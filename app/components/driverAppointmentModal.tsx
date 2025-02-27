@@ -1,4 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import TimePicker from "./timePicker";
 
 interface DriverAppointmentModalProps {
   process: string;
@@ -75,7 +76,7 @@ const DriverAppointmentModal = forwardRef<
 												<i className="material-symbols-outlined">schedule</i>
 											</span>
 										</div>
-                    <input type="text" className="form-control timepicker" placeholder="" defaultValue="16.00" />
+                     <TimePicker />
 										
 									</div>
 							

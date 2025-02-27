@@ -1,22 +1,48 @@
-// TimePicker.tsx
 import React, { useEffect, useRef } from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
-export default function TimePicker () {
+interface TimePickerProps {
+  placeholder?: string;
+  onChange?: (selectedTime: string) => void;
+}
+
+const TimePicker: React.FC<TimePickerProps> = ({
+  placeholder = 'HH:MM',
+  onChange,
+}) => {
   const timeInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (timeInputRef.current) {
-      flatpickr(timeInputRef.current, {
-        enableTime: true,
-        noCalendar: true,
-        // dateFormat: 'H:i',
-        altFormat: 'H:i',
-      });
-    }
-  }, []);
+    const fp = flatpickr(timeInputRef.current!, {
+      enableTime: true,
+      noCalendar: true,
+      static : true,
+      dateFormat: 'H:i',
+      position: "below center",
+      time_24hr: true,
+      onChange: (selectedDates, dateStr) => {
+        if (onChange) {
+          onChange(dateStr);
+        }
+      },
+    });
 
-  return (<input className="form-control date-picker-timepickers " placeholder="HH:MM" ref={timeInputRef} type="text" />);
+    return () => {
+      fp.destroy(); // Cleanup flatpickr instance on unmount
+    };
+  }, [onChange]);
+
+  return (
+ 
+    <input
+      className="form-control"
+      placeholder={placeholder}
+      ref={timeInputRef}
+      type="text"
+    />
+  
+  );
 };
 
+export default TimePicker;

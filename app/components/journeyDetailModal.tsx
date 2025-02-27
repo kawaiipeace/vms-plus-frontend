@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import NumberInput from "./numberInput";
+import TimePicker from "./timePicker";
 
 const JourneyDetailModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -69,42 +70,12 @@ const JourneyDetailModal = forwardRef((_, ref) => {
               </div>
             </div>
 
-            <div className="col-span-12 md:col-span-6">
+            <div className="col-span-12 md:col-span-6 journey-time">
               <div className="form-group">
                 <label className="form-label">ช่วงเวลาการเดินทาง</label>
-                <div className="custom-group">
-                  <div className="custom-control custom-radio custom-control-inline">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="ช่วงเวลาการเดินทาง"
-                      data-group="ช่วงเวลาการเดินทาง"
-                      checked
-                      disabled
-                    />
-                    <label className="custom-control-label">เต็มวัน</label>
-                  </div>
-                  <div className="custom-control custom-radio custom-control-inline">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="ช่วงเวลาการเดินทาง"
-                      data-group="ช่วงเวลาการเดินทาง"
-                      disabled
-                    />
-                    <label className="custom-control-label">ครึ่งวันเช้า</label>
-                  </div>
-                  <div className="custom-control custom-radio custom-control-inline">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="ช่วงเวลาการเดินทาง"
-                      data-group="ช่วงเวลาการเดินทาง"
-                      disabled
-                    />
-                    <label className="custom-control-label">ครึ่งวันบ่าย</label>
-                  </div>
-                </div>
+                <div className="input-group">
+                 <TimePicker />
+                 </div>
               </div>
             </div>
 

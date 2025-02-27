@@ -264,8 +264,9 @@ export default function ProcessOne() {
                     <div className="col-span-12 md:col-span-3">
                       <div className="form-group">
                         <label className="form-label">ช่วงเวลาการเดินทาง</label>
-
+                          <div className="input-group">
                         <TimePicker />
+                        </div>
                         {/* <!-- <span className="form-helper">Helper</span> --> */}
                       </div>
                     </div>

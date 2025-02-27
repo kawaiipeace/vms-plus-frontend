@@ -3542,9 +3542,17 @@
   .flatpickr-time{
     border: 1px solid theme('colors.grayDarkMode.300');
     border-radius: 1em;
+    width: 200px;
   }
 
-  
+  .flatpickr-calendar.hasTime{
+    max-width: 200px;
+  }
+
+  .journey-time  .flatpickr-calendar.static.open 
+   {
+      left: 2.3em;
+  }
   @font-face {
     font-family: "Material Symbols Outlined";
     font-style: normal;

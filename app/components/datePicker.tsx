@@ -18,6 +18,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ placeholder, onChange }) => {
       flatpickr(inputRef.current, {
         dateFormat: "d/m/Y",
         locale: Thai,
+        static : true,
         monthSelectorType: 'static',
         onChange: (selectedDates) => {
           if (onChange) {

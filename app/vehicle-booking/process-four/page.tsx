@@ -46,7 +46,7 @@ export default function ProcessFour() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  
+
   return (
     <div>
       <div className="main-container">
@@ -105,7 +105,9 @@ export default function ProcessFour() {
                         </div>
                         <button
                           className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                          onClick={() => vehicleUserModalRef.current?.openModal()}
+                          onClick={() =>
+                            vehicleUserModalRef.current?.openModal()
+                          }
                         >
                           แก้ไข
                         </button>
@@ -173,7 +175,9 @@ export default function ProcessFour() {
                         </div>
                         <button
                           className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                          onClick={() => journeyDetailModalRef.current?.openModal()}
+                          onClick={() =>
+                            journeyDetailModalRef.current?.openModal()
+                          }
                         >
                           แก้ไข
                         </button>
@@ -205,7 +209,7 @@ export default function ProcessFour() {
                                 </i>
                                 <div className="form-plaintext-group">
                                   <div className="form-label">ช่วงเวลา</div>
-                                  <div className="form-text">เต็มวัน</div>
+                                  <div className="form-text">12:33</div>
                                 </div>
                               </div>
                             </div>
@@ -293,12 +297,14 @@ export default function ProcessFour() {
                         </div>
                         <button
                           className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                          onClick={() => driverAppointmentModalRef.current?.openModal()}
+                          onClick={() =>
+                            driverAppointmentModalRef.current?.openModal()
+                          }
                         >
                           แก้ไข
                         </button>
                       </div>
-
+                
                       <div className="form-card">
                         <div className="form-card-body">
                           <div className="grid grid-cols-12">
@@ -397,7 +403,9 @@ export default function ProcessFour() {
                           className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                           data-toggle="modal"
                           data-target="#editDisbursementModal"
-                          onClick={() => disbursementModalRef.current?.openModal()}
+                          onClick={() =>
+                            disbursementModalRef.current?.openModal()
+                          }
                         >
                           แก้ไข
                         </button>
@@ -536,7 +544,12 @@ export default function ProcessFour() {
                                 </div>
                               </div>
 
-                              <button className="btn btn-tertiary-brand bg-transparent shadow-none border-none"   onClick={() => vehiclePickModalRef.current?.openModal()}>
+                              <button
+                                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                                onClick={() =>
+                                  vehiclePickModalRef.current?.openModal()
+                                }
+                              >
                                 เลือกประเภทยานพาหนะ
                               </button>
                             </div>
@@ -635,8 +648,6 @@ export default function ProcessFour() {
                           </div>
                         </div>
                       </div>
-
-                      
                     </div>
 
                     <div className="form-section">
@@ -657,7 +668,7 @@ export default function ProcessFour() {
                           <div className="img img-square img-avatar flex-grow-1 align-self-start">
                             <Image
                               src="/assets/img/sample-avatar.png"
-                                 className="rounded-md"
+                              className="rounded-md"
                               width={100}
                               height={100}
                               alt=""
@@ -702,7 +713,10 @@ export default function ProcessFour() {
 
               <div className="form-accept">
                 การกดปุ่ม “สร้างคำขอ” จะถือว่าท่านอ่านและตกลงยอมรับ{" "}
-                <a  onClick={() => termAndConditionModalRef.current?.openModal()} className="text-info text-underline">
+                <a
+                  onClick={() => termAndConditionModalRef.current?.openModal()}
+                  className="text-info text-underline"
+                >
                   เงื่อนไข หลักเกณฑ์ และระเบียบการใช้ยานพาหนะ
                 </a>
               </div>
@@ -713,6 +727,8 @@ export default function ProcessFour() {
             </div>
           </div>
         </div>
+
+     
 
         <div className="toast-container">
           <div
@@ -739,144 +755,13 @@ export default function ProcessFour() {
             </div>
           </div>
         </div>
-
-        <div
-          className="modal fade"
-          id="filtersModal"
-          tabIndex={-1}
-          aria-labelledby="filtersModal"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-scrollable modal-right">
-            <div className="modal-content">
-              <div className="bottom-sheet">
-                <div className="bottom-sheet-icon"></div>
-              </div>
-              <div className="modal-header">
-                <div className="modal-header-group">
-                  <div className="featured-ico featured-ico-gray">
-                    <i className="material-symbols-outlined icon-settings-400-24">
-                      filter_list
-                    </i>
-                  </div>
-                  <div className="modal-header-content">
-                    <div className="modal-header-top">
-                      <div className="modal-title">ตัวกรอง</div>
-                    </div>
-                    <div className="modal-header-bottom">
-                      <div className="modal-subtitle">
-                        กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="close btn btn-icon btn-tertiary"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <i className="material-symbols-outlined">close</i>
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="grid grid-cols-12">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <label className="form-label">สถานะคำขอ</label>
-                      <div className="custom-group">
-                        <div className="custom-control custom-checkbox custom-control-inline">
-                          <input
-                            type="checkbox"
-                            className="custom-control-input"
-                            name="checkbox"
-                            data-group="checkboxGroup"
-                          />
-                          <label className="custom-control-label">
-                            <div className="custom-control-label-group">
-                              <span className="badge badge-pill-outline badge-info">
-                                รออนุมัติ
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-                      <div className="custom-group">
-                        <div className="custom-control custom-checkbox custom-control-inline">
-                          <input
-                            type="checkbox"
-                            className="custom-control-input"
-                            name="checkbox"
-                            data-group="checkboxGroup"
-                          />
-                          <label className="custom-control-label">
-                            <div className="custom-control-label-group">
-                              <span className="badge badge-pill-outline badge-error">
-                                ถูกตีกลับ
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-12">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <label className="form-label">วันที่เดินทาง</label>
-                      <div className="input-group flatpickr">
-                        <div className="input-group-prepend" data-toggle="">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">
-                              calendar_month
-                            </i>
-                          </span>
-                        </div>
-                        <input
-                          type="text"
-                          className="form-control flatpickr-input"
-                          placeholder="ระบุช่วงวันที่เดินทาง"
-                        />
-                        <div className="input-group-append" data-clear>
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-tertiary btn-resetfilter mr-auto"
-                >
-                  ล้างตัวกรอง
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-dismiss="modal"
-                >
-                  ยกเลิก
-                </button>
-                <button type="button" className="btn btn-primary">
-                  ตกลง
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <TermAndConditionModal ref={termAndConditionModalRef} />
-      <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef}/>
-      <VehiclePickModel process="edit" ref={vehiclePickModalRef}/>
-      <JourneyDetailModal ref={journeyDetailModalRef}/>
-      <VehicleUserModal process="edit" ref={vehicleUserModalRef}/>
-      <ReferenceModal ref={referenceModalRef}/>
+      <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef} />
+      <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
+      <JourneyDetailModal ref={journeyDetailModalRef} />
+      <VehicleUserModal process="edit" ref={vehicleUserModalRef} />
+      <ReferenceModal ref={referenceModalRef} />
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />
     </div>
