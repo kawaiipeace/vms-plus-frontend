@@ -706,7 +706,7 @@
 @font-face {
     font-family: "Material Symbols Outlined";
     font-style: normal;
-    src: url(/public/assets/material-symbol/MaterialSymbolsRounded[FILL\,GRAD\,opsz\,wght].woff2) format("woff");
+    src: url(/assets/material-symbol/MaterialSymbolsRounded[FILL\,GRAD\,opsz\,wght].woff2) format("woff");
   }
   .material-symbols-outlined {
     font-family: "Material Symbols Outlined";
