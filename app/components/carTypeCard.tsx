@@ -1,0 +1,61 @@
+import Image from "next/image";
+
+interface CarTypeCardProps {
+  imgSrc: string;
+  title: string;
+  text: string;
+  name: string;
+  selectedValue: string;
+  setSelectedValue: (value: string) => void;
+}
+
+export default function CarTypeCard({
+  imgSrc,
+  title,
+  text,
+  name,
+  selectedValue,
+  setSelectedValue,
+}: CarTypeCardProps) {
+  return (
+    <div
+      className={`card p-0 cursor-pointer ${
+        selectedValue === title ? "active border-brand-900" : "border-gray-300"
+      }`}
+      onClick={() => setSelectedValue(title)}
+    >
+      <div className="card-body">
+        <div className="card-img-top h-[95px] rounded-md overflow-hidden">
+          <Image src={imgSrc} width={100} height={100} alt="" />
+        </div>
+        <label className="flex flex-wrap items-center gap-2 h-[40px] cursor-pointer new-radio-custom">
+          <input
+            type="radio"
+            className="hidden"
+            name={name}
+            value={title}
+            checked={selectedValue === title}
+            onChange={() => setSelectedValue(title)}
+          />
+          <div
+            className={`os-radio w-5 h-5 rounded-full border-2 ${
+              selectedValue === title
+                ? "active border-brand-900 bg-brand-900"
+                : "border-gray-300"
+            } flex items-center justify-center`}
+          >
+            {selectedValue === title && (
+              <div className="circle-radio w-2 h-2 bg-white rounded-full"></div>
+            )}
+          </div>
+          <div className="custom-control-label">
+            <div className="custom-control-label-group">
+              <div className="custom-control-label-text">{title}</div>
+              <div className="custom-control-label-suptext">ว่าง: {text} คัน</div>
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  );
+}
