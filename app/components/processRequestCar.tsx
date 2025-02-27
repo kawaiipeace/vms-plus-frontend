@@ -22,7 +22,7 @@ export default function ProcessRequestCar({ step }: { step: number }) {
 
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.5 -1.5 34 34" className="circular-progressbar">
                     <circle cx="16" cy="16" r="15.9155" className="circular-progressbar-background"></circle>
-                    <circle cx="16" cy="16" r="15.9155" className="circular-progressbar-progress js-circular-progressbar"></circle>
+                    <circle cx="16" cy="16" r="15.9155" className={`circular-progressbar-progress js-circular-progressbar`}   style={{ strokeDashoffset: step === 1 ? "75" : step === 2 ? "50" : step === 3 ? "25" : "0" }}  ></circle>
                   </svg>
             
             {/* <svg

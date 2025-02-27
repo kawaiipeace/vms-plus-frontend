@@ -1,5 +1,7 @@
 "use client";
 import CustomSelect from "@/app/components/customSelect";
+import DatePicker from "@/app/components/datePicker";
+import TimePicker from "@/app/components/timePicker";
 import Header from "@/app/components/header";
 import NumberInput from "@/app/components/numberInput";
 import ProcessRequestCar from "@/app/components/processRequestCar";
@@ -13,7 +15,8 @@ import { useState } from "react";
 
 export default function ProcessOne() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
-  const [selectedTravelTime, setSelectedTravelTime] = useState('');
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
   const [selectedTravelType, setSelectedTravelType] = useState('');
   const driverOptions = [
     "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
@@ -21,12 +24,12 @@ export default function ProcessOne() {
     "ญาณิศา อุ่นสิริ (543210)"
 ];
 
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
   };
 
+  console.log(startDate,endDate);
   return (
     <div>
       <div className="main-container">
@@ -217,10 +220,9 @@ export default function ProcessOne() {
                               </i>
                             </span>
                           </div>
-                          <input
-                            type="text"
-                            className="form-control"
+                          <DatePicker
                             placeholder="ระบุวันที่"
+                            onChange={(startDate) => setStartDate(startDate)}
                           />
                           {/* <!-- <div className="input-group-append">
                           <span className="input-group-text search-ico-trailing">
@@ -235,7 +237,7 @@ export default function ProcessOne() {
                     <div className="col-span-6 md:col-span-3">
                       <div className="form-group">
                         <label className="form-label">
-                          วันที่สิ้นสุดเดินทาง
+                          วันที่สิ้นสุดเดินทาง 
                         </label>
                         <div className="input-group">
                           <div className="input-group-prepend">
@@ -245,10 +247,9 @@ export default function ProcessOne() {
                               </i>
                             </span>
                           </div>
-                          <input
-                            type="text"
-                            className="form-control"
+                            <DatePicker
                             placeholder="ระบุวันที่"
+                            onChange={(endDate) => setEndDate(endDate)}
                           />
                           {/* <!-- <div className="input-group-append">
                           <span className="input-group-text search-ico-trailing">
@@ -264,29 +265,7 @@ export default function ProcessOne() {
                       <div className="form-group">
                         <label className="form-label">ช่วงเวลาการเดินทาง</label>
 
-                        <div className="custom-group">
-                          <RadioButton
-                            name="travelTime"
-                            label="เต็มวัน"
-                            value="เต็มวัน"
-                            selectedValue={selectedTravelTime}
-                            setSelectedValue={setSelectedTravelTime}
-                          />
-                          <RadioButton
-                            name="travelTime"
-                            label="ครึ่งวันเช้า"
-                            value="ครึ่งวันเช้า"
-                            selectedValue={selectedTravelTime}
-                            setSelectedValue={setSelectedTravelTime}
-                          />
-                          <RadioButton
-                            name="travelTime"
-                            label="ครึ่งวันบ่าย"
-                            value="ครึ่งวันบ่าย"
-                            selectedValue={selectedTravelTime}
-                            setSelectedValue={setSelectedTravelTime}
-                          />
-                        </div>
+                        <TimePicker />
                         {/* <!-- <span className="form-helper">Helper</span> --> */}
                       </div>
                     </div>

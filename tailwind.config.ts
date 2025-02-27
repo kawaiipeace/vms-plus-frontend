@@ -54,6 +54,12 @@ export default {
         customPurple: "0px 0px 0px 4px rgba(168, 6, 137, 0.12)", 
         customGray: "0px 0px 0px 4px #ECECED"
       },
+      strokeDashOffset: {
+        '1': '75px',
+        '2': '50px',
+        '3': '25px',
+        '4': '0px',
+    }
     },
   },
   plugins: [daisyUI],

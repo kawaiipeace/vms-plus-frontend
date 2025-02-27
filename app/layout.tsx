@@ -22,9 +22,8 @@ export default function RootLayout({
         <ThemeToggle />
       </Head>
       <body className="light-mode sidebar-expanded">{children} 
-
+       
       </body>
-      
     </html>
   );
 }
