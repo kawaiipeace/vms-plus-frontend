@@ -15,8 +15,6 @@ import { useState } from "react";
 
 export default function ProcessOne() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
   const [selectedTravelType, setSelectedTravelType] = useState('');
   const driverOptions = [
     "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
@@ -29,7 +27,6 @@ export default function ProcessOne() {
     setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
   };
 
-  console.log(startDate,endDate);
   return (
     <div>
       <div className="main-container">
@@ -222,7 +219,9 @@ export default function ProcessOne() {
                           </div>
                           <DatePicker
                             placeholder="ระบุวันที่"
-                            onChange={(startDate) => setStartDate(startDate)}
+                            // onChange={(startDate) => {
+                            //   console.log('Date picked:', startDate);
+                            //   setStartDate(startDate)}}
                           />
                           {/* <!-- <div className="input-group-append">
                           <span className="input-group-text search-ico-trailing">
@@ -249,7 +248,7 @@ export default function ProcessOne() {
                           </div>
                             <DatePicker
                             placeholder="ระบุวันที่"
-                            onChange={(endDate) => setEndDate(endDate)}
+                            // onChange={(endDate) => setEndDate(endDate)}
                           />
                           {/* <!-- <div className="input-group-append">
                           <span className="input-group-text search-ico-trailing">
@@ -261,7 +260,7 @@ export default function ProcessOne() {
                       </div>
                     </div>
 
-                    <div className="col-span-12 md:col-span-3">
+                    <div className="col-span-12 md:col-span-3 journey-time">
                       <div className="form-group">
                         <label className="form-label">ช่วงเวลาการเดินทาง</label>
                           <div className="input-group">
