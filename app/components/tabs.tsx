@@ -44,7 +44,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
       <div className="py-4">
         {tabs[activeTab].label == "รออนุมัติ" ? (
           <div className="flex justify-between items-center">
-            <div className="hidden">
+            <div className="hidden md:block">
             <div className="input-group input-group-search hidden">
               <div className="input-group-prepend">
                 <span className="input-group-text search-ico-info">
