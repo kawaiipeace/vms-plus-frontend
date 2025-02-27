@@ -1,3 +1,5 @@
+import DatePicker from "./datePicker";
+
 export default function StatusModal(){
     return (
         <div
@@ -94,12 +96,8 @@ export default function StatusModal(){
                           </i>
                         </span>
                       </div>
-                      <input
-                        type="text"
-                        className="form-control flatpickr-input"
-                        placeholder="ระบุช่วงวันที่เดินทาง"
-                        data-input
-                      />
+                     
+                      <DatePicker placeholder="ระบุช่วงวันที่เดินทาง" />
                       <div className="input-group-append" data-clear>
                         <span className="input-group-text search-ico-trailing">
                           <i className="material-symbols-outlined">close</i>

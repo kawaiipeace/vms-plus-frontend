@@ -219,9 +219,6 @@ export default function ProcessOne() {
                           </div>
                           <DatePicker
                             placeholder="ระบุวันที่"
-                            // onChange={(startDate) => {
-                            //   console.log('Date picked:', startDate);
-                            //   setStartDate(startDate)}}
                           />
                           {/* <!-- <div className="input-group-append">
                           <span className="input-group-text search-ico-trailing">
@@ -248,7 +245,6 @@ export default function ProcessOne() {
                           </div>
                             <DatePicker
                             placeholder="ระบุวันที่"
-                            // onChange={(endDate) => setEndDate(endDate)}
                           />
                           {/* <!-- <div className="input-group-append">
                           <span className="input-group-text search-ico-trailing">

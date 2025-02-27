@@ -7,6 +7,7 @@ import SelectCarCard from "@/app/components/selectCarCard";
 import Pagination from "@/app/components/pagination";
 import CustomSelect from "@/app/components/customSelect";
 import ZeroRecord from "@/app/components/zeroRecord";
+import DatePicker from "@/app/components/datePicker";
 
 export default function ProcessTwo() {
 
@@ -279,12 +280,7 @@ export default function ProcessTwo() {
                           </i>
                         </span>
                       </div>
-                      <input
-                        type="text"
-                        className="form-control flatpickr-input"
-                        placeholder="ระบุช่วงวันที่เดินทาง"
-                        data-input
-                      />
+                      <DatePicker placeholder="ระบุช่วงวันที่เดินทาง" />
                       <div className="input-group-append" data-clear>
                         <span className="input-group-text search-ico-trailing">
                           <i className="material-symbols-outlined">close</i>

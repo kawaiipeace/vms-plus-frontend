@@ -1,5 +1,6 @@
 "use client";
 import CustomSelect from "@/app/components/customSelect";
+import DatePicker from "@/app/components/datePicker";
 import DriverCard from "@/app/components/driverCard";
 import EmptyDriver from "@/app/components/emptyDriver";
 import Header from "@/app/components/header";
@@ -411,12 +412,7 @@ export default function ProcessThree() {
                           </i>
                         </span>
                       </div>
-                      <input
-                        type="text"
-                        className="form-control flatpickr-input"
-                        placeholder="ระบุช่วงวันที่เดินทาง"
-                        data-input
-                      />
+                      <DatePicker placeholder="ระบุช่วงวันที่เดินทาง" />
                       <div className="input-group-append" data-clear>
                         <span className="input-group-text search-ico-trailing">
                           <i className="material-symbols-outlined">close</i>

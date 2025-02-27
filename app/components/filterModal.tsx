@@ -1,4 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import DatePicker from "./datePicker";
 
 const FilterModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -80,7 +81,7 @@ const FilterModal = forwardRef((_, ref) => {
                         <i className="material-symbols-outlined">calendar_month</i>
                       </span>
                     </div>
-                    <input type="text" className="form-control flatpickr-input" placeholder="ระบุช่วงวันที่เดินทาง" data-input />
+                    <DatePicker placeholder="ระบุช่วงวันที่เดินทาง" />
                     <div className="input-group-append" data-clear>
                       <span className="input-group-text search-ico-trailing">
                         <i className="material-symbols-outlined">close</i>

@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import NumberInput from "./numberInput";
 import TimePicker from "./timePicker";
+import DatePicker from "./datePicker";
 
 const JourneyDetailModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -37,13 +38,7 @@ const JourneyDetailModal = forwardRef((_, ref) => {
                       </i>
                     </span>
                   </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder=""
-                    defaultValue="01/01/2567"
-                    disabled
-                  />
+                  <DatePicker placeholder="" />
                 </div>
               </div>
             </div>
@@ -59,13 +54,7 @@ const JourneyDetailModal = forwardRef((_, ref) => {
                       </i>
                     </span>
                   </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder=""
-                    defaultValue="01/01/2567"
-                    disabled
-                  />
+                  <DatePicker placeholder="" />
                 </div>
               </div>
             </div>
