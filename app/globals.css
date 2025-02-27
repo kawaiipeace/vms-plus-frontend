@@ -703,53 +703,6 @@
     font-size: 20px;
   }
   
-@font-face {
-    font-family: "Material Symbols Outlined";
-    font-style: normal;
-    src: url(/assets/material-symbol/MaterialSymbolsRounded[FILL\,GRAD\,opsz\,wght].woff2) format("woff");
-  }
-  .material-symbols-outlined {
-    font-family: "Material Symbols Outlined";
-    font-weight: normal;
-    font-style: normal;
-    display: inline-block;
-    line-height: 1;
-    text-transform: none;
-    letter-spacing: normal;
-    word-wrap: normal;
-    white-space: nowrap;
-    direction: ltr;
-    vertical-align: bottom;
-    -webkit-font-smoothing: auto;
-    -moz-osx-font-smoothing: auto;
-    font-size: 24px; /* Preferred icon size */
-    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20;
-  }
-  
-  .icon-settings-300-20 {
-    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20;
-  }
-  
-  .icon-settings-300-24 {
-    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
-  }
-  
-  .icon-settings-400-20 {
-    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
-  }
-  
-  .icon-settings-400-24 {
-    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  }
-  
-  .icon-settings-fill-300-24 {
-    font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 0, "opsz" 24;
-  }
-  
-  .icon-settings-fill-300-20 {
-    font-variation-settings: "FILL" 1, "wght" 300, "GRAD" 0, "opsz" 20;
-  }
-  
   .card {
     border: 1px solid;
     border-radius: 1rem;

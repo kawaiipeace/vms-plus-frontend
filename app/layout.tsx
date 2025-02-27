@@ -4,6 +4,7 @@ import "./globals.css";
 import "../public/assets/css/ibmplexsansthai.css";
 import "../public/assets/css/ibmplexsansthailooped.css";
 import "../public/assets/css/ibmthaifonts.css";
+import "../public/assets/css/material-symbols.css";
 import ThemeToggle from "@/app/components/themeToggle";
 
 export const metadata: Metadata = {
