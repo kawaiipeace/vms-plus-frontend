@@ -3325,7 +3325,6 @@
     padding: 1rem;
     flex-basis: auto;
     position: relative;
-    display: none;
   }
   .light-mode .toast-container .toast {
     background-color: #FFFFFF;
@@ -3339,10 +3338,7 @@
     box-shadow: 0 12px 16px -4px rgba(16, 24, 40, 0.0784313725);
     color: #F5F5F6;
   }
-  .toast-container .toast.show {
-    z-index: 9;
-    display: block;
-  }
+
   .toast-container .toast.toast-success i {
     font-size: 20px;
   }
