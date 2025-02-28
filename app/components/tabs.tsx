@@ -5,6 +5,7 @@ import FilterModal from "./filterModal";
 import Link from "next/link";
 import TableComponent from "./table";
 import { requestData, requestDataColumns } from "@/app/data/requestData";
+import RequestStatusBox from "./requestStatusBox";
 
 interface Tab {
   label: React.ReactNode;
@@ -44,6 +45,12 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
         ))}
       </div>
       <div className="py-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
+        
+       <RequestStatusBox imgSrc="/assets/img/graphic/waiting_icon.svg" title="รออนุมัติ" number={3} />
+       <RequestStatusBox imgSrc="/assets/img/graphic/fileback_icon.svg" title="ถูกตีกลับ" number={1} />
+        </div>
+       
         {tabs[activeTab].label == "รออนุมัติ" ? (
           <div className="flex justify-between items-center">
             <div className="hidden md:block">
