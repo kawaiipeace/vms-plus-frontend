@@ -3,6 +3,8 @@ import Image from "next/image";
 import ZeroRecord from "./zeroRecord";
 import FilterModal from "./filterModal";
 import Link from "next/link";
+import TableComponent from "./table";
+import { requestData, requestDataColumns } from "@/app/data/requestData";
 
 interface Tab {
   label: React.ReactNode;
@@ -89,6 +91,8 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
           ""
         )}
         {tabs[activeTab].content}
+
+        <TableComponent data={requestData} columns={requestDataColumns} />
 
         <div className="hidden">
         <ZeroRecord

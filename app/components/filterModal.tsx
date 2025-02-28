@@ -82,7 +82,7 @@ const FilterModal = forwardRef((_, ref) => {
                       </span>
                     </div>
                     <DatePicker placeholder="ระบุช่วงวันที่เดินทาง" />
-                    <div className="input-group-append" data-clear>
+                    <div className="input-group-append hidden" data-clear>
                       <span className="input-group-text search-ico-trailing">
                         <i className="material-symbols-outlined">close</i>
                       </span>
