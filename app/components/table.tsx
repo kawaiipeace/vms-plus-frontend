@@ -10,7 +10,7 @@ import {
   SortingState,
   PaginationState,
 } from "@tanstack/react-table";
-import CustomSelect from "./customSelect";
+import Paginationselect from "./paginationSelect";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
@@ -194,8 +194,9 @@ export default function TableComponent<T>({
             {Math.min((pageIndex + 1) * pageSize, table.getRowCount())} จาก{" "}
             {table.getRowCount()} รายการ
           </div>
-          <CustomSelect
+          <Paginationselect
             w="w-[5em]"
+            position="top"
             options={["10", "25", "50", "100"]}
             value={String(table.getState().pagination.pageSize)}
             onChange={(selectedValue) =>

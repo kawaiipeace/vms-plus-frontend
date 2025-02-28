@@ -18,23 +18,43 @@ const DatePicker: React.FC<DatePickerProps> = ({ placeholder }) => {
       flatpickr(inputRef.current, {
         dateFormat: "d/m/Y",
         locale: Thai,
-        static : true,
-        monthSelectorType: 'static',
+        static: true,
+        monthSelectorType: "static",
         prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
-			  nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
+        nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
         onReady: function (selectedDates, dateStr, instance) {
-          const prevMonthButton = instance.calendarContainer.querySelector('.flatpickr-prev-month');
-          const nextMonthButton = instance.calendarContainer.querySelector('.flatpickr-next-month');
+          const prevMonthButton = instance.calendarContainer.querySelector(
+            ".flatpickr-prev-month"
+          );
+          const nextMonthButton = instance.calendarContainer.querySelector(
+            ".flatpickr-next-month"
+          );
 
           // Add custom classes to the buttons
-          prevMonthButton?.classList.add('btn', 'btn-tertiary');
-          nextMonthButton?.classList.add('btn', 'btn-tertiary');
+          prevMonthButton?.classList.add(
+            "btn",
+            "btn-tertiary",
+            "bg-transparent",
+            "shadow-none",
+            "border-none"
+          );
+          nextMonthButton?.classList.add(
+            "btn",
+            "btn-tertiary",
+            "bg-transparent",
+            "shadow-none",
+            "border-none"
+          );
 
           const origFormatDate = instance.formatDate;
           instance.formatDate = function (dateObj, formatStr) {
             const gregorianYear = origFormatDate.call(instance, dateObj, "Y");
             const buddhistYear = (parseInt(gregorianYear) + 543).toString(); // Convert to string
-            return origFormatDate.call(instance, dateObj, formatStr.replace("Y", buddhistYear));
+            return origFormatDate.call(
+              instance,
+              dateObj,
+              formatStr.replace("Y", buddhistYear)
+            );
           };
 
           updateCalendarYear(instance);
@@ -55,12 +75,17 @@ const DatePicker: React.FC<DatePickerProps> = ({ placeholder }) => {
 
   const updateCalendarYear = (instance: FlatpickrInstance) => {
     const calendarContainer = instance.calendarContainer;
-    const yearElements = calendarContainer.querySelectorAll<HTMLElement>(".cur-year, .numInput.cur-year");
-  
-    yearElements.forEach(element => {
-      const gregorianYear = parseInt((element as HTMLInputElement).value || element.textContent || "0", 10);
+    const yearElements = calendarContainer.querySelectorAll<HTMLElement>(
+      ".cur-year, .numInput.cur-year"
+    );
+
+    yearElements.forEach((element) => {
+      const gregorianYear = parseInt(
+        (element as HTMLInputElement).value || element.textContent || "0",
+        10
+      );
       const buddhistYear = gregorianYear + 543;
-  
+
       if (element instanceof HTMLInputElement) {
         element.value = buddhistYear.toString();
       } else {
@@ -68,7 +93,6 @@ const DatePicker: React.FC<DatePickerProps> = ({ placeholder }) => {
       }
     });
   };
-  
 
   return (
     <input
