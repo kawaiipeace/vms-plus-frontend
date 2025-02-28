@@ -2830,10 +2830,10 @@
     color: #CECFD2;
   }
   
-  .light-mode .modal .modal-box.modal-confirm .confirm-text {
+  .light-mode .modal .modal-box .confirm-text {
     color: #667085;
   }
-  .dark-mode .modal .modal-box.modal-confirm .confirm-text {
+  .dark-mode .modal .modal-box .confirm-text {
     color: #CECFD2;
   }
  
@@ -3019,14 +3019,14 @@
   
    @media (max-width: 767px) {
 
-    .modal .modal-box.modal-confirm .confirm-title {
+    .modal .confirm-title {
       font-size: 1.25rem;
       font-weight: 600;
       line-height: 1.5;
       letter-spacing: 0px;
       margin-top: 1.5rem;
     }
-    .modal .modal-box.modal-confirm .confirm-text {
+    .modal .modal-box .confirm-text {
       margin-top: 0.25rem;
     }
     .modal .modal-header {
@@ -5171,11 +5171,6 @@
 
 select option{
  padding: 10px;
-}
-
-.modal {
-  position: fixed; /* or absolute */
-  z-index: 1; /* Temporarily set to a low value */
 }
 
 .checkbox:hover{

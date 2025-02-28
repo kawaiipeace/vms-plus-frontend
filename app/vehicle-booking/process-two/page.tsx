@@ -160,7 +160,7 @@ export default function ProcessTwo() {
         </div>
       </div>
               <Toast title="สร้างกลุ่ม “หน่วยงาน กอพ.1” สำเร็จ" desc="กลุ่ม “หน่วยงาน กอพ.1” ได้ถูกสร้างขึ้นมาในระบบเรียบร้อยแล้ว" status="success"/>
-    
+
     </div>
   );
 }

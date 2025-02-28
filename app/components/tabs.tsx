@@ -70,16 +70,19 @@ const Tabs: React.FC<TabsProps> = ({ tabs }) => {
                 className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
                 onClick={() => filterModalRef.current?.openModal()}
               >
+                <div className="flex items-center gap-1">
                 <i className="material-symbols-outlined">filter_list</i>
                 ตัวกรอง
                 <span className="badge badge-brand badge-outline rounded-[50%]">
                   2
                 </span>
+                </div>
               </button>
               <Link href="process-one" className="btn btn-primary h-[40px] min-h-[40px]"  >
                 <i className="material-symbols-outlined">add</i>
                 สร้างคำขอใช้
               </Link>
+             
             </div>
           </div>
         ) : (
