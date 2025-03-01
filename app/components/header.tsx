@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ToggleSidebar from "@/app/components/toggleSideBar";
+import ThemeToggle from "./themeToggle";
 
 export default function Header() {
   return (
@@ -21,9 +22,8 @@ export default function Header() {
 
         <div className="navbar-end gap-[0.5rem]">
 			<div className="flex gap-1">
-			<button className="btn btn-tertiary btn-icon border-none shadow-none toggle-mode relative">
-            <i className="material-symbols-outlined">light_mode</i>
-          </button>
+	
+  <ThemeToggle />
           <button className="btn btn-tertiary btn-icon border-none shadow-none btn-notifications relative">
             <i className="material-symbols-outlined">notifications</i>
             <span className="badge badge-indicator badge-success badge-ping"></span>

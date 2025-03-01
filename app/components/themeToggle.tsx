@@ -6,9 +6,9 @@ export default function ThemeToggle(){
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Check the user's preference from localStorage or default to light mode
+
     const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
+    if (storedTheme === "dark-mode") {
       setIsDarkMode(true);
       document.body.classList.add("dark-mode");
     } else {
@@ -24,9 +24,9 @@ export default function ThemeToggle(){
   };
 
   return (
-    <button onClick={toggleTheme} className="theme-toggle">
-      {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-    </button>
+    <button onClick={toggleTheme} className={`btn btn-tertiary btn-icon border-none shadow-none toggle-mode relative theme-toggle`}>
+    <i className="material-symbols-outlined">light_mode</i> 
+  </button>
   );
 };
 

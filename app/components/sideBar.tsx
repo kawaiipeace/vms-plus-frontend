@@ -106,7 +106,7 @@ export default function SideBar() {
           ))}
         </ul>
 
-        <ul className="nav flex-column mt-auto sidebar-nav-top-bottom">
+        <ul className="nav flex-column mt-auto sidebar-nav-top-bottom hidden">
           <li className="nav-item">
             <Link
               href=""
