@@ -3,7 +3,6 @@ import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
 import StatusModal from "@/app/components/statusModel";
-import ToastCustom from "@/app/components/toastCustom";
 import Link from "next/link";
 import RequestForm from "@/app/components/flow/requestForm";
 
@@ -50,7 +49,6 @@ export default function ProcessOne() {
         </div>
       </div>
 
-      <ToastCustom />
       <StatusModal />
     </div>
   );

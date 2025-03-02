@@ -3,12 +3,13 @@ import CarTypeCard from "./carTypeCard";
 
 interface VehiclePickModelProps {
   process: string;
+  onSelect?: (vehicle: string) => void; 
 }
 
 const VehiclePickModel = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   VehiclePickModelProps // Props type
->(({ process }, ref) => {
+>(({ process,onSelect }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
@@ -75,7 +76,10 @@ const [selectedCarType, setSelectedCarType] = useState('');
             <button className="btn btn-secondary">ปิด</button>
           </form>
 
-          <button type="button" className="btn btn-primary">
+          <button type="button" className="btn btn-primary"  onClick={() => {
+                onSelect("Toyota"); // Call onSelect with the title
+                modalRef.current?.close(); // Close the modal after selecting
+              }}>
             เลือก
           </button>
         </div>

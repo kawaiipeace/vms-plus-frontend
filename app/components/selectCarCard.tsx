@@ -2,25 +2,25 @@
 import Image from "next/image";
 import { useRef } from "react";
 import VehicleDetailModel from "./vehicleDetailModal";
-import VehiclePickModel from "./vehiclePickModal";
 
 export default function SelectCarCard({
   imgSrc,
   title,
   subTitle,
+  onSelect, // Add onSelect prop
 }: {
   imgSrc: string;
   title: string;
   subTitle: string;
+  onSelect: (vehicleTitle: string) => void; // Define the type of onSelect
 }) {
   const vehicleDetailModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const vehiclePickModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+
+  
+
   return (
     <div className="card">
       <div className="card-body">
@@ -66,14 +66,13 @@ export default function SelectCarCard({
           </button>
           <button
             className="btn btn-primary col-span-2"
-            onClick={() => vehiclePickModalRef.current?.openModal()}
+            onClick={() => onSelect(title)}
           >
             เลือก
           </button>
         </div>
       </div>
-      <VehicleDetailModel ref={vehicleDetailModalRef} />
-      <VehiclePickModel process="add" ref={vehiclePickModalRef} />
+      <VehicleDetailModel ref={vehicleDetailModalRef} onSelect={() => onSelect(title)} />
     </div>
   );
 }

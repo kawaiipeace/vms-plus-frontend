@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import {
   useReactTable,
   getCoreRowModel,
@@ -26,6 +28,7 @@ export default function TableComponent<T>({
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [pageCount, setPageCount] = useState(1);
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -115,6 +118,7 @@ export default function TableComponent<T>({
                         <button
                           className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                           data-tip="ดูรายละเอียดคำขอ"
+                          onClick={() => router.push('request-list/1')}
                         >
                           <i className="material-symbols-outlined icon-settings-fill-300-24">
                             quick_reference_all
@@ -123,6 +127,7 @@ export default function TableComponent<T>({
                         <button
                           className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                           data-tip="แก้ไข"
+                          onClick={() => router.push('request-list/edit/1')}
                         >
                           <i className="material-symbols-outlined icon-settings-fill-300-24">
                             stylus

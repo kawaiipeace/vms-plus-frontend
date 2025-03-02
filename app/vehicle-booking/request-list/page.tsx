@@ -1,13 +1,14 @@
 "use client";
 import Header from "@/app/components/header";
+import RequestTabs from "@/app/components/requestTabs";
 import SideBar from "@/app/components/sideBar";
-import TabsComponent from "@/app/components/tabsComponent";
+import ToastCustom from "@/app/components/toastCustom";
 
 export default function requestList() {
   return (
     <div>
       <div className="main-container">
-        <SideBar />
+        <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
         <div className="main-content">
           <Header />
@@ -34,11 +35,13 @@ export default function requestList() {
               </div>
             </div>
 
-                <TabsComponent />
+                <RequestTabs />
 
           </div>
         </div>
       </div>
+      <ToastCustom title="สร้างคำขอใช้ยานพาหนะสำเร็จ" desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด" status="success"/>
+
     </div>
   );
 }

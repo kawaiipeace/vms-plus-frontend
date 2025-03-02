@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
@@ -7,9 +8,14 @@ import SelectCarCard from "@/app/components/selectCarCard";
 import Pagination from "@/app/components/pagination";
 import CustomSelect from "@/app/components/customSelect";
 import ZeroRecord from "@/app/components/zeroRecord";
-import Toast from "@/app/components/toast";
+import { useRouter } from "next/navigation";
+// import Toast from "@/app/components/toast";
 
 export default function ProcessTwo() {
+  const router = useRouter();
+  const [vehicleCards, setVehicleCards] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<string>("");
+
 
   const orgOptions = ["ทุกสังกัด", "หน่วยงานต้นสังกัด", "ฝพจ.", "กอพ.2"];
   const vehicleOptions = [
@@ -18,10 +24,18 @@ export default function ProcessTwo() {
     "รถตู้นั่ง",
   ];
 
+  const handleVehicleSelect = (value: string) => {
+    setSelectedVehicle(value);
+  };
+
+  const NextProcess = () => {
+    router.push("process-three");
+  }
+
   return (
     <div>
       <div className="main-container">
-        <SideBar />
+         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
         <div className="main-content">
           <Header />
@@ -105,26 +119,31 @@ export default function ProcessTwo() {
                       imgSrc="/assets/img/admin-selected.png"
                       title="ผู้ดูแลยานพาหนะเลือกให้"
                       desc="สายงานดิจิทัล"
+                      onSelect={handleVehicleSelect}
                     />
                     <AutoCarCard
                       imgSrc="/assets/img/system-selected.png"
                       title="ระบบเลือกยานพาหนะให้อัตโนมัติ"
                       desc="สายงานดิจิทัล"
+                      onSelect={handleVehicleSelect}
                     />
                     <SelectCarCard
                       imgSrc="/assets/img/sample-car.jpeg"
                       title="Toyota Yaris"
                       subTitle="ก78ยบ กรุงเทพ"
+                      onSelect={handleVehicleSelect}
                     />
                     <SelectCarCard
                       imgSrc="/assets/img/sample-car.jpeg"
                       title="Toyota Yaris"
                       subTitle="ก78ยบ กรุงเทพ"
+                    onSelect={handleVehicleSelect}
                     />
                     <SelectCarCard
                       imgSrc="/assets/img/sample-car.jpeg"
                       title="Toyota Yaris"
                       subTitle="ก78ยบ กรุงเทพ"
+                    onSelect={handleVehicleSelect}
                     />
                   </div>
 
@@ -135,7 +154,7 @@ export default function ProcessTwo() {
               </div>
             </div>
 
-            <ZeroRecord
+          { vehicleCards.length > 0 && <ZeroRecord
               imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
               title="ไม่พบยานพาหนะ"
               desc={
@@ -146,10 +165,11 @@ export default function ProcessTwo() {
                 </>
               }
               button="ล้างคำค้นหา"
-            />
+            /> }
+            
 
             <div className="form-action">
-              <button className="btn btn-primary" disabled>
+              <button onClick={() => NextProcess()} className="btn btn-primary" disabled={selectedVehicle === ""}>
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">
                   arrow_right_alt
@@ -159,8 +179,7 @@ export default function ProcessTwo() {
           </div>
         </div>
       </div>
-              <Toast title="สร้างกลุ่ม “หน่วยงาน กอพ.1” สำเร็จ" desc="กลุ่ม “หน่วยงาน กอพ.1” ได้ถูกสร้างขึ้นมาในระบบเรียบร้อยแล้ว" status="success"/>
-
+           
     </div>
   );
 }

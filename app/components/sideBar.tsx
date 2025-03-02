@@ -1,15 +1,40 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function SideBar() {
+interface SidebarProps {
+  menuName?: string;
+}
+
+export default function SideBar({ menuName }: SidebarProps) {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (menuName) {
+      setActiveItem(menuName);
+
+      // Automatically expand the menu if the active item belongs to it
+      if (["คำขอใช้ยานพาหนะ", "อนุมัติขอคำใช้และใบอนุญาต"].includes(menuName)) {
+        setOpenMenus(["collapseLink2"]);
+      } else if (
+        ["ตรวจสอบคำขอ", "อนุมัติใช้ยานพาหนะ", "ให้กุญแจและรับคืนยานพาหนะ"].includes(menuName)
+      ) {
+        setOpenMenus(["collapseLink3"]);
+      } else if (
+        ["ผู้ดูแลยานพาหนะ", "ข้อมูลพนักงานขับรถ", "ข้อมูลยานพาหนะ", "กลุ่มยานพาหนะ", "ข้อมูล Fleet card"].includes(menuName)
+      ) {
+        setOpenMenus(["collapseLink4"]);
+      }
+    }
+  }, [menuName]);
+
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
-      prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]
+      prev.includes(menuId)
+        ? prev.filter((id) => id !== menuId)
+        : [...prev, menuId]
     );
   };
 
@@ -43,16 +68,19 @@ export default function SideBar() {
               id: "collapseLink2",
               icon: "car_rental",
               label: "ระบบจองยานพาหนะ",
-              items: ["คำขอใช้ยานพาหนะ", "อนุมัติขอคำใช้และใบอนุญาต"],
+              items: [
+                { title: "คำขอใช้ยานพาหนะ", link: "request-list" },
+                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "request-list" },
+              ],
             },
             {
               id: "collapseLink3",
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                "ตรวจสอบคำขอ",
-                "อนุมัติใช้ยานพาหนะ",
-                "ให้กุญแจและรับคืนยานพาหนะ",
+                { title: "ตรวจสอบคำขอ", link: "request-list" },
+                { title: "อนุมัติใช้ยานพาหนะ", link: "request-list" },
+                { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },
             {
@@ -60,18 +88,20 @@ export default function SideBar() {
               icon: "database",
               label: "ข้อมูลพนักงานและยานพาหนะ",
               items: [
-                "ผู้ดูแลยานพาหนะ",
-                "ข้อมูลพนักงานขับรถ",
-                "ข้อมูลยานพาหนะ",
-                "กลุ่มยานพาหนะ",
-                "ข้อมูล Fleet card",
+                { title: "ผู้ดูแลยานพาหนะ", link: "request-list" },
+                { title: "ข้อมูลพนักงานขับรถ", link: "request-list" },
+                { title: "ข้อมูลยานพาหนะ", link: "request-list" },
+                { title: "กลุ่มยานพาหนะ", link: "request-list" },
+                { title: "ข้อมูล Fleet card", link: "request-list" },
               ],
             },
           ].map((menu) => (
             <li className="nav-item" key={menu.id}>
               <button
                 onClick={() => toggleMenu(menu.id)}
-                className={`nav-link ${openMenus.includes(menu.id) ? "active" : ""}`}
+                className={`nav-link ${
+                  openMenus.includes(menu.id) ? "active" : ""
+                }`}
               >
                 <i className="material-symbols-outlined">{menu.icon}</i>
                 <span className="nav-link-label text-left">{menu.label}</span>
@@ -85,18 +115,22 @@ export default function SideBar() {
               </button>
               <div
                 className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                  openMenus.includes(menu.id) ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                  openMenus.includes(menu.id)
+                    ? "max-h-[500px] opacity-100"
+                    : "max-h-0 opacity-0"
                 }`}
               >
                 <ul className="nav flex-column">
                   {menu.items.map((item, index) => (
                     <li className="nav-item" key={index}>
                       <Link
-                        href=""
-                        className={`nav-link ${activeItem === item ? "active" : ""}`}
-                        onClick={() => setActiveItem(item)}
+                        href={item.link}
+                        className={`nav-link ${
+                          activeItem === item.title ? "active" : ""
+                        }`}
+                        onClick={() => setActiveItem(item.title)}
                       >
-                        {item}
+                        {item.title}
                       </Link>
                     </li>
                   ))}
@@ -104,51 +138,6 @@ export default function SideBar() {
               </div>
             </li>
           ))}
-        </ul>
-
-        <ul className="nav flex-column mt-auto sidebar-nav-top-bottom hidden">
-          <li className="nav-item">
-            <Link
-              href=""
-              className={`nav-link toggle-mode ${activeItem === "mode" ? "active" : ""}`}
-              onClick={() => setActiveItem("mode")}
-            >
-              <i className="material-symbols-outlined">light_mode</i>
-              <span className="nav-link-label">โหมดสว่าง</span>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              href=""
-              className={`nav-link toggle-lock ${activeItem === "lock" ? "active" : ""}`}
-              onClick={() => setActiveItem("lock")}
-            >
-              <i className="material-symbols-outlined">lock</i>
-              <span className="nav-link-label">ล็อกหน้าจอ</span>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              href=""
-              className={`nav-link ${activeItem === "license" ? "active" : ""}`}
-              onClick={() => setActiveItem("license")}
-            >
-              <i className="material-symbols-outlined">id_card</i>
-              <span className="nav-link-label">ใบอนุญาตขับขี่</span>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <div className="nav-link sidebar-users">
-              <div className="avatar avatar-sm">
-                <Image src="/assets/img/avatar.svg" width={36} height={36} alt="" />
-              </div>
-              <div className="sidebar-users-content">
-                <div className="sidebar-users-name">นายสมคิด จงจองหอ</div>
-                <div className="sidebar-users-position">ผู้ใช้งานทั่วไป</div>
-              </div>
-              <i className="material-symbols-outlined">logout</i>
-            </div>
-          </li>
         </ul>
       </div>
     </div>

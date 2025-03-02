@@ -1,6 +1,7 @@
 "use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import CustomSelect from "@/app/components/customSelect";
-import DatePicker from "@/app/components/datePicker";
 import DriverCard from "@/app/components/driverCard";
 import EmptyDriver from "@/app/components/emptyDriver";
 import Header from "@/app/components/header";
@@ -9,23 +10,32 @@ import ProcessRequestCar from "@/app/components/processRequestCar";
 import RadioButton from "@/app/components/radioButton";
 import SideBar from "@/app/components/sideBar";
 import Tooltip from "@/app/components/tooltips";
-import { useState } from "react";
+import Link from "next/link";
+
 
 export default function ProcessThree() {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  
+  const router = useRouter();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [drivers, setDrivers] = useState([
+    { name: "ศรัญยู บริรัตน์ฤทธิ์", company: "กฟภ.", rate: 4.5 },
+  ]);
+
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
   const driverOptions = [
     "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
     "ธนพล วิจารณ์ปรีชา (514285)",
     "ญาณิศา อุ่นสิริ (543210)",
   ];
+
+  const next = () => {
+    router.push('process-four');
+  }
   
 
   return (
     <div>
       <div className="main-container">
-        <SideBar />
+         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
         <div className="main-content">
           <Header />
@@ -39,7 +49,7 @@ export default function ProcessThree() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <a>คำขอใช้ยานพาหนะ</a>
+                    <Link href="request-list">คำขอใช้ยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     สร้างคำขอใช้ยานพาหนะ
@@ -94,7 +104,11 @@ export default function ProcessThree() {
                   </div>
                 </div>
 
-                <div className={`form-section ${selectedDriverType == "พนักงาน กฟภ." ? "block": "hidden"} `}>
+                <div
+                  className={`form-section ${
+                    selectedDriverType == "พนักงาน กฟภ." ? "block" : "hidden"
+                  } `}
+                >
                   <div className="page-section-header border-0">
                     <div className="page-header-left">
                       <div className="page-title">
@@ -203,8 +217,13 @@ export default function ProcessThree() {
                           เลขที่ใบอนุญาตขับขี่
                           <span className="form-optional">(ถ้ามี)</span>
                         </label>
-                        <Input type="text" icon="id_card" disable={true}   value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)} />
+                        <Input
+                          type="text"
+                          icon="id_card"
+                          disable={true}
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
                         {/* <!-- <span className="form-helper">Helper</span> --> */}
                       </div>
                     </div>
@@ -214,74 +233,104 @@ export default function ProcessThree() {
                         <label className="form-label">
                           เลขที่อนุญาตขับขี่ กฟภ.
                         </label>
-                        <Input type="text" icon="docs" disable={true}   value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}/>
+                        <Input
+                          type="text"
+                          icon="docs"
+                          disable={true}
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
                         {/* <!-- <span className="form-helper">Helper</span> --> */}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className={`form-section ${selectedDriverType == "พนักงานขับรถ" ? "block": "hidden"} `}>
-                  <div className="page-section-header border-0">
-                    <div className="page-header-left">
-                      <div className="page-title">
-                        <span className="page-title-label">
-                        เลือกพนักงานขับรถ
-                        </span>
-                        <span className="badge badge-outline badge-gray page-title-status">
-                          20 คน
-                        </span>
+                <div
+                  className={`form-section ${
+                    selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
+                  } `}
+                >
+                  {drivers.length > 0 ? (
+                    <>
+                      <div className="page-section-header border-0">
+                        <div className="page-header-left">
+                          <div className="page-title">
+                            <span className="page-title-label">
+                              เลือกพนักงานขับรถ
+                            </span>
+                            <span className="badge badge-outline badge-gray page-title-status">
+                              20 คน
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-4 gap-5 w-full">
-                    <DriverCard
-                      imgSrc="/assets/img/sample-driver.png"
-                      name="ผู้ดูแลยานพาหนะเลือกให้"
-                      company="สายงานดิจิทัล"
-                      rating={4.6}
-                      age="35 ปี 6 เดือน"
-                    />
-                     <DriverCard
-                      imgSrc="/assets/img/sample-driver.png"
-                      name="ผู้ดูแลยานพาหนะเลือกให้"
-                      company="สายงานดิจิทัล"
-                      rating={4.6}
-                      age="35 ปี 6 เดือน"
-                    />
-                     <DriverCard
-                      imgSrc="/assets/img/sample-driver.png"
-                      name="ผู้ดูแลยานพาหนะเลือกให้"
-                      company="สายงานดิจิทัล"
-                      rating={4.6}
-                      age="35 ปี 6 เดือน"
-                    />
-                     <DriverCard
-                      imgSrc="/assets/img/sample-driver.png"
-                      name="ผู้ดูแลยานพาหนะเลือกให้"
-                      company="สายงานดิจิทัล"
-                      rating={4.6}
-                      age="35 ปี 6 เดือน"
-                    />
-                  </div>
+                      <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                <div className="input-group-prepend">
+                  <span className="input-group-text search-ico-info">
+                    <i className="material-symbols-outlined">search</i>
+                  </span>
                 </div>
-
-                <EmptyDriver imgSrc="/assets/img/empty/empty_driver.svg"
-                title="ไม่พบพนักงานขับรถ"
-                desc={
-                  <>
-                    ระบบไม่พบพนักงานขับรถในสังกัด    <br /> กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้    <br /> ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                  </>
-                }
-                button="ค้นหานอกสังกัด"
+                <input
+                  type="text"
+                  id="myInputTextField"
+                  className="form-control dt-search-input"
+                  placeholder="ค้นหาชื่อพนักงานขับรถ.."
                 />
+              </div>
+
+                      <div className="grid grid-cols-4 gap-5 w-full">
+                        <DriverCard
+                          imgSrc="/assets/img/sample-driver.png"
+                          name="ผู้ดูแลยานพาหนะเลือกให้"
+                          company="สายงานดิจิทัล"
+                          rating={4.6}
+                          age="35 ปี 6 เดือน"
+                        />
+                        <DriverCard
+                          imgSrc="/assets/img/sample-driver.png"
+                          name="ผู้ดูแลยานพาหนะเลือกให้"
+                          company="สายงานดิจิทัล"
+                          rating={4.6}
+                          age="35 ปี 6 เดือน"
+                        />
+                        <DriverCard
+                          imgSrc="/assets/img/sample-driver.png"
+                          name="ผู้ดูแลยานพาหนะเลือกให้"
+                          company="สายงานดิจิทัล"
+                          rating={4.6}
+                          age="35 ปี 6 เดือน"
+                        />
+                        <DriverCard
+                          imgSrc="/assets/img/sample-driver.png"
+                          name="ผู้ดูแลยานพาหนะเลือกให้"
+                          company="สายงานดิจิทัล"
+                          rating={4.6}
+                          age="35 ปี 6 เดือน"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <EmptyDriver
+                      imgSrc="/assets/img/empty/empty_driver.svg"
+                      title="ไม่พบพนักงานขับรถ"
+                      desc={
+                        <>
+                          ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
+                          กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
+                          ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                        </>
+                      }
+                      button="ค้นหานอกสังกัด"
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="form-action">
-              <button className="btn btn-primary" disabled>
+              <button className="btn btn-primary" onClick={() => next()}>
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">
                   arrow_right_alt
@@ -292,158 +341,6 @@ export default function ProcessThree() {
         </div>
       </div>
 
-      <div className="toast-container">
-        <div
-          className="toast fade toast-success"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div className="toast-body">
-            <i className="material-symbols-outlined icon-settings-fill-300-24">
-              check_circle
-            </i>
-            <div className="toast-content">
-              <div className="toast-title">
-                สร้างกลุ่ม “หน่วยงาน กอพ.1” สำเร็จ
-              </div>
-              <div className="toast-text">
-                กลุ่ม “หน่วยงาน กอพ.1” ได้ถูกสร้างขึ้นมาในระบบเรียบร้อยแล้ว
-              </div>
-            </div>
-            <button type="button" className="close" data-dismiss="toast">
-              <i className="material-symbols-outlined">close</i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        className="modal fade"
-        id="filtersModal"
-        tabIndex={-1}
-        aria-labelledby="filtersModal"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-scrollable modal-right">
-          <div className="modal-content">
-            <div className="bottom-sheet">
-              <div className="bottom-sheet-icon"></div>
-            </div>
-            <div className="modal-header">
-              <div className="modal-header-group">
-                <div className="featured-ico featured-ico-gray">
-                  <i className="material-symbols-outlined icon-settings-400-24">
-                    filter_list
-                  </i>
-                </div>
-                <div className="modal-header-content">
-                  <div className="modal-header-top">
-                    <div className="modal-title">ตัวกรอง</div>
-                  </div>
-                  <div className="modal-header-bottom">
-                    <div className="modal-subtitle">
-                      กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="close btn btn-icon btn-tertiary"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="row form-row">
-                <div className="col-12">
-                  <div className="form-group">
-                    <label className="form-label">สถานะคำขอ</label>
-                    <div className="custom-group">
-                      <div className="custom-control custom-checkbox custom-control-inline">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          name="checkbox"
-                          data-group="checkboxGroup"
-                        />
-                        <label className="custom-control-label">
-                          <div className="custom-control-label-group">
-                            <span className="badge badge-pill-outline badge-info">
-                              รออนุมัติ
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                    <div className="custom-group">
-                      <div className="custom-control custom-checkbox custom-control-inline">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          name="checkbox"
-                          data-group="checkboxGroup"
-                        />
-                        <label className="custom-control-label">
-                          <div className="custom-control-label-group">
-                            <span className="badge badge-pill-outline badge-error">
-                              ถูกตีกลับ
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="row form-row">
-                <div className="col-12">
-                  <div className="form-group">
-                    <label className="form-label">วันที่เดินทาง</label>
-                    <div className="input-group flatpickr">
-                      <div className="input-group-prepend" data-toggle="">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                            calendar_month
-                          </i>
-                        </span>
-                      </div>
-                      <DatePicker placeholder="ระบุช่วงวันที่เดินทาง" />
-                      <div className="input-group-append" data-clear>
-                        <span className="input-group-text search-ico-trailing">
-                          <i className="material-symbols-outlined">close</i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-tertiary btn-resetfilter mr-auto"
-              >
-                ล้างตัวกรอง
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-dismiss="modal"
-              >
-                ยกเลิก
-              </button>
-              <button type="button" className="btn btn-primary">
-                ตกลง
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
