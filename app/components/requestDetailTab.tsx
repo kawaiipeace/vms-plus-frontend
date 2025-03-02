@@ -24,7 +24,7 @@ export default function RequestDetailTabs({status} : Props) {
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist">
+      <div className="flex border-b tablist z-[10]">
         {tabs.map((tab, index) => (
           <button
             key={index}

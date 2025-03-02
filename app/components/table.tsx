@@ -146,7 +146,7 @@ export default function TableComponent<T>({
                     </div>
 
                     <ul
-                      className="dropdown-menu dropdown-content z-[1] max-w-[200px] w-[200px]"
+                      className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
                       tabIndex={0}
                     >
                       <a className="dropdown-item" href="#">
