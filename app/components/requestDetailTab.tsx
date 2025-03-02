@@ -42,7 +42,7 @@ export default function RequestDetailTabs({status} : Props) {
           </button>
         ))}
       </div>
-      <div className="py-4">
+      <div className="py-4 relative">
 
         {tabs[activeTab].content}
       

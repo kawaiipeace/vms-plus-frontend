@@ -114,6 +114,7 @@ export default function TableComponent<T>({
                         </span>
                       </div>
                     ) : cell.column.columnDef.header === "" ? (
+                      <>
                       <div className="dt-action">
                         <button
                           className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
@@ -133,15 +134,7 @@ export default function TableComponent<T>({
                             stylus
                           </i>
                         </button>
-                      </div>
-                    ) : (
-                      (cell.renderValue() as React.ReactNode)
-                    )}
-                  </td>
-                ))}
-
-                <td>
-                  <div className="dropdown dropdown-left dropdown-end">
+                        <div className="dropdown dropdown-left dropdown-end">
                     <div
                       className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                       tabIndex={0}
@@ -179,6 +172,18 @@ export default function TableComponent<T>({
                       </a>
                     </ul>
                   </div>
+                      </div>
+
+                      
+                      </>
+                    ) : (
+                      (cell.renderValue() as React.ReactNode)
+                    )}
+                  </td>
+                ))}
+
+                <td>
+                 
                 </td>
               </tr>
             ))}
