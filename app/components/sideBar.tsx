@@ -10,21 +10,17 @@ interface SidebarProps {
 export default function SideBar({ menuName }: SidebarProps) {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isPinned, setIsPinned] = useState<boolean>(false);
 
   useEffect(() => {
     if (menuName) {
       setActiveItem(menuName);
-
-      // Automatically expand the menu if the active item belongs to it
       if (["คำขอใช้ยานพาหนะ", "อนุมัติขอคำใช้และใบอนุญาต"].includes(menuName)) {
         setOpenMenus(["collapseLink2"]);
-      } else if (
-        ["ตรวจสอบคำขอ", "อนุมัติใช้ยานพาหนะ", "ให้กุญแจและรับคืนยานพาหนะ"].includes(menuName)
-      ) {
+      } else if (["ตรวจสอบคำขอ", "อนุมัติใช้ยานพาหนะ", "ให้กุญแจและรับคืนยานพาหนะ"].includes(menuName)) {
         setOpenMenus(["collapseLink3"]);
-      } else if (
-        ["ผู้ดูแลยานพาหนะ", "ข้อมูลพนักงานขับรถ", "ข้อมูลยานพาหนะ", "กลุ่มยานพาหนะ", "ข้อมูล Fleet card"].includes(menuName)
-      ) {
+      } else if (["ผู้ดูแลยานพาหนะ", "ข้อมูลพนักงานขับรถ", "ข้อมูลยานพาหนะ", "กลุ่มยานพาหนะ", "ข้อมูล Fleet card"].includes(menuName)) {
         setOpenMenus(["collapseLink4"]);
       }
     }
@@ -39,39 +35,55 @@ export default function SideBar({ menuName }: SidebarProps) {
   };
 
   return (
-    <div className="sidebar">
-      <div className="sidebar-top">
-        <Link href="http://" className="sidebar-brand">
-          <Image src="/assets/img/brand.svg" width={98} height={40} alt="" />
+    <div
+      className={`sidebar z-10 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
+        isExpanded || isPinned ? "w-[280px] min-w-[280px] max-w-[280px]" : "w-[80px]"
+      }`}
+      onMouseEnter={() => !isPinned && setIsExpanded(true)}
+      onMouseLeave={() => !isPinned && setIsExpanded(false)}
+    >
+      {/* Sidebar Top */}
+      <div className={`flex items-center justify-between p-4 ${isExpanded && 'sidebar-top'}`}>
+        <Link href="/" className="sidebar-brand">
+            {isExpanded ? 
+            <Image src={'/assets/img/brand.svg'} width={98} height={40} alt="" className="transition-all duration-300 ease-in-out" />
+           :
+            <Image src={'/assets/img/favicon.png'} width={40} height={40} alt="" className="transition-all duration-300 ease-in-out" />
+          }
         </Link>
 
-        <button className="btn btn-icon btn-tertiary btn-toggle-sidebar">
-          <i className="material-symbols-outlined">close</i>
+        {/* Pin Button */}
+        { isExpanded && 
+        <button
+          className="btn btn-icon rounded-none"
+          onClick={() => setIsPinned(!isPinned)}
+        >
+       
+          <i className="material-symbols-outlined">{isPinned ? "keyboard_tab_rtl" : "keyboard_tab"}</i>
+
         </button>
+        }
       </div>
+
+      {/* Sidebar Navigation */}
       <div className="custom-scrollbar">
-        <ul className="nav flex-column sidebar-nav-top">
+        <ul className="nav flex-col">
           <li className="nav-item">
-            <Link
-              href=""
-              className={`nav-link ${activeItem === "home" ? "active" : ""}`}
-              onClick={() => setActiveItem("home")}
-            >
+            <Link href="/" className={`nav-link flex items-center ${activeItem === "home" ? "active" : ""}`}>
               <i className="material-symbols-outlined">home</i>
-              <span className="nav-link-label">หน้าหลัก</span>
+              <span className={`nav-link-label transition-all duration-300 ${isExpanded || isPinned ? "opacity-100 ml-2" : "opacity-0 w-0"}`}>
+                หน้าหลัก
+              </span>
             </Link>
           </li>
 
-          {/* Dropdown Section */}
+          {/* Dropdown Menus */}
           {[
             {
               id: "collapseLink2",
               icon: "car_rental",
               label: "ระบบจองยานพาหนะ",
-              items: [
-                { title: "คำขอใช้ยานพาหนะ", link: "request-list" },
-                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "request-list" },
-              ],
+              items: [{ title: "คำขอใช้ยานพาหนะ", link: "request-list" }, { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "request-list" }],
             },
             {
               id: "collapseLink3",
@@ -96,46 +108,38 @@ export default function SideBar({ menuName }: SidebarProps) {
               ],
             },
           ].map((menu) => (
-            <li className="nav-item" key={menu.id}>
+            <li className={`nav-item  ${!isExpanded && 'h-[40px] w-[40px]'}`} key={menu.id}>
               <button
                 onClick={() => toggleMenu(menu.id)}
-                className={`nav-link ${
-                  openMenus.includes(menu.id) ? "active" : ""
-                }`}
+                className={`nav-link flex items-center justify-between ${!isExpanded && 'h-[40px] w-[40px]'} ${openMenus.includes(menu.id) ? "active" : ""}`}
               >
-                <i className="material-symbols-outlined">{menu.icon}</i>
-                <span className="nav-link-label text-left">{menu.label}</span>
-                <i className="ico-toggle">
-                  <span className="material-symbols-outlined">
-                    {openMenus.includes(menu.id)
-                      ? "keyboard_arrow_up"
-                      : "keyboard_arrow_down"}
+                <div className="flex items-center">
+                  <i className="material-symbols-outlined">{menu.icon}</i>
+                  <span className={`nav-link-label text-left transition-all duration-300 ${isExpanded || isPinned ? "opacity-100 ml-2" : "opacity-0 w-0"}`}>
+                    {menu.label}
                   </span>
+                </div>
+                {isExpanded &&
+                <i className="ico-toggle">
+                  <span className="material-symbols-outlined">{openMenus.includes(menu.id) ? "keyboard_arrow_up" : "keyboard_arrow_down"}</span>
                 </i>
+                 }
               </button>
-              <div
-                className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                  openMenus.includes(menu.id)
-                    ? "max-h-[500px] opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <ul className="nav flex-column">
+              {isExpanded &&
+              <div className={`transition-all duration-500 ease-in-out overflow-hidden ${openMenus.includes(menu.id) ? "max-h-[500px] block" : "hidden"}`}>
+                <ul className="nav flex-col text-left">
                   {menu.items.map((item, index) => (
-                    <li className="nav-item" key={index}>
-                      <Link
-                        href={item.link}
-                        className={`nav-link ${
-                          activeItem === item.title ? "active" : ""
-                        }`}
-                        onClick={() => setActiveItem(item.title)}
-                      >
-                        {item.title}
+                    <li className="nav-item text-left" key={index}>
+                      <Link href={item.link} className={`nav-link flex items-center ${activeItem === item.title ? "active" : ""}`}>
+                        <span className={`nav-link-label text-left transition-all duration-300 ${isExpanded || isPinned ? "block" : "hidden"}`}>
+                          {item.title}
+                        </span>
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
+}
             </li>
           ))}
         </ul>

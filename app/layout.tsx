@@ -6,6 +6,7 @@ import "../public/assets/css/ibmplexsansthailooped.css";
 import "../public/assets/css/ibmthaifonts.css";
 import "../public/assets/css/material-symbols.css";
 import ThemeToggle from "@/app/components/themeToggle";
+import { SidebarProvider } from "./contexts/sidebarContext";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -23,7 +24,10 @@ export default function RootLayout({
       <Head>
         <ThemeToggle />
       </Head>
-      <body className="light-mode sidebar-expanded">{children} 
+      <body className="light-mode">
+      <SidebarProvider>
+        {children} 
+        </SidebarProvider>
        
       </body>
     </html>
