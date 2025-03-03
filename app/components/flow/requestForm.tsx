@@ -200,6 +200,15 @@ export default function RequestForm() {
                   </div>
                 </div>
 
+                <div className="col-span-12 md:col-span-3 journey-time">
+                  <div className="form-group">
+                    <label className="form-label">เวลาที่ออกเดินทาง</label>
+                    <div className="input-group">
+                      <TimePicker />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="col-span-6 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
@@ -218,12 +227,25 @@ export default function RequestForm() {
 
                 <div className="col-span-12 md:col-span-3 journey-time">
                   <div className="form-group">
-                    <label className="form-label">ช่วงเวลาการเดินทาง</label>
+                    <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
                       <TimePicker />
                     </div>
                   </div>
                 </div>
+
+                <div className="col-span-12 md:col-span-3">
+                  <div className="form-group">
+                    <label className="form-label">
+                      จำนวนผู้โดยสาร{" "}
+                      <span className="form-optional">(รวมผู้ขับขี่)</span>
+                    </label>
+
+                    <NumberInput />
+                  </div>
+                </div>
+
+
 
                 <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
@@ -247,6 +269,7 @@ export default function RequestForm() {
                     </div>
                   </div>
                 </div>
+
 
                 <div className="col-span-12 md:col-span-6">
                   <div className="form-group">
@@ -302,42 +325,6 @@ export default function RequestForm() {
                   </div>
                 </div>
 
-                <div className="col-span-12 md:col-span-2">
-                  <div className="form-group">
-                    <label className="form-label">
-                      จำนวนผู้โดยสาร{" "}
-                      <span className="form-optional">(รวมผู้ขับขี่)</span>
-                    </label>
-
-                    <NumberInput />
-                  </div>
-                </div>
-
-                <div className="col-span-12 md:col-span-10">
-                  <div className="form-group">
-                    <label className="form-label">
-                      หมายเหตุ <span className="form-optional">(ถ้ามี)</span>
-                    </label>
-                    <div className="input-group">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">sms</i>
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="ระบุหมายเหตุ"
-                      />
-                      {/* <!-- <div className="input-group-append">
-                                 <span className="input-group-text search-ico-trailing">
-                                   <i className="material-symbols-outlined">close</i>
-                                 </span>
-                               </div> --> */}
-                    </div>
-                  </div>
-                </div>
-
                 <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">
@@ -389,14 +376,44 @@ export default function RequestForm() {
                         </div>
                       </label>
                     </div>
-                    <span className="form-helper">
+                    {/* <span className="form-helper">
                       รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB
-                    </span>
+                    </span> */}
                   </div>
                 </div>
+
+                <div className="col-span-12 md:col-span-10">
+                  <div className="form-group">
+                    <label className="form-label">
+                      หมายเหตุ <span className="form-optional">(ถ้ามี)</span>
+                    </label>
+                    <div className="input-group">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="material-symbols-outlined">sms</i>
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="ระบุหมายเหตุ"
+                      />
+                      {/* <!-- <div className="input-group-append">
+                                 <span className="input-group-text search-ico-trailing">
+                                   <i className="material-symbols-outlined">close</i>
+                                 </span>
+                               </div> --> */}
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
+
+            
+            
+               
             <div className="form-section">
               <div className="page-section-header border-0">
                 <div className="page-header-left">

@@ -139,24 +139,23 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                         calendar_month
                       </i>
                       <div className="form-plaintext-group">
-                        <div className="form-label">วันที่เดินทาง</div>
-                        <div className="form-text">01/01/2567 - 07/01/2567</div>
+                        <div className="form-label">วันที่ / เวลาเดินทาง</div>
+                        <div className="form-text">01/01/2567 - 07/01/2567  08:30 - 18:00</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="col-span-6 md:col-span-3">
+                  <div className="col-span-12 md:col-span-3">
                     <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">
-                        departure_board
-                      </i>
+                      <i className="material-symbols-outlined">groups</i>
                       <div className="form-plaintext-group">
-                        <div className="form-label">ช่วงเวลา</div>
-                        <div className="form-text">12:33</div>
+                        <div className="form-label">จำนวนผู้โดยสาร</div>
+                        <div className="form-text">4 (รวมผู้ขับขี่)</div>
                       </div>
                     </div>
                   </div>
 
+             
                   <div className="col-span-6 md:col-span-3">
                     <div className="form-group form-plaintext">
                       <i className="material-symbols-outlined">
@@ -209,15 +208,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                     </div>
                   </div>
 
-                  <div className="col-span-12">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">groups</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">จำนวนผู้โดยสาร</div>
-                        <div className="form-text">4 (รวมผู้ขับขี่)</div>
-                      </div>
-                    </div>
-                  </div>
+                
                 </div>
               </div>
             </div>
@@ -460,6 +451,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                       className="form-card d-md-block collapse"
                       id="collapseApproverDetail"
                     >
+                      
                       <div className="form-card-body form-card-inline">
                         <div className="form-group form-plaintext form-users">
                           <div className="form-plaintext-group align-self-center">
@@ -511,7 +503,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               <>
                 <div className="form-section-header">
                   <div className="form-section-header-title">
-                    ยานพาหนะและผู้ขับขี่
+                    ยานพาหนะ
                   </div>
                 </div>
 
@@ -645,6 +637,13 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               </div>
             </div>
             {(status != "detail" && status != "edit") && (
+              <div className="form-section mt-5">
+                <div className="form-section-header">
+                <div className="form-section-header-title">
+                  ผู้ขับขี่
+                </div>
+              </div>
+
               <div className="card mt-3">
                 <div className="card-body card-body-inline">
                   <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -677,6 +676,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
             )}
           </div>

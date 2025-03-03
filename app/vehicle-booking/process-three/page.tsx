@@ -12,7 +12,6 @@ import SideBar from "@/app/components/sideBar";
 import Tooltip from "@/app/components/tooltips";
 import Link from "next/link";
 
-
 export default function ProcessThree() {
   const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -28,14 +27,13 @@ export default function ProcessThree() {
   ];
 
   const next = () => {
-    router.push('process-four');
-  }
-  
+    router.push("process-four");
+  };
 
   return (
     <div>
       <div className="main-container">
-         <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
         <div className="main-content">
           <Header />
@@ -211,40 +209,36 @@ export default function ProcessThree() {
                       </div>
                     </div>
 
-                    <div className="flex-1">
-                      <div className="form-group">
-                        <label className="form-label">
-                          เลขที่ใบอนุญาตขับขี่
-                          <span className="form-optional">(ถ้ามี)</span>
-                        </label>
-                        <Input
-                          type="text"
-                          icon="id_card"
-                          disable={true}
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                        />
-                        {/* <!-- <span className="form-helper">Helper</span> --> */}
+                   
+                  </div>
+
+                  
+                </div>
+
+                <div className="form-card w-full mt-5">
+                      <div className="form-card-body space-y-2">
+                      <div className="flex gap-2 items-center">
+                      <i className="material-symbols-outlined icon-settings-fill-300-24 text-success">
+                        check_circle
+                      </i>
+                      <div className="card-content">
+                        <div className="card-subtitle font-bold">มีใบขับขี่</div>
                       </div>
+                      </div>
+
+                      <div className="flex gap-2 items-center">
+                      <i className="material-symbols-outlined icon-settings-fill-300-24 text-success">
+                        check_circle
+                      </i>
+                      <div className="card-content">
+                        <div className="card-subtitle font-bold">มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี 2568</div>
+                      </div>
+                      </div>
+                      </div>
+                     
                     </div>
 
-                    <div className="flex-1">
-                      <div className="form-group">
-                        <label className="form-label">
-                          เลขที่อนุญาตขับขี่ กฟภ.
-                        </label>
-                        <Input
-                          type="text"
-                          icon="docs"
-                          disable={true}
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                        />
-                        {/* <!-- <span className="form-helper">Helper</span> --> */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                
 
                 <div
                   className={`form-section ${
@@ -267,18 +261,18 @@ export default function ProcessThree() {
                       </div>
 
                       <div className="input-group input-group-search hidden mb-5 w-[20em]">
-                <div className="input-group-prepend">
-                  <span className="input-group-text search-ico-info">
-                    <i className="material-symbols-outlined">search</i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  id="myInputTextField"
-                  className="form-control dt-search-input"
-                  placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                />
-              </div>
+                        <div className="input-group-prepend">
+                          <span className="input-group-text search-ico-info">
+                            <i className="material-symbols-outlined">search</i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          id="myInputTextField"
+                          className="form-control dt-search-input"
+                          placeholder="ค้นหาชื่อพนักงานขับรถ.."
+                        />
+                      </div>
 
                       <div className="grid grid-cols-4 gap-5 w-full">
                         <DriverCard
@@ -340,7 +334,6 @@ export default function ProcessThree() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

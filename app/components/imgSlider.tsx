@@ -55,7 +55,7 @@ export default function ImgSlider({ images }: ImgSliderProps) {
       </div>
 
       {/* Indicators */}
-      <div className="indicator-daisy absolute bottom-[30%] left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="indicator-daisy absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {images.map((_, index) => (
           <a
             key={index}
