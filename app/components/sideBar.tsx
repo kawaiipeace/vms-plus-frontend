@@ -136,7 +136,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                { title: "ตรวจสอบคำขอ", link: "request-list" },
+                { title: "ตรวจสอบคำขอ", link: "../vehicle-booking/admin" },
                 { title: "อนุมัติใช้ยานพาหนะ", link: "request-list" },
                 { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],

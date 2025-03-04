@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
-import TableComponent from "./table";
+import TableComponent from "../table";
 import { requestData, requestDataColumns } from "@/app/data/requestData";
-import ZeroRecord from "./zeroRecord";
+import ZeroRecord from "../zeroRecord";
 import Link from "next/link";
-import FilterModal from "./filterModal";
+import FilterModal from "../filterModal";
 
 export default function ArpproveFlow() {
 //   const [requestData, setRequestData] = useState([]);
@@ -46,13 +46,6 @@ export default function ArpproveFlow() {
                   </span>
                 </div>
               </button>
-              <Link
-                href="process-one"
-                className="btn btn-primary h-[40px] min-h-[40px]"
-              >
-                <i className="material-symbols-outlined">add</i>
-                สร้างคำขอใช้
-              </Link>
             </div>
           </div>
           <TableComponent data={requestData} columns={requestDataColumns} />

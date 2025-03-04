@@ -6,9 +6,14 @@ import RequestDetailTabs from "@/app/components/requestDetailTab";
 import SideBar from "@/app/components/sideBar";
 import CancelRequestModal from "@/app/components/cancelRequestModal";
 import Link from "next/link";
+import PassVerifyModal from "@/app/components/modal/passVerifyModal";
 export default function RequestDetail() {
     const { isPinned } = useSidebar();
    const cancelRequestModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
+    const passVerifyModalRef = useRef<{
       openModal: () => void;
       closeModal: () => void;
     } | null>(null);
@@ -55,7 +60,7 @@ export default function RequestDetail() {
 
                 <button
                   className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-                  onClick={() => cancelRequestModalRef.current?.openModal()}
+                  onClick={() => passVerifyModalRef.current?.openModal()}
                 >
                   ยกเลิกคำขอ
                 </button>
@@ -72,7 +77,8 @@ export default function RequestDetail() {
           </div>
         </div>
       </div>
-      <CancelRequestModal ref={cancelRequestModalRef} />
+      <PassVerifyModal ref={passVerifyModalRef} title="ยืนยันผ่านการตรวจสอบ" desc="คุณต้องการยืนยันผ่านการตรวจสอบ และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่ ?"/>
+      <CancelRequestModal ref={cancelRequestModalRef} title="ยกเลิกคำขอ" desc="ยกเลิกคำขอ" confirmText="ยกเลิกคำขอ" />
     </div>
   );
 }
