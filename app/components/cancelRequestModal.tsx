@@ -12,7 +12,7 @@ interface Props {
 const CancelRequestModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ title, desc, link, confirmText, placeholder }, ref) => {
+>(({ title, desc, confirmText, placeholder }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 

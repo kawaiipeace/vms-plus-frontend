@@ -5,13 +5,12 @@ import CustomSelect from "../customSelect";
 interface Props {
   title: string;
   desc: string;
-  link?: string;
 }
 
 const PassVerifyModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ title, desc, link }, ref) => {
+>(({ title, desc }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 

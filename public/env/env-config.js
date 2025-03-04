@@ -1,0 +1,4 @@
+window.__ENV__={
+    "NEXT_PUBLIC_CLIENT_API_HOST": "",
+    "NEXT_PUBLIC_CLIENT_CALLBACK": ""
+};
