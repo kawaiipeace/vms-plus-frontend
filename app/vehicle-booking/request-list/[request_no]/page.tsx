@@ -73,7 +73,7 @@ export default function RequestDetail() {
                     <button className="btn btn-secondary">
                       <i className="material-symbols-outlined">reply</i>ตีกลับให้แก้ไข
                     </button>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary"    onClick={() => approveRequestModalRef.current?.openModal()}>
                       <i className="material-symbols-outlined">check</i>อนุมัติคำขอ
                     </button>
                   </>

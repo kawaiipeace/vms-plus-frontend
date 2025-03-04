@@ -12,12 +12,14 @@ import ApproveRequestModal from "../approveRequestModal";
 import CarDetailCard from "../carDetailCard";
 import UserInfoCard from "../userInfoCard";
 import PickupKeyCard from "../pickupKeyCard";
+import DriverSmallInfoCard from "../driverSmallInfoCard";
 
 interface RequestDetailFormProps {
   status: string;
 }
 export default function RequestDetailForm({ status }: RequestDetailFormProps) {
-  const driverType = "PEA";
+  const carSelect = false;
+  const driverType = "PEAS";
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -502,7 +504,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
             )}
 
             {(status != "detail" && status != "edit") ||
-              (driverType === "PEA" && (
+              (driverType == "PEA" && (
                 <>
                   <div className="form-section-header">
                     <div className="form-section-header-title">ยานพาหนะ</div>
@@ -518,83 +520,110 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                 </>
               ))}
 
-            {driverType != "PEA" && (
+            {driverType == "PEAS" && (
               <>
-                <div className="card card-section-inline mt-5">
-                  <div className="card-body card-body-inline">
-                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                      <Image
-                        src="/assets/img/graphic/admin_select_small.png"
-                        className="rounded-md"
-                        width={100}
-                        height={100}
-                        alt=""
-                      />
+                {carSelect == true ? (
+                  <>
+                    <div className="form-section-header">
+                      <div className="form-section-header-title">ยานพาหนะ</div>
                     </div>
-                    <div className="card-content">
-                      <div className="card-content-top card-content-top-inline">
-                        <div className="card-content-top-left">
-                          <div className="card-title">
-                            ผู้ดูแลเลือกยานพาหนะให้
+
+                    <CarDetailCard />
+
+                    <DriverSmallInfoCard />
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <div className="card card-section-inline mt-5">
+                      <div className="card-body card-body-inline">
+                        <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                          <Image
+                            src="/assets/img/graphic/admin_select_small.png"
+                            className="rounded-md"
+                            width={100}
+                            height={100}
+                            alt=""
+                          />
+                        </div>
+                        <div className="card-content">
+                          <div className="card-content-top card-content-top-inline">
+                            <div className="card-content-top-left">
+                              <div className="card-title">
+                                ผู้ดูแลเลือกยานพาหนะให้
+                              </div>
+                              <div className="supporting-text-group">
+                                <div className="supporting-text">
+                                  สายงานดิจิทัล
+                                </div>
+                              </div>
+                            </div>
+
+                            <button
+                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                              onClick={() =>
+                                vehiclePickModalRef.current?.openModal()
+                              }
+                            >
+                              เลือกประเภทยานพาหนะ
+                            </button>
                           </div>
-                          <div className="supporting-text-group">
-                            <div className="supporting-text">สายงานดิจิทัล</div>
+
+                          <div className="card-item-group d-flex">
+                            <div className="card-item col-span-2">
+                              <i className="material-symbols-outlined">
+                                directions_car
+                              </i>
+                              <span className="card-item-text">
+                                รถแวนตรวจการ (รถเก๋ง, SUV)
+                              </span>
+                            </div>
                           </div>
                         </div>
-
-                        <button
-                          className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                          onClick={() =>
-                            vehiclePickModalRef.current?.openModal()
-                          }
-                        >
-                          เลือกประเภทยานพาหนะ
-                        </button>
                       </div>
+                    </div>
+                    <div className="card card-section-inline mt-5">
+                      <div className="card-body card-body-inline">
+                        <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                          <Image
+                            src="/assets/img/graphic/admin_select_driver_small.png"
+                            className="rounded-md"
+                            width={100}
+                            height={100}
+                            alt=""
+                          />
+                        </div>
+                        <div className="card-content">
+                          <div className="card-content-top">
+                            <div className="card-title">
+                              ผู้ดูแลเลือกพนักงานขับรถให้
+                            </div>
+                            <div className="supporting-text-group">
+                              <div className="supporting-text">
+                                สายงานดิจิทัล
+                              </div>
+                            </div>
+                          </div>
 
-                      <div className="card-item-group d-flex">
-                        <div className="card-item col-span-2">
-                          <i className="material-symbols-outlined">
-                            directions_car
-                          </i>
-                          <span className="card-item-text">
-                            รถแวนตรวจการ (รถเก๋ง, SUV)
-                          </span>
+                          <div className="card-item-group d-flex">
+                            <div className="card-item">
+                              <i className="material-symbols-outlined">group</i>
+                              <span className="card-item-text">ว่าง 2 คน</span>
+                            </div>
+                          </div>
+                          <div className="card-actions">
+                            <button className="btn btn-primary w-full">
+                              เลือกพนักงานขับรถ
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
 
-                <div className="card card-section-inline mt-5">
-                  <div className="card-body card-body-inline">
-                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                      <Image
-                        src="/assets/img/graphic/admin_select_driver_small.png"
-                        className="rounded-md"
-                        width={100}
-                        height={100}
-                        alt=""
-                      />
-                    </div>
-                    <div className="card-content">
-                      <div className="card-content-top">
-                        <div className="card-title">
-                          ผู้ดูแลเลือกพนักงานขับรถให้
-                        </div>
-                        <div className="supporting-text-group">
-                          <div className="supporting-text">สายงานดิจิทัล</div>
-                        </div>
-                      </div>
-
-                      <div className="card-item-group d-flex">
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">group</i>
-                          <span className="card-item-text">ว่าง 2 คน</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mt-5">
+                  <PickupKeyCard />
                 </div>
               </>
             )}
