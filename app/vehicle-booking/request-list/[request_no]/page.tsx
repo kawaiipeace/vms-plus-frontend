@@ -7,22 +7,26 @@ import SideBar from "@/app/components/sideBar";
 import ApproveRequestModal from "@/app/components/approveRequestModal";
 import Link from "next/link";
 export default function RequestDetail() {
-    const { isPinned } = useSidebar();
-
-   const approveRequestModalRef = useRef<{
-      openModal: () => void;
-      closeModal: () => void;
-    } | null>(null);
+  const { isPinned } = useSidebar();
+  const driverType = "PEA";
+  const approveRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   return (
     <div>
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
-            <div className="breadcrumbs text-sm">
+              <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
                     <a>
@@ -33,11 +37,10 @@ export default function RequestDetail() {
                     <Link href="../request-list">คำขอใช้ยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                  เลขที่คำขอ VA67RA000001
+                    เลขที่คำขอ VA67RA000001
                   </li>
                 </ul>
               </div>
-
 
               <div className="page-group-header">
                 <div className="page-title">
@@ -45,10 +48,12 @@ export default function RequestDetail() {
                     เลขที่คำขอ VA67RA000001
                   </span>
                   <button className="text-sm">
-                  <i className="material-symbols-outlined text-sm">content_copy</i>
-                  คัดลอก
+                    <i className="material-symbols-outlined text-sm">
+                      content_copy
+                    </i>
+                    คัดลอก
                   </button>
-               
+
                   <span className="badge badge-pill-outline badge-info">
                     รออนุมัติ
                   </span>
@@ -63,17 +68,28 @@ export default function RequestDetail() {
                 <button className="btn btn-secondary">
                   <i className="material-symbols-outlined">print</i>พิมพ์
                 </button>
+                {driverType == "PEA" && (
+                  <>
+                    <button className="btn btn-secondary">
+                      <i className="material-symbols-outlined">reply</i>ตีกลับให้แก้ไข
+                    </button>
+                    <button className="btn btn-primary">
+                      <i className="material-symbols-outlined">check</i>อนุมัติคำขอ
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
             <RequestDetailTabs status="detail" />
-
-
-
           </div>
         </div>
       </div>
-      <ApproveRequestModal ref={approveRequestModalRef} title={"ยืนยันการส่งคำขออีกครั้ง"} desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"} />
+      <ApproveRequestModal
+        ref={approveRequestModalRef}
+        title={"ยืนยันการส่งคำขออีกครั้ง"}
+        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
+      />
     </div>
   );
 }

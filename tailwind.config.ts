@@ -48,6 +48,13 @@ export default {
         '800': '#1F242F',
         '900': '#161B26',
         '950': '#0C111D',
+        },
+        soft:{
+          info: "bg-blue-100 text-blue-600 border-blue-300 hover:bg-blue-200",
+          success: "bg-green-100 text-green-600 border-green-300 hover:bg-green-200",
+          error: "bg-red-100 text-red-600 border-red-300 hover:bg-red-200",
+          warning: "bg-yellow-100 text-yellow-600 border-yellow-300 hover:bg-yellow-200",
+          default: "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200",
         }
       },
       boxShadow: {

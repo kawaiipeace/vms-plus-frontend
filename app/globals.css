@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* .btn{
-  box-shadow: none;
-  border-color: transparent;
-} */
 .avatar {
     overflow: hidden;
     display: flex;

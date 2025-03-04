@@ -60,7 +60,6 @@ export default function SelectCarCard({
           <button
             className="btn btn-secondary col-span-4"
             onClick={() => vehicleDetailModalRef.current?.openModal()}
-            data-target="#vehicleDetailModal"
           >
             ดูรายละเอียด
           </button>

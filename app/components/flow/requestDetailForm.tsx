@@ -9,11 +9,15 @@ import DisbursementModal from "@/app/components/disbursementModal";
 import ApproverModal from "@/app/components/approverModal";
 import AlertCustom from "../alertCustom";
 import ApproveRequestModal from "../approveRequestModal";
+import CarDetailCard from "../carDetailCard";
+import UserInfoCard from "../userInfoCard";
+import PickupKeyCard from "../pickupKeyCard";
 
 interface RequestDetailFormProps {
   status: string;
 }
 export default function RequestDetailForm({ status }: RequestDetailFormProps) {
+  const driverType = "PEA";
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -140,7 +144,9 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                       </i>
                       <div className="form-plaintext-group">
                         <div className="form-label">วันที่ / เวลาเดินทาง</div>
-                        <div className="form-text">01/01/2567 - 07/01/2567  08:30 - 18:00</div>
+                        <div className="form-text">
+                          01/01/2567 - 07/01/2567 08:30 - 18:00
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -155,7 +161,6 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                     </div>
                   </div>
 
-             
                   <div className="col-span-6 md:col-span-3">
                     <div className="form-group form-plaintext">
                       <i className="material-symbols-outlined">
@@ -207,8 +212,6 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                       </div>
                     </div>
                   </div>
-
-                
                 </div>
               </div>
             </div>
@@ -451,7 +454,6 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                       className="form-card d-md-block collapse"
                       id="collapseApproverDetail"
                     >
-                      
                       <div className="form-card-body form-card-inline">
                         <div className="form-group form-plaintext form-users">
                           <div className="form-plaintext-group align-self-center">
@@ -499,63 +501,96 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               </div>
             )}
 
-            {(status != "detail" && status != "edit") && (
+            {(status != "detail" && status != "edit") ||
+              (driverType === "PEA" && (
+                <>
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">ยานพาหนะ</div>
+                  </div>
+
+                  <CarDetailCard />
+                  <div className="mt-5">
+                    <UserInfoCard />
+                  </div>
+                  <div className="mt-5">
+                    <PickupKeyCard />
+                  </div>
+                </>
+              ))}
+
+            {driverType != "PEA" && (
               <>
-                <div className="form-section-header">
-                  <div className="form-section-header-title">
-                    ยานพาหนะ
+                <div className="card card-section-inline mt-5">
+                  <div className="card-body card-body-inline">
+                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                      <Image
+                        src="/assets/img/graphic/admin_select_small.png"
+                        className="rounded-md"
+                        width={100}
+                        height={100}
+                        alt=""
+                      />
+                    </div>
+                    <div className="card-content">
+                      <div className="card-content-top card-content-top-inline">
+                        <div className="card-content-top-left">
+                          <div className="card-title">
+                            ผู้ดูแลเลือกยานพาหนะให้
+                          </div>
+                          <div className="supporting-text-group">
+                            <div className="supporting-text">สายงานดิจิทัล</div>
+                          </div>
+                        </div>
+
+                        <button
+                          className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                          onClick={() =>
+                            vehiclePickModalRef.current?.openModal()
+                          }
+                        >
+                          เลือกประเภทยานพาหนะ
+                        </button>
+                      </div>
+
+                      <div className="card-item-group d-flex">
+                        <div className="card-item col-span-2">
+                          <i className="material-symbols-outlined">
+                            directions_car
+                          </i>
+                          <span className="card-item-text">
+                            รถแวนตรวจการ (รถเก๋ง, SUV)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="card card-section-inline gap-4 flex-col">
+                <div className="card card-section-inline mt-5">
                   <div className="card-body card-body-inline">
-                    <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
+                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
                       <Image
-                        src="/assets/img/sample-car.jpeg"
+                        src="/assets/img/graphic/admin_select_driver_small.png"
+                        className="rounded-md"
                         width={100}
                         height={100}
-                        className="object-cover w-full h-full"
                         alt=""
                       />
                     </div>
                     <div className="card-content">
                       <div className="card-content-top">
-                        <div className="card-title">Toyota Yaris</div>
-                        <div className="card-subtitle">ก78ยบ กรุงเทพ</div>
+                        <div className="card-title">
+                          ผู้ดูแลเลือกพนักงานขับรถให้
+                        </div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">รถแวนตรวจการ</div>
                           <div className="supporting-text">สายงานดิจิทัล</div>
                         </div>
                       </div>
 
-                      <div className="card-item-group grid">
-                        <div className="card-item col-span-2">
-                          <i className="material-symbols-outlined">
-                            credit_card
-                          </i>
-                          <span className="card-item-text">บัตรเติมน้ำมัน</span>
-                        </div>
-                        <div className="card-item col-span-2">
-                          <i className="material-symbols-outlined">
-                            local_gas_station
-                          </i>
-                          <span className="card-item-text">
-                            แก๊สโซฮอล์ พรีเมียม 97
-                          </span>
-                        </div>
-                        <div className="card-item col-span-2">
-                          <i className="material-symbols-outlined">
-                            auto_transmission
-                          </i>
-                          <span className="card-item-text">
-                            เกียร์อัตโนมัติ
-                          </span>
-                        </div>
-                        <div className="card-item col-span-2">
-                          <i className="material-symbols-outlined">
-                            airline_seat_recline_extra
-                          </i>
-                          <span className="card-item-text">6 ที่นั่ง</span>
+                      <div className="card-item-group d-flex">
+                        <div className="card-item">
+                          <i className="material-symbols-outlined">group</i>
+                          <span className="card-item-text">ว่าง 2 คน</span>
                         </div>
                       </div>
                     </div>
@@ -563,125 +598,54 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                 </div>
               </>
             )}
-
-            <div className="card card-section-inline mt-5">
-              <div className="card-body card-body-inline">
-                <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                  <Image
-                    src="/assets/img/graphic/admin_select_small.png"
-                    className="rounded-md"
-                    width={100}
-                    height={100}
-                    alt=""
-                  />
-                </div>
-                <div className="card-content">
-                  <div className="card-content-top card-content-top-inline">
-                    <div className="card-content-top-left">
-                      <div className="card-title">ผู้ดูแลเลือกยานพาหนะให้</div>
-                      <div className="supporting-text-group">
-                        <div className="supporting-text">สายงานดิจิทัล</div>
-                      </div>
-                    </div>
-
-                    <button
-                      className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                      onClick={() => vehiclePickModalRef.current?.openModal()}
-                    >
-                      เลือกประเภทยานพาหนะ
-                    </button>
-                  </div>
-
-                  <div className="card-item-group d-flex">
-                    <div className="card-item col-span-2">
-                      <i className="material-symbols-outlined">
-                        directions_car
-                      </i>
-                      <span className="card-item-text">
-                        รถแวนตรวจการ (รถเก๋ง, SUV)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="card card-section-inline mt-5">
-              <div className="card-body card-body-inline">
-                <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                  <Image
-                    src="/assets/img/graphic/admin_select_driver_small.png"
-                    className="rounded-md"
-                    width={100}
-                    height={100}
-                    alt=""
-                  />
-                </div>
-                <div className="card-content">
-                  <div className="card-content-top">
-                    <div className="card-title">
-                      ผู้ดูแลเลือกพนักงานขับรถให้
-                    </div>
-                    <div className="supporting-text-group">
-                      <div className="supporting-text">สายงานดิจิทัล</div>
-                    </div>
-                  </div>
-
-                  <div className="card-item-group d-flex">
-                    <div className="card-item">
-                      <i className="material-symbols-outlined">group</i>
-                      <span className="card-item-text">ว่าง 2 คน</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {(status != "detail" && status != "edit") && (
+            {status != "detail" && status != "edit" && (
               <div className="form-section mt-5">
                 <div className="form-section-header">
-                <div className="form-section-header-title">
-                  ผู้ขับขี่
+                  <div className="form-section-header-title">ผู้ขับขี่</div>
                 </div>
-              </div>
 
-              <div className="card mt-3">
-                <div className="card-body card-body-inline">
-                  <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                    <Image
-                      src="/assets/img/sample-avatar.png"
-                      className="rounded-md"
-                      width={100}
-                      height={100}
-                      alt=""
-                    />
-                  </div>
-                  <div className="card-content">
-                    <div className="card-content-top">
-                      <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-                      <div className="supporting-text-group">
-                        <div className="supporting-text">505291</div>
-                        <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
+                <div className="card mt-3">
+                  <div className="card-body card-body-inline">
+                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                      <Image
+                        src="/assets/img/sample-avatar.png"
+                        className="rounded-md"
+                        width={100}
+                        height={100}
+                        alt=""
+                      />
+                    </div>
+                    <div className="card-content">
+                      <div className="card-content-top">
+                        <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">505291</div>
+                          <div className="supporting-text">
+                            นรค.6 กอพ.1 ฝพจ.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="card-item-group">
+                        <div className="card-item">
+                          <i className="material-symbols-outlined">
+                            smartphone
+                          </i>
+                          <span className="card-item-text">091-234-5678</span>
+                        </div>
+                        <div className="card-item">
+                          <i className="material-symbols-outlined">call</i>
+                          <span className="card-item-text">6032</span>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="card-item-group">
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">smartphone</i>
-                        <span className="card-item-text">091-234-5678</span>
-                      </div>
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">call</i>
-                        <span className="card-item-text">6032</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             )}
           </div>
 
-          {(status != "detail"&& status != "edit") && (
+          {status != "detail" && status != "edit" && (
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
@@ -695,46 +659,19 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                 </button>
               </div>
 
-              <div className="card">
-                <div className="card-body card-body-inline">
-                  <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                    <Image
-                      src="/assets/img/sample-avatar.png"
-                      className="rounded-md"
-                      width={100}
-                      height={100}
-                      alt=""
-                    />
-                  </div>
-                  <div className="card-content">
-                    <div className="card-content-top">
-                      <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-                      <div className="supporting-text-group">
-                        <div className="supporting-text">505291</div>
-                        <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
-                      </div>
-                    </div>
-
-                    <div className="card-item-group">
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">smartphone</i>
-                        <span className="card-item-text">091-234-5678</span>
-                      </div>
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">call</i>
-                        <span className="card-item-text">6032</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <UserInfoCard />
             </div>
           )}
         </div>
       </div>
       {status == "edit" && (
         <div className="form-action">
-          <button className="btn btn-primary"  onClick={() => approveRequestModalRef.current?.openModal()}>ส่งคำขออีกครั้ง</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => approveRequestModalRef.current?.openModal()}
+          >
+            ส่งคำขออีกครั้ง
+          </button>
         </div>
       )}
       <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef} />
@@ -744,7 +681,11 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
       <ReferenceModal ref={referenceModalRef} />
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />
-      <ApproveRequestModal ref={approveRequestModalRef} title={"ยืนยันการส่งคำขออีกครั้ง"} desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"} />
+      <ApproveRequestModal
+        ref={approveRequestModalRef}
+        title={"ยืนยันการส่งคำขออีกครั้ง"}
+        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
+      />
     </>
   );
 }

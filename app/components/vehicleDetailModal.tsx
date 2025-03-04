@@ -5,7 +5,8 @@ import CarCardItem from "./carCardItem";
 
 // Define the props type for the VehicleDetailModel
 interface VehicleDetailModelProps {
-  onSelect: (vehicle: string) => void; // onSelect prop to pass the selected vehicle
+  onSelect?: (vehicle: string) => void; // onSelect prop to pass the selected vehicle
+  status?: string;
 }
 
 // Define the type for the ref object
@@ -17,7 +18,7 @@ interface VehicleDetailModelRef {
 const VehicleDetailModel = forwardRef<
   VehicleDetailModelRef,
   VehicleDetailModelProps
->(({ onSelect }, ref) => {
+>(({ onSelect, status }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const imageUrls = [
@@ -166,17 +167,21 @@ const VehicleDetailModel = forwardRef<
           <form method="dialog">
             <button className="btn btn-secondary">ปิด</button>
           </form>
-
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => {
-              onSelect("Toyota"); // Call onSelect with the title
-              modalRef.current?.close(); // Close the modal after selecting
-            }}
-          >
-            เลือก
-          </button>
+          {status == "detail" ? (
+            ""
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                if(onSelect)
+                onSelect("Toyota"); // Call onSelect with the title
+                modalRef.current?.close(); // Close the modal after selecting
+              }}
+            >
+              เลือก
+            </button>
+          )}
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

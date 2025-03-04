@@ -1,24 +1,30 @@
-import Image from "next/image";
-interface RequestStatusBox {
-  imgSrc: string;
+interface RequestStatusBoxProps {
+  iconName: string;
+  status: "info" | "success" | "error" | "warning" | "default"; // Ensure valid statuses
   title: string;
   number: number;
 }
+
 export default function RequestStatusBox({
-  imgSrc,
+  iconName,
+  status,
   title,
   number,
-}: RequestStatusBox) {
+}: RequestStatusBoxProps) {
+  const softColors: Record<string, string> = {
+    info: "bg-blue-50 text-blue-600 border border-blue-300",
+    success: "bg-green-50 text-green-600 border border-green-300",
+    error: "bg-red-50 text-red-600 border border-red-300",
+    warning: "bg-yellow-50 text-yellow-600 border border-yellow-300",
+    default: "bg-gray-50 text-gray-700 border border-gray-    ",
+  };
+
   return (
     <div className="border border-gray-200 p-3 rounded-xl">
       <div className="flex items-center gap-4">
-        <Image
-          className="size-12"
-          src={imgSrc}
-          width={100}
-          height={100}
-          alt="waiting_icon"
-        />
+        <button className={`btn btn-icon pointer-events-none ${softColors[status] ?? softColors.default} border-none`}>
+          <i className="material-symbols-outlined">{iconName}</i>
+        </button>
         <span className="font-medium text-base">{title}</span>
       </div>
       <p className="text-3xl font-medium mt-3">{number}</p>
