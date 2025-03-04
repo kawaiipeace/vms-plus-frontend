@@ -1,11 +1,13 @@
 "use client";
 import { useRef } from "react";
+import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
 import RequestDetailTabs from "@/app/components/requestDetailTab";
 import SideBar from "@/app/components/sideBar";
 import ApproveRequestModal from "@/app/components/approveRequestModal";
 import Link from "next/link";
 export default function RequestDetail() {
+    const { isPinned } = useSidebar();
 
    const approveRequestModalRef = useRef<{
       openModal: () => void;
@@ -16,7 +18,7 @@ export default function RequestDetail() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className="main-content">
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

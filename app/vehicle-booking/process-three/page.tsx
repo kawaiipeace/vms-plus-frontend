@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSidebar } from "@/app/contexts/sidebarContext";
 import CustomSelect from "@/app/components/customSelect";
 import DriverCard from "@/app/components/driverCard";
 import EmptyDriver from "@/app/components/emptyDriver";
@@ -12,15 +13,13 @@ import SideBar from "@/app/components/sideBar";
 import Tooltip from "@/app/components/tooltips";
 import Link from "next/link";
 
-
-
 export default function ProcessThree() {
-
   const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [drivers, setDrivers] = useState([
     { name: "ศรัญยู บริรัตน์ฤทธิ์", company: "กฟภ.", rate: 4.5 },
   ]);
+  const { isPinned } = useSidebar();
 
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
   const driverOptions = [
@@ -38,7 +37,7 @@ export default function ProcessThree() {
       <div className={`main-container`}>
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className="main-content">
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

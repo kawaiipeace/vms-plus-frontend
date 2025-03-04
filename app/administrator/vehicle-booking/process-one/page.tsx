@@ -13,7 +13,7 @@ export default function ProcessOne() {
       <div className="main-container">
         <SideBar />
 
-        <div className="main-content">
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

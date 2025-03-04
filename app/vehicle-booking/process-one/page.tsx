@@ -1,4 +1,5 @@
 "use client";
+import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
@@ -7,13 +8,14 @@ import Link from "next/link";
 import RequestForm from "@/app/components/flow/requestForm";
 
 export default function ProcessOne() {
+  const { isPinned } = useSidebar();
  
   return (
     <div>
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
       
-        <div className="main-content">
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

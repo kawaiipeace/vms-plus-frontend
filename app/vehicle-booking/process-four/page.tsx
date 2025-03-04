@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
@@ -10,6 +11,7 @@ import Link from "next/link";
 
 export default function ProcessFour() {
   const router = useRouter();
+  const { isPinned } = useSidebar();
   const termAndConditionModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -24,7 +26,7 @@ export default function ProcessFour() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className="main-content">
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

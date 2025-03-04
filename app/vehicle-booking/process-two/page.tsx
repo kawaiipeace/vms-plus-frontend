@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useSidebar } from "@/app/contexts/sidebarContext";
+import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
@@ -8,13 +10,13 @@ import SelectCarCard from "@/app/components/selectCarCard";
 import Pagination from "@/app/components/pagination";
 import CustomSelect from "@/app/components/customSelect";
 import ZeroRecord from "@/app/components/zeroRecord";
-import { useRouter } from "next/navigation";
 // import Toast from "@/app/components/toast";
 
 export default function ProcessTwo() {
   const router = useRouter();
   const [vehicleCards, setVehicleCards] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
+  const { isPinned } = useSidebar();
 
 
   const orgOptions = ["ทุกสังกัด", "หน่วยงานต้นสังกัด", "ฝพจ.", "กอพ.2"];
@@ -37,7 +39,7 @@ export default function ProcessTwo() {
       <div className="main-container">
          <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className="main-content">
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

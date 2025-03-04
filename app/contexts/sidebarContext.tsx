@@ -1,28 +1,24 @@
 "use client";
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
 
-interface SidebarContextType {
+interface SidebarContextProps {
   isPinned: boolean;
-  toggleIsPinned: () => void;
+  setIsPinned: (pinned: boolean) => void;
 }
 
-const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
+const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
-export const SidebarProvider = ({ children }: { children: ReactNode }) => {
+export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPinned, setIsPinned] = useState<boolean>(false);
 
-  const toggleIsPinned = () => {
-    setIsPinned((prev) => !prev);
-  };
-
   return (
-    <SidebarContext.Provider value={{ isPinned, toggleIsPinned }}>
+    <SidebarContext.Provider value={{ isPinned, setIsPinned }}>
       {children}
     </SidebarContext.Provider>
   );
 };
 
-export const useSidebar = (): SidebarContextType => {
+export const useSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider");

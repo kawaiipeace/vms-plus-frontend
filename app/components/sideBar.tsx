@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSidebar } from "@/app/contexts/sidebarContext";
 
 interface SidebarProps {
   menuName?: string;
@@ -11,7 +12,8 @@ export default function SideBar({ menuName }: SidebarProps) {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [isPinned, setIsPinned] = useState<boolean>(false);
+  const { isPinned, setIsPinned } = useSidebar();
+  
 
   useEffect(() => {
     if (menuName) {
@@ -55,7 +57,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {/* Pin Button */}
         { isExpanded && 
         <button
-          className="btn btn-icon rounded-none"
+          className="btn btn-iternary rounded-md w-[40px] h-[40px] min-h-[40px]"
           onClick={() => setIsPinned(!isPinned)}
         >
        
