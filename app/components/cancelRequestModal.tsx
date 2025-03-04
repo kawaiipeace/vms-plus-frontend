@@ -1,7 +1,19 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
 
-const CancelRequestModal = forwardRef((_, ref) => {
+interface Props {
+  title: string;
+  desc: string;
+  link?: string;
+  confirmText: string;
+  placeholder?: string;
+}
+
+const CancelRequestModal = forwardRef<
+  { openModal: () => void; closeModal: () => void }, // Ref type
+  Props
+>(({ title, desc, link, confirmText, placeholder }, ref) => {
+  // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -25,22 +37,17 @@ const CancelRequestModal = forwardRef((_, ref) => {
               height={100}
               alt=""
             />
-            <div className="confirm-title text-xl font-medium">
-              ยืนยันยกเลิกคำขอ?
-            </div>
-            <div className="confirm-text text-base">
-              ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก
-            </div>
+            <div className="confirm-title text-xl font-medium">{title}</div>
+            <div className="confirm-text text-base">{desc}</div>
             <div className="confirm-form mt-4">
               <div className="form-group">
-				<div className="input-group">
-				<input
-                  type="text"
-                  className="form-control"
-                  placeholder="โปรดระบุเหตุผลที่ยกเลิกคำขอ"
-                />
-				</div>
-               
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder={placeholder}
+                  />
+                </div>
               </div>
             </div>
             <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
@@ -49,8 +56,11 @@ const CancelRequestModal = forwardRef((_, ref) => {
                   ไม่ใช่ตอนนี้
                 </button>
               </form>
-              <button type="button" className="btn btn-primary-danger col-span-1">
-                ยกเลิกคำขอ
+              <button
+                type="button"
+                className="btn btn-primary-danger col-span-1"
+              >
+                {confirmText}
               </button>
             </div>
           </div>

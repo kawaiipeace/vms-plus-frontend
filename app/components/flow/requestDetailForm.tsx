@@ -714,6 +714,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
         ref={approveRequestModalRef}
         title={"ยืนยันการส่งคำขออีกครั้ง"}
         desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
+        confirmText="ส่งคำขอ"
       />
     </>
   );

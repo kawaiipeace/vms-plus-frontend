@@ -4,8 +4,10 @@ import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
 import RequestDetailTabs from "@/app/components/requestDetailTab";
 import SideBar from "@/app/components/sideBar";
-import ApproveRequestModal from "@/app/components/approveRequestModal";
+import CancelRequestModal from "@/app/components/cancelRequestModal";
 import Link from "next/link";
+import FileBackRequestModal from "@/app/components/modal/fileBackModal";
+import ApproveRequestModal from "@/app/components/approveRequestModal";
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
   const driverType = "PEA";
@@ -13,6 +15,15 @@ export default function RequestDetail() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const cancelRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const fileBackRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   return (
     <div>
       <div className="main-container">
@@ -61,7 +72,7 @@ export default function RequestDetail() {
 
                 <button
                   className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-                  onClick={() => approveRequestModalRef.current?.openModal()}
+                  onClick={() => cancelRequestModalRef.current?.openModal()}
                 >
                   ยกเลิกคำขอ
                 </button>
@@ -70,11 +81,23 @@ export default function RequestDetail() {
                 </button>
                 {driverType == "PEA" && (
                   <>
-                    <button className="btn btn-secondary">
-                      <i className="material-symbols-outlined">reply</i>ตีกลับให้แก้ไข
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() =>
+                        fileBackRequestModalRef.current?.openModal()
+                      }
+                    >
+                      <i className="material-symbols-outlined">reply</i>
+                      ตีกลับให้แก้ไข
                     </button>
-                    <button className="btn btn-primary"    onClick={() => approveRequestModalRef.current?.openModal()}>
-                      <i className="material-symbols-outlined">check</i>อนุมัติคำขอ
+                    <button
+                      className="btn btn-primary"
+                      onClick={() =>
+                        approveRequestModalRef.current?.openModal()
+                      }
+                    >
+                      <i className="material-symbols-outlined">check</i>
+                      อนุมัติคำขอ
                     </button>
                   </>
                 )}
@@ -85,10 +108,21 @@ export default function RequestDetail() {
           </div>
         </div>
       </div>
+      <CancelRequestModal
+        ref={cancelRequestModalRef}
+        title="ยืนยันยกเลิกคำขอ?"
+        desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
+        confirmText="ยกเลิกคำขอ"
+      />
+      <FileBackRequestModal ref={fileBackRequestModalRef}   title="ยืนยันตีกลับคำขอ"
+        desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
+        confirmText="โปรดระบุเหตุผลที่ตีกลับ"/>
+
       <ApproveRequestModal
         ref={approveRequestModalRef}
-        title={"ยืนยันการส่งคำขออีกครั้ง"}
-        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
+        title={"ยืนยันอนุมัติคำขอ"}
+        desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"}
+        confirmText="อนุมัติคำขอ"
       />
     </div>
   );
