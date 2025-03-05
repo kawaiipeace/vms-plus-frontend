@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import CarTypeCard from "@/app/components/carTypeCard";
+import CarTypeCard from "@/app/components/card/carTypeCard";
 
 interface VehiclePickModelProps {
   process: string;

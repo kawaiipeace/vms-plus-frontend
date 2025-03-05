@@ -58,7 +58,20 @@ export default function TableComponent<T>({
 
   return (
     <>
-      <div className="mt-5 overflow-x-auto  rounded-xl ">
+      <div className="block md:hidden space-y-4">
+        {table.getRowModel().rows.map((row) => (
+          <div key={row.id} className="bg-white shadow-md rounded-lg p-4 border">
+            {row.getVisibleCells().map((cell) => (
+              <div key={cell.id} className="flex justify-between py-1">
+                <span className="font-semibold">{cell.column.columnDef.header as string}</span>
+                <span>{cell.renderValue() as React.ReactNode}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      
+      <div className="mt-5 hidden md:block overflow-x-auto rounded-xl">
         <table className="w-full dataTable">
           <thead className="bg-gray-200">
             {table.getHeaderGroups().map((headerGroup) => (

@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Image from "next/image";
-import VehiclePickModel from "./vehiclePickModal";
+import VehiclePickModel from "@/app/components/modal/vehiclePickModal";
 
 export default function AutoCarCard({
   imgSrc,

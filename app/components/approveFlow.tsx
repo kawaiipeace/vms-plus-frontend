@@ -3,7 +3,7 @@ import TableComponent from "./table";
 import { requestData, requestDataColumns } from "@/app/data/requestData";
 import ZeroRecord from "./zeroRecord";
 import Link from "next/link";
-import FilterModal from "./filterModal";
+import FilterModal from "@/app/components/modal/filterModal";
 
 export default function ArpproveFlow() {
 //   const [requestData, setRequestData] = useState([]);

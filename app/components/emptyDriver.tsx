@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Image from "next/image";
-import SearchDriverModal from "./searchDriverModal";
+import SearchDriverModal from "./modal/searchDriverModal";
 interface ZeroRecordProps {
   imgSrc: string;
   title: string;

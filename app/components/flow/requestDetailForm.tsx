@@ -7,12 +7,17 @@ import VehicleUserModal from "@/app/components/modal/vehicleUserModal";
 import ReferenceModal from "@/app/components/modal/referenceModal";
 import DisbursementModal from "@/app/components/modal/disbursementModal";
 import ApproverModal from "@/app/components/modal/approverModal";
-import AlertCustom from "../alertCustom";
-import ApproveRequestModal from "../modal/approveRequestModal";
-import CarDetailCard from "../carDetailCard";
-import UserInfoCard from "../userInfoCard";
-import PickupKeyCard from "../pickupKeyCard";
-import DriverSmallInfoCard from "../driverSmallInfoCard";
+import AlertCustom from "@/app/components/alertCustom";
+import ApproveRequestModal from "@/app/components/modal/approveRequestModal";
+import CarDetailCard from "@/app/components/card/carDetailCard";
+import UserInfoCard from "@/app/components/card/userInfoCard";
+import PickupKeyCard from "@/app/components/card/pickupKeyCard";
+import DriverSmallInfoCard from "@/app/components/card/driverSmallInfoCard";
+import JourneyDetailCard from "@/app/components/card/journeyDetailCard";
+import AppointmentDriverCard from "@/app/components/card/appointmentDriverCard";
+import ReferenceCard from "@/app/components/card/referenceCard";
+import DisburstmentCard from "@/app/components/card/disburstmentCard";
+import ApproveProgress from "@/app/components/approveProgress";
 
 interface RequestDetailFormProps {
   status: string;
@@ -136,87 +141,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <div className="form-card">
-              <div className="form-card-body">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">
-                        calendar_month
-                      </i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">วันที่ / เวลาเดินทาง</div>
-                        <div className="form-text">
-                          01/01/2567 - 07/01/2567 08:30 - 18:00
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12 md:col-span-3">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">groups</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">จำนวนผู้โดยสาร</div>
-                        <div className="form-text">4 (รวมผู้ขับขี่)</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-6 md:col-span-3">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">
-                        travel_luggage_and_bags
-                      </i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">ประเภท</div>
-                        <div className="form-text">ไป-กลับ</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">
-                        emoji_transportation
-                      </i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">สถานที่ปฏิบัติงาน</div>
-                        <div className="form-text">
-                          การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">target</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">วัตถุประสงค์</div>
-                        <div className="form-text">
-                          เพื่อเก็บรวบรวมข้อมูลการใช้งานระบบ VMS Plus
-                          ขอบเขตงานบริการเช่าชุดเครื่องยนต์กำเนิดไฟฟ้าของ กฟภ.
-                          และงานบริหารจัดการยานพาหนะขนาดใหญ่
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">sms</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">หมายเหตุ</div>
-                        <div className="form-text">
-                          รายละเอียดแผนและรายชื่อพนักงานตามเอกสารแนบ
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <JourneyDetailCard />
           </div>
 
           <div className="form-section">
@@ -234,33 +159,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <div className="form-card">
-              <div className="form-card-body">
-                <div className="grid grid-cols-12">
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">pin_drop</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">สถานที่นัดหมาย</div>
-                        <div className="form-text">Lobby อาคาร LED</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">
-                        calendar_month
-                      </i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">วันที่และเวลา</div>
-                        <div className="form-text">01/01/2567 08:30</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+           <AppointmentDriverCard />
           </div>
 
           <div className="form-section">
@@ -276,34 +175,9 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <div className="form-card">
-              <div className="form-card-body">
-                <div className="grid grid-cols-12">
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">description</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">เลขที่หนังสืออ้างอิง</div>
-                        <div className="form-text">กอพ.1(ก)123/2567</div>
-                      </div>
-                    </div>
-                  </div>
+            <ReferenceCard />
 
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">attach_file</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">เอกสารแนบ</div>
-                        <a href="#" className="form-text text-info">
-                          Document...2567.pdf
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+           </div>
 
           <div className="form-section">
             <div className="form-section-header">
@@ -320,187 +194,15 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <div className="form-card">
-              <div className="form-card-body">
-                <div className="grid grid-cols-12">
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">paid</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">ประเภทงบประมาณ</div>
-                        <div className="form-text">
-                          งบทำการ หน่วยงานต้นสังกัด
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">
-                        account_balance
-                      </i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">ศูนย์ต้นทุน</div>
-                        <div className="form-text">
-                          ZA04020200 : กบห.กอพ.1-บห.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+<DisburstmentCard />
+           
           </div>
         </div>
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
             {status == "detail" && (
-              <div className="card card-approvalprogress">
-                <div className="card-header">
-                  <div className="card-title">สถานะคำขอใช้</div>
-                </div>
-                <div className="card-body">
-                  <div className="md:hidden">
-                    <div className="circular-progressbar d-flex">
-                      <div className="circular-progressbar-container">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="-1.5 -1.5 34 34"
-                          className="circular-progressbar"
-                        >
-                          <circle
-                            cx="16"
-                            cy="16"
-                            r="15.9155"
-                            className="circular-progressbar-background"
-                          />
-                          <circle
-                            cx="16"
-                            cy="16"
-                            r="15.9155"
-                            className="circular-progressbar-progress js-circular-progressbar"
-                            style={{ strokeDashoffset: "70px" }}
-                          />
-                        </svg>
-                        <div className="circular-progressbar-text">
-                          1<span className="circular-progressbar-slash">/</span>
-                          3
-                        </div>
-                      </div>
-                      <div className="progress-steps-btn-content">
-                        <div className="progress-steps-btn-title">
-                          รออนุมัติจากต้นสังกัด
-                        </div>
-                        <div className="progress-steps-btn-text">
-                          ถัดไป:{" "}
-                          <span className="progress-steps-btn-label">
-                            รอผู้ดูแลยานพาหนะตรวจสอบ
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="progress-steps-column d-none d-md-flex">
-                    <div className="progress-step done">
-                      <span className="progress-step-no">
-                        <i className="material-symbols-outlined">check</i>
-                      </span>
-                      <div className="progress-step-content">
-                        <div className="progress-step-title">
-                          รออนุมัติจากต้นสังกัด
-                        </div>
-                      </div>
-                    </div>
-                    <div className="progress-step active">
-                      <span className="progress-step-no"></span>
-                      <div className="progress-step-content">
-                        <div className="progress-step-title">
-                          รอผู้ดูแลยานพาหนะตรวจสอบ
-                        </div>
-                      </div>
-                    </div>
-                    <div className="progress-step">
-                      <span className="progress-step-no"></span>
-                      <div className="progress-step-content">
-                        <div className="progress-step-title">
-                          รออนุมัติใช้ยานพาหนะ
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-section">
-                    <div className="form-section-header">
-                      <div className="form-section-header-title d-none d-md-block">
-                        ผู้อนุมัติต้นสังกัด
-                      </div>
-                      <button
-                        className="btn btn-tertiary hidden p-0 h-auto w-100"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target="#collapseApproverDetail"
-                        aria-expanded="false"
-                        aria-controls="collapseApproverDetail"
-                      >
-                        ผู้อนุมัติต้นสังกัด
-                        <i className="material-symbols-outlined ml-auto">
-                          keyboard_arrow_down
-                        </i>
-                      </button>
-                    </div>
-
-                    <div
-                      className="form-card d-md-block collapse"
-                      id="collapseApproverDetail"
-                    >
-                      <div className="form-card-body form-card-inline">
-                        <div className="form-group form-plaintext form-users">
-                          <div className="form-plaintext-group align-self-center">
-                            <div className="form-label">
-                              ศรัญยู บริรัตน์ฤทธิ์
-                            </div>
-                            <div className="supporting-text-group">
-                              <div className="supporting-text">อก. กอพ.1</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="form-card-right align-self-center">
-                          <div className="flex gap-3 flex-wrap">
-                            <div className="col-span-12 md:col-span-6">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">
-                                  smartphone
-                                </i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-text text-nowrap">
-                                    091-234-5678
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="col-span-12 md:col-span-6">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">
-                                  call
-                                </i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-text text-nowra">
-                                    6032
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  <ApproveProgress />
             )}
 
             {(status != "detail" && status != "edit") ||

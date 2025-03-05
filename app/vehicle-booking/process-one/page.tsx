@@ -3,7 +3,7 @@ import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
-import StatusModal from "@/app/components/statusModel";
+import StatusModal from "@/app/components/modal/statusModel";
 import Link from "next/link";
 import RequestForm from "@/app/components/flow/requestForm";
 

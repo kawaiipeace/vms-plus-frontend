@@ -6,7 +6,7 @@ import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
 import RequestDetailForm from "@/app/components/flow/requestDetailForm";
-import TermAndConditionModal from "@/app/components/termAndConditionModal";
+import TermAndConditionModal from "@/app/components/modal/termAndConditionModal";
 import Link from "next/link";
 
 export default function ProcessFour() {

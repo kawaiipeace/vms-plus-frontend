@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import SideBar from "@/app/components/sideBar";
-import AutoCarCard from "@/app/components/autoCarCard";
+import AutoCarCard from "@/app/components/card/autoCarCard";
 import SelectCarCard from "@/app/components/selectCarCard";
 import Pagination from "@/app/components/pagination";
 import CustomSelect from "@/app/components/customSelect";

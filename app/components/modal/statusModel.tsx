@@ -1,4 +1,4 @@
-import DatePicker from "./datePicker";
+import DatePicker from "@/app/components/datePicker";
 
 export default function StatusModal(){
     return (

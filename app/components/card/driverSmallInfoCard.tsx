@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Image from "next/image";
-import DriverInfoModal from "./modal/driverInfoModal";
+import DriverInfoModal from "@/app/components/modal/driverInfoModal";
 export default function DriverSmallInfoCard() {
       const driverInfoModalRef = useRef<{
         openModal: () => void;

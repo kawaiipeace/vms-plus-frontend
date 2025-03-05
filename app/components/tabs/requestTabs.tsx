@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import ZeroRecord from "./zeroRecord";
-import RequestStatusBox from "./requestStatusBox";
-import ArpproveFlow from "./approveFlow";
+import ZeroRecord from "@/app/components/zeroRecord";
+import RequestStatusBox from "@/app/components/requestStatusBox";
+import ArpproveFlow from "@/app/components/approveFlow";
 
 export default function RequestTabs() {
   const tabs = [
