@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import NumberInput from "./numberInput";
-import TimePicker from "./timePicker";
-import DatePicker from "./datePicker";
+import NumberInput from "@/app/components/numberInput";
+import TimePicker from "@/app/components/timePicker";
+import DatePicker from "@/app/components/datePicker";
 
 const JourneyDetailModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);

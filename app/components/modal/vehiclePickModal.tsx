@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import CarTypeCard from "./carTypeCard";
+import CarTypeCard from "@/app/components/carTypeCard";
 
 interface VehiclePickModelProps {
   process: string;
@@ -77,6 +77,7 @@ const [selectedCarType, setSelectedCarType] = useState('');
           </form>
 
           <button type="button" className="btn btn-primary"  onClick={() => {
+                if(onSelect)
                 onSelect("Toyota"); // Call onSelect with the title
                 modalRef.current?.close(); // Close the modal after selecting
               }}>

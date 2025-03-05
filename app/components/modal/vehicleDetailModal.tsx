@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
-import ImgSlider from "./imgSlider";
-import CarCardItem from "./carCardItem";
+import ImgSlider from "@/app/components/imgSlider";
+import CarCardItem from "@/app/components/carCardItem";
 
 // Define the props type for the VehicleDetailModel
 interface VehicleDetailModelProps {

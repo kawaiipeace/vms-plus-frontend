@@ -2,9 +2,9 @@
 import { useRef } from "react";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
-import RequestDetailTabs from "@/app/components/requestDetailTab";
+import RequestDetailTabs from "@/app/components/tabs/requestDetailTab";
 import SideBar from "@/app/components/sideBar";
-import CancelRequestModal from "@/app/components/cancelRequestModal";
+import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
 import Link from "next/link";
 import PassVerifyModal from "@/app/components/modal/passVerifyModal";
 export default function RequestDetail() {

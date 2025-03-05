@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
-import TableComponent from "../table";
+import TableComponent from "@/app/components/table";
 import { requestData, requestDataColumns } from "@/app/data/requestData";
-import ZeroRecord from "../zeroRecord";
-import FilterModal from "../filterModal";
+import ZeroRecord from "@/app/components/zeroRecord";
+import FilterModal from "@/app/components/modal/filterModal";
 
 export default function ArpproveFlow() {
 //   const [requestData, setRequestData] = useState([]);

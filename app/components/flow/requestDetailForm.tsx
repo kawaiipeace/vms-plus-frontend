@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 import Image from "next/image";
-import JourneyDetailModal from "@/app/components/journeyDetailModal";
-import VehiclePickModel from "@/app/components/vehiclePickModal";
-import DriverAppointmentModal from "@/app/components/driverAppointmentModal";
-import VehicleUserModal from "@/app/components/vehicleUserModal";
-import ReferenceModal from "@/app/components/referenceModal";
-import DisbursementModal from "@/app/components/disbursementModal";
-import ApproverModal from "@/app/components/approverModal";
+import JourneyDetailModal from "@/app/components/modal/journeyDetailModal";
+import VehiclePickModel from "@/app/components/modal/vehiclePickModal";
+import DriverAppointmentModal from "@/app/components/modal/driverAppointmentModal";
+import VehicleUserModal from "@/app/components/modal/vehicleUserModal";
+import ReferenceModal from "@/app/components/modal/referenceModal";
+import DisbursementModal from "@/app/components/modal/disbursementModal";
+import ApproverModal from "@/app/components/modal/approverModal";
 import AlertCustom from "../alertCustom";
-import ApproveRequestModal from "../approveRequestModal";
+import ApproveRequestModal from "../modal/approveRequestModal";
 import CarDetailCard from "../carDetailCard";
 import UserInfoCard from "../userInfoCard";
 import PickupKeyCard from "../pickupKeyCard";
@@ -18,7 +18,7 @@ interface RequestDetailFormProps {
   status: string;
 }
 export default function RequestDetailForm({ status }: RequestDetailFormProps) {
-  const carSelect = false;
+  const carSelect = "true";
   const driverType = "PEAS";
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
@@ -504,7 +504,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
             )}
 
             {(status != "detail" && status != "edit") ||
-              (driverType == "PEA" && (
+              (driverType != "PEAS" && (
                 <>
                   <div className="form-section-header">
                     <div className="form-section-header-title">ยานพาหนะ</div>
@@ -522,7 +522,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
 
             {driverType == "PEAS" && (
               <>
-                {carSelect == true ? (
+                {carSelect == "true" ? (
                   <>
                     <div className="form-section-header">
                       <div className="form-section-header-title">ยานพาหนะ</div>

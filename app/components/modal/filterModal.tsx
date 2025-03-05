@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import DatePicker from "./datePicker";
+import DatePicker from "@/app/components/datePicker";
 
 const FilterModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);

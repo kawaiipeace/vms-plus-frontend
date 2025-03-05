@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import TimePicker from "./timePicker";
-import DatePicker from "./datePicker";
+import TimePicker from "@/app/components/timePicker";
+import DatePicker from "@/app/components/datePicker";
 
 interface DriverAppointmentModalProps {
   process: string;

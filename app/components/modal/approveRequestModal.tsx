@@ -4,14 +4,13 @@ import React, { forwardRef, useImperativeHandle, useRef } from "react";
 interface Props {
   title: string;
   desc: string;
-  link?: string;
   confirmText: string;
 }
 
 const ApproveRequestModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ title, desc, link, confirmText }, ref) => {
+>(({ title, desc, confirmText }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 

@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import CustomSelect from "./customSelect";
+import CustomSelect from "@/app/components/customSelect";
 
 const DisbursementModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
