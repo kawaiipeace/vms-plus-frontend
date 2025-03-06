@@ -15,18 +15,10 @@ interface VehicleDetailModelRef {
   closeModal: () => void;
 }
 
-const VehicleDetailModel = forwardRef<
-  VehicleDetailModelRef,
-  VehicleDetailModelProps
->(({ onSelect, status }, ref) => {
+const VehicleDetailModel = forwardRef<VehicleDetailModelRef, VehicleDetailModelProps>(({ onSelect, status }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
-  const imageUrls = [
-    "/assets/img/sample-car.jpeg",
-    "/assets/img/sample-car.jpeg",
-    "/assets/img/sample-car.jpeg",
-    "/assets/img/sample-car.jpeg",
-  ];
+  const imageUrls = ["/assets/img/sample-car.jpeg", "/assets/img/sample-car.jpeg", "/assets/img/sample-car.jpeg", "/assets/img/sample-car.jpeg"];
 
   // Expose methods to open and close the modal via ref
   useImperativeHandle(ref, () => ({
@@ -36,7 +28,7 @@ const VehicleDetailModel = forwardRef<
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[1200px] p-0 relative">
+      <div className="modal-box max-w-[1200px] p-0 relative !bg-white">
         <div className="bottom-sheet">
           <div className="bottom-sheet-icon"></div>
         </div>
@@ -65,51 +57,14 @@ const VehicleDetailModel = forwardRef<
               </div>
 
               <div className="card-item-group">
-                <CarCardItem
-                  icon="calendar_clock"
-                  title="อายุการใช้งาน"
-                  value="1 ปี"
-                />
-                <CarCardItem
-                  icon="swap_driving_apps_wheel"
-                  title="เลขไมล์"
-                  value="36032"
-                />
-                <CarCardItem
-                  icon="credit_card"
-                  title="บัตรเติมน้ำมัน"
-                  images={[
-                    "/assets/img/ptt.png",
-                    "/assets/img/gas_3.svg",
-                    "/assets/img/gas_2.svg",
-                  ]}
-                  value="4030526388745563"
-                />
-                <CarCardItem
-                  icon="local_gas_station"
-                  title="ประเภทเชื้อเพลิง"
-                  value="แก๊สโซฮอล์ พรีเมียม 97"
-                />
-                <CarCardItem
-                  icon="airline_seat_recline_extra"
-                  title="จำนวนที่นั่ง"
-                  value="5 ที่นั่ง"
-                />
-                <CarCardItem
-                  icon="auto_transmission"
-                  title="ประเภทเกียร์"
-                  value="เกียร์อัตโนมัติ"
-                />
-                <CarCardItem
-                  icon="airport_shuttle"
-                  title="รหัสข้างรถ"
-                  value="กจพ.2-ช(รช)-003/2564"
-                />
-                <CarCardItem
-                  icon="local_parking"
-                  title="สถานที่จอดรถ"
-                  value="ล็อคที่ 5A ชั้น 2B อาคาร LED"
-                />
+                <CarCardItem icon="calendar_clock" title="อายุการใช้งาน" value="1 ปี" />
+                <CarCardItem icon="swap_driving_apps_wheel" title="เลขไมล์" value="36032" />
+                <CarCardItem icon="credit_card" title="บัตรเติมน้ำมัน" images={["/assets/img/ptt.png", "/assets/img/gas_3.svg", "/assets/img/gas_2.svg"]} value="4030526388745563" />
+                <CarCardItem icon="local_gas_station" title="ประเภทเชื้อเพลิง" value="แก๊สโซฮอล์ พรีเมียม 97" />
+                <CarCardItem icon="airline_seat_recline_extra" title="จำนวนที่นั่ง" value="5 ที่นั่ง" />
+                <CarCardItem icon="auto_transmission" title="ประเภทเกียร์" value="เกียร์อัตโนมัติ" />
+                <CarCardItem icon="airport_shuttle" title="รหัสข้างรถ" value="กจพ.2-ช(รช)-003/2564" />
+                <CarCardItem icon="local_parking" title="สถานที่จอดรถ" value="ล็อคที่ 5A ชั้น 2B อาคาร LED" />
               </div>
             </div>
 
@@ -118,13 +73,7 @@ const VehicleDetailModel = forwardRef<
               <div className="form-card">
                 <div className="form-card-body form-card-inline items-center">
                   <div className="form-group form-plaintext form-users items-center">
-                    <Image
-                      src="/assets/img/sample-avatar.png"
-                      className="avatar avatar-md"
-                      width={100}
-                      height={100}
-                      alt=""
-                    />
+                    <Image src="/assets/img/sample-avatar.png" className="avatar avatar-md" width={100} height={100} alt="" />
                     <div className="form-plaintext-group align-self-center">
                       <div className="form-label">ศรัญยู บริรัตน์ฤทธิ์</div>
                       <div className="supporting-text-group">
@@ -137,13 +86,9 @@ const VehicleDetailModel = forwardRef<
                     <div className="flex flex-wrap gap-4">
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
+                          <i className="material-symbols-outlined">smartphone</i>
                           <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              091-234-5678
-                            </div>
+                            <div className="form-text text-nowrap">091-234-5678</div>
                           </div>
                         </div>
                       </div>
@@ -174,8 +119,7 @@ const VehicleDetailModel = forwardRef<
               type="button"
               className="btn btn-primary"
               onClick={() => {
-                if(onSelect)
-                onSelect("Toyota"); // Call onSelect with the title
+                if (onSelect) onSelect("Toyota"); // Call onSelect with the title
                 modalRef.current?.close(); // Close the modal after selecting
               }}
             >
