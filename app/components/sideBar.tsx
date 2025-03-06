@@ -127,8 +127,8 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "car_rental",
               label: "ระบบจองยานพาหนะ",
               items: [
-                { title: "คำขอใช้ยานพาหนะ", link: "request-list" },
-                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "first-approver" },
+                { title: "คำขอใช้ยานพาหนะ", link: "../vehicle-booking/request-list" },
+                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "../administrator/first-approver" },
               ],
             },
             {
@@ -136,8 +136,8 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                { title: "ตรวจสอบคำขอ", link: "../vehicle-booking/admin" },
-                { title: "อนุมัติใช้ยานพาหนะ", link: "../vehicle-booking/final-approver" },
+                { title: "ตรวจสอบคำขอ", link: "../administrator" },
+                { title: "อนุมัติใช้ยานพาหนะ", link: "../administrator/final-approver" },
                 { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },

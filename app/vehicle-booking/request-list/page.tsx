@@ -4,6 +4,7 @@ import Header from "@/app/components/header";
 import RequestTabs from "@/app/components/tabs/requestTabs";
 import SideBar from "@/app/components/sideBar";
 import ToastCustom from "@/app/components/toastCustom";
+import MobileWaitingCard from "@/app/components/card/mobileWaitingCard";
 
 export default function RequestList() {
   const { isPinned } = useSidebar();
@@ -38,6 +39,7 @@ export default function RequestList() {
             </div>
 
                 <RequestTabs />
+                <MobileWaitingCard />
 
           </div>
         </div>

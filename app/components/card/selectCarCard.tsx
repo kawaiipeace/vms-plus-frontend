@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRef } from "react";
-import VehicleDetailModel from "./vehicleDetailModal";
+import VehicleDetailModel from "@/app/components/modal/vehicleDetailModal";
 
 export default function SelectCarCard({
   imgSrc,

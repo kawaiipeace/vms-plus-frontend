@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import CustomSelect from "@/app/components/customSelect";
-import DriverCard from "@/app/components/driverCard";
+import DriverCard from "@/app/components/card/driverCard";
 import EmptyDriver from "@/app/components/emptyDriver";
 import Header from "@/app/components/header";
 import Input from "@/app/components/input";

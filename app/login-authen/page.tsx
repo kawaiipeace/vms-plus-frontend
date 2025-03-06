@@ -9,7 +9,7 @@ export default function LoginAuthen() {
   const [otpID, setOtpID] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
-  const [timeLeft, setTimeLeft] = useState(10); // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const [timerText, setTimerText] = useState("05:00");
   const [error, setError] = useState<string>("");
 
@@ -59,22 +59,19 @@ export default function LoginAuthen() {
   };
 
   const verifyotp = async () => {
-    console.log("test");
     const otpData = {
       otp: otp.join(""),
       otpId: String(otpID),
     };
-    console.log("tt", otpData);
 
     try {
       const response = await verifyOTP(otpData);
+      console.log(response);
       if (response.status === 200) {
         console.log("OTP Verified successfully", response.data);
-      } else {
-        setError(response.data.error);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setError(error.response.data.error);
     }
   };
 
@@ -156,9 +153,15 @@ export default function LoginAuthen() {
             ))}
           </div>
           <span className="form-helper">รหัสอ้างอิง : HYPL</span>
-          {error && 
-          <span className="form-helper text-error"><i className="material-symbols-outlined icon-settings-fill-300-20">info</i>{error}</span>
-        }
+
+          {error && (
+            <span className="form-helper text-error">
+              <i className="material-symbols-outlined icon-settings-fill-300-20">
+                info
+              </i>
+              {error}
+            </span>
+          )}
         </div>
 
         <button

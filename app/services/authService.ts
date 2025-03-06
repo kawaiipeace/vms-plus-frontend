@@ -5,7 +5,6 @@ export const requestOTP = async (phone: string) => {
         const response = await axiosInstance.post('login/request-otp', { phone });
         return response;
     } catch (error) {
-        console.error('Error requesting:', error);
         throw error;
     }
 };
@@ -15,7 +14,6 @@ export const verifyOTP = async ({ otp, otpId }: { otp: string; otpId: string }) 
         const response = await axiosInstance.post('login/verify-otp', { otp, otpId });
         return response;
     } catch (error) {
-        console.error('Error requesting:', error);
         throw error;
     }
 };

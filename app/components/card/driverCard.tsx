@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef } from "react";
 import Image from "next/image";
-import DriverAppointmentModal from "./driverAppointmentModal";
+import DriverAppointmentModal from "@/app/components/modal/driverAppointmentModal";
 
 export default function DriverCard({
   imgSrc,
