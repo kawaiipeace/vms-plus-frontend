@@ -8,6 +8,7 @@ import { requestOTP, verifyOTP } from "../services/authService";
 export default function LoginAuthen() {
   const [otpID, setOtpID] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
+  const [referenceCode, setRefCode] = useState<string | null>(null);
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const [timerText, setTimerText] = useState("05:00");
@@ -37,9 +38,11 @@ export default function LoginAuthen() {
 
     const storedPhone = sessionStorage.getItem("phone");
     const storedOtpID = sessionStorage.getItem("otpID");
+    const refCode = sessionStorage.getItem("refCode");
 
     if (storedPhone) setPhone(storedPhone);
     if (storedOtpID) setOtpID(storedOtpID);
+    if (refCode) setRefCode(refCode);
 
     return () => clearInterval(interval); // Cleanup interval on unmount or timer reset
   }, [timeLeft]);
@@ -50,7 +53,7 @@ export default function LoginAuthen() {
         const response = await requestOTP(phone);
         if (response.status === 200) {
           setOtpID(response.data.otpId);
-          setTimeLeft(300); // Reset the timer to 5 minutes
+          setTimeLeft(60);
         }
       } catch (error) {
         console.log(error);
@@ -71,7 +74,7 @@ export default function LoginAuthen() {
         console.log("OTP Verified successfully", response.data);
       }
     } catch (error: any) {
-      setError(error.response.data.error);
+      setError(error.response.data.message);
     }
   };
 
@@ -152,7 +155,7 @@ export default function LoginAuthen() {
               />
             ))}
           </div>
-          <span className="form-helper">รหัสอ้างอิง : HYPL</span>
+          <span className="form-helper">รหัสอ้างอิง : {referenceCode}</span>
 
           {error && (
             <span className="form-helper text-error">

@@ -7,21 +7,9 @@ import ArpproveFlow from "@/app/components/approveFlow";
 export default function RequestTabs() {
   const tabs = [
     {
-      label: "รออนุมัติ",
+      label: "กำลังดำเนินการ",
       content: <ArpproveFlow />,
       badge: "4",
-    },
-    {
-      label: "รับกุญแจ",
-      content: <div></div>,
-    },
-    {
-      label: "เดินทาง",
-      content: <div></div>,
-    },
-    {
-      label: "คืนยานพาหนะ",
-      content: <div></div>,
     },
     {
       label: "เสร็จสิ้น",

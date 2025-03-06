@@ -39,7 +39,6 @@ export default function RequestList() {
             </div>
 
                 <RequestTabs />
-                <MobileWaitingCard />
 
           </div>
         </div>

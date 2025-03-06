@@ -33,6 +33,7 @@ export default function LoginOS() {
         const otpID = response.data.otpId;
         sessionStorage.setItem("phone", data.phone);
         sessionStorage.setItem("otpID", otpID);
+        sessionStorage.setItem("refCode", response.data.refCode);
         router.push(`/login-authen`);
         }
     } catch (error) {
