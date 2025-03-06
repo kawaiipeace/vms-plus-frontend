@@ -4,16 +4,33 @@ import Header from "@/app/components/header";
 import RequestTabs from "@/app/components/tabs/requestTabs";
 import SideBar from "@/app/components/sideBar";
 import ToastCustom from "@/app/components/toastCustom";
-import MobileWaitingCard from "@/app/components/card/mobileWaitingCard";
+import { requests } from "@/app/services/bookingUser";
 
 export default function RequestList() {
   const { isPinned } = useSidebar();
+  const getRequest = async () => {
+    try {
+      const response = await requests();
+      if (response.status === 200) {
+        console.log("request_data", response.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  getRequest();
+
   return (
     <div>
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -38,13 +55,15 @@ export default function RequestList() {
               </div>
             </div>
 
-                <RequestTabs />
-
+            <RequestTabs />
           </div>
         </div>
       </div>
-      <ToastCustom title="สร้างคำขอใช้ยานพาหนะสำเร็จ" desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด" status="success"/>
-
+      <ToastCustom
+        title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
+        desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
+        status="success"
+      />
     </div>
   );
 }

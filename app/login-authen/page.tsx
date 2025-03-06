@@ -1,17 +1,18 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import LoginHeader from "../components/loginHeader";
-import BackButton from "../components/backButton";
-import { requestOTP, verifyOTP } from "../services/authService";
+import LoginHeader from "@/app/components/loginHeader";
+import BackButton from "@/app/components/backButton";
+import { requestOTP, verifyOTP, setToken } from "../services/authService";
+import { useRouter } from "next/navigation";
 
 export default function LoginAuthen() {
+  const router = useRouter();
   const [otpID, setOtpID] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [referenceCode, setRefCode] = useState<string | null>(null);
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-  const [timerText, setTimerText] = useState("05:00");
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [timerText, setTimerText] = useState("01:00");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -72,9 +73,25 @@ export default function LoginAuthen() {
       console.log(response);
       if (response.status === 200) {
         console.log("OTP Verified successfully", response.data);
+        const token = await setToken(response.data.accessToken);
+        if (token) router.push("/vehicle-booking/request-list");
       }
     } catch (error: any) {
-      setError(error.response.data.message);
+      const errorMessage = error.response.data.message;
+      setError(errorMessage);
+      if (errorMessage.includes("หมดอายุ")) {
+        setOtp(new Array(6).fill(""));
+        setTimeLeft(60);
+        setTimerText("01:00");
+      } else if (errorMessage.includes("5 นาที")) {
+        setOtp(new Array(6).fill(""));
+        setTimeLeft(300);
+        setTimerText("05:00");
+      } else if (errorMessage.includes("30 นาที")) {
+        setOtp(new Array(6).fill(""));
+        setTimeLeft(1800);
+        setTimerText("30:00");
+      }
     }
   };
 
@@ -138,20 +155,23 @@ export default function LoginAuthen() {
           </div>
         </div>
 
-        <div className="form-group">
+        <div className={`form-group ${error && " form-error"}`}>
           <div className="input-otp w-6/6 flex gap-2">
             {otp.map((digit, index) => (
               <input
                 key={index}
                 id={`otp-input-${index}`}
                 type="text"
-                className="form-control w-1/6 text-center"
+                className={`form-control w-1/6 text-center ${
+                  error && "is-invalid"
+                }`}
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleOtpChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)} // Handle backspace
                 placeholder=""
                 autoFocus={index === 0}
+                disabled={!!(error && error.includes("เกินกำหนด"))}
               />
             ))}
           </div>
