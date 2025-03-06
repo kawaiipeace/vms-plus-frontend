@@ -1,6 +1,7 @@
 import axiosInstance from '@/app/utils/axiosInstance';
 
-const redirect_uri = "http://localhost/callback_code_token"
+const redirect_uri = "http://localhost:3000/callback_code_token";
+
 
 export const requestOTP = async (phone: string) => {
     try {
@@ -12,8 +13,6 @@ export const requestOTP = async (phone: string) => {
 };
 
 export const requestThaiID = async () => {
-
-    const redirect_uri = "http://localhost/callback_code_token"
 
     try {
         const response = await axiosInstance.post('login/request-thaiid', { redirect_uri });
@@ -33,6 +32,15 @@ export const requestkeyCloak = async () => {
     }
 };
 
+export const getKeyCloakData = async (code: string) => {
+    const redirect_uri =  "http://localhost:3000/callback_code_token";
+    try {
+        const response = await axiosInstance.post('login/authen-keycloak', { code, redirect_uri });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const verifyOTP = async ({ otp, otpId }: { otp: string; otpId: string }) => {
     try {

@@ -11,6 +11,7 @@ export default function Home() {
       try {
         const response = await requestkeyCloak();
         if (response.status === 200) {
+          console.log('res',response);
           router.push(response.data.url)
         }
       } catch (error) {
