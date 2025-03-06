@@ -1,7 +1,23 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { requestkeyCloak } from "./services/authService";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+    const requestKey = async () => {
+      try {
+        const response = await requestkeyCloak();
+        if (response.status === 200) {
+          router.push(response.data.url)
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
   return (
     <div className="page-login">
       <div className="login-left">
@@ -15,7 +31,7 @@ export default function Home() {
           <div className="login-label">เข้าสู่ระบบด้วยบัญชี</div>
 
           <div className="login-type">
-            <Link href="login-authen" className="login-type-link login-type-internal">
+            <Link href="#" onClick={requestKey} className="login-type-link login-type-internal">
               <Image src="assets/img/login_pea.svg" width={80} height={85} alt=""></Image>
               <div className="login-type-link-label">พนักงาน กฟภ.</div>
             </Link>

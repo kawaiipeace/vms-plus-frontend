@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import LoginHeader from "@/app/components/loginHeader";
 import BackButton from "@/app/components/backButton";
-import { requestOTP, verifyOTP, setToken } from "../services/authService";
+import { requestOTP, verifyOTP } from "../services/authService";
 import { useRouter } from "next/navigation";
 
 export default function LoginAuthen() {
@@ -53,7 +53,8 @@ export default function LoginAuthen() {
       try {
         const response = await requestOTP(phone);
         if (response.status === 200) {
-          setOtpID(response.data.otpId);
+          sessionStorage.setItem("otpID", response.data.otpId);
+          sessionStorage.setItem("refCode", response.data.refCode);
           setTimeLeft(60);
         }
       } catch (error) {
@@ -72,22 +73,22 @@ export default function LoginAuthen() {
       const response = await verifyOTP(otpData);
       console.log(response);
       if (response.status === 200) {
-        console.log("OTP Verified successfully", response.data);
-        const token = await setToken(response.data.accessToken);
-        if (token) router.push("/vehicle-booking/request-list");
+        console.log("OTP Verified successfully", response.data.accessToken);
+        localStorage.setItem('accessToken', response.data.accessToken);
+        router.push("/vehicle-booking/request-list");
       }
     } catch (error: any) {
-      const errorMessage = error.response.data.message;
+      const errorMessage = error?.response?.data?.message;
       setError(errorMessage);
-      if (errorMessage.includes("หมดอายุ")) {
+      if (errorMessage?.includes("หมดอายุ")) {
         setOtp(new Array(6).fill(""));
         setTimeLeft(60);
         setTimerText("01:00");
-      } else if (errorMessage.includes("5 นาที")) {
+      } else if (errorMessage?.includes("5 นาที")) {
         setOtp(new Array(6).fill(""));
         setTimeLeft(300);
         setTimerText("05:00");
-      } else if (errorMessage.includes("30 นาที")) {
+      } else if (errorMessage?.includes("30 นาที")) {
         setOtp(new Array(6).fill(""));
         setTimeLeft(1800);
         setTimerText("30:00");

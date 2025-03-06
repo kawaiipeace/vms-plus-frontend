@@ -1,9 +1,7 @@
 
 import axiosInstance from '@/app/utils/axiosInstance';
-import Cookies from 'js-cookie'; 
 
-const token = Cookies.get('accessToken')
-console.log('token',token);
+const token = localStorage.getItem("accessToken")
 
 export const requests = async () => {
     try {
@@ -12,7 +10,9 @@ export const requests = async () => {
                 'Authorization': `Bearer ${token}`,
             }
         });
+
         return response;
+
     } catch (error) {
         throw error;
     }

@@ -2,7 +2,7 @@
 
 import LoginHeader from "@/app/components/loginHeader";
 import BackButton from "@/app/components/backButton";
-import { requestOTP } from "@/app/services/authService";
+import { requestOTP, requestThaiID } from "@/app/services/authService";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,9 +11,7 @@ import FormHelper from "../components/formHelper";
 import { useRouter } from "next/navigation";
 
 const schema = yup.object().shape({
-  phone: yup
-    .string()
-    .required("กรุณาระบุเบอร์โทรศัพท์"),
+  phone: yup.string().required("กรุณาระบุเบอร์โทรศัพท์"),
 });
 
 export default function LoginOS() {
@@ -35,14 +33,25 @@ export default function LoginOS() {
         sessionStorage.setItem("otpID", otpID);
         sessionStorage.setItem("refCode", response.data.refCode);
         router.push(`/login-authen`);
-        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const clickThaiID = async () => {
+    try {
+      const response = await requestThaiID();
+      if (response.status === 200) {
+        console.log("response thai id", response);
+        router.push(response.data.url)
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0,10);
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
   };
 
   return (
@@ -77,7 +86,11 @@ export default function LoginOS() {
           ส่งรหัส OTP
         </button>
         <div className="form-divider">หรือ</div>
-        <button className="btn btn-secondary btn-login-thaiid border border-[#D0D5DD]">
+        <button
+          type="button"
+          className="btn btn-secondary btn-login-thaiid border border-[#D0D5DD]"
+          onClick={clickThaiID}
+        >
           ลงชื่อเข้าใช้งานผ่าน ThaID{" "}
           <Image
             src="/assets/img/thaiid.png"
