@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import Image from "next/image";
+import DatePicker from "../datePicker";
 
 interface Props {
   location?: string;
@@ -35,44 +35,45 @@ const EditKeyAppointmentModal = forwardRef<
         </div>
 
           <div className="modal-body text-center overflow-y-auto">
-            <Image
-              src="/assets/img/graphic/confirm_verify.svg"
-              className="w-full confirm-img"
-              width={100}
-              height={100}
-              alt=""
-            />
-            <div className="confirm-form mt-4">
-              <div className="form-group">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">สถานที่รับกุญแจ</label>
-
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder=""
-                        defaultValue={location}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-12 md:col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">วันที่นัดรับกุญแจ</label>
-
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder=""
-                        defaultValue={date}
-                      />
-                    </div>
-                  </div>
-                </div>
+        
+            
+          <div className="w-full grid grid-cols-12 gap-4">
+              <div className="col-span-12 md:col-span-6">
+                <div className="form-group">
+									<label className="form-label">สถานที่รับกุญแจ</label>
+                  <div className="input-group">
+										<div className="input-group-prepend">
+											<span className="input-group-text">
+												<i className="material-symbols-outlined">location_on</i>
+											</span>
+										</div>
+                    <input type="text" className="form-control" placeholder="" defaultValue="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด" />
+									
+									</div>
+									{/* <span className="form-helper">Helper</span> */}
+								</div>
               </div>
+
+              <div className="col-span-12 md:col-span-6">
+                <div className="form-group">
+									<label className="form-label">วันที่นัดรับกุญแจ</label>
+                  <div className="input-group">
+										<div className="input-group-prepend">
+											<span className="input-group-text">
+												<i className="material-symbols-outlined">calendar_month</i>
+											</span>
+										</div>
+                  
+                      <DatePicker placeholder="" />
+									</div>
+							
+								</div>
+              </div>
+
+            
             </div>
+            
+           
             <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
               <form method="dialog col-span-1">
                 <button className="btn btn-secondary w-full">ปิด</button>

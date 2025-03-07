@@ -1,7 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
-import KeyPickupDetailModal from "./keyPickUpDetailModal";
-
 interface Props {
   id?: string;
 }
@@ -13,10 +11,6 @@ const ConfirmKeyHandOverModal = forwardRef<
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
-  const keyPickUpDetailModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -52,7 +46,6 @@ const ConfirmKeyHandOverModal = forwardRef<
                 <button
                   className="btn btn-secondary w-full"
                   onClick={() => {
-                    keyPickUpDetailModalRef.current?.openModal();
                     modalRef.current?.close()
                   }}
                 >
@@ -69,7 +62,7 @@ const ConfirmKeyHandOverModal = forwardRef<
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>
-        <KeyPickupDetailModal ref={keyPickUpDetailModalRef} />
+     
       </dialog>
     </>
   );

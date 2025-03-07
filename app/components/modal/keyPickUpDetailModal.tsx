@@ -7,8 +7,8 @@ import React, {
 import Image from "next/image";
 import DateTimePicker from "@/app/components/dateTimePicker";
 import RadioButton from "@/app/components/radioButton";
-import KeyPickUpEditModal from "./keyPickUpEditModal";
-import ConfirmKeyHandOverModal from "./confirmKeyHandOverModal";
+// import KeyPickUpEditModal from "./keyPickUpEditModal";
+import ConfirmKeyHandOverModal from "@/app/components/modal/confirmKeyHandOverModal";
 
 const KeyPickupDetailModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -173,9 +173,18 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
             <form method="dialog">
               <button className="btn btn-secondary">ปิด</button>
             </form>
-            <form method="dialog">
-              <button className="btn btn-primary" onClick={() => confirmKeyHandOverModalRef.current?.openModal}>ให้กุญแจ</button>
-            </form>
+
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => {
+                if (modalRef.current) modalRef.current.close();
+                if (confirmKeyHandOverModalRef.current) confirmKeyHandOverModalRef.current.openModal();
+              }}
+              
+            >
+              ให้กุญแจ
+            </button>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
@@ -183,7 +192,8 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
         </form>
       </dialog>
 
-      <KeyPickUpEditModal ref={keyPickUpEditModalRef} />
+      {/* <KeyPickUpEditModal ref={keyPickUpEditModalRef} /> */}
+      
       <ConfirmKeyHandOverModal ref={confirmKeyHandOverModalRef} />
     </>
   );
