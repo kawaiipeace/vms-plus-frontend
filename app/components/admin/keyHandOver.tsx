@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
-import TableComponent from "@/app/components/table";
 import { requestData } from "@/app/data/requestData";
 import ZeroRecord from "@/app/components/zeroRecord";
 import RequestStatusBox from "../requestStatusBox";
 import { keyHandOverData, keyHandOverDataColumns } from "@/app/data/keyHandOverData";
 import FilterKeyHandOverModal from "../modal/filterKeyHandOverModal";
+import TableKeyPickup from "../tableKeyPickUp";
 
 export default function KeyHandOver() {
 //   const [requestData, setRequestData] = useState([]);
@@ -64,7 +64,7 @@ export default function KeyHandOver() {
               </button>
             </div>
           </div>
-          <TableComponent data={keyHandOverData} columns={keyHandOverDataColumns} listName="keyhandover"/>
+          <TableKeyPickup data={keyHandOverData} columns={keyHandOverDataColumns} />
           <FilterKeyHandOverModal ref={filterModalRef} />
         </>
       ) : (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -14,18 +14,18 @@ import {
 } from "@tanstack/react-table";
 import Paginationselect from "./paginationSelect";
 import Link from "next/link";
+import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
+import EditKeyAppointmentModal from "./modal/editKeyAppointmentModal";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
   data: T[];
   columns: ColumnDef<T>[];
-  listName?: string;
 };
 
-export default function TableComponent<T>({
+export default function TableKeyPickup<T>({
   data,
   columns,
-  listName,
 }: TableComponentProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -60,6 +60,17 @@ export default function TableComponent<T>({
   useEffect(() => {
     setPageCount(table.getPageCount());
   }, [table.getPageCount()]);
+
+    // const keyPickupDetailModalRef = useRef<{
+    //   openModal: () => void;
+    //   closeModal: () => void;
+    // } | null>(null);
+
+    // const editKeyAppointmentModalRef = useRef<{
+    //   openModal: () => void;
+    //   closeModal: () => void;
+    // } | null>(null);
+  
 
   return (
     <>
@@ -149,21 +160,21 @@ export default function TableComponent<T>({
                       </div>
                     ) : cell.column.columnDef.header === "" ? (
                       <>
-                        {listName == "request" && (
+
                           <div className="dt-action">
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                              data-tip="ดูรายละเอียดคำขอ"
-                              onClick={() => router.push("/vehicle-booking/request-list/1")}
+                              data-tip="ให้กุญแจ"
+                              // onClick={() => keyPickupDetailModalRef.current?.openModal()}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
-                                quick_reference_all
+                                passkey
                               </i>
                             </button>
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                              data-tip="แก้ไข"
-                              onClick={() => router.push("/vehicle-booking/request-list/edit/1")}
+                              data-tip="แก้ไขนัดหมาย"
+                              onClick={() => router.push("request-list/edit/1")}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 stylus
@@ -186,33 +197,22 @@ export default function TableComponent<T>({
                               >
                                 <Link className="dropdown-item" href="#">
                                   <i className="material-symbols-outlined">
-                                    add_location_alt
+                                    quick_reference_all
                                   </i>
-                                  บันทึกเดินทาง
+                                  รายละเอียดคำขอ
                                 </Link>
-                                <Link className="dropdown-item" href="#">
-                                  <i className="material-symbols-outlined">
-                                    local_gas_station
-                                  </i>
-                                  เติมเชื้อเพลิง
-                                </Link>
-                                <Link className="dropdown-item" href="#">
-                                  <i className="material-symbols-outlined">
-                                    id_card
-                                  </i>
-                                  แสดงบัตรเดินทาง
-                                </Link>
+
                                 <div className="dropdown-divider"></div>
                                 <Link className="dropdown-item" href="#">
                                   <i className="material-symbols-outlined">
-                                    reply
+                                    delete
                                   </i>
-                                  คืนยานพาหนะ
+                                  ยกเลิกคำขอ
                                 </Link>
                               </ul>
                             </div>
                           </div>
-                        )}
+                       
                       </>
                     ) : (
                       (cell.renderValue() as React.ReactNode)
@@ -281,7 +281,8 @@ export default function TableComponent<T>({
             </button>
           </div>
         </div>
-   
+        {/* <KeyPickupDetailModal ref={keyPickupDetailModalRef} /> */}
+        {/* <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} /> */}
       </div>
     </>
   );
