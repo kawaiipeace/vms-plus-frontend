@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import Paginationselect from "./paginationSelect";
 import Link from "next/link";
+import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
@@ -58,6 +59,12 @@ export default function TableComponent<T>({
   useEffect(() => {
     setPageCount(table.getPageCount());
   }, [table.getPageCount()]);
+
+    const keyPickupDetailModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
+  
 
   return (
     <>
@@ -152,7 +159,7 @@ export default function TableComponent<T>({
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="ดูรายละเอียดคำขอ"
-                              onClick={() => router.push("request-list/1")}
+                              onClick={() => router.push("/vehicle-booking/request-list/1")}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 quick_reference_all
@@ -161,7 +168,7 @@ export default function TableComponent<T>({
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="แก้ไข"
-                              onClick={() => router.push("request-list/edit/1")}
+                              onClick={() => router.push("/vehicle-booking/request-list/edit/1")}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 stylus
@@ -217,7 +224,7 @@ export default function TableComponent<T>({
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="ให้กุญแจ"
-                              onClick={() => router.push("request-list/1")}
+                              onClick={() => keyPickupDetailModalRef.current?.openModal()}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 passkey
@@ -333,6 +340,7 @@ export default function TableComponent<T>({
             </button>
           </div>
         </div>
+        <KeyPickupDetailModal ref={keyPickupDetailModalRef} />
       </div>
     </>
   );
