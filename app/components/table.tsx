@@ -15,6 +15,7 @@ import {
 import Paginationselect from "./paginationSelect";
 import Link from "next/link";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
+import EditKeyAppointmentModal from "./modal/editKeyAppointmentModal";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
@@ -61,6 +62,11 @@ export default function TableComponent<T>({
   }, [table.getPageCount()]);
 
     const keyPickupDetailModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
+
+    const editKeyAppointmentModalRef = useRef<{
       openModal: () => void;
       closeModal: () => void;
     } | null>(null);
@@ -341,6 +347,7 @@ export default function TableComponent<T>({
           </div>
         </div>
         <KeyPickupDetailModal ref={keyPickupDetailModalRef} />
+        <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} />
       </div>
     </>
   );

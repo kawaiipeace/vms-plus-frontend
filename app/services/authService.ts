@@ -1,7 +1,7 @@
 import axiosInstance from '@/app/utils/axiosInstance';
 
 const redirect_uri = "http://localhost:3000/callback_code_token";
-const token = localStorage.getItem("accessToken")
+const token = typeof window !== "undefined" && localStorage?.getItem("accessToken");
 
 
 export const requestOTP = async (phone: string) => {
