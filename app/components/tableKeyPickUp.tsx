@@ -197,7 +197,7 @@ export default function TableComponent<T>({
                                 className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
                                 tabIndex={0}
                               >
-                                <Link className="dropdown-item" href="#">
+                                <Link className="dropdown-item" href="/administrator/request-detail/1">
                                   <i className="material-symbols-outlined">
                                     quick_reference_all
                                   </i>
@@ -284,7 +284,7 @@ export default function TableComponent<T>({
           </div>
         </div>
         <KeyPickupDetailModal ref={keyPickupDetailModalRef} />
-        <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} location="test" date="03/04/2567"/>
+        <EditKeyAppointmentModal ref={editKeyAppointmentModalRef}/>
       </div>
     </>
   );

@@ -2,15 +2,15 @@
 import { useRef } from "react";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
-import RequestDetailTabs from "@/app/components/tabs/requestDetailTab";
+import RequestDetailTabs from "@/app/components/admin/tabs/requestDetailTab";
 import SideBar from "@/app/components/sideBar";
 import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
 import Link from "next/link";
 import FileBackRequestModal from "@/app/components/modal/fileBackModal";
 import ApproveRequestModal from "@/app/components/modal/approveRequestModal";
+import ConfirmKeyHandOverModal from "@/app/components/modal/confirmKeyHandOverModal";
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
-  const driverType = "PEA";
   const approveRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -23,11 +23,15 @@ export default function RequestDetail() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const confirmKeyHandOverModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <SideBar menuName="ตรวจสอบและจัดการคำขอ" />
 
         <div
           className={`main-content ${
@@ -45,7 +49,7 @@ export default function RequestDetail() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <Link href="../request-list">คำขอใช้ยานพาหนะ</Link>
+                    <Link href="/administrator">ตรวจสอบและจัดการคำขอ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     เลขที่คำขอ VA67RA000001
@@ -79,28 +83,20 @@ export default function RequestDetail() {
                 <button className="btn btn-secondary">
                   <i className="material-symbols-outlined">print</i>พิมพ์
                 </button>
-                {driverType == "PEA" && (
-                  <>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() =>
-                        fileBackRequestModalRef.current?.openModal()
-                      }
-                    >
-                      <i className="material-symbols-outlined">reply</i>
-                      ตีกลับให้แก้ไข
-                    </button>
+             
+                  
+                 
                     <button
                       className="btn btn-primary"
                       onClick={() =>
-                        approveRequestModalRef.current?.openModal()
+                        confirmKeyHandOverModalRef.current?.openModal()
                       }
                     >
-                      <i className="material-symbols-outlined">check</i>
-                      อนุมัติคำขอ
+                      <i className="material-symbols-outlined">passkey</i>
+                      ให้กุญแจ
                     </button>
-                  </>
-                )}
+                
+             
               </div>
             </div>
 
@@ -124,6 +120,8 @@ export default function RequestDetail() {
         desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"}
         confirmText="อนุมัติคำขอ"
       />
+
+      <ConfirmKeyHandOverModal ref={confirmKeyHandOverModalRef} />
     </div>
   );
 }
