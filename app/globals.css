@@ -1303,28 +1303,28 @@
   .sidebar .nav .nav-item .nav-link[aria-expanded=false] .ico-toggle span[data-expand=true] {
     display: none;
   }
-  .light-mode .sidebar .nav .nav-item .nav-link.sidebar-users {
+  .light-mode .sidebar-users {
     color: #000000;
   }
-  .dark-mode .sidebar .nav .nav-item .nav-link.sidebar-users {
+  .dark-mode .sidebar-users {
     color: #F5F5F6;
   }
-  .sidebar .nav .nav-item .nav-link.sidebar-users .sidebar-users-content {
+  .sidebar-users .sidebar-users-content {
     flex-grow: 1;
   }
-  .sidebar .nav .nav-item .nav-link.sidebar-users .sidebar-users-position {
+  .sidebar-users-content .sidebar-users-position {
     font-size: 0.75rem;
     font-weight: 400;
     line-height: 1.5;
     letter-spacing: -0.2px;
   }
-  .light-mode .sidebar .nav .nav-item .nav-link.sidebar-users .sidebar-users-position {
+  .light-mode .sidebar-users-content .sidebar-users-position {
     color: #667085;
   }
-  .dark-mode .sidebar .nav .nav-item .nav-link.sidebar-users .sidebar-users-position {
+  .dark-mode .sidebar-users-content .sidebar-users-position {
     color: #CECFD2;
   }
-  .sidebar .nav .nav-item .nav-link.sidebar-users i {
+  .sidebar-users-content i {
     font-size: 20px;
   }
   .sidebar .nav .nav-item .nav-item .nav-link {
