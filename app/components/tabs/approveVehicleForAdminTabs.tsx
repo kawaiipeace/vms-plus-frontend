@@ -1,26 +1,26 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import ZeroRecord from "../zeroRecord";
-import RequestStatusBox from "../requestStatusBox";
-import ArpproveFlow from "../admin/approveFlow";
+import ApproveFlow from "../admin/approveFlow";
+import KeyHandOver from "../admin/keyHandOver";
 
 export default function ApproveVehicleForAdminTabs() {
   const tabs = [
     {
       label: "ตรวจสอบคำขอ",
-      content: <ArpproveFlow />,
+      content: <ApproveFlow />,
       badge: "4",
     },
     {
-        label: "รับกุญแจ",
-        content: <div></div>,
+        label: "ให้กุญแจ",
+        content: <KeyHandOver />,
       },
       {
         label: "เดินทาง",
         content: <div></div>,
       },
       {
-        label: "คืนยานพาหนะ",
+        label: "ตรวจสอบยานพาหนะ",
         content: <div></div>,
       },
       {
@@ -55,32 +55,7 @@ export default function ApproveVehicleForAdminTabs() {
         ))}
       </div>
       <div className="py-4">
-        <div className="grid grid-cols-4 gap-4 mb-4">
-          <RequestStatusBox
-            iconName="schedule"
-            status="info"
-            title="รออนุมัติ"
-            number={3}
-          />
-          <RequestStatusBox
-            iconName="reply"
-            status="warning"
-            title="ตีกลับคำขอ"
-            number={1}
-          />
-             <RequestStatusBox
-            iconName="check"
-            status="success"
-            title="อนุมัติ"
-            number={1}
-          />
-             <RequestStatusBox
-            iconName="delete"
-            status="default"
-            title="ยกเลิกคำขอ"
-            number={1}
-          />
-        </div>
+
 
         {tabs[activeTab].content}
 

@@ -1,8 +1,25 @@
 import Image from "next/image";
 import ToggleSidebar from "@/app/components/toggleSideBar";
 import ThemeToggle from "./themeToggle";
+import { logOut } from "@/app/services/authService";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Header() {
+  const router = useRouter();
+
+   const logOutFunc = async () => {
+     try {
+       const response = await logOut();
+       if (response.status === 200) {
+         localStorage.removeItem('accessToken');
+         router.push("/")
+       }
+     } catch (error) {
+       console.log(error);
+     }
+   };
+
   return (
     <div className="header items-center">
       <div className="navbar p-0 items-center min-h-0">
@@ -80,10 +97,10 @@ export default function Header() {
 					
             <hr />
 						<li className="nav-item">
-							<a href="" className="nav-link">
+							<Link href="#" onClick={logOutFunc} className="nav-link">
 								<i className="material-symbols-outlined">logout</i>
 								<span className="nav-link-label">ออกจากระบบ</span>
-							</a>
+							</Link>
 						</li>
               </ul>
             </div>

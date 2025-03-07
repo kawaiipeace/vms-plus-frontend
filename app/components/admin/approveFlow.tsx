@@ -3,8 +3,9 @@ import TableComponent from "@/app/components/table";
 import { requestData, requestDataColumns } from "@/app/data/requestData";
 import ZeroRecord from "@/app/components/zeroRecord";
 import FilterModal from "@/app/components/modal/filterModal";
+import RequestStatusBox from "../requestStatusBox";
 
-export default function ArpproveFlow() {
+export default function ApproveFlow() {
 //   const [requestData, setRequestData] = useState([]);
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -13,6 +14,33 @@ export default function ArpproveFlow() {
 
   return (
     <>
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <RequestStatusBox
+                iconName="schedule"
+                status="info"
+                title="รออนุมัติ"
+                number={3}
+              />
+              <RequestStatusBox
+                iconName="reply"
+                status="warning"
+                title="ตีกลับคำขอ"
+                number={1}
+              />
+                 <RequestStatusBox
+                iconName="check"
+                status="success"
+                title="อนุมัติ"
+                number={1}
+              />
+                 <RequestStatusBox
+                iconName="delete"
+                status="default"
+                title="ยกเลิกคำขอ"
+                number={1}
+              />
+            </div>
+            
       {requestData.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
@@ -47,7 +75,7 @@ export default function ArpproveFlow() {
               </button>
             </div>
           </div>
-          <TableComponent data={requestData} columns={requestDataColumns} />
+          <TableComponent data={requestData} columns={requestDataColumns} listName="request" />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (

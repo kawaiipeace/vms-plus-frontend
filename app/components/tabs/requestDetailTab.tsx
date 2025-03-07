@@ -16,7 +16,7 @@ export default function RequestDetailTabs({status} : Props) {
     },
     {
       label: "ประวัติการดำเนินการ",
-      content:  <TableComponent data={requestHistoryLog} columns={requestHistoryLogColumns} />,
+      content:  <TableComponent data={requestHistoryLog} columns={requestHistoryLogColumns}/>,
       badge: ""
     },
   ];

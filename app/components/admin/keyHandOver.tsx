@@ -1,11 +1,12 @@
 import React, { useRef } from "react";
-import TableComponent from "./table";
-import { requestData, requestDataColumns } from "@/app/data/requestData";
-import ZeroRecord from "./zeroRecord";
-import Link from "next/link";
-import FilterModal from "@/app/components/modal/filterModal";
+import TableComponent from "@/app/components/table";
+import { requestData } from "@/app/data/requestData";
+import ZeroRecord from "@/app/components/zeroRecord";
+import RequestStatusBox from "../requestStatusBox";
+import { keyHandOverData, keyHandOverDataColumns } from "@/app/data/keyHandOverData";
+import FilterKeyHandOverModal from "../modal/filterKeyHandOverModal";
 
-export default function ArpproveFlow() {
+export default function KeyHandOver() {
 //   const [requestData, setRequestData] = useState([]);
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -14,6 +15,21 @@ export default function ArpproveFlow() {
 
   return (
     <>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <RequestStatusBox
+                iconName="key"
+                status="info"
+                title="รอให้กุญแจ"
+                number={1}
+              />
+                 <RequestStatusBox
+                iconName="priority_high"
+                status="error"
+                title="เกินวันที่นัดหมาย"
+                number={1}
+              />
+            </div>
+            
       {requestData.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
@@ -46,17 +62,10 @@ export default function ArpproveFlow() {
                   </span>
                 </div>
               </button>
-              <Link
-                href="process-one"
-                className="btn btn-primary h-[40px] min-h-[40px]"
-              >
-                <i className="material-symbols-outlined">add</i>
-                สร้างคำขอใช้
-              </Link>
             </div>
           </div>
-          <TableComponent data={requestData} columns={requestDataColumns} listName="request" />
-          <FilterModal ref={filterModalRef} />
+          <TableComponent data={keyHandOverData} columns={keyHandOverDataColumns} listName="keyhandover"/>
+          <FilterKeyHandOverModal ref={filterModalRef} />
         </>
       ) : (
         <ZeroRecord
