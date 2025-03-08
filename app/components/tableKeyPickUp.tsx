@@ -23,7 +23,7 @@ type TableComponentProps<T> = {
   columns: ColumnDef<T>[];
 };
 
-export default function TableKeyPickup<T>({
+export default function TableComponent<T>({
   data,
   columns,
 }: TableComponentProps<T>) {
@@ -61,15 +61,15 @@ export default function TableKeyPickup<T>({
     setPageCount(table.getPageCount());
   }, [table.getPageCount()]);
 
-    // const keyPickupDetailModalRef = useRef<{
-    //   openModal: () => void;
-    //   closeModal: () => void;
-    // } | null>(null);
+    const keyPickupDetailModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
 
-    // const editKeyAppointmentModalRef = useRef<{
-    //   openModal: () => void;
-    //   closeModal: () => void;
-    // } | null>(null);
+    const editKeyAppointmentModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
   
 
   return (
@@ -161,11 +161,13 @@ export default function TableKeyPickup<T>({
                     ) : cell.column.columnDef.header === "" ? (
                       <>
 
+
+                    
                           <div className="dt-action">
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="ให้กุญแจ"
-                              // onClick={() => keyPickupDetailModalRef.current?.openModal()}
+                              onClick={() => keyPickupDetailModalRef.current?.openModal()}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 passkey
@@ -174,7 +176,7 @@ export default function TableKeyPickup<T>({
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="แก้ไขนัดหมาย"
-                              onClick={() => router.push("request-list/edit/1")}
+                              onClick={() => editKeyAppointmentModalRef.current?.openModal()}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 stylus
@@ -195,7 +197,7 @@ export default function TableKeyPickup<T>({
                                 className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
                                 tabIndex={0}
                               >
-                                <Link className="dropdown-item" href="#">
+                                <Link className="dropdown-item" href="/administrator/request-detail/1">
                                   <i className="material-symbols-outlined">
                                     quick_reference_all
                                   </i>
@@ -281,8 +283,8 @@ export default function TableKeyPickup<T>({
             </button>
           </div>
         </div>
-        {/* <KeyPickupDetailModal ref={keyPickupDetailModalRef} /> */}
-        {/* <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} /> */}
+        <KeyPickupDetailModal ref={keyPickupDetailModalRef} />
+        <EditKeyAppointmentModal ref={editKeyAppointmentModalRef}/>
       </div>
     </>
   );
