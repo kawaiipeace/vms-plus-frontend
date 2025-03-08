@@ -13,7 +13,6 @@ import UserInfoCard from "@/app/components/card/userInfoCard";
 import PickupKeyCard from "@/app/components/card/pickupKeyCard";
 import DriverSmallInfoCard from "@/app/components/card/driverSmallInfoCard";
 import JourneyDetailCard from "@/app/components/card/journeyDetailCard";
-import AppointmentDriverCard from "@/app/components/card/appointmentDriverCard";
 import ReferenceCard from "@/app/components/card/referenceCard";
 import DisburstmentCard from "@/app/components/card/disburstmentCard";
 import CarDetailCard2 from "@/app/components/card/carDetailCard2";
@@ -23,7 +22,7 @@ interface KeyPickUpDetailFormProps {
 }
 export default function KeyPickUpDetailForm({ status }: KeyPickUpDetailFormProps) {
   const carSelect = "true";
-  const [driverType, setDriverType] = useState("PEASS");
+  const [driverType, setDriverType] = useState("PEA");
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -64,7 +63,7 @@ export default function KeyPickUpDetailForm({ status }: KeyPickUpDetailFormProps
     <>
       {status == "edit" && <AlertCustom title="คำขอใช้ถูกตีกลับ" desc="เหตุผล: แก้วัตถุประสงค์และสถานที่ปฏิบัติงานตามเอกสารอ้างอิง" />}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-        <div className="w-full row-start-2 md:col-start-1">
+        <div className="w-full row-start-2 col-span-1 md:col-start-1">
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
@@ -122,20 +121,7 @@ export default function KeyPickUpDetailForm({ status }: KeyPickUpDetailFormProps
               )}
             </div>
 
-            <JourneyDetailCard />
-          </div>
-
-          <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title">การนัดหมายพนักงานขับรถ</div>
-              {status != "detail" && (
-                <button className="btn btn-tertiary-brand bg-transparent shadow-none border-none" onClick={() => driverAppointmentModalRef.current?.openModal()}>
-                  แก้ไข
-                </button>
-              )}
-            </div>
-
-            <AppointmentDriverCard />
+            <JourneyDetailCard displayOn="keypickup" />
           </div>
 
           <div className="form-section">

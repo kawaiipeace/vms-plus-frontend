@@ -11,7 +11,7 @@ export default function CarDetailCard2() {
     <div className="card card-section-inline gap-4 flex-col">
       <div className="card-body">
         <div className="card-body-inline">
-          <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
+          <div className="img img-square w-full md:h-[239px] md:aspect-auto !aspect-square h-auto rounded-md overflow-hidden self-start">
             <Image src="/assets/img/sample-car.jpeg" width={100} height={100} className="object-cover w-full h-full" alt="" />
           </div>
           <div className="card-content">
@@ -22,9 +22,14 @@ export default function CarDetailCard2() {
                 <div className="supporting-text">รถแวนตรวจการ</div>
                 <div className="supporting-text">สายงานดิจิทัล</div>
               </div>
+              <div className="md:hidden flex">
+                <button className="btn bg-transparent text-[#A80689] outline-none border-none shadow-none p-0 ml-auto" onClick={() => vehicleDetailModalRef.current?.openModal()}>
+                  ดูรายละเอียด &#62;
+                </button>
+              </div>
             </div>
 
-            <div className="card-item-group grid">
+            <div className="card-item-group md:!grid !hidden">
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">credit_card</i>
                 <span className="card-item-text">บัตรเติมน้ำมัน</span>
@@ -44,7 +49,7 @@ export default function CarDetailCard2() {
             </div>
           </div>
         </div>
-        <div className="card-actioins w-full">
+        <div className="card-actioins w-full md:block hidden">
           <button className="btn btn-default w-full" onClick={() => vehicleDetailModalRef.current?.openModal()}>
             ดูรายละเอียด
           </button>

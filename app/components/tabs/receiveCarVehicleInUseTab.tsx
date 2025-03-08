@@ -1,0 +1,188 @@
+import React, { useRef, useState } from "react";
+import CarDetailCard2 from "@/app/components/card/carDetailCard2";
+import UserInfoCard from "@/app/components/card/userInfoCard";
+import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
+import Image from "next/image";
+
+interface ReceiveCarVehicleInUseTabProps {
+  edit: string;
+}
+
+const ReceiveCarVehicleInUseTab = ({ edit }: ReceiveCarVehicleInUseTabProps) => {
+  const receiveCarVehicleModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const [receiveSuccess, setReceiveSuccess] = useState(true);
+  return (
+    <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+      <div className="w-full row-start-2 md:col-start-1">
+        {receiveSuccess && (
+          <>
+            <div className="form-section">
+              <div className="form-section-header">
+                <div className="form-section-header-title">
+                  <p>ข้อมูลการรับยานพาหนะ</p>
+                </div>
+                {edit === "edit" && (
+                  <div className="form-section-header-actions">
+                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+                      แก้ไข
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-card">
+                <div className="form-card-body">
+                  <div className="grid grid-cols-2">
+                    <div>
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">calendar_month</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">วันที่</div>
+                          <div className="form-text">01/01/2567</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">schedule</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">เวลา</div>
+                          <div className="form-text">08:30</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2">
+                    <div>
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">search_activity</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">เลขไมล์</div>
+                          <div className="form-text">19845</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">local_gas_station</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">ปริมาณเชื้อเพลิง</div>
+                          <div className="form-text">100%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1">
+                    <div>
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">news</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">หมายเหตุ</div>
+                          <div className="form-text">มีรอยบุบนิดหน่อย</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-section">
+              <div className="form-section-header">
+                <div className="form-section-header-title">
+                  <p>รูปยานพาหนะก่อนเดินทาง</p>
+                </div>
+                {edit === "edit" && (
+                  <div className="form-section-header-actions">
+                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]">แก้ไข</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="form-card">
+                <div className="form-card-body">
+                  <div className="w-[320px] mx-auto overflow-x-auto">
+                    <div className="w-[560px] flex justify-center gap-4">
+                      <div className="w-[280px] aspect-square overflow-hidden">
+                        <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
+                      </div>
+                      <div className="w-[280px] grid grid-cols-2 gap-4">
+                        <div className="w-[140px] aspect-square overflow-hidden">
+                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
+                        </div>
+                        <div className="w-[140px] aspect-square overflow-hidden">
+                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
+                        </div>
+                        <div className="w-[140px] aspect-square overflow-hidden">
+                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
+                        </div>
+                        <div className="w-[140px] aspect-square overflow-hidden">
+                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        <div className="form-section">
+          <div className="form-section-header">
+            <div className="form-section-header-title">
+              <p>สถานที่จอดรถ</p>
+            </div>
+          </div>
+
+          <div className="form-card">
+            <div className="form-card-body">
+              <div className="grid grid-cols-12">
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    <i className="material-symbols-outlined">calendar_month</i>
+                    <div className="form-plaintext-group">
+                      <div className="form-label">วันที่และเวลา</div>
+                      <div className="form-text">01/01/2567 08:30</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <div className="form-section-header">
+            <div className="form-section-header-title">
+              <p>ผู้ดูแลยานพาหนะ</p>
+            </div>
+          </div>
+
+          <UserInfoCard UserType="outsource" displayBtnMore={true} />
+        </div>
+
+        {!receiveSuccess && (
+          <button className="btn btn-default w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+            รับยานพาหนะ
+          </button>
+        )}
+      </div>
+
+      <div className="col-span-1 row-start-1 md:row-start-2">
+        <div className="form-section">
+          <div className="form-section-header">
+            <div className="form-section-header-title">ข้อมูลยานพาหนะ</div>
+          </div>
+
+          <CarDetailCard2 />
+        </div>
+      </div>
+      <ReceiveCarVehicleModal status={edit} ref={receiveCarVehicleModalRef} />
+    </div>
+  );
+};
+
+export default ReceiveCarVehicleInUseTab;

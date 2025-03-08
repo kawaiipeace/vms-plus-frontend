@@ -6,12 +6,18 @@ import SideBar from "@/app/components/sideBar";
 import KeyPickUp from "@/app/components/flow/keyPickUp";
 import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
 import KeyPickUpDetailForm from "@/app/components/flow/keyPickUpDetailForm";
+import KeyPickUpAppointment from "@/app/components/tabs/keyPickUpAppointment";
+import ReceiveCarVehicleInUseTab from "@/app/components/tabs/receiveCarVehicleInUseTab";
+import RecordTravelTab from "@/app/components/tabs/recordTravelTab";
+import RecordFuelTab from "@/app/components/tabs/recordFuelTab";
+import ReturnCarTab from "@/app/components/tabs/returnCarTab";
 
 const RequestNo = () => {
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
@@ -32,8 +38,44 @@ const RequestNo = () => {
       badge: "",
     },
     {
+      label: "การรับยานพาหนะ",
+      content: (
+        <>
+          <ReceiveCarVehicleInUseTab edit="" />
+        </>
+      ),
+      badge: "",
+    },
+    {
+      label: "ข้อมูลการเดินทาง",
+      content: (
+        <>
+          <RecordTravelTab />
+        </>
+      ),
+      badge: "",
+    },
+    {
+      label: "การเติมเชื้อเพลิง",
+      content: (
+        <>
+          <RecordFuelTab />
+        </>
+      ),
+      badge: "",
+    },
+    {
+      label: "การคืนยานพาหนะ",
+      content: (
+        <>
+          <ReturnCarTab status="returnFail" />
+        </>
+      ),
+      badge: "",
+    },
+    {
       label: "การนัดหมายเดินทาง",
-      content: <div></div>,
+      content: <KeyPickUpAppointment />,
       badge: "",
     },
     {
@@ -42,7 +84,7 @@ const RequestNo = () => {
       badge: "",
     },
   ];
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(5);
   const { isPinned } = useSidebar();
   return (
     <div>

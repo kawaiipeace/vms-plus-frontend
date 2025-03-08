@@ -21,34 +21,19 @@ const ApproveRequestModal = forwardRef<
 
   return (
     <>
-      <dialog
-        ref={modalRef}
-        className={`modal modal-middle`}
-      >
+      <dialog ref={modalRef} className={`modal modal-middle`}>
         <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
           <div className="bottom-sheet">
             <div className="bottom-sheet-icon"></div>
           </div>
 
           <div className="modal-body overflow-y-auto text-center">
-            <Image
-              src="/assets/img/graphic/confirm_request.svg"
-              className="w-full confirm-img"
-              width={100}
-              height={100}
-              alt=""
-            />
-            <div className="confirm-title text-xl font-medium">
-              {title}
-            </div>
-            <div className="confirm-text">
-              {desc}
-            </div>
+            <Image src="/assets/img/graphic/confirm_request.svg" className="w-full confirm-img" width={100} height={100} alt="" />
+            <div className="confirm-title text-xl font-medium">{title}</div>
+            <div className="confirm-text">{desc}</div>
             <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
               <form method="dialog col-span-1">
-                <button className="btn btn-secondary w-full">
-                  ไม่ใช่ตอนนี้
-                </button>
+                <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
               </form>
               <button type="button" className="btn btn-primary col-span-1">
                 {confirmText}
@@ -58,8 +43,8 @@ const ApproveRequestModal = forwardRef<
         </div>
 
         <form method="dialog" className="modal-backdrop">
-        <button>close</button>
-      </form>
+          <button>close</button>
+        </form>
       </dialog>
     </>
   );

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
 import SideBar from "@/app/components/sideBar";
@@ -9,8 +9,13 @@ import MobileWaitingCard from "@/app/components/card/mobileWaitingCard";
 
 import TableComponent from "@/app/components/table";
 import { requestData, requestDataColumns } from "@/app/data/requestData";
+import MobileRecordTravelCard from "@/app/components/card/mobileRecordTravelCard";
+import ReviewCarDriveModal from "@/app/components/modal/reviewCarDriveModal";
+import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
+import VehicleFinishTab from "@/app/components/tabs/vehicleFinishTab";
 
 export default function RequestList() {
+  const vehicleFinish: [] = [];
   const tabs = [
     {
       label: "กำลังดำเนินการ",
@@ -19,13 +24,18 @@ export default function RequestList() {
           <MobileFileBackCard />
           <MobileWaitForKeyCard />
           <MobileWaitingCard />
+          <MobileRecordTravelCard reviewCarDrive={() => reviewCarDriveModalRef.current?.openModal()} returnCarAdd={() => returnCarAddModalRef.current?.openModal()} />
         </>
       ),
       badge: "4",
     },
     {
       label: "เสร็จสิ้น",
-      content: <div></div>,
+      content: (
+        <>
+          <VehicleFinishTab data={vehicleFinish} />
+        </>
+      ),
     },
     {
       label: "ยกเลิก",
@@ -47,6 +57,17 @@ export default function RequestList() {
   ];
   const [activeTab, setActiveTab] = useState(0);
   const { isPinned } = useSidebar();
+
+  const reviewCarDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const returnCarAddModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   return (
     <>
       <div className="main-container">
@@ -92,6 +113,8 @@ export default function RequestList() {
             </div>
           </div>
         </div>
+        <ReviewCarDriveModal ref={reviewCarDriveModalRef} />
+        <ReturnCarAddModal ref={returnCarAddModalRef} />
       </div>
     </>
   );

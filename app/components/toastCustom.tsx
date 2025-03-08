@@ -4,9 +4,10 @@ interface ToastCustomProps {
   title: string;
   desc: string;
   status: string;
+  styleText?: string;
 }
 
-export default function ToastCustom({ title, desc, status }: ToastCustomProps) {
+export default function ToastCustom({ title, desc, status, styleText }: ToastCustomProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   const closeToast = () => {
@@ -17,7 +18,7 @@ export default function ToastCustom({ title, desc, status }: ToastCustomProps) {
 
   return (
     <div className="toast-container">
-      <div className={`toast fade toast-${status} block`} role="alert">
+      <div className={`toast fade toast-${status} block ${styleText}`} role="alert">
         <div className="toast-body">
           <i className="material-symbols-outlined icon-settings-fill-300-24">check_circle</i>
           <div className="toast-content">

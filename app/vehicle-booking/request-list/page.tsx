@@ -14,7 +14,7 @@ export default function RequestList() {
       if (response.status === 200) {
         console.log("request_data", response.data);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -26,11 +26,7 @@ export default function RequestList() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -59,11 +55,7 @@ export default function RequestList() {
           </div>
         </div>
       </div>
-      <ToastCustom
-        title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
-        desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
-        status="success"
-      />
+      <ToastCustom title="สร้างคำขอใช้ยานพาหนะสำเร็จ" desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด" status="success" />
     </div>
   );
 }
