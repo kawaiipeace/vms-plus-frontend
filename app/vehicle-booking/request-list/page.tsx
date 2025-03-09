@@ -4,22 +4,9 @@ import Header from "@/app/components/header";
 import RequestTabs from "@/app/components/tabs/requestTabs";
 import SideBar from "@/app/components/sideBar";
 import ToastCustom from "@/app/components/toastCustom";
-import { requests } from "@/app/services/bookingUser";
 
 export default function RequestList() {
   const { isPinned } = useSidebar();
-  const getRequest = async () => {
-    try {
-      const response = await requests();
-      if (response.status === 200) {
-        console.log("request_data", response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  getRequest();
 
   return (
     <div>

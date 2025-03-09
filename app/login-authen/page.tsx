@@ -75,6 +75,7 @@ export default function LoginAuthen() {
       if (response.status === 200) {
         console.log("OTP Verified successfully", response.data.accessToken);
         localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
         router.push("/vehicle-booking/request-list");
       }
     } catch (error: any) {

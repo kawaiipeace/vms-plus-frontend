@@ -1,20 +1,25 @@
 import React, { useRef } from "react";
 import TableComponent from "./table";
-import { requestData, requestDataColumns } from "@/app/data/requestData";
+import { RequestData, requestDataColumns } from "@/app/data/requestData";
 import ZeroRecord from "./zeroRecord";
 import Link from "next/link";
 import FilterModal from "@/app/components/modal/filterModal";
 
-export default function ArpproveFlow() {
-//   const [requestData, setRequestData] = useState([]);
+interface ApproveFlowProps {
+  data: RequestData[];
+}
+
+export default function ArpproveFlow({ data }: ApproveFlowProps) {
+  // const [requestData, setRequestData] = useState<RequestData[]>([]);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
 
+
   return (
     <>
-      {requestData.length > 0 ? (
+      {data?.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
             <div className="hidden md:block">
@@ -55,7 +60,11 @@ export default function ArpproveFlow() {
               </Link>
             </div>
           </div>
-          <TableComponent data={requestData} columns={requestDataColumns} listName="request" />
+          <TableComponent
+            data={data}
+            columns={requestDataColumns}
+            listName="request"
+          />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (
@@ -70,5 +79,4 @@ export default function ArpproveFlow() {
       )}
     </>
   );
-
 }

@@ -39,10 +39,19 @@ export default function TableComponent<T>({
     data: memoizedData,
     columns: memoizedColumns,
     state: { sorting, pagination: { pageIndex, pageSize } },
+    initialState: {
+      sorting: [
+        {
+          id: 'start_datetime',
+          desc: true,
+        },
+      ],
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
+
     onPaginationChange: (
       updater: PaginationState | ((old: PaginationState) => PaginationState)
     ) => {

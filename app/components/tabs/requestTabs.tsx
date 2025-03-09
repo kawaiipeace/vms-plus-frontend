@@ -1,15 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ZeroRecord from "@/app/components/zeroRecord";
 import RequestStatusBox from "@/app/components/requestStatusBox";
 import ArpproveFlow from "@/app/components/approveFlow";
+import { requests } from "@/app/services/bookingUser";
+import { RequestData } from "@/app/data/requestData";
 
 export default function RequestTabs() {
+  const [ data, setData ] = useState<RequestData[]>([]);
+
+  useEffect(() => {
+    const getRequest = async () => {
+      try {
+        const response = await requests();
+        if (response.status === 200) {
+          setData(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getRequest();
+  }, []); // Runs only once when the component mounts
+
   const tabs = [
     {
       label: "กำลังดำเนินการ",
-      content: <ArpproveFlow />,
-      badge: "4",
+      content: <ArpproveFlow data={data} />,
+      badge: data?.length,
     },
     {
       label: "เสร็จสิ้น",
@@ -36,7 +55,7 @@ export default function RequestTabs() {
             <div className="flex gap-2 items-center">
               {tab.label}
               {tab.badge && (
-                <span className="badge badge-brand badge-pill-outline">4</span>
+                <span className="badge badge-brand badge-pill-outline">{tab.badge}</span>
               )}{" "}
             </div>
           </button>
@@ -69,6 +88,7 @@ export default function RequestTabs() {
           />
         </div>
 
+        { data.length == 0 && 
         <div className="dt-table-emptyrecord hidden">
           <div className="emptystate">
             <Image
@@ -89,6 +109,8 @@ export default function RequestTabs() {
             </div>
           </div>
         </div>
+        }
+
       </div>
     </div>
   );

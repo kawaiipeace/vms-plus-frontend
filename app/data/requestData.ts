@@ -1,12 +1,66 @@
 export type RequestData = {
-  reqNo: string;
-  vehicleUser: string;
-  vehicle: string;
-  location: string;
-  startDate: string;
-  detail: string;
-  status: string;
-  action: string;
+  trn_request_uid: string;
+  vehicle_user_emp_name: string;
+  vehicle_user_dept_sap: string;
+  vehicle_user_emp_id: string;
+  car_user_mobile_contact_number: string;
+  vehicle_license_plate: string;
+  approved_request_emp_id: string;
+  approved_request_emp_name: string;
+  approved_request_dept_sap: string;
+  start_datetime: string;
+  end_datetime: string;
+  date_range: string;
+  trip_type: number;
+  work_place: string;
+  objective: string;
+  remark: string;
+  number_of_passengers: number;
+  pickup_place: string;
+  pickup_datetime: string;
+  reference_number: string;
+  attached_document: string;
+  is_pea_employee_driver: string;
+  is_admin_choose_driver: string;
+  ref_cost_type_code: string;
+  cost_no: string;
+  mas_carpool_driver_uid: string;
+  driver: {
+    mas_driver_uid: string;
+    driver_name: string;
+    driver_image: string;
+    driver_nickname: string;
+    driver_dept_sap: string;
+    driver_identification_no: string;
+    driver_contact_number: string;
+    driver_average_satisfaction_score: number;
+    driver_birthdate: string;
+    age: string;
+  };
+  mas_vehicle_uid: string;
+  vehicle: {
+    mas_vehicle_uid: string;
+    vehicle_brand_name: string;
+    vehicle_model_name: string;
+    vehicle_license_plate: string;
+    vehicle_img: string;
+    CarType: string;
+    vehicle_owner_dept_sap: string;
+    is_has_fleet_card: number;
+    vehicle_gear: string;
+    ref_vehicle_subtype_code: number;
+    vehicle_user_emp_id: string;
+    ref_fuel_type_id: number;
+    seat: number;
+    ref_fuel_type: {
+      ref_fuel_type_id: number;
+      ref_fuel_type_name_th: string;
+      ref_fuel_type_name_en: string;
+    };
+  };
+  received_key_place: string;
+  received_key_start_datetime: string;
+  received_key_end_datetime: string;
 };
 
 export type RecordTravelTabProps = {
@@ -31,128 +85,16 @@ export type RecordFuelTabProps = {
   paymentType: string;
 };
 
-export const requestData: RequestData[] = [
-  {
-    reqNo: "REQ001",
-    vehicleUser: "John Doe",
-    vehicle: "Toyota",
-    location: "Bangkok Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Business trip to Bangkok.",
-    status: "รออนุมัติ",
-    action: "Completed",
-  },
-  {
-    reqNo: "REQ002",
-    vehicleUser: "Jane Smith",
-    vehicle: "Toyota",
-    location: "Chiang Mai Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Attending a conference.",
-    status: "รอตรวจสอบ",
-    action: "Awaiting Approval",
-  },
-  {
-    reqNo: "REQ003",
-    vehicleUser: "Michael Brown",
-    vehicle: "Toyota",
-    location: "Phuket Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Site visit to construction project.",
-    status: "ถูกตีกลับ",
-    action: "Cancelled",
-  },
-  {
-    reqNo: "REQ004",
-    vehicleUser: "Emily White",
-    vehicle: "Toyota",
-    location: "Pattaya Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Business trip for client meeting.",
-    status: "รออนุมัติ",
-    action: "Completed",
-  },
-  {
-    reqNo: "REQ005",
-    vehicleUser: "David Lee",
-    vehicle: "Toyota",
-    location: "Hat Yai Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Attending a workshop.",
-    status: "รอตรวจสอบ",
-    action: "Awaiting Approval",
-  },
-  {
-    reqNo: "REQ006",
-    vehicleUser: "Sophia Green",
-    vehicle: "Toyota",
-    location: "Bangkok Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Training session at HQ.",
-    status: "รออนุมัติ",
-    action: "Completed",
-  },
-  {
-    reqNo: "REQ007",
-    vehicleUser: "Chris Black",
-    vehicle: "Toyota",
-    location: "Khon Kaen Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Meeting with investors.",
-    status: "ถูกตีกลับ",
-    action: "Cancelled",
-  },
-  {
-    reqNo: "REQ008",
-    vehicleUser: "Olivia Martin",
-    vehicle: "Toyota",
-    location: "Samui Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Product launch event.",
-    status: "รอตรวจสอบ",
-    action: "Awaiting Approval",
-  },
-  {
-    reqNo: "REQ009",
-    vehicleUser: "Lucas Harris",
-    vehicle: "Toyota",
-    location: "Surat Thani Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Client meeting and presentation.",
-    status: "รออนุมัติ",
-    action: "Completed",
-  },
-  {
-    reqNo: "REQ010",
-    vehicleUser: "Isabella Clark",
-    vehicle: "Toyota",
-    location: "Hua Hin Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Company team-building trip.",
-    status: "รอตรวจสอบ",
-    action: "Awaiting Approval",
-  },
-  {
-    reqNo: "REQ011",
-    vehicleUser: "Isabella Clark",
-    vehicle: "Toyota",
-    location: "Hua Hin Office",
-    startDate: "2025-03-10T00:00:00Z",
-    detail: "Company team-building trip.",
-    status: "รอตรวจสอบ",
-    action: "Awaiting Approval",
-  },
-];
 
 export const requestDataColumns = [
-  { accessorKey: "reqNo", header: "เลขที่คำขอ" },
-  { accessorKey: "vehicleUser", header: "ผู้ใช้ยานพาหนะ" },
-  { accessorKey: "vehicle", header: "ยานพาหนะ" },
-  { accessorKey: "location", header: "สถานที่ปฏิบัติงาน" },
-  { accessorKey: "startDate", header: "วันที่เดินทาง" },
-  { accessorKey: "detail", header: "รายละเอียด" },
-  { accessorKey: "status", header: "สถานะคำขอ" },
-  { accessorKey: "action", header: "" },
+  { accessorKey: "trn_request_uid", header: "เลขที่คำขอ" },
+  { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ" },
+  { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ" },
+  { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน" },
+  { accessorKey: "start_datetime", header: "วันที่เดินทาง" },
+  { accessorKey: "remark", header: "รายละเอียด" },
+  { accessorKey: "objective", header: "สถานะคำขอ" },
+  { accessorKey: "action", header: "", disableSortBy: true },
 ];
 
 export const recordData: RecordTravelTabProps[] = [
