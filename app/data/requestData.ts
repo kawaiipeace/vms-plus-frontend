@@ -87,14 +87,14 @@ export type RecordFuelTabProps = {
 
 
 export const requestDataColumns = [
-  { accessorKey: "trn_request_uid", header: "เลขที่คำขอ" },
-  { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ" },
-  { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ" },
-  { accessorKey: "vehicle_user_dept_sap", header: "สังกัดยานพาหนะ" },
-  { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน" },
-  { accessorKey: "start_datetime", header: "วันที่เดินทาง" },
-  { accessorKey: "objective", header: "สถานะคำขอ" },
-  { accessorKey: "action", header: "", disableSortBy: true },
+  { accessorKey: "trn_request_uid", header: "เลขที่คำขอ", enableSorting: true },
+  { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ", enableSorting: false  },
+  { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ", enableSorting: false  },
+  { accessorKey: "vehicle_user_dept_sap", header: "สังกัดยานพาหนะ", enableSorting: false },
+  { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน", enableSorting: false  },
+  { accessorKey: "start_datetime", header: "วันที่เดินทาง", enableSorting: true },
+  { accessorKey: "objective", header: "สถานะคำขอ", enableSorting: false  },
+  { accessorKey: "action", header: "", enableSorting: false  },
 ];
 
 export const recordData: RecordTravelTabProps[] = [
