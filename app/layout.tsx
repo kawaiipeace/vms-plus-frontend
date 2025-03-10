@@ -6,7 +6,8 @@ import "../public/assets/css/ibmplexsansthailooped.css";
 import "../public/assets/css/ibmthaifonts.css";
 import "../public/assets/css/material-symbols.css";
 import ThemeToggle from "@/app/components/themeToggle";
-import { SidebarProvider } from "./contexts/sidebarContext";
+import { SidebarProvider } from "@/app/contexts/sidebarContext";
+import { FormProvider } from "@/app/contexts/requestFormContext";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -20,15 +21,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+      ></meta>
       <Head>
         <ThemeToggle />
       </Head>
       <body className="light-mode">
-      <SidebarProvider>
-        {children} 
+        <SidebarProvider>
+          <FormProvider>{children}</FormProvider>
         </SidebarProvider>
-       
       </body>
     </html>
   );

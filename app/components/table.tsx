@@ -43,6 +43,7 @@ export default function TableComponent<T>({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
+
     onPaginationChange: (
       updater: PaginationState | ((old: PaginationState) => PaginationState)
     ) => {
@@ -88,33 +89,35 @@ export default function TableComponent<T>({
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
-                    key={header.id}
-                    className="p-2 cursor-pointer"
-                    onClick={header.column.getToggleSortingHandler()}
+                  key={header.id}
+                  className="p-2 cursor-pointer"
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  <span
+                    className={`dt-column-title flex gap-2 ${
+                      header.column.columnDef.header == "" ? "justify-center" : ""
+                    }`}
                   >
-                    <span
-                      className={`dt-column-title flex gap-2 ${
-                        header.column.columnDef.header == ""
-                          ? "justify-center"
-                          : ""
-                      }`}
-                    >
-                      {header.column.columnDef.header as string}
-                      {header.column.getIsSorted() === "asc" ? (
-                        <i className="material-symbols-outlined text-black">
-                          arrow_upward_alt
-                        </i>
-                      ) : header.column.getIsSorted() === "desc" ? (
-                        <i className="material-symbols-outlined text-black">
-                          arrow_downward_alt
-                        </i>
-                      ) : (
-                        <i className="material-symbols-outlined">
-                          import_export
-                        </i>
-                      )}
-                    </span>
-                  </th>
+                    {header.column.columnDef.header as string}
+                    {header.column.getCanSort() && (
+                      <>
+                        {header.column.getIsSorted() === "asc" ? (
+                          <i className="material-symbols-outlined text-black">
+                            arrow_upward_alt
+                          </i>
+                        ) : header.column.getIsSorted() === "desc" ? (
+                          <i className="material-symbols-outlined text-black">
+                            arrow_downward_alt
+                          </i>
+                        ) : (
+                          <i className="material-symbols-outlined">
+                            import_export
+                          </i>
+                        )}
+                      </>
+                    )}
+                  </span>
+                </th>
                 ))}
                 <th></th>
               </tr>
