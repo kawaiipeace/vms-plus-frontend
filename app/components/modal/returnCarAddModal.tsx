@@ -4,7 +4,11 @@ import NumberInput from "@/app/components/numberInput";
 import RadioButton from "@/app/components/radioButton";
 import ReturnCarAddStep2Modal from "@/app/components/modal/returnCarAddStep2Modal";
 
-const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
+interface ReturnCarAddModalProps {
+  useBy?: string;
+}
+
+const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddModalProps>(({ useBy }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const [inCarType, setInCarType] = useState("");
@@ -130,7 +134,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
           <button>close</button>
         </form>
       </dialog>
-      <ReturnCarAddStep2Modal openStep1={() => modalRef.current?.showModal()} ref={returnCarAddStep2ModalRef} />
+      <ReturnCarAddStep2Modal openStep1={() => modalRef.current?.showModal()} useBy={useBy} ref={returnCarAddStep2ModalRef} />
     </>
   );
 });

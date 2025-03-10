@@ -5,13 +5,16 @@ import ImagePreview from "@/app/components/imagePreview";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
+  status?: string;
+  useBy?: string;
 }
 
-const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddStep2ModalProps>(({ openStep1 }, ref) => {
+const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddStep2ModalProps>(({ openStep1, status, useBy }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<File[]>([]);
   const [images2, setImages2] = useState<File[]>([]);
+  const [images3, setImages3] = useState<File[]>([]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -34,6 +37,14 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
     setImages2(images2.filter((_, i) => i !== index));
   };
 
+  const handleImageChange3 = (newImages: File[]) => {
+    setImages3(newImages);
+  };
+
+  const handleDeleteImage3 = (index: number) => {
+    setImages3(images3.filter((_, i) => i !== index));
+  };
+
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
@@ -50,9 +61,17 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                         modalRef.current?.close();
                       }}
                     >
-                      <span className="page-title-label">&#60; คืนยานพาหนะ</span>
+                      <span className="page-title-label">
+                        {status === "edit" ? (
+                          "แก้ไขรูปยานพาหนะก่อนเดินทาง"
+                        ) : (
+                          <>
+                            <i className="material-symbols-outlined">keyboard_arrow_left</i> คืนยานพาหนะ
+                          </>
+                        )}
+                      </span>
                     </div>
-                    <p className="text-left font-bold">Step 2: รูปยานพาหนะ</p>
+                    {status !== "edit" && <p className="text-left font-bold">Step 2: รูปยานพาหนะ</p>}
                   </div>
                 </div>
 
@@ -73,7 +92,7 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-12">
+                  <div className={`col-span-12 ${useBy === "driver" ? "hidden" : "block"}`}>
                     <div className="form-group">
                       <label className="form-label">
                         รูปยานพาหนะภายในและภายนอก<span className="font-light">(ถ้ามี)</span>
@@ -84,6 +103,38 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                       <ImageUpload images={images2} onImageChange={handleImageChange2} onDeleteImage={handleDeleteImage2} />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images2.map((image, index) => (
+                          <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`col-span-12 ${useBy !== "driver" ? "hidden" : "block"}`}>
+                    <div className="form-group">
+                      <label className="form-label">
+                        รูปยานพาหนะภายใน<span className="font-light">(ถ้ามี)</span>
+                        <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                          <i className="material-symbols-outlined">info</i>
+                        </Tooltip>
+                      </label>
+                      <ImageUpload images={images2} onImageChange={handleImageChange2} onDeleteImage={handleDeleteImage2} />
+                      <div className="image-preview flex flex-wrap gap-3">
+                        {images2.map((image, index) => (
+                          <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`col-span-12 ${useBy !== "driver" ? "hidden" : "block"}`}>
+                    <div className="form-group">
+                      <label className="form-label">
+                        รูปยานพาหนะภายนอก<span className="font-light">(ถ้ามี)</span>
+                        <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                          <i className="material-symbols-outlined">info</i>
+                        </Tooltip>
+                      </label>
+                      <ImageUpload images={images3} onImageChange={handleImageChange3} onDeleteImage={handleDeleteImage3} />
+                      <div className="image-preview flex flex-wrap gap-3">
+                        {images3.map((image, index) => (
                           <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
                         ))}
                       </div>

@@ -35,6 +35,16 @@ const RecordFuelTab = () => {
           </div>
         ) : (
           <>
+            <div className="mt-4">
+              <div className="input-group input-group-search hidden">
+                <div className="input-group-prepend">
+                  <span className="input-group-text search-ico-info">
+                    <i className="material-symbols-outlined">search</i>
+                  </span>
+                </div>
+                <input type="text" id="myInputTextField" className="form-control dt-search-input" placeholder="ค้นหา" />
+              </div>
+            </div>
             <div className="mt-3">
               <button className="btn btn-primary" onClick={() => recordFuelAddModalRef.current?.openModal()}>
                 <i className="material-symbols-outlined">add</i> เพิ่มข้อมูล

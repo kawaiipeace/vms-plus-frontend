@@ -1,13 +1,19 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import DriverInfoModal from "@/app/components/modal/driverInfoModal";
+import { CallToDriverModal } from "@/app/components/modal/callToDriverModal";
 
 interface UserInfoCardProps {
   UserType?: string;
   displayBtnMore?: boolean;
+  displayOn?: string;
 }
-export default function UserInfoCard({ UserType, displayBtnMore }: UserInfoCardProps) {
+export default function UserInfoCard({ UserType, displayBtnMore, displayOn }: UserInfoCardProps) {
   const driverInfoModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const callToDriverModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -33,19 +39,44 @@ export default function UserInfoCard({ UserType, displayBtnMore }: UserInfoCardP
               </div>
             </div>
 
-            <div className="card-item-group md:!grid-cols-2 !grid-cols-1">
-              <div className="card-item w-full">
-                <i className="material-symbols-outlined">smartphone</i>
-                <span className="card-item-text">091-234-5678</span>
-              </div>
-              {UserType != "outsource" && (
+            {displayOn != "driver" && (
+              <div className="card-item-group md:!grid-cols-2 !grid-cols-1">
                 <div className="card-item w-full">
-                  <i className="material-symbols-outlined">call</i>
-                  <span className="card-item-text">6032</span>
+                  <i className="material-symbols-outlined">smartphone</i>
+                  <span className="card-item-text">091-234-5678</span>
                 </div>
-              )}
-            </div>
+                {UserType != "outsource" && (
+                  <div className="card-item w-full">
+                    <i className="material-symbols-outlined">call</i>
+                    <span className="card-item-text">6032</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+        </div>
+        <div>
+          {displayOn == "driver" && (
+            <div className="card-item-group !grid-cols-4">
+              <div className="grid grid-cols-1 gap-3 col-span-3">
+                <div className="card-item w-full">
+                  <i className="material-symbols-outlined">smartphone</i>
+                  <span className="card-item-text">091-234-5678</span>
+                </div>
+                {UserType != "outsource" && (
+                  <div className="card-item w-full">
+                    <i className="material-symbols-outlined">call</i>
+                    <span className="card-item-text">6032</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex w-full justify-end col-span-1">
+                <button className="btn btn-primary" onClick={() => callToDriverModalRef.current?.openModal()}>
+                  <i className="material-symbols-outlined">call</i>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         <div className="card-actioins w-full">
           <button className={`btn btn-default w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
@@ -53,6 +84,7 @@ export default function UserInfoCard({ UserType, displayBtnMore }: UserInfoCardP
           </button>
         </div>
       </div>
+      <CallToDriverModal ref={callToDriverModalRef} />
       <DriverInfoModal ref={driverInfoModalRef} />
     </div>
   );

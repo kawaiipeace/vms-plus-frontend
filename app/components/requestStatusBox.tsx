@@ -2,15 +2,10 @@ interface RequestStatusBoxProps {
   iconName: string;
   status: "info" | "success" | "error" | "warning" | "default"; // Ensure valid statuses
   title: string;
-  number: number;
+  number?: number;
 }
 
-export default function RequestStatusBox({
-  iconName,
-  status,
-  title,
-  number,
-}: RequestStatusBoxProps) {
+export default function RequestStatusBox({ iconName, status, title, number }: RequestStatusBoxProps) {
   const softColors: Record<string, string> = {
     info: "bg-blue-50 text-blue-600 border border-blue-300",
     success: "bg-green-50 text-green-600 border border-green-300",

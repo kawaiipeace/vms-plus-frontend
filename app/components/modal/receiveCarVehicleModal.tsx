@@ -51,7 +51,7 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
                 <div className="page-section-header border-0">
                   <div className="page-header-left">
                     <div className="page-title">
-                      <span className="page-title-label">รับยานพาหนะ</span>
+                      <span className="page-title-label">{status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}</span>
                     </div>
                   </div>
                 </div>
