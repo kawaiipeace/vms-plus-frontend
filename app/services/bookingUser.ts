@@ -32,3 +32,19 @@ export const requestDetail = async (id: string) => {
         throw error;
     }
 };
+
+export const createRequest = async (data:[]) => {
+    try {
+        const response = await axiosInstance.post('booking-user/create-request/', {
+            body: {data},
+            headers:{
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+}

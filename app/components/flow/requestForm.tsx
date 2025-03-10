@@ -9,6 +9,7 @@ import RadioButton from "@/app/components/radioButton";
 import Tooltip from "@/app/components/tooltips";
 import FormHelper from "../formHelper";
 import { useRouter } from "next/navigation";
+import { useFormContext } from "@/app/contexts/requestFormContext";
 
 const schema = yup.object().shape({
   internalPhone: yup
@@ -27,6 +28,7 @@ export default function RequestForm() {
   const router = useRouter();
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTravelType, setSelectedTravelType] = useState("");
+  const { updateFormData } = useFormContext();
 
   const driverOptions = [
     "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
@@ -55,6 +57,8 @@ export default function RequestForm() {
 
   const onSubmit = (data: any) => {
     console.log("Form Data:", data);
+    updateFormData(data);
+    console.log(data);
     router.push("process-two");
 
   };
