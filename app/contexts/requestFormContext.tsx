@@ -2,11 +2,34 @@
 import { createContext, useContext, useState } from "react";
 
 interface FormData {
-  internalPhone?: string;
-  phone?: string;
-  workPlace?: string;
-  purpose?: string;
-  // Add more fields as needed
+    internalPhone?: string;
+    phone?: string;
+    workPlace?: string;
+    purpose?: string;
+    attachedDocument?: string;
+    costNo?: string;
+    endDatetime?: string;
+    isAdminChooseDriver?: string;
+    isAdminChooseVehicle?: string;
+    isDriverNeed?: string;
+    isHaveSubRequest?: string;
+    isPeaEmployeeDriver?: string;
+    masCarpoolDriverUid?: string;
+    masVehicleUid?: string;
+    numberOfPassengers?: number;
+    pickupDatetime?: string;
+    pickupPlace?: string;
+    refCostTypeCode?: number;
+    refRequestTypeCode?: number;
+    referenceNumber?: string;
+    remark?: string;
+    requestedVehicleTypeId?: number;
+    reservedTimeType?: string;
+    startDatetime?: string;
+    tripType?: number;
+    vehicleUserDeptSap?: string;
+    vehicleUserEmpId?: string;
+    vehicleUserEmpName?: string;
 }
 
 interface RequestFormContextType {
