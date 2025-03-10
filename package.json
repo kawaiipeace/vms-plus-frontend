@@ -13,6 +13,7 @@
     "@tanstack/react-table": "^8.21.2",
     "axios": "^1.8.1",
     "classnames": "^2.5.1",
+    "cookie": "^1.0.2",
     "flatpickr": "^4.6.13",
     "js-cookie": "^3.0.5",
     "next": "^15.1.7",

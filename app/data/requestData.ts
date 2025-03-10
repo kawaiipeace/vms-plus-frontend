@@ -90,9 +90,9 @@ export const requestDataColumns = [
   { accessorKey: "trn_request_uid", header: "เลขที่คำขอ" },
   { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ" },
   { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ" },
+  { accessorKey: "vehicle_user_dept_sap", header: "สังกัดยานพาหนะ" },
   { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน" },
   { accessorKey: "start_datetime", header: "วันที่เดินทาง" },
-  { accessorKey: "remark", header: "รายละเอียด" },
   { accessorKey: "objective", header: "สถานะคำขอ" },
   { accessorKey: "action", header: "", disableSortBy: true },
 ];

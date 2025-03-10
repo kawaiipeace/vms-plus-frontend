@@ -1,12 +1,12 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import TableComponent from "@/app/components/table";
-import { requestData, requestDataColumns } from "@/app/data/requestData";
+import { RequestData, requestDataColumns } from "@/app/data/requestData";
 import ZeroRecord from "@/app/components/zeroRecord";
 import FilterModal from "@/app/components/modal/filterModal";
 import RequestStatusBox from "../requestStatusBox";
 
 export default function ApproveFlow() {
-//   const [requestData, setRequestData] = useState([]);
+  const [data, setRequestData] = useState<RequestData[]>([]);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -41,7 +41,7 @@ export default function ApproveFlow() {
               />
             </div>
             
-      {requestData.length > 0 ? (
+      {data.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
             <div className="hidden md:block">
@@ -75,7 +75,7 @@ export default function ApproveFlow() {
               </button>
             </div>
           </div>
-          <TableComponent data={requestData} columns={requestDataColumns} listName="request" />
+          <TableComponent data={data} columns={requestDataColumns} />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (

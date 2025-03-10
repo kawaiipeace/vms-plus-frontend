@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { requestData } from "@/app/data/requestData";
+import React, { useRef, useState } from "react";
+import { RequestData } from "@/app/data/requestData";
 import ZeroRecord from "@/app/components/zeroRecord";
 import RequestStatusBox from "../requestStatusBox";
 import { keyHandOverData, keyHandOverDataColumns } from "@/app/data/keyHandOverData";
@@ -7,7 +7,7 @@ import FilterKeyHandOverModal from "../modal/filterKeyHandOverModal";
 import TableKeyPickup from "../tableKeyPickUp";
 
 export default function KeyHandOver() {
-//   const [requestData, setRequestData] = useState([]);
+  const [data, setRequestData] = useState<RequestData[]>([]);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -30,7 +30,7 @@ export default function KeyHandOver() {
               />
             </div>
             
-      {requestData.length > 0 ? (
+      {data.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
             <div className="hidden md:block">

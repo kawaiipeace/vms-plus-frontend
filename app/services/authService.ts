@@ -34,7 +34,7 @@ export const requestkeyCloak = async () => {
 };
 
 export const getKeyCloakData = async (code: string) => {
-    const redirect_uri =  "http://localhost:3000/callback_code_token";
+
     try {
         const response = await axiosInstance.post('login/authen-keycloak', { code, redirect_uri });
         return response;

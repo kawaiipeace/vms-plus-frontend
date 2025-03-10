@@ -17,3 +17,18 @@ export const requests = async () => {
         throw error;
     }
 };
+
+export const requestDetail = async (id: string) => {
+    try {
+        const response = await axiosInstance.get('booking-user/request/'+ id, {
+            headers:{
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+};
