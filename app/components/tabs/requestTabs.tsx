@@ -76,7 +76,7 @@ export default function RequestTabs() {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge > 0 && (
+              {tab.badge && (
                 <span className="badge badge-brand badge-pill-outline">{tab.badge}</span>
               )}
             </div>

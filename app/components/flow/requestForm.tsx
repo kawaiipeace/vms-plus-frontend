@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "@/app/components/customSelect";
@@ -10,6 +10,8 @@ import Tooltip from "@/app/components/tooltips";
 import FormHelper from "../formHelper";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "@/app/contexts/requestFormContext";
+import { fetchVehicleUsers } from "@/app/services/masterService";
+import VehicleUserSelect from "@/app/components/vehicleUserSelect";
 
 const schema = yup.object().shape({
   internalPhone: yup
@@ -29,17 +31,51 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTravelType, setSelectedTravelType] = useState("");
   const { updateFormData } = useFormContext();
+  const [ driverOptions, setDriverOptions] = useState<{ value: string; label: string, deptSap: string, deptSapShort: string }[]>([]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{ label: string; value: string, deptSap: string, deptSapShort: string }>({
+    label: "",
+    value: "",
+    deptSap: "",
+    deptSapShort: "",
+  });
+  const [deptSapShortVal, setDeptSapShortVal] = useState("");
 
-  const driverOptions = [
-    "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
-    "ธนพล วิจารณ์ปรีชา (514285)",
-    "ญาณิศา อุ่นสิริ (543210)",
-  ];
+  const handleSelectChange = (option: { label: string; value: string, deptSap: string, deptSapShort: string  }) => {
+    setSelectedVehicleUserOption(option);
+    setDeptSapShortVal(option.deptSapShort);
+  };
+
   const options = [
     "งบทำการ หน่วยงานต้นสังกัด",
     "หน่วยงานต้นสังกัด",
     "งบทำการ หน่วยงานต้นสังกั",
   ];
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        // Step 1: Fetch the list of requests
+        const response = await fetchVehicleUsers("");
+        if (response.status === 200) {
+          const vehicleUserData = response.data;
+          const driverOptionsArray = [...vehicleUserData.map((user: { emp_id: string; full_name: string; dept_sap: string, dept_sap_short: string }) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.dept_sap})`,
+            deptSap: user.dept_sap,
+            deptSapShort: user.dept_sap_short
+          }))];
+          
+          console.log(driverOptionsArray);
+          setDriverOptions(driverOptionsArray);
+
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchRequests();
+  },[]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -56,11 +92,13 @@ export default function RequestForm() {
   });
 
   const onSubmit = (data: any) => {
+    data.vehicleUserEmpId = selectedVehicleUserOption.value;
+    data.vehicleUserEmpName = selectedVehicleUserOption.label;
+    data.vehicleUserEmpDeptSap = selectedVehicleUserOption.deptSap;
+    data.vehicleUserEmpDeptSapShort = selectedVehicleUserOption.deptSapShort;
     console.log("Form Data:", data);
     updateFormData(data);
-    console.log(data);
-    router.push("process-two");
-
+    // router.push("process-two");
   };
 
   return (
@@ -93,10 +131,11 @@ export default function RequestForm() {
                       </Tooltip>
                     </label>
 
-                    <CustomSelect
+                    <VehicleUserSelect
                       iconName="person"
                       w="w-full"
                       options={driverOptions}
+                      onChange={handleSelectChange}
                     />
                     {/* {errors.driver && <FormHelper text={String(errors.driver.message)} /> } */}
                   </div>
@@ -116,6 +155,7 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
+                        defaultValue={deptSapShortVal}
                         placeholder=""
                       />
                     </div>
@@ -249,8 +289,6 @@ export default function RequestForm() {
                   </div>
                 </div>
 
-
-
                 <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">ประเภทการเดินทาง</label>
@@ -273,7 +311,6 @@ export default function RequestForm() {
                     </div>
                   </div>
                 </div>
-
 
                 <div className="col-span-12 md:col-span-6">
                   <div className="form-group">
@@ -410,14 +447,9 @@ export default function RequestForm() {
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
 
-
-            
-            
-               
             <div className="form-section">
               <div className="page-section-header border-0">
                 <div className="page-header-left">
@@ -434,7 +466,7 @@ export default function RequestForm() {
                     <CustomSelect
                       iconName="paid"
                       w="w-full"
-                      options={options}
+                      options={driverOptions}
                     />
                   </div>
                 </div>
@@ -461,7 +493,7 @@ export default function RequestForm() {
           </div>
         </div>
         <div className="form-action">
-          <button type="submit" className="btn btn-primary"  disabled={!isValid}>
+          <button type="submit" className="btn btn-primary" disabled={!isValid}>
             ต่อไป
             <i className="material-symbols-outlined icon-settings-300-24">
               arrow_right_alt
