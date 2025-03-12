@@ -50,6 +50,17 @@ export const verifyOTP = async ({ otp, otpId }: { otp: string; otpId: string }) 
     }
 };
 
+export const fetchProfile = async () => {
+    try {
+        const response = await axiosInstance.get('/login/profile');
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const logOut = async () => {
     try {
         const response = await axiosInstance.get('logout');

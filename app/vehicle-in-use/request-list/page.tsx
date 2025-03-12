@@ -8,13 +8,14 @@ import MobileWaitForKeyCard from "@/app/components/card/mobileWaitForKeyCard";
 import MobileWaitingCard from "@/app/components/card/mobileWaitingCard";
 
 import TableComponent from "@/app/components/table";
-import { requestData, requestDataColumns } from "@/app/data/requestData";
+import { RequestData, requestDataColumns } from "@/app/data/requestData";
 import MobileRecordTravelCard from "@/app/components/card/mobileRecordTravelCard";
 import ReviewCarDriveModal from "@/app/components/modal/reviewCarDriveModal";
 import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
 import VehicleFinishTab from "@/app/components/tabs/vehicleFinishTab";
 
 export default function RequestList() {
+    const [dataRequest, setDataRequest] = useState<RequestData[]>([]);
   const vehicleFinish: [] = [];
   const tabs = [
     {
@@ -41,8 +42,8 @@ export default function RequestList() {
       label: "ยกเลิก",
       content: (
         <>
-          {requestData.length > 0 ? (
-            <TableComponent data={requestData} columns={requestDataColumns} listName="request" />
+          {dataRequest.length > 0 ? (
+            <TableComponent data={dataRequest} columns={requestDataColumns} listName="request" />
           ) : (
             <div className="flex justify-center items-center h-[300px]">
               <div className="text-center">

@@ -5,6 +5,8 @@ interface Option {
   deptSap: string;
   deptSapShort: string;
   value: string;
+  telInternal: string;
+  telMobile: string;
 }
 
 interface SelectProps {
@@ -14,8 +16,22 @@ interface SelectProps {
   onChange?: (selectedOption: Option) => void; // Callback to send both value and label
 }
 
-export default function VehicleUserSelect({ w, options, iconName, onChange }: SelectProps) {
-  const [selected, setSelected] = useState<Option>(options[0] || { label: "", value: "", deptSap: "", deptSapShort: "" }); // Default to first option
+export default function VehicleUserSelect({
+  w,
+  options,
+  iconName,
+  onChange,
+}: SelectProps) {
+  const [selected, setSelected] = useState<Option>(
+    options[0] || {
+      label: "",
+      value: "",
+      deptSap: "",
+      deptSapShort: "",
+      telInternal: "",
+      telMobile: "",
+    }
+  ); // Default to first option
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -69,7 +85,7 @@ export default function VehicleUserSelect({ w, options, iconName, onChange }: Se
         )}
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {selected.label + ( selected.deptSap && "("+selected.deptSap+")")}
+          {selected.label}
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">
@@ -84,7 +100,9 @@ export default function VehicleUserSelect({ w, options, iconName, onChange }: Se
             <li
               key={option.value}
               className={`px-4 py-2 cursor-pointer flex gap-2 items-center rounded-lg ${
-                selected.value === option.value ? "text-brand-900 active" : "text-gray-700"
+                selected.value === option.value
+                  ? "text-brand-900 active"
+                  : "text-gray-700"
               } hover:bg-gray-100`}
               onClick={() => handleSelect(option)} // Use handleSelect for setting value and label
             >

@@ -12,13 +12,14 @@ import { useRouter } from "next/navigation";
 import { useFormContext } from "@/app/contexts/requestFormContext";
 import { fetchVehicleUsers } from "@/app/services/masterService";
 import VehicleUserSelect from "@/app/components/vehicleUserSelect";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
-  internalPhone: yup
+  telInternal: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
     .required("กรุณากรอกเบอร์โทรศัพท์"),
-  phone: yup
+  telMobile: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
     .required("กรุณากรอกเบอร์โทรศัพท์"),
@@ -31,18 +32,41 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTravelType, setSelectedTravelType] = useState("");
   const { updateFormData } = useFormContext();
-  const [ driverOptions, setDriverOptions] = useState<{ value: string; label: string, deptSap: string, deptSapShort: string }[]>([]);
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{ label: string; value: string, deptSap: string, deptSapShort: string }>({
+  const [driverOptions, setDriverOptions] = useState<
+    {
+      value: string;
+      label: string;
+      deptSap: string;
+      deptSapShort: string;
+      telInternal: string;
+      telMobile: string;
+    }[]
+  >([]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
+    label: string;
+    value: string;
+    deptSap: string;
+    deptSapShort: string;
+    telInternal: string;
+    telMobile: string;
+  }>({
     label: "",
     value: "",
     deptSap: "",
     deptSapShort: "",
+    telInternal: "",
+    telMobile: "",
   });
-  const [deptSapShortVal, setDeptSapShortVal] = useState("");
 
-  const handleSelectChange = (option: { label: string; value: string, deptSap: string, deptSapShort: string  }) => {
+  const handleSelectChange = (option: {
+    label: string;
+    value: string;
+    deptSap: string;
+    deptSapShort: string;
+    telInternal: string;
+    telMobile: string;
+  }) => {
     setSelectedVehicleUserOption(option);
-    setDeptSapShortVal(option.deptSapShort);
   };
 
   const options = [
@@ -58,16 +82,28 @@ export default function RequestForm() {
         const response = await fetchVehicleUsers("");
         if (response.status === 200) {
           const vehicleUserData = response.data;
-          const driverOptionsArray = [...vehicleUserData.map((user: { emp_id: string; full_name: string; dept_sap: string, dept_sap_short: string }) => ({
-            value: user.emp_id,
-            label: `${user.full_name} (${user.dept_sap})`,
-            deptSap: user.dept_sap,
-            deptSapShort: user.dept_sap_short
-          }))];
-          
+          const driverOptionsArray = [
+            ...vehicleUserData.map(
+              (user: {
+                emp_id: string;
+                full_name: string;
+                dept_sap: string;
+                dept_sap_short: string;
+                tel_internal: string;
+                tel_mobile: string;
+              }) => ({
+                value: user.emp_id,
+                label: `${user.full_name} (${user.dept_sap})`,
+                deptSap: user.dept_sap,
+                deptSapShort: user.dept_sap_short,
+                telInternal: user.tel_internal,
+                telMobile: user.tel_mobile,
+              })
+            ),
+          ];
+
           console.log(driverOptionsArray);
           setDriverOptions(driverOptionsArray);
-
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -75,7 +111,7 @@ export default function RequestForm() {
     };
 
     fetchRequests();
-  },[]);
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -85,10 +121,11 @@ export default function RequestForm() {
   const {
     register,
     handleSubmit,
-    // setValue,
+    setValue,
     formState: { errors, isValid },
   } = useForm({
-    mode: "onChange", // Validate fields as user types
+    mode: "onChange",
+    resolver: yupResolver(schema),
   });
 
   const onSubmit = (data: any) => {
@@ -100,6 +137,13 @@ export default function RequestForm() {
     updateFormData(data);
     // router.push("process-two");
   };
+
+  useEffect(() => {
+    if (selectedVehicleUserOption) {
+      setValue("telInternal", selectedVehicleUserOption.telInternal);
+      setValue("telMobile", selectedVehicleUserOption.telMobile);
+    }
+  }, [selectedVehicleUserOption, setValue]);
 
   return (
     <>
@@ -155,8 +199,9 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
-                        defaultValue={deptSapShortVal}
+                        value={selectedVehicleUserOption.deptSapShort}
                         placeholder=""
+                        readOnly
                       />
                     </div>
                   </div>
@@ -167,7 +212,7 @@ export default function RequestForm() {
                     <label className="form-label">เบอร์ภายใน</label>
                     <div
                       className={`input-group ${
-                        errors.internalPhone && "is-invalid"
+                        errors.telInternal && "is-invalid"
                       }`}
                     >
                       <div className="input-group-prepend">
@@ -178,12 +223,12 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
-                        {...register("internalPhone")}
+                        {...register("telInternal")}
                         placeholder="ระบุเบอร์ภายใน"
                       />
                     </div>
-                    {errors.internalPhone && (
-                      <FormHelper text={String(errors.internalPhone.message)} />
+                    {errors.telInternal && (
+                      <FormHelper text={String(errors.telInternal.message)} />
                     )}
                   </div>
                 </div>
@@ -192,7 +237,9 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เบอร์โทรศัพท์</label>
                     <div
-                      className={`input-group ${errors.phone && "is-invalid"}`}
+                      className={`input-group ${
+                        errors.telMobile && "is-invalid"
+                      }`}
                     >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -204,12 +251,12 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
-                        {...register("phone")}
+                        {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
                       />
                     </div>
-                    {errors.phone && (
-                      <FormHelper text={String(errors.phone.message)} />
+                    {errors.telMobile && (
+                      <FormHelper text={String(errors.telMobile.message)} />
                     )}
                   </div>
                 </div>
@@ -383,11 +430,6 @@ export default function RequestForm() {
                         className="form-control"
                         placeholder="ระบุเลขที่หนังสืออ้างอิง"
                       />
-                      {/* <!-- <div className="input-group-append">
-                                 <span className="input-group-text search-ico-trailing">
-                                   <i className="material-symbols-outlined">close</i>
-                                 </span>
-                               </div> --> */}
                     </div>
                   </div>
                 </div>
@@ -466,7 +508,7 @@ export default function RequestForm() {
                     <CustomSelect
                       iconName="paid"
                       w="w-full"
-                      options={driverOptions}
+                      options={options}
                     />
                   </div>
                 </div>
