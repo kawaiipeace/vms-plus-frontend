@@ -1,15 +1,9 @@
 
 import axiosInstance from '@/app/utils/axiosInstance';
 
-const token = typeof window !== "undefined" && localStorage?.getItem("accessToken");
-
 export const requests = async () => {
     try {
-        const response = await axiosInstance.get('booking-user/requests', {
-            headers:{
-                'Authorization': `Bearer ${token}`,
-            }
-        });
+        const response = await axiosInstance.get('booking-user/requests');
 
         return response;
 
@@ -20,11 +14,7 @@ export const requests = async () => {
 
 export const requestDetail = async (id: string) => {
     try {
-        const response = await axiosInstance.get('booking-user/request/'+ id, {
-            headers:{
-                'Authorization': `Bearer ${token}`,
-            }
-        });
+        const response = await axiosInstance.get('booking-user/request/'+ id);
 
         return response;
 
@@ -37,9 +27,6 @@ export const createRequest = async (data:[]) => {
     try {
         const response = await axiosInstance.post('booking-user/create-request/', {
             body: {data},
-            headers:{
-                'Authorization': `Bearer ${token}`,
-            }
         });
 
         return response;
