@@ -99,7 +99,6 @@ export default function RequestForm() {
             ),
           ];
 
-          console.log(driverOptionsArray);
           setDriverOptions(driverOptionsArray);
         }
       } catch (error) {
@@ -143,7 +142,6 @@ export default function RequestForm() {
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url);
-      console.log("File uploaded successfully:", response);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -169,7 +167,7 @@ export default function RequestForm() {
     data.tripType = selectedTravelType;
     console.log("Form Data:", data);
     updateFormData(data);
-    // router.push("process-two");
+    router.push("process-two");
   };
 
   useEffect(() => {
