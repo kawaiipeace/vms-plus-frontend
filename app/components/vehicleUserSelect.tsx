@@ -13,7 +13,7 @@ interface SelectProps {
   options: Option[];
   w: string;
   iconName?: string;
-  onChange?: (selectedOption: Option) => void; // Callback to send both value and label
+  onChange?: (selectedOption: Option) => void;
 }
 
 export default function VehicleUserSelect({
@@ -22,19 +22,17 @@ export default function VehicleUserSelect({
   iconName,
   onChange,
 }: SelectProps) {
-  const [selected, setSelected] = useState<Option>(
-    options[0] || {
-      label: "",
-      value: "",
-      deptSap: "",
-      deptSapShort: "",
-      telInternal: "",
-      telMobile: "",
-    }
-  ); // Default to first option
+  const [selected, setSelected] = useState<Option | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
+
+  // Set default value when options change
+  useEffect(() => {
+    if (options.length > 0 && !selected) {
+      setSelected(options[0]); // Set the first option as the default if no selected value
+    }
+  }, [options, selected]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -59,7 +57,7 @@ export default function VehicleUserSelect({
   const handleSelect = (option: Option) => {
     setSelected(option);
     if (onChange) {
-      onChange(option); // This will now work as Option is defined with optional properties
+      onChange(option); // Notify parent of the selected option
     }
     setIsOpen(false);
     buttonRef.current?.focus(); // Keep focus on the button
@@ -67,7 +65,6 @@ export default function VehicleUserSelect({
 
   return (
     <div ref={dropdownRef} className={`relative custom-select`}>
-      {/* Button that shows selected option */}
       <div
         ref={buttonRef}
         tabIndex={0}
@@ -85,7 +82,7 @@ export default function VehicleUserSelect({
         )}
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {selected.label}
+          {selected?.label || "Select an option"}
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">
@@ -93,21 +90,18 @@ export default function VehicleUserSelect({
         </div>
       </div>
 
-      {/* Dropdown List */}
       {isOpen && (
         <ul className="absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
           {options.map((option) => (
             <li
               key={option.value}
               className={`px-4 py-2 cursor-pointer flex gap-2 items-center rounded-lg ${
-                selected.value === option.value
-                  ? "text-brand-900 active"
-                  : "text-gray-700"
+                selected?.value === option.value ? "text-brand-900 active" : "text-gray-700"
               } hover:bg-gray-100`}
-              onClick={() => handleSelect(option)} // Use handleSelect for setting value and label
+              onClick={() => handleSelect(option)}
             >
               {option.label}
-              {selected.value === option.value && (
+              {selected?.value === option.value && (
                 <span className="material-symbols-outlined">check</span>
               )}
             </li>

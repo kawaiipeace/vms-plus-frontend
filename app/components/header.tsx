@@ -1,28 +1,14 @@
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import ToggleSidebar from "@/app/components/toggleSideBar";
 import ThemeToggle from "./themeToggle";
 import { logOut } from "@/app/services/authService";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { fetchProfile } from "@/app/services/authService"; // Adjust the import path as needed
+import { useProfile } from "@/app/contexts/profileContext";
 
 export default function Header() {
-  const [profile, setProfile] = useState<any>(null);
+  const { profile } = useProfile();
   const router = useRouter();
-
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const response = await fetchProfile();
-        setProfile(response.data); // Assuming response.data contains the profile information
-      } catch (error) {
-        console.log("Error fetching profile:", error);
-      }
-    };
-
-    getProfile();
-  }, []);
 
   const logOutFunc = async () => {
     try {

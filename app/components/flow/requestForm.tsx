@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Form, useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "@/app/components/customSelect";
 import DatePicker from "@/app/components/datePicker";
@@ -15,21 +15,11 @@ import {
   fetchVehicleUsers,
   uploadFile,
 } from "@/app/services/masterService";
-import VehicleUserSelect from "@/app/components/vehicleUserSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-type vehicleUserType = {
-  label: string;
-  value: string;
-  deptSap: string;
-  deptSapShort: string;
-  telInternal: string;
-  telMobile: string;
-}
+import { useProfile } from "@/app/contexts/profileContext";
 
 const schema = yup.object().shape({
-  telInternal: yup
-    .string(),
+  telInternal: yup.string(),
   telMobile: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
@@ -43,34 +33,40 @@ const schema = yup.object().shape({
   refCostTypeCode: yup.string(),
   timeStart: yup.string(),
   timeEnd: yup.string(),
-  attachmentFile: yup.string()
+  attachmentFile: yup.string(),
+  deptSapShort: yup.string(),
+  deptSap: yup.string(),
 });
+
+interface VehicleUser {
+  emp_id: string;
+  full_name: string;
+  dept_sap: string;
+  tel_internal?: string;
+  tel_mobile: string;
+  dept_sap_short: string;
+}
 
 export default function RequestForm() {
   const router = useRouter();
+  const { profile } = useProfile();
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTravelType, setSelectedTravelType] = useState("1");
   const { updateFormData } = useFormContext();
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(costTypeOptions[0]);
-  const [driverOptions, setDriverOptions] = useState<
-  vehicleUserType[]
-  >([]);
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<vehicleUserType>({
-    label: "",
-    value: "",
-    deptSap: "",
-    deptSapShort: "",
-    telInternal: "",
-    telMobile: "",
-  });
+  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(
+    costTypeOptions[0]
+  );
 
-  const handleSelectChange = (option: vehicleUserType) => {
-    setSelectedVehicleUserOption(option);
-  };
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
   const [passengerCount, setPassengerCount] = useState(0);
+  const [fileError, setFileError] = useState("");
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -78,23 +74,17 @@ export default function RequestForm() {
         // Step 1: Fetch the list of requests
         const response = await fetchVehicleUsers("");
         if (response.status === 200) {
-          const vehicleUserData = response.data;
+          const vehicleUserData: VehicleUser[] = response.data;
+          setVehicleUserDatas(vehicleUserData);
           const driverOptionsArray = [
             ...vehicleUserData.map(
               (user: {
                 emp_id: string;
                 full_name: string;
                 dept_sap: string;
-                dept_sap_short: string;
-                tel_internal: string;
-                tel_mobile: string;
               }) => ({
                 value: user.emp_id,
                 label: `${user.full_name} (${user.dept_sap})`,
-                deptSap: user.dept_sap,
-                deptSapShort: user.dept_sap_short,
-                telInternal: user.tel_internal,
-                telMobile: user.tel_mobile,
               })
             ),
           ];
@@ -122,7 +112,7 @@ export default function RequestForm() {
               })
             ),
           ];
-  
+
           setCostTypeOptions(costTypeArr);
         }
       } catch (error) {
@@ -133,17 +123,60 @@ export default function RequestForm() {
     fetchRequests();
     fetchCostTypeRequest();
   }, []);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
+      const defaultVehicleUser = vehicleUserDatas.find(
+        (user) => user.emp_id === profile.emp_id
+      );
+      if (defaultVehicleUser) {
+        setSelectedVehicleUserOption({
+          value: defaultVehicleUser.emp_id,
+          label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.dept_sap})`,
+        });
+        setValue("telInternal", defaultVehicleUser.tel_internal);
+        setValue("telMobile", defaultVehicleUser.tel_mobile);
+        setValue("deptSapShort", defaultVehicleUser.dept_sap_short);
+        setValue("deptSap", defaultVehicleUser.dept_sap);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, vehicleUserDatas]);
+
+  const handleVehicleUserChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedVehicleUserOption(selectedOption);
+
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+    );
+
+    if (empData) {
+      setValue("telInternal", empData.tel_internal);
+      setValue("telMobile", empData.tel_mobile);
+      setValue("deptSapShort", empData.dept_sap_short);
+      setValue("deptSap", empData.dept_sap);
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (!event.target.files) return;
     const file = event.target.files?.[0];
     setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
-    
+
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url);
-    } catch (error) {
-      console.error("Error uploading file:", error);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message;
+      setFileError(errorMessage);
     }
   };
 
@@ -157,11 +190,10 @@ export default function RequestForm() {
     resolver: yupResolver(schema),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     data.vehicleUserEmpName = selectedVehicleUserOption.label;
-    data.vehicleUserEmpDeptSap = selectedVehicleUserOption.deptSap;
-    data.vehicleUserEmpDeptSapShort = selectedVehicleUserOption.deptSapShort;
     data.numberOfPassanger = passengerCount;
     data.refCostTypeCode = selectedCostTypeOption.value;
     data.tripType = selectedTravelType;
@@ -169,13 +201,6 @@ export default function RequestForm() {
     updateFormData(data);
     router.push("process-two");
   };
-
-  useEffect(() => {
-    if (selectedVehicleUserOption) {
-      setValue("telInternal", selectedVehicleUserOption.telInternal);
-      setValue("telMobile", selectedVehicleUserOption.telMobile);
-    }
-  }, [selectedVehicleUserOption, setValue]);
 
   return (
     <>
@@ -207,11 +232,18 @@ export default function RequestForm() {
                       </Tooltip>
                     </label>
 
-                    <VehicleUserSelect
+                    {/* <VehicleUserSelect
                       iconName="person"
                       w="w-full"
                       options={driverOptions}
                       onChange={handleSelectChange}
+                    /> */}
+                    <CustomSelect
+                      iconName="person"
+                      w="w-full"
+                      options={driverOptions}
+                      value={selectedVehicleUserOption}
+                      onChange={handleVehicleUserChange}
                     />
                     {/* {errors.driver && <FormHelper text={String(errors.driver.message)} /> } */}
                   </div>
@@ -230,8 +262,8 @@ export default function RequestForm() {
                       </div>
                       <input
                         type="text"
-                        className="form-control"
-                        value={selectedVehicleUserOption.deptSapShort}
+                        className="form-control pointer-events-none"
+                        {...register("deptSapShort")}
                         placeholder=""
                         readOnly
                       />
@@ -318,7 +350,10 @@ export default function RequestForm() {
                           </i>
                         </span>
                       </div>
-                      <DatePicker placeholder="ระบุวันที่" onChange={(dateStr) => setValue("startDate", dateStr)} />
+                      <DatePicker
+                        placeholder="ระบุวันที่"
+                        onChange={(dateStr) => setValue("startDate", dateStr)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -327,7 +362,9 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่ออกเดินทาง</label>
                     <div className="input-group">
-                      <TimePicker onChange={(dateStr) => setValue("timeStart", dateStr)} />
+                      <TimePicker
+                        onChange={(dateStr) => setValue("timeStart", dateStr)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -343,7 +380,10 @@ export default function RequestForm() {
                           </i>
                         </span>
                       </div>
-                      <DatePicker placeholder="ระบุวันที่" onChange={(dateStr) => setValue("endDate", dateStr)}/>
+                      <DatePicker
+                        placeholder="ระบุวันที่"
+                        onChange={(dateStr) => setValue("endDate", dateStr)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -352,7 +392,9 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
-                      <TimePicker  onChange={(dateStr) => setValue("timeEnd", dateStr)}/>
+                      <TimePicker
+                        onChange={(dateStr) => setValue("timeEnd", dateStr)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -364,7 +406,10 @@ export default function RequestForm() {
                       <span className="form-optional">(รวมผู้ขับขี่)</span>
                     </label>
 
-                    <NumberInput value={passengerCount} onChange={setPassengerCount} />
+                    <NumberInput
+                      value={passengerCount}
+                      onChange={setPassengerCount}
+                    />
                   </div>
                 </div>
 
@@ -472,7 +517,11 @@ export default function RequestForm() {
                     <label className="form-label">
                       เอกสารแนบ <span className="form-optional">(ถ้ามี)</span>
                     </label>
-                    <div className="input-group input-uploadfile">
+                    <div
+                      className={`input-group input-uploadfile ${
+                        fileError && "is-invalid"
+                      }`}
+                    >
                       {/* <input type="file" className="file-input hidden" /> */}
                       <label className="flex items-center gap-2 cursor-pointer">
                         <div className="input-group-prepend">
@@ -492,9 +541,7 @@ export default function RequestForm() {
                         </div>
                       </label>
                     </div>
-                    {/* <span className="form-helper">
-                      รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB
-                    </span> */}
+                    {fileError && <FormHelper text={fileError} />}
                   </div>
                 </div>
 

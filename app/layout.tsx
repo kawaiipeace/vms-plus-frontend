@@ -8,6 +8,7 @@ import "../public/assets/css/material-symbols.css";
 import ThemeToggle from "@/app/components/themeToggle";
 import { SidebarProvider } from "@/app/contexts/sidebarContext";
 import { FormProvider } from "@/app/contexts/requestFormContext";
+import { ProfileProvider } from "@/app/contexts/profileContext";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -29,9 +30,11 @@ export default function RootLayout({
         <ThemeToggle />
       </Head>
       <body className="light-mode">
-        <SidebarProvider>
-          <FormProvider>{children}</FormProvider>
-        </SidebarProvider>
+        <ProfileProvider>
+          <SidebarProvider>
+            <FormProvider>{children}</FormProvider>
+          </SidebarProvider>
+        </ProfileProvider>
       </body>
     </html>
   );
