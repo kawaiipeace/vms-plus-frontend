@@ -64,7 +64,7 @@ export default function CustomSelect({
         )}
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {value?.label || "Select an option"}
+          {value?.label || "กรุณาเลือก"}
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">

@@ -40,7 +40,7 @@ const schema = yup.object().shape({
 export default function RequestForm() {
   const router = useRouter();
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
-  const [selectedTravelType, setSelectedTravelType] = useState("");
+  const [selectedTravelType, setSelectedTravelType] = useState("1");
   const { updateFormData } = useFormContext();
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string }[]
