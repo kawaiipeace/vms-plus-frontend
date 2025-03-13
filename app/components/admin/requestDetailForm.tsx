@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import JourneyDetailModal from "@/app/components/modal/journeyDetailModal";
 import VehiclePickModel from "@/app/components/modal/vehiclePickModal";
@@ -22,6 +22,7 @@ interface RequestDetailFormProps {
 }
 export default function RequestDetailForm({ status }: RequestDetailFormProps) {
   const driverType = "PEAS";
+  const [haveUserKeyPickUp, setHaveUserKeyPickUp] = useState(true);
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -47,25 +48,16 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
     closeModal: () => void;
   } | null>(null);
 
-
   return (
     <>
-      {status == "edit" && (
-        <AlertCustom
-          title="คำขอใช้ถูกตีกลับ"
-          desc="เหตุผล: แก้วัตถุประสงค์และสถานที่ปฏิบัติงานตามเอกสารอ้างอิง"
-        />
-      )}
+      {status == "edit" && <AlertCustom title="คำขอใช้ถูกตีกลับ" desc="เหตุผล: แก้วัตถุประสงค์และสถานที่ปฏิบัติงานตามเอกสารอ้างอิง" />}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
               {status != "detail" && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => vehicleUserModalRef.current?.openModal()}
-                >
+                <button className="btn btn-tertiary-brand bg-transparent shadow-none border-none" onClick={() => vehicleUserModalRef.current?.openModal()}>
                   แก้ไข
                 </button>
               )}
@@ -74,13 +66,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
             <div className="form-card">
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
-                  <Image
-                    src="/assets/img/sample-avatar.png"
-                    className="avatar avatar-md"
-                    width={100}
-                    height={100}
-                    alt=""
-                  />
+                  <Image src="/assets/img/sample-avatar.png" className="avatar avatar-md" width={100} height={100} alt="" />
                   <div className="form-plaintext-group align-self-center">
                     <div className="form-label">ศรัญยู บริรัตน์ฤทธิ์</div>
                     <div className="supporting-text-group">
@@ -95,9 +81,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                       <div className="form-group form-plaintext">
                         <i className="material-symbols-outlined">smartphone</i>
                         <div className="form-plaintext-group">
-                          <div className="form-text text-nowrap">
-                            091-234-5678
-                          </div>
+                          <div className="form-text text-nowrap">091-234-5678</div>
                         </div>
                       </div>
                     </div>
@@ -118,81 +102,59 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
 
           <div className="form-section">
             <div className="form-section-header">
-              <div className="form-section-header-title">
-                รายละเอียดการเดินทาง
-              </div>
+              <div className="form-section-header-title">รายละเอียดการเดินทาง</div>
               {status != "detail" && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => journeyDetailModalRef.current?.openModal()}
-                >
+                <button className="btn btn-tertiary-brand bg-transparent shadow-none border-none" onClick={() => journeyDetailModalRef.current?.openModal()}>
                   แก้ไข
                 </button>
               )}
             </div>
 
-              <JourneyDetailCard />
+            <JourneyDetailCard />
           </div>
 
           <div className="form-section">
             <div className="form-section-header">
-              <div className="form-section-header-title">
-                การนัดหมายพนักงานขับรถ
-              </div>
+              <div className="form-section-header-title">การนัดหมายพนักงานขับรถ</div>
               {status != "detail" && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => driverAppointmentModalRef.current?.openModal()}
-                >
+                <button className="btn btn-tertiary-brand bg-transparent shadow-none border-none" onClick={() => driverAppointmentModalRef.current?.openModal()}>
                   แก้ไข
                 </button>
               )}
             </div>
 
-           <AppointmentDriverCard />
+            <AppointmentDriverCard />
           </div>
 
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
               {status != "detail" && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                  onClick={() => referenceModalRef.current?.openModal()}
-                >
+                <button className="btn btn-tertiary-brand bg-transparent border-none shadow-none" onClick={() => referenceModalRef.current?.openModal()}>
                   แก้ไข
                 </button>
               )}
             </div>
 
             <ReferenceCard />
-
-           </div>
+          </div>
 
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
               {status != "detail" && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                  data-toggle="modal"
-                  data-target="#editDisbursementModal"
-                  onClick={() => disbursementModalRef.current?.openModal()}
-                >
+                <button className="btn btn-tertiary-brand bg-transparent border-none shadow-none" data-toggle="modal" data-target="#editDisbursementModal" onClick={() => disbursementModalRef.current?.openModal()}>
                   แก้ไข
                 </button>
               )}
             </div>
 
-<DisburstmentCard />
-           
+            <DisburstmentCard />
           </div>
         </div>
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-      
-
             {(status != "detail" && status != "edit") ||
               (driverType != "PEAS" && (
                 <>
@@ -202,7 +164,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
 
                   <CarDetailCard />
                   <div className="mt-5">
-                    <UserInfoCard />
+                    <UserInfoCard UserType="outsource" displayOn="driver" />
                   </div>
                   <div className="mt-5">
                     <PickupKeyCard />
@@ -210,25 +172,25 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                 </>
               ))}
 
-         
-            
-              
-                  
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">ยานพาหนะ</div>
-                    </div>
+            <div className="form-section-header">
+              <div className="form-section-header-title">ยานพาหนะ</div>
+            </div>
 
-                    <CarDetailCard />
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">ผู้ขับขี่</div>
-                    </div>
+            <CarDetailCard />
+            <div className="form-section-header">
+              <div className="form-section-header-title">ผู้ขับขี่</div>
+            </div>
 
-                    <DriverSmallInfoCard />
-                
-          
-        
+            <DriverSmallInfoCard />
+            {haveUserKeyPickUp && (
+              <>
+                <div className="form-section-header">
+                  <div className="form-section-header-title">ข้อมูลผู้รับกุญแจ</div>
+                </div>
+                <DriverSmallInfoCard userKeyPickup={haveUserKeyPickUp} />
+              </>
+            )}
           </div>
-
         </div>
       </div>
 

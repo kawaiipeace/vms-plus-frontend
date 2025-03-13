@@ -1,7 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import DatePicker from "@/app/components/datePicker";
 
-const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
+interface Props {
+  status?: boolean;
+}
+
+const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(({ status }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -12,7 +16,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-body overflow-y-auto text-center">
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มข้อมูลการเดินทาง</div>
+            <div className="modal-title">{status ? "แก้ไขข้อมูลการเดินทาง" : "เพิ่มข้อมูลการเดินทาง"}</div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>

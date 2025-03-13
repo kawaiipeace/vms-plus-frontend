@@ -42,7 +42,7 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, VehicleDetailModelP
         </div>
         <div className="modal-body flex flex-col md:flex-row gap-5">
           <div className="w-full md:w-6/12">
-            <ImgSlider images={imageUrls} />
+            <ImgSlider id="1" images={imageUrls} />
           </div>
 
           <div className="modal-inner-scrollable md:w-6/12 w-full">

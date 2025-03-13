@@ -2,14 +2,20 @@ import React, { useRef, useState } from "react";
 import CarDetailCard2 from "@/app/components/card/carDetailCard2";
 import UserInfoCard from "@/app/components/card/userInfoCard";
 import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
-import Image from "next/image";
+import ImagesCarCard from "@/app/components/card/ImagesCarCard";
+import ReturnCarAddStep2Modal from "@/app/components/modal/returnCarAddStep2Modal";
 
 interface ReceiveCarVehicleInUseTabProps {
-  edit: string;
+  edit?: string;
+  displayOn?: string;
 }
 
-const ReceiveCarVehicleInUseTab = ({ edit }: ReceiveCarVehicleInUseTabProps) => {
+const ReceiveCarVehicleInUseTab = ({ edit, displayOn }: ReceiveCarVehicleInUseTabProps) => {
   const receiveCarVehicleModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const returnCarAddStep2ModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -97,72 +103,54 @@ const ReceiveCarVehicleInUseTab = ({ edit }: ReceiveCarVehicleInUseTabProps) => 
                 </div>
                 {edit === "edit" && (
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]">แก้ไข</button>
+                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddStep2ModalRef.current?.openModal()}>
+                      แก้ไข
+                    </button>
                   </div>
                 )}
               </div>
 
-              <div className="form-card">
-                <div className="form-card-body">
-                  <div className="w-[320px] mx-auto overflow-x-auto">
-                    <div className="w-[560px] flex justify-center gap-4">
-                      <div className="w-[280px] aspect-square overflow-hidden">
-                        <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
-                      </div>
-                      <div className="w-[280px] grid grid-cols-2 gap-4">
-                        <div className="w-[140px] aspect-square overflow-hidden">
-                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
-                        </div>
-                        <div className="w-[140px] aspect-square overflow-hidden">
-                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
-                        </div>
-                        <div className="w-[140px] aspect-square overflow-hidden">
-                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
-                        </div>
-                        <div className="w-[140px] aspect-square overflow-hidden">
-                          <Image className="object-cover object-center" src="/assets/img/sample-car.jpeg" width={900} height={900} alt="" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ImagesCarCard />
             </div>
           </>
         )}
-        <div className="form-section">
-          <div className="form-section-header">
-            <div className="form-section-header-title">
-              <p>สถานที่จอดรถ</p>
-            </div>
-          </div>
+        {displayOn !== "admin" && (
+          <>
+            <div className="form-section">
+              <div className="form-section-header">
+                <div className="form-section-header-title">
+                  <p>สถานที่จอดรถ</p>
+                </div>
+              </div>
 
-          <div className="form-card">
-            <div className="form-card-body">
-              <div className="grid grid-cols-12">
-                <div className="col-span-12 md:col-span-6">
-                  <div className="form-group form-plaintext">
-                    <i className="material-symbols-outlined">calendar_month</i>
-                    <div className="form-plaintext-group">
-                      <div className="form-label">วันที่และเวลา</div>
-                      <div className="form-text">01/01/2567 08:30</div>
+              <div className="form-card">
+                <div className="form-card-body">
+                  <div className="grid grid-cols-12">
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">calendar_month</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">วันที่และเวลา</div>
+                          <div className="form-text">01/01/2567 08:30</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="form-section">
-          <div className="form-section-header">
-            <div className="form-section-header-title">
-              <p>ผู้ดูแลยานพาหนะ</p>
+            <div className="form-section">
+              <div className="form-section-header">
+                <div className="form-section-header-title">
+                  <p>ผู้ดูแลยานพาหนะ</p>
+                </div>
+              </div>
+
+              <UserInfoCard UserType="outsource" displayBtnMore={true} />
             </div>
-          </div>
-
-          <UserInfoCard UserType="outsource" displayBtnMore={true} />
-        </div>
+          </>
+        )}
 
         {!receiveSuccess && (
           <button className="btn btn-default w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
@@ -181,6 +169,7 @@ const ReceiveCarVehicleInUseTab = ({ edit }: ReceiveCarVehicleInUseTabProps) => 
         </div>
       </div>
       <ReceiveCarVehicleModal status={edit} ref={receiveCarVehicleModalRef} />
+      <ReturnCarAddStep2Modal openStep1={() => {}} ref={returnCarAddStep2ModalRef} />
     </div>
   );
 };

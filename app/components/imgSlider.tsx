@@ -1,11 +1,12 @@
-import Image from 'next/image';
-import { useState } from 'react';
+import Image from "next/image";
+import { useState } from "react";
 
 interface ImgSliderProps {
+  id: string;
   images: string[];
 }
 
-export default function ImgSlider({ images }: ImgSliderProps) {
+export default function ImgSlider({ id, images }: ImgSliderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleIndicatorClick = (index: number, event: React.MouseEvent) => {
@@ -17,39 +18,23 @@ export default function ImgSlider({ images }: ImgSliderProps) {
     <div className="relative">
       <div className="carousel w-full rounded-lg overflow-hidden h-[356px]">
         {images.map((src, index) => (
-          <div
-            key={index}
-            id={`slide${index + 1}`}
-            className={`carousel-item relative w-full ${index === activeIndex ? 'active' : ''}`}
-          >
-            <Image
-              src={src}
-              alt={`Image ${index + 1}`}
-              layout="responsive"
-              width={100}
-              height={100}
-              className="object-cover"
-            />
+          <div key={index} id={`slide${id}${index + 1}`} className={`carousel-item relative w-full flex-wrap flex-col ${index === activeIndex ? "active" : ""}`}>
+            <div className="h-[280px] w-full overflow-hidden rounded-2xl">
+              <Image src={src} alt={`Image ${index + 1}`} layout="responsive" width={100} height={100} className="object-cover" />
+            </div>
+            <div className="w-full text-center py-2">หน้าปัดเรือนไมล์</div>
           </div>
         ))}
       </div>
 
       {/* Navigation Arrows */}
       <div className="absolute slick-arrow left-[2rem] top-1/3 transform -translate-y-1/3">
-        <a
-          href={`#slide${activeIndex === 0 ? images.length : activeIndex}`}
-          className="btn w-[40px] h-[40px] rounded-full min-h-0"
-          onClick={() => setActiveIndex((activeIndex - 1 + images.length) % images.length)}
-        >
+        <a href={`#slide${id}${activeIndex === 0 ? images.length : activeIndex}`} className="btn w-[40px] h-[40px] rounded-full min-h-0" onClick={() => setActiveIndex((activeIndex - 1 + images.length) % images.length)}>
           <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_left</i>
         </a>
       </div>
       <div className="absolute slick-arrow right-[2rem] top-1/3 transform -translate-y-1/3">
-        <a
-          href={`#slide${(activeIndex + 1) % images.length + 1}`}
-          className="btn w-[40px] h-[40px] rounded-full min-h-0"
-          onClick={() => setActiveIndex((activeIndex + 1) % images.length)}
-        >
+        <a href={`#slide${id}${((activeIndex + 1) % images.length) + 1}`} className="btn w-[40px] h-[40px] rounded-full min-h-0" onClick={() => setActiveIndex((activeIndex + 1) % images.length)}>
           <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
         </a>
       </div>
@@ -59,8 +44,8 @@ export default function ImgSlider({ images }: ImgSliderProps) {
         {images.map((_, index) => (
           <a
             key={index}
-            href={`#slide${index + 1}`}
-            className={`btn btn-xs ${activeIndex === index ? 'active' : ''}`}
+            href={`#slide${id}${index + 1}`}
+            className={`btn btn-xs ${activeIndex === index ? "active" : ""}`}
             onClick={(event) => handleIndicatorClick(index, event)} // Pass event to the handler
           ></a>
         ))}

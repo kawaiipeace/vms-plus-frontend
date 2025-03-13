@@ -4,9 +4,10 @@ import NumberInput from "@/app/components/numberInput";
 import Tooltip from "@/app/components/tooltips";
 import ImageUpload from "@/app/components/imageUpload";
 import ImagePreview from "@/app/components/imagePreview";
-import ReceiveCarSuccessModal from "./receiveCarSuccessModal";
+import ReceiveCarSuccessModal from "@/app/components/modal/receiveCarSuccessModal";
+import ExampleCarImageModal from "@/app/components/modal/exampleCarImageModal";
 interface ReceiveCarVehicleModalProps {
-  status: string;
+  status?: string;
 }
 
 const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReceiveCarVehicleModalProps>(({ status }, ref) => {
@@ -21,6 +22,11 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
   }));
 
   const receiveCarSuccessModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const exampleCarImageModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -117,7 +123,15 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
                           <label className="form-label">
                             รูปยานพาหนะภายในและภายนอก<span className="font-light">(ถ้ามี)</span>
                             <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
-                              <i className="material-symbols-outlined">info</i>
+                              <i
+                                className="material-symbols-outlined"
+                                onClick={() => {
+                                  exampleCarImageModalRef.current?.openModal();
+                                  modalRef.current?.close();
+                                }}
+                              >
+                                info
+                              </i>
                             </Tooltip>
                           </label>
                           <ImageUpload images={images2} onImageChange={handleImageChange2} onDeleteImage={handleDeleteImage2} />
@@ -159,6 +173,7 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
         </form>
       </dialog>
       <ReceiveCarSuccessModal ref={receiveCarSuccessModalRef} />
+      <ExampleCarImageModal backModal={() => modalRef.current?.showModal()} ref={exampleCarImageModalRef} />
     </>
   );
 });

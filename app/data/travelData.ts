@@ -1,16 +1,15 @@
-export type KeyHandOverData = {
+export type TravelData = {
   reqNo: string;
   vehicleUser: string;
   vehicle: string;
   location: string;
   startDate: string;
   appointmentDate: string;
-  detail: string;
   status: string;
   action: string;
 };
 
-export const keyHandOverData: KeyHandOverData[] = [
+export const travelData: TravelData[] = [
   {
     reqNo: "REQ001",
     vehicleUser: "John Doe",
@@ -18,7 +17,6 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Bangkok Office",
     startDate: "02/01/2567",
     appointmentDate: "03/01/2567",
-    detail: "Business trip to Bangkok.",
     status: "เกินวันที่นัดหมาย",
     action: "Completed",
   },
@@ -29,7 +27,6 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Chiang Mai Office",
     startDate: "02/01/2567",
     appointmentDate: "04/01/2567",
-    detail: "Attending a conference.",
     status: "รอให้กุญแจ",
     action: "Awaiting Approval",
   },
@@ -40,7 +37,6 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Phuket Office",
     startDate: "02/01/2567",
     appointmentDate: "05/01/2567",
-    detail: "Site visit to construction project.",
     status: "เกินวันที่นัดหมาย",
     action: "Cancelled",
   },
@@ -51,20 +47,29 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Pattaya Office",
     startDate: "02/01/2567",
     appointmentDate: "06/01/2567",
-    detail: "Business trip for client meeting.",
     status: "รอให้กุญแจ",
     action: "Awaiting Approval",
   },
 ];
 
-export const keyHandOverDataColumns = [
+export const travelDataColumns = [
   { accessorKey: "reqNo", header: "เลขที่คำขอ" },
-  { accessorKey: "vehicle", header: "ยานพาหนะ" },
-  { accessorKey: "detail", header: "สังกัดยานพาหนะ" },
-  { accessorKey: "startDate", header: "วันที่เดินทาง" },
-  { accessorKey: "vehicleUser", header: "ผู้มารับกุญแจ" },
-  { accessorKey: "appointmentDate", header: "วันที่นัดรับกุญแจ" },
-  { accessorKey: "location", header: "สถานที่นัดหมาย" },
+  { accessorKey: "vehicle", header: "ผู้ใช้ยานพาหนะ" },
+  { accessorKey: "location", header: "ยานพาหนะ" },
+  { accessorKey: "startDate", header: "สังกัดยานพาหนะ" },
+  { accessorKey: "vehicleUser", header: "สถานที่ปฏิบัติงาน" },
+  { accessorKey: "appointmentDate", header: "วันที่เดินทาง" },
   { accessorKey: "status", header: "สถานะคำขอ" },
+  { accessorKey: "action", header: "" },
+];
+
+export const travelDataColumnsAdmin = [
+  { accessorKey: "reqNo", header: "วันที่ / เวลาจากต้นทาง" },
+  { accessorKey: "vehicle", header: "วันที่ / เวลาถึงปลายทาง" },
+  { accessorKey: "location", header: "เลขไมล์ต้นทาง" },
+  { accessorKey: "startDate", header: "เลขไมล์ปลายทาง" },
+  { accessorKey: "vehicleUser", header: "สถานที่ต้นทาง" },
+  { accessorKey: "appointmentDate", header: "สถานที่ปลายทาง" },
+  { accessorKey: "status", header: "รายละเอียด" },
   { accessorKey: "action", header: "" },
 ];

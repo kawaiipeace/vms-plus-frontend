@@ -78,11 +78,28 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn }: Us
             </div>
           )}
         </div>
-        <div className="card-actioins w-full">
-          <button className={`btn btn-default w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
-            ดูรายละเอียด
-          </button>
-        </div>
+        {displayOn === "admin" ? (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-1">
+                <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
+                  ดูรายละเอียด
+                </button>
+              </div>
+              <div className="col-span-1">
+                <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
+                  คะแนนการให้บริการ
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="card-actioins w-full">
+            <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
+              ดูรายละเอียด
+            </button>
+          </div>
+        )}
       </div>
       <CallToDriverModal ref={callToDriverModalRef} />
       <DriverInfoModal ref={driverInfoModalRef} />

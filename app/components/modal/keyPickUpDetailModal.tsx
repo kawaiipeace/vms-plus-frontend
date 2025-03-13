@@ -1,20 +1,17 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import Image from "next/image";
 import DateTimePicker from "@/app/components/dateTimePicker";
 import RadioButton from "@/app/components/radioButton";
-// import KeyPickUpEditModal from "./keyPickUpEditModal";
+import KeyPickUpEditModal from "./keyPickUpEditModal";
 import ConfirmKeyHandOverModal from "@/app/components/modal/confirmKeyHandOverModal";
 
-const KeyPickupDetailModal = forwardRef((_, ref) => {
+interface KeyPickUpDetail {
+  userPickUpType: "พนักงาน กฟภ." | "พนักงานขับรถ" | "บุคคลภายนอก";
+}
+
+const KeyPickupDetailModal = forwardRef(({ userPickUpType }: KeyPickUpDetail, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [selectedAttach, setSelectedAttach] = useState(
-    "กุญแจหลัก และบัตรเติมน้ำมัน"
-  );
+  const [selectedAttach, setSelectedAttach] = useState("กุญแจหลัก และบัตรเติมน้ำมัน");
   const keyPickUpEditModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -32,7 +29,7 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
 
   return (
     <>
-      <dialog ref={modalRef} id="my_modal_1" className="modal">
+      <dialog ref={modalRef} className="modal">
         <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
           <div className="bottom-sheet">
             <div className="bottom-sheet-icon"></div>
@@ -63,55 +60,54 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
               <div className="form-card w-full">
                 <div className="form-card-body">
                   <div className="form-group form-plaintext form-users">
-                    <Image
-                      src="/assets/img/sample-avatar.png"
-                      className="avatar avatar-md"
-                      width={100}
-                      height={100}
-                      alt=""
-                    />
+                    <Image src="/assets/img/sample-avatar.png" className="avatar avatar-md" width={100} height={100} alt="" />
                     <div className="form-plaintext-group align-self-center">
                       <div className="form-label">ศรัญยู บริรัตน์ฤทธิ์</div>
-                      <div className="supporting-text-group">
-                        <div className="supporting-text">505291</div>
-                        <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
-                      </div>
+                      {userPickUpType === "พนักงาน กฟภ." && (
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">505291</div>
+                          <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
+                        </div>
+                      )}
+                      {(userPickUpType === "พนักงานขับรถ" || userPickUpType === "บุคคลภายนอก") && (
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">บริษัท ยุทธศาสตร์การขับขี่ยี่สิบปี จำกัด</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="form-card-right align-self-center mt-4">
                     <div className="flex flex-wrap gap-4">
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
+                          <i className="material-symbols-outlined">smartphone</i>
                           <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              091-234-5678
-                            </div>
+                            <div className="form-text text-nowrap">091-234-5678</div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowra">6032</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">SMS</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              จะไปรับกุญแจช่วงบ่ายครับ
+                      {userPickUpType === "พนักงาน กฟภ." && (
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">call</i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowra">6032</div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
+
+                      {(userPickUpType === "พนักงาน กฟภ." || userPickUpType === "บุคคลภายนอก") && (
+                        <div className="col-span-12 w-full">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">SMS</i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowrap">จะไปรับกุญแจช่วงบ่ายครับ</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -125,9 +121,7 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
                   <div className="input-group">
                     <div className="input-group-prepend">
                       <span className="input-group-text">
-                        <i className="material-symbols-outlined">
-                          calendar_month
-                        </i>
+                        <i className="material-symbols-outlined">calendar_month</i>
                       </span>
                     </div>
                     <DateTimePicker placeholder="ระบุวันที่" />
@@ -137,34 +131,10 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
                 <div className="form-group">
                   <label className="form-label">สิ่งที่ส่งมอบ</label>
 
-                  <RadioButton
-                    name={"key"}
-                    label={"กุญแจหลัก และบัตรเติมน้ำมัน"}
-                    value={"กุญแจหลัก และบัตรเติมน้ำมัน"}
-                    selectedValue={selectedAttach}
-                    setSelectedValue={setSelectedAttach}
-                  />
-                  <RadioButton
-                    name={"key"}
-                    label={"กุญแจสำรอง และบัตรเติมน้ำมัน"}
-                    value={"กุญแจสำรอง และบัตรเติมน้ำมัน"}
-                    selectedValue={selectedAttach}
-                    setSelectedValue={setSelectedAttach}
-                  />
-                  <RadioButton
-                    name={"key"}
-                    label={"กุญแจหลัก"}
-                    value={"กุญแจหลัก"}
-                    selectedValue={selectedAttach}
-                    setSelectedValue={setSelectedAttach}
-                  />
-                  <RadioButton
-                    name={"key"}
-                    label={"กุญแจสำรอง"}
-                    value={"กุญแจสำรอง"}
-                    selectedValue={selectedAttach}
-                    setSelectedValue={setSelectedAttach}
-                  />
+                  <RadioButton name={"key"} label={"กุญแจหลัก และบัตรเติมน้ำมัน"} value={"กุญแจหลัก และบัตรเติมน้ำมัน"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
+                  <RadioButton name={"key"} label={"กุญแจสำรอง และบัตรเติมน้ำมัน"} value={"กุญแจสำรอง และบัตรเติมน้ำมัน"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
+                  <RadioButton name={"key"} label={"กุญแจหลัก"} value={"กุญแจหลัก"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
+                  <RadioButton name={"key"} label={"กุญแจสำรอง"} value={"กุญแจสำรอง"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
                 </div>
               </div>
             </div>
@@ -181,7 +151,6 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
                 if (modalRef.current) modalRef.current.close();
                 if (confirmKeyHandOverModalRef.current) confirmKeyHandOverModalRef.current.openModal();
               }}
-              
             >
               ให้กุญแจ
             </button>
@@ -192,8 +161,7 @@ const KeyPickupDetailModal = forwardRef((_, ref) => {
         </form>
       </dialog>
 
-      {/* <KeyPickUpEditModal ref={keyPickUpEditModalRef} /> */}
-      
+      <KeyPickUpEditModal ref={keyPickUpEditModalRef} />
       <ConfirmKeyHandOverModal ref={confirmKeyHandOverModalRef} />
     </>
   );

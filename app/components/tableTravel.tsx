@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, ColumnDef, SortingState, PaginationState } from "@tanstack/react-table";
 import Paginationselect from "./paginationSelect";
-import Link from "next/link";
-import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
-import EditKeyAppointmentModal from "./modal/editKeyAppointmentModal";
+// import Link from "next/link";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
   data: T[];
   columns: ColumnDef<T>[];
+  listName?: string;
 };
 
 export default function TableComponent<T>({ data, columns }: TableComponentProps<T>) {
@@ -32,6 +31,7 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
+
     onPaginationChange: (updater: PaginationState | ((old: PaginationState) => PaginationState)) => {
       if (typeof updater === "function") {
         const newPagination = updater({ pageIndex, pageSize });
@@ -47,16 +47,6 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
   useEffect(() => {
     setPageCount(table.getPageCount());
   }, [table.getPageCount()]);
-
-  const keyPickupDetailModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-
-  const editKeyAppointmentModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   return (
     <>
@@ -82,7 +72,7 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
                   <th key={header.id} className="p-2 cursor-pointer" onClick={header.column.getToggleSortingHandler()}>
                     <span className={`dt-column-title flex gap-2 ${header.column.columnDef.header == "" ? "justify-center" : ""}`}>
                       {header.column.columnDef.header as string}
-                      {header.column.getIsSorted() === "asc" ? <i className="material-symbols-outlined text-black">arrow_upward_alt</i> : header.column.getIsSorted() === "desc" ? <i className="material-symbols-outlined text-black">arrow_downward_alt</i> : <i className="material-symbols-outlined">import_export</i>}
+                      {header.column.getCanSort() && <>{header.column.getIsSorted() === "asc" ? <i className="material-symbols-outlined text-black">arrow_upward_alt</i> : header.column.getIsSorted() === "desc" ? <i className="material-symbols-outlined text-black">arrow_downward_alt</i> : <i className="material-symbols-outlined">import_export</i>}</>}
                     </span>
                   </th>
                 ))}
@@ -100,30 +90,12 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
                     ) : cell.column.columnDef.header === "" ? (
                       <>
                         <div className="dt-action">
-                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="ให้กุญแจ" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
-                            <i className="material-symbols-outlined icon-settings-fill-300-24">passkey</i>
+                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="ดูรายละเอียดคำขอ" onClick={() => router.push("/administrator/request-detail/1")}>
+                            <i className="material-symbols-outlined icon-settings-fill-300-24">quick_reference_all</i>
                           </button>
-                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="แก้ไขนัดหมาย" onClick={() => editKeyAppointmentModalRef.current?.openModal()}>
-                            <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
+                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="รับยานพาหนะ">
+                            <i className="material-symbols-outlined icon-settings-fill-300-24">directions_car</i>
                           </button>
-                          <div className="dropdown dropdown-left dropdown-end">
-                            <div className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none" tabIndex={0} role="button">
-                              <i className="material-symbols-outlined icon-settings-fill-300-24">more_vert</i>
-                            </div>
-
-                            <ul className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]" tabIndex={0}>
-                              <Link className="dropdown-item" href="/administrator/request-detail/1">
-                                <i className="material-symbols-outlined">quick_reference_all</i>
-                                รายละเอียดคำขอ
-                              </Link>
-
-                              <div className="dropdown-divider"></div>
-                              <Link className="dropdown-item" href="#">
-                                <i className="material-symbols-outlined">delete</i>
-                                ยกเลิกคำขอ
-                              </Link>
-                            </ul>
-                          </div>
                         </div>
                       </>
                     ) : (
@@ -168,8 +140,6 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
             </button>
           </div>
         </div>
-        <KeyPickupDetailModal userPickUpType="พนักงานขับรถ" ref={keyPickupDetailModalRef} />
-        <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} />
       </div>
     </>
   );

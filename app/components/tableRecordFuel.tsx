@@ -1,26 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+// import { useRouter } from "next/navigation";
 
 import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, ColumnDef, SortingState, PaginationState } from "@tanstack/react-table";
 import Paginationselect from "./paginationSelect";
-import Link from "next/link";
-import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
-import EditKeyAppointmentModal from "./modal/editKeyAppointmentModal";
+// import Link from "next/link";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
   data: T[];
   columns: ColumnDef<T>[];
+  listName?: string;
+  editRecordFuel?: () => void;
+  deleteRecordFuel?: () => void;
 };
 
-export default function TableComponent<T>({ data, columns }: TableComponentProps<T>) {
+export default function TableRecordFuelComponent<T>({ data, columns, listName, editRecordFuel, deleteRecordFuel }: TableComponentProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [pageCount, setPageCount] = useState(1);
-  const router = useRouter();
+  // const router = useRouter();
   const memoizedData = useMemo(() => data, [data]);
   const memoizedColumns = useMemo(() => columns, [columns]);
 
@@ -47,16 +48,6 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
   useEffect(() => {
     setPageCount(table.getPageCount());
   }, [table.getPageCount()]);
-
-  const keyPickupDetailModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-
-  const editKeyAppointmentModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   return (
     <>
@@ -99,32 +90,29 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
                       <div className="w-full text-center">{cell.renderValue() === "เกินวันที่นัดหมาย" || cell.renderValue() === "ถูกตีกลับ" ? <span className="badge badge-pill-outline badge-error whitespace-nowrap">{cell.renderValue() as React.ReactNode}</span> : cell.renderValue() === "ตีกลับคำขอ" ? <span className="badge badge-pill-outline badge-warning whitespace-nowrap">{cell.renderValue() as React.ReactNode}</span> : <span className="badge badge-pill-outline badge-info whitespace-nowrap">{cell.renderValue() as React.ReactNode}</span>}</div>
                     ) : cell.column.columnDef.header === "" ? (
                       <>
-                        <div className="dt-action">
-                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="ให้กุญแจ" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
-                            <i className="material-symbols-outlined icon-settings-fill-300-24">passkey</i>
-                          </button>
-                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="แก้ไขนัดหมาย" onClick={() => editKeyAppointmentModalRef.current?.openModal()}>
-                            <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
-                          </button>
-                          <div className="dropdown dropdown-left dropdown-end">
-                            <div className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none" tabIndex={0} role="button">
-                              <i className="material-symbols-outlined icon-settings-fill-300-24">more_vert</i>
-                            </div>
-
-                            <ul className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]" tabIndex={0}>
-                              <Link className="dropdown-item" href="/administrator/request-detail/1">
-                                <i className="material-symbols-outlined">quick_reference_all</i>
-                                รายละเอียดคำขอ
-                              </Link>
-
-                              <div className="dropdown-divider"></div>
-                              <Link className="dropdown-item" href="#">
-                                <i className="material-symbols-outlined">delete</i>
-                                ยกเลิกคำขอ
-                              </Link>
-                            </ul>
+                        {listName == "request" && (
+                          <div className="dt-action">
+                            <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="แก้ไข" onClick={editRecordFuel}>
+                              <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
+                            </button>
+                            <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="ลบ" onClick={deleteRecordFuel}>
+                              <i className="material-symbols-outlined icon-settings-fill-300-24">delete</i>
+                            </button>
                           </div>
-                        </div>
+                        )}
+                        {listName == "fuel" && (
+                          <div className="dt-action">
+                            <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="แก้ไข" onClick={editRecordFuel}>
+                              <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
+                            </button>
+                            <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="ลบ" onClick={deleteRecordFuel}>
+                              <i className="material-symbols-outlined icon-settings-fill-300-24">delete</i>
+                            </button>
+                            <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="รูปใบเสร็จ" onClick={deleteRecordFuel}>
+                              <i className="material-symbols-outlined icon-settings-fill-300-24">imagesmode</i>
+                            </button>
+                          </div>
+                        )}
                       </>
                     ) : (
                       (cell.renderValue() as React.ReactNode)
@@ -168,8 +156,6 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
             </button>
           </div>
         </div>
-        <KeyPickupDetailModal userPickUpType="พนักงานขับรถ" ref={keyPickupDetailModalRef} />
-        <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} />
       </div>
     </>
   );

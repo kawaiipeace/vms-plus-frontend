@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
-import TableComponent from "@/app/components/table";
-import { RequestData, requestDataColumns, requestData_1 } from "@/app/data/requestData";
+import TableTravel from "@/app/components/tableTravel";
+import { TravelData, travelDataColumns, travelData } from "@/app/data/travelData";
 import ZeroRecord from "@/app/components/zeroRecord";
 import FilterModal from "@/app/components/modal/filterModal";
 import RequestStatusBox from "../requestStatusBox";
 
-export default function ApproveFlow() {
-  const [data, setRequestData] = useState<RequestData[]>(requestData_1);
+export default function TravelTab() {
+  const [data, setRequestData] = useState<TravelData[]>(travelData);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -15,10 +15,10 @@ export default function ApproveFlow() {
   return (
     <>
       <div className="grid grid-cols-4 gap-4 mb-4">
-        <RequestStatusBox iconName="schedule" status="info" title="รออนุมัติ" number={3} />
-        <RequestStatusBox iconName="reply" status="warning" title="ตีกลับคำขอ" number={1} />
-        <RequestStatusBox iconName="check" status="success" title="อนุมัติ" number={1} />
-        <RequestStatusBox iconName="delete" status="default" title="ยกเลิกคำขอ" number={1} />
+        <RequestStatusBox iconName="directions_car" status="warning" title="รอรับยานพาหนะ" number={3} />
+        <RequestStatusBox iconName="car_crash" status="error" title="รับยานพาหนะล่าช้า" number={1} />
+        <RequestStatusBox iconName="travel_luggage_and_bags" status="info" title="อยู่ระหว่างเดินทาง" number={1} />
+        <RequestStatusBox iconName="priority_high" status="error" title="คืนยานพาหนะล่าช้า" number={1} />
       </div>
 
       {data.length > 0 ? (
@@ -45,11 +45,11 @@ export default function ApproveFlow() {
               </button>
             </div>
           </div>
-          <TableComponent data={data} columns={requestDataColumns} />
+          <TableTravel data={data} columns={travelDataColumns} />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (
-        <ZeroRecord imgSrc="/assets/img/empty/add_carpool.svg" title="สร้างคำขอใช้ยานพาหนะ" desc={<>ระบุข้อมูลการเดินทาง ค้นหายานพาหนะ และผู้ขับขี่</>} button="สร้างคำขอใช้" icon="add" link="process-one" />
+        <ZeroRecord imgSrc="/assets/img/graphic/empty.svg" title="ไม่มีคำขอใช้ยานพาหนะ" desc={<>เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติรายการคำขอที่รอให้กุญแจจะแสดงที่นี่</>} button="สร้างคำขอใช้" icon="add" link="process-one" displayBtn={false} />
       )}
     </>
   );

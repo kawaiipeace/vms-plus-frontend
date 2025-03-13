@@ -1,16 +1,15 @@
-export type KeyHandOverData = {
+export type FuelData = {
   reqNo: string;
   vehicleUser: string;
   vehicle: string;
   location: string;
   startDate: string;
   appointmentDate: string;
-  detail: string;
   status: string;
   action: string;
 };
 
-export const keyHandOverData: KeyHandOverData[] = [
+export const fuelData: FuelData[] = [
   {
     reqNo: "REQ001",
     vehicleUser: "John Doe",
@@ -18,7 +17,6 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Bangkok Office",
     startDate: "02/01/2567",
     appointmentDate: "03/01/2567",
-    detail: "Business trip to Bangkok.",
     status: "เกินวันที่นัดหมาย",
     action: "Completed",
   },
@@ -29,7 +27,6 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Chiang Mai Office",
     startDate: "02/01/2567",
     appointmentDate: "04/01/2567",
-    detail: "Attending a conference.",
     status: "รอให้กุญแจ",
     action: "Awaiting Approval",
   },
@@ -40,7 +37,6 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Phuket Office",
     startDate: "02/01/2567",
     appointmentDate: "05/01/2567",
-    detail: "Site visit to construction project.",
     status: "เกินวันที่นัดหมาย",
     action: "Cancelled",
   },
@@ -51,20 +47,31 @@ export const keyHandOverData: KeyHandOverData[] = [
     location: "Pattaya Office",
     startDate: "02/01/2567",
     appointmentDate: "06/01/2567",
-    detail: "Business trip for client meeting.",
     status: "รอให้กุญแจ",
     action: "Awaiting Approval",
   },
 ];
 
-export const keyHandOverDataColumns = [
+export const fuelDataColumns = [
   { accessorKey: "reqNo", header: "เลขที่คำขอ" },
-  { accessorKey: "vehicle", header: "ยานพาหนะ" },
-  { accessorKey: "detail", header: "สังกัดยานพาหนะ" },
-  { accessorKey: "startDate", header: "วันที่เดินทาง" },
-  { accessorKey: "vehicleUser", header: "ผู้มารับกุญแจ" },
-  { accessorKey: "appointmentDate", header: "วันที่นัดรับกุญแจ" },
-  { accessorKey: "location", header: "สถานที่นัดหมาย" },
+  { accessorKey: "vehicle", header: "ผู้ใช้ยานพาหนะ" },
+  { accessorKey: "location", header: "ยานพาหนะ" },
+  { accessorKey: "startDate", header: "สังกัดยานพาหนะ" },
+  { accessorKey: "vehicleUser", header: "สถานที่ปฏิบัติงาน" },
+  { accessorKey: "appointmentDate", header: "วันที่เดินทาง" },
   { accessorKey: "status", header: "สถานะคำขอ" },
+  { accessorKey: "action", header: "" },
+];
+
+export const fuelDataColumnsAdmin = [
+  { accessorKey: "reqNo", header: "วันที่ใบเสร็จ" },
+  { accessorKey: "vehicle", header: "เลขที่ใบเสร็จ" },
+  { accessorKey: "location", header: "สถานีบริการน้ำมัน" },
+  { accessorKey: "startDate", header: "ประเภทเชื้อเพลิง" },
+  { accessorKey: "vehicleUser", header: "เลขไมล์" },
+  { accessorKey: "appointmentDate", header: "จำนวนลิตร" },
+  { accessorKey: "status", header: "ภาษี" },
+  { accessorKey: "", header: "ยอดรวมชำระ" },
+  { accessorKey: "", header: "วิธีชำระเงิน" },
   { accessorKey: "action", header: "" },
 ];

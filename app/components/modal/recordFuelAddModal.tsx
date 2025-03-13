@@ -5,7 +5,11 @@ import RadioButton from "@/app/components/radioButton";
 import ImageUpload from "@/app/components/imageUpload";
 import ImagePreview from "@/app/components/imagePreview";
 
-const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
+interface Props {
+  status?: boolean;
+}
+
+const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(({ status }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const fuelOptions = ["ปตท. (OR)", "บางจาก (BCP)", "พีที (PTG)", "ซัสโก้ (SUSCO)", "เชลล์ (SHELL)"];
   const fuelTypeOptions = ["ดีเซล", "เบนซิน"];
@@ -28,7 +32,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-body overflow-y-auto text-center">
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มข้อมูลการเติมเชื้อเพลิง</div>
+            <div className="modal-title">{status ? "แก้ไขข้อมูลการเติมเชื้อเพลิง" : "เพิ่มข้อมูลการเติมเชื้อเพลิง"}</div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
