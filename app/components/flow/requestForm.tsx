@@ -13,6 +13,7 @@ import { useFormContext } from "@/app/contexts/requestFormContext";
 import {
   fetchCostTypes,
   fetchVehicleUsers,
+  uploadFile,
 } from "@/app/services/masterService";
 import VehicleUserSelect from "@/app/components/vehicleUserSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -32,7 +33,8 @@ const schema = yup.object().shape({
   endDate: yup.string(),
   refCostTypeCode: yup.string(),
   timeStart: yup.string(),
-  timeEnd: yup.string()
+  timeEnd: yup.string(),
+  attachmentFile: yup.string()
 });
 
 export default function RequestForm() {
@@ -145,9 +147,18 @@ export default function RequestForm() {
     fetchCostTypeRequest();
   }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
     const file = event.target.files?.[0];
     setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
+    
+    try {
+      const response = await uploadFile(file);
+      setValue("attachmentFile", response.file_url);
+      console.log("File uploaded successfully:", response);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
   };
 
   const {

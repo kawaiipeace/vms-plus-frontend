@@ -21,3 +21,21 @@ export const fetchCostTypes = async () => {
         throw error;
     }
 };
+
+export const uploadFile = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+  
+      const response = await axiosInstance.post("upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      return response.data; 
+    } catch (error) {
+      console.error("Upload failed:", error);
+      throw error;
+    }
+  };
