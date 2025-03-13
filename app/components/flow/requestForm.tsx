@@ -18,6 +18,15 @@ import {
 import VehicleUserSelect from "@/app/components/vehicleUserSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+type vehicleUserType = {
+  label: string;
+  value: string;
+  deptSap: string;
+  deptSapShort: string;
+  telInternal: string;
+  telMobile: string;
+}
+
 const schema = yup.object().shape({
   telInternal: yup
     .string(),
@@ -47,23 +56,9 @@ export default function RequestForm() {
   >([]);
   const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(costTypeOptions[0]);
   const [driverOptions, setDriverOptions] = useState<
-    {
-      value: string;
-      label: string;
-      deptSap: string;
-      deptSapShort: string;
-      telInternal: string;
-      telMobile: string;
-    }[]
+  vehicleUserType[]
   >([]);
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
-    label: string;
-    value: string;
-    deptSap: string;
-    deptSapShort: string;
-    telInternal: string;
-    telMobile: string;
-  }>({
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<vehicleUserType>({
     label: "",
     value: "",
     deptSap: "",
@@ -72,14 +67,7 @@ export default function RequestForm() {
     telMobile: "",
   });
 
-  const handleSelectChange = (option: {
-    label: string;
-    value: string;
-    deptSap: string;
-    deptSapShort: string;
-    telInternal: string;
-    telMobile: string;
-  }) => {
+  const handleSelectChange = (option: vehicleUserType) => {
     setSelectedVehicleUserOption(option);
   };
   const [passengerCount, setPassengerCount] = useState(0);
