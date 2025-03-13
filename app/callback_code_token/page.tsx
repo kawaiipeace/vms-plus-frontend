@@ -12,7 +12,8 @@ export default function CallbackCodeToken(){
               try {
                 const response = await getKeyCloakData(code);
                 if (response.status === 200) {
-                  console.log('res',response);
+                  localStorage.setItem('accessToken', response.data.accessToken);
+                  localStorage.setItem('refreshToken', response.data.refreshToken);
                   router.push('/vehicle-booking/request-list');
                 }
               } catch (error) {

@@ -1,8 +1,6 @@
 import axiosInstance from '@/app/utils/axiosInstance';
 
 const redirect_uri = "http://localhost:3000/callback_code_token";
-const token = typeof window !== "undefined" && localStorage?.getItem("accessToken");
-
 
 export const requestOTP = async (phone: string) => {
     try {
@@ -52,13 +50,20 @@ export const verifyOTP = async ({ otp, otpId }: { otp: string; otpId: string }) 
     }
 };
 
+export const fetchProfile = async () => {
+    try {
+        const response = await axiosInstance.get('/login/profile');
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const logOut = async () => {
     try {
-        const response = await axiosInstance.get('logout', {
-            headers:{
-                'Authorization': `Bearer ${token}`,
-            }
-        });
+        const response = await axiosInstance.get('logout');
 
         return response;
 
