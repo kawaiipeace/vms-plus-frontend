@@ -10,3 +10,14 @@ export const fetchVehicleUsers = async (search?: string) => {
         throw error;
     }
 };
+
+export const fetchCostTypes = async () => {
+    try {
+        const response = await axiosInstance.get('ref/cost-type');
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+};

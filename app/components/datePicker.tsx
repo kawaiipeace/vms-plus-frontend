@@ -8,9 +8,10 @@ import { Thai } from "flatpickr/dist/l10n/th.js";
 
 interface DatePickerProps {
   placeholder?: string;
+  onChange?: (dateStr: string) => void;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ placeholder }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ placeholder, onChange }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -62,6 +63,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ placeholder }) => {
         onChange: function (selectedDates, dateStr, instance) {
           instance.input.value = dateStr;
           updateCalendarYear(instance);
+          if (onChange) {
+            onChange(dateStr);
+          }
         },
         onMonthChange: function (selectedDates, dateStr, instance) {
           updateCalendarYear(instance);

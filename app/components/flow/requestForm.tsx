@@ -10,21 +10,29 @@ import Tooltip from "@/app/components/tooltips";
 import FormHelper from "../formHelper";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "@/app/contexts/requestFormContext";
-import { fetchVehicleUsers } from "@/app/services/masterService";
+import {
+  fetchCostTypes,
+  fetchVehicleUsers,
+} from "@/app/services/masterService";
 import VehicleUserSelect from "@/app/components/vehicleUserSelect";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
   telInternal: yup
-    .string()
-    .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
-    .required("กรุณากรอกเบอร์โทรศัพท์"),
+    .string(),
   telMobile: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
     .required("กรุณากรอกเบอร์โทรศัพท์"),
   workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
   purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
+  remark: yup.string(),
+  referenceNumber: yup.string(),
+  startDate: yup.string(),
+  endDate: yup.string(),
+  refCostTypeCode: yup.string(),
+  timeStart: yup.string(),
+  timeEnd: yup.string()
 });
 
 export default function RequestForm() {
@@ -32,6 +40,10 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTravelType, setSelectedTravelType] = useState("");
   const { updateFormData } = useFormContext();
+  const [costTypeOptions, setCostTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(costTypeOptions[0]);
   const [driverOptions, setDriverOptions] = useState<
     {
       value: string;
@@ -68,12 +80,7 @@ export default function RequestForm() {
   }) => {
     setSelectedVehicleUserOption(option);
   };
-
-  const options = [
-    "งบทำการ หน่วยงานต้นสังกัด",
-    "หน่วยงานต้นสังกัด",
-    "งบทำการ หน่วยงานต้นสังกั",
-  ];
+  const [passengerCount, setPassengerCount] = useState(0);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -110,7 +117,32 @@ export default function RequestForm() {
       }
     };
 
+    const fetchCostTypeRequest = async () => {
+      try {
+        const response = await fetchCostTypes();
+        if (response.status === 200) {
+          const costTypeData = response.data;
+          const costTypeArr = [
+            ...costTypeData.map(
+              (cost: {
+                ref_cost_type_code: string;
+                ref_cost_type_name: string;
+              }) => ({
+                value: cost.ref_cost_type_code,
+                label: cost.ref_cost_type_name,
+              })
+            ),
+          ];
+  
+          setCostTypeOptions(costTypeArr);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
     fetchRequests();
+    fetchCostTypeRequest();
   }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,6 +165,9 @@ export default function RequestForm() {
     data.vehicleUserEmpName = selectedVehicleUserOption.label;
     data.vehicleUserEmpDeptSap = selectedVehicleUserOption.deptSap;
     data.vehicleUserEmpDeptSapShort = selectedVehicleUserOption.deptSapShort;
+    data.numberOfPassanger = passengerCount;
+    data.refCostTypeCode = selectedCostTypeOption.value;
+    data.tripType = selectedTravelType;
     console.log("Form Data:", data);
     updateFormData(data);
     // router.push("process-two");
@@ -286,7 +321,7 @@ export default function RequestForm() {
                           </i>
                         </span>
                       </div>
-                      <DatePicker placeholder="ระบุวันที่" />
+                      <DatePicker placeholder="ระบุวันที่" onChange={(dateStr) => setValue("startDate", dateStr)} />
                     </div>
                   </div>
                 </div>
@@ -295,7 +330,7 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่ออกเดินทาง</label>
                     <div className="input-group">
-                      <TimePicker />
+                      <TimePicker onChange={(dateStr) => setValue("timeStart", dateStr)} />
                     </div>
                   </div>
                 </div>
@@ -311,7 +346,7 @@ export default function RequestForm() {
                           </i>
                         </span>
                       </div>
-                      <DatePicker placeholder="ระบุวันที่" />
+                      <DatePicker placeholder="ระบุวันที่" onChange={(dateStr) => setValue("endDate", dateStr)}/>
                     </div>
                   </div>
                 </div>
@@ -320,7 +355,7 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
-                      <TimePicker />
+                      <TimePicker  onChange={(dateStr) => setValue("timeEnd", dateStr)}/>
                     </div>
                   </div>
                 </div>
@@ -332,7 +367,7 @@ export default function RequestForm() {
                       <span className="form-optional">(รวมผู้ขับขี่)</span>
                     </label>
 
-                    <NumberInput />
+                    <NumberInput value={passengerCount} onChange={setPassengerCount} />
                   </div>
                 </div>
 
@@ -343,7 +378,7 @@ export default function RequestForm() {
                       <RadioButton
                         name="travelType"
                         label="ไป-กลับ"
-                        value="ไป-กลับ"
+                        value="1"
                         selectedValue={selectedTravelType}
                         setSelectedValue={setSelectedTravelType}
                       />
@@ -351,7 +386,7 @@ export default function RequestForm() {
                       <RadioButton
                         name="travelType"
                         label="ค้างแรม"
-                        value="ค้างแรม"
+                        value="2"
                         selectedValue={selectedTravelType}
                         setSelectedValue={setSelectedTravelType}
                       />
@@ -428,6 +463,7 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
+                        {...register("referenceNumber")}
                         placeholder="ระบุเลขที่หนังสืออ้างอิง"
                       />
                     </div>
@@ -479,13 +515,9 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
+                        {...register("remark")}
                         placeholder="ระบุหมายเหตุ"
                       />
-                      {/* <!-- <div className="input-group-append">
-                                 <span className="input-group-text search-ico-trailing">
-                                   <i className="material-symbols-outlined">close</i>
-                                 </span>
-                               </div> --> */}
                     </div>
                   </div>
                 </div>
@@ -508,7 +540,9 @@ export default function RequestForm() {
                     <CustomSelect
                       iconName="paid"
                       w="w-full"
-                      options={options}
+                      options={costTypeOptions}
+                      value={selectedCostTypeOption}
+                      onChange={setSelectedCostTypeOption}
                     />
                   </div>
                 </div>

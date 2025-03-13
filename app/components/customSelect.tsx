@@ -1,13 +1,25 @@
 import { useState, useRef, useEffect } from "react";
 
-interface SelectProps {
-  options: string[];
-  w: string;
-  iconName?: string;
+interface SelectOption {
+  value: string;
+  label: string;
 }
 
-export default function CustomSelect({ w, options, iconName }: SelectProps) {
-  const [selected, setSelected] = useState(options[0] || ""); // Default to first option
+interface SelectProps {
+  options: SelectOption[];
+  w: string;
+  iconName?: string;
+  value: SelectOption | null;
+  onChange: (selected: SelectOption) => void;
+}
+
+export default function CustomSelect({
+  w,
+  options,
+  iconName,
+  value,
+  onChange,
+}: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
@@ -43,15 +55,16 @@ export default function CustomSelect({ w, options, iconName }: SelectProps) {
         } overflow-hidden`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        { iconName &&  <div className="input-group-prepend mr-1">
-          <span className="input-group-text">
-            <i className="material-symbols-outlined"> {iconName} </i>
-          </span>
-        </div>}
-       
+        {iconName && (
+          <div className="input-group-prepend mr-1">
+            <span className="input-group-text">
+              <i className="material-symbols-outlined"> {iconName} </i>
+            </span>
+          </div>
+        )}
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {selected}
+          {value?.label || "Select an option"}
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">
@@ -64,18 +77,20 @@ export default function CustomSelect({ w, options, iconName }: SelectProps) {
         <ul className="absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
           {options.map((option) => (
             <li
-              key={option}
+              key={option.value}
               className={`px-4 py-2 cursor-pointer flex gap-2 items-center rounded-lg ${
-                selected === option ? "text-brand-900 active" : "text-gray-700"
+                value?.value === option.value
+                  ? "text-brand-900 active"
+                  : "text-gray-700"
               } hover:bg-gray-100`}
               onClick={() => {
-                setSelected(option);
+                onChange(option);
                 setIsOpen(false);
                 buttonRef.current?.focus(); // Keep focus on the div
               }}
             >
-              {option}
-              {selected === option && (
+              {option.label}
+              {value?.value === option.value && (
                 <span className="material-symbols-outlined">check</span>
               )}
             </li>
