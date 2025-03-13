@@ -35,3 +35,14 @@ export const createRequest = async (data:[]) => {
         throw error;
     }
 }
+
+export const fetchVehicles = async (id: string) => {
+    try {
+        const response = await axiosInstance.get('vehicle/search'+ id);
+
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+};

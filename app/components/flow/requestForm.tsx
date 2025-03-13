@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "@/app/components/customSelect";
 import DatePicker from "@/app/components/datePicker";
@@ -71,7 +71,6 @@ export default function RequestForm() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        // Step 1: Fetch the list of requests
         const response = await fetchVehicleUsers("");
         if (response.status === 200) {
           const vehicleUserData: VehicleUser[] = response.data;
@@ -174,6 +173,7 @@ export default function RequestForm() {
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
       setFileError(errorMessage);
@@ -232,12 +232,6 @@ export default function RequestForm() {
                       </Tooltip>
                     </label>
 
-                    {/* <VehicleUserSelect
-                      iconName="person"
-                      w="w-full"
-                      options={driverOptions}
-                      onChange={handleSelectChange}
-                    /> */}
                     <CustomSelect
                       iconName="person"
                       w="w-full"
@@ -245,7 +239,6 @@ export default function RequestForm() {
                       value={selectedVehicleUserOption}
                       onChange={handleVehicleUserChange}
                     />
-                    {/* {errors.driver && <FormHelper text={String(errors.driver.message)} /> } */}
                   </div>
                 </div>
 

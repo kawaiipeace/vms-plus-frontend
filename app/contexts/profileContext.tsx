@@ -1,4 +1,5 @@
 "use client";
+
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { fetchProfile } from "@/app/services/authService";
 
@@ -14,6 +15,7 @@ interface ProfileContextType {
   setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
   loading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -22,9 +24,29 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check if the user is authenticated by checking the access token in local storage
+    const checkAuth = () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const getProfile = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
@@ -39,10 +61,10 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     };
 
     getProfile();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
-    <ProfileContext.Provider value={{ profile, setProfile, loading, error }}>
+    <ProfileContext.Provider value={{ profile, setProfile, loading, error, isAuthenticated }}>
       {children}
     </ProfileContext.Provider>
   );
