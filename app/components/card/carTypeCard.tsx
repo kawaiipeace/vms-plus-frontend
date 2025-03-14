@@ -19,16 +19,16 @@ export default function CarTypeCard({
 }: CarTypeCardProps) {
   return (
     <div
-      className={`card p-0 cursor-pointer ${
+      className={`card p-0 cursor-pointer h-auto ${
         selectedValue === title ? "active border-brand-900" : "border-gray-300"
       }`}
       onClick={() => setSelectedValue(title)}
     >
       <div className="card-body">
-        <div className="card-img-top h-[95px] rounded-md overflow-hidden">
-          <Image src={imgSrc} width={100} height={100} alt="" />
+        <div className="card-img-top rounded-md overflow-hidden">
+          <Image src={imgSrc} width={100} height={100} alt={title} />
         </div>
-        <label className="flex flex-wrap items-center gap-2 h-[40px] cursor-pointer new-radio-custom">
+        <label className="grid grid-cols-12 items-center gap-2 cursor-pointer new-radio-custom">
           <input
             type="radio"
             className="hidden"
@@ -38,7 +38,7 @@ export default function CarTypeCard({
             onChange={() => setSelectedValue(title)}
           />
           <div
-            className={`os-radio w-5 h-5 rounded-full border-2 ${
+            className={`os-radio w-5 h-5 rounded-full border-2 col-span-2 ${
               selectedValue === title
                 ? "active border-brand-900 bg-brand-900"
                 : "border-gray-300"
@@ -48,7 +48,7 @@ export default function CarTypeCard({
               <div className="circle-radio w-2 h-2 bg-white rounded-full"></div>
             )}
           </div>
-          <div className="custom-control-label">
+          <div className="custom-control-label col-span-10">
             <div className="custom-control-label-group">
               <div className="custom-control-label-text">{title}</div>
               <div className="custom-control-label-suptext">ว่าง: {text} คัน</div>

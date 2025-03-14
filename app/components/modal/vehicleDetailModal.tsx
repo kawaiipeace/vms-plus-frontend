@@ -67,7 +67,6 @@ const VehicleDetailModel = forwardRef<
     const fetchVehicleDetailData = async () => {
       try {
         const response = await fetchVehicleDetail(vehicleId);
-        console.log("Vehicle Detail:", response);
 
         if (response.status === 200) {
           setVehicleDetail(response.data ?? {}); // Handle null response
