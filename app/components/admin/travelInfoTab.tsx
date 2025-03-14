@@ -5,7 +5,11 @@ import ZeroRecord from "@/app/components/zeroRecord";
 import RecordTravelAddModal from "@/app/components/modal/recordTravelAddModal";
 import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
 
-export default function TravelInfoTab() {
+interface TravelDataProps {
+  requestType?: string;
+}
+
+export default function TravelInfoTab({ requestType }: TravelDataProps) {
   const [data, setData] = useState<TravelData[]>(travelData);
   const [statusEdit, setStatusEdit] = useState(false);
   const recordTravelAddModalRef = useRef<{
@@ -38,6 +42,12 @@ export default function TravelInfoTab() {
                 </div>
                 <input type="text" id="myInputTextField" className="form-control dt-search-input" placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่" />
               </div>
+              {requestType === "เสร็จสิ้น" && (
+                <button className="btn btn-secondary ml-auto">
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+              )}
             </div>
           </div>
           <TableRecordTravelComponent

@@ -16,7 +16,7 @@ import ApproveRequestCheckCarModal from "@/app/components/modal/approveRequestCh
 import RejectRequestCheckCarModal from "@/app/components/modal/rejectRequestCheckCarModal";
 
 interface RequestNoProps {
-  requestType?: "ให้กุญแจ" | "รับยานพาหนะ" | "คืนยานพาหนะ" | "ตรวจสอบยานพาหนะ";
+  requestType?: "ให้กุญแจ" | "รับยานพาหนะ" | "คืนยานพาหนะ" | "ตรวจสอบยานพาหนะ" | "เสร็จสิ้น";
 }
 
 export default function RequestDetail() {
@@ -95,9 +95,12 @@ export default function RequestDetail() {
                   <span className="badge badge-pill-outline badge-info">รออนุมัติ</span>
                 </div>
 
-                <button className="btn btn-tertiary-danger bg-transparent shadow-none border-none" onClick={() => cancelRequestModalRef.current?.openModal()}>
-                  ยกเลิกคำขอ
-                </button>
+                {requestType !== "เสร็จสิ้น" && (
+                  <button className="btn btn-tertiary-danger bg-transparent shadow-none border-none" onClick={() => cancelRequestModalRef.current?.openModal()}>
+                    ยกเลิกคำขอ
+                  </button>
+                )}
+
                 <button className="btn btn-secondary">
                   <i className="material-symbols-outlined">print</i>พิมพ์
                 </button>
@@ -142,7 +145,7 @@ export default function RequestDetail() {
               </div>
             </div>
 
-            <RequestDetailTabs status="detail" />
+            <RequestDetailTabs status="detail" requestType={requestType} />
           </div>
         </div>
       </div>

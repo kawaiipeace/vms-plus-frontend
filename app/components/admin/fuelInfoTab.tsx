@@ -5,7 +5,11 @@ import ZeroRecord from "@/app/components/zeroRecord";
 import RecordTravelAddModal from "@/app/components/modal/recordFuelAddModal";
 import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
 
-export default function FuelInfoTab() {
+interface FuelDataProps {
+  requestType?: string;
+}
+
+export default function FuelInfoTab({ requestType }: FuelDataProps) {
   const [data, setData] = useState<FuelData[]>(fuelData);
   const [statusEdit, setStatusEdit] = useState(false);
   const recordTravelAddModalRef = useRef<{
@@ -38,6 +42,12 @@ export default function FuelInfoTab() {
                 </div>
                 <input type="text" id="myInputTextField" className="form-control dt-search-input" placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่" />
               </div>
+              {requestType === "เสร็จสิ้น" && (
+                <button className="btn btn-secondary ml-auto">
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+              )}
             </div>
           </div>
           <TableRecordFuelComponent

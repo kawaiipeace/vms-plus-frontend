@@ -10,9 +10,10 @@ import ReturnCarTab from "@/app/components/admin/returnCarTab";
 
 interface Props {
   status: string;
+  requestType: string | undefined;
 }
 
-export default function RequestDetailTabs({ status }: Props) {
+export default function RequestDetailTabs({ status, requestType }: Props) {
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
@@ -26,12 +27,12 @@ export default function RequestDetailTabs({ status }: Props) {
     },
     {
       label: "ข้อมูลการเดินทาง",
-      content: <TravelInfoTab />,
+      content: <TravelInfoTab requestType={requestType} />,
       badge: "",
     },
     {
       label: "การเติมเชื้อเพลิง",
-      content: <FuelInfoTab />,
+      content: <FuelInfoTab requestType={requestType} />,
       badge: "",
     },
     {
@@ -45,7 +46,7 @@ export default function RequestDetailTabs({ status }: Props) {
       badge: "",
     },
   ];
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(5);
 
   return (
     <div className="w-full">

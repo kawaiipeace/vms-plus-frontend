@@ -14,8 +14,8 @@ export default function Header() {
     try {
       const response = await logOut();
       if (response.status === 201) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         router.push("/");
       }
     } catch (error) {
@@ -29,12 +29,7 @@ export default function Header() {
         <div className="navbar-start">
           <div className="header-brand block md:hidden">
             <a href="">
-              <Image
-                src="/assets/img/brand.svg"
-                width={98}
-                height={40}
-                alt=""
-              ></Image>
+              <Image src="/assets/img/brand.svg" width={98} height={40} alt=""></Image>
             </a>
           </div>
           <ToggleSidebar />
@@ -52,27 +47,14 @@ export default function Header() {
           <div className="header-users">
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="">
-                <Image
-                  src="/assets/img/avatar.svg"
-                  width={36}
-                  height={36}
-                  alt="User Avatar"
-                ></Image>
+                <Image src="/assets/img/avatar.svg" width={36} height={36} alt="User Avatar"></Image>
               </div>
-              <ul
-                tabIndex={0}
-                className="menu dropdown-content space-y-2 bg-base-100 rounded-box z-[1] mt-4 w-64 p-2 shadow"
-              >
+              <ul tabIndex={0} className="menu dropdown-content space-y-2 bg-base-100 rounded-box z-[1] mt-4 w-64 p-2 shadow">
                 {profile && (
                   <li className="nav-item">
                     <div className="nav-link sidebar-users">
                       <div className="avatar avatar-sm">
-                        <Image
-                          src="/assets/img/avatar.svg"
-                          width={36}
-                          height={36}
-                          alt="Profile Avatar"
-                        ></Image>
+                        <Image src="/assets/img/avatar.svg" width={36} height={36} alt="Profile Avatar"></Image>
                       </div>
                       <div className="sidebar-users-content">
                         <div className="sidebar-users-name">
