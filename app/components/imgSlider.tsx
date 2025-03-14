@@ -22,7 +22,7 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
             <div className="h-[280px] w-full overflow-hidden rounded-2xl">
               <Image src={src} alt={`Image ${index + 1}`} layout="responsive" width={100} height={100} className="object-cover" />
             </div>
-            <div className="w-full text-center py-2">หน้าปัดเรือนไมล์</div>
+            {/* <div className="w-full text-center py-2">หน้าปัดเรือนไมล์</div> */}
           </div>
         ))}
       </div>

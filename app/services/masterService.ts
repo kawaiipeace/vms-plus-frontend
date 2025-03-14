@@ -2,7 +2,7 @@ import axiosInstance from '@/app/utils/axiosInstance';
 
 export const fetchVehicleUsers = async (search?: string) => {
     try {
-        const response = await axiosInstance.get('mas/user-vehicle-users' + search);
+        const response = await axiosInstance.get('mas/user-vehicle-users?search=' + search);
 
         return response;
 
@@ -36,6 +36,31 @@ export const uploadFile = async (file: File) => {
       return response.data; 
     } catch (error) {
       console.error("Upload failed:", error);
+      throw error;
+    }
+  };
+
+  export const fetchVehicleCategories = async (params: {
+    page?: number;
+    limit?: number;
+  }) => {
+    try {
+      const response = await axiosInstance.get('vehicle/category', { params });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const fetchDrivers = async (params: {
+    name?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    try {
+      const response = await axiosInstance.get('driver/search', { params });
+      return response;
+    } catch (error) {
       throw error;
     }
   };

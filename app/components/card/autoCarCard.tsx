@@ -18,6 +18,7 @@ export default function AutoCarCard({
     closeModal: () => void;
   } | null>(null);
 
+
   return (
     <div className="card">
       <div className="card-body">
