@@ -12,15 +12,21 @@ import ConfirmKeyHandOverModal from "@/app/components/modal/confirmKeyHandOverMo
 import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
 import TravelCardModal from "@/app/components/modal/travelCardModal";
 import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
+import ApproveRequestCheckCarModal from "@/app/components/modal/approveRequestCheckCarModal";
+import RejectRequestCheckCarModal from "@/app/components/modal/rejectRequestCheckCarModal";
 
 interface RequestNoProps {
-  requestType?: "ให้กุญแจ" | "รับยานพาหนะ" | "คืนยานพาหนะ";
+  requestType?: "ให้กุญแจ" | "รับยานพาหนะ" | "คืนยานพาหนะ" | "ตรวจสอบยานพาหนะ";
 }
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
-  const [requestType, setRequestType] = useState<RequestNoProps["requestType"]>("คืนยานพาหนะ");
+  const [requestType, setRequestType] = useState<RequestNoProps["requestType"]>("ตรวจสอบยานพาหนะ");
   const approveRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const approveRequestCheckCarModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -45,6 +51,10 @@ export default function RequestDetail() {
     closeModal: () => void;
   } | null>(null);
   const returnCarAddModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const rejectRequestCheckCarModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -92,9 +102,18 @@ export default function RequestDetail() {
                   <i className="material-symbols-outlined">print</i>พิมพ์
                 </button>
 
-                <button className="btn btn-secondary" onClick={() => TravelCardModalRef.current?.openModal()}>
-                  <i className="material-symbols-outlined">id_card</i>แสดงบัตรเดินทาง
-                </button>
+                {requestType === "คืนยานพาหนะ" && (
+                  <button className="btn btn-secondary" onClick={() => TravelCardModalRef.current?.openModal()}>
+                    <i className="material-symbols-outlined">id_card</i>แสดงบัตรเดินทาง
+                  </button>
+                )}
+
+                {requestType === "ตรวจสอบยานพาหนะ" && (
+                  <button className="btn btn-secondary" onClick={() => rejectRequestCheckCarModalRef.current?.openModal()}>
+                    <i className="material-symbols-outlined">reply</i>
+                    ตีกลับยานพาหนะ
+                  </button>
+                )}
 
                 {requestType === "ให้กุญแจ" && (
                   <button className="btn btn-primary" onClick={() => confirmKeyHandOverModalRef.current?.openModal()}>
@@ -114,6 +133,12 @@ export default function RequestDetail() {
                     คืนยานพาหนะ
                   </button>
                 )}
+                {requestType === "ตรวจสอบยานพาหนะ" && (
+                  <button className="btn btn-primary" onClick={() => approveRequestCheckCarModalRef.current?.openModal()}>
+                    <i className="material-symbols-outlined">check</i>
+                    ผ่านการตรวจสอบ
+                  </button>
+                )}
               </div>
             </div>
 
@@ -125,7 +150,8 @@ export default function RequestDetail() {
       <FileBackRequestModal ref={fileBackRequestModalRef} title="ยืนยันตีกลับคำขอ" desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง" confirmText="โปรดระบุเหตุผลที่ตีกลับ" />
 
       <ApproveRequestModal ref={approveRequestModalRef} title={"ยืนยันอนุมัติคำขอ"} desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"} confirmText="อนุมัติคำขอ" />
-
+      <ApproveRequestCheckCarModal title={"ยืนยันการคืนยานพาหนะ"} desc={"คุณได้ตรวจสอบข้อมูลการคืนยานพาหนะ รับกุญแจ บัตรเติมน้ำมัน และยานพาหนะคืนเรียบร้อยแล้วใช่หรือไม่ ?"} confirmText="ผ่านการตรวจสอบ" ref={approveRequestCheckCarModalRef} />
+      <RejectRequestCheckCarModal title={"ยืนยันตีกลับยานพาหนะ"} desc={"ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและคืนยานพาหนะใหม่อีกครั้ง"} confirmText="ตีกลับยานพาหนะ" ref={rejectRequestCheckCarModalRef} />
       <ConfirmKeyHandOverModal ref={confirmKeyHandOverModalRef} />
       <ReceiveCarVehicleModal status="" ref={receiveCarVehicleModalRef} />
       <TravelCardModal ref={TravelCardModalRef} />

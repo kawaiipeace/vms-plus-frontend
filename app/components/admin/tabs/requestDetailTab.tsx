@@ -36,7 +36,7 @@ export default function RequestDetailTabs({ status }: Props) {
     },
     {
       label: "การคืนยานพาหนะ",
-      content: <ReturnCarTab status="" />,
+      content: <ReturnCarTab displayOn="adminTab" />,
       badge: "",
     },
     {

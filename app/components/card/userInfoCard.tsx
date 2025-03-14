@@ -7,8 +7,9 @@ interface UserInfoCardProps {
   UserType?: string;
   displayBtnMore?: boolean;
   displayOn?: string;
+  reviewDriver?: () => void;
 }
-export default function UserInfoCard({ UserType, displayBtnMore, displayOn }: UserInfoCardProps) {
+export default function UserInfoCard({ UserType, displayBtnMore, displayOn, reviewDriver }: UserInfoCardProps) {
   const driverInfoModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -51,6 +52,12 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn }: Us
                     <span className="card-item-text">6032</span>
                   </div>
                 )}
+                {UserType == "outsource" && displayOn == "admin" && (
+                  <div className="card-item w-full">
+                    <i className="material-symbols-outlined">star</i>
+                    <span className="card-item-text">5.0</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -87,7 +94,7 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn }: Us
                 </button>
               </div>
               <div className="col-span-1">
-                <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
+                <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={reviewDriver}>
                   คะแนนการให้บริการ
                 </button>
               </div>

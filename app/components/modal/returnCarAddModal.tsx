@@ -118,11 +118,15 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                       type="button"
                       className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
                       onClick={() => {
-                        returnCarAddStep2ModalRef.current?.openModal();
-                        modalRef.current?.close();
+                        if (useBy !== "admin") {
+                          returnCarAddStep2ModalRef.current?.openModal();
+                          modalRef.current?.close();
+                        } else {
+                          modalRef.current?.close();
+                        }
                       }}
                     >
-                      ต่อไป
+                      {useBy === "admin" ? "บันทึก" : "ต่อไป"}
                     </button>
                   </div>
                 </div>
