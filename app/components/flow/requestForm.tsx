@@ -173,7 +173,6 @@ export default function RequestForm() {
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
       setFileError(errorMessage);

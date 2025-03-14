@@ -19,10 +19,57 @@ import ReferenceCard from "@/app/components/card/referenceCard";
 import DisburstmentCard from "@/app/components/card/disburstmentCard";
 import ApproveProgress from "@/app/components/approveProgress";
 
+interface FormData {
+  telInternal?: string;
+  telMobile?: string;
+  workPlace?: string;
+  purpose?: string;
+  attachmentFile?: string;
+  costNo?: string;
+  endDatetime?: string;
+  isAdminChooseDriver?: string;
+  isAdminChooseVehicle?: string;
+  isDriverNeed?: string;
+  isHaveSubRequest?: string;
+  isPeaEmployeeDriver?: string;
+  masCarpoolDriverUid?: string;
+  masVehicleUid?: string;
+  numberOfPassengers?: number;
+  pickupDatetime?: string;
+  pickupPlace?: string;
+  refCostTypeCode?: number;
+  refRequestTypeCode?: number;
+  referenceNumber?: string;
+  remark?: string;
+  requestedVehicleTypeId?: number;
+  reservedTimeType?: string;
+  startDate?: string;
+  endDate?: string;
+  startTime?: string;
+  endTime?: string;
+  tripType?: string;
+  vehicleUserDeptSap?: string;
+  vehicleUserEmpId?: string;
+  vehicleUserEmpName?: string;
+  deptSapShort?: string;
+  numberOfPassanger: number;
+
+}
+
 interface RequestDetailFormProps {
   status: string;
+  formData: FormData;
+  approverCard?: boolean;
+  driverCard?: boolean;
+  keyPickUpCard?: boolean;
 }
-export default function RequestDetailForm({ status }: RequestDetailFormProps) {
+export default function RequestDetailForm({
+  status,
+  formData,
+  approverCard,
+  driverCard,
+  keyPickUpCard,
+}: RequestDetailFormProps) {
   const carSelect = "true";
   const driverType = "PEAS";
   const driverAppointmentModalRef = useRef<{
@@ -92,10 +139,16 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                     alt=""
                   />
                   <div className="form-plaintext-group align-self-center">
-                    <div className="form-label">ศรัญยู บริรัตน์ฤทธิ์</div>
+                    <div className="form-label">
+                      {formData?.vehicleUserEmpName}
+                    </div>
                     <div className="supporting-text-group">
-                      <div className="supporting-text">505291</div>
-                      <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
+                      <div className="supporting-text">
+                        {formData.vehicleUserDeptSap}
+                      </div>
+                      <div className="supporting-text">
+                        {formData.deptSapShort}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -106,7 +159,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                         <i className="material-symbols-outlined">smartphone</i>
                         <div className="form-plaintext-group">
                           <div className="form-text text-nowrap">
-                            091-234-5678
+                            {formData.telMobile}
                           </div>
                         </div>
                       </div>
@@ -116,7 +169,10 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                       <div className="form-group form-plaintext">
                         <i className="material-symbols-outlined">call</i>
                         <div className="form-plaintext-group">
-                          <div className="form-text text-nowra">6032</div>
+                          <div className="form-text text-nowra">
+                            {" "}
+                            {formData.telInternal}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -141,7 +197,17 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-              <JourneyDetailCard />
+            <JourneyDetailCard
+              startDate={formData.startDate}
+              endDate={formData.endDate}
+              startTime={formData.startTime}
+              endTime={formData.endTime}
+              workPlace={formData.workPlace}
+              purpose={formData.purpose}
+              remark={formData.remark}
+              tripType={formData.tripType}
+              numberOfPassanger={formData.numberOfPassanger}
+            />
           </div>
 
           <div className="form-section">
@@ -159,7 +225,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-           <AppointmentDriverCard />
+            <AppointmentDriverCard />
           </div>
 
           <div className="form-section">
@@ -175,9 +241,11 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <ReferenceCard />
-
-           </div>
+            <ReferenceCard
+              refNum={formData.referenceNumber}
+              file={formData.attachmentFile}
+            />
+          </div>
 
           <div className="form-section">
             <div className="form-section-header">
@@ -194,35 +262,25 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-<DisburstmentCard />
-           
+            <DisburstmentCard />
           </div>
         </div>
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-            {status == "detail" && (
-                  <ApproveProgress />
-            )}
+            {status == "detail" && <ApproveProgress />}
 
-            {(status != "detail" && status != "edit") ||
-              (driverType != "PEAS" && (
-                <>
-                  <div className="form-section-header">
-                    <div className="form-section-header-title">ยานพาหนะ</div>
-                  </div>
-
-                  <CarDetailCard />
-                  <div className="mt-5">
-                    <UserInfoCard />
-                  </div>
-                  <div className="mt-5">
+       
+           
+                  {/* <div className="mt-5">
+                 
+                  
                     <PickupKeyCard />
-                  </div>
-                </>
-              ))}
 
-            {driverType == "PEAS" && (
+                  </div> */}
+           
+
+          
               <>
                 {carSelect == "true" ? (
                   <>
@@ -324,12 +382,10 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
                   </>
                 )}
 
-                <div className="mt-5">
-                  <PickupKeyCard />
-                </div>
               </>
-            )}
-            {status != "detail" && status != "edit" && (
+          
+               { driverCard &&
+            status != "detail" && status != "edit" && (
               <div className="form-section mt-5">
                 <div className="form-section-header">
                   <div className="form-section-header-title">ผู้ขับขี่</div>
@@ -375,8 +431,8 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               </div>
             )}
           </div>
-
-          {status != "detail" && status != "edit" && (
+          { approverCard &&
+          status != "detail" && status != "edit" && (
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
@@ -392,7 +448,10 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
 
               <UserInfoCard />
             </div>
-          )}
+          )
+        }
+
+
         </div>
       </div>
       {status == "edit" && (

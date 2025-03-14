@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import Header from "@/app/components/header";
@@ -16,6 +16,18 @@ export default function ProcessFour() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const [formData, setFormData] = useState<any>({});
+
+  // Load formData from localStorage on component mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedData = localStorage.getItem("formData");
+      if (storedData) {
+        setFormData(JSON.parse(storedData));
+      }
+    }
+  }, []);
 
   const nextStep = () => {
     router.push("request-list");
@@ -49,7 +61,6 @@ export default function ProcessFour() {
               <div className="page-group-header">
                 <div className="page-title">
                   <span className="page-title-label">สร้างคำขอใช้ยานพาหนะ</span>
-                  {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                 </div>
               </div>
             </div>
@@ -62,15 +73,13 @@ export default function ProcessFour() {
                   <div className="page-section-header border-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">
-                          ยืนยันการสร้างคำขอ
-                        </span>
+                        <span className="page-title-label">ยืนยันการสร้างคำขอ</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <RequestDetailForm status="add" />
+                <RequestDetailForm status="add" formData={formData} approverCard={true} /> {/* Pass formData as prop */}
               </div>
 
               <div className="form-accept">

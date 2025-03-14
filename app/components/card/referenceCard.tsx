@@ -1,4 +1,12 @@
-export default function ReferenceCard(){
+import Link from "next/link";
+
+interface RefProps{
+  refNum?: string;
+  file?: string;
+}
+
+export default function ReferenceCard({refNum, file}:RefProps){
+  const fileName = file ? file.split("/").pop() : "";
     return (
         <div className="form-card">
         <div className="form-card-body">
@@ -8,7 +16,7 @@ export default function ReferenceCard(){
                 <i className="material-symbols-outlined">description</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">เลขที่หนังสืออ้างอิง</div>
-                  <div className="form-text">กอพ.1(ก)123/2567</div>
+                  <div className="form-text">{refNum}</div>
                 </div>
               </div>
             </div>
@@ -18,9 +26,9 @@ export default function ReferenceCard(){
                 <i className="material-symbols-outlined">attach_file</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">เอกสารแนบ</div>
-                  <a href="#" className="form-text text-info">
-                    Document...2567.pdf
-                  </a>
+                  <Link href={file ? file : "#"} className="form-text text-info">
+                    {fileName}
+                  </Link>
                 </div>
               </div>
             </div>
