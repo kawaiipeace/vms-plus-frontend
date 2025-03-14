@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
@@ -10,21 +10,64 @@ import SelectCarCard from "@/app/components/card/selectCarCard";
 import Pagination from "@/app/components/pagination";
 import CustomSelect from "@/app/components/customSelect";
 import ZeroRecord from "@/app/components/zeroRecord";
+import { fetchVehicles } from "@/app/services/bookingUser";
+import { fetchVehicleCategories } from "@/app/services/masterService";
 // import Toast from "@/app/components/toast";
+
+interface Vehicle {
+  mas_vehicle_uid: string;
+  vehicle_license_plate: string;
+  vehicle_brand_name: string;
+  vehicle_model_name: string;
+  car_type: string;
+  vehicle_owner_dept_sap: string;
+  vehicle_img: string;
+  seat: number;
+}
+
+interface PaginationInterface {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
 
 export default function ProcessTwo() {
   const router = useRouter();
-  const [vehicleCards, setVehicleCards] = useState([]);
+  const [vehicleCards, setVehicleCards] = useState<Vehicle[]>([]);
+  const [paginationData, setPaginationData] = useState<PaginationInterface>({
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const { isPinned } = useSidebar();
+  const [params, setParams] = useState({
+    search: "",
+    vehicle_owner_dept: "",
+    car_type: "",
+    category_code: "",
+    page: 1,
+    limit: 10,
+  });
+  const vehicleCatParams = {
+    page: 1,
+    limit: 100,
+  }
+  const [vehicleCatOptions, setVehicleCatOptions] = useState<
+  { value: string; label: string }[]
+>([]);
 
-
-  const orgOptions = ["ทุกสังกัด", "หน่วยงานต้นสังกัด", "ฝพจ.", "กอพ.2"];
-  const vehicleOptions = [
-    "ทุกประเภทยานพาหนะ",
-    "รถแวนตรวจการ (รถเก๋ง, SUV)",
-    "รถตู้นั่ง",
+  const orgOptions = [
+    { label: "ทุกสังกัด", value: "" },
+    { label: "หน่วยงานต้นสังกัด", value: "หน่วยงานต้นสังกัด" },
+    { label: "ฝพจ.", value: "ฝพจ." },
+    { label: "กอพ.2", value: "กอพ.2" },
   ];
+
+  const [selectedOrgOption, setSelectedOrgOption] = useState(orgOptions[0]);
+  const [selectedVehicleOption, setSelectedVehicleOption] = useState<{ value: string; label: string }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
 
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
@@ -32,14 +75,96 @@ export default function ProcessTwo() {
 
   const NextProcess = () => {
     router.push("process-three");
-  }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setParams((prev) => ({ ...prev, search: e.target.value }));
+  };
+
+  const handleOrgChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedOrgOption(selectedOption);
+    setParams((prev) => ({
+      ...prev,
+      vehicle_owner_dept: selectedOption.value,
+    }));
+  };
+
+  const handleVehicleTypeChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedVehicleOption(selectedOption);
+    setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
+  };
+
+  const handlePageChange = (page: number) => {
+    setParams((prev) => ({ ...prev, page }));
+  };  
+
+  useEffect(() => {
+    const fetchVehicleData = async () => {
+      try {
+        const response = await fetchVehicles(params);
+        if (response.status === 200) {
+          if (response.data.vehicles == null) {
+            setVehicleCards([]);
+          }
+          setVehicleCards(response.data.vehicles);
+          setPaginationData(response.data.pagination);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+       const fetchVehicleCategoriesData = async () => {
+          try {
+            const response = await fetchVehicleCategories(vehicleCatParams);
+
+            console.log('res',response);
+            if (response.status === 200) {
+              const vehicleCatData = response.data.categories;
+              console.log(response.data.categories);
+              const vehicleCatArr = [
+                { value: "", label: "ทุกประเภทยานพาหนะ" },
+                ...vehicleCatData.map(
+                  (cat: {
+                    ref_vehicle_category_code: string;
+                    ref_vehicle_category_name: string;
+                  }) => ({
+                    value: cat.ref_vehicle_category_code,
+                    label: cat.ref_vehicle_category_name,
+                  })
+                ),
+              ];
+              
+              setVehicleCatOptions(vehicleCatArr);
+              setSelectedVehicleOption((prev) =>
+                prev.value ? prev : vehicleCatArr[0]
+              );
+            }
+          } catch (error) {
+            console.error("Error fetching requests:", error);
+          }
+        };
+
+    fetchVehicleData();
+    fetchVehicleCategoriesData();
+  }, [params]);
 
   return (
     <div>
       <div className="main-container">
-         <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -70,7 +195,6 @@ export default function ProcessTwo() {
             <ProcessRequestCar step={2} />
 
             <div className="form-steps-group">
-
               <div className="form-steps" data-step="2">
                 <div className="form-section">
                   <div className="page-section-header border-0">
@@ -80,7 +204,7 @@ export default function ProcessTwo() {
                           ข้อมูลผู้ใช้ยานพาหนะ
                         </span>
                         <span className="badge badge-outline badge-gray page-title-status">
-                          20 คัน
+                          {paginationData.total} คัน
                         </span>
                       </div>
                       <div className="page-desc">
@@ -99,6 +223,7 @@ export default function ProcessTwo() {
                       <input
                         type="text"
                         className="form-control dt-search-input"
+                        onChange={handleSearchChange}
                         placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
                       />
                       <div className="input-group-append hidden">
@@ -111,67 +236,94 @@ export default function ProcessTwo() {
                     </div>
 
                     <div className="search-filter w-12/12 md:w-6/12 sm:gap-4 flex md:justify-end">
-                      <CustomSelect w="md:w-[13.4rem]" options={orgOptions} />
-                      <CustomSelect w="md:w-[14rem]" options={vehicleOptions} />
+                      <CustomSelect
+                        w="md:w-[13.4rem]"
+                        options={orgOptions}
+                        value={selectedOrgOption}
+                        onChange={handleOrgChange}
+                      />
+                      <CustomSelect
+                        w="md:w-[14rem]"
+                        options={vehicleCatOptions}
+                        value={selectedVehicleOption}
+                        onChange={handleVehicleTypeChange}
+                      />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
-                    <AutoCarCard
-                      imgSrc="/assets/img/admin-selected.png"
-                      title="ผู้ดูแลยานพาหนะเลือกให้"
-                      desc="สายงานดิจิทัล"
-                      onSelect={handleVehicleSelect}
-                    />
-                    <AutoCarCard
-                      imgSrc="/assets/img/system-selected.png"
-                      title="ระบบเลือกยานพาหนะให้อัตโนมัติ"
-                      desc="สายงานดิจิทัล"
-                      onSelect={handleVehicleSelect}
-                    />
-                    <SelectCarCard
-                      imgSrc="/assets/img/sample-car.jpeg"
-                      title="Toyota Yaris"
-                      subTitle="ก78ยบ กรุงเทพ"
-                      onSelect={handleVehicleSelect}
-                    />
-                    <SelectCarCard
-                      imgSrc="/assets/img/sample-car.jpeg"
-                      title="Toyota Yaris"
-                      subTitle="ก78ยบ กรุงเทพ"
-                    onSelect={handleVehicleSelect}
-                    />
-                    <SelectCarCard
-                      imgSrc="/assets/img/sample-car.jpeg"
-                      title="Toyota Yaris"
-                      subTitle="ก78ยบ กรุงเทพ"
-                    onSelect={handleVehicleSelect}
-                    />
+                    {vehicleCards != null && vehicleCards.length > 0 && (
+                      <>
+                        <AutoCarCard
+                          imgSrc="/assets/img/admin-selected.png"
+                          title="ผู้ดูแลยานพาหนะเลือกให้"
+                          desc="สายงานดิจิทัล"
+                          onSelect={handleVehicleSelect}
+                        />
+                        <AutoCarCard
+                          imgSrc="/assets/img/system-selected.png"
+                          title="ระบบเลือกยานพาหนะให้อัตโนมัติ"
+                          desc="สายงานดิจิทัล"
+                          onSelect={handleVehicleSelect}
+                        />
+                        {vehicleCards.map((vehicle) => (
+                          <SelectCarCard
+                            key={vehicle.mas_vehicle_uid}
+                            vehicleId={vehicle.mas_vehicle_uid}
+                            imgSrc={
+                              vehicle.vehicle_img ||
+                              "/assets/img/sample-car.jpeg"
+                            }
+                            title={
+                              vehicle.vehicle_brand_name +
+                              vehicle.vehicle_model_name
+                            }
+                            subTitle={vehicle.vehicle_license_plate}
+                            carType={vehicle.car_type}
+                            deptSap={vehicle.vehicle_owner_dept_sap}
+                            seat={vehicle.seat}
+                            onSelect={() =>
+                              handleVehicleSelect(vehicle.mas_vehicle_uid)
+                            }
+                          />
+                        ))}{" "}
+                      </>
+                    )}
                   </div>
-
-                  <div className="pagination mt-[1.5rem] flex justify-end">
-                    <Pagination />
-                  </div>
+                  {vehicleCards != null && vehicleCards.length > 0 && (
+                    <div className="pagination mt-[1.5rem] flex justify-end">
+                      <Pagination
+                        currentPage={paginationData.page}
+                        totalPages={paginationData.totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-          { vehicleCards.length > 0 && <ZeroRecord
-              imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
-              title="ไม่พบยานพาหนะ"
-              desc={
-                <>
-                  ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
-                  <br />
-                  ลองค้นหาใหม่อีกครั้ง
-                </>
-              }
-              button="ล้างคำค้นหา"
-            /> }
-            
+            {(vehicleCards == null || vehicleCards.length === 0) && (
+              <ZeroRecord
+                imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
+                title="ไม่พบยานพาหนะ"
+                desc={
+                  <>
+                    ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
+                    <br />
+                    ลองค้นหาใหม่อีกครั้ง
+                  </>
+                }
+                button="ล้างคำค้นหา"
+              />
+            )}
 
             <div className="form-action">
-              <button onClick={() => NextProcess()} className="btn btn-primary" disabled={selectedVehicle === ""}>
+              <button
+                onClick={() => NextProcess()}
+                className="btn btn-primary"
+                disabled={selectedVehicle === ""}
+              >
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">
                   arrow_right_alt
@@ -181,7 +333,6 @@ export default function ProcessTwo() {
           </div>
         </div>
       </div>
-           
     </div>
   );
 }

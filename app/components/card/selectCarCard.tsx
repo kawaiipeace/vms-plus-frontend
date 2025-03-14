@@ -7,11 +7,19 @@ export default function SelectCarCard({
   imgSrc,
   title,
   subTitle,
-  onSelect, // Add onSelect prop
+  carType,
+  deptSap,
+  seat,
+  vehicleId,
+  onSelect,
 }: {
   imgSrc: string;
   title: string;
   subTitle: string;
+  carType?: string;
+  deptSap?: string;
+  seat?: number;
+  vehicleId: string;
   onSelect: (vehicleTitle: string) => void; // Define the type of onSelect
 }) {
   const vehicleDetailModalRef = useRef<{
@@ -38,8 +46,8 @@ export default function SelectCarCard({
             <div className="card-title">{title}</div>
             <div className="card-subtitle">{subTitle}</div>
             <div className="card-supporting-text-group">
-              <div className="card-supporting-text">รถแวนตรวจการ</div>
-              <div className="card-supporting-text">สายงานดิจิทัล</div>
+              <div className="card-supporting-text">{carType}</div>
+              <div className="card-supporting-text">{deptSap}</div>
             </div>
           </div>
 
@@ -52,7 +60,7 @@ export default function SelectCarCard({
               <i className="material-symbols-outlined">
                 airline_seat_recline_extra
               </i>
-              <span className="card-item-text">6 ที่นั่ง</span>
+              <span className="card-item-text">{seat} ที่นั่ง</span>
             </div>
           </div>
         </div>
@@ -71,7 +79,7 @@ export default function SelectCarCard({
           </button>
         </div>
       </div>
-      <VehicleDetailModel ref={vehicleDetailModalRef} onSelect={() => onSelect(title)} />
+      <VehicleDetailModel ref={vehicleDetailModalRef} vehicleId={vehicleId} onSelect={() => onSelect(title)} />
     </div>
   );
 }
