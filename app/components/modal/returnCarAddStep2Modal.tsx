@@ -92,7 +92,7 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy === "driver" ? "hidden" : "block"}`}>
+                  <div className={`col-span-12 ${useBy !== "driver" && useBy !== "admin" ? "hidden" : "block"}`}>
                     <div className="form-group">
                       <label className="form-label">
                         รูปยานพาหนะภายในและภายนอก<span className="font-light">(ถ้ามี)</span>
@@ -108,7 +108,7 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" ? "hidden" : "block"}`}>
+                  <div className={`col-span-12 ${useBy !== "driver" && useBy !== "admin" ? "hidden" : "block"}`}>
                     <div className="form-group">
                       <label className="form-label">
                         รูปยานพาหนะภายใน<span className="font-light">(ถ้ามี)</span>
@@ -155,7 +155,7 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                         modalRef.current?.close();
                       }}
                     >
-                      ยืนยัน
+                      {useBy === "admin" ? "บันทึก" : "ยืนยัน"}
                     </button>
                   </div>
                 </div>

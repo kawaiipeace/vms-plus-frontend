@@ -1,8 +1,12 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Image from "next/image";
-import Rating from "../rating";
+import Rating from "@/app/components/rating";
 
-const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
+interface Props {
+  displayOn?: string;
+}
+
+const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(({ displayOn }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [reviewSubmit, setReviewSubmit] = useState(false);
 
@@ -10,6 +14,12 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  useEffect(() => {
+    if (displayOn === "admin") {
+      setReviewSubmit(true);
+    }
+  }, [displayOn]);
 
   return (
     <dialog ref={modalRef} className="modal">

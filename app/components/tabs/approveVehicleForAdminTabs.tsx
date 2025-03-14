@@ -5,6 +5,7 @@ import ApproveFlow from "@/app/components/admin/approveFlow";
 import KeyHandOver from "@/app/components/admin/keyHandOver";
 import TravelTab from "@/app/components/admin/travelTab";
 import CheckCar from "@/app/components/admin/checkCar";
+import FinishTab from "@/app/components/admin/finishTab";
 
 export default function ApproveVehicleForAdminTabs() {
   const tabs = [
@@ -27,7 +28,7 @@ export default function ApproveVehicleForAdminTabs() {
     },
     {
       label: "เสร็จสิ้น",
-      content: <div></div>,
+      content: <FinishTab />,
     },
     {
       label: "ยกเลิก",
