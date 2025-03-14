@@ -71,6 +71,7 @@ export default function ProcessTwo() {
 
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
+    localStorage.setItem('processTwoSelect', value);
   };
 
   const NextProcess = () => {

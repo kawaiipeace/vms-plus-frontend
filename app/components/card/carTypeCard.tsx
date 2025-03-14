@@ -25,7 +25,7 @@ export default function CarTypeCard({
       onClick={() => setSelectedValue(title)}
     >
       <div className="card-body">
-        <div className="card-img-top rounded-md overflow-hidden">
+        <div className="card-img-top rounded-md overflow-hidden h-[8em]">
           <Image src={imgSrc} width={100} height={100} alt={title} />
         </div>
         <label className="grid grid-cols-12 items-center gap-2 cursor-pointer new-radio-custom">

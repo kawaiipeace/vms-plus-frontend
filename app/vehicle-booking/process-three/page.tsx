@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import CustomSelect from "@/app/components/customSelect";
@@ -12,6 +12,7 @@ import RadioButton from "@/app/components/radioButton";
 import SideBar from "@/app/components/sideBar";
 import Tooltip from "@/app/components/tooltips";
 import Link from "next/link";
+import { fetchDrivers } from "@/app/services/masterService";
 
 export default function ProcessThree() {
   const router = useRouter();
@@ -22,11 +23,32 @@ export default function ProcessThree() {
   const { isPinned } = useSidebar();
 
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
+  const [params, setParams] = useState({
+    name: "",
+    page: 1,
+    limit: 10,
+  });
   const driverOptions = [
     "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
     "ธนพล วิจารณ์ปรีชา (514285)",
     "ญาณิศา อุ่นสิริ (543210)",
   ];
+
+  useEffect(()=> {
+   const fetchDriverData = async () => {
+      try {
+        const response = await fetchDrivers(
+          params
+        );
+        if (response.status === 200) {
+          setDrivers(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+    fetchDriverData();
+  },[]);
 
   const next = () => {
     router.push("process-four");

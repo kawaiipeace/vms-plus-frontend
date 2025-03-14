@@ -51,3 +51,16 @@ export const uploadFile = async (file: File) => {
       throw error;
     }
   };
+
+  export const fetchDrivers = async (params: {
+    name?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    try {
+      const response = await axiosInstance.get('driver/search', { params });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
