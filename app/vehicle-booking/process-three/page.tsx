@@ -12,7 +12,7 @@ import RadioButton from "@/app/components/radioButton";
 import SideBar from "@/app/components/sideBar";
 import Tooltip from "@/app/components/tooltips";
 import Link from "next/link";
-import { fetchDrivers } from "@/app/services/masterService";
+import { fetchDrivers, fetchVehicleUsers } from "@/app/services/masterService";
 
 export default function ProcessThree() {
   const router = useRouter();
@@ -20,6 +20,7 @@ export default function ProcessThree() {
   const [drivers, setDrivers] = useState([
     { name: "ศรัญยู บริรัตน์ฤทธิ์", company: "กฟภ.", rate: 4.5 },
   ]);
+    const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
   const { isPinned } = useSidebar();
 
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
@@ -28,13 +29,69 @@ export default function ProcessThree() {
     page: 1,
     limit: 10,
   });
-  const driverOptions = [
-    "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
-    "ธนพล วิจารณ์ปรีชา (514285)",
-    "ญาณิศา อุ่นสิริ (543210)",
-  ];
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
+
+  const handleVehicleUserChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedVehicleUserOption(selectedOption);
+
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+    );
+
+    if (empData) {
+      // setValue("telInternal", empData.tel_internal);
+      // setValue("telMobile", empData.tel_mobile);
+      // setValue("deptSapShort", empData.dept_sap_short);
+      // setValue("deptSap", empData.dept_sap);
+    }
+  };
+
+
+  interface VehicleUser {
+    emp_id: string;
+    full_name: string;
+    dept_sap: string;
+    tel_internal?: string;
+    tel_mobile: string;
+    dept_sap_short: string;
+  }
 
   useEffect(()=> {
+
+     const fetchVehicleUserData = async () => {
+          try {
+            const response = await fetchVehicleUsers("");
+            if (response.status === 200) {
+              const vehicleUserData: VehicleUser[] = response.data;
+              setVehicleUserDatas(vehicleUserData);
+              const driverOptionsArray = [
+                ...vehicleUserData.map(
+                  (user: {
+                    emp_id: string;
+                    full_name: string;
+                    dept_sap: string;
+                  }) => ({
+                    value: user.emp_id,
+                    label: `${user.full_name} (${user.dept_sap})`,
+                  })
+                ),
+              ];
+    
+              setDriverOptions(driverOptionsArray);
+            }
+          } catch (error) {
+            console.error("Error fetching requests:", error);
+          }
+        };
+
    const fetchDriverData = async () => {
       try {
         const response = await fetchDrivers(
@@ -48,6 +105,7 @@ export default function ProcessThree() {
       }
     };
     fetchDriverData();
+    fetchVehicleUserData();
   },[]);
 
   const next = () => {
@@ -159,6 +217,8 @@ export default function ProcessThree() {
                           iconName="person"
                           w="w-full"
                           options={driverOptions}
+                          value={selectedVehicleUserOption}
+                          onChange={handleVehicleUserChange}
                         />
 
                         {/* <!-- <div className="input-group-append">
@@ -237,7 +297,7 @@ export default function ProcessThree() {
                   </div>
 
                   
-                </div>
+              
 
                 <div className="form-card w-full mt-5">
                       <div className="form-card-body space-y-2">
@@ -262,7 +322,7 @@ export default function ProcessThree() {
                      
                     </div>
 
-                
+                    </div>
 
                 <div
                   className={`form-section ${

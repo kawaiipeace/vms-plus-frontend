@@ -25,6 +25,7 @@ export default function RequestTabs() {
                 const detailResponse = await requestDetail(req.trn_request_uid);
                 if (detailResponse.status === 200) {
                   console.log('detailres',detailResponse);
+                  console.log(detailResponse.data.summary);
                   return detailResponse.data; // Assuming this is the request detail
                 }
               } catch (error) {

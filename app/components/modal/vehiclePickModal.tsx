@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import CarTypeCard from "@/app/components/card/carTypeCard";
-import { fetchVehicleCategories } from "@/app/services/masterService";
+import { fetchVehicleCarTypes } from "@/app/services/masterService";
 
 interface VehiclePickModelProps {
   process: string;
@@ -14,10 +14,10 @@ interface VehiclePickModelProps {
 }
 
 interface VehicleCat{
-  ref_vehicle_category_code: string;
-  ref_vehicle_category_name: string;
+  ref_vehicle_type_code: string;
+  ref_vehicle_type_name: string;
   available_units: string;
-  vehicle_img:string;
+  vehicle_type_image:string;
 }
 
 const VehiclePickModel = forwardRef<
@@ -34,24 +34,20 @@ const VehiclePickModel = forwardRef<
 
   const [selectedCarType, setSelectedCarType] = useState("");
   const [vehicleCatData, setVehicleCatData] = useState<VehicleCat[]>([]);
-  const vehicleCatParams = {
-    page: 1,
-    limit: 100,
-  };
 
   useEffect(() => {
-    const fetchVehicleCategoriesData = async () => {
+    const fetchVehicleCarTypesData = async () => {
       try {
-        const response = await fetchVehicleCategories(vehicleCatParams);
+        const response = await fetchVehicleCarTypes();
         if (response.status === 200) {
-          setVehicleCatData(response.data.categories);
+          setVehicleCatData(response.data);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
     };
 
-    fetchVehicleCategoriesData();
+    fetchVehicleCarTypesData();
   }, []);
 
   return (
@@ -83,9 +79,9 @@ const VehiclePickModel = forwardRef<
             <div className="grid grid-cols-3 gap-4">
             {vehicleCatData.map((vehicle) => (
                 <CarTypeCard
-                  key={vehicle.ref_vehicle_category_code} // Unique key for each card
-                  imgSrc={vehicle.vehicle_img || "/assets/img/graphic/category_car.png"} // Adjust this to the actual field in your data
-                  title={vehicle.ref_vehicle_category_name} // Adjust this to the actual field in your data
+                  key={vehicle.ref_vehicle_type_code} // Unique key for each card
+                  imgSrc={vehicle.vehicle_type_image || "/assets/img/graphic/category_car.png"} // Adjust this to the actual field in your data
+                  title={vehicle.ref_vehicle_type_name} // Adjust this to the actual field in your data
                   text={vehicle.available_units} // Adjust this to the actual field in your data
                   name="carType"
                   selectedValue={selectedCarType}

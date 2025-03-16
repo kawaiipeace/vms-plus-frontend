@@ -9,7 +9,6 @@ import ImgSlider from "@/app/components/imgSlider";
 import Image from "next/image";
 import CarCardItem from "@/app/components/carCardItem";
 import { fetchVehicleDetail } from "@/app/services/bookingUser";
-import { fetchVehicleUsers } from "@/app/services/masterService";
 
 interface VehicleDetail {
   mas_vehicle_uid?: string;
@@ -25,20 +24,27 @@ interface VehicleDetail {
   vehicle_user_emp_id?: string;
   ref_fuel_type_id?: number;
   seat?: number;
+  age?: number;
   ref_fuel_type?: {
     ref_fuel_type_id?: number;
     ref_fuel_type_name_th?: string;
     ref_fuel_type_name_en?: string;
   };
-}
-
-interface VehicleUser {
-  emp_id: string;
-  full_name: string;
-  dept_sap: string;
-  tel_internal?: string;
-  tel_mobile: string;
-  dept_sap_short: string;
+  vehicle_department?: {
+    vehicle_mileage: string;
+    vehicle_fleet_card_no: string;
+    vehicle_pea_id: string;
+    parking_place: string;
+    vehicle_user?: {
+      emp_id: string;
+      full_name: string;
+      dept_sap: string;
+      tel_internal?: string;
+      tel_mobile: string;
+      dept_sap_short: string;
+      image_url: string;
+    };
+  };
 }
 
 interface VehicleDetailModelProps {
@@ -57,7 +63,6 @@ const VehicleDetailModel = forwardRef<
   VehicleDetailModelProps
 >(({ onSelect, status, vehicleId }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [vehicleUserData, setVehicleUserData] = useState<VehicleUser>();
   const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
     null
   );
@@ -69,28 +74,14 @@ const VehicleDetailModel = forwardRef<
         const response = await fetchVehicleDetail(vehicleId);
 
         if (response.status === 200) {
-          setVehicleDetail(response.data ?? {}); // Handle null response
+          setVehicleDetail(response.data ?? {});
         }
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
       }
     };
 
-    const fetchVehicleOwnder = async () => {
-      try {
-        const response = await fetchVehicleUsers(
-          vehicleDetail?.vehicle_user_emp_id
-        );
-        if (response.status === 200) {
-          setVehicleUserData(response.data[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-
     fetchVehicleDetailData();
-    fetchVehicleOwnder();
   }, [vehicleId]);
 
   // Image Handling
@@ -146,12 +137,12 @@ const VehicleDetailModel = forwardRef<
                 <CarCardItem
                   icon="calendar_clock"
                   title="อายุการใช้งาน"
-                  value="1 ปี"
+                  value={vehicleDetail?.age + " ปี"}
                 />
                 <CarCardItem
                   icon="swap_driving_apps_wheel"
                   title="เลขไมล์"
-                  value="36032"
+                  value={` ${vehicleDetail?.vehicle_department?.vehicle_mileage}`}
                 />
                 <CarCardItem
                   icon="credit_card"
@@ -161,11 +152,11 @@ const VehicleDetailModel = forwardRef<
                     "/assets/img/gas_3.svg",
                     "/assets/img/gas_2.svg",
                   ]}
-                  value={
+                  value={`${
                     vehicleDetail?.is_has_fleet_card
-                      ? vehicleDetail?.is_has_fleet_card
+                      ? vehicleDetail?.vehicle_department?.vehicle_fleet_card_no
                       : "ไม่มี"
-                  }
+                  }`}
                 />
                 <CarCardItem
                   icon="local_gas_station"
@@ -193,63 +184,91 @@ const VehicleDetailModel = forwardRef<
                 <CarCardItem
                   icon="airport_shuttle"
                   title="รหัสข้างรถ"
-                  value="กจพ.2-ช(รช)-003/2564"
+                  value={`${vehicleDetail?.vehicle_department?.vehicle_pea_id}`}
                 />
                 <CarCardItem
                   icon="local_parking"
                   title="สถานที่จอดรถ"
-                  value="ล็อคที่ 5A ชั้น 2B อาคาร LED"
+                  value={`${vehicleDetail?.vehicle_department?.parking_place}`}
                 />
               </div>
             </div>
 
-            {vehicleUserData && (
+            {vehicleDetail?.vehicle_department?.vehicle_user && (
               <div className="modal-section">
                 <div className="modal-section-label">ผู้ดูแลยานพาหนะ</div>
                 <div className="form-card">
                   <div className="form-card-body form-card-inline items-center">
                     <div className="form-group form-plaintext form-users items-center">
                       <Image
-                        src="/assets/img/sample-avatar.png"
+                        src={
+                          vehicleDetail?.vehicle_department?.vehicle_user
+                            ?.image_url || "/assets/img/avatar.svg"
+                        }
                         className="avatar avatar-md"
                         width={100}
                         height={100}
                         alt=""
                       />
                       <div className="form-plaintext-group align-self-center">
-                        <div className="form-label">{vehicleUserData?.full_name}</div>
+                        <div className="form-label">
+                          {
+                            vehicleDetail?.vehicle_department?.vehicle_user
+                              ?.full_name
+                          }
+                        </div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">{vehicleUserData.dept_sap}</div>
                           <div className="supporting-text">
-                            {vehicleUserData.dept_sap_short}
+                            {
+                              vehicleDetail?.vehicle_department?.vehicle_user
+                                ?.dept_sap
+                            }
+                          </div>
+                          <div className="supporting-text">
+                            {
+                              vehicleDetail?.vehicle_department?.vehicle_user
+                                ?.dept_sap_short
+                            }
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="form-card-right align-self-center">
                       <div className="flex flex-wrap gap-4">
-                        <div className="col-span-12 md:col-span-6">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">
-                              smartphone
-                            </i>
-                            <div className="form-plaintext-group">
-                              <div className="form-text text-nowrap">
-                                {vehicleUserData.tel_mobile}
+                        {vehicleDetail?.vehicle_department?.vehicle_user
+                          ?.tel_mobile && (
+                          <div className="col-span-12 md:col-span-6">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">
+                                smartphone
+                              </i>
+                              <div className="form-plaintext-group">
+                                <div className="form-text text-nowrap">
+                                  {
+                                    vehicleDetail?.vehicle_department
+                                      ?.vehicle_user?.tel_mobile
+                                  }
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        { (vehicleUserData.tel_internal) && 
-                        <div className="col-span-12 md:col-span-6">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">call</i>
-                            <div className="form-plaintext-group">
-                              <div className="form-text text-nowra">{vehicleUserData.tel_internal}</div>
+                        )}
+                        {vehicleDetail?.vehicle_department?.vehicle_user
+                          ?.tel_internal && (
+                          <div className="col-span-12 md:col-span-6">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">call</i>
+                              <div className="form-plaintext-group">
+                                <div className="form-text text-nowra">
+                                  {
+                                    vehicleDetail?.vehicle_department
+                                      ?.vehicle_user?.tel_internal
+                                  }
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      }
+                        )}
                       </div>
                     </div>
                   </div>

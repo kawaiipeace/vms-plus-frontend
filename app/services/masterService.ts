@@ -40,12 +40,9 @@ export const uploadFile = async (file: File) => {
     }
   };
 
-  export const fetchVehicleCategories = async (params: {
-    page?: number;
-    limit?: number;
-  }) => {
+  export const fetchVehicleCarTypes = async () => {
     try {
-      const response = await axiosInstance.get('vehicle/category', { params });
+      const response = await axiosInstance.get('vehicle/types');
       return response;
     } catch (error) {
       throw error;
