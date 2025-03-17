@@ -55,7 +55,7 @@ export default function CarDetailCard2() {
           </button>
         </div>
       </div>
-      <VehicleDetailModel ref={vehicleDetailModalRef} status="detail" />
+      <VehicleDetailModel ref={vehicleDetailModalRef} vehicleId="" status="detail" />
     </div>
   );
 }
