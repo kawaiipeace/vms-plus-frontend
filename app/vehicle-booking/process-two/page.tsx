@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import * as yup from "yup";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
@@ -11,7 +12,10 @@ import Pagination from "@/app/components/pagination";
 import CustomSelect from "@/app/components/customSelect";
 import ZeroRecord from "@/app/components/zeroRecord";
 import { fetchVehicles } from "@/app/services/bookingUser";
-import { fetchVehicleCategories } from "@/app/services/masterService";
+import { fetchVehicleCarTypes } from "@/app/services/masterService";
+import { useForm } from "react-hook-form";
+// import { useFormContext } from "@/app/contexts/requestFormContext";
+import { yupResolver } from "@hookform/resolvers/yup";
 // import Toast from "@/app/components/toast";
 
 interface Vehicle {
@@ -32,6 +36,10 @@ interface PaginationInterface {
   totalPages: number;
 }
 
+const schema = yup.object().shape({
+  isAdminChooseVehicle: yup.number(),
+});
+
 export default function ProcessTwo() {
   const router = useRouter();
   const [vehicleCards, setVehicleCards] = useState<Vehicle[]>([]);
@@ -51,13 +59,11 @@ export default function ProcessTwo() {
     page: 1,
     limit: 10,
   });
-  const vehicleCatParams = {
-    page: 1,
-    limit: 100,
-  }
+
   const [vehicleCatOptions, setVehicleCatOptions] = useState<
   { value: string; label: string }[]
 >([]);
+// const { updateFormData } = useFormContext();
 
   const orgOptions = [
     { label: "ทุกสังกัด", value: "" },
@@ -72,6 +78,9 @@ export default function ProcessTwo() {
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
     localStorage.setItem('processTwoSelect', value);
+    if(value == "ผู้ดูแลยานพาหนะเลือกให้"){
+      setValue("isAdminChooseVehicle", 1);
+    }
   };
 
   const NextProcess = () => {
@@ -81,6 +90,16 @@ export default function ProcessTwo() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setParams((prev) => ({ ...prev, search: e.target.value }));
   };
+
+   const {
+      // register,
+      // handleSubmit,
+      setValue,
+      // formState: { errors, isValid },
+    } = useForm({
+      mode: "onChange",
+      resolver: yupResolver(schema),
+    });
 
   const handleOrgChange = async (selectedOption: {
     value: string;
@@ -121,9 +140,9 @@ export default function ProcessTwo() {
       }
     };
 
-       const fetchVehicleCategoriesData = async () => {
+       const fetchVehicleCarTypesData = async () => {
           try {
-            const response = await fetchVehicleCategories(vehicleCatParams);
+            const response = await fetchVehicleCarTypes();
 
             console.log('res',response);
             if (response.status === 200) {
@@ -133,11 +152,11 @@ export default function ProcessTwo() {
                 { value: "", label: "ทุกประเภทยานพาหนะ" },
                 ...vehicleCatData.map(
                   (cat: {
-                    ref_vehicle_category_code: string;
-                    ref_vehicle_category_name: string;
+                    ref_vehicle_type_code: string;
+                    ref_vehicle_type_name: string;
                   }) => ({
-                    value: cat.ref_vehicle_category_code,
-                    label: cat.ref_vehicle_category_name,
+                    value: cat.ref_vehicle_type_code,
+                    label: cat.ref_vehicle_type_name,
                   })
                 ),
               ];
@@ -153,7 +172,7 @@ export default function ProcessTwo() {
         };
 
     fetchVehicleData();
-    fetchVehicleCategoriesData();
+    fetchVehicleCarTypesData();
   }, [params]);
 
   return (
