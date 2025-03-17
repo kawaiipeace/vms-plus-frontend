@@ -5,7 +5,7 @@ import ZeroRecord from "@/app/components/zeroRecord";
 import FilterModal from "@/app/components/modal/filterModal";
 
 export default function ArpproveFlow() {
-  const [data, setRequestData] = useState<RequestData[]>([]);
+  const [datas, setRequestData] = useState<RequestData[]>([]);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -13,7 +13,7 @@ export default function ArpproveFlow() {
 
   return (
     <>
-      {data.length > 0 ? (
+      {datas.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
             <div className="hidden md:block">
@@ -48,7 +48,7 @@ export default function ArpproveFlow() {
              
             </div>
           </div>
-          <TableComponent data={requestData} columns={requestDataColumns} listName="request" />
+          <TableComponent data={datas} columns={requestDataColumns} listName="request" />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (

@@ -11,7 +11,8 @@ export default function RequestDetailTabs({status} : Props) {
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
-      content:  <RequestDetailForm status={status} />,
+      // content:  <RequestDetailForm status={status} />,
+      constent: "",
       badge: ""
     },
     {

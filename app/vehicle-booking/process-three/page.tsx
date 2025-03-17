@@ -2,27 +2,41 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/app/contexts/sidebarContext";
+import * as yup from "yup";
 import CustomSelect from "@/app/components/customSelect";
 import DriverCard from "@/app/components/card/driverCard";
 import EmptyDriver from "@/app/components/emptyDriver";
 import Header from "@/app/components/header";
-import Input from "@/app/components/input";
 import ProcessRequestCar from "@/app/components/processRequestCar";
 import RadioButton from "@/app/components/radioButton";
 import SideBar from "@/app/components/sideBar";
 import Tooltip from "@/app/components/tooltips";
 import Link from "next/link";
 import { fetchDrivers, fetchVehicleUsers } from "@/app/services/masterService";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import LicensePlateStat from "@/app/components/licensePlateStat";
+
+const schema = yup.object().shape({
+  driverInternalContact: yup.string(),
+  driverMobileContact: yup.string(),
+  driverEmpID: yup.string().required(),
+  driverEmpName: yup.string(),
+  driverDeptSap: yup.string(),
+});
 
 export default function ProcessThree() {
   const router = useRouter();
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [drivers, setDrivers] = useState([
     { name: "ศรัญยู บริรัตน์ฤทธิ์", company: "กฟภ.", rate: 4.5 },
   ]);
-    const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
   const { isPinned } = useSidebar();
-
+  const [driverLicenseNo, setDriverLicenseNo] = useState("");
+  const today = new Date();
+  const [annualYear, setAnnualYear] = useState<number>(2025);
+  const [requestAnnual, setRequestAnnual] = useState("");
+  const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
   const [params, setParams] = useState({
     name: "",
@@ -36,6 +50,26 @@ export default function ProcessThree() {
     driverOptions[0]
   );
 
+  const [licenseValid, setLicenseValid] = useState(false);
+  const [annualValid, setAnnualValid] = useState(false);
+
+  useEffect(() => {
+    if (driverLicenseNo) {
+      const isLicenseValid = new Date(licenseExpDate) > today;
+      setLicenseValid(isLicenseValid);
+
+      if (requestAnnual) {
+        const isAnnualValid = annualYear >= today.getFullYear();
+        setAnnualValid(isAnnualValid);
+      } else {
+        setAnnualValid(true); // if no requestAnnual, treat as valid
+      }
+    }
+  }, [driverLicenseNo, licenseExpDate, requestAnnual, annualYear]);
+
+  const allValid = licenseValid && annualValid;
+
+
   const handleVehicleUserChange = async (selectedOption: {
     value: string;
     label: string;
@@ -47,13 +81,17 @@ export default function ProcessThree() {
     );
 
     if (empData) {
-      // setValue("internalContactNumber", empData.tel_internal);
-      // setValue("telMobile", empData.tel_mobile);
-      // setValue("deptSapShort", empData.dept_sap_short);
-      // setValue("deptSap", empData.dept_sap);
+      setValue("driverInternalContact", empData.tel_internal);
+      setValue("driverMobileContact", empData.tel_mobile);
+      setValue("driverEmpID", empData.emp_id);
+      setValue("driverEmpName", empData.full_name);
+      setValue("driverDeptSap", empData.dept_sap);
+      setDriverLicenseNo(empData.annual_driver.driver_license_no);
+      setAnnualYear(empData.annual_driver.annual_yyyy);
+      setRequestAnnual(empData.annual_driver.request_annual_driver_no);
+      setLicenseExpDate(empData.annual_driver.driver_license_expire_date);
     }
   };
-
 
   interface VehicleUser {
     emp_id: string;
@@ -67,42 +105,40 @@ export default function ProcessThree() {
       annual_yyyy: number;
       driver_license_no: string;
       driver_license_expire_date: string;
-    }
+    };
   }
 
-  useEffect(()=> {
-
-     const fetchVehicleUserData = async () => {
-          try {
-            const response = await fetchVehicleUsers("");
-            if (response.status === 200) {
-              const vehicleUserData: VehicleUser[] = response.data;
-              setVehicleUserDatas(vehicleUserData);
-              const driverOptionsArray = [
-                ...vehicleUserData.map(
-                  (user: {
-                    emp_id: string;
-                    full_name: string;
-                    dept_sap: string;
-                  }) => ({
-                    value: user.emp_id,
-                    label: `${user.full_name} (${user.dept_sap})`,
-                  })
-                ),
-              ];
-    
-              setDriverOptions(driverOptionsArray);
-            }
-          } catch (error) {
-            console.error("Error fetching requests:", error);
-          }
-        };
-
-   const fetchDriverData = async () => {
+  useEffect(() => {
+    const fetchVehicleUserData = async () => {
       try {
-        const response = await fetchDrivers(
-          params
-        );
+        const response = await fetchVehicleUsers("");
+        if (response.status === 200) {
+          const vehicleUserData: VehicleUser[] = response.data;
+          setVehicleUserDatas(vehicleUserData);
+          console.log(vehicleUserData);
+          const driverOptionsArray = [
+            ...vehicleUserData.map(
+              (user: {
+                emp_id: string;
+                full_name: string;
+                dept_sap: string;
+              }) => ({
+                value: user.emp_id,
+                label: `${user.full_name} (${user.dept_sap})`,
+              })
+            ),
+          ];
+
+          setDriverOptions(driverOptionsArray);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    const fetchDriverData = async () => {
+      try {
+        const response = await fetchDrivers(params);
         if (response.status === 200) {
           setDrivers(response.data);
         }
@@ -112,18 +148,27 @@ export default function ProcessThree() {
     };
     fetchDriverData();
     fetchVehicleUserData();
-  },[]);
+  }, []);
 
   const next = () => {
     router.push("process-four");
   };
+
+  const { register, setValue } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+  });
 
   return (
     <div>
       <div className={`main-container`}>
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -273,62 +318,54 @@ export default function ProcessThree() {
                           <input
                             type="text"
                             className="form-control"
+                            {...register("driverInternalContact")}
                             placeholder="ระบุเบอร์ภายใน"
                           />
-                          {/* <!-- <div className="input-group-append">
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
-                        </div> --> */}
                         </div>
-                        {/* <!-- <span className="form-helper">Helper</span> --> */}
                       </div>
                     </div>
 
                     <div className="flex-1">
                       <div className="form-group">
                         <label className="form-label">เบอร์โทรศัพท์</label>
-                        <Input
+                        <input
                           type="text"
-                          icon="smartphone"
-                          placeholder="ระบุเบอร์โทรศัพท์"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          className="form-control"
+                          {...register("driverMobileContact")}
+                          placeholder="ระบุเบอร์ภายใน"
                         />
-                        {/* <!-- <span className="form-helper">Helper</span> --> */}
                       </div>
                     </div>
-
-                   
                   </div>
 
-                  
-              
+                  <div className="form-card w-full mt-5">
+                    <div className="form-card-body space-y-2">
+                    {driverLicenseNo && (
+          new Date(licenseExpDate) > today ? (
+            <LicensePlateStat status={true} title="มีใบขับขี่" />
+          ) : (
+            <LicensePlateStat status={false} title="ใบขับขี่หมดอายุ" />
+          )
+        )}
 
-                <div className="form-card w-full mt-5">
-                      <div className="form-card-body space-y-2">
-                      <div className="flex gap-2 items-center">
-                      <i className="material-symbols-outlined icon-settings-fill-300-24 text-success">
-                        check_circle
-                      </i>
-                      <div className="card-content">
-                        <div className="card-subtitle font-bold">มีใบขับขี่</div>
-                      </div>
-                      </div>
-
-                      <div className="flex gap-2 items-center">
-                      <i className="material-symbols-outlined icon-settings-fill-300-24 text-success">
-                        check_circle
-                      </i>
-                      <div className="card-content">
-                        <div className="card-subtitle font-bold">มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี 2568</div>
-                      </div>
-                      </div>
-                      </div>
+        {driverLicenseNo && requestAnnual && (
+          annualYear >= today.getFullYear() ? (
+            <LicensePlateStat
+              status={true}
+              title={`มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
+            />
+          ) : (
+            <LicensePlateStat
+              status={false}
+              title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
+              desc="ผู้ขับขี่จะต้องขออนุมัติทำหน้าที่ขับรถยนต์ประจำปีก่อน"
+            />
+          )
+        )}
                      
                     </div>
-
-                    </div>
+                  </div>
+                </div>
 
                 <div
                   className={`form-section ${
@@ -414,7 +451,11 @@ export default function ProcessThree() {
             </div>
 
             <div className="form-action">
-              <button className="btn btn-primary" onClick={() => next()}>
+              <button
+                className="btn btn-primary"
+                onClick={() => next()}
+                disabled={!selectedVehicleUserOption || !allValid}
+              >
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">
                   arrow_right_alt

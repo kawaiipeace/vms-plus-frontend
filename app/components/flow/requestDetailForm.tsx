@@ -71,7 +71,6 @@ export default function RequestDetailForm({
   keyPickUpCard,
 }: RequestDetailFormProps) {
   const carSelect = "true";
-  const driverType = "PEAS";
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;

@@ -144,10 +144,9 @@ export default function ProcessTwo() {
           try {
             const response = await fetchVehicleCarTypes();
 
-            console.log('res',response);
             if (response.status === 200) {
-              const vehicleCatData = response.data.types;
-              console.log(response.data.types);
+              const vehicleCatData = response.data;
+              console.log(response.data);
               const vehicleCatArr = [
                 { value: "", label: "ทุกประเภทยานพาหนะ" },
                 ...vehicleCatData.map(
