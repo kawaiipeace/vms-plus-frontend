@@ -44,13 +44,13 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">สถานีบริการน้ำมัน</label>
-                  <CustomSelect w="w-full" options={fuelOptions} />
+                  {/* <CustomSelect w="w-full" options={fuelOptions} /> */}
                 </div>
               </div>
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">ประเภทเชื้อเพลิง</label>
-                  <CustomSelect w="w-full" options={fuelTypeOptions} />
+                  {/* <CustomSelect w="w-full" options={fuelTypeOptions} /> */}
                 </div>
               </div>
               <div className="col-span-12 grid grid-cols-2 gap-4">

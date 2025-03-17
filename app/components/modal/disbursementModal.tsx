@@ -1,5 +1,6 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import CustomSelect from "@/app/components/customSelect";
+import { fetchCostTypes } from "@/app/services/masterService";
 
 const DisbursementModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -9,11 +10,39 @@ const DisbursementModal = forwardRef((_, ref) => {
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const options = [
-    "งบทำการ หน่วยงานต้นสังกัด",
-    "หน่วยงานต้นสังกัด",
-    "งบทำการ หน่วยงานต้นสังกั",
-  ];
+   const [costTypeOptions, setCostTypeOptions] = useState<
+      { value: string; label: string }[]
+    >([]);
+    const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(
+      costTypeOptions[0]
+    );
+    useEffect(() => {
+       const fetchCostTypeRequest = async () => {
+            try {
+              const response = await fetchCostTypes();
+              if (response.status === 200) {
+                const costTypeData = response.data;
+                const costTypeArr = [
+                  ...costTypeData.map(
+                    (cost: {
+                      ref_cost_type_code: string;
+                      ref_cost_type_name: string;
+                    }) => ({
+                      value: cost.ref_cost_type_code,
+                      label: cost.ref_cost_type_name,
+                    })
+                  ),
+                ];
+      
+                setCostTypeOptions(costTypeArr);
+              }
+            } catch (error) {
+              console.error("Error fetching requests:", error);
+            }
+          };
+          fetchCostTypeRequest();
+    },[])
+
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -32,7 +61,13 @@ const DisbursementModal = forwardRef((_, ref) => {
         <div className="modal-body overflow-y-auto">
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
-                <CustomSelect iconName="paid" w="w-full" options={options} />
+              <CustomSelect
+                iconName="paid"
+                w="w-full"
+                options={costTypeOptions}
+                value={selectedCostTypeOption}
+                onChange={setSelectedCostTypeOption}
+              />
             </div>
 
             <div className="col-span-12">

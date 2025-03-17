@@ -67,7 +67,7 @@ const KeyPickUpEditModal = forwardRef((_, ref) => {
                 <div className="form-group">
                   <label className="form-label">ชื่อ - นามสกุล</label>
 
-                  <CustomSelect options={driverOptions} iconName="person" w={"w-full"} />
+                  {/* <CustomSelect options={driverOptions} iconName="person" w={"w-full"} /> */}
                 </div>
               </div>
 
@@ -133,7 +133,7 @@ const KeyPickUpEditModal = forwardRef((_, ref) => {
                 <div className="form-group">
                   <label className="form-label">ชื่อ - นามสกุล</label>
 
-                  <CustomSelect options={driverOptions} iconName="person" w={"w-full"} />
+                  {/* <CustomSelect options={driverOptions} iconName="person" w={"w-full"} /> */}
                 </div>
               </div>
 

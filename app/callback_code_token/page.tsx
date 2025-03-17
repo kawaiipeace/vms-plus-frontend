@@ -1,32 +1,13 @@
-"use client";
-import { useSearchParams, useRouter } from 'next/navigation'
-import { getKeyCloakData } from '@/app/services/authService';
 
-export default function CallbackCodeToken(){
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const code = searchParams.get('code');
 
-    if(code){
-        const getKeyData = async () => {
-              try {
-                const response = await getKeyCloakData(code);
-                if (response.status === 200) {
-                  localStorage.setItem('accessToken', response.data.accessToken);
-                  localStorage.setItem('refreshToken', response.data.refreshToken);
-                  router.push('/vehicle-booking/request-list');
-                }
-              } catch (error) {
-                console.log(error);
-              }
-            };
-            getKeyData();
-    }
+import React, { Suspense } from 'react';
+import CallbackCodeToken from '@/app/components/callbackCodeToken';
 
-  
-  
-    return(
-        <>
-        </>
-    );
+export default function CallbackCodeTokenPage() {
+  return (
+    <Suspense fallback={<div></div>}>
+      <CallbackCodeToken />
+    </Suspense>
+  );
 }
+

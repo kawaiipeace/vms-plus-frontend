@@ -15,6 +15,7 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
   const modalRef = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<File[]>([]);
   const [images2, setImages2] = useState<File[]>([]);
+  const [passengerCount, setPassengerCount] = useState(0);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -87,7 +88,10 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
                   <div className="col-span-6">
                     <div className="form-group">
                       <label className="form-label">ปริมาณเชื้อเพลิง</label>
-                      <NumberInput />
+                      <NumberInput
+                                           value={passengerCount}
+                                           onChange={setPassengerCount}
+                                         />
                     </div>
                   </div>
                   <div className="col-span-12">

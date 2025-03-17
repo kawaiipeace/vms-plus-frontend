@@ -48,11 +48,11 @@ const PassVerifyModal = forwardRef<
                 <div className="grid grid-cols-12 gap-4">
                   <div className="col-span-12">
                     <div className="form-group text-left">
-                         <CustomSelect
+                         {/* <CustomSelect
                                             iconName="person"
                                             w="w-full"
                                             options={driverOptions}
-                                          />
+                                          /> */}
                     </div>
                   </div>
 

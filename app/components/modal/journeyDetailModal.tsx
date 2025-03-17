@@ -1,10 +1,11 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import NumberInput from "@/app/components/numberInput";
 import TimePicker from "@/app/components/timePicker";
 import DatePicker from "@/app/components/datePicker";
 
 const JourneyDetailModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+    const [passengerCount, setPassengerCount] = useState(0);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -142,7 +143,10 @@ const JourneyDetailModal = forwardRef((_, ref) => {
                   <span className="form-optional">(รวมผู้ขับขี่)</span>
                 </label>
                <div className="w-full overflow-hidden">
-               <NumberInput />
+             <NumberInput
+                                  value={passengerCount}
+                                  onChange={setPassengerCount}
+                                />
                </div>
              
                

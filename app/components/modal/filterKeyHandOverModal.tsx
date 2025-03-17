@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import DatePicker from "@/app/components/datePicker";
 import CustomSelect from "../customSelect";
 
@@ -10,12 +10,17 @@ const FilterKeyHandOverModal = forwardRef((_, ref) => {
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const options = [
-    "ทั้งหมด",
-    "หน่วยงานต้นสังกัด",
-    "งบทำการ หน่วยงานต้นสังกั",
-  ];
+    const [options, setOptions] = useState<
+      { value: string; label: string }[]
+    >([]);
+    const [selectedOption, setSelectedOption] = useState(
+      options[0]
+    );
 
+    useEffect(() => {
+      // Set options only once when component mounts
+      setOptions([{ label: "ทั้งหมด", value: "ทั้งหมด" }]);
+    }, []);
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -48,7 +53,8 @@ const FilterKeyHandOverModal = forwardRef((_, ref) => {
         <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">สังกัดยานพาหนะ</label>
-                  <CustomSelect w="100" options={options} />
+                  <CustomSelect w="100" options={options}   value={selectedOption}
+                      onChange={setSelectedOption}/>
                   
                 </div>
               </div>

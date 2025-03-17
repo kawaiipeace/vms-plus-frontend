@@ -13,6 +13,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
   const modalRef = useRef<HTMLDialogElement>(null);
   const [inCarType, setInCarType] = useState("");
   const [outCarType, setOutCarType] = useState("");
+  const [passengerCount, setPassengerCount] = useState(0);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -73,7 +74,10 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                   <div className="col-span-6">
                     <div className="form-group">
                       <label className="form-label">ปริมาณเชื้อเพลิง</label>
-                      <NumberInput />
+                    <NumberInput
+                                         value={passengerCount}
+                                         onChange={setPassengerCount}
+                                       />
                     </div>
                   </div>
                   <div className="col-span-12">
