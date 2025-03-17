@@ -25,6 +25,7 @@ interface VehicleDetail {
   ref_fuel_type_id?: number;
   seat?: number;
   age?: number;
+  vehicle_imgs: string[];
   ref_fuel_type?: {
     ref_fuel_type_id?: number;
     ref_fuel_type_name_th?: string;
@@ -72,6 +73,7 @@ const VehicleDetailModel = forwardRef<
     const fetchVehicleDetailData = async () => {
       try {
         const response = await fetchVehicleDetail(vehicleId);
+        console.log('rescar',response.data);
 
         if (response.status === 200) {
           setVehicleDetail(response.data ?? {});
@@ -85,9 +87,7 @@ const VehicleDetailModel = forwardRef<
   }, [vehicleId]);
 
   // Image Handling
-  const imageUrls = vehicleDetail?.vehicle_img
-    ? [vehicleDetail.vehicle_img]
-    : ["/assets/img/sample-car.jpeg"];
+  const imageUrls = vehicleDetail?.vehicle_imgs;
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -110,7 +110,7 @@ const VehicleDetailModel = forwardRef<
         <div className="modal-body flex flex-col md:flex-row gap-5">
           {/* Image Slider */}
           <div className="w-full md:w-6/12">
-            <ImgSlider id="1" images={imageUrls} />
+            <ImgSlider id="1" images={imageUrls ?? []} />
           </div>
 
           <div className="modal-inner-scrollable md:w-6/12 w-full">

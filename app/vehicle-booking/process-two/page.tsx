@@ -146,8 +146,8 @@ export default function ProcessTwo() {
 
             console.log('res',response);
             if (response.status === 200) {
-              const vehicleCatData = response.data.categories;
-              console.log(response.data.categories);
+              const vehicleCatData = response.data.types;
+              console.log(response.data.types);
               const vehicleCatArr = [
                 { value: "", label: "ทุกประเภทยานพาหนะ" },
                 ...vehicleCatData.map(

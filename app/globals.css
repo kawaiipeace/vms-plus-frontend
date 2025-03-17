@@ -2041,7 +2041,7 @@
   border: 0;
 }
 .light-mode .indicator-daisy a {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: #D0D5DD;
 }
 .dark-mode .indicator-daisy a {
   background-color: rgba(51, 55, 65, 0.6);

@@ -57,7 +57,7 @@ export default function CarDetailCard() {
         <button className="btn btn-default w-full" onClick={() => vehicleDetailModalRef.current?.openModal()}>ดูรายละเอียด</button>
         </div>
       </div>
-      <VehicleDetailModel ref={vehicleDetailModalRef} status="detail"/>
+      <VehicleDetailModel ref={vehicleDetailModalRef} vehicleId="" status="detail"/>
     </div>
   );
 }

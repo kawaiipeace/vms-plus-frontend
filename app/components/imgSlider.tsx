@@ -19,8 +19,8 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
       <div className="carousel w-full rounded-lg overflow-hidden h-[356px]">
         {images.map((src, index) => (
           <div key={index} id={`slide${id}${index + 1}`} className={`carousel-item relative w-full flex-wrap flex-col ${index === activeIndex ? "active" : ""}`}>
-            <div className="h-[280px] w-full overflow-hidden rounded-2xl">
-              <Image src={src} alt={`Image ${index + 1}`} layout="responsive" width={100} height={100} className="object-cover" />
+            <div className="h-[22em] w-full overflow-hidden rounded-2xl">
+              <Image src={src || ""} alt={`Image ${index + 1}`} layout="responsive" width={100} height={100} className="object-cover min-h-full w-full" />
             </div>
             {/* <div className="w-full text-center py-2">หน้าปัดเรือนไมล์</div> */}
           </div>
@@ -40,7 +40,7 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
       </div>
 
       {/* Indicators */}
-      <div className="indicator-daisy absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="indicator-daisy absolute bottom-[2em] left-1/2 transform -translate-x-1/2 flex space-x-2">
         {images.map((_, index) => (
           <a
             key={index}

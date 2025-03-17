@@ -47,8 +47,8 @@ export default function ProcessThree() {
     );
 
     if (empData) {
-      // setValue("telInternal", empData.tel_internal);
-      // setValue("telMobile", empData.tel_mobile);
+      setValue("internalContactNumber", empData.tel_internal);
+      setValue("telMobile", empData.tel_mobile);
       // setValue("deptSapShort", empData.dept_sap_short);
       // setValue("deptSap", empData.dept_sap);
     }
@@ -62,6 +62,12 @@ export default function ProcessThree() {
     tel_internal?: string;
     tel_mobile: string;
     dept_sap_short: string;
+    annual_driver: {
+      request_annual_driver_no: string;
+      annual_yyyy: number;
+      driver_license_no: string;
+      driver_license_expire_date: string;
+    }
   }
 
   useEffect(()=> {
