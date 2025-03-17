@@ -47,8 +47,8 @@ export default function ProcessThree() {
     );
 
     if (empData) {
-      setValue("internalContactNumber", empData.tel_internal);
-      setValue("telMobile", empData.tel_mobile);
+      // setValue("internalContactNumber", empData.tel_internal);
+      // setValue("telMobile", empData.tel_mobile);
       // setValue("deptSapShort", empData.dept_sap_short);
       // setValue("deptSap", empData.dept_sap);
     }
