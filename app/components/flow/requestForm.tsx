@@ -36,6 +36,7 @@ const schema = yup.object().shape({
   attachmentFile: yup.string(),
   deptSapShort: yup.string(),
   deptSap: yup.string(),
+  userImageUrl: yup.string()
 });
 
 interface VehicleUser {
@@ -45,6 +46,7 @@ interface VehicleUser {
   tel_internal?: string;
   tel_mobile: string;
   dept_sap_short: string;
+  image_url: string;
 }
 
 export default function RequestForm() {
@@ -140,6 +142,7 @@ export default function RequestForm() {
         setValue("telMobile", defaultVehicleUser.tel_mobile);
         setValue("deptSapShort", defaultVehicleUser.dept_sap_short);
         setValue("deptSap", defaultVehicleUser.dept_sap);
+        setValue("userImageUrl", defaultVehicleUser.image_url);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,6 +163,7 @@ export default function RequestForm() {
       setValue("telMobile", empData.tel_mobile);
       setValue("deptSapShort", empData.dept_sap_short);
       setValue("deptSap", empData.dept_sap);
+      setValue("userImageUrl", empData.image_url);
     }
   };
 
@@ -525,6 +529,7 @@ export default function RequestForm() {
                         </div>
                         <input
                           type="file"
+                           accept="application/pdf"
                           className="file-input hidden"
                           onChange={handleFileChange}
                         />

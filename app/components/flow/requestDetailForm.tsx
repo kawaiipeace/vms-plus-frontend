@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import JourneyDetailModal from "@/app/components/modal/journeyDetailModal";
 import VehiclePickModel from "@/app/components/modal/vehiclePickModal";
@@ -18,6 +18,7 @@ import AppointmentDriverCard from "@/app/components/card/appointmentDriverCard";
 import ReferenceCard from "@/app/components/card/referenceCard";
 import DisburstmentCard from "@/app/components/card/disburstmentCard";
 import ApproveProgress from "@/app/components/approveProgress";
+import { fetchVehicleDetail } from "@/app/services/bookingUser";
 
 interface FormData {
   telInternal?: string;
@@ -53,7 +54,46 @@ interface FormData {
   vehicleUserEmpName?: string;
   deptSapShort?: string;
   numberOfPassanger: number;
+  userImageUrl: string;
+  vehicleSelect: string;
+}
 
+interface VehicleDetail {
+  mas_vehicle_uid?: string;
+  vehicle_brand_name?: string;
+  vehicle_model_name?: string;
+  vehicle_license_plate?: string;
+  vehicle_img?: string;
+  CarType?: string;
+  vehicle_owner_dept_sap?: string;
+  is_has_fleet_card?: string;
+  vehicle_gear?: string;
+  ref_vehicle_subtype_code?: number;
+  vehicle_user_emp_id?: string;
+  ref_fuel_type_id?: number;
+  seat?: number;
+  age?: number;
+  vehicle_imgs: string[];
+  ref_fuel_type?: {
+    ref_fuel_type_id?: number;
+    ref_fuel_type_name_th?: string;
+    ref_fuel_type_name_en?: string;
+  };
+  vehicle_department?: {
+    vehicle_mileage: string;
+    vehicle_fleet_card_no: string;
+    vehicle_pea_id: string;
+    parking_place: string;
+    vehicle_user?: {
+      emp_id: string;
+      full_name: string;
+      dept_sap: string;
+      tel_internal?: string;
+      tel_mobile: string;
+      dept_sap_short: string;
+      image_url: string;
+    };
+  };
 }
 
 interface RequestDetailFormProps {
@@ -104,6 +144,30 @@ export default function RequestDetailForm({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
+    null
+  );
+
+  useEffect(() => {
+    console.log(formData);
+    const fetchVehicleDetailData = async () => {
+      try {
+        const response = await fetchVehicleDetail(formData.vehicleSelect);
+        console.log("rescar", response.data);
+
+        if (response.status === 200) {
+          setVehicleDetail(response.data ?? {});
+        }
+      } catch (error) {
+        console.error("Error fetching vehicle details:", error);
+      }
+    };
+    if (formData.vehicleSelect) {
+      fetchVehicleDetailData();
+    }
+  }, [formData.vehicleSelect]);
+
   return (
     <>
       {status == "edit" && (
@@ -131,7 +195,7 @@ export default function RequestDetailForm({
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <Image
-                    src="/assets/img/sample-avatar.png"
+                    src={formData.userImageUrl || "/assets/img/avatar.svg"}
                     className="avatar avatar-md"
                     width={100}
                     height={100}
@@ -164,17 +228,19 @@ export default function RequestDetailForm({
                       </div>
                     </div>
 
-                    <div className="col-span-12 md:col-span-6">
-                      <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">call</i>
-                        <div className="form-plaintext-group">
-                          <div className="form-text text-nowra">
-                            {" "}
-                            {formData.telInternal}
+                    {formData.telInternal && (
+                      <div className="col-span-12 md:col-span-6">
+                        <div className="form-group form-plaintext">
+                          <i className="material-symbols-outlined">call</i>
+                          <div className="form-plaintext-group">
+                            <div className="form-text text-nowra">
+                              {" "}
+                              {formData.telInternal}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -269,31 +335,25 @@ export default function RequestDetailForm({
           <div className="form-section">
             {status == "detail" && <ApproveProgress />}
 
-       
-           
-                  {/* <div className="mt-5">
+            {/* <div className="mt-5">
                  
                   
                     <PickupKeyCard />
 
                   </div> */}
-           
 
-          
-              <>
-                {carSelect == "true" ? (
-                  <>
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">ยานพาหนะ</div>
-                    </div>
+            <>
+              {carSelect == "true" ? (
+                <>
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">ยานพาหนะ</div>
+                  </div>
 
-                    <CarDetailCard />
+                  {formData.vehicleSelect && vehicleDetail && (
+                    <CarDetailCard vehicle={vehicleDetail} />
+                  )}
 
-                    <DriverSmallInfoCard />
-                  </>
-                ) : (
-                  <>
-                    {" "}
+                  {formData.isAdminChooseVehicle === "1" && (
                     <div className="card card-section-inline mt-5">
                       <div className="card-body card-body-inline">
                         <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -341,50 +401,53 @@ export default function RequestDetailForm({
                         </div>
                       </div>
                     </div>
-                    <div className="card card-section-inline mt-5">
-                      <div className="card-body card-body-inline">
-                        <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                          <Image
-                            src="/assets/img/graphic/admin_select_driver_small.png"
-                            className="rounded-md"
-                            width={100}
-                            height={100}
-                            alt=""
-                          />
-                        </div>
-                        <div className="card-content">
-                          <div className="card-content-top">
-                            <div className="card-title">
-                              ผู้ดูแลเลือกพนักงานขับรถให้
-                            </div>
-                            <div className="supporting-text-group">
-                              <div className="supporting-text">
-                                สายงานดิจิทัล
-                              </div>
-                            </div>
-                          </div>
+                  )}
 
-                          <div className="card-item-group d-flex">
-                            <div className="card-item">
-                              <i className="material-symbols-outlined">group</i>
-                              <span className="card-item-text">ว่าง 2 คน</span>
-                            </div>
+                  <DriverSmallInfoCard />
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <div className="card card-section-inline mt-5">
+                    <div className="card-body card-body-inline">
+                      <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                        <Image
+                          src="/assets/img/graphic/admin_select_driver_small.png"
+                          className="rounded-md"
+                          width={100}
+                          height={100}
+                          alt=""
+                        />
+                      </div>
+                      <div className="card-content">
+                        <div className="card-content-top">
+                          <div className="card-title">
+                            ผู้ดูแลเลือกพนักงานขับรถให้
                           </div>
-                          <div className="card-actions">
-                            <button className="btn btn-primary w-full">
-                              เลือกพนักงานขับรถ
-                            </button>
+                          <div className="supporting-text-group">
+                            <div className="supporting-text">สายงานดิจิทัล</div>
                           </div>
+                        </div>
+
+                        <div className="card-item-group d-flex">
+                          <div className="card-item">
+                            <i className="material-symbols-outlined">group</i>
+                            <span className="card-item-text">ว่าง 2 คน</span>
+                          </div>
+                        </div>
+                        <div className="card-actions">
+                          <button className="btn btn-primary w-full">
+                            เลือกพนักงานขับรถ
+                          </button>
                         </div>
                       </div>
                     </div>
-                  </>
-                )}
+                  </div>
+                </>
+              )}
+            </>
 
-              </>
-          
-               { driverCard &&
-            status != "detail" && status != "edit" && (
+            {driverCard && status != "detail" && status != "edit" && (
               <div className="form-section mt-5">
                 <div className="form-section-header">
                   <div className="form-section-header-title">ผู้ขับขี่</div>
@@ -430,8 +493,7 @@ export default function RequestDetailForm({
               </div>
             )}
           </div>
-          { approverCard &&
-          status != "detail" && status != "edit" && (
+          {approverCard && status != "detail" && status != "edit" && (
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
@@ -447,10 +509,7 @@ export default function RequestDetailForm({
 
               <UserInfoCard />
             </div>
-          )
-        }
-
-
+          )}
         </div>
       </div>
       {status == "edit" && (

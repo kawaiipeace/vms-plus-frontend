@@ -15,6 +15,7 @@ import Link from "next/link";
 import { fetchDrivers, fetchVehicleUsers } from "@/app/services/masterService";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useFormContext } from "@/app/contexts/requestFormContext";
 import LicensePlateStat from "@/app/components/licensePlateStat";
 
 const schema = yup.object().shape({
@@ -38,6 +39,7 @@ export default function ProcessThree() {
   const [requestAnnual, setRequestAnnual] = useState("");
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
+    const { updateFormData } = useFormContext();
   const [params, setParams] = useState({
     name: "",
     page: 1,

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import * as yup from "yup";
 import { useSidebar } from "@/app/contexts/sidebarContext";
 import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
@@ -13,9 +12,7 @@ import CustomSelect from "@/app/components/customSelect";
 import ZeroRecord from "@/app/components/zeroRecord";
 import { fetchVehicles } from "@/app/services/bookingUser";
 import { fetchVehicleCarTypes } from "@/app/services/masterService";
-import { useForm } from "react-hook-form";
-// import { useFormContext } from "@/app/contexts/requestFormContext";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useFormContext } from "@/app/contexts/requestFormContext";
 // import Toast from "@/app/components/toast";
 
 interface Vehicle {
@@ -36,13 +33,15 @@ interface PaginationInterface {
   totalPages: number;
 }
 
-const schema = yup.object().shape({
-  isAdminChooseVehicle: yup.number(),
-});
+interface FormData {
+  isAdminChooseVehicle?: string;  
+  vehicleSelect?: string; 
+}
 
 export default function ProcessTwo() {
   const router = useRouter();
   const [vehicleCards, setVehicleCards] = useState<Vehicle[]>([]);
+  const { updateFormData } = useFormContext();
   const [paginationData, setPaginationData] = useState<PaginationInterface>({
     limit: 10,
     page: 1,
@@ -77,10 +76,16 @@ export default function ProcessTwo() {
 
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
-    localStorage.setItem('processTwoSelect', value);
-    if(value == "ผู้ดูแลยานพาหนะเลือกให้"){
-      setValue("isAdminChooseVehicle", 1);
-    }
+    const updatedData: Partial<FormData> = {};
+  if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
+    updatedData.isAdminChooseVehicle = "1"; // Update the data object
+  } else if (value === "ระบบเลือกยานพาหนะให้") {
+    updatedData.isAdminChooseVehicle = "0"; // Update the data object
+  } else {
+    updatedData.vehicleSelect = value; // Update the data object
+  }
+
+  updateFormData(updatedData);
   };
 
   const NextProcess = () => {
@@ -90,16 +95,6 @@ export default function ProcessTwo() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setParams((prev) => ({ ...prev, search: e.target.value }));
   };
-
-   const {
-      // register,
-      // handleSubmit,
-      setValue,
-      // formState: { errors, isValid },
-    } = useForm({
-      mode: "onChange",
-      resolver: yupResolver(schema),
-    });
 
   const handleOrgChange = async (selectedOption: {
     value: string;
@@ -175,7 +170,7 @@ export default function ProcessTwo() {
   }, [params]);
 
   return (
-    <div>
+
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
@@ -352,6 +347,6 @@ export default function ProcessTwo() {
           </div>
         </div>
       </div>
-    </div>
+    
   );
 }

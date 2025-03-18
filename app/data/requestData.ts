@@ -1,5 +1,5 @@
 export type RequestData = {
-  trn_request_uid: string;
+  request_no: string;
   vehicle_user_emp_name: string;
   vehicle_user_dept_sap: string;
   vehicle_user_emp_id: string;
@@ -8,6 +8,7 @@ export type RequestData = {
   approved_request_emp_id: string;
   approved_request_emp_name: string;
   approved_request_dept_sap: string;
+  ref_request_status_name: string;
   start_datetime: string;
   end_datetime: string;
   date_range: string;
@@ -87,7 +88,7 @@ export type RecordFuelTabProps = {
 
 export const requestData_1: RequestData[] = [
   {
-    trn_request_uid: "0001",
+    request_no: "0001",
     vehicle_user_emp_name: "นาย สมชาย ใจดี",
     vehicle_user_dept_sap: "กฟฟ. ในสังกัด กระทรวงมหาดไทย",
     vehicle_user_emp_id: "0001",
@@ -149,17 +150,18 @@ export const requestData_1: RequestData[] = [
     received_key_place: "0001",
     received_key_start_datetime: "0001",
     received_key_end_datetime: "0001",
+    ref_request_status_name: "รออนุมัติ"
   },
 ];
 
 export const requestDataColumns = [
-  { accessorKey: "trn_request_uid", header: "เลขที่คำขอ", enableSorting: true },
+  { accessorKey: "request_no", header: "เลขที่คำขอ", enableSorting: true },
   { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ", enableSorting: false },
   { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ", enableSorting: false },
-  { accessorKey: "vehicle_user_dept_sap", header: "สังกัดยานพาหนะ", enableSorting: false },
   { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน", enableSorting: false },
   { accessorKey: "start_datetime", header: "วันที่เดินทาง", enableSorting: true },
-  { accessorKey: "objective", header: "สถานะคำขอ", enableSorting: false },
+  // { accessorKey: "objective", header: "รายละเอียด", enableSorting: false },
+  { accessorKey: "ref_request_status_name", header: "สถานะคำขอ", enableSorting: false },
   { accessorKey: "action", header: "", enableSorting: false },
 ];
 

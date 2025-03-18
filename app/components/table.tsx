@@ -134,7 +134,9 @@ export default function TableComponent<T>({
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="p-2">
                     {cell.column.columnDef.header === "สถานะคำขอ" ? (
-                      <div className="w-full text-center">
+                       <>
+                       <div className="flex items-center">
+                       <div className="w-full text-center">
                         {cell.renderValue() === "เกินวันที่นัดหมาย" ||
                         cell.renderValue() === "ถูกตีกลับ" ? (
                           <span className="badge badge-pill-outline badge-error whitespace-nowrap">
@@ -149,20 +151,22 @@ export default function TableComponent<T>({
                             {cell.renderValue() as React.ReactNode}
                           </span>
                         )}
+                       
+                         
                       </div>
-                    ) : cell.column.columnDef.header === "" ? (
-                      <>
-                        {listName == "request" && (
-                          <div className="dt-action">
-                            <button
-                              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                              data-tip="ดูรายละเอียดคำขอ"
-                              onClick={() => router.push("/vehicle-booking/request-list/1")}
-                            >
-                              <i className="material-symbols-outlined icon-settings-fill-300-24">
-                                quick_reference_all
-                              </i>
-                            </button>
+                       <div className="dt-action">
+                       { cell.renderValue() == "รออนุมัติ" &&
+                           <button
+                             className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                             data-tip="ดูรายละเอียดคำขอ"
+                             onClick={() => router.push("/vehicle-booking/request-list/1")}
+                           >
+                             <i className="material-symbols-outlined icon-settings-fill-300-24">
+                               quick_reference_all
+                             </i>
+                           </button>
+}
+{ cell.renderValue() == "ถูกตีกลับ" &&
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="แก้ไข"
@@ -172,7 +176,19 @@ export default function TableComponent<T>({
                                 stylus
                               </i>
                             </button>
-                            <div className="dropdown dropdown-left dropdown-end">
+}
+                       </div>
+
+                       </div>
+                    
+                      </>
+                    ) : cell.column.columnDef.header === "" ? (
+                      <>
+                        {listName == "request" && (
+                          <div className="dt-action">
+                           
+
+                            {/* <div className="dropdown dropdown-left dropdown-end">
                               <div
                                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                                 tabIndex={0}
@@ -213,7 +229,7 @@ export default function TableComponent<T>({
                                   คืนยานพาหนะ
                                 </Link>
                               </ul>
-                            </div>
+                            </div> */}
                           </div>
                         )}
                       </>

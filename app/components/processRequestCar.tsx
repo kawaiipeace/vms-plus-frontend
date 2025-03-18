@@ -1,7 +1,9 @@
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function ProcessRequestCar({ step }: { step: number }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const router = useRouter();
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
@@ -25,18 +27,6 @@ export default function ProcessRequestCar({ step }: { step: number }) {
                     <circle cx="16" cy="16" r="15.9155" className={`circular-progressbar-progress js-circular-progressbar`}   style={{ strokeDashoffset: step === 1 ? "75" : step === 2 ? "50" : step === 3 ? "25" : "0" }}  ></circle>
                   </svg>
             
-            {/* <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="-1.5 -1.5 34 34"
-              className="circular-progressbar"
-            >
-              <circle
-                cx="16"
-                cy="16"
-                r="15.9155"
-                className="circular-progressbar-background"
-              ></circle>
-            </svg> */}
             <div className="circular-progressbar-text">
               {step} <span className="circular-progressbar-slash">/</span>4
             </div>
@@ -64,9 +54,10 @@ export default function ProcessRequestCar({ step }: { step: number }) {
         id="collapseSteps"
       >
         <div
-          className={`progress-step ${
+          className={`progress-step cursor-pointer ${
             step == 1 ? "active" : step > 1 ? "done" : ""
           }`}
+          onClick={() => router.push('/vehicle-booking/process-one')}
         >
           <span className="progress-step-no">
             {step > 1 ? <i className="material-symbols-outlined">check</i> : 1}
@@ -77,9 +68,10 @@ export default function ProcessRequestCar({ step }: { step: number }) {
           </div>
         </div>
         <div
-          className={`progress-step ${
+          className={`progress-step cursor-pointer ${
             step == 2 ? "active" : step > 2 ? "done" : ""
           }`}
+          onClick={() => router.push('/vehicle-booking/process-two')}
         >
           <span className="progress-step-no">
             {step > 2 ? <i className="material-symbols-outlined">check</i> : 2}
@@ -90,9 +82,10 @@ export default function ProcessRequestCar({ step }: { step: number }) {
           </div>
         </div>
         <div
-          className={`progress-step ${
+          className={`progress-step cursor-pointer ${
             step == 3 ? "active" : step > 3 ? "done" : ""
           }`}
+          onClick={() => router.push('/vehicle-booking/process-three')}
         >
           <span className="progress-step-no">
             {step > 3 ? <i className="material-symbols-outlined">check</i> : 3}
