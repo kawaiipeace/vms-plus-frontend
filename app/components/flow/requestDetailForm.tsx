@@ -354,7 +354,7 @@ export default function RequestDetailForm({
                   )}
 
                   {formData.isAdminChooseVehicle === "1" && (
-                    <div className="card card-section-inline mt-5">
+                    <div className="card card-section-inline mt-5 mb-5">
                       <div className="card-body card-body-inline">
                         <div className="img img-square img-avatar flex-grow-1 align-self-start">
                           <Image
@@ -526,7 +526,8 @@ export default function RequestDetailForm({
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
       <JourneyDetailModal ref={journeyDetailModalRef} />
       <VehicleUserModal process="edit" ref={vehicleUserModalRef} />
-      <ReferenceModal ref={referenceModalRef} />
+      <ReferenceModal ref={referenceModalRef}  refNum={formData.referenceNumber}
+        files={formData.attachmentFile} />
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />
       <ApproveRequestModal

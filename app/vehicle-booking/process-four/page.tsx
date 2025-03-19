@@ -23,7 +23,6 @@ export default function ProcessFour() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("formData");
-      console.log('storedata',storedData);
       if (storedData) {
         setFormData(JSON.parse(storedData));
       }

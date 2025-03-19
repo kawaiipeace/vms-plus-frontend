@@ -2,8 +2,8 @@
 import { createContext, useContext, useState } from "react";
 
 interface FormData {
-  internalPhone?: string;
-  phone?: string;
+  telInternal?: string;
+  telMobile?: string;
   workPlace?: string;
   purpose?: string;
   attachedDocument?: string;
@@ -31,6 +31,11 @@ interface FormData {
   vehicleUserEmpId?: string;
   vehicleUserEmpName?: string;
   vehicleSelect?:string;
+  driverInternalContact?:string;
+  driverMobileContact?:string;
+  driverEmpID?: string;
+  driverEmpName?: string;
+  driverDeptSap?: string;
 }
 
 interface RequestFormContextType {

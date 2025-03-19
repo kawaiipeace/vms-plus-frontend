@@ -2,7 +2,6 @@ import { useRef } from "react";
 import Image from "next/image";
 import VehiclePickModel from "@/app/components/modal/vehiclePickModal";
 
-
 export default function AutoCarCard({
   imgSrc,
   title,
@@ -19,7 +18,6 @@ export default function AutoCarCard({
     closeModal: () => void;
   } | null>(null);
 
- 
 
   return (
     <div className="card">

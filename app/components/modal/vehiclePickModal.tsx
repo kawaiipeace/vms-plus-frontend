@@ -9,11 +9,10 @@ import CarTypeCard from "@/app/components/card/carTypeCard";
 import { fetchVehicleCarTypes } from "@/app/services/masterService";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
-import { useFormContext } from "@/app/contexts/requestFormContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
-  vehicleTypeSelect: yup.string().required("Please select a vehicle"),
+  vehicleTypeSelect: yup.string()
 });
 
 interface VehiclePickModelProps {
@@ -21,17 +20,18 @@ interface VehiclePickModelProps {
   onSelect?: (vehicle: string) => void;
 }
 
-interface VehicleCat {
+interface VehicleCat{
   ref_vehicle_type_code: string;
   ref_vehicle_type_name: string;
   available_units: string;
-  vehicle_type_image: string;
+  vehicle_type_image:string;
 }
 
 const VehiclePickModel = forwardRef<
-  { openModal: () => void; closeModal: () => void },
-  VehiclePickModelProps
+  { openModal: () => void; closeModal: () => void }, // Ref type
+  VehiclePickModelProps // Props type
 >(({ process, onSelect }, ref) => {
+  // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -41,7 +41,6 @@ const VehiclePickModel = forwardRef<
 
   const [selectedCarType, setSelectedCarType] = useState("");
   const [vehicleCatData, setVehicleCatData] = useState<VehicleCat[]>([]);
-    const { updateFormData } = useFormContext();
 
   useEffect(() => {
     const fetchVehicleCarTypesData = async () => {
@@ -58,28 +57,15 @@ const VehiclePickModel = forwardRef<
     fetchVehicleCarTypesData();
   }, []);
 
+  
+
   const {
     setValue,
-    register,
-    handleSubmit,
-    formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
-    defaultValues: {
-      vehicleTypeSelect: "",
-    },
   });
 
-  const onSubmit = (data: any) => {
-    if (onSelect) onSelect(data.vehicleTypeSelect);
-    updateFormData(data);
-    modalRef.current?.close(); // Close modal
-  };
-
-  useEffect(() => {
-    setValue("vehicleTypeSelect", selectedCarType);
-  }, [selectedCarType, setValue]);
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -89,6 +75,7 @@ const VehiclePickModel = forwardRef<
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">
+            {" "}
             {process == "edit" ? "แก้ไข" : "เลือก"}ประเภทยานพาหนะ
           </div>
           <form method="dialog">
@@ -97,11 +84,7 @@ const VehiclePickModel = forwardRef<
             </button>
           </form>
         </div>
-
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="modal-body overflow-y-auto flex flex-col"
-        >
+        <div className="modal-body overflow-y-auto">
           <div className="form-group">
             <label className="form-label mb-4 text-primary">
               <i className="material-symbols-outlined text-brand">
@@ -110,45 +93,40 @@ const VehiclePickModel = forwardRef<
               สายงานดิจิทัล
             </label>
 
-            <input type="hidden" {...register("vehicleTypeSelect")} />
-
             <div className="grid grid-cols-3 gap-4">
-              {vehicleCatData.map((vehicle) => (
+            {vehicleCatData.map((vehicle) => (
                 <CarTypeCard
-                  key={vehicle.ref_vehicle_type_code}
-                  imgSrc={
-                    vehicle.vehicle_type_image ||
-                    "/assets/img/graphic/category_car.png"
-                  }
-                  title={vehicle.ref_vehicle_type_name}
-                  text={vehicle.available_units}
+                  key={vehicle.ref_vehicle_type_code} // Unique key for each card
+                  imgSrc={vehicle.vehicle_type_image || "/assets/img/graphic/category_car.png"} // Adjust this to the actual field in your data
+                  title={vehicle.ref_vehicle_type_name} // Adjust this to the actual field in your data
+                  text={vehicle.available_units} // Adjust this to the actual field in your data
                   name="carType"
                   selectedValue={selectedCarType}
                   setSelectedValue={setSelectedCarType}
                 />
               ))}
+             
             </div>
-            {errors.vehicleTypeSelect && (
-              <p className="text-red-500">{errors.vehicleTypeSelect.message}</p>
-            )}
           </div>
+        </div>
+        <div className="modal-action sticky bottom-0 gap-3 mt-0">
+          <form method="dialog">
+            <button className="btn btn-secondary">ปิด</button>
+          </form>
 
-          <div className="modal-action sticky bottom-0 gap-3 mt-0">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => modalRef.current?.close()} // Manual close
-            >
-              ปิด
-            </button>
-
-            <button type="submit" className="btn btn-primary">
-              เลือก
-            </button>
-          </div>
-        </form>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              if (onSelect) onSelect(selectedCarType); 
+              setValue("vehicleTypeSelect",selectedCarType)
+              modalRef.current?.close(); // Close the modal after selecting
+            }}
+          >
+            เลือก
+          </button>
+        </div>
       </div>
-
       <form method="dialog" className="modal-backdrop">
         <button>close</button>
       </form>

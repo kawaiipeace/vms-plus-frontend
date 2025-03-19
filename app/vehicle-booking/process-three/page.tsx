@@ -39,7 +39,7 @@ export default function ProcessThree() {
   const [requestAnnual, setRequestAnnual] = useState("");
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
-    const { updateFormData } = useFormContext();
+  const { updateFormData } = useFormContext();
   const [params, setParams] = useState({
     name: "",
     page: 1,
@@ -71,7 +71,6 @@ export default function ProcessThree() {
 
   const allValid = licenseValid && annualValid;
 
-
   const handleVehicleUserChange = async (selectedOption: {
     value: string;
     label: string;
@@ -92,6 +91,15 @@ export default function ProcessThree() {
       setAnnualYear(empData.annual_driver.annual_yyyy);
       setRequestAnnual(empData.annual_driver.request_annual_driver_no);
       setLicenseExpDate(empData.annual_driver.driver_license_expire_date);
+
+      // Update form data using updateFormData
+      updateFormData({
+        driverInternalContact: empData.tel_internal,
+        driverMobileContact: empData.tel_mobile,
+        driverEmpID: empData.emp_id,
+        driverEmpName: empData.full_name,
+        driverDeptSap: empData.dept_sap,
+      });
     }
   };
 
@@ -342,29 +350,31 @@ export default function ProcessThree() {
 
                   <div className="form-card w-full mt-5">
                     <div className="form-card-body space-y-2">
-                    {driverLicenseNo && (
-          new Date(licenseExpDate) > today ? (
-            <LicensePlateStat status={true} title="มีใบขับขี่" />
-          ) : (
-            <LicensePlateStat status={false} title="ใบขับขี่หมดอายุ" />
-          )
-        )}
+                      {driverLicenseNo && (
+                        new Date(licenseExpDate) > today ? (
+                          <LicensePlateStat status={true} title="มีใบขับขี่" />
+                        ) : (
+                          <LicensePlateStat
+                            status={false}
+                            title="ใบขับขี่หมดอายุ"
+                          />
+                        )
+                      )}
 
-        {driverLicenseNo && requestAnnual && (
-          annualYear >= today.getFullYear() ? (
-            <LicensePlateStat
-              status={true}
-              title={`มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
-            />
-          ) : (
-            <LicensePlateStat
-              status={false}
-              title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
-              desc="ผู้ขับขี่จะต้องขออนุมัติทำหน้าที่ขับรถยนต์ประจำปีก่อน"
-            />
-          )
-        )}
-                     
+                      {driverLicenseNo && requestAnnual && (
+                        annualYear >= today.getFullYear() ? (
+                          <LicensePlateStat
+                            status={true}
+                            title={`มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
+                          />
+                        ) : (
+                          <LicensePlateStat
+                            status={false}
+                            title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
+                            desc="ผู้ขับขี่จะต้องขออนุมัติทำหน้าที่ขับรถยนต์ประจำปีก่อน"
+                          />
+                        )
+                      )}
                     </div>
                   </div>
                 </div>

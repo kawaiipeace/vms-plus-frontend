@@ -124,71 +124,70 @@ export default function TableComponent<T>({
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row, index) => (
-              <tr
-                key={row.id}
-                className={` ${
-                  index === 0 ? "" : "border-t"
-                } border-gray-200 text-left`}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-2">
-                    {cell.column.columnDef.header === "สถานะคำขอ" ? (
-                       <>
-                       <div className="flex items-center">
-                       <div className="w-full text-center">
-                        {cell.renderValue() === "เกินวันที่นัดหมาย" ||
-                        cell.renderValue() === "ถูกตีกลับ" ? (
-                          <span className="badge badge-pill-outline badge-error whitespace-nowrap">
-                            {cell.renderValue() as React.ReactNode}
-                          </span>
-                        ) : cell.renderValue() === "ตีกลับคำขอ" ? (
-                          <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
-                            {cell.renderValue() as React.ReactNode}
-                          </span>
-                        ) : (
-                          <span className="badge badge-pill-outline badge-info whitespace-nowrap">
-                            {cell.renderValue() as React.ReactNode}
-                          </span>
-                        )}
-                       
-                         
-                      </div>
-                       <div className="dt-action">
-                       { cell.renderValue() == "รออนุมัติ" &&
-                           <button
-                             className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                             data-tip="ดูรายละเอียดคำขอ"
-                             onClick={() => router.push("/vehicle-booking/request-list/1")}
-                           >
-                             <i className="material-symbols-outlined icon-settings-fill-300-24">
-                               quick_reference_all
-                             </i>
-                           </button>
-}
-{ cell.renderValue() == "ถูกตีกลับ" &&
+            {table.getRowModel().rows.map((row, index) => {
+              // Store the value of the "สถานะคำขอ" cell
+              const statusValue = row
+                .getVisibleCells()
+                .find((cell) => cell.column.columnDef.header === "สถานะคำขอ")
+                ?.renderValue();
+
+              return (
+                <tr
+                  key={row.id}
+                  className={` ${
+                    index === 0 ? "" : "border-t"
+                  } border-gray-200 text-left`}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="p-2">
+                      {cell.column.columnDef.header === "สถานะคำขอ" ? (
+                        <div className="w-full">
+                          {cell.renderValue() === "เกินวันที่นัดหมาย" ||
+                          cell.renderValue() === "ถูกตีกลับ" ? (
+                            <span className="badge badge-pill-outline badge-error whitespace-nowrap">
+                              {cell.renderValue() as React.ReactNode}
+                            </span>
+                          ) : cell.renderValue() === "ตีกลับคำขอ" ? (
+                            <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
+                              {cell.renderValue() as React.ReactNode}
+                            </span>
+                          ) : (
+                            <span className="badge badge-pill-outline badge-info whitespace-nowrap">
+                              {cell.renderValue() as React.ReactNode}
+                            </span>
+                          )}
+                        </div>
+                      ) : cell.column.columnDef.header === "" ? (
+                        <div className="dt-action">
+                          {statusValue == "รออนุมัติ" && (
+                            <button
+                              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                              data-tip="ดูรายละเอียดคำขอ"
+                              onClick={() =>
+                                router.push("/vehicle-booking/request-list/1")
+                              }
+                            >
+                              <i className="material-symbols-outlined icon-settings-fill-300-24">
+                                quick_reference_all
+                              </i>
+                            </button>
+                          )}
+                          {statusValue == "ถูกตีกลับ" && (
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="แก้ไข"
-                              onClick={() => router.push("/vehicle-booking/request-list/edit/1")}
+                              onClick={() =>
+                                router.push(
+                                  "/vehicle-booking/request-list/edit/1"
+                                )
+                              }
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">
                                 stylus
                               </i>
                             </button>
-}
-                       </div>
-
-                       </div>
-                    
-                      </>
-                    ) : cell.column.columnDef.header === "" ? (
-                      <>
-                        {listName == "request" && (
-                          <div className="dt-action">
-                           
-
-                            {/* <div className="dropdown dropdown-left dropdown-end">
+                          )}
+                          {/* <div className="dropdown dropdown-left dropdown-end">
                               <div
                                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                                 tabIndex={0}
@@ -230,18 +229,17 @@ export default function TableComponent<T>({
                                 </Link>
                               </ul>
                             </div> */}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      (cell.renderValue() as React.ReactNode)
-                    )}
-                  </td>
-                ))}
+                        </div>
+                      ) : (
+                        (cell.renderValue() as React.ReactNode)
+                      )}
+                    </td>
+                  ))}
 
-                <td></td>
-              </tr>
-            ))}
+                  <td></td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

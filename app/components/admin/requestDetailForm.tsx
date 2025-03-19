@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import JourneyDetailModal from "@/app/components/modal/journeyDetailModal";
 import VehiclePickModel from "@/app/components/modal/vehiclePickModal";
@@ -16,13 +16,24 @@ import AppointmentDriverCard from "@/app/components/card/appointmentDriverCard";
 import ReferenceCard from "@/app/components/card/referenceCard";
 import DisburstmentCard from "@/app/components/card/disburstmentCard";
 import ConfirmKeyHandOverModal from "../modal/confirmKeyHandOverModal";
+import { useFormContext } from "@/app/contexts/requestFormContext";
+
 
 interface RequestDetailFormProps {
   status: string;
 }
 export default function RequestDetailForm({ status }: RequestDetailFormProps) {
+  const { formData, updateFormData } = useFormContext();
   const driverType = "PEAS";
   const [haveUserKeyPickUp, setHaveUserKeyPickUp] = useState(true);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem('formdata');
+    if (storedData) {
+      updateFormData(JSON.parse(storedData));
+    }
+  }, [updateFormData]);
+
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -136,7 +147,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <ReferenceCard />
+            <ReferenceCard refNumber={formData.referenceNumber} file={formData.attachedDocument} />
           </div>
 
           <div className="form-section">

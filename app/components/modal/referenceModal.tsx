@@ -1,19 +1,28 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from "react";
 
-const ReferenceModal = forwardRef((_, ref) => {
-  const modalRef = useRef<HTMLDialogElement>(null);
+interface RefProps {
+  refNum?: string;
+  files?: string;
+}
 
+const ReferenceModal = forwardRef<
+  { openModal: () => void; closeModal: () => void }, // Ref type
+  RefProps
+>(({ refNum, files }, ref) => {
+
+  const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  const [fileName, setFileName] = useState( files ? files.split("/").pop() : "อัพโหลดเอกสารแนบ");
 
-  const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,7 +63,7 @@ const ReferenceModal = forwardRef((_, ref) => {
                     type="text"
                     className="form-control"
                     placeholder=""
-                    defaultValue="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด"
+                    defaultValue={refNum}
                   />
                 </div>
               </div>

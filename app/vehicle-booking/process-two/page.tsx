@@ -77,12 +77,14 @@ export default function ProcessTwo() {
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
+    updatedData.isAdminChooseVehicle = "";
   if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
     updatedData.isAdminChooseVehicle = "1"; // Update the data object
   } else if (value === "ระบบเลือกยานพาหนะให้") {
     updatedData.isAdminChooseVehicle = "0"; // Update the data object
   } else {
     updatedData.vehicleSelect = value; // Update the data object
+    delete updatedData.isAdminChooseVehicle;
   }
 
   updateFormData(updatedData);
