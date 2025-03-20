@@ -4,8 +4,8 @@ interface JourneyDetailCardProps {
   displayOn?: string;
   startDate?: string;
   endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  timeStart?: string;
+  timeEnd?: string;
   workPlace?: string;
   purpose?: string;
   remark?: string;
@@ -17,8 +17,8 @@ export default function JourneyDetailCard({
   displayOn,
   startDate,
   endDate,
-  startTime,
-  endTime,
+  timeStart,
+  timeEnd,
   workPlace,
   purpose,
   remark,
@@ -35,7 +35,7 @@ export default function JourneyDetailCard({
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่ / เวลาเดินทาง</div>
                 <div className="form-text">
-                  {startDate} - {endDate} {startTime} - {endTime}
+                  {startDate} - {endDate} {timeStart} - {timeEnd}
                 </div>
               </div>
             </div>

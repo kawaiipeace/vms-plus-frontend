@@ -4,6 +4,7 @@ import { RequestData, requestDataColumns } from "@/app/data/requestData";
 import ZeroRecord from "./zeroRecord";
 import Link from "next/link";
 import FilterModal from "@/app/components/modal/filterModal";
+import { useRouter } from "next/navigation";
 
 interface ApproveFlowProps {
   data: RequestData[];
@@ -11,10 +12,16 @@ interface ApproveFlowProps {
 
 export default function ArpproveFlow({ data }: ApproveFlowProps) {
   // const [requestData, setRequestData] = useState<RequestData[]>([]);
+  const router = useRouter();
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const addNewRequest = () => {
+    localStorage.removeItem('formData');
+    router.push('/vehicle-booking/process-one');
+  }
 
 
   return (
@@ -51,13 +58,13 @@ export default function ArpproveFlow({ data }: ApproveFlowProps) {
                   </span>
                 </div>
               </button>
-              <Link
-                href="process-one"
+              <button
+                onClick={addNewRequest}
                 className="btn btn-primary h-[40px] min-h-[40px]"
               >
                 <i className="material-symbols-outlined">add</i>
                 สร้างคำขอใช้
-              </Link>
+              </button>
             </div>
           </div>
           <TableComponent

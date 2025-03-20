@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface FormData {
   telInternal?: string;
@@ -30,9 +30,9 @@ interface FormData {
   vehicleUserDeptSap?: string;
   vehicleUserEmpId?: string;
   vehicleUserEmpName?: string;
-  vehicleSelect?:string;
-  driverInternalContact?:string;
-  driverMobileContact?:string;
+  vehicleSelect?: string;
+  driverInternalContact?: string;
+  driverMobileContact?: string;
   driverEmpID?: string;
   driverEmpName?: string;
   driverDeptSap?: string;
@@ -45,8 +45,7 @@ interface RequestFormContextType {
 
 const FormContext = createContext<RequestFormContextType | undefined>(undefined);
 
-export const FormProvider = ({ children }: { children: React.ReactNode }) => {
-  // Initialize formData with data from localStorage if available
+export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [formData, setFormData] = useState<FormData>(() => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("formData");
@@ -58,7 +57,6 @@ export const FormProvider = ({ children }: { children: React.ReactNode }) => {
   const updateFormData = (newData: Partial<FormData>) => {
     setFormData((prev) => {
       const updatedData = { ...prev, ...newData };
-      // Save the updated formData to localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("formData", JSON.stringify(updatedData));
       }

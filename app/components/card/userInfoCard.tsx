@@ -1,15 +1,24 @@
-import React, { useRef } from "react";
+import React, { useRef} from "react";
 import Image from "next/image";
 import DriverInfoModal from "@/app/components/modal/driverInfoModal";
 import { CallToDriverModal } from "@/app/components/modal/callToDriverModal";
+import { VehicleUserType } from "@/app/components/types/vehicleUserType";
 
 interface UserInfoCardProps {
   UserType?: string;
   displayBtnMore?: boolean;
   displayOn?: string;
   reviewDriver?: () => void;
+  vehicleUserData: VehicleUserType;
 }
-export default function UserInfoCard({ UserType, displayBtnMore, displayOn, reviewDriver }: UserInfoCardProps) {
+
+export default function UserInfoCard({
+  UserType,
+  displayBtnMore,
+  displayOn,
+  reviewDriver,
+  vehicleUserData,
+}: UserInfoCardProps) {
   const driverInfoModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -18,23 +27,33 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn, revi
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
   return (
     <div className="card">
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
-            <Image src="/assets/img/sample-avatar.png" className="rounded-md" width={100} height={100} alt="" />
+            <Image
+              src={vehicleUserData.image_url || "/assets/image/sample-avatar.png"}
+              className="rounded-md"
+              width={100}
+              height={100}
+              alt={vehicleUserData.full_name}
+            />
           </div>
           <div className="card-content">
             <div className="card-content-top">
-              <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-
+              <div className="card-title">{vehicleUserData.full_name}</div>
               <div className="supporting-text-group">
-                {UserType == "outsource" && <div className="supporting-text">บริษัท ยุทธศาสตร์การขับขี่ยี่สิบปี จำกัด</div>}
+                {UserType == "outsource" && (
+                  <div className="supporting-text">
+                    บริษัท ยุทธศาสตร์การขับขี่ยี่สิบปี จำกัด
+                  </div>
+                )}
                 {UserType != "outsource" && (
                   <>
-                    <div className="supporting-text">505291</div>
-                    <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
+                    <div className="supporting-text">{vehicleUserData.emp_id}</div>
+                    <div className="supporting-text">{vehicleUserData.dept_sap_short}</div>
                   </>
                 )}
               </div>
@@ -44,12 +63,12 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn, revi
               <div className="card-item-group md:!grid-cols-2 !grid-cols-1">
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">091-234-5678</span>
+                  <span className="card-item-text">{vehicleUserData.tel_mobile}</span>
                 </div>
                 {UserType != "outsource" && (
                   <div className="card-item w-full">
                     <i className="material-symbols-outlined">call</i>
-                    <span className="card-item-text">6032</span>
+                    <span className="card-item-text">{vehicleUserData.tel_internal}</span>
                   </div>
                 )}
                 {UserType == "outsource" && displayOn == "admin" && (
@@ -68,17 +87,20 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn, revi
               <div className="grid grid-cols-1 gap-3 col-span-3">
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">091-234-5678</span>
+                  <span className="card-item-text">{vehicleUserData.tel_mobile}</span>
                 </div>
                 {UserType != "outsource" && (
                   <div className="card-item w-full">
                     <i className="material-symbols-outlined">call</i>
-                    <span className="card-item-text">6032</span>
+                    <span className="card-item-text">{vehicleUserData.tel_internal}</span>
                   </div>
                 )}
               </div>
               <div className="flex w-full justify-end col-span-1">
-                <button className="btn btn-primary" onClick={() => callToDriverModalRef.current?.openModal()}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => callToDriverModalRef.current?.openModal()}
+                >
                   <i className="material-symbols-outlined">call</i>
                 </button>
               </div>
@@ -89,23 +111,34 @@ export default function UserInfoCard({ UserType, displayBtnMore, displayOn, revi
           <>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-1">
-                <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
+                <button
+                  className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`}
+                  onClick={() => driverInfoModalRef.current?.openModal()}
+                >
                   ดูรายละเอียด
                 </button>
               </div>
               <div className="col-span-1">
-                <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={reviewDriver}>
+                <button
+                  className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`}
+                  onClick={reviewDriver}
+                >
                   คะแนนการให้บริการ
                 </button>
               </div>
             </div>
           </>
         ) : (
-          <div className="card-actioins w-full">
-            <button className={`btn btn-secondary w-full ${displayBtnMore && "hidden"}`} onClick={() => driverInfoModalRef.current?.openModal()}>
-              ดูรายละเอียด
-            </button>
-          </div>
+          displayBtnMore === false && (
+            <div className="card-actioins w-full">
+              <button
+                className={`btn btn-secondary w-full`}
+                onClick={() => driverInfoModalRef.current?.openModal()}
+              >
+                ดูรายละเอียด
+              </button>
+            </div>
+          )
         )}
       </div>
       <CallToDriverModal ref={callToDriverModalRef} />

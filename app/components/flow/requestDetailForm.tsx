@@ -19,6 +19,8 @@ import ReferenceCard from "@/app/components/card/referenceCard";
 import DisburstmentCard from "@/app/components/card/disburstmentCard";
 import ApproveProgress from "@/app/components/approveProgress";
 import { fetchVehicleDetail } from "@/app/services/bookingUser";
+import { fetchVehicleUsers } from "@/app/services/masterService";
+import { VehicleUserType } from "../types/vehicleUserType";
 
 interface FormData {
   telInternal?: string;
@@ -46,8 +48,8 @@ interface FormData {
   reservedTimeType?: string;
   startDate?: string;
   endDate?: string;
-  startTime?: string;
-  endTime?: string;
+  timeStart?: string;
+  timeEnd?: string;
   tripType?: string;
   vehicleUserDeptSap?: string;
   vehicleUserEmpId?: string;
@@ -148,6 +150,7 @@ export default function RequestDetailForm({
   const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
     null
   );
+  const [approver, setApprover] = useState<VehicleUserType>();
 
   useEffect(() => {
     console.log(formData);
@@ -163,9 +166,24 @@ export default function RequestDetailForm({
         console.error("Error fetching vehicle details:", error);
       }
     };
+
+    const fetchApprover = async () => {
+      try {
+        const response = await fetchVehicleUsers("");
+        if (response.status === 200) {
+          const vehicleUserData = response.data[0];
+          console.log('user',vehicleUserData);
+          setApprover(vehicleUserData);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
     if (formData.vehicleSelect) {
       fetchVehicleDetailData();
     }
+    fetchApprover();
   }, [formData.vehicleSelect]);
 
   return (
@@ -265,8 +283,8 @@ export default function RequestDetailForm({
             <JourneyDetailCard
               startDate={formData.startDate}
               endDate={formData.endDate}
-              startTime={formData.startTime}
-              endTime={formData.endTime}
+              timeStart={formData.timeStart}
+              timeEnd={formData.timeEnd}
               workPlace={formData.workPlace}
               purpose={formData.purpose}
               remark={formData.remark}
@@ -506,8 +524,9 @@ export default function RequestDetailForm({
                   แก้ไข
                 </button>
               </div>
-
-              <UserInfoCard />
+              {approver && (
+  <UserInfoCard displayBtnMore={true} vehicleUserData={approver} />
+)}
             </div>
           )}
         </div>
@@ -526,8 +545,11 @@ export default function RequestDetailForm({
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
       <JourneyDetailModal ref={journeyDetailModalRef} />
       <VehicleUserModal process="edit" ref={vehicleUserModalRef} />
-      <ReferenceModal ref={referenceModalRef}  refNum={formData.referenceNumber}
-        files={formData.attachmentFile} />
+      <ReferenceModal
+        ref={referenceModalRef}
+        refNum={formData.referenceNumber}
+        files={formData.attachmentFile}
+      />
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />
       <ApproveRequestModal

@@ -4,9 +4,12 @@ import Header from "@/app/components/header";
 import RequestTabs from "@/app/components/tabs/requestTabs";
 import SideBar from "@/app/components/sideBar";
 import ToastCustom from "@/app/components/toastCustom";
+import { useSearchParams } from "next/navigation"; // Import this
 
 export default function RequestList() {
   const { isPinned } = useSidebar();
+  const searchParams = useSearchParams();
+  const created = searchParams.get("created");
 
   return (
     <div>
@@ -33,7 +36,6 @@ export default function RequestList() {
               <div className="page-group-header">
                 <div className="page-title">
                   <span className="page-title-label">คำขอใช้ยานพาหนะ</span>
-                  {/* <span className="badge badge-outline badge-gray">95 กลุ่ม</span> */}
                 </div>
               </div>
             </div>
@@ -42,7 +44,14 @@ export default function RequestList() {
           </div>
         </div>
       </div>
-      {/* <ToastCustom title="สร้างคำขอใช้ยานพาหนะสำเร็จ" desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด" status="success" /> */}
+
+      {created === "success" && (
+        <ToastCustom
+          title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
+          desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
+          status="success"
+        />
+      )}
     </div>
   );
 }

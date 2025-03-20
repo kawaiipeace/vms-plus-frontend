@@ -32,12 +32,10 @@ export const requestDetail = async (id: string) => {
   }
 };
 
-export const createRequest = async (data: []) => {
-  try {
-    const response = await axiosInstance.post('booking-user/create-request/', {
-      body: { data },
-    });
 
+export const createRequest = async (data: any) => {
+  try {
+    const response = await axiosInstance.post('booking-user/create-request',  data );
     return response;
 
   } catch (error) {
