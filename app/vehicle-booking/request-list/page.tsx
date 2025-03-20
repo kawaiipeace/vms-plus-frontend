@@ -4,12 +4,28 @@ import Header from "@/app/components/header";
 import RequestTabs from "@/app/components/tabs/requestTabs";
 import SideBar from "@/app/components/sideBar";
 import ToastCustom from "@/app/components/toastCustom";
-import { useSearchParams } from "next/navigation"; // Import this
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function RequestListContent() {
+  const searchParams = useSearchParams();
+  const created = searchParams.get("created");
+
+  return (
+    <>
+      {created === "success" && (
+        <ToastCustom
+          title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
+          desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
+          status="success"
+        />
+      )}
+    </>
+  );
+}
 
 export default function RequestList() {
   const { isPinned } = useSidebar();
-  const searchParams = useSearchParams();
-  const created = searchParams.get("created");
 
   return (
     <div>
@@ -44,14 +60,9 @@ export default function RequestList() {
           </div>
         </div>
       </div>
-
-      {created === "success" && (
-        <ToastCustom
-          title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
-          desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
-          status="success"
-        />
-      )}
+      <Suspense fallback={<div></div>}>
+        <RequestListContent />
+      </Suspense>
     </div>
   );
 }
