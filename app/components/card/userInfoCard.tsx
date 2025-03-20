@@ -9,7 +9,7 @@ interface UserInfoCardProps {
   displayBtnMore?: boolean;
   displayOn?: string;
   reviewDriver?: () => void;
-  vehicleUserData: VehicleUserType;
+  vehicleUserData?: VehicleUserType;
 }
 
 export default function UserInfoCard({
@@ -34,16 +34,16 @@ export default function UserInfoCard({
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
             <Image
-              src={vehicleUserData.image_url || "/assets/image/sample-avatar.png"}
+              src={vehicleUserData?.image_url || "/assets/image/sample-avatar.png"}
               className="rounded-md"
               width={100}
               height={100}
-              alt={vehicleUserData.full_name}
+              alt={vehicleUserData?.full_name || ""}
             />
           </div>
           <div className="card-content">
             <div className="card-content-top">
-              <div className="card-title">{vehicleUserData.full_name}</div>
+              <div className="card-title">{vehicleUserData?.full_name}</div>
               <div className="supporting-text-group">
                 {UserType == "outsource" && (
                   <div className="supporting-text">
@@ -52,8 +52,8 @@ export default function UserInfoCard({
                 )}
                 {UserType != "outsource" && (
                   <>
-                    <div className="supporting-text">{vehicleUserData.emp_id}</div>
-                    <div className="supporting-text">{vehicleUserData.dept_sap_short}</div>
+                    <div className="supporting-text">{vehicleUserData?.emp_id}</div>
+                    <div className="supporting-text">{vehicleUserData?.dept_sap_short}</div>
                   </>
                 )}
               </div>
@@ -63,12 +63,12 @@ export default function UserInfoCard({
               <div className="card-item-group md:!grid-cols-2 !grid-cols-1">
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">{vehicleUserData.tel_mobile}</span>
+                  <span className="card-item-text">{vehicleUserData?.tel_mobile}</span>
                 </div>
                 {UserType != "outsource" && (
                   <div className="card-item w-full">
                     <i className="material-symbols-outlined">call</i>
-                    <span className="card-item-text">{vehicleUserData.tel_internal}</span>
+                    <span className="card-item-text">{vehicleUserData?.tel_internal}</span>
                   </div>
                 )}
                 {UserType == "outsource" && displayOn == "admin" && (
@@ -87,12 +87,12 @@ export default function UserInfoCard({
               <div className="grid grid-cols-1 gap-3 col-span-3">
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">{vehicleUserData.tel_mobile}</span>
+                  <span className="card-item-text">{vehicleUserData?.tel_mobile}</span>
                 </div>
                 {UserType != "outsource" && (
                   <div className="card-item w-full">
                     <i className="material-symbols-outlined">call</i>
-                    <span className="card-item-text">{vehicleUserData.tel_internal}</span>
+                    <span className="card-item-text">{vehicleUserData?.tel_internal}</span>
                   </div>
                 )}
               </div>

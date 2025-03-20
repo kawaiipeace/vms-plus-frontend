@@ -147,7 +147,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <ReferenceCard refNumber={formData.referenceNumber} file={formData.attachedDocument} />
+            <ReferenceCard refNum={formData.referenceNumber} file={formData.attachedDocument} />
           </div>
 
           <div className="form-section">
