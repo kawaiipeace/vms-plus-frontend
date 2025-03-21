@@ -19,7 +19,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useProfile } from "@/app/contexts/profileContext";
 
 const schema = yup.object().shape({
-  telInternal: yup.string(),
+  telInternal: yup.string().matches(/^\d+$/, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
   telMobile: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")

@@ -100,14 +100,13 @@ interface VehicleDetail {
 
 interface RequestDetailFormProps {
   status: string;
-  formData: FormData;
   approverCard?: boolean;
   driverCard?: boolean;
   keyPickUpCard?: boolean;
 }
+
 export default function RequestDetailForm({
   status,
-  formData,
   approverCard,
   driverCard,
   keyPickUpCard,
@@ -151,8 +150,17 @@ export default function RequestDetailForm({
     null
   );
   const [approver, setApprover] = useState<VehicleUserType>();
+  const [formData, setFormData] = useState<FormData | null>(null);
 
   useEffect(() => {
+    const storedFormData = localStorage.getItem("formData");
+    if (storedFormData) {
+      setFormData(JSON.parse(storedFormData));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!formData) return;
     console.log(formData);
     const fetchVehicleDetailData = async () => {
       try {
@@ -172,7 +180,7 @@ export default function RequestDetailForm({
         const response = await fetchVehicleUsers("");
         if (response.status === 200) {
           const vehicleUserData = response.data[0];
-          console.log('user',vehicleUserData);
+          console.log("user", vehicleUserData);
           setApprover(vehicleUserData);
         }
       } catch (error) {
@@ -184,7 +192,9 @@ export default function RequestDetailForm({
       fetchVehicleDetailData();
     }
     fetchApprover();
-  }, [formData.vehicleSelect]);
+  }, [formData]);
+
+  if (!formData) return null;
 
   return (
     <>
@@ -353,13 +363,6 @@ export default function RequestDetailForm({
           <div className="form-section">
             {status == "detail" && <ApproveProgress />}
 
-            {/* <div className="mt-5">
-                 
-                  
-                    <PickupKeyCard />
-
-                  </div> */}
-
             <>
               {carSelect == "true" ? (
                 <>
@@ -425,7 +428,6 @@ export default function RequestDetailForm({
                 </>
               ) : (
                 <>
-                  {" "}
                   <div className="card card-section-inline mt-5">
                     <div className="card-body card-body-inline">
                       <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -525,8 +527,11 @@ export default function RequestDetailForm({
                 </button>
               </div>
               {approver && (
-  <UserInfoCard displayBtnMore={true} vehicleUserData={approver} />
-)}
+                <UserInfoCard
+                  displayBtnMore={true}
+                  vehicleUserData={approver}
+                />
+              )}
             </div>
           )}
         </div>

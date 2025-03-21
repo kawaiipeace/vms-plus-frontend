@@ -36,6 +36,7 @@ interface FormData {
   driverEmpID?: string;
   driverEmpName?: string;
   driverDeptSap?: string;
+  deptSapShort?: string;
 }
 
 interface RequestFormContextType {
