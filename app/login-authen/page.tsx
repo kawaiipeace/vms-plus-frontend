@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import LoginHeader from "@/components/loginHeader";
 import BackButton from "@/components/backButton";
-import { requestOTP, verifyOTP } from "../services/authService";
+import { requestOTP, verifyOTP } from "@/services/authService";
 import { useRouter } from "next/navigation";
 
 export default function LoginAuthen() {

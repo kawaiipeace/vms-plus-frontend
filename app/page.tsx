@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { requestkeyCloak } from "./services/authService";
+import { requestkeyCloak } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
