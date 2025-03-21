@@ -1,9 +1,9 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import Image from "next/image";
-import DateTimePicker from "@/app/components/dateTimePicker";
-import RadioButton from "@/app/components/radioButton";
+import DateTimePicker from "@/components/dateTimePicker";
+import RadioButton from "@/components/radioButton";
 import KeyPickUpEditModal from "./keyPickUpEditModal";
-import ConfirmKeyHandOverModal from "@/app/components/modal/confirmKeyHandOverModal";
+import ConfirmKeyHandOverModal from "@/components/modal/confirmKeyHandOverModal";
 
 interface KeyPickUpDetail {
   userPickUpType: "พนักงาน กฟภ." | "พนักงานขับรถ" | "บุคคลภายนอก";

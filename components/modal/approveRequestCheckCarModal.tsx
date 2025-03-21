@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import DatePicker from "@/app/components/dateTimePicker";
+import DatePicker from "@/components/dateTimePicker";
 
 interface Props {
   title: string;

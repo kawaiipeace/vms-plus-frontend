@@ -1,4 +1,4 @@
-import axiosInstance from '@/app/utils/axiosInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 export const fetchVehicleUsers = async (search?: string) => {
     try {

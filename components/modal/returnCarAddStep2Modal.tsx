@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import Tooltip from "@/app/components/tooltips";
-import ImageUpload from "@/app/components/imageUpload";
-import ImagePreview from "@/app/components/imagePreview";
+import Tooltip from "@/components/tooltips";
+import ImageUpload from "@/components/imageUpload";
+import ImagePreview from "@/components/imagePreview";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;

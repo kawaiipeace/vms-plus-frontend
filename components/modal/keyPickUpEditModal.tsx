@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import CustomSelect from "@/app/components/customSelect";
+import CustomSelect from "@/components/customSelect";
 import Link from "next/link";
-import RadioButton from "@/app/components/radioButton";
+import RadioButton from "@/components/radioButton";
 import Image from "next/image";
 // import KeyPickupDetailModal from "./keyPickUpDetailModal";
 const KeyPickUpEditModal = forwardRef((_, ref) => {

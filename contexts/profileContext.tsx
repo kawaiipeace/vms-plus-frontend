@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import { fetchProfile } from "@/app/services/authService";
+import { fetchProfile } from "@/services/authService";
 
 interface Profile {
   emp_id: string;

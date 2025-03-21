@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
-import CarDetailCard2 from "@/app/components/card/carDetailCard2";
-import UserInfoCard from "@/app/components/card/userInfoCard";
-import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
-import ImagesCarCard from "@/app/components/card/ImagesCarCard";
-import ReturnCarAddStep2Modal from "@/app/components/modal/returnCarAddStep2Modal";
+import CarDetailCard2 from "@/components/card/carDetailCard2";
+import UserInfoCard from "@/components/card/userInfoCard";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
+import ImagesCarCard from "@/components/card/ImagesCarCard";
+import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
 
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;

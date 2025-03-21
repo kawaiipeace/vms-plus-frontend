@@ -1,8 +1,8 @@
 import React, { useRef} from "react";
 import Image from "next/image";
-import DriverInfoModal from "@/app/components/modal/driverInfoModal";
-import { CallToDriverModal } from "@/app/components/modal/callToDriverModal";
-import { VehicleUserType } from "@/app/components/types/vehicleUserType";
+import DriverInfoModal from "@/components/modal/driverInfoModal";
+import { CallToDriverModal } from "@/components/modal/callToDriverModal";
+import { VehicleUserType } from "@/components/types/vehicleUserType";
 
 interface UserInfoCardProps {
   UserType?: string;

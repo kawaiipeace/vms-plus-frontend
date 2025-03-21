@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
-import ImgSlider from "@/app/components/imgSlider";
+import ImgSlider from "@/components/imgSlider";
 
 interface Props {
   backModal: () => void;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import CarDetailCard2 from "@/app/components/card/carDetailCard2";
-import DriverTravelCard from "@/app/components/card/driverTravelCard";
-import DriverPassengerInfoCard from "@/app/components/card/driverPassengerInfoCard";
+import CarDetailCard2 from "@/components/card/carDetailCard2";
+import DriverTravelCard from "@/components/card/driverTravelCard";
+import DriverPassengerInfoCard from "@/components/card/driverPassengerInfoCard";
 
 export const DriverVIURequestDetail = () => {
   const [requestDetailType, setRequestDetailType] = useState("รอรับกุญแจ");

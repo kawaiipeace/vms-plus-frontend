@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import MobileFinishVehicleCard from "../card/mobileFinishVehicleCard";
-import FilterModal from "@/app/components/modal/filterModal";
+import FilterModal from "@/components/modal/filterModal";
 import Image from "next/image";
 
 interface VehicleFinishTabProps {

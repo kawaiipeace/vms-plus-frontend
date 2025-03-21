@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
-import TableRecordTravelComponent from "@/app/components/tableRecordTravel";
-import { travelData, travelDataColumnsAdmin, TravelData } from "@/app/data/travelData";
-import ZeroRecord from "@/app/components/zeroRecord";
-import RecordTravelAddModal from "@/app/components/modal/recordTravelAddModal";
-import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
+import TableRecordTravelComponent from "@/components/tableRecordTravel";
+import { travelData, travelDataColumnsAdmin, TravelData } from "@/data/travelData";
+import ZeroRecord from "@/components/zeroRecord";
+import RecordTravelAddModal from "@/components/modal/recordTravelAddModal";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
 
 interface TravelDataProps {
   requestType?: string;

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import LoginHeader from "@/app/components/loginHeader";
-import BackButton from "@/app/components/backButton";
+import LoginHeader from "@/components/loginHeader";
+import BackButton from "@/components/backButton";
 import { requestOTP, verifyOTP } from "../services/authService";
 import { useRouter } from "next/navigation";
 

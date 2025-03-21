@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ImagePreview from "@/app/components/imagePreview";
+import ImagePreview from "@/components/imagePreview";
 
 interface ImageUploadProps {
   images: File[];

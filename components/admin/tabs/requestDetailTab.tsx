@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import RequestDetailForm from "@/app/components/admin/requestDetailForm";
-import { requestHistoryLog, requestHistoryLogColumns } from "@/app/data/requestHistory";
-import TableComponent from "@/app/components/table";
-import AlertCustom from "@/app/components/alertCustom";
-import ReceiveCarVehicleInUseTab from "@/app/components/tabs/receiveCarVehicleInUseTab";
-import TravelInfoTab from "@/app/components/admin/travelInfoTab";
-import FuelInfoTab from "@/app/components/admin/fuelInfoTab";
-import ReturnCarTab from "@/app/components/admin/returnCarTab";
+import RequestDetailForm from "@/components/admin/requestDetailForm";
+import { requestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import TableComponent from "@/components/table";
+import AlertCustom from "@/components/alertCustom";
+import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
+import TravelInfoTab from "@/components/admin/travelInfoTab";
+import FuelInfoTab from "@/components/admin/fuelInfoTab";
+import ReturnCarTab from "@/components/admin/returnCarTab";
 
 interface Props {
   status: string;

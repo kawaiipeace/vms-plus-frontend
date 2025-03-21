@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Image from "next/image";
-import { CallToDriverModal } from "@/app/components/modal/callToDriverModal";
+import { CallToDriverModal } from "@/components/modal/callToDriverModal";
 
 interface DriverPassengerInfoCardProps {
   displayOn?: "waitCar";

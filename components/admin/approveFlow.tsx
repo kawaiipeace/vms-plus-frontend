@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import TableComponent from "@/app/components/table";
-import { RequestData, requestDataColumns, requestData_1 } from "@/app/data/requestData";
-import ZeroRecord from "@/app/components/zeroRecord";
-import FilterModal from "@/app/components/modal/filterModal";
+import TableComponent from "@/components/table";
+import { RequestData, requestDataColumns, requestData_1 } from "@/data/requestData";
+import ZeroRecord from "@/components/zeroRecord";
+import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "../requestStatusBox";
 
 export default function ApproveFlow() {

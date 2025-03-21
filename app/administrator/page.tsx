@@ -1,9 +1,9 @@
 "use client";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import SideBar from "@/app/components/sideBar";
-import ToastCustom from "@/app/components/toastCustom";
-import ApproveVehicleForAdminTabs from "@/app/components/tabs/approveVehicleForAdminTabs";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import SideBar from "@/components/sideBar";
+import ToastCustom from "@/components/toastCustom";
+import ApproveVehicleForAdminTabs from "@/components/tabs/approveVehicleForAdminTabs";
 
 export default function RequestManagement() {
   const { isPinned } = useSidebar();

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import RequestDetailForm from "@/app/components/flow/requestDetailForm";
-import { requestHistoryLog, requestHistoryLogColumns } from "@/app/data/requestHistory";
-import TableComponent from "@/app/components/table";
+import RequestDetailForm from "@/components/flow/requestDetailForm";
+import { requestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import TableComponent from "@/components/table";
 
 interface Props{
  status: string;

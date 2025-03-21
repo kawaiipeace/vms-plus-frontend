@@ -1,19 +1,19 @@
 import React, { useState, useRef } from "react";
-import DriverWaitKeyCard from "@/app/components/card/driverWaitKeyCard";
-import DriverPickUpPassengerCard from "@/app/components/card/driverPickUpPassengerCard";
-import UserInfoCard from "@/app/components/card/userInfoCard";
+import DriverWaitKeyCard from "@/components/card/driverWaitKeyCard";
+import DriverPickUpPassengerCard from "@/components/card/driverPickUpPassengerCard";
+import UserInfoCard from "@/components/card/userInfoCard";
 import Link from "next/link";
-import AlertCustom from "@/app/components/alertCustom";
-import CarDetailCard2 from "@/app/components/card/carDetailCard2";
-import DriverPassengerInfoCard from "@/app/components/card/driverPassengerInfoCard";
-import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
-import RequestStatusBox from "@/app/components/requestStatusBox";
-import RecordTravelTab from "@/app/components/tabs/recordTravelTab";
-import RecordFuelTab from "@/app/components/tabs/recordFuelTab";
-import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
-import { ReturnCarInfoCard } from "@/app/components/card/returnCarInfoCard";
-import { DriverReceiveCarInfoCard } from "@/app/components/card/driverReceiveCarInfoCard";
-import ImagesCarCard from "@/app/components/card/ImagesCarCard";
+import AlertCustom from "@/components/alertCustom";
+import CarDetailCard2 from "@/components/card/carDetailCard2";
+import DriverPassengerInfoCard from "@/components/card/driverPassengerInfoCard";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
+import RequestStatusBox from "@/components/requestStatusBox";
+import RecordTravelTab from "@/components/tabs/recordTravelTab";
+import RecordFuelTab from "@/components/tabs/recordFuelTab";
+import ReturnCarAddModal from "@/components/modal/returnCarAddModal";
+import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
+import { DriverReceiveCarInfoCard } from "@/components/card/driverReceiveCarInfoCard";
+import ImagesCarCard from "@/components/card/ImagesCarCard";
 
 interface DriverDetailContentProps {
   progressType: string;

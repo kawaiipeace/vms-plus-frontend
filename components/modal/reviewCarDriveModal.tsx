@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Image from "next/image";
-import Rating from "@/app/components/rating";
+import Rating from "@/components/rating";
 
 interface Props {
   displayOn?: string;

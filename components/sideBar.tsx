@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSidebar } from "@/app/contexts/sidebarContext";
+import { useSidebar } from "@/contexts/sidebarContext";
 
 interface SidebarProps {
   menuName?: string;

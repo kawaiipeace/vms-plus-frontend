@@ -1,9 +1,9 @@
 "use client";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import SideBar from "@/app/components/sideBar";
-import ToastCustom from "@/app/components/toastCustom";
-import Main from "@/app/components/finalapprove/main";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import SideBar from "@/components/sideBar";
+import ToastCustom from "@/components/toastCustom";
+import Main from "@/components/finalapprove/main";
 
 export default function ApproveRequest() {
   const { isPinned } = useSidebar();

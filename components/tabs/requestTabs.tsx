@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ZeroRecord from "@/app/components/zeroRecord";
-import RequestStatusBox from "@/app/components/requestStatusBox";
-import ArpproveFlow from "@/app/components/approveFlow";
-import { requests } from "@/app/services/bookingUser";
-import { RequestData } from "@/app/data/requestData";
+import ZeroRecord from "@/components/zeroRecord";
+import RequestStatusBox from "@/components/requestStatusBox";
+import ArpproveFlow from "@/components/approveFlow";
+import { requests } from "@/services/bookingUser";
+import { RequestData } from "@/data/requestData";
 
 interface summaryType{
   ref_request_status_name : string;

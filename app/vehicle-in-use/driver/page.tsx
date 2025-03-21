@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import SideBar from "@/app/components/sideBar";
-import DriverProgressTab from "@/app/components/tabs/driverProgressTab";
-import DriverSoonTab from "@/app/components/tabs/driverSoonTab";
-import DriverFinishTab from "@/app/components/tabs/driverFinishTab";
-import DriverCancelTab from "@/app/components/tabs/driverCancelTab";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import SideBar from "@/components/sideBar";
+import DriverProgressTab from "@/components/tabs/driverProgressTab";
+import DriverSoonTab from "@/components/tabs/driverSoonTab";
+import DriverFinishTab from "@/components/tabs/driverFinishTab";
+import DriverCancelTab from "@/components/tabs/driverCancelTab";
 
 export default function DriverMain() {
   const dataProgress: number[] = [1];

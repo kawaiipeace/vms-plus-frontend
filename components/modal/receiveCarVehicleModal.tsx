@@ -1,11 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import DatePicker from "@/app/components/datePicker";
-import NumberInput from "@/app/components/numberInput";
-import Tooltip from "@/app/components/tooltips";
-import ImageUpload from "@/app/components/imageUpload";
-import ImagePreview from "@/app/components/imagePreview";
-import ReceiveCarSuccessModal from "@/app/components/modal/receiveCarSuccessModal";
-import ExampleCarImageModal from "@/app/components/modal/exampleCarImageModal";
+import DatePicker from "@/components/datePicker";
+import NumberInput from "@/components/numberInput";
+import Tooltip from "@/components/tooltips";
+import ImageUpload from "@/components/imageUpload";
+import ImagePreview from "@/components/imagePreview";
+import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
+import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
 interface ReceiveCarVehicleModalProps {
   status?: string;
 }

@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import Image from "next/image";
-import CustomSelect from "@/app/components/customSelect";
-import RadioButton from "@/app/components/radioButton";
+import CustomSelect from "@/components/customSelect";
+import RadioButton from "@/components/radioButton";
 
 interface KeyPickUpAppointmentModalProps {
   process: string;

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import ZeroRecord from "@/app/components/zeroRecord";
-import ApproveFlow from "@/app/components/admin/approveFlow";
-import KeyHandOver from "@/app/components/admin/keyHandOver";
-import TravelTab from "@/app/components/admin/travelTab";
-import CheckCar from "@/app/components/admin/checkCar";
-import FinishTab from "@/app/components/admin/finishTab";
+import ZeroRecord from "@/components/zeroRecord";
+import ApproveFlow from "@/components/admin/approveFlow";
+import KeyHandOver from "@/components/admin/keyHandOver";
+import TravelTab from "@/components/admin/travelTab";
+import CheckCar from "@/components/admin/checkCar";
+import FinishTab from "@/components/admin/finishTab";
 
 export default function ApproveVehicleForAdminTabs() {
   const tabs = [

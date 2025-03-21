@@ -1,8 +1,8 @@
 "use client";
 
-import LoginHeader from "@/app/components/loginHeader";
-import BackButton from "@/app/components/backButton";
-import { requestOTP, requestThaiID } from "@/app/services/authService";
+import LoginHeader from "@/components/loginHeader";
+import BackButton from "@/components/backButton";
+import { requestOTP, requestThaiID } from "@/services/authService";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";

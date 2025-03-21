@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import TableComponent from "./table";
-import { RequestData, requestDataColumns } from "@/app/data/requestData";
+import { RequestData, requestDataColumns } from "@/data/requestData";
 import ZeroRecord from "./zeroRecord";
 import Link from "next/link";
-import FilterModal from "@/app/components/modal/filterModal";
+import FilterModal from "@/components/modal/filterModal";
 import { useRouter } from "next/navigation";
 
 interface ApproveFlowProps {

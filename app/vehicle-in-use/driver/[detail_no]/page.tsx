@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import SideBar from "@/app/components/sideBar";
-import DriverDetailContent from "@/app/components/driverDetail";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import SideBar from "@/components/sideBar";
+import DriverDetailContent from "@/components/driverDetail";
 import { useSearchParams } from "next/navigation";
 
 const DriverDetail = () => {

@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
-import ToastCustom from "@/app/components/toastCustom";
+import ToastCustom from "@/components/toastCustom";
 
 const TravelCardModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);

@@ -1,5 +1,5 @@
 
-import axiosInstance from '@/app/utils/axiosInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 export const requests = async (params: {
   search?: string;

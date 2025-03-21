@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
-import TableRecordFuelComponent from "@/app/components/tableRecordFuel";
-import { fuelData, fuelDataColumnsAdmin, FuelData } from "@/app/data/fuelData";
-import ZeroRecord from "@/app/components/zeroRecord";
-import RecordTravelAddModal from "@/app/components/modal/recordFuelAddModal";
-import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
+import TableRecordFuelComponent from "@/components/tableRecordFuel";
+import { fuelData, fuelDataColumnsAdmin, FuelData } from "@/data/fuelData";
+import ZeroRecord from "@/components/zeroRecord";
+import RecordTravelAddModal from "@/components/modal/recordFuelAddModal";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
 
 interface FuelDataProps {
   requestType?: string;

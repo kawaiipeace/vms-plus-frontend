@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import ZeroRecord from "@/app/components/zeroRecord";
-import RequestStatusBox from "@/app/components/requestStatusBox";
-import ArpproveFlow from "@/app/components/approveFlow";
-import { RequestData } from "@/app/data/requestData";
+import ZeroRecord from "@/components/zeroRecord";
+import RequestStatusBox from "@/components/requestStatusBox";
+import ArpproveFlow from "@/components/approveFlow";
+import { RequestData } from "@/data/requestData";
 
 
 export default function ApproveVehicleTabs() {

@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
-import UserInfoCard from "@/app/components/card/userInfoCard";
+import UserInfoCard from "@/components/card/userInfoCard";
 import Image from "next/image";
-import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
-import ReturnCarAddStep2Modal from "@/app/components/modal/returnCarAddStep2Modal";
-import AlertCustom from "@/app/components/alertCustom";
-import { ReturnCarInfoCard } from "@/app/components/card/returnCarInfoCard";
+import ReturnCarAddModal from "@/components/modal/returnCarAddModal";
+import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
+import AlertCustom from "@/components/alertCustom";
+import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
 
 interface ReturnCarTabProps {
   status: string;

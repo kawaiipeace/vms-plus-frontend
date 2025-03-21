@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import { RequestData } from "@/app/data/requestData";
-import ZeroRecord from "@/app/components/zeroRecord";
+import { RequestData } from "@/data/requestData";
+import ZeroRecord from "@/components/zeroRecord";
 import RequestStatusBox from "../requestStatusBox";
-import { keyHandOverData, keyHandOverDataColumns } from "@/app/data/keyHandOverData";
+import { keyHandOverData, keyHandOverDataColumns } from "@/data/keyHandOverData";
 import FilterKeyHandOverModal from "../modal/filterKeyHandOverModal";
 import TableKeyPickup from "../tableKeyPickUp";
 

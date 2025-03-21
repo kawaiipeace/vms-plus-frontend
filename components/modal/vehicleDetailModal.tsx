@@ -5,10 +5,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import ImgSlider from "@/app/components/imgSlider";
+import ImgSlider from "@/components/imgSlider";
 import Image from "next/image";
-import CarCardItem from "@/app/components/carCardItem";
-import { fetchVehicleDetail } from "@/app/services/bookingUser";
+import CarCardItem from "@/components/carCardItem";
+import { fetchVehicleDetail } from "@/services/bookingUser";
 
 interface VehicleDetail {
   mas_vehicle_uid?: string;

@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
-import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
-import ReturnCarAddStep2Modal from "@/app/components/modal/returnCarAddStep2Modal";
-import { ReturnCarInfoCard } from "@/app/components/card/returnCarInfoCard";
-import AlertCustom from "@/app/components/alertCustom";
-import { DriverReceiveCarInfoCard } from "@/app/components/card/driverReceiveCarInfoCard";
-import ImagesCarCard from "@/app/components/card/ImagesCarCard";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
+import ReturnCarAddModal from "@/components/modal/returnCarAddModal";
+import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
+import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
+import AlertCustom from "@/components/alertCustom";
+import { DriverReceiveCarInfoCard } from "@/components/card/driverReceiveCarInfoCard";
+import ImagesCarCard from "@/components/card/ImagesCarCard";
 
 interface DriverEditContentProps {
   progressType: string;

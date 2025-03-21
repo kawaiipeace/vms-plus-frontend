@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import CustomSelect from "@/app/components/customSelect";
-import { fetchCostTypes } from "@/app/services/masterService";
+import CustomSelect from "@/components/customSelect";
+import { fetchCostTypes } from "@/services/masterService";
 
 const DisbursementModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);

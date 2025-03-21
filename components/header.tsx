@@ -1,10 +1,10 @@
 import Image from "next/image";
-import ToggleSidebar from "@/app/components/toggleSideBar";
+import ToggleSidebar from "@/components/toggleSideBar";
 import ThemeToggle from "./themeToggle";
-import { logOut } from "@/app/services/authService";
+import { logOut } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useProfile } from "@/app/contexts/profileContext";
+import { useProfile } from "@/contexts/profileContext";
 
 export default function Header() {
   const { profile } = useProfile();

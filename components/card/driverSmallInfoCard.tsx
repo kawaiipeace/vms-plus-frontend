@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import Image from "next/image";
-import DriverInfoModal from "@/app/components/modal/driverInfoModal";
-import UserKeyPickUpModal from "@/app/components/modal/userKeyPickUpModal";
+import DriverInfoModal from "@/components/modal/driverInfoModal";
+import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 
 interface DriverSmallInfoCardProps {
   driverType?: string;

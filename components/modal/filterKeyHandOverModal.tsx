@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import DatePicker from "@/app/components/datePicker";
+import DatePicker from "@/components/datePicker";
 import CustomSelect from "../customSelect";
 
 const FilterKeyHandOverModal = forwardRef((_, ref) => {

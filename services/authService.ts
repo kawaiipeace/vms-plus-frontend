@@ -1,4 +1,4 @@
-import axiosInstance from '@/app/utils/axiosInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 const redirect_uri = "http://localhost:3000/callback_code_token";
 

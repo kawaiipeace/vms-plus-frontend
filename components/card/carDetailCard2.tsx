@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Image from "next/image";
-import VehicleDetailModel from "@/app/components/modal/vehicleDetailModal";
+import VehicleDetailModel from "@/components/modal/vehicleDetailModal";
 export default function CarDetailCard2() {
   const vehicleDetailModalRef = useRef<{
     openModal: () => void;

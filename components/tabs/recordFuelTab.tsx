@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 import Image from "next/image";
-import ToastCustom from "@/app/components/toastCustom";
+import ToastCustom from "@/components/toastCustom";
 import TableRecordTravelComponent from "../tableRecordTravel";
-import { recordFuelData, recordFuelDataColumns } from "@/app/data/requestData";
-import RecordFuelAddModal from "@/app/components/modal/recordFuelAddModal";
-import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
+import { recordFuelData, recordFuelDataColumns } from "@/data/requestData";
+import RecordFuelAddModal from "@/components/modal/recordFuelAddModal";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
 
 const RecordFuelTab = () => {
   const recordFuelAddModalRef = useRef<{

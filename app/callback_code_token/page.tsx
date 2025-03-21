@@ -1,7 +1,7 @@
 
 
 import React, { Suspense } from 'react';
-import CallbackCodeToken from '@/app/components/callbackCodeToken';
+import CallbackCodeToken from '@/components/callbackCodeToken';
 
 export default function CallbackCodeTokenPage() {
   return (

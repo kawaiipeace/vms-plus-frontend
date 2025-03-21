@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { getKeyCloakData } from '@/app/services/authService';
+import { getKeyCloakData } from '@/services/authService';
 
 export default function CallbackCodeToken() {
   const router = useRouter();

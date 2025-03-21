@@ -1,19 +1,19 @@
 "use client";
 import { useRef, useState } from "react";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import RequestDetailTabs from "@/app/components/admin/tabs/requestDetailTab";
-import SideBar from "@/app/components/sideBar";
-import CancelRequestModal from "@/app/components/modal/cancelRequestModal";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import RequestDetailTabs from "@/components/admin/tabs/requestDetailTab";
+import SideBar from "@/components/sideBar";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import Link from "next/link";
-import FileBackRequestModal from "@/app/components/modal/fileBackModal";
-import ApproveRequestModal from "@/app/components/modal/approveRequestModal";
-import ConfirmKeyHandOverModal from "@/app/components/modal/confirmKeyHandOverModal";
-import ReceiveCarVehicleModal from "@/app/components/modal/receiveCarVehicleModal";
-import TravelCardModal from "@/app/components/modal/travelCardModal";
-import ReturnCarAddModal from "@/app/components/modal/returnCarAddModal";
-import ApproveRequestCheckCarModal from "@/app/components/modal/approveRequestCheckCarModal";
-import RejectRequestCheckCarModal from "@/app/components/modal/rejectRequestCheckCarModal";
+import FileBackRequestModal from "@/components/modal/fileBackModal";
+import ApproveRequestModal from "@/components/modal/approveRequestModal";
+import ConfirmKeyHandOverModal from "@/components/modal/confirmKeyHandOverModal";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
+import TravelCardModal from "@/components/modal/travelCardModal";
+import ReturnCarAddModal from "@/components/modal/returnCarAddModal";
+import ApproveRequestCheckCarModal from "@/components/modal/approveRequestCheckCarModal";
+import RejectRequestCheckCarModal from "@/components/modal/rejectRequestCheckCarModal";
 
 interface RequestNoProps {
   requestType?: "ให้กุญแจ" | "รับยานพาหนะ" | "คืนยานพาหนะ" | "ตรวจสอบยานพาหนะ" | "เสร็จสิ้น";

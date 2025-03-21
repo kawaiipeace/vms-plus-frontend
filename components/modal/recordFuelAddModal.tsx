@@ -1,9 +1,9 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import DatePicker from "@/app/components/datePicker";
-import CustomSelect from "@/app/components/customSelect";
-import RadioButton from "@/app/components/radioButton";
-import ImageUpload from "@/app/components/imageUpload";
-import ImagePreview from "@/app/components/imagePreview";
+import DatePicker from "@/components/datePicker";
+import CustomSelect from "@/components/customSelect";
+import RadioButton from "@/components/radioButton";
+import ImageUpload from "@/components/imageUpload";
+import ImagePreview from "@/components/imagePreview";
 
 interface Props {
   status?: boolean;

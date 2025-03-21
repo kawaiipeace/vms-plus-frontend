@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import SideBar from "@/app/components/sideBar";
-import { DriverEditContent } from "@/app/components/driverEditContent";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import SideBar from "@/components/sideBar";
+import { DriverEditContent } from "@/components/driverEditContent";
 
 const DriverEdit = () => {
   const { isPinned } = useSidebar();

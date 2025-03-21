@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import TableTravel from "@/app/components/tableTravel";
-import { TravelData, travelDataColumns, travelData } from "@/app/data/travelData";
-import ZeroRecord from "@/app/components/zeroRecord";
-import FilterModal from "@/app/components/modal/filterModal";
+import TableTravel from "@/components/tableTravel";
+import { TravelData, travelDataColumns, travelData } from "@/data/travelData";
+import ZeroRecord from "@/components/zeroRecord";
+import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "../requestStatusBox";
 
 export default function TravelTab() {

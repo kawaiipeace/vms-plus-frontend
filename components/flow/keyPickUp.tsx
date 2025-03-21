@@ -1,12 +1,12 @@
 import React, { useRef } from "react";
 import Image from "next/image";
-import DriverAppointmentModal from "@/app/components/modal/driverAppointmentModal";
-import ApproverModal from "@/app/components/modal/approverModal";
-import AlertCustom from "@/app/components/alertCustom";
-import ApproveRequestModal from "@/app/components/modal/approveRequestModal";
-import CarDetailCard2 from "@/app/components/card/carDetailCard2";
-import AppointmentDriverCard from "@/app/components/card/appointmentDriverCard";
-import KeyPickUpAppointmentModal from "@/app/components/modal/keyPickupAppointmentModal";
+import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
+import ApproverModal from "@/components/modal/approverModal";
+import AlertCustom from "@/components/alertCustom";
+import ApproveRequestModal from "@/components/modal/approveRequestModal";
+import CarDetailCard2 from "@/components/card/carDetailCard2";
+import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
+import KeyPickUpAppointmentModal from "@/components/modal/keyPickupAppointmentModal";
 
 interface RequestDetailFormProps {
   status: string;

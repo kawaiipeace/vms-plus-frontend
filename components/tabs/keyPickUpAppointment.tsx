@@ -1,7 +1,7 @@
 import React from "react";
-import AppointmentDriverCard from "@/app/components/card/appointmentDriverCard";
-import CarDetailCard2 from "@/app/components/card/carDetailCard2";
-import UserInfoCard from "@/app/components/card/userInfoCard";
+import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
+import CarDetailCard2 from "@/components/card/carDetailCard2";
+import UserInfoCard from "@/components/card/userInfoCard";
 
 const KeyPickUpAppointment = () => {
   return (

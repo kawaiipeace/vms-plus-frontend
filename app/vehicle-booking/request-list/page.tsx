@@ -1,9 +1,9 @@
 "use client";
-import { useSidebar } from "@/app/contexts/sidebarContext";
-import Header from "@/app/components/header";
-import RequestTabs from "@/app/components/tabs/requestTabs";
-import SideBar from "@/app/components/sideBar";
-import ToastCustom from "@/app/components/toastCustom";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import RequestTabs from "@/components/tabs/requestTabs";
+import SideBar from "@/components/sideBar";
+import ToastCustom from "@/components/toastCustom";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 

@@ -5,8 +5,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CarTypeCard from "@/app/components/card/carTypeCard";
-import { fetchVehicleCarTypes } from "@/app/services/masterService";
+import CarTypeCard from "@/components/card/carTypeCard";
+import { fetchVehicleCarTypes } from "@/services/masterService";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";

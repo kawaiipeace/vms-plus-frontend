@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
-import DatePicker from "@/app/components/datePicker";
+import DatePicker from "@/components/datePicker";
 
 interface Props {
   status?: boolean;
