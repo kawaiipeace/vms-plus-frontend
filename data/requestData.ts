@@ -1,3 +1,4 @@
+
 export type RequestData = {
   request_no: string;
   vehicle_user_emp_name: string;
@@ -62,6 +63,7 @@ export type RequestData = {
   received_key_place: string;
   received_key_start_datetime: string;
   received_key_end_datetime: string;
+  
 };
 
 export type RecordTravelTabProps = {
@@ -156,8 +158,9 @@ export const requestData_1: RequestData[] = [
 
 export const requestDataColumns = [
   { accessorKey: "request_no", header: "เลขที่คำขอ", enableSorting: true },
-  { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ", enableSorting: false },
+  {accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ",  enableSorting: false },
   { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ", enableSorting: false },
+  {accessorKey: "vehicle_user_dept_sap", header: "หน่วยงาน",  enableSorting: false },
   { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน", enableSorting: false },
   { accessorKey: "start_datetime", header: "วันที่เดินทาง", enableSorting: true },
   // { accessorKey: "objective", header: "รายละเอียด", enableSorting: false },

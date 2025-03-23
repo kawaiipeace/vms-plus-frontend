@@ -17,6 +17,7 @@ import {
 } from "@/services/masterService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useProfile } from "@/contexts/profileContext";
+import { VehicleUserType } from "../types/vehicleUserType";
 
 const schema = yup.object().shape({
   telInternal: yup.string().matches(/^\d+$/, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
@@ -36,17 +37,14 @@ const schema = yup.object().shape({
   attachmentFile: yup.string(),
   deptSapShort: yup.string(),
   deptSap: yup.string(),
-  userImageUrl: yup.string()
+  userImageUrl: yup.string(),
+  costOrigin: yup.string()
 });
 
-interface VehicleUser {
-  emp_id: string;
-  full_name: string;
-  dept_sap: string;
-  tel_internal?: string;
-  tel_mobile: string;
-  dept_sap_short: string;
-  image_url: string;
+interface costType {
+  ref_cost_type_code: string;
+  ref_cost_type_name: string;
+  ref_cost_no: string;
 }
 
 export default function RequestForm() {
@@ -55,7 +53,7 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTravelType, setSelectedTravelType] = useState("1");
   const { updateFormData } = useFormContext();
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string }[]
   >([]);
@@ -68,6 +66,7 @@ export default function RequestForm() {
   >([]);
 
   const [passengerCount, setPassengerCount] = useState(0);
+  const [ costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
   const [fileError, setFileError] = useState("");
 
   useEffect(() => {
@@ -75,7 +74,7 @@ export default function RequestForm() {
       try {
         const response = await fetchVehicleUsers("");
         if (response.status === 200) {
-          const vehicleUserData: VehicleUser[] = response.data;
+          const vehicleUserData: VehicleUserType[] = response.data;
           setVehicleUserDatas(vehicleUserData);
           const driverOptionsArray = [
             ...vehicleUserData.map(
@@ -102,6 +101,7 @@ export default function RequestForm() {
         const response = await fetchCostTypes();
         if (response.status === 200) {
           const costTypeData = response.data;
+          setCostTypeDatas(costTypeData);
           const costTypeArr = [
             ...costTypeData.map(
               (cost: {
@@ -115,6 +115,7 @@ export default function RequestForm() {
           ];
 
           setCostTypeOptions(costTypeArr);
+       
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -164,6 +165,21 @@ export default function RequestForm() {
       setValue("deptSapShort", empData.dept_sap_short);
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
+    }
+  };
+
+  const handleCostTypeChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedCostTypeOption(selectedOption);
+
+    const data = costTypeDatas.find(
+      (cost: { ref_cost_type_code: string }) => cost.ref_cost_type_code === selectedOption.value
+    );
+
+    if (data) {
+      setValue("costOrigin", data.ref_cost_no);
     }
   };
 
@@ -583,7 +599,7 @@ export default function RequestForm() {
                       w="w-full"
                       options={costTypeOptions}
                       value={selectedCostTypeOption}
-                      onChange={setSelectedCostTypeOption}
+                      onChange={handleCostTypeChange}
                     />
                   </div>
                 </div>
@@ -600,7 +616,7 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder=""
+                        {...register('costOrigin')}
                       />
                     </div>
                   </div>

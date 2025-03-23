@@ -19,13 +19,11 @@ import Link from "next/link";
 type TableComponentProps<T> = {
   data: T[];
   columns: ColumnDef<T>[];
-  listName?: string;
 };
 
 export default function TableComponent<T>({
   data,
   columns,
-  listName,
 }: TableComponentProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -89,35 +87,37 @@ export default function TableComponent<T>({
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
-                  key={header.id}
-                  className="p-2 cursor-pointer"
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  <span
-                    className={`dt-column-title flex gap-2 ${
-                      header.column.columnDef.header == "" ? "justify-center" : ""
-                    }`}
+                    key={header.id}
+                    className="p-2 cursor-pointer"
+                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    {header.column.columnDef.header as string}
-                    {header.column.getCanSort() && (
-                      <>
-                        {header.column.getIsSorted() === "asc" ? (
-                          <i className="material-symbols-outlined text-black">
-                            arrow_upward_alt
-                          </i>
-                        ) : header.column.getIsSorted() === "desc" ? (
-                          <i className="material-symbols-outlined text-black">
-                            arrow_downward_alt
-                          </i>
-                        ) : (
-                          <i className="material-symbols-outlined">
-                            import_export
-                          </i>
-                        )}
-                      </>
-                    )}
-                  </span>
-                </th>
+                    <span
+                      className={`dt-column-title flex gap-2 ${
+                        header.column.columnDef.header == ""
+                          ? "justify-center"
+                          : ""
+                      }`}
+                    >
+                      {header.column.columnDef.header as string}
+                      {header.column.getCanSort() && (
+                        <>
+                          {header.column.getIsSorted() === "asc" ? (
+                            <i className="material-symbols-outlined text-black select-none">
+                              arrow_upward_alt
+                            </i>
+                          ) : header.column.getIsSorted() === "desc" ? (
+                            <i className="material-symbols-outlined text-black select-none">
+                              arrow_downward_alt
+                            </i>
+                          ) : (
+                            <i className="material-symbols-outlined select-none">
+                              import_export
+                            </i>
+                          )}
+                        </>
+                      )}
+                    </span>
+                  </th>
                 ))}
                 <th></th>
               </tr>
@@ -125,7 +125,7 @@ export default function TableComponent<T>({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row, index) => {
-              console.log('tt',row);
+              console.log("tt", row);
               // Store the value of the "สถานะคำขอ" cell
               const statusValue = row
                 .getVisibleCells()
@@ -140,6 +140,7 @@ export default function TableComponent<T>({
                   } border-gray-200 text-left`}
                 >
                   {row.getVisibleCells().map((cell) => (
+                    
                     <td key={cell.id} className="p-2">
                       {cell.column.columnDef.header === "สถานะคำขอ" ? (
                         <div className="w-full">
@@ -158,6 +159,8 @@ export default function TableComponent<T>({
                             </span>
                           )}
                         </div>
+                      ) : cell.column.columnDef.header === "ผู้ใช้ยานพาหนะ" ? (
+                        <> {cell.renderValue() as React.ReactNode}</>
                       ) : cell.column.columnDef.header === "" ? (
                         <div className="dt-action">
                           {statusValue == "รออนุมัติ" && (
@@ -236,7 +239,6 @@ export default function TableComponent<T>({
                       )}
                     </td>
                   ))}
-
                   <td></td>
                 </tr>
               );
@@ -299,7 +301,6 @@ export default function TableComponent<T>({
             </button>
           </div>
         </div>
-   
       </div>
     </>
   );

@@ -12,7 +12,7 @@ import RadioButton from "@/components/radioButton";
 import SideBar from "@/components/sideBar";
 import Tooltip from "@/components/tooltips";
 import Link from "next/link";
-import { fetchDrivers, fetchVehicleUsers } from "@/services/masterService";
+import { fetchUserDrivers, fetchVehicleUsers } from "@/services/masterService";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -28,9 +28,9 @@ const schema = yup.object().shape({
 
 export default function ProcessThree() {
   const router = useRouter();
-  const [drivers, setDrivers] = useState([
-    { name: "ศรัญยู บริรัตน์ฤทธิ์", company: "กฟภ.", rate: 4.5 },
-  ]);
+  const [drivers, setDrivers] = useState([]);
+  const [filteredDrivers, setFilteredDrivers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
   const { isPinned } = useSidebar();
   const [driverLicenseNo, setDriverLicenseNo] = useState("");
@@ -40,11 +40,6 @@ export default function ProcessThree() {
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
   const { updateFormData } = useFormContext();
-  const [params, setParams] = useState({
-    name: "",
-    page: 1,
-    limit: 10,
-  });
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
@@ -54,6 +49,15 @@ export default function ProcessThree() {
 
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+    const filtered = drivers.filter((driver: any) =>
+      driver.full_name.toLowerCase().includes(value)
+    );
+    setFilteredDrivers(filtered);
+  };
 
   useEffect(() => {
     if (driverLicenseNo) {
@@ -148,9 +152,10 @@ export default function ProcessThree() {
 
     const fetchDriverData = async () => {
       try {
-        const response = await fetchDrivers(params);
+        const response = await fetchUserDrivers("");
         if (response.status === 200) {
           setDrivers(response.data);
+          setFilteredDrivers(response.data);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -350,19 +355,19 @@ export default function ProcessThree() {
 
                   <div className="form-card w-full mt-5">
                     <div className="form-card-body space-y-2">
-                      {driverLicenseNo && (
-                        new Date(licenseExpDate) > today ? (
+                      {driverLicenseNo &&
+                        (new Date(licenseExpDate) > today ? (
                           <LicensePlateStat status={true} title="มีใบขับขี่" />
                         ) : (
                           <LicensePlateStat
                             status={false}
                             title="ใบขับขี่หมดอายุ"
                           />
-                        )
-                      )}
+                        ))}
 
-                      {driverLicenseNo && requestAnnual && (
-                        annualYear >= today.getFullYear() ? (
+                      {driverLicenseNo &&
+                        requestAnnual &&
+                        (annualYear >= today.getFullYear() ? (
                           <LicensePlateStat
                             status={true}
                             title={`มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
@@ -373,8 +378,7 @@ export default function ProcessThree() {
                             title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
                             desc="ผู้ขับขี่จะต้องขออนุมัติทำหน้าที่ขับรถยนต์ประจำปีก่อน"
                           />
-                        )
-                      )}
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -384,7 +388,7 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                  {drivers.length > 0 ? (
+                  {filteredDrivers.length > 0 ? (
                     <>
                       <div className="page-section-header border-0">
                         <div className="page-header-left">
@@ -393,7 +397,7 @@ export default function ProcessThree() {
                               เลือกพนักงานขับรถ
                             </span>
                             <span className="badge badge-outline badge-gray page-title-status">
-                              20 คน
+                              {filteredDrivers.length} คน
                             </span>
                           </div>
                         </div>
@@ -408,40 +412,26 @@ export default function ProcessThree() {
                         <input
                           type="text"
                           id="myInputTextField"
+                          value={searchTerm}
+                          onChange={handleSearch}
                           className="form-control dt-search-input"
                           placeholder="ค้นหาชื่อพนักงานขับรถ.."
                         />
                       </div>
 
                       <div className="grid grid-cols-4 gap-5 w-full">
-                        <DriverCard
-                          imgSrc="/assets/img/sample-driver.png"
-                          name="ผู้ดูแลยานพาหนะเลือกให้"
-                          company="สายงานดิจิทัล"
-                          rating={4.6}
-                          age="35 ปี 6 เดือน"
-                        />
-                        <DriverCard
-                          imgSrc="/assets/img/sample-driver.png"
-                          name="ผู้ดูแลยานพาหนะเลือกให้"
-                          company="สายงานดิจิทัล"
-                          rating={4.6}
-                          age="35 ปี 6 เดือน"
-                        />
-                        <DriverCard
-                          imgSrc="/assets/img/sample-driver.png"
-                          name="ผู้ดูแลยานพาหนะเลือกให้"
-                          company="สายงานดิจิทัล"
-                          rating={4.6}
-                          age="35 ปี 6 เดือน"
-                        />
-                        <DriverCard
-                          imgSrc="/assets/img/sample-driver.png"
-                          name="ผู้ดูแลยานพาหนะเลือกให้"
-                          company="สายงานดิจิทัล"
-                          rating={4.6}
-                          age="35 ปี 6 เดือน"
-                        />
+                        {filteredDrivers.map((driver: any, index: number) => (
+                          <DriverCard
+                            key={index}
+                            imgSrc={
+                              driver.image_url || "/assets/img/sample-driver.png"
+                            }
+                            name={driver.full_name || ""}
+                            company={driver.dept_sap_short || ""}
+                            rating={driver.rating || 0}
+                            age={driver.age || "-"}
+                          />
+                        ))}
                       </div>
                     </>
                   ) : (

@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import FormHelper from "../components/formHelper";
+import FormHelper from "@/components/formHelper";
 import { useRouter } from "next/navigation";
 
 const schema = yup.object().shape({

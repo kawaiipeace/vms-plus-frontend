@@ -43,7 +43,7 @@ export default function RequestList() {
       content: (
         <>
           {dataRequest.length > 0 ? (
-            <TableComponent data={dataRequest} columns={requestDataColumns} listName="request" />
+            <TableComponent data={dataRequest} columns={requestDataColumns} />
           ) : (
             <div className="flex justify-center items-center h-[300px]">
               <div className="text-center">
