@@ -48,7 +48,7 @@ export default function ArpproveFlow() {
              
             </div>
           </div>
-          <TableComponent data={datas} columns={requestDataColumns} listName="request" />
+          <TableComponent data={datas} columns={requestDataColumns} />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (

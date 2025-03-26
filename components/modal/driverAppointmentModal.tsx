@@ -10,7 +10,7 @@ import { convertToISO } from "@/utils/convertToISO";
 interface DriverAppointmentModalProps {
   process: string;
   id: string;
-  onSubmit: (date: string, time: string) => void;
+  onSubmit?: (date: string, time: string) => void;
 }
 
 const schema = yup.object().shape({
@@ -51,6 +51,7 @@ const DriverAppointmentModal = forwardRef<
       pickupPlace: data.pickupPlace,
       masCarpooluid: id
     });
+    if(onSubmit)
     onSubmit(selectedDate, selectedTime);
     modalRef.current?.close();
   };
