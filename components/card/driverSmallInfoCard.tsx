@@ -1,14 +1,31 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
+import { fetchUserDrivers } from "@/services/masterService";
 
 interface DriverSmallInfoCardProps {
-  driverType?: string;
   userKeyPickup?: boolean;
+  id?: string;
 }
 
-export default function DriverSmallInfoCard({ driverType, userKeyPickup }: DriverSmallInfoCardProps) {
+interface Driver {
+  mas_driver_uid: string;
+  driver_name: string;
+  driver_image: string;
+  driver_nickname: string;
+  driver_dept_sap: string;
+  driver_identification_no: string;
+  driver_contact_number: string;
+  driver_average_satisfaction_score: number;
+  driver_birthdate: string;
+  age: string;
+}
+
+export default function DriverSmallInfoCard({
+  userKeyPickup,
+  id,
+}: DriverSmallInfoCardProps) {
   const driverInfoModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -17,68 +34,87 @@ export default function DriverSmallInfoCard({ driverType, userKeyPickup }: Drive
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const [driver, setDriver] = useState<Driver | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserDrivers("");
+        console.log('data',data);
+        // const driverRaw = data?.drivers;
+        // Assuming the API returns an array of drivers and we need the first one
+        // setDriver(driverRaw[0]);
+      } catch (error) {
+        console.error("Error fetching driver data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!driver) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="card">
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
-            <Image src="/assets/img/sample-avatar.png" className="rounded-md" width={100} height={100} alt="" />
+            <Image
+              src={`${driver.driver_image || ""}`}
+              className="rounded-md"
+              width={100}
+              height={100}
+              alt={driver.driver_name}
+            />
           </div>
           <div className="card-content">
             <div className="card-content-top">
-              <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-              {driverType == "outsource" ? (
+              <div className="card-title">{driver.driver_name}</div>
                 <div className="supporting-text-group">
-                  <div className="supporting-text">บริษัท ยุทธศาสตร์การขับขี่ยี่สิบปี จำกัด</div>
+                  <div className="supporting-text">
+                   {driver.driver_dept_sap}
+                  </div>
                 </div>
-              ) : (
-                <div className="supporting-text-group">
-                  <div className="supporting-text">505291</div>
-                  <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
-                </div>
-              )}
             </div>
-            {driverType == "outsource" ? (
+
               <div className="card-item-group">
                 <div className="card-item">
                   <i className="material-symbols-outlined">star</i>
                   <span className="card-item-text">
-                    4.5 <span className="supporting-text">(200)</span>{" "}
+                    {driver.driver_average_satisfaction_score}
                   </span>
                 </div>
                 <div className="card-item">
                   <i className="material-symbols-outlined">person</i>
-                  <span className="card-item-text">35 ปี</span>
+                  <span className="card-item-text">{driver.age} ปี</span>
                 </div>
               </div>
-            ) : (
-              <div className="card-item-group">
-                <div className="card-item">
-                  <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">
-                    4.5 <span className="supporting-text">082-462-5577</span>{" "}
-                  </span>
-                </div>
-                <div className="card-item">
-                  <i className="material-symbols-outlined">call</i>
-                  <span className="card-item-text">5687</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
         <div className="card-actioins w-full">
-          <button className="btn btn-default w-full" onClick={userKeyPickup ? () => userKeyPickUpModalRef.current?.openModal() : () => driverInfoModalRef.current?.openModal()}>
+          <button
+            className="btn btn-default w-full"
+            onClick={
+              userKeyPickup
+                ? () => userKeyPickUpModalRef.current?.openModal()
+                : () => driverInfoModalRef.current?.openModal()
+            }
+          >
             ดูรายละเอียด
           </button>
         </div>
-        {driverType == "outsource" && (
+
           <>
             <hr />
             <div className="form-section">
               <div className="form-section-header">
-                <div className="form-section-header-title">การนัดหมายพนักงานขับรถ</div>
+                <div className="form-section-header-title">
+                  การนัดหมายพนักงานขับรถ
+                </div>
               </div>
 
               <div className="form-card">
@@ -96,7 +132,9 @@ export default function DriverSmallInfoCard({ driverType, userKeyPickup }: Drive
 
                     <div className="col-span-12 md:col-span-12">
                       <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">calendar_month</i>
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่และเวลา</div>
                           <div className="form-text">01/01/2567</div>
@@ -108,7 +146,6 @@ export default function DriverSmallInfoCard({ driverType, userKeyPickup }: Drive
               </div>
             </div>
           </>
-        )}
       </div>
 
       <DriverInfoModal ref={driverInfoModalRef} />

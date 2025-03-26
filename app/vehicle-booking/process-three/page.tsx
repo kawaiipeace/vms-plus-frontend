@@ -12,7 +12,7 @@ import RadioButton from "@/components/radioButton";
 import SideBar from "@/components/sideBar";
 import Tooltip from "@/components/tooltips";
 import Link from "next/link";
-import { fetchUserDrivers, fetchVehicleUsers } from "@/services/masterService";
+import { fetchDrivers, fetchUserDrivers, fetchVehicleUsers } from "@/services/masterService";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -43,6 +43,16 @@ export default function ProcessThree() {
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
+  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string | null>(null);
+
+  const handleVehicleSelection = (vehiclePoolId: string) => {
+    setSelectedVehiclePoolId(vehiclePoolId);
+  };
+   const [params, setParams] = useState({
+      name: "",
+      page: 1,
+      limit: 10,
+    });
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
     driverOptions[0]
   );
@@ -51,10 +61,10 @@ export default function ProcessThree() {
   const [annualValid, setAnnualValid] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
+    const value = e.target.value;
     setSearchTerm(value);
     const filtered = drivers.filter((driver: any) =>
-      driver.full_name.toLowerCase().includes(value)
+      driver.driver_name.includes(value)
     );
     setFilteredDrivers(filtered);
   };
@@ -71,7 +81,7 @@ export default function ProcessThree() {
         setAnnualValid(true); // if no requestAnnual, treat as valid
       }
     }
-  }, [driverLicenseNo, licenseExpDate, requestAnnual, annualYear]);
+  }, [driverLicenseNo, licenseExpDate, requestAnnual, annualYear, today]);
 
   const allValid = licenseValid && annualValid;
 
@@ -125,11 +135,11 @@ export default function ProcessThree() {
   useEffect(() => {
     const fetchVehicleUserData = async () => {
       try {
-        const response = await fetchVehicleUsers("");
+        const response = await fetchUserDrivers("");
         if (response.status === 200) {
           const vehicleUserData: VehicleUser[] = response.data;
           setVehicleUserDatas(vehicleUserData);
-          console.log(vehicleUserData);
+          console.log('s',vehicleUserData);
           const driverOptionsArray = [
             ...vehicleUserData.map(
               (user: {
@@ -152,10 +162,10 @@ export default function ProcessThree() {
 
     const fetchDriverData = async () => {
       try {
-        const response = await fetchUserDrivers("");
+        const response = await fetchDrivers(params);
         if (response.status === 200) {
-          setDrivers(response.data);
-          setFilteredDrivers(response.data);
+          setDrivers(response.data.drivers);
+          setFilteredDrivers(response.data.drivers);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -423,13 +433,15 @@ export default function ProcessThree() {
                         {filteredDrivers.map((driver: any, index: number) => (
                           <DriverCard
                             key={index}
+                            id={driver.mas_driver_uid}
                             imgSrc={
-                              driver.image_url || "/assets/img/sample-driver.png"
+                              driver.driver_image || "/assets/img/sample-driver.png"
                             }
-                            name={driver.full_name || ""}
-                            company={driver.dept_sap_short || ""}
-                            rating={driver.rating || 0}
+                            name={driver.driver_name || ""}
+                            company={driver.driver_dept_sap || ""}
+                            rating={driver.driver_average_satisfaction_score || 0}
                             age={driver.age || "-"}
+                            onVehicleSelect={handleVehicleSelection}
                           />
                         ))}
                       </div>
@@ -456,7 +468,7 @@ export default function ProcessThree() {
               <button
                 className="btn btn-primary"
                 onClick={() => next()}
-                disabled={!selectedVehicleUserOption || !allValid}
+                disabled={selectedDriverType == "พนักงาน กฟภ." ? (!selectedVehicleUserOption || !allValid) : (!selectedVehiclePoolId)}
               >
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">

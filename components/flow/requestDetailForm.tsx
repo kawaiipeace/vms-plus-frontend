@@ -21,6 +21,7 @@ import ApproveProgress from "@/components/approveProgress";
 import { fetchVehicleDetail } from "@/services/bookingUser";
 import { fetchVehicleUsers } from "@/services/masterService";
 import { VehicleUserType } from "../types/vehicleUserType";
+import DriverPeaInfoCard from "../card/driverPeaInfoCard";
 
 interface FormData {
   telInternal?: string;
@@ -103,6 +104,7 @@ interface RequestDetailFormProps {
   approverCard?: boolean;
   driverCard?: boolean;
   keyPickUpCard?: boolean;
+  formData?: FormData;
 }
 
 export default function RequestDetailForm({
@@ -110,6 +112,7 @@ export default function RequestDetailForm({
   approverCard,
   driverCard,
   keyPickUpCard,
+  formData,
 }: RequestDetailFormProps) {
   const carSelect = "true";
   const driverAppointmentModalRef = useRef<{
@@ -150,14 +153,6 @@ export default function RequestDetailForm({
     null
   );
   const [approver, setApprover] = useState<VehicleUserType>();
-  const [formData, setFormData] = useState<FormData | null>(null);
-
-  useEffect(() => {
-    const storedFormData = localStorage.getItem("formData");
-    if (storedFormData) {
-      setFormData(JSON.parse(storedFormData));
-    }
-  }, []);
 
   useEffect(() => {
     if (!formData) return;
@@ -423,8 +418,12 @@ export default function RequestDetailForm({
                       </div>
                     </div>
                   )}
+                  {formData.masCarpoolDriverUid && (
+                    <div className="mt-5">
+                      <DriverSmallInfoCard id={formData.masCarpoolDriverUid} />
+                    </div>
+                  )}
 
-                  <DriverSmallInfoCard />
                 </>
               ) : (
                 <>
@@ -466,6 +465,10 @@ export default function RequestDetailForm({
                 </>
               )}
             </>
+
+            <div className="mt-5">
+                      <DriverPeaInfoCard />
+                    </div>
 
             {driverCard && status != "detail" && status != "edit" && (
               <div className="form-section mt-5">

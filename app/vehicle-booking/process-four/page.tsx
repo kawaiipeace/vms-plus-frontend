@@ -9,7 +9,6 @@ import RequestDetailForm from "@/components/flow/requestDetailForm";
 import TermAndConditionModal from "@/components/modal/termAndConditionModal";
 import Link from "next/link";
 import { createRequest } from "@/services/bookingUser";
-import dayjs from "dayjs";
 
 export default function ProcessFour() {
   const router = useRouter();
@@ -82,13 +81,6 @@ export default function ProcessFour() {
     } else {
       console.warn("No formData found!");
     }
-  };
-
-  // Helper function: Convert Buddhist year (2568) to Gregorian year (2025)
-  const convertToGregorian = (thaiDate: string) => {
-    const [day, month, year] = thaiDate.split("/");
-    const gregorianYear = parseInt(year) - 543;
-    return `${gregorianYear}-${month}-${day}`; // YYYY-MM-DD
   };
 
   return (

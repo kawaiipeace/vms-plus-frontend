@@ -1,4 +1,8 @@
-export default function DisburstmentCard(){
+interface Props{
+  name?: string;
+  refCostNo?: string;
+}
+export default function DisburstmentCard({name, refCostNo}: Props){
     return(
         <div className="form-card">
         <div className="form-card-body">
@@ -9,7 +13,7 @@ export default function DisburstmentCard(){
                 <div className="form-plaintext-group">
                   <div className="form-label">ประเภทงบประมาณ</div>
                   <div className="form-text">
-                    งบทำการ หน่วยงานต้นสังกัด
+                    {name}
                   </div>
                 </div>
               </div>
@@ -23,7 +27,7 @@ export default function DisburstmentCard(){
                 <div className="form-plaintext-group">
                   <div className="form-label">ศูนย์ต้นทุน</div>
                   <div className="form-text">
-                    ZA04020200 : กบห.กอพ.1-บห.
+                   {refCostNo}
                   </div>
                 </div>
               </div>

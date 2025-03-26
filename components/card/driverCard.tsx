@@ -4,23 +4,31 @@ import Image from "next/image";
 import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
 
 export default function DriverCard({
+  id,
   imgSrc,
   name,
   rating,
   age,
   company,
+  onVehicleSelect,
 }: {
+  id: string;
   imgSrc: string;
   name: string;
   rating: number;
   age: string;
   company: string;
+  onVehicleSelect: (id: string) => void;
 }) {
-
   const driverAppointmentRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  
+
+  const handleAppointmentSubmit = () => {
+    onVehicleSelect(id);
+  };
 
   return (
     <div className="card">
@@ -64,7 +72,12 @@ export default function DriverCard({
           </button>
         </div>
       </div>
-      <DriverAppointmentModal process="add" ref={driverAppointmentRef} />
+      <DriverAppointmentModal 
+        process="add" 
+        ref={driverAppointmentRef} 
+        id={id} 
+        onSubmit={handleAppointmentSubmit}
+      />
     </div>
   );
 }
