@@ -5,7 +5,7 @@ interface ZeroRecordProps {
   imgSrc: string;
   title: string;
   desc: string | React.ReactNode;
-  button: string;
+  button?: string;
 }
 export default function EmptyDriver({
   imgSrc,
@@ -30,6 +30,7 @@ export default function EmptyDriver({
         <div className="emptystate-text">
         {desc}
         </div>
+        { button && 
         <div className="emptystate-action">
           <button className="btn btn-secondary btn-clearsearch"   
             onClick={() => searchDriverModalRef.current?.openModal()}
@@ -37,6 +38,7 @@ export default function EmptyDriver({
             {button}
           </button>
         </div>
+}
       </div>
       <SearchDriverModal ref={searchDriverModalRef} />
     </div>

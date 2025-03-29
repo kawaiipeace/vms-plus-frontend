@@ -1,3 +1,7 @@
+import {
+  fetchDriverDetail,
+  fetchOtherDeptDrivers,
+} from "@/services/masterService";
 import React, {
   forwardRef,
   useImperativeHandle,
@@ -5,6 +9,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import { Driver } from "@/components/types/vehicleUserType";
 
 const SearchDriverModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -14,20 +19,51 @@ const SearchDriverModal = forwardRef((_, ref) => {
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const driverOptions = [
-    "ศรัญยู บริรัตน์ฤทธิ์ (505291)",
-    "ธนพล วิจารณ์ปรีชา (514285)",
-    "ญาณิศา อุ่นสิริ (543210)",
-  ];
-
   const [selected, setSelected] = useState(""); // Allow empty selection
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState(""); // Live search state
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [params, setParams] = useState({
+    name: "",
+    page: 1,
+    limit: 10,
+  });
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string; status: string }[]
+  >([]);
+  const [driverDetail, setDriverDetail] = useState<Driver>();
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    const fetchDriverData = async () => {
+      try {
+        const response = await fetchOtherDeptDrivers(params);
+        if (response.status === 200) {
+          const vehicleUserData = response.data.drivers;
+          const driverOptionsArray = [
+            ...vehicleUserData.map(
+              (user: {
+                mas_driver_uid: string;
+                driver_name: string;
+                driver_dept_sap: string;
+                status: string;
+              }) => ({
+                value: user.mas_driver_uid,
+                label: `${user.driver_name} (${user.driver_dept_sap})`,
+                activeStatus: status,
+              })
+            ),
+          ];
+
+          setDriverOptions(driverOptionsArray);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+    fetchDriverData();
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -46,10 +82,30 @@ const SearchDriverModal = forwardRef((_, ref) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  const fetchDriverDetailFunc = async (mas_id: string) => {
+    try {
+      console.log("masfunc", mas_id);
+      const response = await fetchDriverDetail(mas_id);
+      if (response.status === 200) {
+        const res = response.data;
+        setDriverDetail(res);
+        console.log("rrs", res);
+      }
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  };
+
   // Filter options based on the search input
   const filteredOptions = driverOptions.filter((option) =>
-    option.toLowerCase().includes(search.toLowerCase())
+    option.label.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleSelected = (mas_id: string) => {
+    console.log("mas", mas_id);
+    fetchDriverDetailFunc(mas_id);
+    setSelected(mas_id);
+  };
 
   return (
     <dialog ref={modalRef} className="modal">
@@ -67,7 +123,7 @@ const SearchDriverModal = forwardRef((_, ref) => {
         </div>
         {/* Ensure modal body takes remaining space */}
         <div className="modal-body flex-1 overflow-y-auto">
-          <div className={`row form-row ${ !selected && 'p-3' }`}>
+          <div className={`row form-row ${!selected && "p-3"}`}>
             {selected && (
               <div className="cover">
                 <div className={`relative custom-select`}>
@@ -111,20 +167,20 @@ const SearchDriverModal = forwardRef((_, ref) => {
                       {filteredOptions.length > 0 ? (
                         filteredOptions.map((option) => (
                           <li
-                            key={option}
+                            key={option.value}
                             className={`px-4 py-2 cursor-pointer flex gap-2 items-center rounded-lg ${
-                              selected === option
+                              selected === option.label
                                 ? "text-brand-900 active"
                                 : "text-gray-700"
                             } hover:bg-gray-100`}
                             onClick={() => {
-                              setSelected(option);
-                              setSearch(option); // Set input value to selected option
+                              handleSelected(option.value);
+                              setSearch(option.label);
                               setIsOpen(false);
                             }}
                           >
-                            {option}
-                            {selected === option && (
+                            {option.label}
+                            {selected === option.label && (
                               <span className="material-symbols-outlined">
                                 check
                               </span>
@@ -139,72 +195,112 @@ const SearchDriverModal = forwardRef((_, ref) => {
                     </ul>
                   )}
                 </div>
+                {((selected) && search !== "") && (
+                  <>
+                    {driverDetail?.status == "ว่าง" && (
+                      <div className="mt-5 flex items-center justify-between free">
+                        <div className="">
+                          <div className="title text-base">
+                            {" "}
+                            {driverDetail?.driver_name} (
+                            {driverDetail?.driver_nickname})
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            สังกัด {driverDetail?.driver_dept_sap}
+                          </div>
+                        </div>
 
-                <div className="mt-5 flex items-center justify-between free">
-                  <div className="">
-                    <div className="title text-base"> {selected}</div>
-                    <div className="text-sm text-gray-500">สังกัด กอพ.1</div>
-                  </div>
+                        <div className="border rounded-md px-4 py-1 text-sm flex gap-2 items-center">
+                          <div className="rounded-full w-[6px] h-[6px] bg-green-500"></div>
+                          ว่าง
+                        </div>
+                      </div>
+                    )}
+                    {driverDetail?.status == "ไม่ว่าง" && (
+                      <div className="not-free">
+                        <div className="mt-5 flex items-center justify-between free">
+                          <div className="">
+                            <div className="title text-base">
+                              {" "}
+                              {driverDetail?.driver_name} (
+                              {driverDetail?.driver_nickname})
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              สังกัด {driverDetail?.driver_dept_sap}
+                            </div>
+                          </div>
 
-                  <div className="border rounded-md px-4 py-1 text-sm flex gap-2 items-center">
-                    <div className="rounded-full w-[6px] h-[6px] bg-green-500"></div>
-                    ว่าง
-                  </div>
-                </div>
-
-                <div className="not-free">
-                  <div className="mt-5 flex items-center justify-between free">
-                    <div className="">
-                      <div className="title text-base"> {selected}</div>
-                      <div className="text-sm text-gray-500">สังกัด กอพ.1</div>
-                    </div>
-
-                    <div className="border rounded-md px-4 py-1 text-sm flex gap-2 items-center">
-                      <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-                      ไม่ว่าง
-                    </div>
-                  </div>
-                  <p className="text-lg font-semibold mt-4">
-                    รายละเอียดการเดินทาง
-                  </p>
-                  <div className="overflow-x-auto">
-                    <div className="rounded-md overflow-hidden border border-primary-grayBorder mt-3">
-                      <table className="table w-full">
-                        <tbody>
-                          <tr>
-                            <th>วันที่เดินทาง</th>
-                            <td className="text-right">
-                              01/01/2567 - 07/01/2567
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>สถานที่ปฏิบัติงาน</th>
-                            <td className="text-right">
-                              การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>เลขที่คำขอ</th>
-                            <td className="text-right">VA67RA000008</td>
-                          </tr>
-                          <tr>
-                            <th>ผู้ดูแลยานพาหนะ</th>
-                            <td className="text-right">
-                              วโรดม สิงหเสนี <br></br>{" "}
-                              <sub>094-560-0817, 6832</sub>{" "}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
+                          <div className="border rounded-md px-4 py-1 text-sm flex gap-2 items-center">
+                            <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
+                            ไม่ว่าง
+                          </div>
+                        </div>
+                        <p className="text-lg font-semibold mt-4">
+                          รายละเอียดการเดินทาง
+                        </p>
+                        <div className="overflow-x-auto pb-3">
+                          {(driverDetail?.trip_Details).map((trip, index) => (
+                            <div
+                              key={index}
+                              className="rounded-md overflow-hidden border border-primary-grayBorder mt-3"
+                            >
+                              <table className="table w-full">
+                                <tbody>
+                                  <tr>
+                                    <th>วันที่เดินทาง</th>
+                                    <td className="text-right">
+                                      {new Date(
+                                        trip.start_datetime
+                                      ).toLocaleDateString("th-TH")}{" "}
+                                      -{" "}
+                                      {new Date(
+                                        trip.end_datetime
+                                      ).toLocaleDateString("th-TH")}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th>สถานที่ปฏิบัติงาน</th>
+                                    <td className="text-right">
+                                      {trip.work_place}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th>เลขที่คำขอ</th>
+                                    <td className="text-right">
+                                      {trip.request_no}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th>ผู้ดูแลยานพาหนะ</th>
+                                    <td className="text-right">
+                                      {trip.vehicle_user.full_name} <br />
+                                      <sub>
+                                        {trip.vehicle_user.tel_mobile},{" "}
+                                        {trip.vehicle_user.tel_internal}
+                                      </sub>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0 bg-white p-3">
-          <button type="button" className="btn btn-primary">
+          <button
+            type="button"
+            className={`btn btn-primary ${
+              driverDetail?.status === "ไม่ว่าง" && "disabled"
+            }`}
+            disabled={driverDetail?.status === "ไม่ว่าง"}
+          >
             เลือก
           </button>
         </div>
@@ -249,24 +345,24 @@ const SearchDriverModal = forwardRef((_, ref) => {
 
           {/* Dropdown List */}
           {isOpen && (
-            <ul className="absolute flex flex-col left-0 p-2 gap-2 z-999 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
+            <ul className="absolute flex flex-col left-0 p-2 gap-2 z-[99] mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((option) => (
                   <li
-                    key={option}
+                    key={option.value}
                     className={`px-4 py-2 cursor-pointer flex gap-2 items-center rounded-lg ${
-                      selected === option
+                      selected === option.label
                         ? "text-brand-900 active"
                         : "text-gray-700"
                     } hover:bg-gray-100`}
                     onClick={() => {
-                      setSelected(option);
-                      setSearch(option); // Set input value to selected option
+                      handleSelected(option.value);
+                      setSearch(option.label); // Set input value to selected option
                       setIsOpen(false);
                     }}
                   >
-                    {option}
-                    {selected === option && (
+                    {option.label}
+                    {selected === option.label && (
                       <span className="material-symbols-outlined">check</span>
                     )}
                   </li>

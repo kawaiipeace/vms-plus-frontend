@@ -12,7 +12,7 @@ import RadioButton from "@/components/radioButton";
 import SideBar from "@/components/sideBar";
 import Tooltip from "@/components/tooltips";
 import Link from "next/link";
-import { fetchDrivers, fetchUserDrivers, fetchVehicleUsers } from "@/services/masterService";
+import { fetchDrivers, fetchUserDrivers } from "@/services/masterService";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -398,7 +398,7 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                  {filteredDrivers.length > 0 ? (
+                
                     <>
                       <div className="page-section-header border-0">
                         <div className="page-header-left">
@@ -429,6 +429,8 @@ export default function ProcessThree() {
                         />
                       </div>
 
+                      {filteredDrivers.length > 0 ? (
+
                       <div className="grid grid-cols-4 gap-5 w-full">
                         {filteredDrivers.map((driver: any, index: number) => (
                           <DriverCard
@@ -445,9 +447,25 @@ export default function ProcessThree() {
                           />
                         ))}
                       </div>
+                        ) : (
+
+                          <EmptyDriver
+                          imgSrc="/assets/img/empty/empty_driver.svg"
+                          title="ไม่พบพนักงานขับรถ"
+                          desc={
+                            <>
+                              เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง
+                            </>
+                          }
+      
+                        />
+      
+                        
+                        )}
                     </>
-                  ) : (
-                    <EmptyDriver
+                
+                </div>
+                <EmptyDriver
                       imgSrc="/assets/img/empty/empty_driver.svg"
                       title="ไม่พบพนักงานขับรถ"
                       desc={
@@ -459,8 +477,6 @@ export default function ProcessThree() {
                       }
                       button="ค้นหานอกสังกัด"
                     />
-                  )}
-                </div>
               </div>
             </div>
 

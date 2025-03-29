@@ -71,3 +71,25 @@ export const uploadFile = async (file: File) => {
       throw error;
     }
   };
+
+  export const fetchOtherDeptDrivers = async (params: {
+    name?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    try {
+      const response = await axiosInstance.get('driver/search-other-dept', { params });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const fetchDriverDetail = async (id: string) => {
+    try {
+      const response = await axiosInstance.get('driver/' + id);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
