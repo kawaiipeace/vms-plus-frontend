@@ -11,13 +11,20 @@ import React, {
 } from "react";
 import { Driver } from "@/components/types/vehicleUserType";
 
-const SearchDriverModal = forwardRef((_, ref) => {
+const SearchDriverModal = forwardRef(({ onSelectDrivers }: { onSelectDrivers?: (mas_driver_uid: string) => void }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-
+  
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  const handleConfirmSelection = () => {
+    if (driverDetail && driverDetail.status !== "ไม่ว่าง") {
+      onSelectDrivers?.(driverDetail.mas_driver_uid);
+    }
+  };
+
 
   const [selected, setSelected] = useState(""); // Allow empty selection
   const [isOpen, setIsOpen] = useState(false);
@@ -300,6 +307,7 @@ const SearchDriverModal = forwardRef((_, ref) => {
               driverDetail?.status === "ไม่ว่าง" && "disabled"
             }`}
             disabled={driverDetail?.status === "ไม่ว่าง"}
+            onClick={handleConfirmSelection}
           >
             เลือก
           </button>

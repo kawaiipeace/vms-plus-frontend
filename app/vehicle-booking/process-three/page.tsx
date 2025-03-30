@@ -36,6 +36,7 @@ export default function ProcessThree() {
   const [driverLicenseNo, setDriverLicenseNo] = useState("");
   const today = new Date();
   const [annualYear, setAnnualYear] = useState<number>(2025);
+  const [masDriverUid, setMasDriverUid] = useState<string>("");
   const [requestAnnual, setRequestAnnual] = useState("");
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
@@ -43,16 +44,16 @@ export default function ProcessThree() {
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string | null>(null);
+  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string>("");
 
   const handleVehicleSelection = (vehiclePoolId: string) => {
     setSelectedVehiclePoolId(vehiclePoolId);
   };
-   const [params, setParams] = useState({
-      name: "",
-      page: 1,
-      limit: 10,
-    });
+  const [params, setParams] = useState({
+    name: "",
+    page: 1,
+    limit: 10,
+  });
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
     driverOptions[0]
   );
@@ -113,6 +114,7 @@ export default function ProcessThree() {
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
         driverDeptSap: empData.dept_sap,
+        masCarpoolDriverUid: masDriverUid,
       });
     }
   };
@@ -139,7 +141,7 @@ export default function ProcessThree() {
         if (response.status === 200) {
           const vehicleUserData: VehicleUser[] = response.data;
           setVehicleUserDatas(vehicleUserData);
-          console.log('s',vehicleUserData);
+          console.log("s", vehicleUserData);
           const driverOptionsArray = [
             ...vehicleUserData.map(
               (user: {
@@ -175,6 +177,9 @@ export default function ProcessThree() {
     fetchVehicleUserData();
   }, []);
 
+  const setCarpoolId = (mas_driver_uid: string) => {
+    setMasDriverUid(mas_driver_uid);
+  };
   const next = () => {
     router.push("process-four");
   };
@@ -398,85 +403,80 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                
-                    <>
-                      <div className="page-section-header border-0">
-                        <div className="page-header-left">
-                          <div className="page-title">
-                            <span className="page-title-label">
-                              เลือกพนักงานขับรถ
-                            </span>
-                            <span className="badge badge-outline badge-gray page-title-status">
-                              {filteredDrivers.length} คน
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="input-group input-group-search hidden mb-5 w-[20em]">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text search-ico-info">
-                            <i className="material-symbols-outlined">search</i>
+                  <>
+                    <div className="page-section-header border-0">
+                      <div className="page-header-left">
+                        <div className="page-title">
+                          <span className="page-title-label">
+                            เลือกพนักงานขับรถ
+                          </span>
+                          <span className="badge badge-outline badge-gray page-title-status">
+                            {filteredDrivers.length} คน
                           </span>
                         </div>
-                        <input
-                          type="text"
-                          id="myInputTextField"
-                          value={searchTerm}
-                          onChange={handleSearch}
-                          className="form-control dt-search-input"
-                          placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                        />
                       </div>
+                    </div>
 
-                      {filteredDrivers.length > 0 ? (
+                    <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text search-ico-info">
+                          <i className="material-symbols-outlined">search</i>
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        id="myInputTextField"
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        className="form-control dt-search-input"
+                        placeholder="ค้นหาชื่อพนักงานขับรถ.."
+                      />
+                    </div>
 
+                    {filteredDrivers.length > 0 ? (
                       <div className="grid grid-cols-4 gap-5 w-full">
                         {filteredDrivers.map((driver: any, index: number) => (
                           <DriverCard
                             key={index}
                             id={driver.mas_driver_uid}
                             imgSrc={
-                              driver.driver_image || "/assets/img/sample-driver.png"
+                              driver.driver_image ||
+                              "/assets/img/sample-driver.png"
                             }
                             name={driver.driver_name || ""}
                             company={driver.driver_dept_sap || ""}
-                            rating={driver.driver_average_satisfaction_score || 0}
+                            rating={
+                              driver.driver_average_satisfaction_score || 0
+                            }
                             age={driver.age || "-"}
                             onVehicleSelect={handleVehicleSelection}
                           />
                         ))}
                       </div>
-                        ) : (
-
-                          <EmptyDriver
-                          imgSrc="/assets/img/empty/empty_driver.svg"
-                          title="ไม่พบพนักงานขับรถ"
-                          desc={
-                            <>
-                              เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง
-                            </>
-                          }
-      
-                        />
-      
-                        
-                        )}
-                    </>
-                
+                    ) : (
+                      <EmptyDriver
+                        imgSrc="/assets/img/empty/empty_driver.svg"
+                        title="ไม่พบพนักงานขับรถ"
+                        desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                      />
+                    )}
+                  </>
+                  { drivers.length <= 0 && 
+                  <EmptyDriver
+                    imgSrc="/assets/img/empty/empty_driver.svg"
+                    title="ไม่พบพนักงานขับรถ"
+                    desc={
+                      <>
+                        ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
+                        กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
+                        ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                      </>
+                    }
+                    button="ค้นหานอกสังกัด"
+                    onSelectDriver={setCarpoolId}
+                  />
+}
                 </div>
-                <EmptyDriver
-                      imgSrc="/assets/img/empty/empty_driver.svg"
-                      title="ไม่พบพนักงานขับรถ"
-                      desc={
-                        <>
-                          ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
-                          กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
-                          ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                        </>
-                      }
-                      button="ค้นหานอกสังกัด"
-                    />
               </div>
             </div>
 
@@ -484,7 +484,11 @@ export default function ProcessThree() {
               <button
                 className="btn btn-primary"
                 onClick={() => next()}
-                disabled={selectedDriverType == "พนักงาน กฟภ." ? (!selectedVehicleUserOption || !allValid) : (!selectedVehiclePoolId)}
+                disabled={
+                  selectedDriverType === "พนักงาน กฟภ."
+                    ? !selectedVehicleUserOption || !allValid
+                    : ((selectedVehiclePoolId === "") && (masDriverUid === ""))
+                }
               >
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">

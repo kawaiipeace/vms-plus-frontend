@@ -6,17 +6,25 @@ interface ZeroRecordProps {
   title: string;
   desc: string | React.ReactNode;
   button?: string;
+  onSelectDriver?: (mas_driver_uid: string) => void;
 }
 export default function EmptyDriver({
   imgSrc,
   title,
   desc,
   button,
+  onSelectDriver,
 }: ZeroRecordProps) {
     const searchDriverModalRef = useRef<{
       openModal: () => void;
       closeModal: () => void;
     } | null>(null);
+
+    const handleSelectDriver = (mas_driver_uid: string) => {
+      onSelectDriver?.(mas_driver_uid); 
+      searchDriverModalRef.current?.closeModal(); // Close modal after selection
+    };
+
   return (
     <div className="zerorecord">
       <div className="emptystate">
@@ -40,7 +48,7 @@ export default function EmptyDriver({
         </div>
 }
       </div>
-      <SearchDriverModal ref={searchDriverModalRef} />
+      <SearchDriverModal ref={searchDriverModalRef} onSelectDrivers={handleSelectDriver} />
     </div>
   );
 }
