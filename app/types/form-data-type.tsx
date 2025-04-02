@@ -34,5 +34,10 @@ export interface FormDataType {
     numberOfPassanger: number;
     userImageUrl: string;
     vehicleSelect: string;
+    driverInternalContact: string;
+    driverMobileContact: string;
+    driverEmpID: string;
+    driverEmpName: string;
+    driverDeptSap: string;
   }
   

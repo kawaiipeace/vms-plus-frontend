@@ -1,4 +1,9 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import DatePicker from "@/components/datePicker";
 import NumberInput from "@/components/numberInput";
 import RadioButton from "@/components/radioButton";
@@ -8,7 +13,10 @@ interface ReturnCarAddModalProps {
   useBy?: string;
 }
 
-const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddModalProps>(({ useBy }, ref) => {
+const ReturnCarAddModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  ReturnCarAddModalProps
+>(({ useBy }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const [inCarType, setInCarType] = useState("");
@@ -44,11 +52,15 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12">
                   <div className="col-span-12">
                     <div className="form-group">
-                      <label className="form-label">วันที่เริ่มต้นเดินทาง</label>
+                      <label className="form-label">
+                        วันที่เริ่มต้นเดินทาง
+                      </label>
                       <div className="input-group">
                         <div className="input-group-prepend">
                           <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
+                            <i className="material-symbols-outlined">
+                              calendar_month
+                            </i>
                           </span>
                         </div>
                         <DatePicker placeholder="ระบุวันที่" />
@@ -67,26 +79,42 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                     <div className="form-group">
                       <label className="form-label">เลขไมล์</label>
                       <div className="input-group">
-                        <input type="text" className="form-control" placeholder="ระบุเลขไมล์" />
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="ระบุเลขไมล์"
+                        />
                       </div>
                     </div>
                   </div>
                   <div className="col-span-6">
                     <div className="form-group">
                       <label className="form-label">ปริมาณเชื้อเพลิง</label>
-                    <NumberInput
-                                         value={passengerCount}
-                                         onChange={setPassengerCount}
-                                       />
+                      <NumberInput
+                        value={passengerCount}
+                        onChange={setPassengerCount}
+                      />
                     </div>
                   </div>
                   <div className="col-span-12">
                     <div className="form-group">
                       <label className="form-label">ภายในห้องโดยสาร</label>
                       <div className="custom-group">
-                        <RadioButton name="travelType" label="สะอาด" value="สะอาด" selectedValue={inCarType} setSelectedValue={setInCarType} />
+                        <RadioButton
+                          name="travelType"
+                          label="สะอาด"
+                          value="สะอาด"
+                          selectedValue={inCarType}
+                          setSelectedValue={setInCarType}
+                        />
 
-                        <RadioButton name="travelType" label="ไม่สะอาด" value="ไม่สะอาด" selectedValue={inCarType} setSelectedValue={setInCarType} />
+                        <RadioButton
+                          name="travelType"
+                          label="ไม่สะอาด"
+                          value="ไม่สะอาด"
+                          selectedValue={inCarType}
+                          setSelectedValue={setInCarType}
+                        />
                       </div>
                     </div>
                   </div>
@@ -94,9 +122,21 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                     <div className="form-group">
                       <label className="form-label">ภายนอกยานพาหนะ</label>
                       <div className="custom-group">
-                        <RadioButton name="travelType" label="สะอาด" value="สะอาด" selectedValue={outCarType} setSelectedValue={setOutCarType} />
+                        <RadioButton
+                          name="travelType"
+                          label="สะอาด"
+                          value="สะอาด"
+                          selectedValue={outCarType}
+                          setSelectedValue={setOutCarType}
+                        />
 
-                        <RadioButton name="travelType" label="ไม่สะอาด" value="ไม่สะอาด" selectedValue={outCarType} setSelectedValue={setOutCarType} />
+                        <RadioButton
+                          name="travelType"
+                          label="ไม่สะอาด"
+                          value="ไม่สะอาด"
+                          selectedValue={outCarType}
+                          setSelectedValue={setOutCarType}
+                        />
                       </div>
                     </div>
                   </div>
@@ -106,7 +146,11 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                         หมายเหตุ<span className="font-light">(ถ้ามี)</span>
                       </label>
                       <div className="input-group">
-                        <input type="text" className="form-control" placeholder="ระบุหมายเหตุ" />
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="ระบุหมายเหตุ"
+                        />
                       </div>
                     </div>
                   </div>
@@ -142,7 +186,11 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
           <button>close</button>
         </form>
       </dialog>
-      <ReturnCarAddStep2Modal openStep1={() => modalRef.current?.showModal()} useBy={useBy} ref={returnCarAddStep2ModalRef} />
+      <ReturnCarAddStep2Modal
+        openStep1={() => modalRef.current?.showModal()}
+        useBy={useBy}
+        ref={returnCarAddStep2ModalRef}
+      />
     </>
   );
 });

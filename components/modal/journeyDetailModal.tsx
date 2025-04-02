@@ -10,6 +10,7 @@ import * as yup from "yup";
 import NumberInput from "@/components/numberInput";
 import FormHelper from "@/components/formHelper";
 import { useFormContext } from "@/contexts/requestFormContext";
+import RadioButton from "../radioButton";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,8 +22,11 @@ const schema = yup.object().shape({
   endDate: yup.string(),
   timeStart: yup.string(),
   timeEnd: yup.string(),
-  passengerCount: yup.number().min(1, "ต้องมีผู้โดยสารอย่างน้อย 1 คน"),
-  workPlace: yup.string().optional(),
+  workPlace: yup.string().required(),
+  purpose: yup.string().required(),
+  remark: yup.string().optional(),
+  tripType: yup.number(),
+  numberOfPassengers: yup.number()
 });
 
 const JourneyDetailModal = forwardRef<
@@ -31,6 +35,16 @@ const JourneyDetailModal = forwardRef<
 >(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
+
+
+  useImperativeHandle(ref, () => ({
+    openModal: () => modalRef.current?.showModal(),
+    closeModal: () => modalRef.current?.close(),
+  }));
+
+  const [passengerCount, setPassengerCount] = useState(formData.numberOfPassanger);
+  const [selectedTripType, setSelectedTripType] = useState<string>((formData.tripType  ?? "").toString());
+
   const {
     control,
     handleSubmit,
@@ -44,26 +58,32 @@ const JourneyDetailModal = forwardRef<
       timeStart: formData.timeStart,
       timeEnd: formData.timeEnd,
       workPlace: formData.workPlace,
+      purpose: formData.purpose,
+      remark: formData.remark,
     },
   });
 
-  useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
-    closeModal: () => modalRef.current?.close(),
-  }));
-
-  const [passengerCount, setPassengerCount] = useState<number>();
-
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
+    const updatedata = {
+      startDate: data.startDate,
+      endDate: data.endDate,
+      timeStart: data.timeStart,
+      timeEnd: data.timeEnd,
+      workPlace: data.workPlace,
+      purpose: data.purpose,
+      remark: data.remark,
+      numberOfPassengers: passengerCount,
+      tripType: parseInt(selectedTripType)
+    }
+    console.log('pp',passengerCount);
     onUpdate({
       ...data,
-      telInternal: data.internalPhone,
-      telMobile: data.mobilePhone,
+      updatedata,
+      numberOfPassengers: passengerCount,
+      tripType: parseInt(selectedTripType)
     });
 
-    data.telInternal = data.internalPhone;
-    data.telMobile = data.mobilePhone;
-    updateFormData(data);
+    updateFormData(updatedata);
     modalRef.current?.close();
   };
 
@@ -94,15 +114,19 @@ const JourneyDetailModal = forwardRef<
                       </i>
                     </span>
                   </div>
-               
+
                   <Controller
                     name="startDate"
                     control={control}
                     render={({ field }) => (
-                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none border-0"
+                        readOnly
+                        {...field}
+                      />
                     )}
                   />
-               
                 </div>
               </div>
             </div>
@@ -122,7 +146,12 @@ const JourneyDetailModal = forwardRef<
                     name="endDate"
                     control={control}
                     render={({ field }) => (
-                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none border-0"
+                        readOnly
+                        {...field}
+                      />
                     )}
                   />
                 </div>
@@ -132,12 +161,17 @@ const JourneyDetailModal = forwardRef<
             <div className="col-span-6 md:col-span-6 journey-time">
               <div className="form-group">
                 <label className="form-label">เวลาเริ่มต้นเดินทาง</label>
-                <div className="input-group">
-                <Controller
+                <div className="input-group is-readonly">
+                  <Controller
                     name="timeStart"
                     control={control}
                     render={({ field }) => (
-                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none border-0"
+                        readOnly
+                        {...field}
+                      />
                     )}
                   />
                 </div>
@@ -147,42 +181,43 @@ const JourneyDetailModal = forwardRef<
             <div className="col-span-6 md:col-span-6 journey-time">
               <div className="form-group">
                 <label className="form-label">เวลาสิ้นสุดเดินทาง</label>
-                <div className="input-group">
-                <Controller
+                <div className="input-group is-readonly">
+                  <Controller
                     name="timeEnd"
                     control={control}
                     render={({ field }) => (
-                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none border-0"
+                        readOnly
+                        {...field}
+                      />
                     )}
                   />
                 </div>
               </div>
             </div>
-
             <div className="col-span-12 md:col-span-6">
               <div className="form-group">
                 <label className="form-label">ประเภทการเดินทาง</label>
                 <div className="custom-group">
                   <div className="custom-control custom-radio custom-control-inline">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="ประเภทการเดินทาง"
-                      data-group="ประเภทการเดินทาง"
-                      checked
-                      disabled
+                    <RadioButton
+                      name="tripType"
+                      label="ไป-กลับ"
+                      value="1"
+                      selectedValue={selectedTripType}
+                      setSelectedValue={setSelectedTripType}
                     />
-                    <label className="custom-control-label">ไป-กลับ</label>
                   </div>
                   <div className="custom-control custom-radio custom-control-inline">
-                    <input
-                      type="radio"
-                      className="custom-control-input"
-                      name="ประเภทการเดินทาง"
-                      data-group="ประเภทการเดินทาง"
-                      disabled
+                  <RadioButton
+                      name="tripType"
+                      label="ค้างแรม"
+                      value="0"
+                      selectedValue={selectedTripType}
+                      setSelectedValue={setSelectedTripType}
                     />
-                    <label className="custom-control-label">ค้างแรม</label>
                   </div>
                 </div>
               </div>
@@ -191,23 +226,38 @@ const JourneyDetailModal = forwardRef<
             <div className="col-span-12">
               <div className="form-group">
                 <label className="form-label">สถานที่ปฏิบัติงาน</label>
-                <Controller
-                  name="workPlace"
-                  control={control}
-                  render={({ field }) => <input {...field} />}
-                />
+                <div className="input-group">
+                  <Controller
+                    name="workPlace"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        className="form-control border-0"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
             <div className="col-span-12">
               <div className="form-group">
                 <label className="form-label">วัตถุประสงค์</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder=""
-                  defaultValue="เพื่อเก็บรวบรวมข้อมูลการใช้งานระบบ VMS Plus ขอบเขตงานบริการเช่าชุดเครื่องยนต์กำเนิดไฟฟ้าของ กฟภ. และงานบริหารจัดการยานพาหนะขนาดใหญ่"
-                />
+                <div className="input-group">
+                  <Controller
+                    name="purpose"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        className="form-control border-0"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
@@ -216,12 +266,19 @@ const JourneyDetailModal = forwardRef<
                 <label className="form-label">
                   หมายเหตุ<span className="form-optional">(ถ้ามี)</span>
                 </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder=""
-                  defaultValue="รายละเอียดแผนและรายชื่อพนักงานตามเอกสารแนบ"
-                />
+                <div className="input-group">
+                  <Controller
+                    name="remark"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        className="form-control border-0"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
@@ -233,7 +290,7 @@ const JourneyDetailModal = forwardRef<
                 </label>
                 <div className="w-full overflow-hidden">
                   <NumberInput
-                    value={passengerCount || 0}
+                    value={passengerCount}
                     onChange={setPassengerCount}
                   />
                 </div>

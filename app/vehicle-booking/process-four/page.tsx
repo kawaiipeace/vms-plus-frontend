@@ -48,7 +48,7 @@ export default function ProcessFour() {
         is_pea_employee_driver: "1", // Assume always PEA employee, adjust as needed
         mas_carpool_driver_uid: "", // If you have this info, map it
         mas_vehicle_uid: formData.vehicleSelect || "",
-        number_of_passengers: formData.numberOfPassanger || 1,
+        number_of_passengers: formData.numberOfPassanger || 0,
         objective: formData.purpose || "",
         pickup_datetime: "2025-02-16T08:30:00Z",
         pickup_place: "", // Fill if needed

@@ -51,7 +51,7 @@ export default function RequestForm() {
   const router = useRouter();
   const { profile } = useProfile();
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
-  const [selectedTravelType, setSelectedTravelType] = useState("1");
+  const [selectedTripType, setSelectedTripType] = useState("1");
   const { updateFormData } = useFormContext();
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
   const [costTypeOptions, setCostTypeOptions] = useState<
@@ -215,7 +215,7 @@ export default function RequestForm() {
     data.vehicleUserEmpName = selectedVehicleUserOption.label;
     data.numberOfPassanger = passengerCount;
     data.refCostTypeCode = selectedCostTypeOption.value;
-    data.tripType = selectedTravelType;
+    data.tripType = selectedTripType;
     console.log("Form Data:", data);
     updateFormData(data);
     router.push("process-two");
@@ -430,19 +430,19 @@ export default function RequestForm() {
                     <label className="form-label">ประเภทการเดินทาง</label>
                     <div className="custom-group">
                       <RadioButton
-                        name="travelType"
+                        name="tripType"
                         label="ไป-กลับ"
                         value="1"
-                        selectedValue={selectedTravelType}
-                        setSelectedValue={setSelectedTravelType}
+                        selectedValue={selectedTripType}
+                        setSelectedValue={setSelectedTripType}
                       />
 
                       <RadioButton
-                        name="travelType"
+                        name="tripType"
                         label="ค้างแรม"
                         value="2"
-                        selectedValue={selectedTravelType}
-                        setSelectedValue={setSelectedTravelType}
+                        selectedValue={selectedTripType}
+                        setSelectedValue={setSelectedTripType}
                       />
                     </div>
                   </div>
