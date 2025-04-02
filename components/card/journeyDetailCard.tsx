@@ -9,7 +9,7 @@ interface JourneyDetailCardProps {
   workPlace?: string;
   purpose?: string;
   remark?: string;
-  tripType?: string;
+  tripType?: number;
   numberOfPassanger?: number;
 }
 
@@ -72,7 +72,7 @@ export default function JourneyDetailCard({
               <i className="material-symbols-outlined">travel_luggage_and_bags</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ประเภท</div>
-                <div className="form-text">{tripType == "1" ? "ไป-กลับ" : "ค้างแรม"}</div>
+                <div className="form-text">{tripType == 1 ? "ไป-กลับ" : "ค้างแรม"}</div>
               </div>
             </div>
           </div>

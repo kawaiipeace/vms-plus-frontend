@@ -2,6 +2,7 @@
 
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { fetchProfile } from "@/services/authService";
+import { useRouter } from "next/navigation";
 
 interface Profile {
   emp_id: string;
@@ -25,6 +26,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Check if the user is authenticated by checking the access token in local storage
@@ -55,13 +57,14 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         setError("Error fetching profile");
         console.error("Error fetching profile:", error);
+        router.push("/");
       } finally {
         setLoading(false);
       }
     };
 
     getProfile();
-  }, [isAuthenticated]);
+  }, []);
 
   return (
     <ProfileContext.Provider value={{ profile, setProfile, loading, error, isAuthenticated }}>

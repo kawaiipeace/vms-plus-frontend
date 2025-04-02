@@ -83,6 +83,13 @@ export default function ProcessFour() {
     }
   };
 
+  // Helper function: Convert Buddhist year (2568) to Gregorian year (2025)
+  // const convertToGregorian = (thaiDate: string) => {
+  //   const [day, month, year] = thaiDate.split("/");
+  //   const gregorianYear = parseInt(year) - 543;
+  //   return `${gregorianYear}-${month}-${day}`; // YYYY-MM-DD
+  // };
+
   return (
     <div>
       <div className="main-container">
@@ -129,7 +136,7 @@ export default function ProcessFour() {
                   </div>
                 </div>
 
-                <RequestDetailForm status="add" formData={formData} approverCard={true} /> {/* Pass formData as prop */}
+                <RequestDetailForm status="add" approverCard={true} /> {/* Pass formData as prop */}
               </div>
 
               <div className="form-accept">

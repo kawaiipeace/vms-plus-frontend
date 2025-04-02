@@ -11,7 +11,7 @@ import AlertCustom from "@/components/alertCustom";
 import ApproveRequestModal from "@/components/modal/approveRequestModal";
 import CarDetailCard from "@/components/card/carDetailCard";
 import UserInfoCard from "@/components/card/userInfoCard";
-import PickupKeyCard from "@/components/card/pickupKeyCard";
+// import PickupKeyCard from "@/components/card/pickupKeyCard";
 import DriverSmallInfoCard from "@/components/card/driverSmallInfoCard";
 import JourneyDetailCard from "@/components/card/journeyDetailCard";
 import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
@@ -20,47 +20,9 @@ import DisburstmentCard from "@/components/card/disburstmentCard";
 import ApproveProgress from "@/components/approveProgress";
 import { fetchVehicleDetail } from "@/services/bookingUser";
 import { fetchVehicleUsers } from "@/services/masterService";
-import { VehicleUserType } from "../types/vehicleUserType";
+import { VehicleUserType } from "../../app/types/vehicleUserType";
 import DriverPeaInfoCard from "../card/driverPeaInfoCard";
-
-interface FormData {
-  telInternal?: string;
-  telMobile?: string;
-  workPlace?: string;
-  purpose?: string;
-  attachmentFile?: string;
-  costNo?: string;
-  endDatetime?: string;
-  isAdminChooseDriver?: string;
-  isAdminChooseVehicle?: string;
-  isDriverNeed?: string;
-  isHaveSubRequest?: string;
-  isPeaEmployeeDriver?: string;
-  masCarpoolDriverUid?: string;
-  masVehicleUid?: string;
-  numberOfPassengers?: number;
-  pickupDatetime?: string;
-  pickupPlace?: string;
-  refCostTypeCode?: number;
-  refRequestTypeCode?: number;
-  referenceNumber?: string;
-  remark?: string;
-  requestedVehicleTypeId?: number;
-  reservedTimeType?: string;
-  startDate?: string;
-  endDate?: string;
-  timeStart?: string;
-  timeEnd?: string;
-  tripType?: string;
-  vehicleUserDeptSap?: string;
-  vehicleUserEmpId?: string;
-  vehicleUserEmpName?: string;
-  deptSapShort?: string;
-  numberOfPassanger: number;
-  userImageUrl: string;
-  vehicleSelect: string;
-}
-
+import { FormDataType } from "@/app/types/form-data-type";
 interface VehicleDetail {
   mas_vehicle_uid?: string;
   vehicle_brand_name?: string;
@@ -104,15 +66,13 @@ interface RequestDetailFormProps {
   approverCard?: boolean;
   driverCard?: boolean;
   keyPickUpCard?: boolean;
-  formData?: FormData;
 }
 
 export default function RequestDetailForm({
   status,
   approverCard,
   driverCard,
-  keyPickUpCard,
-  formData,
+  // keyPickUpCard,
 }: RequestDetailFormProps) {
   const carSelect = "true";
   const driverAppointmentModalRef = useRef<{
@@ -149,27 +109,49 @@ export default function RequestDetailForm({
     closeModal: () => void;
   } | null>(null);
 
-  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
-    null
-  );
+  const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
+  
+  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(null);
   const [approver, setApprover] = useState<VehicleUserType>();
+  const handleVehicleUserUpdate = (updatedData: Partial<FormDataType>) => {
+    setUpdatedFormData((prevData) => {
+      if (!prevData) return undefined; // Fix: Return undefined instead of null
+  
+      return {
+        ...prevData,
+        ...updatedData,
+      };
+    });
+  };
+  
+  
 
   useEffect(() => {
-    if (!formData) return;
-    console.log(formData);
-    const fetchVehicleDetailData = async () => {
-      try {
-        const response = await fetchVehicleDetail(formData.vehicleSelect);
-        console.log("rescar", response.data);
-
-        if (response.status === 200) {
-          setVehicleDetail(response.data ?? {});
+    const storedDataString = localStorage.getItem("formData");
+  
+    if (storedDataString) {
+      const parsedData = JSON.parse(storedDataString); // Parse the string
+      setUpdatedFormData(parsedData);
+      console.log("data", parsedData);
+  
+      const fetchVehicleDetailData = async () => {
+        try {
+          if (parsedData?.vehicleSelect) { // Ensure parsedData is an object before accessing vehicleSelect
+            const response = await fetchVehicleDetail(parsedData.vehicleSelect);
+            console.log("rescar", response.data);
+  
+            if (response.status === 200) {
+              setVehicleDetail(response.data ?? {});
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching vehicle details:", error);
         }
-      } catch (error) {
-        console.error("Error fetching vehicle details:", error);
-      }
-    };
-
+      };
+  
+      fetchVehicleDetailData();
+    }
+  
     const fetchApprover = async () => {
       try {
         const response = await fetchVehicleUsers("");
@@ -182,15 +164,12 @@ export default function RequestDetailForm({
         console.error("Error fetching requests:", error);
       }
     };
-
-    if (formData.vehicleSelect) {
-      fetchVehicleDetailData();
-    }
+  
     fetchApprover();
-  }, [formData]);
+  }, []);
+  
 
-  if (!formData) return null;
-
+  if (!updatedFormData) return null;
   return (
     <>
       {status == "edit" && (
@@ -218,7 +197,7 @@ export default function RequestDetailForm({
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <Image
-                    src={formData.userImageUrl || "/assets/img/avatar.svg"}
+                    src={updatedFormData.userImageUrl || "/assets/img/avatar.svg"}
                     className="avatar avatar-md"
                     width={100}
                     height={100}
@@ -226,14 +205,14 @@ export default function RequestDetailForm({
                   />
                   <div className="form-plaintext-group align-self-center">
                     <div className="form-label">
-                      {formData?.vehicleUserEmpName}
+                      {updatedFormData?.vehicleUserEmpName}
                     </div>
                     <div className="supporting-text-group">
                       <div className="supporting-text">
-                        {formData.vehicleUserDeptSap}
+                        {updatedFormData.vehicleUserDeptSap}
                       </div>
                       <div className="supporting-text">
-                        {formData.deptSapShort}
+                        {updatedFormData.deptSapShort}
                       </div>
                     </div>
                   </div>
@@ -245,20 +224,20 @@ export default function RequestDetailForm({
                         <i className="material-symbols-outlined">smartphone</i>
                         <div className="form-plaintext-group">
                           <div className="form-text text-nowrap">
-                            {formData.telMobile}
+                            {updatedFormData.telMobile}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {formData.telInternal && (
+                    {updatedFormData.telInternal && (
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
                           <i className="material-symbols-outlined">call</i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowra">
                               {" "}
-                              {formData.telInternal}
+                              {updatedFormData.telInternal}
                             </div>
                           </div>
                         </div>
@@ -286,15 +265,15 @@ export default function RequestDetailForm({
             </div>
 
             <JourneyDetailCard
-              startDate={formData.startDate}
-              endDate={formData.endDate}
-              timeStart={formData.timeStart}
-              timeEnd={formData.timeEnd}
-              workPlace={formData.workPlace}
-              purpose={formData.purpose}
-              remark={formData.remark}
-              tripType={formData.tripType}
-              numberOfPassanger={formData.numberOfPassanger}
+              startDate={updatedFormData.startDate}
+              endDate={updatedFormData.endDate}
+              timeStart={updatedFormData.timeStart}
+              timeEnd={updatedFormData.timeEnd}
+              workPlace={updatedFormData.workPlace}
+              purpose={updatedFormData.purpose}
+              remark={updatedFormData.remark}
+              tripType={updatedFormData.tripType}
+              numberOfPassanger={updatedFormData.numberOfPassanger}
             />
           </div>
 
@@ -330,8 +309,8 @@ export default function RequestDetailForm({
             </div>
 
             <ReferenceCard
-              refNum={formData.referenceNumber}
-              file={formData.attachmentFile}
+              refNum={updatedFormData.referenceNumber}
+              file={updatedFormData.attachmentFile}
             />
           </div>
 
@@ -365,11 +344,11 @@ export default function RequestDetailForm({
                     <div className="form-section-header-title">ยานพาหนะ</div>
                   </div>
 
-                  {formData.vehicleSelect && vehicleDetail && (
+                  {updatedFormData.vehicleSelect && vehicleDetail && (
                     <CarDetailCard vehicle={vehicleDetail} />
                   )}
 
-                  {formData.isAdminChooseVehicle === "1" && (
+                  {updatedFormData.isAdminChooseVehicle === "1" && (
                     <div className="card card-section-inline mt-5 mb-5">
                       <div className="card-body card-body-inline">
                         <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -418,9 +397,9 @@ export default function RequestDetailForm({
                       </div>
                     </div>
                   )}
-                  {formData.masCarpoolDriverUid && (
+                  {updatedFormData.masCarpoolDriverUid && (
                     <div className="mt-5">
-                      <DriverSmallInfoCard id={formData.masCarpoolDriverUid} />
+                      <DriverSmallInfoCard id={updatedFormData.masCarpoolDriverUid} />
                     </div>
                   )}
 
@@ -552,11 +531,11 @@ export default function RequestDetailForm({
       <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef} id="2" />
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
       <JourneyDetailModal ref={journeyDetailModalRef} />
-      <VehicleUserModal process="edit" ref={vehicleUserModalRef} />
+      <VehicleUserModal process="edit" ref={vehicleUserModalRef} onUpdate={handleVehicleUserUpdate} />
       <ReferenceModal
         ref={referenceModalRef}
-        refNum={formData.referenceNumber}
-        files={formData.attachmentFile}
+        refNum={updatedFormData.referenceNumber}
+        files={updatedFormData.attachmentFile}
       />
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />

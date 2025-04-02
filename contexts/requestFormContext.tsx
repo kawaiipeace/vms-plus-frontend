@@ -37,8 +37,6 @@ interface FormData {
   driverEmpName?: string;
   driverDeptSap?: string;
   deptSapShort?: string;
-  costOrigin?:string;
-  masCarpooluid?: string;
 }
 
 interface RequestFormContextType {
@@ -57,16 +55,15 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     return {};
   });
 
-  const updateFormData = (newData: Partial<FormData>, shouldReset = false) => {
+  const updateFormData = (newData: Partial<FormData>) => {
     setFormData((prev) => {
-      const updatedData = shouldReset ? { ...newData } : { ...prev, ...newData };
+      const updatedData = { ...prev, ...newData };
       if (typeof window !== "undefined") {
         localStorage.setItem("formData", JSON.stringify(updatedData));
       }
       return updatedData;
     });
   };
-  
 
   return (
     <FormContext.Provider value={{ formData, updateFormData }}>

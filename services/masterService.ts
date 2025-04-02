@@ -93,3 +93,12 @@ export const uploadFile = async (file: File) => {
       throw error;
     }
   };
+
+  export const fetchCodeTypeFromCode = async (code: number) => {
+    try {
+      const response = await axiosInstance.get('ref/cost-type/' + code.toString());
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };

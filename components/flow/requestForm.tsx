@@ -17,7 +17,7 @@ import {
 } from "@/services/masterService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useProfile } from "@/contexts/profileContext";
-import { VehicleUserType } from "../types/vehicleUserType";
+import { VehicleUserType } from "../../app/types/vehicleUserType";
 
 const schema = yup.object().shape({
   telInternal: yup.string().matches(/^\d+$/, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
