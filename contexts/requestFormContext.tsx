@@ -1,53 +1,16 @@
 "use client";
+import { FormDataType } from "@/app/types/form-data-type";
 import { createContext, useContext, useState, ReactNode } from "react";
 
-interface FormData {
-  telInternal?: string;
-  telMobile?: string;
-  workPlace?: string;
-  purpose?: string;
-  attachedDocument?: string;
-  costNo?: string;
-  endDatetime?: string;
-  isAdminChooseDriver?: string;
-  isAdminChooseVehicle?: string;
-  isDriverNeed?: string;
-  isHaveSubRequest?: string;
-  isPeaEmployeeDriver?: string;
-  masCarpoolDriverUid?: string;
-  masVehicleUid?: string;
-  numberOfPassengers?: number;
-  pickupDatetime?: string;
-  pickupPlace?: string;
-  refCostTypeCode?: number;
-  refRequestTypeCode?: number;
-  referenceNumber?: string;
-  remark?: string;
-  requestedVehicleTypeId?: number;
-  reservedTimeType?: string;
-  startDatetime?: string;
-  tripType?: number;
-  vehicleUserDeptSap?: string;
-  vehicleUserEmpId?: string;
-  vehicleUserEmpName?: string;
-  vehicleSelect?: string;
-  driverInternalContact?: string;
-  driverMobileContact?: string;
-  driverEmpID?: string;
-  driverEmpName?: string;
-  driverDeptSap?: string;
-  deptSapShort?: string;
-}
-
 interface RequestFormContextType {
-  formData: FormData;
-  updateFormData: (newData: Partial<FormData>) => void;
+  formData: FormDataType;
+  updateFormData: (newData: Partial<FormDataType>) => void;
 }
 
 const FormContext = createContext<RequestFormContextType | undefined>(undefined);
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
-  const [formData, setFormData] = useState<FormData>(() => {
+  const [formData, setFormData] = useState<FormDataType>(() => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("formData");
       return storedData ? JSON.parse(storedData) : {};
@@ -55,7 +18,7 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     return {};
   });
 
-  const updateFormData = (newData: Partial<FormData>) => {
+  const updateFormData = (newData: Partial<FormDataType>) => {
     setFormData((prev) => {
       const updatedData = { ...prev, ...newData };
       if (typeof window !== "undefined") {

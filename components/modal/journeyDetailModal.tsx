@@ -1,16 +1,71 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import NumberInput from "@/components/numberInput";
-import TimePicker from "@/components/timePicker";
-import DatePicker from "@/components/datePicker";
+import FormHelper from "@/components/formHelper";
+import { useFormContext } from "@/contexts/requestFormContext";
 
-const JourneyDetailModal = forwardRef((_, ref) => {
+interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onUpdate: (data: any) => void;
+}
+
+const schema = yup.object().shape({
+  startDate: yup.string(),
+  endDate: yup.string(),
+  timeStart: yup.string(),
+  timeEnd: yup.string(),
+  passengerCount: yup.number().min(1, "ต้องมีผู้โดยสารอย่างน้อย 1 คน"),
+  workPlace: yup.string().optional(),
+});
+
+const JourneyDetailModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-    const [passengerCount, setPassengerCount] = useState(0);
+  const { formData, updateFormData } = useFormContext();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+    defaultValues: {
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      timeStart: formData.timeStart,
+      timeEnd: formData.timeEnd,
+      workPlace: formData.workPlace,
+    },
+  });
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  const [passengerCount, setPassengerCount] = useState<number>();
+
+  const onSubmit = (data) => {
+    onUpdate({
+      ...data,
+      telInternal: data.internalPhone,
+      telMobile: data.mobilePhone,
+    });
+
+    data.telInternal = data.internalPhone;
+    data.telMobile = data.mobilePhone;
+    updateFormData(data);
+    modalRef.current?.close();
+  };
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -39,7 +94,15 @@ const JourneyDetailModal = forwardRef((_, ref) => {
                       </i>
                     </span>
                   </div>
-                  <DatePicker placeholder="" />
+               
+                  <Controller
+                    name="startDate"
+                    control={control}
+                    render={({ field }) => (
+                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                    )}
+                  />
+               
                 </div>
               </div>
             </div>
@@ -55,17 +118,44 @@ const JourneyDetailModal = forwardRef((_, ref) => {
                       </i>
                     </span>
                   </div>
-                  <DatePicker placeholder="" />
+                  <Controller
+                    name="endDate"
+                    control={control}
+                    render={({ field }) => (
+                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                    )}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="col-span-12 md:col-span-6 journey-time">
+            <div className="col-span-6 md:col-span-6 journey-time">
               <div className="form-group">
-                <label className="form-label">ช่วงเวลาการเดินทาง</label>
+                <label className="form-label">เวลาเริ่มต้นเดินทาง</label>
                 <div className="input-group">
-                 <TimePicker />
-                 </div>
+                <Controller
+                    name="timeStart"
+                    control={control}
+                    render={({ field }) => (
+                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="col-span-6 md:col-span-6 journey-time">
+              <div className="form-group">
+                <label className="form-label">เวลาสิ้นสุดเดินทาง</label>
+                <div className="input-group">
+                <Controller
+                    name="timeEnd"
+                    control={control}
+                    render={({ field }) => (
+                      <input type="text" className="form-control pointer-events-none border-0" readOnly {...field}/>
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
@@ -101,11 +191,10 @@ const JourneyDetailModal = forwardRef((_, ref) => {
             <div className="col-span-12">
               <div className="form-group">
                 <label className="form-label">สถานที่ปฏิบัติงาน</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder=""
-                  defaultValue="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด"
+                <Controller
+                  name="workPlace"
+                  control={control}
+                  render={({ field }) => <input {...field} />}
                 />
               </div>
             </div>
@@ -142,15 +231,12 @@ const JourneyDetailModal = forwardRef((_, ref) => {
                   จำนวนผู้โดยสาร
                   <span className="form-optional">(รวมผู้ขับขี่)</span>
                 </label>
-               <div className="w-full overflow-hidden">
-             <NumberInput
-                                  value={passengerCount}
-                                  onChange={setPassengerCount}
-                                />
-               </div>
-             
-               
-          
+                <div className="w-full overflow-hidden">
+                  <NumberInput
+                    value={passengerCount || 0}
+                    onChange={setPassengerCount}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -160,7 +246,12 @@ const JourneyDetailModal = forwardRef((_, ref) => {
             <button className="btn btn-secondary">ยกเลิก</button>
           </form>
           <form method="dialog">
-            <button className="btn btn-primary">ยืนยัน</button>
+            <button
+              className="btn btn-primary"
+              onClick={handleSubmit(onSubmit)}
+            >
+              ยืนยัน
+            </button>
           </form>
         </div>
       </div>

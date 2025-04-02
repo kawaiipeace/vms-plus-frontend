@@ -113,7 +113,7 @@ export default function RequestDetailForm({
   
   const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(null);
   const [approver, setApprover] = useState<VehicleUserType>();
-  const handleVehicleUserUpdate = (updatedData: Partial<FormDataType>) => {
+  const handleModalUpdate = (updatedData: Partial<FormDataType>) => {
     setUpdatedFormData((prevData) => {
       if (!prevData) return undefined; // Fix: Return undefined instead of null
   
@@ -530,8 +530,8 @@ export default function RequestDetailForm({
       )}
       <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef} id="2" />
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
-      <JourneyDetailModal ref={journeyDetailModalRef} />
-      <VehicleUserModal process="edit" ref={vehicleUserModalRef} onUpdate={handleVehicleUserUpdate} />
+      <JourneyDetailModal ref={journeyDetailModalRef} onUpdate={handleModalUpdate} />
+      <VehicleUserModal process="edit" ref={vehicleUserModalRef} onUpdate={handleModalUpdate} />
       <ReferenceModal
         ref={referenceModalRef}
         refNum={updatedFormData.referenceNumber}

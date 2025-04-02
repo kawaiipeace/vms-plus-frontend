@@ -20,7 +20,7 @@ import { useProfile } from "@/contexts/profileContext";
 import { VehicleUserType } from "../../app/types/vehicleUserType";
 
 const schema = yup.object().shape({
-  telInternal: yup.string().matches(/^\d+$/, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
+  telInternal: yup.string().optional(),
   telMobile: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
