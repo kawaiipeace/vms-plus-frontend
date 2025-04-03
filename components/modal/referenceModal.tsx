@@ -13,7 +13,7 @@ import { uploadFile } from "@/services/masterService";
 import FormHelper from "../formHelper";
 
 interface RefProps {
-  onUpdate: (data: any) => void;
+  onUpdate?: (data: any) => void;
 }
 
 const schema = yup.object().shape({
@@ -70,6 +70,7 @@ const ReferenceModal = forwardRef<
 
   const onSubmit = (data: any) => {
     console.log("Submitted Data:", data);
+    if(onUpdate)
     onUpdate({
       ...data,
       referenceNumber: data.referenceNumber,

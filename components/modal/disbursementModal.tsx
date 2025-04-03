@@ -13,7 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 interface Props {
-  onUpdate: (data: any) => void;
+  onUpdate?: (data: any) => void;
 }
 
 const schema = yup.object().shape({
@@ -118,6 +118,7 @@ const DisbursementModal = forwardRef<
   };
 
   const onSubmit = (data: any) => {
+    if(onUpdate)
     onUpdate({
       ...data,
       refCostTypeCode: data.refCostTypeCode,

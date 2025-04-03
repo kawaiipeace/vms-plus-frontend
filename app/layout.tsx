@@ -9,6 +9,7 @@ import ThemeToggle from "@/components/themeToggle";
 import { SidebarProvider } from "@/contexts/sidebarContext";
 import { FormProvider } from "@/contexts/requestFormContext";
 import { ProfileProvider } from "@/contexts/profileContext";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -35,6 +36,7 @@ export default function RootLayout({
             <FormProvider>{children}</FormProvider>
           </SidebarProvider>
         </ProfileProvider>
+        <Script id="env-config" src={'/env/env-config.js'} />
       </body>
     </html>
   );

@@ -8,7 +8,7 @@ import FormHelper from "@/components/formHelper";
 interface VehicleUserModalProps {
   process: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdate: (data: any) => void;
+  onUpdate?: (data: any) => void;
 }
 
 const schema = yup.object().shape({
@@ -49,6 +49,7 @@ const VehicleUserModal = forwardRef<
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (data: any) => {
+    if(onUpdate)
     onUpdate({
       ...data,
       telInternal: data.internalPhone,

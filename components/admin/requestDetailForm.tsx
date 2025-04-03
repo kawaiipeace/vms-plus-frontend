@@ -190,8 +190,6 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
             </div>
 
             <ReferenceCard
-              refNum={formData.referenceNumber}
-              file={formData.attachedDocument}
             />
           </div>
 
@@ -210,7 +208,7 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
               )}
             </div>
 
-            <DisburstmentCard name={costTypeData} />
+            <DisburstmentCard />
           </div>
         </div>
 

@@ -8,13 +8,12 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import NumberInput from "@/components/numberInput";
-import FormHelper from "@/components/formHelper";
 import { useFormContext } from "@/contexts/requestFormContext";
 import RadioButton from "../radioButton";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdate: (data: any) => void;
+  onUpdate?: (data: any) => void;
 }
 
 const schema = yup.object().shape({
@@ -42,7 +41,7 @@ const JourneyDetailModal = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const [passengerCount, setPassengerCount] = useState(formData.numberOfPassenger);
+  const [passengerCount, setPassengerCount] = useState<number>(formData.numberOfPassenger || 0);
   const [selectedTripType, setSelectedTripType] = useState<string>((formData.tripType  ?? "").toString());
 
   const {
@@ -76,6 +75,7 @@ const JourneyDetailModal = forwardRef<
       tripType: parseInt(selectedTripType)
     }
 
+    if(onUpdate)
     onUpdate({
       ...data,
       startDate: data.startDate,

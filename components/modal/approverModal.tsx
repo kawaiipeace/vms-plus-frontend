@@ -15,7 +15,7 @@ import * as yup from "yup";
 
 
 interface Props {
-  onUpdate: (data: any) => void;
+  onUpdate?: (data: any) => void;
 }
 
 const schema = yup.object().shape({
@@ -104,7 +104,7 @@ const ApproverModal = forwardRef<
     const selectedUser = vehicleUserDatas.find(
       (user) => user.emp_id === selectedVehicleUserOption?.value
     );
-
+    if(onUpdate)
     onUpdate({
       ...data,
       approvedRequestDeptSap: selectedUser?.dept_sap || "",

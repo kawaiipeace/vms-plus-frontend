@@ -298,8 +298,6 @@ RequestDetailFormProps) {
             </div>
 
             <ReferenceCard
-              refNum={updatedFormData.referenceNumber}
-              file={updatedFormData.attachmentFile}
             />
           </div>
 
@@ -432,11 +430,7 @@ RequestDetailFormProps) {
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
                 <DriverPeaInfoCard
-                  deptSapShort={updatedFormData.deptSapShort}
                   driverEmpID={updatedFormData.driverEmpID}
-                  driverEmpName={updatedFormData.driverEmpName}
-                  driverInternalContact={updatedFormData.driverInternalContact}
-                  driverMobileContact={updatedFormData.driverMobileContact}
                 />
               </div>
             ) : (
