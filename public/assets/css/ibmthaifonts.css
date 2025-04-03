@@ -1,0 +1,73 @@
+@import url("ibmplexsansthai.css");
+@import url("ibmplexsansthailooped.css");
+
+.ibm-plex-sans-thai-thin {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: 100;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-extralight {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: 200;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-light {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: 300;
+	font-style: normal;
+}
+.ibm-plex-sans-thai {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: normal;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-medium {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: 500;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-semibold {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: 600;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-bold {
+	font-family: 'IBM Plex Sans Thai';
+	font-weight: bold;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped-thin {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: 100;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped-extralight {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: 200;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped-light {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: 300;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: normal;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped-medium {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: 500;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped-semibold {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: 600;
+	font-style: normal;
+}
+.ibm-plex-sans-thai-looped-bold {
+	font-family: 'IBM Plex Sans Thai Looped';
+	font-weight: bold;
+	font-style: normal;
+}

@@ -1,0 +1,91 @@
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-Regular.eot');
+    src: local('IBM Plex Sans Thai Regular'), local('IBMPlexSansThai-Regular'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Regular.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Regular.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-Medium.eot');
+    src: local('IBM Plex Sans Thai Medium'), local('IBMPlexSansThai-Medium'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Medium.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Medium.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Medium.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-Bold.eot');
+    src: local('IBM Plex Sans Thai Bold'), local('IBMPlexSansThai-Bold'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Bold.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Bold.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Bold.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-Light.eot');
+    src: local('IBM Plex Sans Thai Light'), local('IBMPlexSansThai-Light'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Light.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Light.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Light.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-SemiBold.eot');
+    src: local('IBM Plex Sans Thai SemiBold'), local('IBMPlexSansThai-SemiBold'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-SemiBold.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-SemiBold.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-SemiBold.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-Thin.eot');
+    src: local('IBM Plex Sans Thai Thin'), local('IBMPlexSansThai-Thin'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Thin.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Thin.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Thin.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Sans Thai';
+    src: url('../fonts/ibmplexsansthai/IBMPlexSansThai-ExtraLight.eot');
+    src: local('IBM Plex Sans Thai ExtraLight'), local('IBMPlexSansThai-ExtraLight'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-ExtraLight.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-ExtraLight.woff2') format('woff2'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-ExtraLight.woff') format('woff'),
+        url('../fonts/ibmplexsansthai/IBMPlexSansThai-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
