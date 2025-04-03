@@ -137,7 +137,6 @@ RequestDetailFormProps) {
           if (parsedData?.vehicleSelect) {
             // Ensure parsedData is an object before accessing vehicleSelect
             const response = await fetchVehicleDetail(parsedData.vehicleSelect);
-            console.log("rescar", response.data);
 
             if (response.status === 200) {
               setVehicleDetail(response.data ?? {});
@@ -430,7 +429,17 @@ RequestDetailFormProps) {
                 </>
               )}
             </>
-            {updatedFormData.masCarpoolDriverUid && (
+            {updatedFormData.isPeaEmployeeDriver === "1" ? (
+              <div className="mt-5">
+                <DriverPeaInfoCard
+                  deptSapShort={updatedFormData.deptSapShort}
+                  driverEmpID={updatedFormData.driverEmpID}
+                  driverEmpName={updatedFormData.driverEmpName}
+                  driverInternalContact={updatedFormData.driverInternalContact}
+                  driverMobileContact={updatedFormData.driverMobileContact}
+                />
+              </div>
+            ) : (
               <div className="mt-5">
                 <DriverSmallInfoCard
                   id={updatedFormData.masCarpoolDriverUid}
@@ -438,10 +447,6 @@ RequestDetailFormProps) {
                 />
               </div>
             )}
-
-            {/* <div className="mt-5">
-                <DriverPeaInfoCard />
-            </div> */}
 
             {driverCard && status != "detail" && status != "edit" && (
               <div className="form-section mt-5">
@@ -504,7 +509,7 @@ RequestDetailFormProps) {
               </div>
               {approverCard && (
                 <ApproverInfoCard
-                emp_id={updatedFormData?.approvedRequestEmpId || ""}
+                  emp_id={updatedFormData?.approvedRequestEmpId || ""}
                 />
               )}
             </div>
@@ -535,17 +540,12 @@ RequestDetailFormProps) {
         ref={vehicleUserModalRef}
         onUpdate={handleModalUpdate}
       />
-      <ReferenceModal
-        ref={referenceModalRef}
-        // refNum={updatedFormData.referenceNumber}
-        // files={updatedFormData.attachmentFile}
-        onUpdate={handleModalUpdate}
-      />
+      <ReferenceModal ref={referenceModalRef} onUpdate={handleModalUpdate} />
       <DisbursementModal
         ref={disbursementModalRef}
         onUpdate={handleModalUpdate}
       />
-      <ApproverModal ref={approverModalRef} />
+      <ApproverModal ref={approverModalRef} onUpdate={handleModalUpdate} />
       <ApproveRequestModal
         ref={approveRequestModalRef}
         title={"ยืนยันการส่งคำขออีกครั้ง"}

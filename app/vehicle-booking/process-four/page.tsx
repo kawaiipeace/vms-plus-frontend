@@ -33,41 +33,41 @@ export default function ProcessFour() {
   const nextStep = async () => {
     if (formData) {
       const mappedData = {
-
-        approved_request_dept_sap: "Finance",
-        approved_request_dept_sap_full: "Finance",
-        approved_request_dept_sap_short: "Finance",
-        approved_request_emp_id: "EMP67890",
-        approved_request_emp_name: "Jane Doe",
-        attached_document: "document.pdf",
-        car_user_internal_contact_number: "1234567890",
-        car_user_mobidriver_mobile_contact_numberle_contact_number: "0987654321",
-        car_user_mobile_contact_number: "0987654321",
-        cost_no: "COST2024001",
-        driver_emp_dept_sap: "DPT001",
-        driver_emp_id: "700001",
-        driver_emp_name: "John Doe",
-        driver_internal_contact_number: "1234567890",
+        approved_request_dept_sap: formData.approvedRequestDeptSap,
+        approved_request_dept_sap_full: formData.approvedRequestDeptSapFull,
+        approved_request_dept_sap_short: formData.approvedRequestDeptSapShort,
+        approved_request_emp_id: formData.approvedRequestEmpId,
+        approved_request_emp_name: formData.approvedRequestEmpName,
+        attached_document: formData.attachmentFile || "",
+        car_user_internal_contact_number: formData.telInternal || "",
+        car_user_mobidriver_mobile_contact_numberle_contact_number:
+          formData.driverMobileContact || "",
+        car_user_mobile_contact_number: formData.telMobile || "",
+        cost_no: formData.referenceNumber || "",
+        driver_emp_dept_sap: formData.driverDeptSap || "",
+        driver_emp_id: formData.driverEmpID || "",
+        driver_emp_name: formData.driverEmpName || "",
+        driver_internal_contact_number: formData.driverInternalContact || "",
         end_datetime: "2025-01-01T10:00:00Z",
-        is_admin_choose_vehicle: "0",
-        is_pea_employee_driver: "1",
-        mas_carpool_driver_uid: "a6c8a34b-9245-49c8-a12b-45fae77a4e7d",
-        mas_vehicle_uid: "389b0f63-4195-4ece-bf35-0011c2f5f28c",
-        number_of_passengers: 3,
-        objective: "Business Meeting",
-        pickup_datetime: "2025-02-16T08:30:00Z",
-        pickup_place: "Main Office",
-        ref_cost_type_code: 101,
-        reference_number: "REF123456",
-        remark: "Urgent request",
-        requested_vehicle_type_id: 1,
-        reserved_time_type: "1",
+        is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
+        is_pea_employee_driver: "1", // Assume always PEA employee, adjust as needed
+        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "", // If you have this info, map it
+        mas_vehicle_uid: formData.vehicleSelect || "",
+        number_of_passengers: formData.numberOfPassenger || 0,
+        objective: formData.purpose || "",
+        pickup_datetime: formData.pickupDatetime || "",
+        pickup_place: formData.pickupPlace || "", // Fill if needed
+        ref_cost_type_code: parseInt(formData.refCostTypeCode) || 101,
+        reference_number: formData.referenceNumber || "",
+        remark: formData.remark || "",
+        requested_vehicle_type_id: 1, // You can map vehicleTypeSelect if it matches
+        reserved_time_type: "1", // Adjust based on logic
         start_datetime: "2025-01-01T08:00:00Z",
-        trip_type: 1,
-        vehicle_user_dept_sap: "DPT001",
-        vehicle_user_emp_id: "E12345",
-        vehicle_user_emp_name: "John Doe",
-        work_place: "Head Office"
+        trip_type: parseInt(formData.tripType) || 1,
+        vehicle_user_dept_sap: formData.deptSap || "",
+        vehicle_user_emp_id: formData.vehicleUserEmpId || "",
+        vehicle_user_emp_name: formData.vehicleUserEmpName || "",
+        work_place: formData.workPlace || "",
 
         // attached_document: formData.attachmentFile || "",
         // car_user_internal_contact_number: formData.telInternal || "",
@@ -106,11 +106,9 @@ export default function ProcessFour() {
       try {
         const response = await createRequest(mappedData);
         console.log("API Response:", response.data);
-        if(response.data){
+        if (response.data) {
           router.push("request-list?created=success");
         }
-      
-      
       } catch (error) {
         console.error("API Error:", error);
       }
@@ -124,7 +122,11 @@ export default function ProcessFour() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -159,13 +161,15 @@ export default function ProcessFour() {
                   <div className="page-section-header border-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">ยืนยันการสร้างคำขอ</span>
+                        <span className="page-title-label">
+                          ยืนยันการสร้างคำขอ
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <RequestDetailForm status="add" approverCard={true} /> {/* Pass formData as prop */}
+                <RequestDetailForm status="add" approverCard={true} />{" "}
+                {/* Pass formData as prop */}
               </div>
 
               <div className="form-accept">

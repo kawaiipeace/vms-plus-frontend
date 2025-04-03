@@ -24,7 +24,8 @@ const schema = yup.object().shape({
   driverEmpID: yup.string().required(),
   driverEmpName: yup.string(),
   driverDeptSap: yup.string(),
-  masCarpoolDriverUid: yup.string()
+  masCarpoolDriverUid: yup.string(),
+  isPeaEmployeeDriver: yup.string()
 });
 
 export default function ProcessThree() {
@@ -107,6 +108,7 @@ export default function ProcessThree() {
       setValue("driverEmpID", empData.emp_id);
       setValue("driverEmpName", empData.full_name);
       setValue("driverDeptSap", empData.dept_sap);
+      setValue("isPeaEmployeeDriver", "1");
       setDriverLicenseNo(empData.annual_driver.driver_license_no);
       setAnnualYear(empData.annual_driver.annual_yyyy);
       setRequestAnnual(empData.annual_driver.request_annual_driver_no);
@@ -119,6 +121,7 @@ export default function ProcessThree() {
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
         driverDeptSap: empData.dept_sap,
+        isPeaEmployeeDriver: "1"
       });
     }
   };

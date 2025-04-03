@@ -34,8 +34,8 @@ interface PaginationInterface {
 }
 
 interface FormData {
-  isAdminChooseVehicle?: string;  
-  vehicleSelect?: string; 
+  isAdminChooseVehicle?: string;
+  vehicleSelect?: string;
 }
 
 export default function ProcessTwo() {
@@ -60,9 +60,9 @@ export default function ProcessTwo() {
   });
 
   const [vehicleCatOptions, setVehicleCatOptions] = useState<
-  { value: string; label: string }[]
->([]);
-// const { updateFormData } = useFormContext();
+    { value: string; label: string }[]
+  >([]);
+  // const { updateFormData } = useFormContext();
 
   const orgOptions = [
     { label: "ทุกสังกัด", value: "" },
@@ -72,21 +72,23 @@ export default function ProcessTwo() {
   ];
 
   const [selectedOrgOption, setSelectedOrgOption] = useState(orgOptions[0]);
-  const [selectedVehicleOption, setSelectedVehicleOption] = useState<{ value: string; label: string }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
+  const [selectedVehicleOption, setSelectedVehicleOption] = useState<{
+    value: string;
+    label: string;
+  }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
 
   const handleVehicleSelect = (value: string) => {
-
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
-  if (value == "ผู้ดูแลยานพาหนะเลือกให้") {
-    updatedData.isAdminChooseVehicle = "1"; // Update the data object
-  } else if (value == "ระบบเลือกยานพาหนะให้") {
-    updatedData.isAdminChooseVehicle = "0"; // Update the data object
-  } else {
-    updatedData.vehicleSelect = value; // Update the data object
-  }
+    if (value == "ผู้ดูแลยานพาหนะเลือกให้") {
+      updatedData.isAdminChooseVehicle = "1"; // Update the data object
+    } else if (value == "ระบบเลือกยานพาหนะให้") {
+      updatedData.isAdminChooseVehicle = "0"; // Update the data object
+    } else {
+      updatedData.vehicleSelect = value; // Update the data object
+    }
 
-  updateFormData(updatedData);
+    updateFormData(updatedData);
   };
 
   const NextProcess = () => {
@@ -118,7 +120,7 @@ export default function ProcessTwo() {
 
   const handlePageChange = (page: number) => {
     setParams((prev) => ({ ...prev, page }));
-  };  
+  };
 
   useEffect(() => {
     const fetchVehicleData = async () => {
@@ -136,218 +138,213 @@ export default function ProcessTwo() {
       }
     };
 
-       const fetchVehicleCarTypesData = async () => {
-          try {
-            const response = await fetchVehicleCarTypes();
+    const fetchVehicleCarTypesData = async () => {
+      try {
+        const response = await fetchVehicleCarTypes();
 
-            if (response.status === 200) {
-              const vehicleCatData = response.data;
-              console.log(response.data);
-              const vehicleCatArr = [
-                { value: "", label: "ทุกประเภทยานพาหนะ" },
-                ...vehicleCatData.map(
-                  (cat: {
-                    ref_vehicle_type_code: string;
-                    ref_vehicle_type_name: string;
-                  }) => ({
-                    value: cat.ref_vehicle_type_code,
-                    label: cat.ref_vehicle_type_name,
-                  })
-                ),
-              ];
-              
-              setVehicleCatOptions(vehicleCatArr);
-              setSelectedVehicleOption((prev) =>
-                prev.value ? prev : vehicleCatArr[0]
-              );
-            }
-          } catch (error) {
-            console.error("Error fetching requests:", error);
-          }
-        };
+        if (response.status === 200) {
+          const vehicleCatData = response.data;
+          console.log(response.data);
+          const vehicleCatArr = [
+            { value: "", label: "ทุกประเภทยานพาหนะ" },
+            ...vehicleCatData.map(
+              (cat: {
+                ref_vehicle_type_code: string;
+                ref_vehicle_type_name: string;
+              }) => ({
+                value: cat.ref_vehicle_type_code,
+                label: cat.ref_vehicle_type_name,
+              })
+            ),
+          ];
+
+          setVehicleCatOptions(vehicleCatArr);
+          setSelectedVehicleOption((prev) =>
+            prev.value ? prev : vehicleCatArr[0]
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
 
     fetchVehicleData();
     fetchVehicleCarTypesData();
   }, [params]);
 
   return (
+    <div className="main-container">
+      <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-      <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
-
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
-          <Header />
-          <div className="main-content-body">
-            <div className="page-header">
-              <div className="breadcrumbs text-sm">
-                <ul>
-                  <li className="breadcrumb-item">
-                    <a>
-                      <i className="material-symbols-outlined">home</i>
-                    </a>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <a>คำขอใช้ยานพาหนะ</a>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    สร้างคำขอใช้ยานพาหนะ
-                  </li>
-                </ul>
-              </div>
-
-              <div className="page-group-header">
-                <div className="page-title">
-                  <span className="page-title-label">สร้างคำขอใช้ยานพาหนะ</span>
-                  {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
-                </div>
-              </div>
+      <div
+        className={`main-content ${
+          isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+        }`}
+      >
+        <Header />
+        <div className="main-content-body">
+          <div className="page-header">
+            <div className="breadcrumbs text-sm">
+              <ul>
+                <li className="breadcrumb-item">
+                  <a>
+                    <i className="material-symbols-outlined">home</i>
+                  </a>
+                </li>
+                <li className="breadcrumb-item">
+                  <a>คำขอใช้ยานพาหนะ</a>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  สร้างคำขอใช้ยานพาหนะ
+                </li>
+              </ul>
             </div>
 
-            <ProcessRequestCar step={2} />
+            <div className="page-group-header">
+              <div className="page-title">
+                <span className="page-title-label">สร้างคำขอใช้ยานพาหนะ</span>
+                {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+              </div>
+            </div>
+          </div>
 
-            <div className="form-steps-group">
-              <div className="form-steps" data-step="2">
-                <div className="form-section">
-                  <div className="page-section-header border-0">
-                    <div className="page-header-left">
-                      <div className="page-title">
-                        <span className="page-title-label">
-                          ข้อมูลผู้ใช้ยานพาหนะ
-                        </span>
-                        <span className="badge badge-outline badge-gray page-title-status">
-                          {paginationData.total} คัน
-                        </span>
-                      </div>
-                      <div className="page-desc">
-                        ระบบจะแสดงรายการยานพาหนะที่พร้อมให้บริการตามช่วงเวลาและเงื่อนไขที่กำหนด
-                      </div>
+          <ProcessRequestCar step={2} />
+
+          <div className="form-steps-group">
+            <div className="form-steps" data-step="2">
+              <div className="form-section">
+                <div className="page-section-header border-0">
+                  <div className="page-header-left">
+                    <div className="page-title">
+                      <span className="page-title-label">
+                        ข้อมูลผู้ใช้ยานพาหนะ
+                      </span>
+                      <span className="badge badge-outline badge-gray page-title-status">
+                        {paginationData.total} คัน
+                      </span>
+                    </div>
+                    <div className="page-desc">
+                      ระบบจะแสดงรายการยานพาหนะที่พร้อมให้บริการตามช่วงเวลาและเงื่อนไขที่กำหนด
+                    </div>
+                  </div>
+                </div>
+
+                <div className="search-section flex justify-between">
+                  <div className="input-group input-group-search w-6/12">
+                    <div className="input-group-prepend">
+                      <span className="input-group-text search-ico-info">
+                        <i className="material-symbols-outlined">search</i>
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control dt-search-input"
+                      onChange={handleSearchChange}
+                      placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
+                    />
+                    <div className="input-group-append hidden">
+                      <span className="input-group-text search-ico-trailing">
+                        <i className="material-symbols-outlined">close_small</i>
+                      </span>
                     </div>
                   </div>
 
-                  <div className="search-section flex justify-between">
-                    <div className="input-group input-group-search w-6/12">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text search-ico-info">
-                          <i className="material-symbols-outlined">search</i>
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control dt-search-input"
-                        onChange={handleSearchChange}
-                        placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
-                      />
-                      <div className="input-group-append hidden">
-                        <span className="input-group-text search-ico-trailing">
-                          <i className="material-symbols-outlined">
-                            close_small
-                          </i>
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="search-filter w-12/12 md:w-6/12 sm:gap-4 flex md:justify-end">
-                      <CustomSelect
-                        w="md:w-[13.4rem]"
-                        options={orgOptions}
-                        value={selectedOrgOption}
-                        onChange={handleOrgChange}
-                      />
-                      <CustomSelect
-                        w="md:w-[14rem]"
-                        options={vehicleCatOptions}
-                        value={selectedVehicleOption}
-                        onChange={handleVehicleTypeChange}
-                      />
-                    </div>
+                  <div className="search-filter w-12/12 md:w-6/12 sm:gap-4 flex md:justify-end">
+                    <CustomSelect
+                      w="md:w-[13.4rem]"
+                      options={orgOptions}
+                      value={selectedOrgOption}
+                      onChange={handleOrgChange}
+                    />
+                    <CustomSelect
+                      w="md:w-[14rem]"
+                      options={vehicleCatOptions}
+                      value={selectedVehicleOption}
+                      onChange={handleVehicleTypeChange}
+                    />
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
-                    {vehicleCards != null && vehicleCards.length > 0 && (
-                      <>
-                        <AutoCarCard
-                          imgSrc="/assets/img/admin-selected.png"
-                          title="ผู้ดูแลยานพาหนะเลือกให้"
-                          desc="สายงานดิจิทัล"
-                          onSelect={handleVehicleSelect}
-                        />
-                        <AutoCarCard
-                          imgSrc="/assets/img/system-selected.png"
-                          title="ระบบเลือกยานพาหนะให้อัตโนมัติ"
-                          desc="สายงานดิจิทัล"
-                          onSelect={handleVehicleSelect}
-                        />
-                        {vehicleCards.map((vehicle) => (
-                          <SelectCarCard
-                            key={vehicle.mas_vehicle_uid}
-                            vehicleId={vehicle.mas_vehicle_uid}
-                            imgSrc={
-                              vehicle.vehicle_img ||
-                              "/assets/img/sample-car.jpeg"
-                            }
-                            title={
-                              vehicle.vehicle_brand_name +
-                              vehicle.vehicle_model_name
-                            }
-                            subTitle={vehicle.vehicle_license_plate}
-                            carType={vehicle.car_type}
-                            deptSap={vehicle.vehicle_owner_dept_sap}
-                            seat={vehicle.seat}
-                            onSelect={() =>
-                              handleVehicleSelect(vehicle.mas_vehicle_uid)
-                            }
-                          />
-                        ))}{" "}
-                      </>
-                    )}
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
                   {vehicleCards != null && vehicleCards.length > 0 && (
-                    <div className="pagination mt-[1.5rem] flex justify-end">
-                      <Pagination
-                        currentPage={paginationData.page}
-                        totalPages={paginationData.totalPages}
-                        onPageChange={handlePageChange}
+                    <>
+                      <AutoCarCard
+                        imgSrc="/assets/img/admin-selected.png"
+                        title="ผู้ดูแลยานพาหนะเลือกให้"
+                        desc="สายงานดิจิทัล"
+                        onSelect={handleVehicleSelect}
                       />
-                    </div>
+                      <AutoCarCard
+                        imgSrc="/assets/img/system-selected.png"
+                        title="ระบบเลือกยานพาหนะให้อัตโนมัติ"
+                        desc="สายงานดิจิทัล"
+                        onSelect={handleVehicleSelect}
+                      />
+                      {vehicleCards.map((vehicle) => (
+                        <SelectCarCard
+                          key={vehicle.mas_vehicle_uid}
+                          vehicleId={vehicle.mas_vehicle_uid}
+                          imgSrc={
+                            vehicle.vehicle_img || "/assets/img/sample-car.jpeg"
+                          }
+                          title={
+                            vehicle.vehicle_brand_name +
+                            vehicle.vehicle_model_name
+                          }
+                          subTitle={vehicle.vehicle_license_plate}
+                          carType={vehicle.car_type}
+                          deptSap={vehicle.vehicle_owner_dept_sap}
+                          seat={vehicle.seat}
+                          onSelect={() =>
+                            handleVehicleSelect(vehicle.mas_vehicle_uid)
+                          }
+                        />
+                      ))}{" "}
+                    </>
                   )}
                 </div>
+                {vehicleCards != null && vehicleCards.length > 0 && (
+                  <div className="pagination mt-[1.5rem] flex justify-end">
+                    <Pagination
+                      currentPage={paginationData.page}
+                      totalPages={paginationData.totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
               </div>
             </div>
+          </div>
 
-            {(vehicleCards == null || vehicleCards.length === 0) && (
-              <ZeroRecord
-                imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
-                title="ไม่พบยานพาหนะ"
-                desc={
-                  <>
-                    ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
-                    <br />
-                    ลองค้นหาใหม่อีกครั้ง
-                  </>
-                }
-                button="ล้างคำค้นหา"
-              />
-            )}
+          {(vehicleCards == null || vehicleCards.length === 0) && (
+            <ZeroRecord
+              imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
+              title="ไม่พบยานพาหนะ"
+              desc={
+                <>
+                  ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
+                  <br />
+                  ลองค้นหาใหม่อีกครั้ง
+                </>
+              }
+              button="ล้างคำค้นหา"
+            />
+          )}
 
-            <div className="form-action">
-              <button
-                onClick={() => NextProcess()}
-                className="btn btn-primary"
-                disabled={selectedVehicle === ""}
-              >
-                ต่อไป
-                <i className="material-symbols-outlined icon-settings-300-24">
-                  arrow_right_alt
-                </i>
-              </button>
-            </div>
+          <div className="form-action">
+            <button
+              onClick={() => NextProcess()}
+              className="btn btn-primary"
+              disabled={selectedVehicle === ""}
+            >
+              ต่อไป
+              <i className="material-symbols-outlined icon-settings-300-24">
+                arrow_right_alt
+              </i>
+            </button>
           </div>
         </div>
       </div>
-    
+    </div>
   );
 }

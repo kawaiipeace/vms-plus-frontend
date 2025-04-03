@@ -1,56 +1,130 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import CustomSelect from "../customSelect";
 import { fetchUserApproverUsers } from "@/services/masterService";
 import { ApproverUserType } from "@/app/types/approve-user-type";
+import { useFormContext } from "@/contexts/requestFormContext";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-const ApproverModal = forwardRef((_, ref) => {
+
+interface Props {
+  onUpdate: (data: any) => void;
+}
+
+const schema = yup.object().shape({
+  approvedRequestDeptSap: yup.string(),
+  approvedRequestDeptSapFull: yup.string(),
+  approvedRequestDeptSapShort: yup.string(),
+  approvedRequestEmpId: yup.string(),
+  approvedRequestEmpName: yup.string(),
+});
+
+
+const ApproverModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-    const [driverOptions, setDriverOptions] = useState<
-      { value: string; label: string }[]
-    >([]);
+  const { formData, updateFormData } = useFormContext();
 
-    const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-      driverOptions[0]
-    );
+    const { handleSubmit } = useForm({
+      mode: "onChange",
+      resolver: yupResolver(schema),
+    });
+    
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [costName, setCostName] = useState<string>("");
 
-    const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>([]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
+
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>(
+    []
+  );
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
 
-   useEffect(() => {
-       const fetchApprover = async () => {
-           try {
-             const response = await fetchUserApproverUsers("");
-             if (response.status === 200) {
-               const vehicleUserData = response.data;
-               console.log("user", vehicleUserData);
+  useEffect(() => {
+    const fetchApprover = async () => {
+      try {
+        const response = await fetchUserApproverUsers("");
+        if (response.status === 200) {
+          const vehicleUserData = response.data;
+          setVehicleUserDatas(vehicleUserData);
 
-               setVehicleUserDatas(vehicleUserData);
-               const driverOptionsArray = [
-                 ...vehicleUserData.map(
-                   (user: {
-                     emp_id: string;
-                     full_name: string;
-                     dept_sap: string;
-                   }) => ({
-                     value: user.emp_id,
-                     label: `${user.full_name} (${user.dept_sap})`,
-                   })
-                 ),
-               ];
-     
-               setDriverOptions(driverOptionsArray);
-             }
-           } catch (error) {
-             console.error("Error fetching requests:", error);
-           }
-         };
-  
-         fetchApprover();
-    }, []);
+          const driverOptionsArray = vehicleUserData.map((user: ApproverUserType) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.dept_sap})`,
+          }));
+
+          setDriverOptions(driverOptionsArray);
+
+          // Find selected user based on formData.approvedRequestEmpId
+          const selectedUser = vehicleUserData.find(
+            (user: ApproverUserType) => user.emp_id === formData.approvedRequestEmpId
+          );
+
+          if (selectedUser) {
+            setSelectedVehicleUserOption({
+              value: selectedUser.emp_id,
+              label: `${selectedUser.full_name} (${selectedUser.dept_sap})`,
+            });
+
+            setCostName(selectedUser.dept_sap); // Set costName
+          } else {
+            setSelectedVehicleUserOption(driverOptionsArray[0]);
+            setCostName(
+              driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || ""
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchApprover();
+  }, []);
+
+  const onSubmit = (data: any) => {
+
+    const selectedUser = vehicleUserDatas.find(
+      (user) => user.emp_id === selectedVehicleUserOption?.value
+    );
+
+    onUpdate({
+      ...data,
+      approvedRequestDeptSap: selectedUser?.dept_sap || "",
+      approvedRequestDeptSapFull: selectedUser?.dept_sap_full || "",
+      approvedRequestDeptSapShort: selectedUser?.dept_sap_short || "",
+      approvedRequestEmpId: selectedUser?.emp_id || "",
+      approvedRequestEmpName: selectedUser?.full_name || "",
+    });
+
+    updateFormData({
+      approvedRequestDeptSap: selectedUser?.dept_sap || "",
+      approvedRequestDeptSapFull: selectedUser?.dept_sap_full || "",
+      approvedRequestDeptSapShort: selectedUser?.dept_sap_short || "",
+      approvedRequestEmpId: selectedUser?.emp_id || "",
+      approvedRequestEmpName: selectedUser?.full_name || "",
+    });
+
+    modalRef.current?.close();
+  };
+
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -71,20 +145,20 @@ const ApproverModal = forwardRef((_, ref) => {
             <div className="col-span-12">
               <div className="form-group">
                 <label className="form-label">ผู้อนุมัติต้นสังกัด</label>
-                <div className="input-group">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      <i className="material-symbols-outlined">person</i>
-                    </span>
-                  </div>
-                  <CustomSelect
-                                       iconName="person"
-                                       w="w-full"
-                                       options={driverOptions}
-                                       value={selectedVehicleUserOption}
-                                       onChange={setSelectedVehicleUserOption}
-                                     />
-                </div>
+
+                <CustomSelect
+                  iconName="person"
+                  w="w-full"
+                  options={driverOptions}
+                  value={selectedVehicleUserOption}
+                  onChange={(option) => {
+                    setSelectedVehicleUserOption(option);
+                    const selectedUser = vehicleUserDatas.find(
+                      (user) => user.emp_id === option.value
+                    );
+                    setCostName(selectedUser?.dept_sap || ""); // Update costName when selecting an option
+                  }}
+                />
               </div>
             </div>
 
@@ -102,8 +176,9 @@ const ApproverModal = forwardRef((_, ref) => {
                   <input
                     type="text"
                     className="form-control"
+                    value={costName}
                     placeholder=""
-                    defaultValue="นรค.6 กอพ.1 ฝพจ."
+                    readOnly
                   />
                 </div>
               </div>
@@ -114,9 +189,7 @@ const ApproverModal = forwardRef((_, ref) => {
           <form method="dialog">
             <button className="btn btn-secondary">ยกเลิก</button>
           </form>
-          <form method="dialog">
-            <button className="btn btn-primary">ยืนยัน</button>
-          </form>
+            <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>ยืนยัน</button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

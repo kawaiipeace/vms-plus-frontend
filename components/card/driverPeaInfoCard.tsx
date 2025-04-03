@@ -4,10 +4,9 @@ import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 
 interface DriverInfoProps {
+  seeDetail?: boolean;
   userKeyPickup?: boolean;
-  deptSap?: string;
   deptSapShort?: string;
-  driverDeptSap?: string;
   driverEmpID?: string;
   driverEmpName?: string;
   driverInternalContact?: string;
@@ -16,13 +15,12 @@ interface DriverInfoProps {
 
 export default function DriverPeaInfoCard({
   userKeyPickup,
-  deptSap,
   deptSapShort,
-  driverDeptSap,
   driverEmpID,
   driverEmpName,
   driverInternalContact,
   driverMobileContact,
+  seeDetail
 }: DriverInfoProps) {
   const driverInfoModalRef = useRef<{
     openModal: () => void;
@@ -73,7 +71,7 @@ export default function DriverPeaInfoCard({
             </div>
           </div>
         </div>
-
+          { seeDetail && 
         <div className="card-actions w-full">
           <button
             className="btn btn-default w-full"
@@ -86,6 +84,7 @@ export default function DriverPeaInfoCard({
             ดูรายละเอียด
           </button>
         </div>
+        }
       </div>
 
       <DriverInfoModal ref={driverInfoModalRef} />

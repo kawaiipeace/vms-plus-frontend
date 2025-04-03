@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object().shape({
-  vehicleTypeSelect: yup.string()
+  requestedVehicleTypeId: yup.string()
 });
 
 interface VehiclePickModelProps {
@@ -119,7 +119,7 @@ const VehiclePickModel = forwardRef<
             className="btn btn-primary"
             onClick={() => {
               if (onSelect) onSelect(selectedCarType); 
-              setValue("vehicleTypeSelect",selectedCarType)
+              setValue("requestedVehicleTypeId",selectedCarType)
               modalRef.current?.close(); // Close the modal after selecting
             }}
           >

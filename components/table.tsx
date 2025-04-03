@@ -125,7 +125,6 @@ export default function TableComponent<T>({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row, index) => {
-              console.log("tt", row);
               // Store the value of the "สถานะคำขอ" cell
               const statusValue = row
                 .getVisibleCells()
