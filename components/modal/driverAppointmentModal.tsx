@@ -9,7 +9,7 @@ import { convertToISO } from "@/utils/convertToISO";
 import FormHelper from "@/components/formHelper";
 
 interface DriverAppointmentModalProps {
-  id: string;
+  id?: string;
   onSubmit?: (date: string, time: string) => void;
 }
 

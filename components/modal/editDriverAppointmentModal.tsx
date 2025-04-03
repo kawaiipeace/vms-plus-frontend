@@ -27,11 +27,13 @@ const EditDriverAppointmentModal = forwardRef<
   EditDriverAppointmentModalProps
 >(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  
 
   const { formData, updateFormData } = useFormContext();
 

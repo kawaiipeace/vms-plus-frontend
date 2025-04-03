@@ -25,7 +25,7 @@ const schema = yup.object().shape({
   driverEmpName: yup.string(),
   driverDeptSap: yup.string(),
   masCarpoolDriverUid: yup.string(),
-  isPeaEmployeeDriver: yup.string()
+  isPeaEmployeeDriver: yup.string(),
 });
 
 export default function ProcessThree() {
@@ -46,14 +46,15 @@ export default function ProcessThree() {
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string>("");
+  const [selectedVehiclePoolId, setSelectedVehiclePoolId] =
+    useState<string>("");
 
   const handleVehicleSelection = (vehiclePoolId: string) => {
     setSelectedVehiclePoolId(vehiclePoolId);
-      setValue("masCarpoolDriverUid", vehiclePoolId);
-      updateFormData({
-        masCarpoolDriverUid: vehiclePoolId,
-      });
+    setValue("masCarpoolDriverUid", vehiclePoolId);
+    updateFormData({
+      masCarpoolDriverUid: vehiclePoolId,
+    });
   };
   const [params, setParams] = useState({
     name: "",
@@ -121,7 +122,7 @@ export default function ProcessThree() {
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
         driverDeptSap: empData.dept_sap,
-        isPeaEmployeeDriver: "1"
+        isPeaEmployeeDriver: "1",
       });
     }
   };
@@ -185,11 +186,10 @@ export default function ProcessThree() {
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
-      setValue("masCarpoolDriverUid", mas_driver_uid);
-      updateFormData({
-        masCarpoolDriverUid: mas_driver_uid,
-      });
-
+    setValue("masCarpoolDriverUid", mas_driver_uid);
+    updateFormData({
+      masCarpoolDriverUid: mas_driver_uid,
+    });
   };
   const next = () => {
     router.push("process-four");
@@ -378,35 +378,39 @@ export default function ProcessThree() {
                       </div>
                     </div>
                   </div>
+                  {selectedVehicleUserOption && (
+                    <div className="form-card w-full mt-5">
+                      <div className="form-card-body space-y-2">
+                        {driverLicenseNo &&
+                          (new Date(licenseExpDate) > today ? (
+                            <LicensePlateStat
+                              status={true}
+                              title="มีใบขับขี่"
+                            />
+                          ) : (
+                            <LicensePlateStat
+                              status={false}
+                              title="ใบขับขี่หมดอายุ"
+                            />
+                          ))}
 
-                  <div className="form-card w-full mt-5">
-                    <div className="form-card-body space-y-2">
-                      {driverLicenseNo &&
-                        (new Date(licenseExpDate) > today ? (
-                          <LicensePlateStat status={true} title="มีใบขับขี่" />
-                        ) : (
-                          <LicensePlateStat
-                            status={false}
-                            title="ใบขับขี่หมดอายุ"
-                          />
-                        ))}
-
-                      {driverLicenseNo &&
-                        requestAnnual &&
-                        (annualYear >= today.getFullYear() ? (
-                          <LicensePlateStat
-                            status={true}
-                            title={`มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
-                          />
-                        ) : (
-                          <LicensePlateStat
-                            status={false}
-                            title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
-                            desc="ผู้ขับขี่จะต้องขออนุมัติทำหน้าที่ขับรถยนต์ประจำปีก่อน"
-                          />
-                        ))}
+                        {driverLicenseNo &&
+                          requestAnnual &&
+                          (annualYear >= today.getFullYear() ? (
+                            <LicensePlateStat
+                              status={true}
+                              title={`มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
+                            />
+                          ) : (
+                            <LicensePlateStat
+                              status={false}
+                              title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${annualYear}`}
+                              desc="ผู้ขับขี่จะต้องขออนุมัติทำหน้าที่ขับรถยนต์ประจำปีก่อน"
+                            />
+                          ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div
@@ -472,21 +476,21 @@ export default function ProcessThree() {
                       />
                     )}
                   </>
-                  { drivers.length <= 0 && 
-                  <EmptyDriver
-                    imgSrc="/assets/img/empty/empty_driver.svg"
-                    title="ไม่พบพนักงานขับรถ"
-                    desc={
-                      <>
-                        ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
-                        กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
-                        ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                      </>
-                    }
-                    button="ค้นหานอกสังกัด"
-                    onSelectDriver={setCarpoolId}
-                  />
-}
+                  {drivers.length <= 0 && (
+                    <EmptyDriver
+                      imgSrc="/assets/img/empty/empty_driver.svg"
+                      title="ไม่พบพนักงานขับรถ"
+                      desc={
+                        <>
+                          ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
+                          กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
+                          ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                        </>
+                      }
+                      button="ค้นหานอกสังกัด"
+                      onSelectDriver={setCarpoolId}
+                    />
+                   )} 
                 </div>
               </div>
             </div>
@@ -498,7 +502,7 @@ export default function ProcessThree() {
                 disabled={
                   selectedDriverType === "พนักงาน กฟภ."
                     ? !selectedVehicleUserOption || !allValid
-                    : ((selectedVehiclePoolId === "") && (masDriverUid === ""))
+                    : selectedVehiclePoolId === "" && masDriverUid === ""
                 }
               >
                 ต่อไป

@@ -3,24 +3,12 @@ import Image from "next/image";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 import { fetchDriverDetail } from "@/services/masterService";
+import { DriverType } from "@/app/types/driver-user-type";
 
 interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
   id?: string;
   seeDetail?: boolean;
-}
-
-interface Driver {
-  mas_driver_uid: string;
-  driver_name: string;
-  driver_image: string;
-  driver_nickname: string;
-  driver_dept_sap: string;
-  driver_identification_no: string;
-  driver_contact_number: string;
-  driver_average_satisfaction_score: number;
-  driver_birthdate: string;
-  age: string;
 }
 
 export default function DriverSmallInfoCard({
@@ -37,7 +25,7 @@ export default function DriverSmallInfoCard({
     closeModal: () => void;
   } | null>(null);
 
-  const [driver, setDriver] = useState<Driver>();
+  const [driver, setDriver] = useState<DriverType>();
 
   useEffect(() => {
     const fetchData = async () => {
