@@ -1,53 +1,14 @@
-import React, { ReactNode, useRef } from "react";
-import TableComponent from "./table";
-import { RequestData } from "@/data/requestData";
+import React, { useRef } from "react";
 import ZeroRecord from "./zeroRecord";
-import Link from "next/link";
 import FilterModal from "@/components/modal/filterModal";
 import { useRouter } from "next/navigation";
-import { ColumnDef } from "@tanstack/react-table";
-import router from "next/router";
+import RequestListTable from "@/components/table/request-list-table";
+import { RequestListType } from "@/app/types/request-list-type";
 
 interface ApproveFlowProps {
-  data: RequestData[];
+  data: RequestListType[];
 }
 
-const columns: ColumnDef<RequestData>[] = [
-  {
-    header: "เลขที่คำขอ",
-    accessorFn: (row) => `${row.request_no}`,
-  },
-  {
-    header: "ผู้ใช้ยานพาหนะ",
-    accessorFn: (row) => `${row.vehicle_user_emp_name} (${row.vehicle_user_dept_sap && ""})`,
-    enableSorting: false
-  },
-  {
-    header: "ยานพาหนะ",
-    accessorFn: (row) => `${row.vehicle_license_plate}`,
-    enableSorting: false
-  },
-  {
-    header: "สถานที่ปฏิบัติงาน",
-    accessorFn: (row) => `${row.work_place}`,
-    enableSorting: false
-  },
-  {
-    header: "วันที่เดินทาง",
-    accessorFn: (row) => `${row.start_datetime} ${row.end_datetime}`,
-   
-  },
-  {
-    header: "สถานะคำขอ",
-    accessorFn: (row) => `${row.ref_request_status_name}`,
-    enableSorting: false,
-  },
-  // {
-  //   header: "",
-  //   accessorFn: (row) => `${row.ref_request_status_name}`,
-  //   enableSorting: false,
-  // },
-];
 
 export default function ArpproveFlow({ data }: ApproveFlowProps) {
   // const [requestData, setRequestData] = useState<RequestData[]>([]);
@@ -106,10 +67,11 @@ export default function ArpproveFlow({ data }: ApproveFlowProps) {
               </button>
             </div>
           </div>
-          <TableComponent
+          {/* <TableComponent
             data={data}
             columns={columns}
-          />
+          /> */}
+          <RequestListTable defaultData={data} />
           <FilterModal ref={filterModalRef} />
         </>
       ) : (
