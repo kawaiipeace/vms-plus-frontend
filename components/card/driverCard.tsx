@@ -73,7 +73,6 @@ export default function DriverCard({
         </div>
       </div>
       <DriverAppointmentModal 
-        process="add" 
         ref={driverAppointmentRef} 
         id={id} 
         onSubmit={handleAppointmentSubmit}

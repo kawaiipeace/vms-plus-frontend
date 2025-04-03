@@ -9,7 +9,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { Driver } from "@/app/types/vehicleUserType";
+import { Driver } from "@/app/types/vehicle-user-type";
 
 const SearchDriverModal = forwardRef(({ onSelectDrivers }: { onSelectDrivers?: (mas_driver_uid: string) => void }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);

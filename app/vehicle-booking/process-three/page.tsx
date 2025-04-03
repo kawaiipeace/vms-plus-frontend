@@ -24,6 +24,7 @@ const schema = yup.object().shape({
   driverEmpID: yup.string().required(),
   driverEmpName: yup.string(),
   driverDeptSap: yup.string(),
+  masCarpoolDriverUid: yup.string()
 });
 
 export default function ProcessThree() {
@@ -48,6 +49,10 @@ export default function ProcessThree() {
 
   const handleVehicleSelection = (vehiclePoolId: string) => {
     setSelectedVehiclePoolId(vehiclePoolId);
+      setValue("masCarpoolDriverUid", vehiclePoolId);
+      updateFormData({
+        masCarpoolDriverUid: vehiclePoolId,
+      });
   };
   const [params, setParams] = useState({
     name: "",
@@ -114,7 +119,6 @@ export default function ProcessThree() {
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
         driverDeptSap: empData.dept_sap,
-        masCarpoolDriverUid: masDriverUid,
       });
     }
   };
@@ -141,7 +145,6 @@ export default function ProcessThree() {
         if (response.status === 200) {
           const vehicleUserData: VehicleUser[] = response.data;
           setVehicleUserDatas(vehicleUserData);
-          console.log("s", vehicleUserData);
           const driverOptionsArray = [
             ...vehicleUserData.map(
               (user: {
@@ -179,6 +182,11 @@ export default function ProcessThree() {
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
+      setValue("masCarpoolDriverUid", mas_driver_uid);
+      updateFormData({
+        masCarpoolDriverUid: mas_driver_uid,
+      });
+
   };
   const next = () => {
     router.push("process-four");

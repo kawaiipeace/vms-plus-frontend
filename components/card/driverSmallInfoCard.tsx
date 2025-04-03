@@ -2,11 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
-import { fetchUserDrivers } from "@/services/masterService";
+import { fetchDriverDetail } from "@/services/masterService";
 
 interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
   id?: string;
+  seeDetail?: boolean;
 }
 
 interface Driver {
@@ -24,6 +25,7 @@ interface Driver {
 
 export default function DriverSmallInfoCard({
   userKeyPickup,
+  seeDetail,
   id,
 }: DriverSmallInfoCardProps) {
   const driverInfoModalRef = useRef<{
@@ -35,26 +37,24 @@ export default function DriverSmallInfoCard({
     closeModal: () => void;
   } | null>(null);
 
-  const [driver, setDriver] = useState<Driver | null>(null);
+  const [driver, setDriver] = useState<Driver>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchUserDrivers("");
-        console.log('data',data);
-        // const driverRaw = data?.drivers;
-        // Assuming the API returns an array of drivers and we need the first one
-        // setDriver(driverRaw[0]);
+        const res = await fetchDriverDetail(id || "");
+        console.log("dataDriver", res.data);
+        setDriver(res.data);
       } catch (error) {
         console.error("Error fetching driver data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   if (!driver) {
-    return <div>Loading...</div>;
+    return;
   }
 
   return (
@@ -63,7 +63,7 @@ export default function DriverSmallInfoCard({
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
             <Image
-              src={`${driver.driver_image || ""}`}
+              src={`${driver.driver_image || "/assets/img/avatar.svg"}`}
               className="rounded-md"
               width={100}
               height={100}
@@ -73,28 +73,26 @@ export default function DriverSmallInfoCard({
           <div className="card-content">
             <div className="card-content-top">
               <div className="card-title">{driver.driver_name}</div>
-                <div className="supporting-text-group">
-                  <div className="supporting-text">
-                   {driver.driver_dept_sap}
-                  </div>
-                </div>
+              <div className="supporting-text-group">
+                <div className="supporting-text">{driver.driver_dept_sap}</div>
+              </div>
             </div>
 
-              <div className="card-item-group">
-                <div className="card-item">
-                  <i className="material-symbols-outlined">star</i>
-                  <span className="card-item-text">
-                    {driver.driver_average_satisfaction_score}
-                  </span>
-                </div>
-                <div className="card-item">
-                  <i className="material-symbols-outlined">person</i>
-                  <span className="card-item-text">{driver.age} ปี</span>
-                </div>
+            <div className="card-item-group">
+              <div className="card-item">
+                <i className="material-symbols-outlined">star</i>
+                <span className="card-item-text">
+                  {driver.driver_average_satisfaction_score}
+                </span>
               </div>
+              <div className="card-item">
+                <i className="material-symbols-outlined">person</i>
+                <span className="card-item-text">{driver.age} ปี</span>
+              </div>
+            </div>
           </div>
         </div>
-
+      {seeDetail && 
         <div className="card-actioins w-full">
           <button
             className="btn btn-default w-full"
@@ -107,7 +105,8 @@ export default function DriverSmallInfoCard({
             ดูรายละเอียด
           </button>
         </div>
-
+        }
+        {userKeyPickup && (
           <>
             <hr />
             <div className="form-section">
@@ -146,6 +145,7 @@ export default function DriverSmallInfoCard({
               </div>
             </div>
           </>
+        )}
       </div>
 
       <DriverInfoModal ref={driverInfoModalRef} />

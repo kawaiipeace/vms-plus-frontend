@@ -258,7 +258,6 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
       </div>
 
       <DriverAppointmentModal
-        process="edit"
         ref={driverAppointmentModalRef}
         id="2"
       />

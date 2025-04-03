@@ -3,13 +3,27 @@ import Image from "next/image";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 
-interface Props {
+interface DriverInfoProps {
   userKeyPickup?: boolean;
+  deptSap?: string;
+  deptSapShort?: string;
+  driverDeptSap?: string;
+  driverEmpID?: string;
+  driverEmpName?: string;
+  driverInternalContact?: string;
+  driverMobileContact?: string;
 }
 
 export default function DriverPeaInfoCard({
   userKeyPickup,
-}: Props) {
+  deptSap,
+  deptSapShort,
+  driverDeptSap,
+  driverEmpID,
+  driverEmpName,
+  driverInternalContact,
+  driverMobileContact,
+}: DriverInfoProps) {
   const driverInfoModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -18,6 +32,7 @@ export default function DriverPeaInfoCard({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
   return (
     <div className="card">
       <div className="card-body">
@@ -28,34 +43,38 @@ export default function DriverPeaInfoCard({
               className="rounded-md"
               width={100}
               height={100}
-              alt=""
+              alt="Driver Avatar"
             />
           </div>
           <div className="card-content">
             <div className="card-content-top">
-              <div className="card-title">ธนพล</div>
-                <div className="supporting-text-group">
-                  <div className="supporting-text">505291</div>
-                  <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
-                </div>
+              <div className="card-title">{driverEmpName || "ไม่ระบุชื่อ"}</div>
+              <div className="supporting-text-group">
+                <div className="supporting-text">{driverEmpID || "-"}</div>
+                <div className="supporting-text">{deptSapShort || "-"}</div>
+              </div>
             </div>
 
-              <div className="card-item-group">
+            <div className="card-item-group">
+              {driverMobileContact && (
                 <div className="card-item">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                   <span className="supporting-text">082-462-5577</span>{" "}
+                    <span className="supporting-text">{driverMobileContact}</span>
                   </span>
                 </div>
+              )}
+              {driverInternalContact && (
                 <div className="card-item">
                   <i className="material-symbols-outlined">call</i>
-                  <span className="card-item-text">5687</span>
+                  <span className="card-item-text">{driverInternalContact}</span>
                 </div>
-              </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="card-actioins w-full">
+        <div className="card-actions w-full">
           <button
             className="btn btn-default w-full"
             onClick={

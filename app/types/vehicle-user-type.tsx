@@ -32,3 +32,4 @@ export interface VehicleUserType {
     dept_sap_short: string;
     image_url: string;
   }
+

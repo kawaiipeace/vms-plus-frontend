@@ -10,7 +10,7 @@ interface JourneyDetailCardProps {
   purpose?: string;
   remark?: string;
   tripType?: number;
-  numberOfPassanger?: number;
+  numberOfPassenger?: number;
 }
 
 export default function JourneyDetailCard({
@@ -23,7 +23,7 @@ export default function JourneyDetailCard({
   purpose,
   remark,
   tripType,
-  numberOfPassanger,
+  numberOfPassenger,
 }: JourneyDetailCardProps) {
   return (
     <div className="form-card">
@@ -60,7 +60,7 @@ export default function JourneyDetailCard({
                   <i className="material-symbols-outlined">groups</i>
                   <div className="form-plaintext-group">
                     <div className="form-label">จำนวนผู้โดยสาร</div>
-                    <div className="form-text">{numberOfPassanger} (รวมผู้ขับขี่)</div>
+                    <div className="form-text">{numberOfPassenger} (รวมผู้ขับขี่)</div>
                   </div>
                 </div>
               </div>
@@ -113,7 +113,7 @@ export default function JourneyDetailCard({
                 <i className="material-symbols-outlined">groups</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">จำนวนผู้โดยสาร</div>
-                  <div className="form-text">{numberOfPassanger} (รวมผู้ขับขี่)</div>
+                  <div className="form-text">{numberOfPassenger} (รวมผู้ขับขี่)</div>
                 </div>
               </div>
             </div>

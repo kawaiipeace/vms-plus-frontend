@@ -94,11 +94,23 @@ export const uploadFile = async (file: File) => {
     }
   };
 
-  export const fetchCodeTypeFromCode = async (code: number) => {
+  export const fetchCodeTypeFromCode = async (code: string) => {
     try {
-      const response = await axiosInstance.get('ref/cost-type/' + code.toString());
+      const response = await axiosInstance.get('ref/cost-type/' + code);
       return response;
     } catch (error) {
       throw error;
+    }
+  };
+
+  export const fetchUserApproverUsers = async (search?: string) => {
+
+    try {
+        const response = await axiosInstance.get('mas/user-approval-users?search=' + search);
+  
+        return response;
+  
+    } catch (error) {
+        throw error;
     }
   };

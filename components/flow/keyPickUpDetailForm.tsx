@@ -301,7 +301,7 @@ export default function KeyPickUpDetailForm({ status }: KeyPickUpDetailFormProps
           </button>
         </div>
       )}
-      <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef} id="2" />
+      <DriverAppointmentModal ref={driverAppointmentModalRef} id="2" />
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
       <JourneyDetailModal ref={journeyDetailModalRef} />
       <VehicleUserModal process="edit" ref={vehicleUserModalRef} />

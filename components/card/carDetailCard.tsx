@@ -42,9 +42,10 @@ interface VehicleDetail {
 
 interface CarDetailCardProps {
   vehicle?: VehicleDetail;
+  seeDetail?: boolean;
 }
 
-export default function CarDetailCard({ vehicle }: CarDetailCardProps) {
+export default function CarDetailCard({ vehicle, seeDetail }: CarDetailCardProps) {
   const vehicleDetailModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -117,6 +118,7 @@ export default function CarDetailCard({ vehicle }: CarDetailCardProps) {
             </div>
           </div>
         </div>
+        { seeDetail &&
         <div className="card-actioins w-full">
           <button
             className="btn btn-default w-full"
@@ -125,6 +127,7 @@ export default function CarDetailCard({ vehicle }: CarDetailCardProps) {
             ดูรายละเอียด
           </button>
         </div>
+         }
       </div>
       <VehicleDetailModel
         ref={vehicleDetailModalRef}

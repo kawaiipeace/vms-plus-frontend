@@ -26,7 +26,7 @@ const schema = yup.object().shape({
   purpose: yup.string().required(),
   remark: yup.string().optional(),
   tripType: yup.number(),
-  numberOfPassengers: yup.number()
+  numberOfPassenger: yup.number()
 });
 
 const JourneyDetailModal = forwardRef<
@@ -42,7 +42,7 @@ const JourneyDetailModal = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const [passengerCount, setPassengerCount] = useState(formData.numberOfPassanger);
+  const [passengerCount, setPassengerCount] = useState(formData.numberOfPassenger);
   const [selectedTripType, setSelectedTripType] = useState<string>((formData.tripType  ?? "").toString());
 
   const {
@@ -72,14 +72,20 @@ const JourneyDetailModal = forwardRef<
       workPlace: data.workPlace,
       purpose: data.purpose,
       remark: data.remark,
-      numberOfPassengers: passengerCount,
+      numberOfPassenger: passengerCount,
       tripType: parseInt(selectedTripType)
     }
-    console.log('pp',passengerCount);
+
     onUpdate({
       ...data,
-      updatedata,
-      numberOfPassengers: passengerCount,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      timeStart: data.timeStart,
+      timeEnd: data.timeEnd,
+      workPlace: data.workPlace,
+      purpose: data.purpose,
+      remark: data.remark,
+      numberOfPassenger: passengerCount,
       tripType: parseInt(selectedTripType)
     });
 

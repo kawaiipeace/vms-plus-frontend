@@ -7,17 +7,19 @@ import TimePicker from "@/components/timePicker";
 import NumberInput from "@/components/numberInput";
 import RadioButton from "@/components/radioButton";
 import Tooltip from "@/components/tooltips";
-import FormHelper from "../formHelper";
+import FormHelper from "@/components/formHelper";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "@/contexts/requestFormContext";
 import {
   fetchCostTypes,
+  fetchUserApproverUsers,
   fetchVehicleUsers,
   uploadFile,
 } from "@/services/masterService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useProfile } from "@/contexts/profileContext";
-import { VehicleUserType } from "../../app/types/vehicleUserType";
+import { VehicleUserType } from "@/app/types/vehicle-user-type";
+import { ApproverUserType } from "@/app/types/approve-user-type";
 
 const schema = yup.object().shape({
   telInternal: yup.string().optional(),
@@ -38,7 +40,7 @@ const schema = yup.object().shape({
   deptSapShort: yup.string(),
   deptSap: yup.string(),
   userImageUrl: yup.string(),
-  costOrigin: yup.string()
+  costOrigin: yup.string(),
 });
 
 interface costType {
@@ -53,7 +55,9 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTripType, setSelectedTripType] = useState("1");
   const { updateFormData } = useFormContext();
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
+    []
+  );
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string }[]
   >([]);
@@ -66,8 +70,9 @@ export default function RequestForm() {
   >([]);
 
   const [passengerCount, setPassengerCount] = useState(0);
-  const [ costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
+  const [costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
   const [fileError, setFileError] = useState("");
+  const [approverData, setApproverData] = useState<ApproverUserType>();
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -115,7 +120,6 @@ export default function RequestForm() {
           ];
 
           setCostTypeOptions(costTypeArr);
-       
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -146,6 +150,21 @@ export default function RequestForm() {
         setValue("userImageUrl", defaultVehicleUser.image_url);
       }
     }
+
+    const fetchApprover = async () => {
+      try {
+        const response = await fetchUserApproverUsers("");
+        if (response.status === 200) {
+          console.log('aa',response);
+          const data = response.data[0];
+          setApproverData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchApprover();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, vehicleUserDatas]);
 
@@ -175,7 +194,8 @@ export default function RequestForm() {
     setSelectedCostTypeOption(selectedOption);
 
     const data = costTypeDatas.find(
-      (cost: { ref_cost_type_code: string }) => cost.ref_cost_type_code === selectedOption.value
+      (cost: { ref_cost_type_code: string }) =>
+        cost.ref_cost_type_code === selectedOption.value
     );
 
     if (data) {
@@ -213,10 +233,14 @@ export default function RequestForm() {
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     data.vehicleUserEmpName = selectedVehicleUserOption.label;
-    data.numberOfPassanger = passengerCount;
+    data.numberOfPassenger = passengerCount;
     data.refCostTypeCode = selectedCostTypeOption.value;
     data.tripType = selectedTripType;
-    console.log("Form Data:", data);
+    data.approvedRequestDeptSap = approverData?.dept_sap;
+    data.approvedRequestDeptSapFull = approverData?.dept_sap_full;
+    data.approvedRequestDeptSapShort = approverData?.dept_sap_short;
+    data.approvedRequestEmpId = approverData?.emp_id;
+    data.approvedRequestEmpName = approverData?.full_name;
     updateFormData(data);
     router.push("process-two");
   };
@@ -491,7 +515,7 @@ export default function RequestForm() {
                       </div>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control select-none"
                         {...register("purpose")}
                         placeholder="ระบุวัตถุประสงค์"
                       />
@@ -545,7 +569,7 @@ export default function RequestForm() {
                         </div>
                         <input
                           type="file"
-                           accept="application/pdf"
+                          accept="application/pdf"
                           className="file-input hidden"
                           onChange={handleFileChange}
                         />
@@ -616,7 +640,7 @@ export default function RequestForm() {
                       <input
                         type="text"
                         className="form-control"
-                        {...register('costOrigin')}
+                        {...register("costOrigin")}
                       />
                     </div>
                   </div>

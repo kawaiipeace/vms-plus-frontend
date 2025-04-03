@@ -1,12 +1,56 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import CustomSelect from "../customSelect";
+import { fetchUserApproverUsers } from "@/services/masterService";
+import { ApproverUserType } from "@/app/types/approve-user-type";
 
 const ApproverModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+    const [driverOptions, setDriverOptions] = useState<
+      { value: string; label: string }[]
+    >([]);
+
+    const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+      driverOptions[0]
+    );
+
+    const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>([]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+   useEffect(() => {
+       const fetchApprover = async () => {
+           try {
+             const response = await fetchUserApproverUsers("");
+             if (response.status === 200) {
+               const vehicleUserData = response.data;
+               console.log("user", vehicleUserData);
+
+               setVehicleUserDatas(vehicleUserData);
+               const driverOptionsArray = [
+                 ...vehicleUserData.map(
+                   (user: {
+                     emp_id: string;
+                     full_name: string;
+                     dept_sap: string;
+                   }) => ({
+                     value: user.emp_id,
+                     label: `${user.full_name} (${user.dept_sap})`,
+                   })
+                 ),
+               ];
+     
+               setDriverOptions(driverOptionsArray);
+             }
+           } catch (error) {
+             console.error("Error fetching requests:", error);
+           }
+         };
+  
+         fetchApprover();
+    }, []);
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -33,12 +77,13 @@ const ApproverModal = forwardRef((_, ref) => {
                       <i className="material-symbols-outlined">person</i>
                     </span>
                   </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder=""
-                    defaultValue="ศรัญยู บริรัตน์ฤทธิ์ (505291)"
-                  />
+                  <CustomSelect
+                                       iconName="person"
+                                       w="w-full"
+                                       options={driverOptions}
+                                       value={selectedVehicleUserOption}
+                                       onChange={setSelectedVehicleUserOption}
+                                     />
                 </div>
               </div>
             </div>

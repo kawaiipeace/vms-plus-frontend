@@ -4,11 +4,13 @@ import 'flatpickr/dist/flatpickr.css';
 
 interface TimePickerProps {
   placeholder?: string;
+  defaultValue?: string;
   onChange?: (selectedTime: string) => void;
 }
 
 const TimePicker: React.FC<TimePickerProps> = ({
   placeholder = 'HH:MM',
+  defaultValue,
   onChange,
 }) => {
   const timeInputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +40,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
     <input
       className="form-control"
       placeholder={placeholder}
+      defaultValue={defaultValue}
       ref={timeInputRef}
       type="text"
     />

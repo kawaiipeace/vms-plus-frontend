@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import JourneyDetailModal from "@/components/modal/journeyDetailModal";
 import VehiclePickModel from "@/components/modal/vehiclePickModal";
-import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
+import EditDriverAppointmentModal from "@/components/modal/editDriverAppointmentModal";
 import VehicleUserModal from "@/components/modal/vehicleUserModal";
 import ReferenceModal from "@/components/modal/referenceModal";
 import DisbursementModal from "@/components/modal/disbursementModal";
@@ -10,7 +10,6 @@ import ApproverModal from "@/components/modal/approverModal";
 import AlertCustom from "@/components/alertCustom";
 import ApproveRequestModal from "@/components/modal/approveRequestModal";
 import CarDetailCard from "@/components/card/carDetailCard";
-import UserInfoCard from "@/components/card/userInfoCard";
 // import PickupKeyCard from "@/components/card/pickupKeyCard";
 import DriverSmallInfoCard from "@/components/card/driverSmallInfoCard";
 import JourneyDetailCard from "@/components/card/journeyDetailCard";
@@ -19,10 +18,9 @@ import ReferenceCard from "@/components/card/referenceCard";
 import DisburstmentCard from "@/components/card/disburstmentCard";
 import ApproveProgress from "@/components/approveProgress";
 import { fetchVehicleDetail } from "@/services/bookingUser";
-import { fetchVehicleUsers } from "@/services/masterService";
-import { VehicleUserType } from "../../app/types/vehicleUserType";
 import DriverPeaInfoCard from "../card/driverPeaInfoCard";
 import { FormDataType } from "@/app/types/form-data-type";
+import ApproverInfoCard from "../card/approverInfoCard";
 interface VehicleDetail {
   mas_vehicle_uid?: string;
   vehicle_brand_name?: string;
@@ -72,10 +70,10 @@ export default function RequestDetailForm({
   status,
   approverCard,
   driverCard,
-  // keyPickUpCard,
-}: RequestDetailFormProps) {
+}: // keyPickUpCard,
+RequestDetailFormProps) {
   const carSelect = "true";
-  const driverAppointmentModalRef = useRef<{
+  const editDriverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -110,36 +108,37 @@ export default function RequestDetailForm({
   } | null>(null);
 
   const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
-  
-  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(null);
-  const [approver, setApprover] = useState<VehicleUserType>();
+
+  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
+    null
+  );
+
   const handleModalUpdate = (updatedData: Partial<FormDataType>) => {
     setUpdatedFormData((prevData) => {
       if (!prevData) return undefined; // Fix: Return undefined instead of null
-  
+
       return {
         ...prevData,
         ...updatedData,
       };
     });
   };
-  
-  
 
   useEffect(() => {
     const storedDataString = localStorage.getItem("formData");
-  
+
     if (storedDataString) {
       const parsedData = JSON.parse(storedDataString); // Parse the string
       setUpdatedFormData(parsedData);
       console.log("data", parsedData);
-  
+
       const fetchVehicleDetailData = async () => {
         try {
-          if (parsedData?.vehicleSelect) { // Ensure parsedData is an object before accessing vehicleSelect
+          if (parsedData?.vehicleSelect) {
+            // Ensure parsedData is an object before accessing vehicleSelect
             const response = await fetchVehicleDetail(parsedData.vehicleSelect);
             console.log("rescar", response.data);
-  
+
             if (response.status === 200) {
               setVehicleDetail(response.data ?? {});
             }
@@ -148,26 +147,10 @@ export default function RequestDetailForm({
           console.error("Error fetching vehicle details:", error);
         }
       };
-  
+
       fetchVehicleDetailData();
     }
-  
-    const fetchApprover = async () => {
-      try {
-        const response = await fetchVehicleUsers("");
-        if (response.status === 200) {
-          const vehicleUserData = response.data[0];
-          console.log("user", vehicleUserData);
-          setApprover(vehicleUserData);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-  
-    fetchApprover();
   }, []);
-  
 
   if (!updatedFormData) return null;
   return (
@@ -197,7 +180,9 @@ export default function RequestDetailForm({
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <Image
-                    src={updatedFormData.userImageUrl || "/assets/img/avatar.svg"}
+                    src={
+                      updatedFormData.userImageUrl || "/assets/img/avatar.svg"
+                    }
                     className="avatar avatar-md"
                     width={100}
                     height={100}
@@ -273,7 +258,7 @@ export default function RequestDetailForm({
               purpose={updatedFormData.purpose}
               remark={updatedFormData.remark}
               tripType={updatedFormData.tripType}
-              numberOfPassanger={updatedFormData.numberOfPassanger}
+              numberOfPassenger={updatedFormData.numberOfPassenger}
             />
           </div>
 
@@ -285,14 +270,19 @@ export default function RequestDetailForm({
               {status != "detail" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => driverAppointmentModalRef.current?.openModal()}
+                  onClick={() =>
+                    editDriverAppointmentModalRef.current?.openModal()
+                  }
                 >
                   แก้ไข
                 </button>
               )}
             </div>
 
-            <AppointmentDriverCard />
+            <AppointmentDriverCard
+              pickupPlace={updatedFormData.pickupPlace}
+              pickupDatetime={updatedFormData.pickupDatetime}
+            />
           </div>
 
           <div className="form-section">
@@ -329,7 +319,9 @@ export default function RequestDetailForm({
               )}
             </div>
 
-            <DisburstmentCard />
+            <DisburstmentCard
+              refCostTypeCode={updatedFormData.refCostTypeCode}
+            />
           </div>
         </div>
 
@@ -397,12 +389,6 @@ export default function RequestDetailForm({
                       </div>
                     </div>
                   )}
-                  {updatedFormData.masCarpoolDriverUid && (
-                    <div className="mt-5">
-                      <DriverSmallInfoCard id={updatedFormData.masCarpoolDriverUid} />
-                    </div>
-                  )}
-
                 </>
               ) : (
                 <>
@@ -444,10 +430,18 @@ export default function RequestDetailForm({
                 </>
               )}
             </>
+            {updatedFormData.masCarpoolDriverUid && (
+              <div className="mt-5">
+                <DriverSmallInfoCard
+                  id={updatedFormData.masCarpoolDriverUid}
+                  userKeyPickup={false}
+                />
+              </div>
+            )}
 
-            <div className="mt-5">
-                      <DriverPeaInfoCard />
-                    </div>
+            {/* <div className="mt-5">
+                <DriverPeaInfoCard />
+            </div> */}
 
             {driverCard && status != "detail" && status != "edit" && (
               <div className="form-section mt-5">
@@ -508,10 +502,9 @@ export default function RequestDetailForm({
                   แก้ไข
                 </button>
               </div>
-              {approver && (
-                <UserInfoCard
-                  displayBtnMore={true}
-                  vehicleUserData={approver}
+              {approverCard && (
+                <ApproverInfoCard
+                emp_id={updatedFormData?.approvedRequestEmpId || ""}
                 />
               )}
             </div>
@@ -528,16 +521,30 @@ export default function RequestDetailForm({
           </button>
         </div>
       )}
-      <DriverAppointmentModal process="edit" ref={driverAppointmentModalRef} id="2" />
+      <EditDriverAppointmentModal
+        ref={editDriverAppointmentModalRef}
+        onUpdate={handleModalUpdate}
+      />
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
-      <JourneyDetailModal ref={journeyDetailModalRef} onUpdate={handleModalUpdate} />
-      <VehicleUserModal process="edit" ref={vehicleUserModalRef} onUpdate={handleModalUpdate} />
+      <JourneyDetailModal
+        ref={journeyDetailModalRef}
+        onUpdate={handleModalUpdate}
+      />
+      <VehicleUserModal
+        process="edit"
+        ref={vehicleUserModalRef}
+        onUpdate={handleModalUpdate}
+      />
       <ReferenceModal
         ref={referenceModalRef}
-        refNum={updatedFormData.referenceNumber}
-        files={updatedFormData.attachmentFile}
+        // refNum={updatedFormData.referenceNumber}
+        // files={updatedFormData.attachmentFile}
+        onUpdate={handleModalUpdate}
       />
-      <DisbursementModal ref={disbursementModalRef} />
+      <DisbursementModal
+        ref={disbursementModalRef}
+        onUpdate={handleModalUpdate}
+      />
       <ApproverModal ref={approverModalRef} />
       <ApproveRequestModal
         ref={approveRequestModalRef}

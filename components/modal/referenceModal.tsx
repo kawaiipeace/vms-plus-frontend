@@ -1,32 +1,87 @@
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from "react";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useFormContext } from "@/contexts/requestFormContext";
+import { shortenFilename } from "@/utils/shortenFilename";
+import { uploadFile } from "@/services/masterService";
+import FormHelper from "../formHelper";
 
 interface RefProps {
-  refNum?: string;
-  files?: string;
+  onUpdate: (data: any) => void;
 }
+
+const schema = yup.object().shape({
+  referenceNumber: yup.string(),
+  attachmentFile: yup.mixed(),
+});
 
 const ReferenceModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   RefProps
->(({ refNum, files }, ref) => {
-
+>(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
-  const [fileName, setFileName] = useState( files ? files.split("/").pop() : "อัพโหลดเอกสารแนบ");
 
+  const { formData, updateFormData } = useFormContext();
+  const [fileError, setFileError] = useState("");
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
+  const { handleSubmit, control, setValue } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+    defaultValues: {
+      referenceNumber: formData.referenceNumber || "",
+      attachmentFile: formData.attachmentFile || "",
+    },
+  });
+
+  const [fileName, setFileName] = useState(
+    formData.attachmentFile
+      ? shortenFilename(formData.attachmentFile)
+      : "อัพโหลดเอกสารแนบ"
+  );
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    onChange: (value: File | null) => void
+  ) => {
+    const file = event.target.files?.[0] || null;
+    if (!file) return;
+
+    try {
+      const response = await uploadFile(file);
+      console.log('filerespon',response);
+      onChange(file);
+      setValue("attachmentFile", response.file_url);
+      setFileName(shortenFilename(response.file_url));
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message;
+      setFileError(errorMessage);
+    }
+  };
+
+  const onSubmit = (data: any) => {
+    console.log("Submitted Data:", data);
+    onUpdate({
+      ...data,
+      referenceNumber: data.referenceNumber,
+      attachmentFile: data.attachmentFile,
+    });
+
+    updateFormData({
+      referenceNumber: data.referenceNumber,
+      attachmentFile: data.attachmentFile,
+    });
+
+    modalRef.current?.close();
   };
 
   return (
@@ -46,71 +101,88 @@ const ReferenceModal = forwardRef<
           </form>
         </div>
         <div className="modal-body overflow-y-auto">
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12">
-              <div className="form-group">
-                <label className="form-label">
-                  เลขที่หนังสืออ้างอิง
-                  <span className="form-optional">(ถ้ามี)</span>
-                </label>
-                <div className="input-group">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      <i className="material-symbols-outlined">docs</i>
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder=""
-                    defaultValue={refNum}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="col-span-12">
-              <div className="form-group">
-                <label className="form-label">
-                  เอกสารแนบ<span className="form-optional">(ถ้ามี)</span>
-                </label>
-                <div className="input-group input-uploadfile">
-                  {/* <input type="file" className="file-input hidden" /> */}
-                  <label className="flex items-center gap-2 cursor-pointer">
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12">
+                <div className="form-group">
+                  <label className="form-label">
+                    เลขที่หนังสืออ้างอิง
+                    <span className="form-optional">(ถ้ามี)</span>
+                  </label>
+                  <div className="input-group">
                     <div className="input-group-prepend">
                       <span className="input-group-text">
-                        <i className="material-symbols-outlined">attach_file</i>
+                        <i className="material-symbols-outlined">docs</i>
                       </span>
                     </div>
-                    <input
-                      type="file"
-                      className="file-input hidden"
-                      onChange={handleFileChange}
+                    <Controller
+                      name="referenceNumber"
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder=""
+                          {...field}
+                        />
+                      )}
                     />
-                    <div className="input-uploadfile-label w-full">
-                      {fileName}
-                    </div>
-                  </label>
-
-                  {/* <!-- <div className="input-group-append">
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
-                        </div> --> */}
+                  </div>
                 </div>
-                <span className="form-helper">
-                  รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB
-                </span>
+              </div>
+
+              <div className="col-span-12">
+                <div className="form-group">
+                  <label className="form-label">
+                    เอกสารแนบ<span className="form-optional">(ถ้ามี)</span>
+                  </label>
+                  <div className="input-group input-uploadfile">
+                    <Controller
+                      name="attachmentFile"
+                      control={control}
+                      render={({ field: { onChange } }) => (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">
+                                attach_file
+                              </i>
+                            </span>
+                          </div>
+                          <input
+                            type="file"
+                            className="file-input hidden"
+                            onChange={(e) => handleFileChange(e, onChange)}
+                          />
+                          <div className="input-uploadfile-label w-full">
+                            {fileName}
+                          </div>
+                        </label>
+                      )}
+                    />
+                  </div>
+                  {fileError ? (
+                    <FormHelper text={fileError} />
+                  ) : (
+                    <span className="form-helper">
+                      รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="modal-action sticky bottom-0 gap-3 mt-0">
-          <form method="dialog">
-            <button className="btn btn-secondary">ยกเลิก</button>
-          </form>
-          <form method="dialog">
-            <button className="btn btn-primary">ยืนยัน</button>
+            <div className="modal-action sticky bottom-0 gap-3 mt-0">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => modalRef.current?.close()}
+              >
+                ยกเลิก
+              </button>
+              <button type="submit" className="btn btn-primary">
+                ยืนยัน
+              </button>
+            </div>
           </form>
         </div>
       </div>

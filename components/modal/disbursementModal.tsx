@@ -1,8 +1,29 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import CustomSelect from "@/components/customSelect";
 import { fetchCostTypes } from "@/services/masterService";
+import { useFormContext } from "@/contexts/requestFormContext";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-const DisbursementModal = forwardRef((_, ref) => {
+interface Props {
+  onUpdate: (data: any) => void;
+}
+
+const schema = yup.object().shape({
+  refCostTypeCode: yup.string(),
+});
+
+const DisbursementModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -10,39 +31,104 @@ const DisbursementModal = forwardRef((_, ref) => {
     closeModal: () => modalRef.current?.close(),
   }));
 
-   const [costTypeOptions, setCostTypeOptions] = useState<
-      { value: string; label: string }[]
-    >([]);
-    const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(
-      costTypeOptions[0]
-    );
-    useEffect(() => {
-       const fetchCostTypeRequest = async () => {
-            try {
-              const response = await fetchCostTypes();
-              if (response.status === 200) {
-                const costTypeData = response.data;
-                const costTypeArr = [
-                  ...costTypeData.map(
-                    (cost: {
-                      ref_cost_type_code: string;
-                      ref_cost_type_name: string;
-                    }) => ({
-                      value: cost.ref_cost_type_code,
-                      label: cost.ref_cost_type_name,
-                    })
-                  ),
-                ];
-      
-                setCostTypeOptions(costTypeArr);
-              }
-            } catch (error) {
-              console.error("Error fetching requests:", error);
-            }
-          };
-          fetchCostTypeRequest();
-    },[])
+  const { formData, updateFormData } = useFormContext();
 
+  const { handleSubmit, setValue } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+  });
+
+  const [costCenter, setCostCenter] = useState<string>("");
+  const [costData, setCostData] = useState<
+    {
+      ref_cost_type_code: string;
+      ref_cost_type_name: string;
+      ref_cost_no: string;
+    }[]
+  >([]);
+
+  const [costTypeOptions, setCostTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchCostTypeRequest = async () => {
+      try {
+        const response = await fetchCostTypes();
+        if (response.status === 200) {
+          const costTypeData = response.data;
+          setCostData(costTypeData); // Fix: Ensure costData is properly set
+
+          const costTypeArr = costTypeData.map(
+            (cost: {
+              ref_cost_type_code: string;
+              ref_cost_type_name: string;
+            }) => ({
+              value: cost.ref_cost_type_code,
+              label: cost.ref_cost_type_name,
+            })
+          );
+
+          setCostTypeOptions(costTypeArr);
+        }
+      } catch (error) {
+        console.error("Error fetching cost types:", error);
+      }
+    };
+    fetchCostTypeRequest();
+  }, []);
+
+  useEffect(() => {
+    if (costTypeOptions.length > 0) {
+      const selectedOption = costTypeOptions.find(
+        (option) => option.value === formData.refCostTypeCode
+      );
+
+      if (selectedOption) {
+        setSelectedCostTypeOption(selectedOption);
+        const selectedCostType = costData.find(
+          (cost: { ref_cost_type_code: string }) =>
+            cost.ref_cost_type_code === selectedOption.value
+        );
+
+        if (selectedCostType) {
+          setCostCenter(selectedCostType?.ref_cost_no);
+        }
+      }
+    }
+  }, [costTypeOptions, costData, formData.refCostTypeCode]);
+
+  const handleCostTypeChange = (option: any) => {
+    setSelectedCostTypeOption(option);
+    setValue("refCostTypeCode", option.value); // Update form state
+
+    const selectedCostType = costData.find(
+      (cost) => cost.ref_cost_type_code === option.value
+    );
+
+    if (selectedCostType) {
+      setCostCenter(selectedCostType.ref_cost_no);
+    } else {
+      setCostCenter("");
+    }
+  };
+
+  const onSubmit = (data: any) => {
+    onUpdate({
+      ...data,
+      refCostTypeCode: data.refCostTypeCode,
+    });
+
+    updateFormData({
+      refCostTypeCode: data.refCostTypeCode,
+    });
+
+    modalRef.current?.close();
+  };
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -66,7 +152,7 @@ const DisbursementModal = forwardRef((_, ref) => {
                 w="w-full"
                 options={costTypeOptions}
                 value={selectedCostTypeOption}
-                onChange={setSelectedCostTypeOption}
+                onChange={handleCostTypeChange}
               />
             </div>
 
@@ -84,8 +170,9 @@ const DisbursementModal = forwardRef((_, ref) => {
                   <input
                     type="text"
                     className="form-control"
+                    value={costCenter}
                     placeholder=""
-                    defaultValue="ZA04020200 : กบห.กอพ.1-บห."
+                    readOnly
                   />
                 </div>
               </div>
@@ -96,9 +183,10 @@ const DisbursementModal = forwardRef((_, ref) => {
           <form method="dialog">
             <button className="btn btn-secondary">ยกเลิก</button>
           </form>
-          <form method="dialog">
-            <button className="btn btn-primary">ยืนยัน</button>
-          </form>
+
+          <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>
+            ยืนยัน
+          </button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
