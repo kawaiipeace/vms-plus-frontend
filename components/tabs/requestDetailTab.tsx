@@ -1,24 +1,32 @@
 import React, { useState } from "react";
 import RequestDetailForm from "@/components/flow/requestDetailForm";
-import { requestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import {
+  requestHistoryLog,
+  requestHistoryLogColumns,
+} from "@/data/requestHistory";
 import TableComponent from "@/components/table";
 
-interface Props{
- status: string;
+interface Props {
+  requestId: string;
 }
 
-export default function RequestDetailTabs({status} : Props) {
+export default function RequestDetailTabs({ requestId }: Props) {
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
-      // content:  <RequestDetailForm status={status} />,
+      content: <RequestDetailForm requestId={requestId} />,
       constent: "",
-      badge: ""
+      badge: "",
     },
     {
       label: "ประวัติการดำเนินการ",
-      content:  <TableComponent data={requestHistoryLog} columns={requestHistoryLogColumns}/>,
-      badge: ""
+      content: (
+        <TableComponent
+          data={requestHistoryLog}
+          columns={requestHistoryLogColumns}
+        />
+      ),
+      badge: "",
     },
   ];
   const [activeTab, setActiveTab] = useState(0);
@@ -43,11 +51,7 @@ export default function RequestDetailTabs({status} : Props) {
           </button>
         ))}
       </div>
-      <div className="py-4 relative">
-
-        {tabs[activeTab].content}
-      
-      </div>
+      <div className="py-4 relative">{tabs[activeTab].content}</div>
     </div>
   );
 }

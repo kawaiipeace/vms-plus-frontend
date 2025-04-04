@@ -1,5 +1,6 @@
 export interface RequestListType{
-    request_no: string;
+  trn_request_uid: string;
+  request_no: string;
   vehicle_user_emp_name: string;
   vehicle_user_dept_sap?: string;
   vehicle_license_plate: string;

@@ -70,9 +70,7 @@ export default function RequestDetail() {
               </div>
             </div>
 
-            <RequestDetailTabs status="edit" />
-
-
+            <RequestDetailTabs requestId="" />
 
           </div>
         </div>

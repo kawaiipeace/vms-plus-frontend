@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import RequestDetailTabs from "@/components/tabs/requestDetailTab";
@@ -8,9 +8,26 @@ import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import Link from "next/link";
 import FileBackRequestModal from "@/components/modal/fileBackModal";
 import ApproveRequestModal from "@/components/modal/approveRequestModal";
-export default function RequestDetail() {
+import { useParams, useSearchParams } from "next/navigation";
+import { requestDetail } from "@/services/bookingUser";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+
+interface Props {
+  copy?: boolean;
+  returnRequest?: boolean;
+  cancelRequest?: boolean;
+  approveRequest?: boolean;
+  status?: string;
+}
+
+export default function RequestDetail({
+  copy,
+  returnRequest,
+  cancelRequest,
+  approveRequest,
+  status,
+}: Props) {
   const { isPinned } = useSidebar();
-  const driverType = "PEA";
   const approveRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -23,6 +40,26 @@ export default function RequestDetail() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const params = useParams();
+  const request_id = String(params.request_id);
+
+  const [requestData, setRequestData] = useState<RequestDetailType>();
+
+  useEffect(() => {
+    if (request_id) {
+      const fetchRequestDetailfunc = async () => {
+        try {
+          const response = await requestDetail(request_id);
+          setRequestData(response.data);
+        } catch (error) {
+          console.error("Error fetching vehicle details:", error);
+        }
+      };
+
+      fetchRequestDetailfunc();
+    }
+  }, [request_id]);
 
   return (
     <div>
@@ -48,7 +85,7 @@ export default function RequestDetail() {
                     <Link href="../request-list">คำขอใช้ยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    เลขที่คำขอ VA67RA000001
+                    เลขที่คำขอ {requestData?.request_no || ""}
                   </li>
                 </ul>
               </div>
@@ -56,55 +93,57 @@ export default function RequestDetail() {
               <div className="page-group-header">
                 <div className="page-title">
                   <span className="page-title-label">
-                    เลขที่คำขอ VA67RA000001
+                    เลขที่คำขอ {requestData?.request_no || ""}
                   </span>
-                  <button className="text-sm">
-                    <i className="material-symbols-outlined text-sm">
-                      content_copy
-                    </i>
-                    คัดลอก
-                  </button>
+                  {copy && (
+                    <button className="text-sm">
+                      <i className="material-symbols-outlined text-sm">
+                        content_copy
+                      </i>
+                      คัดลอก
+                    </button>
+                  )}
 
-                  <span className="badge badge-pill-outline badge-info">
-                    รออนุมัติ
-                  </span>
+                  {status && (
+                    <span className="badge badge-pill-outline badge-info">
+                      {status}
+                    </span>
+                  )}
                 </div>
 
-                <button
-                  className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-                  onClick={() => cancelRequestModalRef.current?.openModal()}
-                >
-                  ยกเลิกคำขอ
-                </button>
+                {cancelRequest && (
+                  <button
+                    className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+                    onClick={() => cancelRequestModalRef.current?.openModal()}
+                  >
+                    ยกเลิกคำขอ
+                  </button>
+                )}
                 <button className="btn btn-secondary">
                   <i className="material-symbols-outlined">print</i>พิมพ์
                 </button>
-                {driverType == "PEA" && (
-                  <>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() =>
-                        fileBackRequestModalRef.current?.openModal()
-                      }
-                    >
-                      <i className="material-symbols-outlined">reply</i>
-                      ตีกลับให้แก้ไข
-                    </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() =>
-                        approveRequestModalRef.current?.openModal()
-                      }
-                    >
-                      <i className="material-symbols-outlined">check</i>
-                      อนุมัติคำขอ
-                    </button>
-                  </>
+                {returnRequest && (
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => fileBackRequestModalRef.current?.openModal()}
+                  >
+                    <i className="material-symbols-outlined">reply</i>
+                    ตีกลับให้แก้ไข
+                  </button>
+                )}
+                {approveRequest && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => approveRequestModalRef.current?.openModal()}
+                  >
+                    <i className="material-symbols-outlined">check</i>
+                    อนุมัติคำขอ
+                  </button>
                 )}
               </div>
             </div>
 
-            <RequestDetailTabs status="detail" />
+            <RequestDetailTabs requestId={request_id} />
           </div>
         </div>
       </div>
@@ -114,9 +153,12 @@ export default function RequestDetail() {
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
         confirmText="ยกเลิกคำขอ"
       />
-      <FileBackRequestModal ref={fileBackRequestModalRef}   title="ยืนยันตีกลับคำขอ"
+      <FileBackRequestModal
+        ref={fileBackRequestModalRef}
+        title="ยืนยันตีกลับคำขอ"
         desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
-        confirmText="โปรดระบุเหตุผลที่ตีกลับ"/>
+        confirmText="โปรดระบุเหตุผลที่ตีกลับ"
+      />
 
       <ApproveRequestModal
         ref={approveRequestModalRef}

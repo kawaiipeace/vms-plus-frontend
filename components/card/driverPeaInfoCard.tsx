@@ -31,8 +31,6 @@ export default function DriverPeaInfoCard({
       const fetchData = async () => {
         try {
           const res = await fetchVehicleUsers(driverEmpID || "");
-          console.log('emp',driverEmpID);
-          console.log('datacar',res.data);
           setDriver(res.data[0]);
         } catch (error) {
           console.error("Error fetching driver data:", error);

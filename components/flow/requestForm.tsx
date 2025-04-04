@@ -213,9 +213,13 @@ export default function RequestForm() {
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url);
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
-      setFileError(errorMessage);
+    } catch (error: unknown) {
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        setFileError(axiosError.response?.data?.message || "Upload failed");
+      } else {
+        setFileError("An unexpected error occurred");
+      }
     }
   };
 
@@ -233,6 +237,7 @@ export default function RequestForm() {
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     data.vehicleUserEmpName = selectedVehicleUserOption.label;
+    data.vehicleUserDeptSap = data.deptSapShort;
     data.numberOfPassenger = passengerCount;
     data.refCostTypeCode = selectedCostTypeOption.value;
     data.tripType = selectedTripType;

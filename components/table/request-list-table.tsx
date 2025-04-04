@@ -124,7 +124,7 @@ export default function RequestListTable({ defaultData }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() => router.push("/vehicle-booking/request-list/1")}
+                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>

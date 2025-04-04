@@ -5,10 +5,11 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
-import RequestDetailForm from "@/components/flow/requestDetailForm";
+import RequestEditForm from "@/components/flow/requestEditForm";
 import TermAndConditionModal from "@/components/modal/termAndConditionModal";
 import Link from "next/link";
 import { createRequest } from "@/services/bookingUser";
+import { FormDataType } from "@/app/types/form-data-type";
 
 export default function ProcessFour() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function ProcessFour() {
     closeModal: () => void;
   } | null>(null);
 
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<FormDataType>();
 
   // Load formData from localStorage on component mount
   useEffect(() => {
@@ -57,14 +58,14 @@ export default function ProcessFour() {
         objective: formData.purpose || "",
         pickup_datetime: formData.pickupDatetime || "",
         pickup_place: formData.pickupPlace || "", // Fill if needed
-        ref_cost_type_code: parseInt(formData.refCostTypeCode) || 101,
+        ref_cost_type_code: parseInt(formData.refCostTypeCode || "") || 101,
         reference_number: formData.referenceNumber || "",
         remark: formData.remark || "",
         requested_vehicle_type_id: 1, // You can map vehicleTypeSelect if it matches
         reserved_time_type: "1", // Adjust based on logic
         start_datetime: "2025-01-01T08:00:00Z",
-        trip_type: parseInt(formData.tripType) || 1,
-        vehicle_user_dept_sap: formData.deptSap || "",
+        trip_type: formData.tripType|| 1,
+        vehicle_user_dept_sap: formData.vehicleUserDeptSap || "",
         vehicle_user_emp_id: formData.vehicleUserEmpId || "",
         vehicle_user_emp_name: formData.vehicleUserEmpName || "",
         work_place: formData.workPlace || "",
@@ -168,12 +169,11 @@ export default function ProcessFour() {
                     </div>
                   </div>
                 </div>
-                <RequestDetailForm status="add" approverCard={true} />{" "}
-                {/* Pass formData as prop */}
+                <RequestEditForm approverCard={true} />
               </div>
 
               <div className="form-accept">
-                การกดปุ่ม “สร้างคำขอ” จะถือว่าท่านอ่านและตกลงยอมรับ{" "}
+                การกดปุ่ม “สร้างคำขอ” จะถือว่าท่านอ่านและตกลงยอมรับ
                 <a
                   onClick={() => termAndConditionModalRef.current?.openModal()}
                   className="text-info text-underline"
