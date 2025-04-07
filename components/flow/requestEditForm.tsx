@@ -142,7 +142,7 @@ Props) {
         }
       };
 
-      if (parsedData.vehicleSelect) {
+      if (parsedData.vehicleSelect && parsedData.is_admin_choose_driver === "0") {
         fetchVehicleDetailData();
       }
     }
@@ -283,7 +283,7 @@ Props) {
               </button>
             </div>
 
-            <ReferenceCard />
+            <ReferenceCard refNum={updatedFormData.referenceNumber} file={updatedFormData.attachmentFile} />
           </div>
 
           <div className="form-section">
@@ -307,18 +307,15 @@ Props) {
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-            <>
-              {carSelect == "true" ? (
-                <>
                   <div className="form-section-header">
                     <div className="form-section-header-title">ยานพาหนะ</div>
                   </div>
 
-                  {updatedFormData.vehicleSelect && vehicleDetail && (
-                    <CarDetailCard vehicle={vehicleDetail} />
-                  )}
+                
+               
+             
 
-                  {updatedFormData.isAdminChooseVehicle === "1" && (
+                  {updatedFormData.isAdminChooseVehicle === "1" && 
                     <div className="card card-section-inline mt-5 mb-5">
                       <div className="card-body card-body-inline">
                         <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -359,17 +356,20 @@ Props) {
                                 directions_car
                               </i>
                               <span className="card-item-text">
-                                รถแวนตรวจการ (รถเก๋ง, SUV)
+                                {updatedFormData.requestedVehicleTypeName}
                               </span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  )}
-                </>
-              ) : (
+                  }
+              
+              {updatedFormData.isAdminChooseVehicle === "0" && (
                 <>
+                   {updatedFormData.vehicleSelect && vehicleDetail && (
+                    <CarDetailCard vehicle={vehicleDetail} />
+                  )}
                   <div className="card card-section-inline mt-5">
                     <div className="card-body card-body-inline">
                       <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -407,7 +407,7 @@ Props) {
                   </div>
                 </>
               )}
-            </>
+         
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
                 <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
@@ -493,7 +493,7 @@ Props) {
         ref={editDriverAppointmentModalRef}
         onUpdate={handleModalUpdate}
       />
-      <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
+      <VehiclePickModel ref={vehiclePickModalRef} process="edit" onUpdate={handleModalUpdate} />
       <JourneyDetailModal
         ref={journeyDetailModalRef}
         onUpdate={handleModalUpdate}

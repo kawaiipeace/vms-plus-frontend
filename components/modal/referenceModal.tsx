@@ -33,6 +33,7 @@ const ReferenceModal = forwardRef<
 
   const { formData, updateFormData } = useFormContext();
   const [fileError, setFileError] = useState("");
+  const [fileValue, setFileValue] = useState("");
 
   const { handleSubmit, control, setValue } = useForm({
     mode: "onChange",
@@ -58,10 +59,10 @@ const ReferenceModal = forwardRef<
 
     try {
       const response = await uploadFile(file);
-      console.log('filerespon',response);
       onChange(file);
-      setValue("attachmentFile", response.file_url);
+      setFileValue(response.file_url)
       setFileName(shortenFilename(response.file_url));
+  
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
       setFileError(errorMessage);
@@ -69,17 +70,17 @@ const ReferenceModal = forwardRef<
   };
 
   const onSubmit = (data: any) => {
-    console.log("Submitted Data:", data);
+    console.log("Submitted Data:", fileValue);
     if(onUpdate)
     onUpdate({
       ...data,
       referenceNumber: data.referenceNumber,
-      attachmentFile: data.attachmentFile,
+      attachmentFile: fileValue,
     });
 
     updateFormData({
       referenceNumber: data.referenceNumber,
-      attachmentFile: data.attachmentFile,
+      attachmentFile: fileValue,
     });
 
     modalRef.current?.close();

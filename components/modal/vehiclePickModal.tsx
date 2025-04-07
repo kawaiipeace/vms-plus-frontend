@@ -10,14 +10,16 @@ import { fetchVehicleCarTypes } from "@/services/masterService";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useFormContext } from "@/contexts/requestFormContext";
 
 const schema = yup.object().shape({
-  requestedVehicleTypeId: yup.string()
+  requestedVehicleTypeName: yup.string()
 });
 
 interface VehiclePickModelProps {
   process: string;
   onSelect?: (vehicle: string) => void;
+  onUpdate?: (data: any) => void;
 }
 
 interface VehicleCat{
@@ -30,7 +32,7 @@ interface VehicleCat{
 const VehiclePickModel = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   VehiclePickModelProps // Props type
->(({ process, onSelect }, ref) => {
+>(({ process, onSelect, onUpdate }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
@@ -39,6 +41,7 @@ const VehiclePickModel = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
+  const { updateFormData } = useFormContext();
   const [selectedCarType, setSelectedCarType] = useState("");
   const [vehicleCatData, setVehicleCatData] = useState<VehicleCat[]>([]);
 
@@ -119,7 +122,14 @@ const VehiclePickModel = forwardRef<
             className="btn btn-primary"
             onClick={() => {
               if (onSelect) onSelect(selectedCarType); 
-              setValue("requestedVehicleTypeId",selectedCarType)
+              setValue("requestedVehicleTypeName",selectedCarType)
+              updateFormData({
+                requestedVehicleTypeName: selectedCarType,
+              });
+              if(onUpdate)
+                onUpdate({
+                  requestedVehicleTypeName: selectedCarType,
+                });
               modalRef.current?.close(); // Close the modal after selecting
             }}
           >

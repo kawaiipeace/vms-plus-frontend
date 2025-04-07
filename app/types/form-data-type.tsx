@@ -26,6 +26,7 @@ export interface FormDataType {
   referenceNumber?: string;
   remark?: string;
   requestedVehicleTypeId?: number;
+  requestedVehicleTypeName?: string;
   reservedTimeType?: string;
   startDate?: string;
   endDate?: string;
