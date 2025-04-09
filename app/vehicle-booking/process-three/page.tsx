@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "@/contexts/sidebarContext";
 import * as yup from "yup";
@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import LicensePlateStat from "@/components/licensePlateStat";
+import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
 
 const schema = yup.object().shape({
   driverInternalContact: yup.string(),
@@ -42,12 +43,17 @@ export default function ProcessThree() {
   const [requestAnnual, setRequestAnnual] = useState("");
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
-  const { updateFormData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
   const [selectedVehiclePoolId, setSelectedVehiclePoolId] =
     useState<string>("");
+
+  const driverAppointmentRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const handleVehicleSelection = (vehiclePoolId: string) => {
     setSelectedVehiclePoolId(vehiclePoolId);
@@ -67,6 +73,7 @@ export default function ProcessThree() {
 
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
+  const [appointValid, setAppointValid] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -76,6 +83,18 @@ export default function ProcessThree() {
     );
     setFilteredDrivers(filtered);
   };
+
+  const handleAppointmentSubmit = () => {
+    setAppointValid(true);
+  };
+  
+
+  useEffect(() => {
+    console.log('appointValid changed:', appointValid);
+    if (appointValid) {
+      
+    }
+  }, [appointValid]);
 
   useEffect(() => {
     if (driverLicenseNo) {
@@ -141,6 +160,11 @@ export default function ProcessThree() {
       driver_license_expire_date: string;
     };
   }
+
+  const handleSelectTypes = (typeName: string) => {
+    setSelectedDriverType(typeName);
+    driverAppointmentRef.current?.openModal();
+  };
 
   useEffect(() => {
     const fetchVehicleUserData = async () => {
@@ -264,12 +288,15 @@ export default function ProcessThree() {
                         selectedValue={selectedDriverType}
                         setSelectedValue={setSelectedDriverType}
                       />
+
                       <RadioButton
                         name="driverType"
                         label="พนักงานขับรถ"
                         value="พนักงานขับรถ"
                         selectedValue={selectedDriverType}
-                        setSelectedValue={setSelectedDriverType}
+                        setSelectedValue={() =>
+                          handleSelectTypes("พนักงานขับรถ")
+                        }
                       />
                     </div>
                     {/* <!-- <span className="form-helper">Helper</span> --> */}
@@ -418,79 +445,90 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                  <>
-                    <div className="page-section-header border-0">
-                      <div className="page-header-left">
-                        <div className="page-title">
-                          <span className="page-title-label">
-                            เลือกพนักงานขับรถ
-                          </span>
-                          <span className="badge badge-outline badge-gray page-title-status">
-                            {filteredDrivers.length} คน
-                          </span>
+                  {!formData.isAdminChooseDriver && (
+                    <>
+                      <>
+                        <div className="page-section-header border-0">
+                          <div className="page-header-left">
+                            <div className="page-title">
+                              <span className="page-title-label">
+                                เลือกพนักงานขับรถ
+                              </span>
+                              <span className="badge badge-outline badge-gray page-title-status">
+                                {filteredDrivers.length} คน
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
 
-                    <div className="input-group input-group-search hidden mb-5 w-[20em]">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text search-ico-info">
-                          <i className="material-symbols-outlined">search</i>
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        id="myInputTextField"
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        className="form-control dt-search-input"
-                        placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                      />
-                    </div>
-
-                    {filteredDrivers.length > 0 ? (
-                      <div className="grid grid-cols-4 gap-5 w-full">
-                        {filteredDrivers.map((driver: any, index: number) => (
-                          <DriverCard
-                            key={index}
-                            id={driver.mas_driver_uid}
-                            imgSrc={
-                              driver.driver_image ||
-                              "/assets/img/sample-driver.png"
-                            }
-                            name={driver.driver_name || ""}
-                            company={driver.driver_dept_sap || ""}
-                            rating={
-                              driver.driver_average_satisfaction_score || 0
-                            }
-                            age={driver.age || "-"}
-                            onVehicleSelect={handleVehicleSelection}
+                        <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text search-ico-info">
+                              <i className="material-symbols-outlined">
+                                search
+                              </i>
+                            </span>
+                          </div>
+                          <input
+                            type="text"
+                            id="myInputTextField"
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            className="form-control dt-search-input"
+                            placeholder="ค้นหาชื่อพนักงานขับรถ.."
                           />
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyDriver
-                        imgSrc="/assets/img/empty/empty_driver.svg"
-                        title="ไม่พบพนักงานขับรถ"
-                        desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-                      />
-                    )}
-                  </>
-                  {drivers.length <= 0 && (
-                    <EmptyDriver
-                      imgSrc="/assets/img/empty/empty_driver.svg"
-                      title="ไม่พบพนักงานขับรถ"
-                      desc={
-                        <>
-                          ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
-                          กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
-                          ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                        </>
-                      }
-                      button="ค้นหานอกสังกัด"
-                      onSelectDriver={setCarpoolId}
-                    />
-                   )} 
+                        </div>
+
+                        {filteredDrivers.length > 0 ? (
+                          <div className="grid grid-cols-4 gap-5 w-full">
+                            {filteredDrivers.map(
+                              (driver: any, index: number) => (
+                                <DriverCard
+                                  key={index}
+                                  id={driver.mas_driver_uid}
+                                  imgSrc={
+                                    driver.driver_image ||
+                                    "/assets/img/sample-driver.png"
+                                  }
+                                  name={driver.driver_name || ""}
+                                  company={driver.driver_dept_sap || ""}
+                                  rating={
+                                    driver.driver_average_satisfaction_score ||
+                                    0
+                                  }
+                                  age={driver.age || "-"}
+                                  onVehicleSelect={handleVehicleSelection}
+                                />
+                              )
+                            )}
+                          </div>
+                        ) : (
+                          <EmptyDriver
+                            imgSrc="/assets/img/empty/empty_driver.svg"
+                            title="ไม่พบพนักงานขับรถ"
+                            desc={
+                              <>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>
+                            }
+                          />
+                        )}
+                      </>
+                      {drivers.length <= 0 && (
+                        <EmptyDriver
+                          imgSrc="/assets/img/empty/empty_driver.svg"
+                          title="ไม่พบพนักงานขับรถ"
+                          desc={
+                            <>
+                              ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
+                              กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
+                              ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                            </>
+                          }
+                          button="ค้นหานอกสังกัด"
+                          onSelectDriver={setCarpoolId}
+                        />
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -502,7 +540,7 @@ export default function ProcessThree() {
                 disabled={
                   selectedDriverType === "พนักงาน กฟภ."
                     ? !selectedVehicleUserOption || !allValid
-                    : selectedVehiclePoolId === "" && masDriverUid === ""
+                    : (selectedVehiclePoolId === "" && masDriverUid === "") && (!appointValid)
                 }
               >
                 ต่อไป
@@ -514,6 +552,10 @@ export default function ProcessThree() {
           </div>
         </div>
       </div>
+      <DriverAppointmentModal
+        ref={driverAppointmentRef}
+        onSubmit={handleAppointmentSubmit}
+      />
     </div>
   );
 }

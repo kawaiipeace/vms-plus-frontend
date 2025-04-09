@@ -18,6 +18,7 @@ import { fetchVehicleDetail } from "@/services/bookingUser";
 import DriverPeaInfoCard from "@/components/card/driverPeaInfoCard";
 import { FormDataType } from "@/app/types/form-data-type";
 import ApproverInfoCard from "@/components/card/approverInfoCard";
+import ChooseDriverCard from "@/components/card/chooseDriverCard";
 
 interface VehicleDetail {
   mas_vehicle_uid?: string;
@@ -55,6 +56,7 @@ interface VehicleDetail {
       image_url: string;
     };
   };
+  is_admin_choose_driver: boolean
 }
 
 interface Props {
@@ -68,7 +70,6 @@ export default function RequestEditForm({
   driverCard,
 }: // keyPickUpCard,
 Props) {
-  const carSelect = "true";
   const editDriverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -126,23 +127,21 @@ Props) {
     if (storedDataString) {
       const parsedData = JSON.parse(storedDataString); // Parse the string
       setUpdatedFormData(parsedData);
-
-      const fetchVehicleDetailData = async () => {
-        try {
-          if (parsedData?.vehicleSelect) {
-            // Ensure parsedData is an object before accessing vehicleSelect
-            const response = await fetchVehicleDetail(parsedData.vehicleSelect);
-
-            if (response.status === 200) {
-              setVehicleDetail(response.data ?? {});
+      if (parsedData.vehicleSelect && !parsedData.isAdminChooseVehicle) {
+        const fetchVehicleDetailData = async () => {
+          try {
+            if (parsedData?.vehicleSelect) {
+              // Ensure parsedData is an object before accessing vehicleSelect
+              const response = await fetchVehicleDetail(
+                parsedData.vehicleSelect
+              );
+              setVehicleDetail(response.data);
             }
+          } catch (error) {
+            console.error("Error fetching vehicle details:", error);
           }
-        } catch (error) {
-          console.error("Error fetching vehicle details:", error);
-        }
-      };
+        };
 
-      if (parsedData.vehicleSelect && parsedData.is_admin_choose_driver === "0") {
         fetchVehicleDetailData();
       }
     }
@@ -283,7 +282,10 @@ Props) {
               </button>
             </div>
 
-            <ReferenceCard refNum={updatedFormData.referenceNumber} file={updatedFormData.attachmentFile} />
+            <ReferenceCard
+              refNum={updatedFormData.referenceNumber}
+              file={updatedFormData.attachmentFile}
+            />
           </div>
 
           <div className="form-section">
@@ -307,118 +309,77 @@ Props) {
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-                  <div className="form-section-header">
-                    <div className="form-section-header-title">ยานพาหนะ</div>
+            <div className="form-section-header">
+              <div className="form-section-header-title">ยานพาหนะ</div>
+            </div>
+
+            {updatedFormData.isAdminChooseVehicle === "1" && (
+              <div className="card card-section-inline mt-5 mb-5">
+                <div className="card-body card-body-inline">
+                  <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                    <Image
+                      src="/assets/img/graphic/admin_select_small.png"
+                      className="rounded-md"
+                      width={100}
+                      height={100}
+                      alt=""
+                    />
                   </div>
-
-                
-               
-             
-
-                  {updatedFormData.isAdminChooseVehicle === "1" && 
-                    <div className="card card-section-inline mt-5 mb-5">
-                      <div className="card-body card-body-inline">
-                        <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                          <Image
-                            src="/assets/img/graphic/admin_select_small.png"
-                            className="rounded-md"
-                            width={100}
-                            height={100}
-                            alt=""
-                          />
+                  <div className="card-content">
+                    <div className="card-content-top card-content-top-inline">
+                      <div className="card-content-top-left">
+                        <div className="card-title">
+                          ผู้ดูแลเลือกยานพาหนะให้
                         </div>
-                        <div className="card-content">
-                          <div className="card-content-top card-content-top-inline">
-                            <div className="card-content-top-left">
-                              <div className="card-title">
-                                ผู้ดูแลเลือกยานพาหนะให้
-                              </div>
-                              <div className="supporting-text-group">
-                                <div className="supporting-text">
-                                  สายงานดิจิทัล
-                                </div>
-                              </div>
-                            </div>
-
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          </div>
-
-                          <div className="card-item-group d-flex">
-                            <div className="card-item col-span-2">
-                              <i className="material-symbols-outlined">
-                                directions_car
-                              </i>
-                              <span className="card-item-text">
-                                {updatedFormData.requestedVehicleTypeName}
-                              </span>
-                            </div>
-                          </div>
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">สายงานดิจิทัล</div>
                         </div>
                       </div>
+
+                      <button
+                        className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                        onClick={() => vehiclePickModalRef.current?.openModal()}
+                      >
+                        เลือกประเภทยานพาหนะ
+                      </button>
                     </div>
-                  }
-              
-              {updatedFormData.isAdminChooseVehicle === "0" && (
-                <>
-                   {updatedFormData.vehicleSelect && vehicleDetail && (
-                    <CarDetailCard vehicle={vehicleDetail} />
-                  )}
-                  <div className="card card-section-inline mt-5">
-                    <div className="card-body card-body-inline">
-                      <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                        <Image
-                          src="/assets/img/graphic/admin_select_driver_small.png"
-                          className="rounded-md"
-                          width={100}
-                          height={100}
-                          alt=""
-                        />
-                      </div>
-                      <div className="card-content">
-                        <div className="card-content-top">
-                          <div className="card-title">
-                            ผู้ดูแลเลือกพนักงานขับรถให้
-                          </div>
-                          <div className="supporting-text-group">
-                            <div className="supporting-text">สายงานดิจิทัล</div>
-                          </div>
-                        </div>
 
-                        <div className="card-item-group d-flex">
-                          <div className="card-item">
-                            <i className="material-symbols-outlined">group</i>
-                            <span className="card-item-text">ว่าง 2 คน</span>
-                          </div>
-                        </div>
-                        <div className="card-actions">
-                          <button className="btn btn-primary w-full">
-                            เลือกพนักงานขับรถ
-                          </button>
-                        </div>
+                    <div className="card-item-group d-flex">
+                      <div className="card-item col-span-2">
+                        <i className="material-symbols-outlined">
+                          directions_car
+                        </i>
+                        <span className="card-item-text">
+                          {updatedFormData.requestedVehicleTypeName}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </>
-              )}
-         
+                </div>
+              </div>
+            )}
+
+            {updatedFormData?.vehicleSelect &&
+              vehicleDetail &&
+              (!updatedFormData?.isAdminChooseVehicle || updatedFormData?.isAdminChooseVehicle === "0") &&
+                <CarDetailCard vehicle={vehicleDetail} />
+              }
+
+            {updatedFormData.isAdminChooseDriver && <ChooseDriverCard />}
+
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
                 <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
               </div>
             ) : (
-              <div className="mt-5">
-                <DriverSmallInfoCard
-                  id={updatedFormData.masCarpoolDriverUid}
-                  userKeyPickup={false}
-                />
-              </div>
+              !updatedFormData?.isAdminChooseDriver && (
+                <div className="mt-5">
+                  <DriverSmallInfoCard
+                    id={updatedFormData?.masCarpoolDriverUid}
+                    userKeyPickup={false}
+                  />
+                </div>
+              )
             )}
 
             {driverCard && (
@@ -493,7 +454,11 @@ Props) {
         ref={editDriverAppointmentModalRef}
         onUpdate={handleModalUpdate}
       />
-      <VehiclePickModel ref={vehiclePickModalRef} process="edit" onUpdate={handleModalUpdate} />
+      <VehiclePickModel
+        ref={vehiclePickModalRef}
+        process="edit"
+        onUpdate={handleModalUpdate}
+      />
       <JourneyDetailModal
         ref={journeyDetailModalRef}
         onUpdate={handleModalUpdate}

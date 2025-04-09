@@ -24,6 +24,7 @@ interface Vehicle {
   vehicle_owner_dept_sap: string;
   vehicle_img: string;
   seat: number;
+  is_admin_choose_driver?: boolean;
 }
 
 interface PaginationInterface {
@@ -35,6 +36,7 @@ interface PaginationInterface {
 
 interface FormData {
   isAdminChooseVehicle?: string;
+  isAdminChooseDriver?: boolean;
   vehicleSelect?: string;
 }
 
@@ -86,6 +88,15 @@ export default function ProcessTwo() {
       updatedData.isAdminChooseVehicle = "0"; // Update the data object
     } else {
       updatedData.vehicleSelect = value; // Update the data object
+
+      const selectedVehicleObj = vehicleCards.find(
+        (vehicle) => vehicle.mas_vehicle_uid === value
+      );
+
+      if (selectedVehicleObj?.is_admin_choose_driver !== undefined) {
+        updatedData.isAdminChooseDriver =
+          selectedVehicleObj.is_admin_choose_driver ? true : false;
+      }
     }
 
     updateFormData(updatedData);

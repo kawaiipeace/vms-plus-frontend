@@ -11,7 +11,7 @@ export interface FormDataType {
   attachmentFile?: string;
   costNo?: string;
   endDatetime?: string;
-  isAdminChooseDriver?: string;
+  isAdminChooseDriver?: boolean;
   isAdminChooseVehicle?: string;
   isDriverNeed?: string;
   isHaveSubRequest?: string;

@@ -17,6 +17,8 @@ const schema = yup.object().shape({
   pickupDatetime: yup.string(),
   pickupPlace: yup.string().required("กรุณาระบุสถานที่นัดหมาย"),
   masCarpoolDriverUid: yup.string(),
+  pickupDate: yup.string().required("กรุณาเลือกวันที่นัดหมาย"),
+  pickupTime: yup.string().required("กรุณาเลือกเวลานัดหมาย"),
 });
 
 const DriverAppointmentModal = forwardRef<
@@ -34,6 +36,7 @@ const DriverAppointmentModal = forwardRef<
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -45,10 +48,12 @@ const DriverAppointmentModal = forwardRef<
 
   const handleDateChange = (dateStr: string) => {
     setSelectedDate(dateStr);
+    setValue("pickupDate", dateStr); 
   };
 
   const handleTimeChange = (dateStr: string) => {
     setSelectedTime(dateStr);
+    setValue("pickupTime", dateStr);
   };
 
   const onSubmitForm = (data: any) => {
@@ -110,6 +115,7 @@ const DriverAppointmentModal = forwardRef<
                     </div>
                     <DatePicker placeholder="01/01/2567" onChange={handleDateChange} />
                   </div>
+                  {errors.pickupDate && <FormHelper text={String(errors.pickupDate.message)} />}
                 </div>
               </div>
 
@@ -124,6 +130,7 @@ const DriverAppointmentModal = forwardRef<
                     </div>
                     <TimePicker onChange={handleTimeChange} placeholder="ระบุเวลานัดหมาย" />
                   </div>
+                  {errors.pickupTime && <FormHelper text={String(errors.pickupTime.message)} />}
                 </div>
               </div>
             </div>
