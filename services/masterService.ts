@@ -114,3 +114,12 @@ export const uploadFile = async (file: File) => {
         throw error;
     }
   };
+
+  export const fetchVehicleInfo = async (code: string) => {
+    try {
+      const response = await axiosInstance.get('vehicle-info/' + code);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };

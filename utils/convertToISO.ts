@@ -5,4 +5,3 @@ export function convertToISO(dateStr: string, timeStr: string): string {
     const date = new Date(Date.UTC(gregorianYear, month - 1, day, hours, minutes));
     return date.toISOString();
   }
-  

@@ -20,6 +20,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useProfile } from "@/contexts/profileContext";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { ApproverUserType } from "@/app/types/approve-user-type";
+import { shortenFilename } from "@/utils/shortenFilename";
 
 const schema = yup.object().shape({
   telInternal: yup.string().optional(),
@@ -54,7 +55,7 @@ export default function RequestForm() {
   const { profile } = useProfile();
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTripType, setSelectedTripType] = useState("1");
-  const { updateFormData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
     []
   );
@@ -135,19 +136,26 @@ export default function RequestForm() {
 
   useEffect(() => {
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
-      const defaultVehicleUser = vehicleUserDatas.find(
-        (user) => user.emp_id === profile.emp_id
-      );
-      if (defaultVehicleUser) {
+      if (formData.vehicleUserEmpId) {
         setSelectedVehicleUserOption({
-          value: defaultVehicleUser.emp_id,
-          label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.dept_sap})`,
+          value: formData.vehicleUserEmpId,
+          label: `${formData.vehicleUserEmpName} (${formData.vehicleUserDeptSap})`,
         });
-        setValue("telInternal", defaultVehicleUser.tel_internal);
-        setValue("telMobile", defaultVehicleUser.tel_mobile);
-        setValue("deptSapShort", defaultVehicleUser.dept_sap_short);
-        setValue("deptSap", defaultVehicleUser.dept_sap);
-        setValue("userImageUrl", defaultVehicleUser.image_url);
+      } else {
+        const defaultVehicleUser = vehicleUserDatas.find(
+          (user) => user.emp_id === profile.emp_id
+        );
+        if (defaultVehicleUser) {
+          setSelectedVehicleUserOption({
+            value: defaultVehicleUser.emp_id,
+            label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.dept_sap})`,
+          });
+          setValue("telInternal", defaultVehicleUser.tel_internal);
+          setValue("telMobile", defaultVehicleUser.tel_mobile);
+          setValue("deptSapShort", defaultVehicleUser.dept_sap_short);
+          setValue("deptSap", defaultVehicleUser.dept_sap);
+          setValue("userImageUrl", defaultVehicleUser.image_url);
+        }
       }
     }
 
@@ -155,7 +163,7 @@ export default function RequestForm() {
       try {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
-          console.log('aa',response);
+          console.log("aa", response);
           const data = response.data[0];
           setApproverData(data);
         }
@@ -212,10 +220,13 @@ export default function RequestForm() {
 
     try {
       const response = await uploadFile(file);
-      setValue("attachmentFile", response.file_url);
+      setValue("attachmentFile", response.file_url || "");
+      setFileName(shortenFilename(response.file_url) || "อัพโหลดเอกสารแนบ");
     } catch (error: unknown) {
       if (typeof error === "object" && error !== null && "response" in error) {
-        const axiosError = error as { response?: { data?: { message?: string } } };
+        const axiosError = error as {
+          response?: { data?: { message?: string } };
+        };
         setFileError(axiosError.response?.data?.message || "Upload failed");
       } else {
         setFileError("An unexpected error occurred");
@@ -231,12 +242,56 @@ export default function RequestForm() {
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
+    defaultValues: {
+      telInternal: formData.telInternal || "",
+      telMobile: formData.telMobile || "",
+      workPlace: formData.workPlace || "",
+      purpose: formData.purpose || "",
+      remark: formData.remark || "",
+      referenceNumber: formData.referenceNumber || "",
+      startDate: formData.startDate || "",
+      endDate: formData.endDate || "",
+      refCostTypeCode: formData.refCostTypeCode || "",
+      timeStart: formData.timeStart || "",
+      timeEnd: formData.timeEnd || "",
+      attachmentFile: formData.attachmentFile || "",
+      deptSapShort: formData.deptSapShort || "",
+      deptSap: formData.vehicleUserDeptSap || "",
+      userImageUrl: formData.userImageUrl || "",
+    },
   });
+
+  useEffect(() => {
+    if (formData.numberOfPassenger) {
+      setPassengerCount(formData.numberOfPassenger);
+    }
+    if (formData.tripType) {
+      setSelectedTripType(String(formData.tripType));
+    }
+
+    if (formData.attachmentFile) {
+      setFileName(shortenFilename(String(formData?.attachmentFile)));
+    }
+
+    const data = costTypeDatas.find(
+      (cost: { ref_cost_type_code: string }) =>
+        String(cost.ref_cost_type_code) === String(formData.refCostTypeCode)
+    );
+
+    if (data) {
+      setSelectedCostTypeOption({
+        value: data.ref_cost_type_code,
+        label: data.ref_cost_type_name,
+      });
+      setValue("costOrigin", data.ref_cost_no);
+    }
+  }, [formData, costTypeDatas]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
-    data.vehicleUserEmpName = selectedVehicleUserOption.label;
+    const result = (selectedVehicleUserOption.label).split('(')[0].trim();
+    data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSapShort;
     data.numberOfPassenger = passengerCount;
     data.refCostTypeCode = selectedCostTypeOption.value;
@@ -246,6 +301,7 @@ export default function RequestForm() {
     data.approvedRequestDeptSapShort = approverData?.dept_sap_short;
     data.approvedRequestEmpId = approverData?.emp_id;
     data.approvedRequestEmpName = approverData?.full_name;
+    localStorage.setItem("processOne", "Done");
     updateFormData(data);
     router.push("process-two");
   };
@@ -392,7 +448,7 @@ export default function RequestForm() {
                         </span>
                       </div>
                       <DatePicker
-                        placeholder="ระบุวันที่"
+                        placeholder={formData?.startDate || "ระบุวันที่"}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -404,6 +460,7 @@ export default function RequestForm() {
                     <label className="form-label">เวลาที่ออกเดินทาง</label>
                     <div className="input-group">
                       <TimePicker
+                        defaultValue={formData.timeStart}
                         onChange={(dateStr) => setValue("timeStart", dateStr)}
                       />
                     </div>
@@ -422,7 +479,7 @@ export default function RequestForm() {
                         </span>
                       </div>
                       <DatePicker
-                        placeholder="ระบุวันที่"
+                        placeholder={formData?.endDate || "ระบุวันที่"}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
                       />
                     </div>
@@ -434,6 +491,7 @@ export default function RequestForm() {
                     <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
                       <TimePicker
+                        defaultValue={formData.timeEnd}
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
                       />
                     </div>

@@ -19,6 +19,7 @@ import DriverPeaInfoCard from "@/components/card/driverPeaInfoCard";
 import { FormDataType } from "@/app/types/form-data-type";
 import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
+import { fetchVehicleInfo } from "@/services/masterService";
 
 interface VehicleDetail {
   mas_vehicle_uid?: string;
@@ -56,7 +57,7 @@ interface VehicleDetail {
       image_url: string;
     };
   };
-  is_admin_choose_driver: boolean
+  is_admin_choose_driver: boolean;
 }
 
 interface Props {
@@ -110,6 +111,8 @@ Props) {
     null
   );
 
+  const [availableDriver, setAvailableDriver] = useState(0);
+
   const handleModalUpdate = (updatedData: Partial<FormDataType>) => {
     setUpdatedFormData((prevData) => {
       if (!prevData) return undefined; // Fix: Return undefined instead of null
@@ -127,7 +130,10 @@ Props) {
     if (storedDataString) {
       const parsedData = JSON.parse(storedDataString); // Parse the string
       setUpdatedFormData(parsedData);
-      if (parsedData.vehicleSelect && !parsedData.isAdminChooseVehicle) {
+      if (
+        parsedData.isAdminChooseVehicle !== "1" &&
+        parsedData.isSystemChooseVehicle !== "1"
+      ) {
         const fetchVehicleDetailData = async () => {
           try {
             if (parsedData?.vehicleSelect) {
@@ -144,6 +150,19 @@ Props) {
 
         fetchVehicleDetailData();
       }
+      console.log( parsedData?.vehicleSelect);
+      const fetchVehicleInfoFunc = async () => {
+        try {
+          const response = await fetchVehicleInfo(
+            parsedData?.vehicleSelect || ""
+          );
+          setAvailableDriver(response.data.number_of_available_drivers);
+          console.log(response.data.number_of_available_drivers);
+        } catch (error) {
+          console.error("API Error:", error);
+        }
+      };
+      fetchVehicleInfoFunc();
     }
   }, []);
 
@@ -358,14 +377,60 @@ Props) {
                 </div>
               </div>
             )}
+            {updatedFormData.isSystemChooseVehicle === "1" && (
+              <div className="card card-section-inline mt-5 mb-5">
+                <div className="card-body card-body-inline">
+                  <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                    <Image
+                      src="/assets/img/system-selected.png"
+                      className="rounded-md"
+                      width={100}
+                      height={100}
+                      alt=""
+                    />
+                  </div>
+                  <div className="card-content">
+                    <div className="card-content-top card-content-top-inline">
+                      <div className="card-content-top-left">
+                        <div className="card-title">
+                          ระบบเลือกยานพาหนะให้อัตโนมัติ
+                        </div>
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">สายงานดิจิทัล</div>
+                        </div>
+                      </div>
+
+                      <button
+                        className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                        onClick={() => vehiclePickModalRef.current?.openModal()}
+                      >
+                        เลือกประเภทยานพาหนะ
+                      </button>
+                    </div>
+
+                    <div className="card-item-group d-flex">
+                      <div className="card-item col-span-2">
+                        <i className="material-symbols-outlined">
+                          directions_car
+                        </i>
+                        <span className="card-item-text">
+                          {updatedFormData.requestedVehicleTypeName}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {updatedFormData?.vehicleSelect &&
               vehicleDetail &&
-              (!updatedFormData?.isAdminChooseVehicle || updatedFormData?.isAdminChooseVehicle === "0") &&
+              (!updatedFormData?.isAdminChooseVehicle ||
+                updatedFormData?.isAdminChooseVehicle === "0") && (
                 <CarDetailCard vehicle={vehicleDetail} />
-              }
+              )}
 
-            {updatedFormData.isAdminChooseDriver && <ChooseDriverCard />}
+            {updatedFormData.isAdminChooseDriver && <ChooseDriverCard number={availableDriver} />}
 
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">

@@ -36,6 +36,7 @@ interface PaginationInterface {
 
 interface FormData {
   isAdminChooseVehicle?: string;
+  isSystemChooseVehicle?: string;
   isAdminChooseDriver?: boolean;
   vehicleSelect?: string;
 }
@@ -43,7 +44,8 @@ interface FormData {
 export default function ProcessTwo() {
   const router = useRouter();
   const [vehicleCards, setVehicleCards] = useState<Vehicle[]>([]);
-  const { updateFormData } = useFormContext();
+  const [loading, setLoading] = useState(true);
+  const { formData, updateFormData } = useFormContext();
   const [paginationData, setPaginationData] = useState<PaginationInterface>({
     limit: 10,
     page: 1,
@@ -79,13 +81,23 @@ export default function ProcessTwo() {
     label: string;
   }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
 
+  useEffect(() => {
+    const processOneStatus = localStorage.getItem('processOne');
+    if (processOneStatus !== 'Done') {
+      router.push('process-one');
+    }
+    setLoading(false);
+  }, []);
+
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
     if (value == "ผู้ดูแลยานพาหนะเลือกให้") {
       updatedData.isAdminChooseVehicle = "1"; // Update the data object
-    } else if (value == "ระบบเลือกยานพาหนะให้") {
-      updatedData.isAdminChooseVehicle = "0"; // Update the data object
+      updatedData.isSystemChooseVehicle = "0";
+    } else if (value == "ระบบเลือกยานพาหนะให้อัตโนมัติ"){
+      updatedData.isSystemChooseVehicle = "1"; // Update the data object
+      updatedData.isAdminChooseVehicle = "0";
     } else {
       updatedData.vehicleSelect = value; // Update the data object
 
@@ -103,6 +115,7 @@ export default function ProcessTwo() {
   };
 
   const NextProcess = () => {
+    localStorage.setItem('processTwo','Done');
     router.push("process-three");
   };
 
@@ -182,6 +195,8 @@ export default function ProcessTwo() {
     fetchVehicleData();
     fetchVehicleCarTypesData();
   }, [params]);
+
+  if (loading) return null;
 
   return (
     <div className="main-container">
@@ -346,7 +361,7 @@ export default function ProcessTwo() {
             <button
               onClick={() => NextProcess()}
               className="btn btn-primary"
-              disabled={selectedVehicle === ""}
+              disabled={selectedVehicle === "" && formData.vehicleSelect === ""}
             >
               ต่อไป
               <i className="material-symbols-outlined icon-settings-300-24">

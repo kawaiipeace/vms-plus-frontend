@@ -71,7 +71,12 @@ export default function ProcessRequestCar({ step }: { step: number }) {
           className={`progress-step cursor-pointer ${
             step == 2 ? "active" : step > 2 ? "done" : ""
           }`}
-          onClick={() => router.push('/vehicle-booking/process-two')}
+          onClick={() => {
+            if (localStorage.getItem("processOne") === "Done") {
+              router.push('/vehicle-booking/process-two');
+            }
+          }}
+       
         >
           <span className="progress-step-no">
             {step > 2 ? <i className="material-symbols-outlined">check</i> : 2}
@@ -85,7 +90,11 @@ export default function ProcessRequestCar({ step }: { step: number }) {
           className={`progress-step cursor-pointer ${
             step == 3 ? "active" : step > 3 ? "done" : ""
           }`}
-          onClick={() => router.push('/vehicle-booking/process-three')}
+          onClick={() => {
+            if (localStorage.getItem("processTwo") === "Done") {
+              router.push('/vehicle-booking/process-three');
+            }
+          }}
         >
           <span className="progress-step-no">
             {step > 3 ? <i className="material-symbols-outlined">check</i> : 3}

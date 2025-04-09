@@ -20,6 +20,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
       enableTime: true,
       noCalendar: true,
       static : true,
+      defaultDate: defaultValue,
       dateFormat: 'H:i',
       position: "below center",
       time_24hr: true,

@@ -10,6 +10,7 @@ import TermAndConditionModal from "@/components/modal/termAndConditionModal";
 import Link from "next/link";
 import { createRequest } from "@/services/bookingUser";
 import { FormDataType } from "@/app/types/form-data-type";
+import { convertToISO } from "@/utils/convertToISO";
 
 export default function ProcessFour() {
   const router = useRouter();
@@ -51,55 +52,28 @@ export default function ProcessFour() {
         driver_internal_contact_number: formData.driverInternalContact || "",
         end_datetime: "2025-01-01T10:00:00Z",
         is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
-        is_pea_employee_driver: "1", // Assume always PEA employee, adjust as needed
-        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "", // If you have this info, map it
+        is_pea_employee_driver: formData.isPeaEmployeeDriver,
+        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "", 
         mas_vehicle_uid: formData.vehicleSelect || "",
         number_of_passengers: formData.numberOfPassenger || 0,
         objective: formData.purpose || "",
         pickup_datetime: formData.pickupDatetime || "",
-        pickup_place: formData.pickupPlace || "", // Fill if needed
+        pickup_place: formData.pickupPlace || "", 
         ref_cost_type_code: parseInt(formData.refCostTypeCode || "") || 101,
         reference_number: formData.referenceNumber || "",
         remark: formData.remark || "",
-        requested_vehicle_type_id: 1, // You can map vehicleTypeSelect if it matches
-        reserved_time_type: "1", // Adjust based on logic
-        start_datetime: "2025-01-01T08:00:00Z",
-        trip_type: formData.tripType|| 1,
+        requested_vehicle_type_id: 1, 
+        reserved_time_type: "1", 
+        start_datetime: convertToISO(
+          String(formData.startDate),
+          String(formData.timeStart)
+        ),
+        trip_type: formData.tripType || 1,
         vehicle_user_dept_sap: formData.vehicleUserDeptSap || "",
         vehicle_user_emp_id: formData.vehicleUserEmpId || "",
         vehicle_user_emp_name: formData.vehicleUserEmpName || "",
         work_place: formData.workPlace || "",
-
-        // attached_document: formData.attachmentFile || "",
-        // car_user_internal_contact_number: formData.telInternal || "",
-        // car_user_mobidriver_mobile_contact_numberle_contact_number:
-        //   formData.driverMobileContact || "",
-        // car_user_mobile_contact_number: formData.telMobile || "",
-        // cost_no: formData.referenceNumber || "",
-        // driver_emp_dept_sap: formData.driverDeptSap || "",
-        // driver_emp_id: formData.driverEmpID || "",
-        // driver_emp_name: formData.driverEmpName || "",
-        // driver_internal_contact_number: formData.driverInternalContact || "",
-        // end_datetime: "2025-01-01T10:00:00Z",
-        // is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
-        // is_pea_employee_driver: "1", // Assume always PEA employee, adjust as needed
-        // mas_carpool_driver_uid: formData.masCarpoolDriverUid || "", // If you have this info, map it
-        // mas_vehicle_uid: formData.vehicleSelect || "",
-        // number_of_passengers: formData.numberOfPassenger || 0,
-        // objective: formData.purpose || "",
-        // pickup_datetime: formData.pickupDatetime || "",
-        // pickup_place: formData.pickupPlace || "", // Fill if needed
-        // ref_cost_type_code: parseInt(formData.refCostTypeCode) || 101,
-        // reference_number: formData.referenceNumber || "",
-        // remark: formData.remark || "",
-        // requested_vehicle_type_id: 1, // You can map vehicleTypeSelect if it matches
-        // reserved_time_type: "1", // Adjust based on logic
-        // start_datetime: "2025-01-01T08:00:00Z",
-        // trip_type: parseInt(formData.tripType) || 1,
-        // vehicle_user_dept_sap: formData.deptSap || "",
-        // vehicle_user_emp_id: formData.vehicleUserEmpId || "",
-        // vehicle_user_emp_name: formData.vehicleUserEmpName || "",
-        // work_place: formData.workPlace || "",
+        is_system_choose_vehicle: formData.isSystemChooseVehicle || "0",
       };
 
       console.log("Mapped Data:", mappedData);

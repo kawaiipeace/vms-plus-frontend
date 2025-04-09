@@ -29,42 +29,31 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the user is authenticated by checking the access token in local storage
-    const checkAuth = () => {
+    const initializeProfile = async () => {
       const accessToken = localStorage.getItem("accessToken");
-      if (accessToken) {
-        setIsAuthenticated(true);
-      } else {
+      if (!accessToken) {
         setIsAuthenticated(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    const getProfile = async () => {
-      if (!isAuthenticated) {
         setLoading(false);
         return;
       }
-
+  
+      setIsAuthenticated(true);
+  
       try {
-        setLoading(true);
-        setError(null);
         const response = await fetchProfile();
         setProfile(response.data);
       } catch (error) {
-        setError("Error fetching profile");
         console.error("Error fetching profile:", error);
+        setError("Error fetching profile");
         router.push("/");
       } finally {
         setLoading(false);
       }
     };
-
-    getProfile();
+  
+    initializeProfile();
   }, []);
+  
 
   return (
     <ProfileContext.Provider value={{ profile, setProfile, loading, error, isAuthenticated }}>

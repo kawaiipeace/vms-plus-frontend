@@ -12,6 +12,7 @@ export interface FormDataType {
   costNo?: string;
   endDatetime?: string;
   isAdminChooseDriver?: boolean;
+  isSystemChooseVehicle?: string;
   isAdminChooseVehicle?: string;
   isDriverNeed?: string;
   isHaveSubRequest?: string;

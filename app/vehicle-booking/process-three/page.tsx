@@ -12,12 +12,27 @@ import RadioButton from "@/components/radioButton";
 import SideBar from "@/components/sideBar";
 import Tooltip from "@/components/tooltips";
 import Link from "next/link";
-import { fetchDrivers, fetchUserDrivers } from "@/services/masterService";
+import { fetchDrivers, fetchUserDrivers, fetchVehicleUsers } from "@/services/masterService";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import LicensePlateStat from "@/components/licensePlateStat";
 import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
+
+interface VehicleUser {
+  emp_id: string;
+  full_name: string;
+  dept_sap: string;
+  tel_internal?: string;
+  tel_mobile: string;
+  dept_sap_short: string;
+  annual_driver: {
+    request_annual_driver_no: string;
+    annual_yyyy: number;
+    driver_license_no: string;
+    driver_license_expire_date: string;
+  };
+}
 
 const schema = yup.object().shape({
   driverInternalContact: yup.string(),
@@ -74,6 +89,7 @@ export default function ProcessThree() {
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
   const [appointValid, setAppointValid] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -87,12 +103,32 @@ export default function ProcessThree() {
   const handleAppointmentSubmit = () => {
     setAppointValid(true);
   };
-  
 
   useEffect(() => {
-    console.log('appointValid changed:', appointValid);
+    const processOneStatus = localStorage.getItem("processTwo");
+    if (processOneStatus !== "Done") {
+      router.push("process-two");
+    }
+    setLoading(false);
+    if(formData.isPeaEmployeeDriver === "1"){
+      setSelectedDriverType("พนักงาน กฟภ.");
+    }else{
+      setSelectedDriverType("พนักงานขับรถ");
+    }
+
+  }, []);
+
+  useEffect(() => {
+
+    if(formData.isAdminChooseDriver){
+      driverAppointmentRef.current?.openModal();
+    }
+
+  }, [formData.isAdminChooseDriver]);
+
+  useEffect(() => {
+    console.log("appointValid changed:", appointValid);
     if (appointValid) {
-      
     }
   }, [appointValid]);
 
@@ -112,58 +148,15 @@ export default function ProcessThree() {
 
   const allValid = licenseValid && annualValid;
 
-  const handleVehicleUserChange = async (selectedOption: {
-    value: string;
-    label: string;
-  }) => {
-    setSelectedVehicleUserOption(selectedOption);
-
-    const empData = vehicleUserDatas.find(
-      (user: { emp_id: string }) => user.emp_id === selectedOption.value
-    );
-
-    if (empData) {
-      setValue("driverInternalContact", empData.tel_internal);
-      setValue("driverMobileContact", empData.tel_mobile);
-      setValue("driverEmpID", empData.emp_id);
-      setValue("driverEmpName", empData.full_name);
-      setValue("driverDeptSap", empData.dept_sap);
-      setValue("isPeaEmployeeDriver", "1");
-      setDriverLicenseNo(empData.annual_driver.driver_license_no);
-      setAnnualYear(empData.annual_driver.annual_yyyy);
-      setRequestAnnual(empData.annual_driver.request_annual_driver_no);
-      setLicenseExpDate(empData.annual_driver.driver_license_expire_date);
-
-      // Update form data using updateFormData
-      updateFormData({
-        driverInternalContact: empData.tel_internal,
-        driverMobileContact: empData.tel_mobile,
-        driverEmpID: empData.emp_id,
-        driverEmpName: empData.full_name,
-        driverDeptSap: empData.dept_sap,
-        isPeaEmployeeDriver: "1",
-      });
-    }
-  };
-
-  interface VehicleUser {
-    emp_id: string;
-    full_name: string;
-    dept_sap: string;
-    tel_internal?: string;
-    tel_mobile: string;
-    dept_sap_short: string;
-    annual_driver: {
-      request_annual_driver_no: string;
-      annual_yyyy: number;
-      driver_license_no: string;
-      driver_license_expire_date: string;
-    };
-  }
-
   const handleSelectTypes = (typeName: string) => {
     setSelectedDriverType(typeName);
-    driverAppointmentRef.current?.openModal();
+    setValue("isPeaEmployeeDriver", "0")
+    updateFormData({
+      isPeaEmployeeDriver: "0",
+    });
+    if(formData.isAdminChooseDriver){
+      driverAppointmentRef.current?.openModal();
+    }
   };
 
   useEffect(() => {
@@ -206,7 +199,64 @@ export default function ProcessThree() {
     };
     fetchDriverData();
     fetchVehicleUserData();
+   
   }, []);
+
+  
+  const handleVehicleUserChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedVehicleUserOption(selectedOption);
+
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+    );
+
+    if (empData) {
+      setValue("driverInternalContact", empData.tel_internal);
+      setValue("driverMobileContact", empData.tel_mobile);
+      setValue("driverEmpID", empData.emp_id);
+      setValue("driverEmpName", empData.full_name);
+      setValue("driverDeptSap", empData.dept_sap);
+      setValue("isPeaEmployeeDriver", "1");
+      setDriverLicenseNo(empData.annual_driver.driver_license_no);
+      setAnnualYear(empData.annual_driver.annual_yyyy);
+      setRequestAnnual(empData.annual_driver.request_annual_driver_no);
+      setLicenseExpDate(empData.annual_driver.driver_license_expire_date);
+
+      updateFormData({
+        driverInternalContact: empData.tel_internal,
+        driverMobileContact: empData.tel_mobile,
+        driverEmpID: empData.emp_id,
+        driverEmpName: empData.full_name,
+        driverDeptSap: empData.dept_sap,
+        isPeaEmployeeDriver: "1",
+      });
+    }
+  };
+
+
+  useEffect(() => {
+
+    const selectedDriverOption =  {
+      value: formData.driverEmpID,
+      label: `${formData.driverEmpName} (${formData.driverDeptSap})`
+    }
+    setSelectedVehicleUserOption(selectedDriverOption);
+
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedDriverOption.value
+    );
+
+    if (empData) {
+      setValue("isPeaEmployeeDriver", "1");
+      setDriverLicenseNo(empData.annual_driver.driver_license_no);
+      setAnnualYear(empData.annual_driver.annual_yyyy);
+      setRequestAnnual(empData.annual_driver.request_annual_driver_no);
+      setLicenseExpDate(empData.annual_driver.driver_license_expire_date);
+    }
+  }, [vehicleUserDatas, formData]); 
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
@@ -216,13 +266,21 @@ export default function ProcessThree() {
     });
   };
   const next = () => {
+    localStorage.setItem("processThree","Done");
     router.push("process-four");
   };
 
   const { register, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
+    defaultValues: {
+      driverDeptSap: formData.driverDeptSap || "",
+      driverInternalContact: formData.driverInternalContact || "",
+      driverMobileContact: formData.driverMobileContact || ""
+    }
   });
+
+ 
 
   return (
     <div>
@@ -362,6 +420,7 @@ export default function ProcessThree() {
                           <input
                             type="text"
                             className="form-control"
+                            {...register("driverDeptSap")}
                             placeholder=""
                           />
                           {/* <!-- <div className="input-group-append">
@@ -540,7 +599,9 @@ export default function ProcessThree() {
                 disabled={
                   selectedDriverType === "พนักงาน กฟภ."
                     ? !selectedVehicleUserOption || !allValid
-                    : (selectedVehiclePoolId === "" && masDriverUid === "") && (!appointValid)
+                    : selectedVehiclePoolId === "" &&
+                      masDriverUid === "" &&
+                      !appointValid && formData.isPeaEmployeeDriver !== "0"
                 }
               >
                 ต่อไป

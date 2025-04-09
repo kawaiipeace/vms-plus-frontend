@@ -36,7 +36,7 @@ export default function Home() {
     }
   };
 
-  if (loading) return null; // Show nothing while checking login
+  if (loading) return null;
 
   return (
     <div className="page-login">
