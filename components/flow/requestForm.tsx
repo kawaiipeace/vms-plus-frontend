@@ -163,7 +163,6 @@ export default function RequestForm() {
       try {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
-          console.log("aa", response);
           const data = response.data[0];
           setApproverData(data);
         }
@@ -292,7 +291,7 @@ export default function RequestForm() {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     const result = (selectedVehicleUserOption.label).split('(')[0].trim();
     data.vehicleUserEmpName = result;
-    data.vehicleUserDeptSap = data.deptSapShort;
+    data.vehicleUserDeptSap = data.deptSap;
     data.numberOfPassenger = passengerCount;
     data.refCostTypeCode = selectedCostTypeOption.value;
     data.tripType = selectedTripType;
@@ -345,6 +344,14 @@ export default function RequestForm() {
                     />
                   </div>
                 </div>
+
+                <input
+                        type="hidden"
+                        className="form-control pointer-events-none"
+                        {...register("deptSap")}
+                        placeholder=""
+                        readOnly
+                      />
 
                 <div className="flex-1">
                   <div className="form-group">
