@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import flatpickr from "flatpickr";
 import { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
 import "flatpickr/dist/flatpickr.min.css";
@@ -11,101 +11,122 @@ interface DatePickerProps {
   onChange?: (dateStr: string) => void;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ placeholder, onChange }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+export interface DatePickerRef {
+  reset: () => void;
+}
 
-  useEffect(() => {
-    if (inputRef.current) {
-      flatpickr(inputRef.current, {
-        dateFormat: "d/m/Y",
-        locale: Thai,
-        static: true,
-        monthSelectorType: "static",
-        prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
-        nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
-        onReady: function (selectedDates, dateStr, instance) {
-          const prevMonthButton = instance.calendarContainer.querySelector(
-            ".flatpickr-prev-month"
-          );
-          const nextMonthButton = instance.calendarContainer.querySelector(
-            ".flatpickr-next-month"
-          );
+const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
+  ({ placeholder, onChange }, ref) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const flatpickrInstance = useRef<FlatpickrInstance | null>(null);
 
-          // Add custom classes to the buttons
-          prevMonthButton?.classList.add(
-            "btn",
-            "btn-tertiary",
-            "bg-transparent",
-            "shadow-none",
-            "border-none"
-          );
-          nextMonthButton?.classList.add(
-            "btn",
-            "btn-tertiary",
-            "bg-transparent",
-            "shadow-none",
-            "border-none"
-          );
+    useImperativeHandle(ref, () => ({
+      reset: () => {
+        if (flatpickrInstance.current) {
+          flatpickrInstance.current.clear(); // Clear the selected date
+        }
+      },
+    }));
 
-          const origFormatDate = instance.formatDate;
-          instance.formatDate = function (dateObj, formatStr) {
-            const gregorianYear = origFormatDate.call(instance, dateObj, "Y");
-            const buddhistYear = (parseInt(gregorianYear) + 543).toString(); // Convert to string
-            return origFormatDate.call(
-              instance,
-              dateObj,
-              formatStr.replace("Y", buddhistYear)
+    useEffect(() => {
+      if (inputRef.current) {
+        flatpickrInstance.current = flatpickr(inputRef.current, {
+          dateFormat: "d/m/Y",
+          locale: Thai,
+          static: true,
+          monthSelectorType: "static",
+          prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
+          nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
+          onReady: function (selectedDates, dateStr, instance) {
+            const prevMonthButton = instance.calendarContainer.querySelector(
+              ".flatpickr-prev-month"
             );
-          };
+            const nextMonthButton = instance.calendarContainer.querySelector(
+              ".flatpickr-next-month"
+            );
 
-          updateCalendarYear(instance);
-        },
-        onChange: function (selectedDates, dateStr, instance) {
-          instance.input.value = dateStr;
-          updateCalendarYear(instance);
-          if (onChange) {
-            onChange(dateStr);
-          }
-        },
-        onMonthChange: function (selectedDates, dateStr, instance) {
-          updateCalendarYear(instance);
-        },
-        onYearChange: function (selectedDates, dateStr, instance) {
-          updateCalendarYear(instance);
-        },
-      });
-    }
-  }, []);
+            // Add custom classes to the buttons
+            prevMonthButton?.classList.add(
+              "btn",
+              "btn-tertiary",
+              "bg-transparent",
+              "shadow-none",
+              "border-none"
+            );
+            nextMonthButton?.classList.add(
+              "btn",
+              "btn-tertiary",
+              "bg-transparent",
+              "shadow-none",
+              "border-none"
+            );
 
-  const updateCalendarYear = (instance: FlatpickrInstance) => {
-    const calendarContainer = instance.calendarContainer;
-    const yearElements = calendarContainer.querySelectorAll<HTMLElement>(
-      ".cur-year, .numInput.cur-year"
-    );
+            const origFormatDate = instance.formatDate;
+            instance.formatDate = function (dateObj, formatStr) {
+              const gregorianYear = origFormatDate.call(instance, dateObj, "Y");
+              const buddhistYear = (parseInt(gregorianYear) + 543).toString(); // Convert to string
+              return origFormatDate.call(
+                instance,
+                dateObj,
+                formatStr.replace("Y", buddhistYear)
+              );
+            };
 
-    yearElements.forEach((element) => {
-      const gregorianYear = parseInt(
-        (element as HTMLInputElement).value || element.textContent || "0",
-        10
-      );
-      const buddhistYear = gregorianYear + 543;
-
-      if (element instanceof HTMLInputElement) {
-        element.value = buddhistYear.toString();
-      } else {
-        element.textContent = buddhistYear.toString();
+            updateCalendarYear(instance);
+          },
+          onChange: function (selectedDates, dateStr, instance) {
+            instance.input.value = dateStr;
+            updateCalendarYear(instance);
+            if (onChange) {
+              onChange(dateStr);
+            }
+          },
+          onMonthChange: function (selectedDates, dateStr, instance) {
+            updateCalendarYear(instance);
+          },
+          onYearChange: function (selectedDates, dateStr, instance) {
+            updateCalendarYear(instance);
+          },
+        });
       }
-    });
-  };
 
-  return (
-    <input
-      ref={inputRef}
-      type="text"
-      className="form-control"
-      placeholder={placeholder}
-    />
-  );
-};
+      return () => {
+        flatpickrInstance.current?.destroy(); // Cleanup flatpickr instance on unmount
+      };
+    }, []);
+
+    const updateCalendarYear = (instance: FlatpickrInstance) => {
+      const calendarContainer = instance.calendarContainer;
+      const yearElements = calendarContainer.querySelectorAll<HTMLElement>(
+        ".cur-year, .numInput.cur-year"
+      );
+
+      yearElements.forEach((element) => {
+        const gregorianYear = parseInt(
+          (element as HTMLInputElement).value || element.textContent || "0",
+          10
+        );
+        const buddhistYear = gregorianYear + 543;
+
+        if (element instanceof HTMLInputElement) {
+          element.value = buddhistYear.toString();
+        } else {
+          element.textContent = buddhistYear.toString();
+        }
+      });
+    };
+
+    return (
+      <input
+        ref={inputRef}
+        type="text"
+        className="form-control"
+        placeholder={placeholder}
+      />
+    );
+  }
+);
+
+DatePicker.displayName = "DatePicker";
 
 export default DatePicker;

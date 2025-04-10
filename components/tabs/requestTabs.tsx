@@ -82,10 +82,9 @@ export default function RequestTabs() {
         ))}
       </div>
       <div className="py-4">
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <RequestStatusBox iconName="schedule" status="info" title="รออนุมัติ"  number={getCountByStatus("รออนุมัติ")} />
           <RequestStatusBox iconName="reply" status="warning" title="ถูกตีกลับ" number={getCountByStatus("ถูกตีกลับ")} />
-          <RequestStatusBox iconName="reply" status="warning" title="ยกเลิกคำขอ" number={getCountByStatus("ถูกตีกลับ")} />
         </div>
 
         {tabs[activeTab].content}

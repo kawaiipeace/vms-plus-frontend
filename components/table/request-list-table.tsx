@@ -102,7 +102,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       cell: ({ getValue }) => {
         const value = getValue() as string;
         return (
-          <div className="w-full text-center">
+          <div className="w-[80px] text-center">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
@@ -174,7 +174,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
   }, []);
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-4 pt-0">
       {!isLoading && (
         <>
           <DataTable table={table} />
