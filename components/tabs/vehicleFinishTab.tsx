@@ -50,7 +50,7 @@ const VehicleFinishTab = ({ data }: VehicleFinishTabProps) => {
               </div>
             </div>
           </div>
-          <FilterModal ref={filterModalRef} />
+          {/* <FilterModal ref={filterModalRef} /> */}
         </>
       ) : (
         <div className="grid grid-cols-1 gap-4 text-center">

@@ -133,7 +133,7 @@ export default function TableRecordFuelComponent<T>({ data, columns, listName, e
           <div className="dt-info" aria-live="polite" id="DataTables_Table_0_info" role="status">
             แสดง {Math.min(pageIndex * pageSize + 1, table.getRowCount())} ถึง {Math.min((pageIndex + 1) * pageSize, table.getRowCount())} จาก {table.getRowCount()} รายการ
           </div>
-          <Paginationselect w="w-[5em]" position="top" options={["10", "25", "50", "100"]} value={String(table.getState().pagination.pageSize)} onChange={(selectedValue) => table.setPageSize(Number(selectedValue))} />
+          <Paginationselect w="w-[5em]" position="top" options={["10", "25", "50", "100"]} value={table.getState().pagination.pageSize} onChange={(selectedValue) => table.setPageSize(Number(selectedValue))} />
         </div>
 
         <div className="pagination flex justify-end">

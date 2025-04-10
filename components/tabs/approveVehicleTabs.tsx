@@ -11,7 +11,7 @@ export default function ApproveVehicleTabs() {
   const tabs = [
     {
       label: "คำขอใช้ยานพาหนะ",
-      content: <ArpproveFlow data={dataRequest} />,
+      content: <ArpproveFlow />,
       badge: "4",
     },
     {
