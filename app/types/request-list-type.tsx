@@ -9,3 +9,9 @@ export interface RequestListType{
   end_datetime: string;
   ref_request_status_name: string;
 }
+
+export interface summaryType{
+  ref_request_status_code : string;
+  ref_request_status_name : string;
+  count: number;
+}

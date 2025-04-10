@@ -3,35 +3,30 @@ import ZeroRecord from "@/components/zeroRecord";
 import RequestStatusBox from "@/components/requestStatusBox";
 import ArpproveFlow from "@/components/approveFlow";
 import { requests } from "@/services/bookingUser";
-import { RequestData } from "@/data/requestData";
+import { RequestListType, summaryType } from "@/app/types/request-list-type";
 
-interface summaryType{
-  ref_request_status_name : string;
-  count: number;
-}
 export default function RequestTabs() {
-  const [dataRequest, setDataRequest] = useState<RequestData[]>([]);
+  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
-  const [params, setParams] = useState({
-    search: "",
-    vehicle_owner_dept: "",
-    car_type: "",
-    category_code: "",
-    page: 1,
-    limit: 10,
-  });
 
+ const [params, setParams] = useState({
+      search: "",
+      vehicle_owner_dept: "",
+      car_type: "",
+      category_code: "",
+      page: 1,
+      limit: 10,
+    });
+    
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        // Step 1: Fetch the list of requests
         const response = await requests(params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const summaryData = response.data.summary;
           setSummary(summaryData);
           setDataRequest(requestList);
-          console.log(response.data);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -39,12 +34,12 @@ export default function RequestTabs() {
     };
 
     fetchRequests();
-  }, []);
+  }, [params]);
 
   const tabs = [
     {
       label: "กำลังดำเนินการ",
-      content: <ArpproveFlow data={dataRequest} />,
+      content: <ArpproveFlow />,
       badge: dataRequest.length,
     },
     {
@@ -87,9 +82,10 @@ export default function RequestTabs() {
         ))}
       </div>
       <div className="py-4">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-3 gap-4 mb-4">
           <RequestStatusBox iconName="schedule" status="info" title="รออนุมัติ"  number={getCountByStatus("รออนุมัติ")} />
           <RequestStatusBox iconName="reply" status="warning" title="ถูกตีกลับ" number={getCountByStatus("ถูกตีกลับ")} />
+          <RequestStatusBox iconName="reply" status="warning" title="ยกเลิกคำขอ" number={getCountByStatus("ถูกตีกลับ")} />
         </div>
 
         {tabs[activeTab].content}

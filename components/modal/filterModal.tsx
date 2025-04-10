@@ -1,7 +1,15 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import DatePicker from "@/components/datePicker";
+import { summaryType } from "@/app/types/request-list-type";
 
-const FilterModal = forwardRef((_, ref) => {
+interface Props{
+  statusData: summaryType[]
+}
+
+const FilterModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(({ statusData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -36,12 +44,13 @@ const FilterModal = forwardRef((_, ref) => {
             </button>
           </form>
         </div>
-        <div className="modal-body overflow-y-auto flex flex-col gap-4">
+        <div className="modal-body overflow-y-auto flex flex-col gap-4 height-[90vh]">
         <div className="grid grid-cols-12 gap-4">
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">สถานะคำขอ</label>
-                  <div className="custom-group">
+                  {statusData.map((statusItem, index) => (
+                  <div className="custom-group" key={index}>
                     <div className="custom-control custom-checkbox custom-control-inline">
                     <input
                       type="checkbox"
@@ -49,24 +58,13 @@ const FilterModal = forwardRef((_, ref) => {
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md" />
                       <label className="custom-control-label">
                         <div className="custom-control-label-group">
-                          <span className="badge badge-pill-outline badge-info">รออนุมัติ</span>
+                          <span className={`badge badge-pill-outline ${statusItem.ref_request_status_name === 'รออนุมัติ' ? 'badge-info' : 'badge-error'}`}> {statusItem.ref_request_status_name}</span>
                         </div>
                       </label>
                     </div>
                   </div>
-                  <div className="custom-group">
-                    <div className="custom-control custom-checkbox custom-control-inline">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md" />
-                      <label className="custom-control-label">
-                        <div className="custom-control-label-group">
-                          <span className="badge badge-pill-outline badge-error">ถูกตีกลับ</span>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
+                  ))}
+
                 </div>
               </div>
             </div>

@@ -4,8 +4,8 @@ interface SelectProps {
   options: string[];
   w?: string;
   iconName?: string;
-  value?: string; // Controlled value
-  onChange?: (value: string) => void; // Change handler
+  value?: number; // Change to only accept number
+  onChange?: (value: number) => void; // Change to only accept number
   position?: "top" | "bottom"; // Dropdown position
 }
 
@@ -69,18 +69,18 @@ export default function Paginationselect({
             <li
               key={option}
               className={`px-4 py-2 cursor-pointer flex gap-2 items-center rounded-lg ${
-                value === option ? "text-brand-900 active" : "text-gray-700"
+                Number(value) === Number(option) ? "text-brand-900 active" : "text-gray-700"
               } hover:bg-gray-100`}
               onClick={() => {
                 if (onChange) {
-                  onChange(option); // Call onChange only if it exists
+                  onChange(Number(option)); // Call onChange only if it exists
                 }
                 setIsOpen(false);
                 buttonRef.current?.focus(); // Keep focus on the div
               }}
             >
               {option}
-              {value === option && (
+              {Number(value) === Number(option) && (
                 <span className="material-symbols-outlined">check</span>
               )}
             </li>

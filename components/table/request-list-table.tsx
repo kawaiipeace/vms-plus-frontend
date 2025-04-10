@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
 import {
@@ -14,18 +13,28 @@ import { RequestListType } from "@/app/types/request-list-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 
-interface Props {
-  defaultData: RequestListType[];
+interface PaginationType {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
 }
 
-export default function RequestListTable({ defaultData }: Props) {
+interface Props {
+  defaultData: RequestListType[];
+  pagination: PaginationType;
+}
+
+export default function RequestListTable({ defaultData, pagination }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const [isLoading, setIsLoading] = useState(true);
+
+  // Set pagination from props
+  const [paginationState, setPagination] = useState<PaginationState>({
+    pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
+    pageSize: pagination.limit,
+  });
 
   const requestListColumns: ColumnDef<RequestListType>[] = [
     {
@@ -124,7 +133,11 @@ export default function RequestListTable({ defaultData }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" + row.original.trn_request_uid
+                  )
+                }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
@@ -145,12 +158,16 @@ export default function RequestListTable({ defaultData }: Props) {
     onPaginationChange: setPagination,
     state: {
       sorting,
-      pagination,
+      pagination: paginationState,
     },
     defaultColumn: {
       enableSorting: false,
     },
   });
+
+  useEffect(() => {
+    console.log('page',pagination)
+  }, [pagination]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -161,7 +178,6 @@ export default function RequestListTable({ defaultData }: Props) {
       {!isLoading && (
         <>
           <DataTable table={table} />
-          {/* <TablePagination table={table} /> */}
         </>
       )}
     </div>

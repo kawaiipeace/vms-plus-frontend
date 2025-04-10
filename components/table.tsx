@@ -263,7 +263,7 @@ export default function TableComponent<T>({
             w="w-[5em]"
             position="top"
             options={["10", "25", "50", "100"]}
-            value={String(table.getState().pagination.pageSize)}
+            value={Number(table.getState().pagination.pageSize)}
             onChange={(selectedValue) =>
               table.setPageSize(Number(selectedValue))
             }
