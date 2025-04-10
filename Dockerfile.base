@@ -16,3 +16,4 @@ RUN pnpm install --frozen-lockfile --prefer-offline --prod
 
 # Set non-root user for security
 USER node
+#
