@@ -1,0 +1,41 @@
+{
+  "name": "vms-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^4.1.2",
+    "@tanstack/react-table": "^8.21.2",
+    "axios": "^1.8.1",
+    "classnames": "^2.5.1",
+    "cookie": "^1.0.2",
+    "dayjs": "^1.11.13",
+    "flatpickr": "^4.6.13",
+    "js-cookie": "^3.0.5",
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.2.1",
+    "@types/flatpickr": "^3.0.2",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "daisyui": "^4.12.23",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.7",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.7",
+    "typescript": "^5"
+  }
+}
