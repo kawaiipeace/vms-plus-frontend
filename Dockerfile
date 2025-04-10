@@ -9,6 +9,8 @@ COPY . .
 # Run production build using pnpm
 RUN pnpm run build
 
+RUN pnpm prune --prod
+
 ############################
 
 # Production Stage

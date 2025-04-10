@@ -6,13 +6,13 @@ WORKDIR /app
 RUN apk add --no-cache git libc6-compat=1.1.0-r4
 
 # Enable Corepack and prepare pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
 # Copy package files first for caching
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies in production mode with frozen lockfile
-RUN pnpm install --frozen-lockfile --prefer-offline --prod
+RUN pnpm install --frozen-lockfile --prefer-offline 
 
 # Set non-root user for security
 USER node
