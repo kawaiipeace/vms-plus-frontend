@@ -1,5 +1,5 @@
 # Build Stage
-FROM registry.pea.co.th/developer/workpermit/web/frontend/base:stable AS builder
+FROM registry.pea.co.th/developer/vms-plus/web/frontend/base:stable AS builder
 
 USER root
 
