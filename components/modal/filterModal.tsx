@@ -141,7 +141,7 @@ const FilterModal = forwardRef<
                     </span>
                   </div>
                   <DatePicker
-                    ref={startDatePickerRef} // Attach ref to start date picker
+                    ref={startDatePickerRef} 
                     placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
                     onChange={handleStartDateChange}
                   />

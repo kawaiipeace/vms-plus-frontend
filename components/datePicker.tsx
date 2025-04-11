@@ -38,14 +38,15 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
           nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
           onReady: function (selectedDates, dateStr, instance) {
+            if (!instance.calendarContainer) return;
+          
             const prevMonthButton = instance.calendarContainer.querySelector(
               ".flatpickr-prev-month"
             );
             const nextMonthButton = instance.calendarContainer.querySelector(
               ".flatpickr-next-month"
             );
-
-            // Add custom classes to the buttons
+          
             prevMonthButton?.classList.add(
               "btn",
               "btn-tertiary",
@@ -60,20 +61,21 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
               "shadow-none",
               "border-none"
             );
-
+          
             const origFormatDate = instance.formatDate;
             instance.formatDate = function (dateObj, formatStr) {
               const gregorianYear = origFormatDate.call(instance, dateObj, "Y");
-              const buddhistYear = (parseInt(gregorianYear) + 543).toString(); // Convert to string
+              const buddhistYear = (parseInt(gregorianYear) + 543).toString();
               return origFormatDate.call(
                 instance,
                 dateObj,
                 formatStr.replace("Y", buddhistYear)
               );
             };
-
+          
             updateCalendarYear(instance);
           },
+          
           onChange: function (selectedDates, dateStr, instance) {
             instance.input.value = dateStr;
             updateCalendarYear(instance);
