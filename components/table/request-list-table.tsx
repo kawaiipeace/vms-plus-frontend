@@ -111,6 +111,10 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
+            ) : value === "ยกเลิกคำขอ" ? (
+              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
+                {value as React.ReactNode}
+              </span>
             ) : (
               <span className="badge badge-pill-outline badge-info whitespace-nowrap">
                 {value as React.ReactNode}
@@ -135,7 +139,23 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/vehicle-booking/request-list/" + row.original.trn_request_uid
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">quick_reference_all</i>
+              </button>
+            )}
+
+            {statusValue == "ยกเลิกคำขอ" && (
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                data-tip="ดูรายละเอียดคำขอ"
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid
                   )
                 }
               >
@@ -166,7 +186,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
   });
 
   useEffect(() => {
-    console.log('page',pagination)
+    console.log("page", pagination);
   }, [pagination]);
 
   useEffect(() => {

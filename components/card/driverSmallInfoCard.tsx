@@ -9,11 +9,13 @@ interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
   id?: string;
   seeDetail?: boolean;
+  driverDetail?: DriverType;
 }
 
 export default function DriverSmallInfoCard({
   userKeyPickup,
   seeDetail,
+  driverDetail,
   id,
 }: DriverSmallInfoCardProps) {
   const driverInfoModalRef = useRef<{
@@ -27,7 +29,14 @@ export default function DriverSmallInfoCard({
 
   const [driver, setDriver] = useState<DriverType>();
 
+ 
   useEffect(() => {
+    console.log('driver',driverDetail);
+    if (driverDetail) {
+      setDriver(driverDetail);
+      return; 
+    }
+  
     const fetchData = async () => {
       try {
         const res = await fetchDriverDetail(id || "");
@@ -37,9 +46,10 @@ export default function DriverSmallInfoCard({
         console.error("Error fetching driver data:", error);
       }
     };
-
+  
     fetchData();
-  }, [id]);
+  }, [id, driverDetail]);
+  
 
   if (!driver) {
     return;

@@ -1,47 +1,10 @@
 import { useRef } from "react";
 import Image from "next/image";
 import VehicleDetailModel from "@/components/modal/vehicleDetailModal";
-
-interface VehicleDetail {
-  mas_vehicle_uid?: string;
-  vehicle_brand_name?: string;
-  vehicle_model_name?: string;
-  vehicle_license_plate?: string;
-  vehicle_img?: string;
-  CarType?: string;
-  vehicle_owner_dept_sap?: string;
-  is_has_fleet_card?: string;
-  vehicle_gear?: string;
-  ref_vehicle_subtype_code?: number;
-  vehicle_user_emp_id?: string;
-  ref_fuel_type_id?: number;
-  seat?: number;
-  age?: number;
-  vehicle_imgs: string[];
-  ref_fuel_type?: {
-    ref_fuel_type_id?: number;
-    ref_fuel_type_name_th?: string;
-    ref_fuel_type_name_en?: string;
-  };
-  vehicle_department?: {
-    vehicle_mileage: string;
-    vehicle_fleet_card_no: string;
-    vehicle_pea_id: string;
-    parking_place: string;
-    vehicle_user?: {
-      emp_id: string;
-      full_name: string;
-      dept_sap: string;
-      tel_internal?: string;
-      tel_mobile: string;
-      dept_sap_short: string;
-      image_url: string;
-    };
-  };
-}
+import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 
 interface CarDetailCardProps {
-  vehicle?: VehicleDetail;
+  vehicle?: VehicleDetailType;
   seeDetail?: boolean;
 }
 
@@ -61,7 +24,7 @@ export default function CarDetailCard({ vehicle, seeDetail }: CarDetailCardProps
         <div className="card-body-inline">
           <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
             <Image
-              src={vehicle?.vehicle_img || "/assets/img/sample-car.jpeg"}
+              src={vehicle?.vehicle_imgs && vehicle?.vehicle_imgs[0] || "/assets/img/sample-car.jpeg"}
               width={100}
               height={100}
               className="object-cover w-full h-full"
@@ -85,7 +48,7 @@ export default function CarDetailCard({ vehicle, seeDetail }: CarDetailCardProps
             </div>
 
             <div className="card-item-group grid">
-              {vehicle?.is_has_fleet_card === "1" && (
+              {vehicle?.is_has_fleet_card === 1 && (
                 <div className="card-item col-span-2">
                   <i className="material-symbols-outlined">credit_card</i>
                   <span className="card-item-text">บัตรเติมน้ำมัน</span>

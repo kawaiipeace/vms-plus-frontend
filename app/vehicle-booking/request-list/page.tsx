@@ -9,14 +9,25 @@ import { Suspense } from "react";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
-  const created = searchParams.get("created");
+  const createReq = searchParams.get("create-req");
+  const cancelReq = searchParams.get("cancel-req");
+  const requestId = searchParams.get("request-id");
 
   return (
     <>
-      {created === "success" && (
+      {createReq === "success" && (
         <ToastCustom
           title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
           desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
+          status="success"
+          seeDetail={"/vehicle-booking/request-list/" + requestId}
+          seeDetailText="ดูสถานะ"
+        />
+      )}
+      {cancelReq === "success" && (
+        <ToastCustom
+          title="ยกเลิกคำขอสำเร็จ"
+          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ถูกยกเลิกเรียบร้อยแล้ว`}
           status="success"
         />
       )}
@@ -32,7 +43,11 @@ export default function RequestList() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">

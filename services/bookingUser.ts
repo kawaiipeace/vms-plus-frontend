@@ -1,4 +1,5 @@
 
+import { CanceledRequestType } from '@/app/types/request-action-type';
 import axiosInstance from '@/utils/axiosInstance';
 
 export const requests = async (params: {
@@ -67,3 +68,13 @@ export const fetchVehicleDetail = async (id: string) => {
     throw error;
   }
 };
+
+export const cancelRequest = async (data: CanceledRequestType) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-canceled',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import RequestDetailTabs from "@/components/tabs/requestDetailTab";
@@ -24,6 +24,7 @@ export default function RequestDetail() {
         try {
           const response = await requestDetail(request_id);
           setRequestData(response.data);
+          console.log('reqeustdetail',response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }

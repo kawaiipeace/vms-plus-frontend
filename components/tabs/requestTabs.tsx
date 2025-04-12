@@ -1,33 +1,34 @@
 import React, { useEffect, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
-import RequestStatusBox from "@/components/requestStatusBox";
 import ArpproveFlow from "@/components/approveFlow";
 import { requests } from "@/services/bookingUser";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import CancelFlow from "../flow/cancelFlow";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 export default function RequestTabs() {
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
 
- const [params, setParams] = useState({
-      search: "",
-      vehicle_owner_dept: "",
-      car_type: "",
-      category_code: "",
-      page: 1,
-      limit: 10,
-    });
-    
+  const [params, setParams] = useState({
+    search: "",
+    vehicle_owner_dept: "",
+    car_type: "",
+    category_code: "",
+    page: 1,
+    limit: 10,
+  });
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await requests(params);
-        if (response.status === 200) {
-          const requestList = response.data.requests;
-          const summaryData = response.data.summary;
-          setSummary(summaryData);
-          setDataRequest(requestList);
-        }
+        const requestList = response.data.requests;
+        const summaryData = response.data.summary;
+
+        setSummary(summaryData);
+        setDataRequest(requestList);
+
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
@@ -48,18 +49,11 @@ export default function RequestTabs() {
     },
     {
       label: "ยกเลิก",
-      content: <div></div>,
+      content: <CancelFlow />,
     },
   ];
-  
-  const [activeTab, setActiveTab] = useState(0);
 
-  const getCountByStatus = (statusName: string) => {
-    const found = summary.find(
-      (item) => item.ref_request_status_name === statusName
-    );
-    return found ? found.count : 0;
-  };
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <div className="w-full">
@@ -75,18 +69,15 @@ export default function RequestTabs() {
             <div className="flex gap-2 items-center">
               {tab.label}
               {tab.badge && (
-                <span className="badge badge-brand badge-pill-outline">{tab.badge}</span>
+                <span className="badge badge-brand badge-pill-outline">
+                  {tab.badge}
+                </span>
               )}
             </div>
           </button>
         ))}
       </div>
       <div className="py-4">
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <RequestStatusBox iconName="schedule" status="info" title="รออนุมัติ"  number={getCountByStatus("รออนุมัติ")} />
-          <RequestStatusBox iconName="reply" status="warning" title="ถูกตีกลับ" number={getCountByStatus("ถูกตีกลับ")} />
-        </div>
-
         {tabs[activeTab].content}
 
         {dataRequest.length === 0 && (

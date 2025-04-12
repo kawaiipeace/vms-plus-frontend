@@ -20,46 +20,7 @@ import { FormDataType } from "@/app/types/form-data-type";
 import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
 import { fetchVehicleInfo } from "@/services/masterService";
-
-interface VehicleDetail {
-  mas_vehicle_uid?: string;
-  vehicle_brand_name?: string;
-  vehicle_model_name?: string;
-  vehicle_license_plate?: string;
-  vehicle_img?: string;
-  CarType?: string;
-  vehicle_owner_dept_sap?: string;
-  is_has_fleet_card?: string;
-  vehicle_gear?: string;
-  ref_vehicle_subtype_code?: number;
-  vehicle_user_emp_id?: string;
-  ref_fuel_type_id?: number;
-  seat?: number;
-  age?: number;
-  vehicle_imgs: string[];
-  ref_fuel_type?: {
-    ref_fuel_type_id?: number;
-    ref_fuel_type_name_th?: string;
-    ref_fuel_type_name_en?: string;
-  };
-  vehicle_department?: {
-    vehicle_mileage: string;
-    vehicle_fleet_card_no: string;
-    vehicle_pea_id: string;
-    parking_place: string;
-    vehicle_user?: {
-      emp_id: string;
-      full_name: string;
-      dept_sap: string;
-      tel_internal?: string;
-      tel_mobile: string;
-      dept_sap_short: string;
-      image_url: string;
-    };
-  };
-  is_admin_choose_driver: boolean;
-}
-
+import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 interface Props {
   approverCard?: boolean;
   driverCard?: boolean;
@@ -107,7 +68,7 @@ Props) {
 
   const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
 
-  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
+  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetailType | null>(
     null
   );
 

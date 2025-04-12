@@ -24,16 +24,25 @@ export interface RequestDetailType {
   objective: string;
   remark: string;
   number_of_passengers: number;
+  number_of_available_drivers: number;
   pickup_place: string;
   pickup_datetime: string;
   reference_number: string;
   attached_document: string;
   is_pea_employee_driver: string;
   is_admin_choose_driver: string;
+  is_admin_choose_vehicle: string;
+  is_system_choose_vehicle: string;
   ref_cost_type_code: string;
   cost_no: string;
   mas_carpool_driver_uid: string;
   driver: DriverType;
+  driver_emp_id: string;
+  driver_emp_name: string;
+  driver_emp_dept_sap: string;
+  driver_internal_contact_number: string;
+  driver_mobile_contact_number: string;
+  driver_image_url: string;
   mas_vehicle_uid: string;
   vehicle_department_dept_sap: string;
   mas_vehicle_department_dept_sap_short: string;
@@ -43,4 +52,12 @@ export interface RequestDetailType {
   received_key_start_datetime: string;
   received_key_end_datetime: string;
   can_cancel_request: boolean;
+  ref_request_status_code: string,
+  ref_request_status: {
+    ref_request_status_code: string,
+    ref_request_status_desc: string
+  }
+  ref_request_status_name: string;
+  sended_back_request_reason: string;
+  cenceled_request_reason: string;
 }

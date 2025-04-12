@@ -3,20 +3,18 @@ import Link from "next/link";
 import CancelRequestModal from "./modal/cancelRequestModal";
 import FileBackRequestModal from "./modal/fileBackModal";
 import ApproveRequestModal from "./modal/approveRequestModal";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface Props {
   returnRequest?: boolean;
   approveRequest?: boolean;
-  status?: string;
   data: RequestDetailType;
 }
 
 export default function PageHeader({
   returnRequest,
   approveRequest,
-  status,
-  data,
+  data
 }: Props) {
   const approveRequestModalRef = useRef<{
     openModal: () => void;
@@ -30,6 +28,19 @@ export default function PageHeader({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyRequestNo = async (text?: string) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // hide tooltip after 2 seconds
+    } catch (err) {
+      console.error("Copy failed:", err);
+    }
+  };
 
   return (
     <div className="page-header">
@@ -54,16 +65,29 @@ export default function PageHeader({
           <span className="page-title-label">
             เลขที่คำขอ {data?.request_no || ""}
           </span>
-     
-            <button className="text-sm">
+
+          <div className="relative group inline-block">
+            <button
+              className="text-sm"
+              onClick={() => handleCopyRequestNo(data?.request_no)}
+            >
               <i className="material-symbols-outlined text-sm">content_copy</i>
               คัดลอก
             </button>
-      
 
-          {status && (
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-1 
+              w-24 text-center px-2 py-1 text-xs rounded bg-base-200 text-base-content shadow
+              transition-opacity duration-300 
+              ${copied ? "opacity-100 visible" : "opacity-0 invisible"}`}
+            >
+              คัดลอกสำเร็จ
+            </div>
+          </div>
+
+          {data?.ref_request_status_name && (
             <span className="badge badge-pill-outline badge-info">
-              {status}
+              {data?.ref_request_status_name}
             </span>
           )}
         </div>
@@ -76,7 +100,7 @@ export default function PageHeader({
             ยกเลิกคำขอ
           </button>
         )}
-        <button className="btn btn-secondary">
+        <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
         {returnRequest && (
@@ -99,6 +123,7 @@ export default function PageHeader({
         )}
       </div>
       <CancelRequestModal
+        id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
