@@ -152,16 +152,18 @@ RequestDetailFormProps) {
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
             </div>
-
-            {/* <DisburstmentCard
+{requestData?.ref_cost_type_code && 
+            <DisburstmentCard
               refCostTypeCode={requestData?.ref_cost_type_code}
-            /> */}
+            />
+          }
           </div>
         </div>
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-         <ApproveProgress />
+
+         <ApproveProgress processActive={1} />
 
             <>
               {carSelect == "true" ? (

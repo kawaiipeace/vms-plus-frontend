@@ -6,18 +6,14 @@ import ApproveRequestModal from "./modal/approveRequestModal";
 import { useRef } from "react";
 
 interface Props {
-  copyRequest?: boolean;
   returnRequest?: boolean;
-  cancelRequest?: boolean;
   approveRequest?: boolean;
   status?: string;
   data: RequestDetailType;
 }
 
 export default function PageHeader({
-  copyRequest,
   returnRequest,
-  cancelRequest,
   approveRequest,
   status,
   data,
@@ -58,12 +54,12 @@ export default function PageHeader({
           <span className="page-title-label">
             เลขที่คำขอ {data?.request_no || ""}
           </span>
-          {copyRequest && (
+     
             <button className="text-sm">
               <i className="material-symbols-outlined text-sm">content_copy</i>
               คัดลอก
             </button>
-          )}
+      
 
           {status && (
             <span className="badge badge-pill-outline badge-info">
@@ -72,7 +68,7 @@ export default function PageHeader({
           )}
         </div>
 
-        {cancelRequest && (
+        {data?.can_cancel_request && (
           <button
             className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
             onClick={() => cancelRequestModalRef.current?.openModal()}
