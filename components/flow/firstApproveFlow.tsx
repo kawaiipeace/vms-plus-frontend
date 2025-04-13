@@ -1,0 +1,385 @@
+import React, { useEffect, useRef, useState } from "react";
+import ZeroRecord from "@/components/zeroRecord";
+import FilterModal from "@/components/modal/filterModal";
+import { useRouter } from "next/navigation";
+import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import Paginationselect from "@/components/paginationSelect";
+import dayjs from "dayjs";
+import RequestStatusBox from "@/components/requestStatusBox";
+import { firstApproverRequests } from "@/services/bookingApprover";
+import FirstApproverListTable from "../table/first-approver-list-table";
+
+interface PaginationType {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
+
+export default function FirstApproveFlow() {
+  const [params, setParams] = useState({
+    search: "",
+    vehicle_owner_dept: "",
+    ref_request_status_code: "20,21,30,31",
+    startdate: "",
+    enddate: "",
+    car_type: "",
+    category_code: "",
+    page: 1,
+    limit: 10,
+  });
+
+  const [pagination, setPagination] = useState<PaginationType>({
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
+
+  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
+  const [summary, setSummary] = useState<summaryType[]>([]);
+  const [filterNum, setFilterNum] = useState(0);
+  const [filterNames, setFilterNames] = useState<string[]>([]);
+  const [filterDate, setFilterDate] = useState<string>("");
+  const router = useRouter();
+  const filterModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const addNewRequest = () => {
+    localStorage.removeItem("formData");
+    router.push("/vehicle-booking/process-one");
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
+  };
+
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1, // Reset to the first page when page size changes
+    }));
+    console.log(newLimit);
+  };
+
+  const handleFilterSubmit = ({
+    selectedStatuses,
+    selectedStartDate,
+    selectedEndDate,
+  }: {
+    selectedStatuses: string[];
+    selectedStartDate: string;
+    selectedEndDate: string;
+  }) => {
+    const mappedNames = selectedStatuses.map(
+      (code) =>
+        summary.find((item) => item.ref_request_status_code === code)
+          ?.ref_request_status_name || code
+    );
+
+    const date = selectedStartDate + " - " + selectedEndDate;
+
+    setFilterNames(mappedNames);
+    console.log(selectedStartDate);
+    if (selectedStartDate && selectedEndDate) {
+      setFilterDate(date);
+    }
+
+    setFilterNum(selectedStatuses.length);
+    setParams((prevParams) => ({
+      ...prevParams,
+      ref_request_status_code: selectedStatuses.join(","),
+      startdate:
+        selectedStartDate &&
+        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate:
+        selectedEndDate &&
+        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+    }));
+  };
+
+  const removeFilter = (filterType: string, filterValue: string) => {
+    if (filterType === "status") {
+      setFilterNames((prevFilterNames) =>
+        prevFilterNames.filter((name) => name !== filterValue)
+      );
+
+      setParams((prevParams) => {
+        const updatedStatuses = prevParams.ref_request_status_code
+          .split(",")
+          .filter((code) => {
+            const name = summary.find(
+              (item) => item.ref_request_status_code === code
+            )?.ref_request_status_name;
+            return name !== filterValue;
+          });
+
+        setFilterNum(updatedStatuses.length);
+
+        return {
+          ...prevParams,
+          ref_request_status_code: updatedStatuses.join(","),
+        };
+      });
+    } else if (filterType === "date") {
+      setFilterDate(""); // Clear the `filterDate`
+      setParams((prevParams) => ({
+        ...prevParams,
+        startdate: "",
+        enddate: "",
+      }));
+    }
+  };
+
+  const handleClearAllFilters = () => {
+    setParams({
+      search: "",
+      vehicle_owner_dept: "",
+      ref_request_status_code: "",
+      startdate: "",
+      enddate: "",
+      car_type: "",
+      category_code: "",
+      page: 1,
+      limit: 10,
+    });
+
+    setFilterNum(0);
+    setFilterNames([]);
+    setFilterDate("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await firstApproverRequests(params);
+        console.log("param", params);
+        if (response.status === 200) {
+          const requestList = response.data.requests;
+          const { total, totalPages } = response.data.pagination;
+          const summary = response.data.summary;
+
+          setDataRequest(requestList);
+          setSummary(summary);
+          setPagination({
+            limit: params.limit,
+            page: params.page,
+            total,
+            totalPages,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchRequests();
+  }, [params]);
+
+  const getCountByStatus = (statusName: string) => {
+    const found = summary.find(
+      (item) => item.ref_request_status_name === statusName
+    );
+    return found ? found.count : 0;
+  };
+
+  useEffect(() => {
+    console.log("Data Request Updated:", dataRequest);
+  }, [dataRequest]); // This will log whenever dataRequest changes
+
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        <RequestStatusBox
+          iconName="schedule"
+          status="info"
+          title="รออนุมัติ"
+          number={getCountByStatus("รออนุมัติ")}
+        />
+        <RequestStatusBox
+          iconName="reply"
+          status="warning"
+          title="ตีกลับคำขอ"
+          number={getCountByStatus("ตีกลับคำขอ")}
+        />
+        <RequestStatusBox
+          iconName="check"
+          status="success"
+          title="อนุมัติ"
+          number={getCountByStatus("อนุมัติ")}
+        />
+        <RequestStatusBox
+          iconName="delete"
+          status="default"
+          title="ยกเลิกคำขอ"
+          number={getCountByStatus("ยกเลิกคำขอ")}
+        />
+      </div>
+
+      <div className="flex justify-between items-center mt-5">
+        <div className="hidden md:block">
+          <div className="input-group input-group-search hidden">
+            <div className="input-group-prepend">
+              <span className="input-group-text search-ico-info">
+                <i className="material-symbols-outlined">search</i>
+              </span>
+            </div>
+            <input
+              type="text"
+              id="myInputTextField"
+              className="form-control dt-search-input"
+              placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
+              value={params.search}
+              onChange={(e) =>
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  search: e.target.value,
+                  page: 1, // Reset to page 1 on search
+                }))
+              }
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
+            onClick={() => filterModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              ตัวกรอง
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {filterNum}
+              </span>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <div className="mt-3">
+        {filterNames.map((name, index) => (
+          <span
+            key={index}
+            className="badge badge-brand badge-outline rounded-sm mr-2"
+          >
+            {name}
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("status", name)}
+            >
+              close_small
+            </i>
+          </span>
+        ))}
+        {filterDate && (
+          <span className="badge badge-brand badge-outline rounded-sm mr-2">
+            {filterDate}
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("date", filterDate)}
+            >
+              close_small
+            </i>
+          </span>
+        )}
+      </div>
+
+      {dataRequest?.length > 0 ? (
+        <>
+          <div className="mt-2">
+            <FirstApproverListTable
+              defaultData={dataRequest}
+              pagination={pagination}
+            />
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center mt-5 dt-bottom">
+            <div className="flex items-center gap-2">
+              <div className="dt-info" aria-live="polite" role="status">
+                แสดง{" "}
+                {Math.min(
+                  pagination.page * pagination.limit - pagination.limit + 1,
+                  pagination.total
+                )}{" "}
+                ถึง{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
+                จาก {pagination.total} รายการ
+              </div>
+
+              <Paginationselect
+                w="w-[5em]"
+                position="top"
+                options={["10", "25", "50", "100"]}
+                value={pagination.limit}
+                onChange={(value) => handlePageSizeChange(value)}
+              />
+            </div>
+
+            <div className="pagination flex justify-end">
+              <div className="join">
+                <button
+                  className="join-item btn btn-sm btn-outline"
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page <= 1}
+                >
+                  <i className="material-symbols-outlined">chevron_left</i>
+                </button>
+
+                {Array.from(
+                  { length: pagination.totalPages },
+                  (_, index) => index + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    className={`join-item btn btn-sm btn-outline ${
+                      pagination.page === page
+                        ? "active !bg-primary-grayBorder"
+                        : ""
+                    }`}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className="join-item btn btn-sm btn-outline"
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  <i className="material-symbols-outlined">chevron_right</i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : filterNum > 0 || filterDate || dataRequest?.length <= 0 && (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
+      )}
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        onSubmitFilter={handleFilterSubmit}
+      />
+    </>
+  );
+}

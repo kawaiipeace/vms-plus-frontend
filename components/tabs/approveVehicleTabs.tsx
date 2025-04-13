@@ -4,6 +4,7 @@ import ZeroRecord from "@/components/zeroRecord";
 import RequestStatusBox from "@/components/requestStatusBox";
 import ArpproveFlow from "@/components/approveFlow";
 import { RequestData } from "@/data/requestData";
+import FirstApproveFlow from "../flow/firstApproveFlow";
 
 
 export default function ApproveVehicleTabs() {
@@ -11,7 +12,7 @@ export default function ApproveVehicleTabs() {
   const tabs = [
     {
       label: "คำขอใช้ยานพาหนะ",
-      content: <ArpproveFlow />,
+      content: <FirstApproveFlow />,
       badge: "4",
     },
     {
@@ -42,32 +43,6 @@ export default function ApproveVehicleTabs() {
         ))}
       </div>
       <div className="py-4">
-        <div className="grid grid-cols-4 gap-4 mb-4">
-          <RequestStatusBox
-            iconName="schedule"
-            status="info"
-            title="รออนุมัติ"
-            number={3}
-          />
-          <RequestStatusBox
-            iconName="reply"
-            status="warning"
-            title="ตีกลับคำขอ"
-            number={1}
-          />
-             <RequestStatusBox
-            iconName="check"
-            status="success"
-            title="อนุมัติ"
-            number={1}
-          />
-             <RequestStatusBox
-            iconName="delete"
-            status="default"
-            title="ยกเลิกคำขอ"
-            number={1}
-          />
-        </div>
 
         {tabs[activeTab].content}
 
