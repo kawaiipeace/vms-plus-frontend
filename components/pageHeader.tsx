@@ -14,7 +14,7 @@ interface Props {
 export default function PageHeader({
   returnRequest,
   approveRequest,
-  data
+  data,
 }: Props) {
   const approveRequestModalRef = useRef<{
     openModal: () => void;
@@ -85,11 +85,20 @@ export default function PageHeader({
             </div>
           </div>
 
-          {data?.ref_request_status_name && (
-            <span className="badge badge-pill-outline badge-info">
-              {data?.ref_request_status_name}
-            </span>
-          )}
+          {data?.ref_request_status_name &&
+            (data?.ref_request_status_name === "อนุมัติ" ? (
+              <span className="badge badge-pill-outline badge-info">
+                {data?.ref_request_status_name}
+              </span>
+            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
+              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
+                {data?.ref_request_status_name}
+              </span>
+            ) : (
+              <span className="badge badge-pill-outline badge-info">
+                {data?.ref_request_status_name}
+              </span>
+            ))}
         </div>
 
         {data?.can_cancel_request && (

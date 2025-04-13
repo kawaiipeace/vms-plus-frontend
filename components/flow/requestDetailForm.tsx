@@ -115,14 +115,14 @@ RequestDetailFormProps) {
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-           
+              {editable && 
               <button
                 className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                 onClick={() => vehicleUserModalRef.current?.openModal()}
               >
                 แก้ไข
               </button>
-
+            }
             </div>
             <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} />
           </div>
@@ -132,14 +132,14 @@ RequestDetailFormProps) {
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-
+              {editable && 
               <button
                 className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                 onClick={() => journeyDetailModalRef.current?.openModal()}
               >
                 แก้ไข
               </button>
-
+  }
             </div>
 
             <JourneyDetailCard
@@ -170,6 +170,7 @@ RequestDetailFormProps) {
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
+              {editable && 
               <button
                 className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                 onClick={() =>
@@ -178,6 +179,7 @@ RequestDetailFormProps) {
               >
                 แก้ไข
               </button>
+}
             </div>
 
             <AppointmentDriverCard
@@ -189,12 +191,14 @@ RequestDetailFormProps) {
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
+              {editable && 
               <button
                 className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                 onClick={() => referenceModalRef.current?.openModal()}
               >
                 แก้ไข
               </button>
+}
             </div>
 
             <ReferenceCard
@@ -206,6 +210,7 @@ RequestDetailFormProps) {
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
+              {editable && 
               <button
                 className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                 data-toggle="modal"
@@ -214,6 +219,7 @@ RequestDetailFormProps) {
               >
                 แก้ไข
               </button>
+}
             </div>
             {requestData?.ref_cost_type_code && (
               <DisburstmentCard
@@ -260,7 +266,7 @@ RequestDetailFormProps) {
                               </div>
                             </div>
                           </div>
-
+                          {editable && 
                           <button
                             className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                             onClick={() =>
@@ -269,6 +275,7 @@ RequestDetailFormProps) {
                           >
                             เลือกประเภทยานพาหนะ
                           </button>
+}
                         </div>
 
                         <div className="card-item-group d-flex">
@@ -309,7 +316,7 @@ RequestDetailFormProps) {
                               </div>
                             </div>
                           </div>
-
+                          {editable && 
                           <button
                             className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                             onClick={() =>
@@ -318,6 +325,7 @@ RequestDetailFormProps) {
                           >
                             เลือกประเภทยานพาหนะ
                           </button>
+}
                         </div>
 
                         <div className="card-item-group d-flex">
