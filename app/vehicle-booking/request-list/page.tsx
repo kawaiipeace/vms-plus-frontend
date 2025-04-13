@@ -5,7 +5,8 @@ import RequestTabs from "@/components/tabs/requestTabs";
 import SideBar from "@/components/sideBar";
 import ToastCustom from "@/components/toastCustom";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
+import ProcessIntroModal from "@/components/modal/processIntroModal";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -75,6 +76,7 @@ export default function RequestList() {
           </div>
         </div>
       </div>
+
       <Suspense fallback={<div></div>}>
         <RequestListContent />
       </Suspense>

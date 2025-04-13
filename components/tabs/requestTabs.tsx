@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import ArpproveFlow from "@/components/approveFlow";
 import { requests } from "@/services/bookingUser";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import CancelFlow from "../flow/cancelFlow";
-import { RequestDetailType } from "@/app/types/request-detail-type";
+import CancelFlow from "@/components/flow/cancelFlow";
+import ProcessIntroModal from "@/components/modal/processIntroModal";
 
 export default function RequestTabs() {
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
+  const processIntroModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
-  const [params, setParams] = useState({
+  const [params] = useState({
     search: "",
     vehicle_owner_dept: "",
     car_type: "",
@@ -18,6 +22,10 @@ export default function RequestTabs() {
     page: 1,
     limit: 10,
   });
+
+  useEffect(() => {
+    processIntroModalRef.current?.openModal();
+  }, []);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -28,7 +36,6 @@ export default function RequestTabs() {
 
         setSummary(summaryData);
         setDataRequest(requestList);
-
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
@@ -89,6 +96,7 @@ export default function RequestTabs() {
           />
         )}
       </div>
+      <ProcessIntroModal ref={processIntroModalRef} />
     </div>
   );
 }
