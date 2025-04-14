@@ -9,15 +9,19 @@ interface Props {
   data: RequestDetailType;
 }
 
-export default function PageHeader({
-  data,
-}: Props) {
-
+export default function PageHeaderFirst({ data }: Props) {
+  const approveRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
+  const fileBackRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [copied, setCopied] = useState(false);
 
@@ -42,7 +46,9 @@ export default function PageHeader({
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="/administrator/booking-approver">อนุมัติคำขอ</Link>
+            <Link href="/administrator/booking-approver">
+              อนุมัติขอคำใช้และใบอนุญาต
+            </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             เลขที่คำขอ {data?.request_no || ""}
@@ -102,13 +108,48 @@ export default function PageHeader({
         <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
+
+        <button
+          className="btn btn-secondary"
+          onClick={() => fileBackRequestModalRef.current?.openModal()}
+        >
+          <i className="material-symbols-outlined">reply</i>
+          ตีกลับให้แก้ไข
+        </button>
+
+        <button
+          className="btn btn-primary"
+          onClick={() => approveRequestModalRef.current?.openModal()}
+        >
+          <i className="material-symbols-outlined">check</i>
+          อนุมัติคำขอ
+        </button>
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
+        role="firstApprover"
         confirmText="ยกเลิกคำขอ"
+      />
+      <FileBackRequestModal
+        id={data?.trn_request_uid}
+        ref={fileBackRequestModalRef}
+        title="ยืนยันตีกลับคำขอ"
+        role="firstApprover"
+        desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
+        placeholder="โปรดระบุเหตุผลที่ตีกลับ"
+        confirmText="ตีกลับคำขอ"
+      />
+
+      <ApproveRequestModal
+        id={data?.trn_request_uid}
+        ref={approveRequestModalRef}
+        title={"ยืนยันอนุมัติคำขอ"}
+        role="firstApprover"
+        desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"}
+        confirmText="อนุมัติคำขอ"
       />
     </div>
   );

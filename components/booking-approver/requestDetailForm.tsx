@@ -15,32 +15,21 @@ import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
 import ReferenceCard from "@/components/card/referenceCard";
 import DisburstmentCard from "@/components/card/disburstmentCard";
 import ApproveProgress from "@/components/approveProgress";
-import { requestDetail } from "@/services/bookingUser";
-import DriverPeaInfoCard from "../card/driverPeaInfoCard";
-import ApproverInfoCard from "../card/approverInfoCard";
-import { fetchVehicleInfo, fetchVehicleUsers } from "@/services/masterService";
+import DriverPeaInfoCard from "@/components/card/driverPeaInfoCard";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import VehicleUserInfoCard from "../card/vehicleUserInfoCard";
+import VehicleUserInfoCard from "@/components/card/vehicleUserInfoCard";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
-import ChooseDriverCard from "../card/chooseDriverCard";
-import EditDriverAppointmentModal from "../modal/editDriverAppointmentModal";
-import { FormDataType } from "@/app/types/form-data-type";
+import ChooseDriverCard from "@/components/card/chooseDriverCard";
+import { firstApproverRequestDetail } from "@/services/bookingApprover";
+import PickupKeyCard from "@/components/card/pickupKeyCard";
 
 interface RequestDetailFormProps {
   requestId: string;
-  editable?: boolean;
 }
 
 export default function RequestDetailForm({
   requestId,
-  editable,
-}: 
-RequestDetailFormProps) {
-  const editDriverAppointmentModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+}: RequestDetailFormProps) {
   const vehicleUserModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -75,26 +64,16 @@ RequestDetailFormProps) {
 
   const fetchRequestDetailfunc = async () => {
     try {
-      // Ensure parsedData is an object before accessing vehicleSelect
-      const response = await requestDetail(requestId);
+      const response = await firstApproverRequestDetail(requestId);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
     }
   };
 
-
   useEffect(() => {
-   
     fetchRequestDetailfunc();
   }, [requestId]);
-
-  const handleModalUpdate = () => {
-        console.log('test');
-    };
-  
-
-
 
   return (
     <>
@@ -109,14 +88,6 @@ RequestDetailFormProps) {
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-              {editable && 
-              <button
-                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                onClick={() => vehicleUserModalRef.current?.openModal()}
-              >
-                แก้ไข
-              </button>
-            }
             </div>
             <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} />
           </div>
@@ -126,14 +97,6 @@ RequestDetailFormProps) {
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-              {editable && 
-              <button
-                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                onClick={() => journeyDetailModalRef.current?.openModal()}
-              >
-                แก้ไข
-              </button>
-  }
             </div>
 
             <JourneyDetailCard
@@ -158,41 +121,11 @@ RequestDetailFormProps) {
               numberOfPassenger={requestData?.number_of_passengers}
             />
           </div>
-
-          <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title">
-                การนัดหมายพนักงานขับรถ
-              </div>
-              {editable && 
-              <button
-                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                onClick={() =>
-                  editDriverAppointmentModalRef.current?.openModal()
-                }
-              >
-                แก้ไข
-              </button>
-}
-            </div>
-
-            <AppointmentDriverCard
-              pickupPlace={requestData?.pickup_place}
-              pickupDatetime={requestData?.pickup_datetime}
-            />
-          </div>
+        
 
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
-              {editable && 
-              <button
-                className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                onClick={() => referenceModalRef.current?.openModal()}
-              >
-                แก้ไข
-              </button>
-}
             </div>
 
             <ReferenceCard
@@ -204,16 +137,6 @@ RequestDetailFormProps) {
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
-              {editable && 
-              <button
-                className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                data-toggle="modal"
-                data-target="#editDisbursementModal"
-                onClick={() => disbursementModalRef.current?.openModal()}
-              >
-                แก้ไข
-              </button>
-}
             </div>
             {requestData?.ref_cost_type_code && (
               <DisburstmentCard
@@ -260,16 +183,6 @@ RequestDetailFormProps) {
                               </div>
                             </div>
                           </div>
-                          {editable && 
-                          <button
-                            className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                            onClick={() =>
-                              vehiclePickModalRef.current?.openModal()
-                            }
-                          >
-                            เลือกประเภทยานพาหนะ
-                          </button>
-}
                         </div>
 
                         <div className="card-item-group d-flex">
@@ -310,16 +223,6 @@ RequestDetailFormProps) {
                               </div>
                             </div>
                           </div>
-                          {editable && 
-                          <button
-                            className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                            onClick={() =>
-                              vehiclePickModalRef.current?.openModal()
-                            }
-                          >
-                            เลือกประเภทยานพาหนะ
-                          </button>
-}
                         </div>
 
                         <div className="card-item-group d-flex">
@@ -340,7 +243,10 @@ RequestDetailFormProps) {
                 {requestData?.vehicle &&
                   (!requestData?.is_admin_choose_vehicle ||
                     requestData?.is_admin_choose_vehicle === "0") && (
-                    <CarDetailCard vehicle={requestData?.vehicle} />
+                    <CarDetailCard
+                      vehicle={requestData?.vehicle}
+                      seeDetail={true}
+                    />
                   )}
 
                 {requestData?.is_admin_choose_driver && (
@@ -362,6 +268,7 @@ RequestDetailFormProps) {
                         requestData?.driver_mobile_contact_number
                       }
                       driver_image_url={requestData?.driver_image_url}
+                      seeDetail={true}
                     />
                   </div>
                 ) : (
@@ -372,38 +279,40 @@ RequestDetailFormProps) {
                   )
                 )}
 
+                  
+          <div className="form-section">
+            <div className="form-section-header">
+              <div className="form-section-header-title">
+                การนัดหมายพนักงานขับรถ
+              </div>
+           
+            </div>
+
+            <AppointmentDriverCard
+              pickupPlace={requestData?.pickup_place}
+              pickupDatetime={requestData?.pickup_datetime}
+            />
+          </div>
+
+                <div className="mt-5">
+                  <PickupKeyCard
+                    receiveKeyPlace={requestData?.pickup_place}
+                    receiveKeyStart={requestData?.pickup_datetime}
+                    receiveKeyEnd={requestData?.pickup_datetime}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
-          <div className="form-action">
-            <button
-              className="btn btn-primary"
-              onClick={() => approveRequestModalRef.current?.openModal()}
-            >
-              ส่งคำขออีกครั้ง
-            </button>
-          </div>
-        )}
       </div>
-      <EditDriverAppointmentModal
-        ref={editDriverAppointmentModalRef}
-        onUpdate={handleModalUpdate}
-      />
+
       <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
       <JourneyDetailModal ref={journeyDetailModalRef} />
       <VehicleUserModal process="edit" ref={vehicleUserModalRef} />
       <ReferenceModal ref={referenceModalRef} />
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />
-      <ApproveRequestModal
-        ref={approveRequestModalRef}
-        title={"ยืนยันการส่งคำขออีกครั้ง"}
-        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
-        confirmText="ส่งคำขอ"
-      />
     </>
   );
 }

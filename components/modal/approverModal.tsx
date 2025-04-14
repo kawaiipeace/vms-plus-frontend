@@ -186,9 +186,9 @@ const ApproverModal = forwardRef<
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
-          <form method="dialog">
-            <button className="btn btn-secondary">ยกเลิก</button>
-          </form>
+          <form method="dialog" className="col-span-1">
+              <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
+            </form>
             <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>ยืนยัน</button>
         </div>
       </div>

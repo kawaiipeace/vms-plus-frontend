@@ -25,7 +25,10 @@ interface Props {
   pagination: PaginationType;
 }
 
-export default function FirstApproverListTable({ defaultData, pagination }: Props) {
+export default function FirstApproverListTable({
+  defaultData,
+  pagination,
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -107,12 +110,16 @@ export default function FirstApproverListTable({ defaultData, pagination }: Prop
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับคำขอ" ? (
+            ) : value === "ตีกลับ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
-                {value as React.ReactNode}
+                ตีกลับคำขอ
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
+                {value as React.ReactNode}
+              </span>
+            ) : value === "อนุมัติแล้ว" ? (
+              <span className="badge badge-pill-outline badge-success whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
             ) : (
@@ -139,12 +146,29 @@ export default function FirstApproverListTable({ defaultData, pagination }: Prop
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/first-approver/" +
+                    "/administrator/booking-approver/" +
                       row.original.trn_request_uid
                   )
                 }
               >
                 <i className="material-symbols-outlined">stylus</i>
+              </button>
+            )}
+
+            {(statusValue == "ตีกลับ" || statusValue == "อนุมัติแล้ว") && (
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                data-tip="ดูรายละเอียดคำขอ"
+                onClick={() =>
+                  router.push(
+                    "/administrator/booking-approver/" +
+                      row.original.trn_request_uid +
+                      "?status=" +
+                      statusValue
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
             )}
 
@@ -154,8 +178,10 @@ export default function FirstApproverListTable({ defaultData, pagination }: Prop
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid
+                    "/administrator/booking-approver/" +
+                      row.original.trn_request_uid +
+                      "?status=" +
+                      statusValue
                   )
                 }
               >

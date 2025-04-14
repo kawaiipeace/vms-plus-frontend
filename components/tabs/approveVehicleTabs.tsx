@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import ZeroRecord from "@/components/zeroRecord";
-import RequestStatusBox from "@/components/requestStatusBox";
-import ArpproveFlow from "@/components/approveFlow";
-import { RequestData } from "@/data/requestData";
-import FirstApproveFlow from "../flow/firstApproveFlow";
+import FirstApproveFlow from "@/components/flow/firstApproveFlow";
 
 
 export default function ApproveVehicleTabs() {
-  const [dataRequest, setDataRequest] = useState<RequestData[]>([]);
+
   const tabs = [
     {
       label: "คำขอใช้ยานพาหนะ",

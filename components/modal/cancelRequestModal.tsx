@@ -9,6 +9,7 @@ import Image from "next/image";
 import * as yup from "yup";
 import { cancelRequest } from "@/services/bookingUser";
 import { useRouter } from "next/navigation";
+import { firstApprovercancelRequest } from "@/services/bookingApprover";
 
 interface Props {
   id: string;
@@ -18,12 +19,13 @@ interface Props {
   confirmText: string;
   placeholder?: string;
   cancleFor?: string;
+  role?: string;
 }
 
 const CancelRequestModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ id, title, desc, confirmText, placeholder, cancleFor }, ref) => {
+>(({ id, title, desc, confirmText, placeholder, cancleFor, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [inputValue, setInputValue] = useState("");
   const [isValid, setIsValid] = useState(false);
@@ -50,23 +52,32 @@ const CancelRequestModal = forwardRef<
       try {
         const payload = {
           canceled_request_reason: inputValue,
-          trn_request_uid: id
+          trn_request_uid: id,
         };
-  
-        const res = await cancelRequest(payload);
-        if(res){
+        const res =
+          role === "firstApprover"
+            ? await firstApprovercancelRequest(payload)
+            : await cancelRequest(payload);
+        const data = res.data;
+
+        if (data) {
           modalRef.current?.close();
-          router.push(
-            "/vehicle-booking/request-list?create-req=success&request-id=" +
-              id
-          );
+
+          role === "firstApprover"
+            ? router.push(
+                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                data.result?.request_no
+              )
+            : router.push(
+                "/vehicle-booking/request-list?cancel-req=success&request-id=" +
+                data.result?.request_no
+              );
         }
-      
       } catch (error) {
         console.error("Cancel error:", error);
       }
     };
-  
+
     sendCancelRequest();
   };
 

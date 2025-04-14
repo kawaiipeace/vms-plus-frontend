@@ -128,7 +128,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               label: "ระบบจองยานพาหนะ",
               items: [
                 { title: "คำขอใช้ยานพาหนะ", link: "/vehicle-booking/request-list" },
-                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/first-approver" },
+                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/booking-approver" },
               ],
             },
             {

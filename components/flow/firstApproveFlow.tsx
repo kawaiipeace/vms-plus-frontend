@@ -7,7 +7,7 @@ import Paginationselect from "@/components/paginationSelect";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import { firstApproverRequests } from "@/services/bookingApprover";
-import FirstApproverListTable from "../table/first-approver-list-table";
+import FirstApproverListTable from "@/components/table/first-approver-list-table";
 
 interface PaginationType {
   limit: number;
@@ -20,7 +20,7 @@ export default function FirstApproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
-    ref_request_status_code: "20,21,30,31",
+    ref_request_status_code: "",
     startdate: "",
     enddate: "",
     car_type: "",
@@ -46,11 +46,6 @@ export default function FirstApproveFlow() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
-  const addNewRequest = () => {
-    localStorage.removeItem("formData");
-    router.push("/vehicle-booking/process-one");
-  };
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
