@@ -383,6 +383,26 @@ RequestDetailFormProps) {
           </div>
         </div>
 
+      
+      </div>
+      <EditDriverAppointmentModal
+        ref={editDriverAppointmentModalRef}
+        requestId={requestId} 
+        onUpdate={handleModalUpdate}
+      />
+      <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
+      <JourneyDetailModal ref={journeyDetailModalRef} requestId={requestId} />
+      <VehicleUserModal requestId={requestData?.trn_request_uid} process="edit" ref={vehicleUserModalRef} />
+      <ReferenceModal ref={referenceModalRef} requestId={requestId}  />
+      <DisbursementModal ref={disbursementModalRef} />
+      <ApproverModal ref={approverModalRef} />
+      <ApproveRequestModal
+        id={String(requestData?.trn_request_uid)}
+        ref={approveRequestModalRef}
+        title={"ยืนยันการส่งคำขออีกครั้ง"}
+        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
+        confirmText="ส่งคำขอ"
+      />
         {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
           <div className="form-action">
             <button
@@ -393,24 +413,6 @@ RequestDetailFormProps) {
             </button>
           </div>
         )}
-      </div>
-      <EditDriverAppointmentModal
-        ref={editDriverAppointmentModalRef}
-        onUpdate={handleModalUpdate}
-      />
-      <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
-      <JourneyDetailModal ref={journeyDetailModalRef} />
-      <VehicleUserModal process="edit" ref={vehicleUserModalRef} />
-      <ReferenceModal ref={referenceModalRef} />
-      <DisbursementModal ref={disbursementModalRef} />
-      <ApproverModal ref={approverModalRef} />
-      <ApproveRequestModal
-        id={String(requestData?.trn_request_uid)}
-        ref={approveRequestModalRef}
-        title={"ยืนยันการส่งคำขออีกครั้ง"}
-        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
-        confirmText="ส่งคำขอ"
-      />
     </>
   );
 }

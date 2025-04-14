@@ -54,6 +54,15 @@ export default function ArpproveFlow() {
     router.push("/vehicle-booking/process-one");
   };
 
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "20": { iconName: "schedule", status: "info" },
+    "21": { iconName: "reply", status: "warning" },
+    "30": { iconName: "schedule", status: "info" },
+    "31": { iconName: "reply", status: "warning" },
+    "40": { iconName: "check", status: "success" },
+    "90": { iconName: "delete", status: "default" },
+  };
+
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
       ...prevParams,
@@ -184,31 +193,27 @@ export default function ArpproveFlow() {
     fetchRequests();
   }, [params]);
 
-  const getCountByStatus = (statusName: string) => {
-    const found = summary.find(
-      (item) => item.ref_request_status_name === statusName
-    );
-    return found ? found.count : 0;
-  };
-
-  useEffect(() => {
-  }, [dataRequest, params]); 
+  useEffect(() => {}, [dataRequest, params]);
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <RequestStatusBox
-          iconName="schedule"
-          status="info"
-          title="รออนุมัติ"
-          number={getCountByStatus("รออนุมัติ")}
-        />
-        <RequestStatusBox
-          iconName="reply"
-          status="warning"
-          title="ถูกตีกลับ"
-          number={getCountByStatus("ถูกตีกลับ")}
-        />
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        {summary.map((item) => {
+          const config = statusConfig[item.ref_request_status_code];
+
+          // If not in your list, skip
+          if (!config) return null;
+
+          return (
+            <RequestStatusBox
+              key={item.ref_request_status_code}
+              iconName={config.iconName}
+              status={config.status as "info" | "warning" | "success" | "default" | "error"}
+              title={item.ref_request_status_name}
+              number={item.count}
+            />
+          );
+        })}
       </div>
 
       <div className="flex justify-between items-center mt-5">

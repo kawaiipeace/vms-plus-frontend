@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -10,9 +11,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { shortenFilename } from "@/utils/shortenFilename";
 import { uploadFile } from "@/services/masterService";
-import FormHelper from "../formHelper";
+import FormHelper from "@/components/formHelper";
+import { useRequestDetailContext } from "@/contexts/requestDetailContext";
 
 interface RefProps {
+  requestId?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -24,7 +27,7 @@ const schema = yup.object().shape({
 const ReferenceModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   RefProps
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestId }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -34,8 +37,9 @@ const ReferenceModal = forwardRef<
   const { formData, updateFormData } = useFormContext();
   const [fileError, setFileError] = useState("");
   const [fileValue, setFileValue] = useState("");
+   const { requestData, fetchRequestData } = useRequestDetailContext();
 
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit,    reset, control, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -49,6 +53,24 @@ const ReferenceModal = forwardRef<
       ? shortenFilename(formData.attachmentFile)
       : "อัพโหลดเอกสารแนบ"
   );
+
+    // useEffect(() => {
+    //   if (requestId) {
+    //     // Trigger the request data fetch when requestId changes
+    //     fetchRequestData(requestId)
+    //       .then(() => {
+    //         if (requestData) {
+    //           reset({
+    //             referenceNumber: requestData?.reference_number,
+    //             attachmentFile: requestData?.attached_document,
+    //           });
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error fetching request data:", error);
+    //       });
+    //   }
+    // }, [requestId, requestData, reset, fetchRequestData]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,

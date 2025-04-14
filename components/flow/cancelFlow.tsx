@@ -5,6 +5,9 @@ import RequestListTable from "@/components/table/request-list-table";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import { requests } from "@/services/bookingUser";
 import Paginationselect from "@/components/table/paginationSelect";
+import FilterModal from "@/components/modal/filterModal";
+import dayjs from "dayjs";
+import FilterCancelModal from "@/components/modal/filterCancelModal";
 
 interface PaginationType {
   limit: number;
@@ -14,6 +17,7 @@ interface PaginationType {
 }
 
 export default function CancelFlow() {
+  const [filterDate, setFilterDate] = useState<string>("");
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
@@ -33,6 +37,11 @@ export default function CancelFlow() {
     totalPages: 0,
   });
 
+  const filterModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
 
   const handlePageChange = (newPage: number) => {
@@ -40,6 +49,41 @@ export default function CancelFlow() {
       ...prevParams,
       page: newPage,
     }));
+  };
+
+  const handleFilterSubmit = ({
+    selectedStartDate,
+    selectedEndDate,
+  }: {
+    selectedStartDate: string;
+    selectedEndDate: string;
+  }) => {
+    const date = selectedStartDate + " - " + selectedEndDate;
+
+    if (selectedStartDate && selectedEndDate) {
+      setFilterDate(date);
+    }
+
+    setParams((prevParams) => ({
+      ...prevParams,
+      startdate:
+        selectedStartDate &&
+        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate:
+        selectedEndDate &&
+        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+    }));
+  };
+
+  const removeFilter = (filterType: string) => {
+    if (filterType === "date") {
+      setFilterDate("");
+      setParams((prevParams) => ({
+        ...prevParams,
+        startdate: "",
+        enddate: "",
+      }));
+    }
   };
 
   const handleClearAllFilters = () => {
@@ -66,14 +110,13 @@ export default function CancelFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
   };
+
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await requests(params);
-        console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -92,10 +135,6 @@ export default function CancelFlow() {
 
     fetchRequests();
   }, [params]);
-
-  useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
-  }, [dataRequest]); // This will log whenever dataRequest changes
 
   return (
     <>
@@ -122,11 +161,21 @@ export default function CancelFlow() {
               }
             />
           </div>
+
+         
         </div>
-
- 
+        <div className="flex gap-4">
+            <button
+              className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
+              onClick={() => filterModalRef.current?.openModal()}
+            >
+              <div className="flex items-center gap-1">
+                <i className="material-symbols-outlined">filter_list</i>
+                ตัวกรอง
+              </div>
+            </button>
+          </div>
       </div>
-
 
       {dataRequest?.length > 0 ? (
         <>
@@ -137,7 +186,6 @@ export default function CancelFlow() {
             />
           </div>
 
-          {/* Pagination Controls */}
           <div className="flex justify-between items-center mt-5 dt-bottom">
             <div className="flex items-center gap-2">
               <div className="dt-info" aria-live="polite" role="status">
@@ -197,18 +245,18 @@ export default function CancelFlow() {
             </div>
           </div>
         </>
-      )  : (
+      ) : (
         <ZeroRecord
-                 imgSrc="/assets/img/empty/search_not_found.png"
-                 title="ไม่พบข้อมูล"
-                 desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-                 button="ล้างตัวกรอง"
-                 displayBtn={true}
-                 btnType="secondary"
-                 useModal={handleClearAllFilters}
-               />
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
       )}
-     
+      <FilterCancelModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
     </>
   );
 }

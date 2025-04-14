@@ -47,11 +47,11 @@ const ApproveRequestModal = forwardRef<
           role === "firstApprover"
             ? router.push(
                 "/administrator/booking-approver?approve-req=success&request-id=" +
-                  id
+                  res.data.result?.request_no
               )
             : router.push(
                 "/vehicle-booking/request-list?approve-req=success&request-id=" +
-                  id
+                  res.data.result?.request_no
               );
         }
       } catch (error) {

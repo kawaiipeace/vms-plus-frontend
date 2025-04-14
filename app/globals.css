@@ -1846,6 +1846,22 @@
   background-color: transparent;
 }
 
+@media screen and (max-width: 767px) {
+  /* covert from table to card */
+  .dataTable {border-radius: 0; }
+  .dataTable thead { display: none; }
+  .dataTable tbody { display: flex; flex-direction: column; gap: 2rem; }
+  .dataTable tbody tr { display: flex; flex-direction: column; border: 1px solid #eaecf0; border-radius: .5rem; overflow: hidden; }
+  .dataTable tbody tr td { border: 0; padding: .5rem !important; }
+  .dataTable tbody tr td + td { border-top: 1px solid #eaecf0; }
+  .dataTable tbody tr td [data-name] { display: flex; justify-content: space-between; width: 100%; gap: .5rem; text-align: right; }
+  .dataTable tbody tr td [data-name]::before { content: attr(data-name); font-weight: 600; width: calc(50% - .25rem); text-align: left; }
+  .dataTable tbody tr td .dataTable-action { text-align: center; min-height: 40px; }
+
+  .dark-mode .dataTable tbody tr { border-color: #333741; }
+  .dark-mode .dataTable tbody tr td + td { border-color: #333741; }
+}
+
 .btn.dropdown-toggle {
   border: 1px solid;
   border-radius: 0.5rem;

@@ -10,7 +10,7 @@ interface Props {
   requestId: string;
 }
 
-export default function RequestDetailTabs({ requestId }: Props) {
+export default function RequestEditTabs({ requestId }: Props) {
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -46,6 +46,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
     const fetchRequests = async () => {
       try {
         const response = await fetchLogs(requestUid, params);
+        console.log("API Response:", response.data);
         const requestList = response.data.logs;
         const { total, totalPages } = response.data;
   
@@ -72,7 +73,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
-      content: <RequestDetailForm requestId={requestId} />,
+      content: <RequestDetailForm requestId={requestId} editable={true} />,
       constent: "",
       badge: "",
     },

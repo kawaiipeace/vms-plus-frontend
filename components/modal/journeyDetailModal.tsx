@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -10,9 +11,11 @@ import * as yup from "yup";
 import NumberInput from "@/components/numberInput";
 import { useFormContext } from "@/contexts/requestFormContext";
 import RadioButton from "../radioButton";
+import { useRequestDetailContext } from "@/contexts/requestDetailContext";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  requestId?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -31,37 +34,69 @@ const schema = yup.object().shape({
 const JourneyDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestId }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const [contextLoaded, setContextLoaded] = useState(false);
   const { formData, updateFormData } = useFormContext();
+ 
 
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      setContextLoaded(true); // Load the context when opening the modal
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
   const [passengerCount, setPassengerCount] = useState<number>(formData.numberOfPassenger || 0);
   const [selectedTripType, setSelectedTripType] = useState<string>((formData.tripType  ?? "").toString());
+  const { requestData, fetchRequestData } = useRequestDetailContext();
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      timeStart: formData.timeStart,
-      timeEnd: formData.timeEnd,
-      workPlace: formData.workPlace,
-      purpose: formData.purpose,
-      remark: formData.remark,
+      startDate: formData.startDate || "",
+      endDate: formData.endDate || "",    
+      timeStart: formData.timeStart || "",
+      timeEnd: formData.timeEnd || "",    
+      workPlace: formData.workPlace || "",
+      purpose: formData.purpose || "",    
+      remark: formData.remark || "",      
     },
   });
 
+  useEffect(() => {
+    if (contextLoaded && requestId) {
+      console.log("Fetching data for requestId:", requestId); // Debug requestId
+      fetchRequestData(requestId)
+        .then(() => {
+          console.log("Fetched requestData:", requestData); // Debug requestData
+          if (requestData) {
+            reset({
+              startDate: requestData?.start_datetime || "",
+              endDate: requestData?.end_datetime || "",
+              timeStart: requestData?.start_datetime || "",
+              timeEnd: requestData?.end_datetime || "",
+              workPlace: requestData?.work_place || "",
+              purpose: requestData?.objective || "",
+              remark: requestData?.remark || "",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching request data:", error);
+        });
+    }
+  }, [contextLoaded, requestId, reset]);
+  
+  
   const onSubmit = (data: any) => {
     const updatedata = {
       startDate: data.startDate,

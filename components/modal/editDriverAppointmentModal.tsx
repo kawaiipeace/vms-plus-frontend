@@ -12,8 +12,10 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { convertToISO } from "@/utils/convertToISO";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { useRequestDetailContext } from "@/contexts/requestDetailContext";
 
 interface EditDriverAppointmentModalProps {
+  requestId?: string;
   onUpdate: (data: any) => void;
 }
 
@@ -25,7 +27,7 @@ const schema = yup.object().shape({
 const EditDriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditDriverAppointmentModalProps
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestId }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   
 
@@ -36,8 +38,9 @@ const EditDriverAppointmentModal = forwardRef<
   
 
   const { formData, updateFormData } = useFormContext();
+   const { requestData, fetchRequestData } = useRequestDetailContext();
 
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit,  reset, control, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -54,6 +57,24 @@ const EditDriverAppointmentModal = forwardRef<
   const [selectedDate, setSelectedDate] = useState<string>(
     formData?.pickupDatetime ? formData.pickupDatetime.split("T")[0] : ""
   );
+
+    // useEffect(() => {
+    //   if (requestId) {
+    //     // Trigger the request data fetch when requestId changes
+    //     fetchRequestData(requestId)
+    //       .then(() => {
+    //         if (requestData) {
+    //           reset({
+    //             pickupDatetime: requestData?.pickup_datetime || "",
+    //   pickupPlace: requestData?.pickup_place || "",
+    //           });
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error fetching request data:", error);
+    //       });
+    //   }
+    // }, [requestId, requestData, reset, fetchRequestData]);
 
   useEffect(() => {
     setValue("pickupPlace", formData?.pickupPlace || "");

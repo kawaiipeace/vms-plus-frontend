@@ -49,7 +49,7 @@ export default function FirstApproverListTable({
       ),
       enableSorting: true,
       cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
+        <div className="text-center" data-name="เลขที่คำขอ">{getValue() as string}</div>
       ),
     },
     {
@@ -57,9 +57,11 @@ export default function FirstApproverListTable({
       header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-left">
-          {row.original.vehicle_user_emp_name} <br />
-          <span>{row.original.vehicle_user_dept_sap ?? ""}</span>
+        <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
+          <div className="flex flex-col">
+              <div>{row.original.vehicle_user_emp_name}</div>
+              <div>{row.original.vehicle_user_dept_sap}</div>
+            </div>
         </div>
       ),
     },
@@ -68,7 +70,7 @@ export default function FirstApproverListTable({
       header: () => <div className="text-center">ยานพาหนะ</div>,
       enableSorting: false,
       cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
+        <div className="text-center" data-name="ยานพาหนะ">{getValue() as string}</div>
       ),
     },
     {
@@ -76,7 +78,7 @@ export default function FirstApproverListTable({
       header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
       enableSorting: false,
       cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
+        <div className="text-center" data-name="สถานที่ปฏิบัติงาน">{getValue() as string}</div>
       ),
     },
     {
@@ -91,7 +93,7 @@ export default function FirstApproverListTable({
           row.original.end_datetime
         );
         return (
-          <div className="text-left">
+          <div className="text-left" data-name="วันที่เดินทาง">
             {startDateTime.date + " " + startDateTime.time} -{" "}
             {endDateTime.date + " " + endDateTime.time}
           </div>
@@ -105,7 +107,7 @@ export default function FirstApproverListTable({
       cell: ({ getValue }) => {
         const value = getValue() as string;
         return (
-          <div className="w-[80px] text-center">
+          <div className="w-[80px] text-center" data-name="สถานะคำขอ">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
@@ -139,7 +141,7 @@ export default function FirstApproverListTable({
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
         return (
-          <div className="text-left">
+          <div className="text-left dataTable-action">
             {statusValue == "รออนุมัติ" && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"

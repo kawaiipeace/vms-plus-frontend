@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
-import RequestDetailTabs from "@/components/tabs/requestDetailTab";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import PageHeader from "@/components/pageHeader";
+import RequestEditTabs from "@/components/tabs/requestEditTab";
 
 
 export default function RequestDetail() {
@@ -47,7 +47,7 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeader data={requestData} />}
-            <RequestDetailTabs requestId={request_id} />
+            <RequestEditTabs requestId={request_id} />
           </div>
         </div>
       </div>

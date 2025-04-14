@@ -1,12 +1,15 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import FormHelper from "@/components/formHelper";
+import { updateVehicleUser } from "@/services/bookingUser";
+import { useRequestDetailContext } from "@/contexts/requestDetailContext";
 
 interface VehicleUserModalProps {
   process: string;
+  requestId?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUpdate?: (data: any) => void;
 }
@@ -24,21 +27,25 @@ const schema = yup.object().shape({
 const VehicleUserModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   VehicleUserModalProps
->(({ process, onUpdate }, ref) => {
+>(({ process, onUpdate, requestId }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
+  const { requestData, fetchRequestData } = useRequestDetailContext()
+
+
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      name: formData.vehicleUserEmpName,
-      position: formData.deptSapShort,
-      internalPhone: formData.telInternal,
-      mobilePhone: formData.telMobile,
+      name: formData.vehicleUserEmpName || "",
+      position: formData.deptSapShort || "",
+      internalPhone: formData.telInternal || "",
+      mobilePhone: formData.telMobile || "",
     },
   });
 
@@ -46,6 +53,31 @@ const VehicleUserModal = forwardRef<
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  
+  useEffect(() => {
+    if (requestId && requestData) {
+      reset({
+        name: requestData.vehicle_user_emp_name,
+        position: requestData.vehicle_user_dept_sap,
+      });
+    }
+  }, [requestId, requestData, reset]);
+  
+
+  useEffect(() => {
+  
+    // const fetchData = async () => { 
+    //   try {
+    //     const response = await updateVehicleUser(); 
+  
+    //   } catch (error) {
+    //     console.error("Error fetching requests:", error);
+    //   }
+    // };
+
+  
+  },[])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (data: any) => {

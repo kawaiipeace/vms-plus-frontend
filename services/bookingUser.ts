@@ -36,7 +36,7 @@ export const requestDetail = async (id: string) => {
 
 export const createRequest = async (data: any) => {
   try {
-    const response = await axiosInstance.post('booking-user/create-request',  data );
+    const response = await axiosInstance.post('booking-user/create-request', data);
     return response;
 
   } catch (error) {
@@ -71,7 +71,7 @@ export const fetchVehicleDetail = async (id: string) => {
 
 export const cancelRequest = async (data: CanceledRequestType) => {
   try {
-    const response = await axiosInstance.put('booking-user/update-canceled',  data );
+    const response = await axiosInstance.put('booking-user/update-canceled', data);
     return response;
 
   } catch (error) {
@@ -87,3 +87,15 @@ export const fetchMenus = async () => {
     throw error;
   }
 };
+
+export const updateVehicleUser = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-vehicle-user', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+

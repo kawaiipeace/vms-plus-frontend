@@ -91,7 +91,7 @@ export default function PageHeader({
             ))}
         </div>
 
-        {data?.can_cancel_request && (
+        {data?.ref_request_status_name !== "ยกเลิกคำขอ" && data?.can_cancel_request && (
           <button
             className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
             onClick={() => cancelRequestModalRef.current?.openModal()}
