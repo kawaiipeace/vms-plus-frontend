@@ -3,7 +3,7 @@ import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
 import { useRouter } from "next/navigation";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import Paginationselect from "@/components/paginationSelect";
+import Paginationselect from "@/components/table/paginationSelect";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import { firstApproverRequests } from "@/services/bookingApprover";

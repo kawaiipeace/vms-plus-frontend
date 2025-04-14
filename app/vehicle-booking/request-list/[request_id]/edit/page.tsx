@@ -5,9 +5,9 @@ import Header from "@/components/header";
 import RequestDetailTabs from "@/components/tabs/requestDetailTab";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
+import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { firstApproverRequestDetail } from "@/services/bookingApprover";
-import PageHeaderFirst from "@/components/pageHeaderFirst";
+import PageHeader from "@/components/pageHeader";
 
 
 export default function RequestDetail() {
@@ -15,14 +15,14 @@ export default function RequestDetail() {
 
   const params = useParams();
   const request_id = String(params.request_id);
-  console.log('fff',request_id);
+
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {
-          const response = await firstApproverRequestDetail(request_id);
+          const response = await requestDetail(request_id);
           setRequestData(response.data);
           console.log('reqeustdetail',response.data);
         } catch (error) {
@@ -37,7 +37,7 @@ export default function RequestDetail() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
+        <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
         <div
           className={`main-content ${
@@ -46,7 +46,7 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeaderFirst data={requestData} />}
+          {requestData && <PageHeader data={requestData} />}
             <RequestDetailTabs requestId={request_id} />
           </div>
         </div>

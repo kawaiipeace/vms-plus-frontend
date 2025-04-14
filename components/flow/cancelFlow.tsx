@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import RequestListTable from "@/components/table/request-list-table";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import { requests } from "@/services/bookingUser";
-import Paginationselect from "@/components/paginationSelect";
+import Paginationselect from "@/components/table/paginationSelect";
 
 interface PaginationType {
   limit: number;

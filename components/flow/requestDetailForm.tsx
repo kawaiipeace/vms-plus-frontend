@@ -104,6 +104,12 @@ RequestDetailFormProps) {
           desc={`เหตุผล: ${requestData?.sended_back_request_reason}`}
         />
       )}
+        {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
+        <AlertCustom
+          title="คำขอใช้ถูกยกเลิกแล้ว"
+          desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
+        />
+      )}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
           <div className="form-section">
@@ -399,6 +405,7 @@ RequestDetailFormProps) {
       <DisbursementModal ref={disbursementModalRef} />
       <ApproverModal ref={approverModalRef} />
       <ApproveRequestModal
+        id={String(requestData?.trn_request_uid)}
         ref={approveRequestModalRef}
         title={"ยืนยันการส่งคำขออีกครั้ง"}
         desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}

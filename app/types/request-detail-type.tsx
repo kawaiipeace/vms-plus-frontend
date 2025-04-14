@@ -59,5 +59,5 @@ export interface RequestDetailType {
   }
   ref_request_status_name: string;
   sended_back_request_reason: string;
-  cenceled_request_reason: string;
+  canceled_request_reason: string;
 }

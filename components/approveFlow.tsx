@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import RequestListTable from "@/components/table/request-list-table";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import { requests } from "@/services/bookingUser";
-import Paginationselect from "./paginationSelect";
+import Paginationselect from "./table/paginationSelect";
 import dayjs from "dayjs";
 import RequestStatusBox from "./requestStatusBox";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import PaginationControls from "./table/pagination-control";
 
 interface PaginationType {
   limit: number;
@@ -62,13 +63,12 @@ export default function ArpproveFlow() {
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({
       ...prevParams,
       limit,
-      page: 1, // Reset to the first page when page size changes
+      page: 1,
     }));
-    console.log(newLimit);
   };
 
   const handleFilterSubmit = ({
@@ -89,7 +89,6 @@ export default function ArpproveFlow() {
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
@@ -140,14 +139,6 @@ export default function ArpproveFlow() {
     }
   };
 
-  const handleSearchChange = (searchTerm: string) => {
-    setParams((prevParams) => ({
-      ...prevParams,
-      search: searchTerm,
-      page: 1,
-    }));
-  }; 
-
   const handleClearAllFilters = () => {
     setParams({
       search: "",
@@ -171,7 +162,6 @@ export default function ArpproveFlow() {
     const fetchRequests = async () => {
       try {
         const response = await requests(params);
-        console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -202,8 +192,7 @@ export default function ArpproveFlow() {
   };
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
-  }, [dataRequest]); // This will log whenever dataRequest changes
+  }, [dataRequest, params]); 
 
   return (
     <>
@@ -300,72 +289,17 @@ export default function ArpproveFlow() {
 
       {dataRequest?.length > 0 ? (
         <>
-          <div className="mt-2">
+          <div className="mt-2 hidden md:block">
             <RequestListTable
               defaultData={dataRequest}
               pagination={pagination}
             />
           </div>
-
-          {/* Pagination Controls */}
-          <div className="flex justify-between items-center mt-5 dt-bottom">
-            <div className="flex items-center gap-2">
-              <div className="dt-info" aria-live="polite" role="status">
-                แสดง{" "}
-                {Math.min(
-                  pagination.page * pagination.limit - pagination.limit + 1,
-                  pagination.total
-                )}{" "}
-                ถึง{" "}
-                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
-                จาก {pagination.total} รายการ
-              </div>
-
-              <Paginationselect
-                w="w-[5em]"
-                position="top"
-                options={["10", "25", "50", "100"]}
-                value={pagination.limit}
-                onChange={(value) => handlePageSizeChange(value)}
-              />
-            </div>
-
-            <div className="pagination flex justify-end">
-              <div className="join">
-                <button
-                  className="join-item btn btn-sm btn-outline"
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                >
-                  <i className="material-symbols-outlined">chevron_left</i>
-                </button>
-
-                {Array.from(
-                  { length: pagination.totalPages },
-                  (_, index) => index + 1
-                ).map((page) => (
-                  <button
-                    key={page}
-                    className={`join-item btn btn-sm btn-outline ${
-                      pagination.page === page
-                        ? "active !bg-primary-grayBorder"
-                        : ""
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  className="join-item btn btn-sm btn-outline"
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                >
-                  <i className="material-symbols-outlined">chevron_right</i>
-                </button>
-              </div>
-            </div>
-          </div>
+          <PaginationControls
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </>
       ) : filterNum > 0 || filterDate || dataRequest?.length <= 0 ? (
         <ZeroRecord

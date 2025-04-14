@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import ArpproveFlow from "@/components/approveFlow";
-import { requests } from "@/services/bookingUser";
+import { fetchMenus, requests } from "@/services/bookingUser";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import CancelFlow from "@/components/flow/cancelFlow";
 import ProcessIntroModal from "@/components/modal/processIntroModal";
 
 export default function RequestTabs() {
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
-  const [summary, setSummary] = useState<summaryType[]>([]);
+  const [statusData, setStatusData] = useState<summaryType[]>([]);
   const processIntroModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -28,13 +28,20 @@ export default function RequestTabs() {
   }, []);
 
   useEffect(() => {
+    const fetchMenuFunc = async () => {
+      try {
+        const response = await fetchMenus();
+        const result = response.data;
+        setStatusData(result);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
     const fetchRequests = async () => {
       try {
         const response = await requests(params);
         const requestList = response.data.requests;
-        const summaryData = response.data.summary;
-
-        setSummary(summaryData);
         setDataRequest(requestList);
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -42,23 +49,31 @@ export default function RequestTabs() {
     };
 
     fetchRequests();
+    fetchMenuFunc();
   }, [params]);
 
-  const tabs = [
-    {
-      label: "กำลังดำเนินการ",
-      content: <ArpproveFlow />,
-      badge: dataRequest.length,
-    },
-    {
-      label: "เสร็จสิ้น",
-      content: <div></div>,
-    },
-    {
-      label: "ยกเลิก",
-      content: <CancelFlow />,
-    },
-  ];
+  const getTabContent = (code: string) => {
+    switch (code) {
+      case "20": 
+      return <ArpproveFlow />;
+      case "50": // รับกุญแจ
+      case "60": // เดินทาง
+      case "70": // คืนยานพาหนะ
+        return <ArpproveFlow />;
+      case "80": // เสร็จสิ้น
+        return <div>เสร็จสิ้น</div>; // Replace with your component
+      case "90": // ยกเลิก
+        return <CancelFlow />;
+      default:
+        return <div></div>;
+    }
+  };
+
+  const tabs = statusData.map((item) => ({
+    label: item.ref_request_status_name,
+    badge: item.count > 0 ? item.count : undefined,
+    content: getTabContent(item.ref_request_status_code),
+  }));
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -75,7 +90,7 @@ export default function RequestTabs() {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && (
+              {tab.badge !== undefined && (
                 <span className="badge badge-brand badge-pill-outline">
                   {tab.badge}
                 </span>
@@ -84,8 +99,9 @@ export default function RequestTabs() {
           </button>
         ))}
       </div>
+
       <div className="py-4">
-        {tabs[activeTab].content}
+        {tabs[activeTab]?.content}
 
         {dataRequest.length === 0 && (
           <ZeroRecord
@@ -96,6 +112,7 @@ export default function RequestTabs() {
           />
         )}
       </div>
+
       <ProcessIntroModal ref={processIntroModalRef} />
     </div>
   );

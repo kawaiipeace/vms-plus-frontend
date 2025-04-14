@@ -78,3 +78,12 @@ export const cancelRequest = async (data: CanceledRequestType) => {
     throw error;
   }
 }
+
+export const fetchMenus = async () => {
+  try {
+    const response = await axiosInstance.get('booking-user/menu-requests');
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

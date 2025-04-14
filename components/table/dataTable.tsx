@@ -1,6 +1,7 @@
 "use client";
 
 import { flexRender, Table as TableType } from "@tanstack/react-table";
+import ZeroRecord from "../zeroRecord";
 
 interface DataTableProps<TData> {
   table: TableType<TData>;
@@ -10,7 +11,6 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
   return (
     <>
-
       <div className="mt-5 overflow-x-auto rounded-xl">
         <table className="w-full dataTable">
           {/* Table Head */}
@@ -84,12 +84,14 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
                   className="text-center py-6"
                 >
                   <div className="flex flex-col items-center">
-                    <div className="bg-base-300 p-5 rounded-full">
-                      📄 {/* Placeholder for an empty state icon */}
-                    </div>
-                    <span className="mt-2 text-base-content">
-                      No Data Available
-                    </span>
+                  
+                      <ZeroRecord
+                        imgSrc="/assets/img/graphic/data_empty.svg"
+                        title="ไม่มีข้อมูล"
+                        desc={<>ไม่มีข้อมูลในตาราง</>}
+                        button={""}
+                      />
+                    
                   </div>
                 </td>
               </tr>

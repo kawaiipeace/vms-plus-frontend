@@ -11,4 +11,11 @@ export interface ApproveRequestType {
   trn_request_uid: string;
 }
 
+export interface PaginationType {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
+
 
