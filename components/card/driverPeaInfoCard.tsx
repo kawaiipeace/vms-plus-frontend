@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 import { fetchVehicleUsers } from "@/services/masterService";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
+import PeaDriverInfoModal from "../modal/peaDriverInfoModal";
 
 interface DriverInfoProps {
   userKeyPickup?: boolean;
@@ -40,6 +40,7 @@ export default function DriverPeaInfoCard({
       if (!driverEmpID) return;
       try {
         const res = await fetchVehicleUsers(driverEmpID);
+        console.log('driver---',res.data);
         setFetchedDriver(res.data[0]);
       } catch (error) {
         console.error("Error fetching driver data:", error);
@@ -116,7 +117,7 @@ export default function DriverPeaInfoCard({
         )}
       </div>
 
-      <DriverInfoModal ref={driverInfoModalRef} />
+      <PeaDriverInfoModal ref={driverInfoModalRef} id={driver_emp_id} />
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>
   );

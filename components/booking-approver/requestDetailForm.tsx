@@ -65,6 +65,7 @@ export default function RequestDetailForm({
   const fetchRequestDetailfunc = async () => {
     try {
       const response = await firstApproverRequestDetail(requestId);
+      console.log("res", response.data);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -89,7 +90,10 @@ export default function RequestDetailForm({
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} />
+            <VehicleUserInfoCard
+              id={requestData?.vehicle_user_emp_id || ""}
+              requestData={requestData}
+            />
           </div>
 
           <div className="form-section">
@@ -121,7 +125,6 @@ export default function RequestDetailForm({
               numberOfPassenger={requestData?.number_of_passengers}
             />
           </div>
-        
 
           <div className="form-section">
             <div className="form-section-header">
@@ -191,7 +194,10 @@ export default function RequestDetailForm({
                               directions_car
                             </i>
                             <span className="card-item-text">
-                              {/* {requestData.request_ve} */}
+                              {
+                                requestData.request_vehicle_type
+                                  .ref_vehicle_type_name
+                              }
                             </span>
                           </div>
                         </div>
@@ -231,7 +237,10 @@ export default function RequestDetailForm({
                               directions_car
                             </i>
                             <span className="card-item-text">
-                              {/* {requestData.requestedVehicleTypeName} */}
+                              {
+                                requestData.request_vehicle_type
+                                  .ref_vehicle_type_name
+                              }
                             </span>
                           </div>
                         </div>
@@ -241,19 +250,21 @@ export default function RequestDetailForm({
                 )}
 
                 {requestData?.vehicle &&
-                  (!requestData?.is_admin_choose_vehicle ||
-                    requestData?.is_admin_choose_vehicle === "0") && (
+                  !requestData?.is_admin_choose_vehicle &&
+                  requestData?.is_admin_choose_vehicle === "0" && (
                     <CarDetailCard
                       vehicle={requestData?.vehicle}
                       seeDetail={true}
                     />
                   )}
 
-                {requestData?.is_admin_choose_driver && (
-                  <ChooseDriverCard
-                    number={requestData?.number_of_available_drivers}
-                  />
-                )}
+                {/* {(requestData?.is_admin_choose_driver &&
+                  requestData?.is_admin_choose_driver === "1") &&( */}
+                    <ChooseDriverCard
+                      number={requestData?.number_of_available_drivers}
+                      chooseDriver={true}
+                    />
+                  {/* )} */}
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5">
@@ -274,25 +285,32 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
-                      <DriverSmallInfoCard driverDetail={requestData?.driver} />
+                      <DriverSmallInfoCard
+                        driverDetail={requestData?.driver}
+                        id={requestData?.driver.driver_id}
+                        seeDetail={true}
+                      />
                     </div>
                   )
                 )}
 
-                  
-          <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title">
-                การนัดหมายพนักงานขับรถ
-              </div>
-           
-            </div>
+                {(requestData?.ref_request_status_code == "90" ||
+                  requestData?.ref_request_status_code == "31" ||
+                  requestData?.ref_request_status_code == "21" ||
+                  requestData?.ref_request_status_code == "30") &&
+                <div className="form-section">
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">
+                      การนัดหมายพนักงานขับรถ
+                    </div>
+                  </div>
 
-            <AppointmentDriverCard
-              pickupPlace={requestData?.pickup_place}
-              pickupDatetime={requestData?.pickup_datetime}
-            />
-          </div>
+                  <AppointmentDriverCard
+                    pickupPlace={requestData?.pickup_place}
+                    pickupDatetime={requestData?.pickup_datetime}
+                  />
+                </div>
+                }
 
                 <div className="mt-5">
                   <PickupKeyCard

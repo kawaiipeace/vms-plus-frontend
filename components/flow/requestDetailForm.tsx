@@ -277,7 +277,7 @@ export default function RequestDetailForm({
                               directions_car
                             </i>
                             <span className="card-item-text">
-                              {/* {requestData.request_ve} */}
+                              {requestData.request_vehicle_type.ref_vehicle_type_name}
                             </span>
                           </div>
                         </div>
@@ -395,6 +395,7 @@ export default function RequestDetailForm({
         requestData={requestData}
         process="edit"
         ref={vehicleUserModalRef}
+        onUpdate={handleModalUpdate}
       />
       <ReferenceModal
         ref={referenceModalRef}

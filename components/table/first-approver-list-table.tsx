@@ -48,8 +48,16 @@ export default function FirstApproverListTable({
         </div>
       ),
       enableSorting: true,
-      cell: ({ getValue }) => (
-        <div className="text-center" data-name="เลขที่คำขอ">{getValue() as string}</div>
+      cell: ({ row }) => (
+        <div className="text-left" data-name="เลขที่คำขอ">
+          <div className="flex flex-col">
+            <div>{row.original.request_no}</div>
+            <div className="text-left">
+              {row.original.is_have_sub_request === "1" &&
+                "ปฏิบัติงานต่อเนื่อง"}
+            </div>
+          </div>
+        </div>
       ),
     },
     {
@@ -59,9 +67,9 @@ export default function FirstApproverListTable({
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
           <div className="flex flex-col">
-              <div>{row.original.vehicle_user_emp_name}</div>
-              <div>{row.original.vehicle_user_dept_sap}</div>
-            </div>
+            <div>{row.original.vehicle_user_emp_name}</div>
+            <div>{row.original.vehicle_user_dept_sap_short}</div>
+          </div>
         </div>
       ),
     },
@@ -69,8 +77,17 @@ export default function FirstApproverListTable({
       accessorKey: "vehicle_license_plate",
       header: () => <div className="text-center">ยานพาหนะ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-center" data-name="ยานพาหนะ">{getValue() as string}</div>
+      cell: ({ row }) => (
+        <div className="text-left" data-name="ยานพาหนะ">
+          <div className="flex flex-col">
+            <div className="text-left">
+              {row.original.vehicle_license_plate}
+            </div>
+            <div className="">
+              {row.original.vehicle_department_dept_sap_short}
+            </div>
+          </div>
+        </div>
       ),
     },
     {
@@ -78,7 +95,9 @@ export default function FirstApproverListTable({
       header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
       enableSorting: false,
       cell: ({ getValue }) => (
-        <div className="text-center" data-name="สถานที่ปฏิบัติงาน">{getValue() as string}</div>
+        <div className="text-left" data-name="สถานที่ปฏิบัติงาน">
+          {getValue() as string}
+        </div>
       ),
     },
     {

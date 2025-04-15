@@ -56,8 +56,16 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
         </div>
       ),
       enableSorting: true,
-      cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
+      cell: ({ row }) => (
+        <div className="text-left">
+          <div className="flex flex-col">
+            <div>{row.original.request_no}</div>
+            <div className="text-left">
+              {row.original.is_have_sub_request === "1" &&
+                "ปฏิบัติงานต่อเนื่อง"}
+            </div>
+          </div>
+        </div>
       ),
     },
     {
@@ -65,9 +73,9 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-left">
-          {row.original.vehicle_user_emp_name} <br />
-          <span>{row.original.vehicle_user_dept_sap ?? ""}</span>
+        <div className="flex flex-col">
+          <div>{row.original.vehicle_user_emp_name}</div>
+          <div>{row.original.vehicle_user_dept_sap_short}</div>
         </div>
       ),
     },
@@ -166,7 +174,8 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 onClick={() =>
                   router.push(
                     "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid + "/edit"
+                      row.original.trn_request_uid +
+                      "/edit"
                   )
                 }
               >

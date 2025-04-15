@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
-import { fetchUserDrivers } from "@/services/masterService";
+import { fetchVehicleUsers } from "@/services/masterService";
 import { PeaDriverType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
@@ -14,7 +14,7 @@ interface Props {
   id?: string;
 }
 
-const DriverInfoModal = forwardRef<
+const PeaDriverInfoModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
 >(({ id }, ref) => {
@@ -27,10 +27,9 @@ const DriverInfoModal = forwardRef<
   }));
 
   useEffect(() => {
-
     const fetchVehicleUserData = async () => {
       try {
-        const response = await fetchUserDrivers(id);
+        const response = await fetchVehicleUsers(id);
         if (response.status === 200) {
           const res = response.data[0];
           setVehicleUserData(res);
@@ -222,6 +221,6 @@ const DriverInfoModal = forwardRef<
   );
 });
 
-DriverInfoModal.displayName = "DriverInfoModal";
+PeaDriverInfoModal.displayName = "PeaDriverInfoModal";
 
-export default DriverInfoModal;
+export default PeaDriverInfoModal;

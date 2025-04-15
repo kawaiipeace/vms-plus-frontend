@@ -8,7 +8,7 @@ export const firstApproverRequests = async (params: {
   startdate?: string;
   enddate?: string;
   order_by?: string;
-  order_dir?: number;
+  order_dir?: string;
   page?: number;
   limit?: number;
 }) => {
@@ -88,3 +88,11 @@ export const firstApproverApproveRequest = async (data: ApproveRequestType) => {
   }
 }
 
+export const fetchMenus = async () => {
+  try {
+    const response = await axiosInstance.get('booking-approver/menu-requests');
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

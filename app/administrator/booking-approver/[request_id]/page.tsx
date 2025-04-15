@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
-import RequestDetailTabs from "@/components/tabs/requestDetailTab";
+import RequestDetailTabs from "@/components/booking-approver/requestDetailTab";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
@@ -23,7 +23,6 @@ export default function RequestDetail() {
         try {
           const response = await firstApproverRequestDetail(request_id);
           setRequestData(response.data);
-          console.log('reqeustdetail',response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }

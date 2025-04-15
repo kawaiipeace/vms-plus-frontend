@@ -8,6 +8,8 @@ import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import { firstApproverRequests } from "@/services/bookingApprover";
 import FirstApproverListTable from "@/components/table/first-approver-list-table";
+import PaginationControls from "../table/pagination-control";
+import FilterSortModal from "../modal/filterSortModal";
 
 interface PaginationType {
   limit: number;
@@ -25,6 +27,8 @@ export default function FirstApproveFlow() {
     enddate: "",
     car_type: "",
     category_code: "",
+    order_by: "",
+    order_dir: "",
     page: 1,
     limit: 10,
   });
@@ -47,12 +51,28 @@ export default function FirstApproveFlow() {
     closeModal: () => void;
   } | null>(null);
 
+  const filterSortModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
       ...prevParams,
       page: newPage,
     }));
   };
+
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "20": { iconName: "schedule", status: "info" },
+      "21": { iconName: "reply", status: "warning" },
+      "30": { iconName: "check", status: "success" },
+      "31": { iconName: "reply", status: "warning" },
+      "40": { iconName: "check", status: "success" },
+      "90": { iconName: "delete", status: "default" },
+    };
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
@@ -101,6 +121,13 @@ export default function FirstApproveFlow() {
     }));
   };
 
+  const handleFilterSortSubmit = (filters: { requestNo: string; startDateTime: string }) => {
+    console.log("Filters submitted:", filters);
+    // You can use filters.requestNo and filters.startDateTime to filter your data
+    // Example:
+    // fetchData(filters.requestNo, filters.startDateTime);
+  };
+
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
       setFilterNames((prevFilterNames) =>
@@ -134,6 +161,7 @@ export default function FirstApproveFlow() {
     }
   };
 
+
   const handleClearAllFilters = () => {
     setParams({
       search: "",
@@ -143,6 +171,8 @@ export default function FirstApproveFlow() {
       enddate: "",
       car_type: "",
       category_code: "",
+      order_by: "",
+      order_dir: "",
       page: 1,
       limit: 10,
     });
@@ -180,48 +210,44 @@ export default function FirstApproveFlow() {
     fetchRequests();
   }, [params]);
 
-  const getCountByStatus = (statusName: string) => {
-    const found = summary.find(
-      (item) => item.ref_request_status_name === statusName
-    );
-    return found ? found.count : 0;
-  };
-
   useEffect(() => {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]); // This will log whenever dataRequest changes
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+     <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
+  {summary.map((item) => {
+    const config = statusConfig[item.ref_request_status_code];
+
+    if (!config) return null;
+
+    return (
+      <div
+        key={item.ref_request_status_code}
+        className="min-w-[38%] flex-shrink-0"
+      >
         <RequestStatusBox
-          iconName="schedule"
-          status="info"
-          title="รออนุมัติ"
-          number={getCountByStatus("รออนุมัติ")}
-        />
-        <RequestStatusBox
-          iconName="reply"
-          status="warning"
-          title="ตีกลับคำขอ"
-          number={getCountByStatus("ตีกลับคำขอ")}
-        />
-        <RequestStatusBox
-          iconName="check"
-          status="success"
-          title="อนุมัติ"
-          number={getCountByStatus("อนุมัติ")}
-        />
-        <RequestStatusBox
-          iconName="delete"
-          status="default"
-          title="ยกเลิกคำขอ"
-          number={getCountByStatus("ยกเลิกคำขอ")}
+          iconName={config.iconName}
+          status={
+            config.status as
+              | "info"
+              | "warning"
+              | "success"
+              | "default"
+              | "error"
+          }
+          title={item.ref_request_status_name}
+          number={item.count}
         />
       </div>
+    );
+  })}
+</div>
 
-      <div className="flex justify-between items-center mt-5">
-        <div className="hidden md:block">
+
+      <div className="flex justify-start md:justify-between items-center mt-5 md:flex-row flex-col w-full gap-3">
+        <div className="mr-auto">
           <div className="input-group input-group-search hidden">
             <div className="input-group-prepend">
               <span className="input-group-text search-ico-info">
@@ -245,9 +271,9 @@ export default function FirstApproveFlow() {
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 mr-auto md:ml-auto">
           <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
             onClick={() => filterModalRef.current?.openModal()}
           >
             <div className="flex items-center gap-1">
@@ -259,6 +285,15 @@ export default function FirstApproveFlow() {
             </div>
           </button>
 
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+            onClick={() => filterSortModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              เรียงลำดับ
+            </div>
+          </button>
         </div>
       </div>
 
@@ -299,81 +334,36 @@ export default function FirstApproveFlow() {
             />
           </div>
 
-          {/* Pagination Controls */}
-          <div className="flex justify-between items-center mt-5 dt-bottom">
-            <div className="flex items-center gap-2">
-              <div className="dt-info" aria-live="polite" role="status">
-                แสดง{" "}
-                {Math.min(
-                  pagination.page * pagination.limit - pagination.limit + 1,
-                  pagination.total
-                )}{" "}
-                ถึง{" "}
-                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
-                จาก {pagination.total} รายการ
-              </div>
-
-              <Paginationselect
-                w="w-[5em]"
-                position="top"
-                options={["10", "25", "50", "100"]}
-                value={pagination.limit}
-                onChange={(value) => handlePageSizeChange(value)}
-              />
-            </div>
-
-            <div className="pagination flex justify-end">
-              <div className="join">
-                <button
-                  className="join-item btn btn-sm btn-outline"
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                >
-                  <i className="material-symbols-outlined">chevron_left</i>
-                </button>
-
-                {Array.from(
-                  { length: pagination.totalPages },
-                  (_, index) => index + 1
-                ).map((page) => (
-                  <button
-                    key={page}
-                    className={`join-item btn btn-sm btn-outline ${
-                      pagination.page === page
-                        ? "active !bg-primary-grayBorder"
-                        : ""
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  className="join-item btn btn-sm btn-outline"
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                >
-                  <i className="material-symbols-outlined">chevron_right</i>
-                </button>
-              </div>
-            </div>
-          </div>
+          <PaginationControls
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
         </>
-      ) : filterNum > 0 || filterDate || dataRequest?.length <= 0 && (
-        <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-          button="ล้างตัวกรอง"
-          displayBtn={true}
-          btnType="secondary"
-          useModal={handleClearAllFilters}
-        />
+      ) : (
+        filterNum > 0 ||
+        filterDate ||
+        (dataRequest?.length <= 0 && (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
+        ))
       )}
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
         onSubmitFilter={handleFilterSubmit}
+      />
+
+<FilterSortModal
+        ref={filterSortModalRef}
+        onSubmitFilter={handleFilterSortSubmit}
       />
     </>
   );

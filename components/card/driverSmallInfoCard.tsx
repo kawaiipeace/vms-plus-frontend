@@ -32,7 +32,7 @@ export default function DriverSmallInfoCard({
   const [driver, setDriver] = useState<DriverType>();
 
   useEffect(() => {
-    console.log("driver", driverDetail);
+ 
     if (driverDetail) {
       setDriver(driverDetail);
       return;
@@ -157,7 +157,7 @@ export default function DriverSmallInfoCard({
         )}
       </div>
 
-      <DriverInfoModal ref={driverInfoModalRef} />
+      <DriverInfoModal ref={driverInfoModalRef} id={id} />
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>
   );

@@ -11,6 +11,7 @@ interface Props {
     selectedStartDate: string;
     selectedEndDate: string;
   }) => void;
+  deptSap?: string;
 }
 
 const FilterModal = forwardRef<

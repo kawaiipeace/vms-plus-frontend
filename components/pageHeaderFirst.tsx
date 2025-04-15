@@ -82,8 +82,8 @@ export default function PageHeaderFirst({ data }: Props) {
           </div>
 
           {data?.ref_request_status_name &&
-            (data?.ref_request_status_name === "อนุมัติ" ? (
-              <span className="badge badge-pill-outline badge-info">
+            (data?.ref_request_status_name === "อนุมัติ" || data?.ref_request_status_name === "อนุมัติแล้ว" ? (
+              <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
             ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (

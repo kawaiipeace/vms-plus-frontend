@@ -556,7 +556,6 @@ export default function ProcessThree() {
                                     0
                                   }
                                   age={driver.age || "-"}
-                                  phone={driver.driver_contact_number}
                                   onVehicleSelect={handleVehicleSelection}
                                 />
                               )

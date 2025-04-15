@@ -1,5 +1,6 @@
 export interface DriverType {
   mas_driver_uid: string;
+  driver_id:string;
   driver_name: string;
   driver_image: string;
   driver_nickname: string;
