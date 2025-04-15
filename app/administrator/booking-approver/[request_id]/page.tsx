@@ -15,7 +15,6 @@ export default function RequestDetail() {
 
   const params = useParams();
   const request_id = String(params.request_id);
-  console.log('fff',request_id);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {

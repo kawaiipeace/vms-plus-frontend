@@ -59,7 +59,7 @@ export default function RequestTabs() {
       case "50": // รับกุญแจ
       case "60": // เดินทาง
       case "70": // คืนยานพาหนะ
-        return <ArpproveFlow />;
+        return "";
       case "80": // เสร็จสิ้น
         return <div>เสร็จสิ้น</div>; // Replace with your component
       case "90": // ยกเลิก
@@ -79,7 +79,7 @@ export default function RequestTabs() {
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist">
+    <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}

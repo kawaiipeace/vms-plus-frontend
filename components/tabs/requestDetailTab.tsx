@@ -15,7 +15,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
     page: 1,
     limit: 10,
   });
-  const [requestUid, setRequestUid] = useState(requestId);
+  const [requestUid] = useState(requestId);
   const [dataRequest, setDataRequest] = useState<LogType[]>([]);
   const [pagination, setPagination] = useState<PaginationType>({
     limit: 10,
@@ -95,7 +95,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist z-[10]">
+      <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}

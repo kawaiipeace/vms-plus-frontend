@@ -20,8 +20,8 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
     };
   
     return (
-      <div className="flex justify-between items-center mt-5 dt-bottom">
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center mt-5 dt-bottom flex-col-reverse md:flex-row gap-5">
+        <div className="flex items-center gap-2 w-full justify-center">
           <div className="dt-info" aria-live="polite" role="status">
             แสดง{" "}
             {Math.min(page * limit - limit + 1, total)} ถึง{" "}
@@ -37,7 +37,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
           />
         </div>
   
-        <div className="pagination flex justify-end">
+        <div className="pagination flex justify-center md:justify-end w-full ">
           <div className="join">
             <button
               className="join-item btn btn-sm btn-outline"

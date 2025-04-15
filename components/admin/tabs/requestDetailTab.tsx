@@ -51,7 +51,7 @@ export default function RequestDetailTabs({ status, requestType }: Props) {
   return (
     <div className="w-full">
       {status == "edit" && <AlertCustom icon="cancel" title="รับยานพาหนะล่าช้า" desc="คุณต้องรับยานพาหนะก่อนจึงจะสามารถรับบัตรเดินทาง เพื่อนำไปแสดงกับเจ้าหน้าที่รักษาความปลอดภัยก่อนนำรถออกจาก กฟภ." />}
-      <div className="flex border-b tablist z-[10]">
+      <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button key={index} className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`} onClick={() => setActiveTab(index)}>
             <div className="flex gap-2 items-center">

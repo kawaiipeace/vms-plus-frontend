@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import RequestStatusBox from "./requestStatusBox";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import PaginationControls from "./table/pagination-control";
+import ListFlow from "./flow/listFlow";
 
 interface PaginationType {
   limit: number;
@@ -54,14 +55,15 @@ export default function ArpproveFlow() {
     router.push("/vehicle-booking/process-one");
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
-    "20": { iconName: "schedule", status: "info" },
-    "21": { iconName: "reply", status: "warning" },
-    "30": { iconName: "schedule", status: "info" },
-    "31": { iconName: "reply", status: "warning" },
-    "40": { iconName: "check", status: "success" },
-    "90": { iconName: "delete", status: "default" },
-  };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "20": { iconName: "schedule", status: "info" },
+      "21": { iconName: "reply", status: "warning" },
+      "30": { iconName: "schedule", status: "info" },
+      "31": { iconName: "reply", status: "warning" },
+      "40": { iconName: "check", status: "success" },
+      "90": { iconName: "delete", status: "default" },
+    };
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -197,23 +199,32 @@ export default function ArpproveFlow() {
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-4 mb-4">
-        {summary.map((item) => {
-          const config = statusConfig[item.ref_request_status_code];
+      <div className="hidden md:block">
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          {summary.map((item) => {
+            const config = statusConfig[item.ref_request_status_code];
 
-          // If not in your list, skip
-          if (!config) return null;
+            // If not in your list, skip
+            if (!config) return null;
 
-          return (
-            <RequestStatusBox
-              key={item.ref_request_status_code}
-              iconName={config.iconName}
-              status={config.status as "info" | "warning" | "success" | "default" | "error"}
-              title={item.ref_request_status_name}
-              number={item.count}
-            />
-          );
-        })}
+            return (
+              <RequestStatusBox
+                key={item.ref_request_status_code}
+                iconName={config.iconName}
+                status={
+                  config.status as
+                    | "info"
+                    | "warning"
+                    | "success"
+                    | "default"
+                    | "error"
+                }
+                title={item.ref_request_status_name}
+                number={item.count}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-5">
@@ -294,17 +305,23 @@ export default function ArpproveFlow() {
 
       {dataRequest?.length > 0 ? (
         <>
-          <div className="mt-2 hidden md:block">
-            <RequestListTable
-              defaultData={dataRequest}
-              pagination={pagination}
-            />
+          <div className="block md:hidden">
+            <ListFlow requestData={dataRequest} />
+          </div>
+          <div className="hidden md:block">
+            <div className="mt-2">
+              <RequestListTable
+                defaultData={dataRequest}
+                pagination={pagination}
+              />
+            </div>
+          
           </div>
           <PaginationControls
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-          />
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
         </>
       ) : filterNum > 0 || filterDate || dataRequest?.length <= 0 ? (
         <ZeroRecord

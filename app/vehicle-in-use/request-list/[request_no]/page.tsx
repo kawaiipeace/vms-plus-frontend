@@ -131,7 +131,7 @@ const RequestNo = () => {
             </div>
 
             <div className="w-full overflow-x-auto">
-              <div className="flex border-b tablist">
+            <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
                 {tabs.map((tab, index) => (
                   <button key={index} className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`} onClick={() => setActiveTab(index)}>
                     <div className="flex gap-2 items-center">
@@ -147,7 +147,7 @@ const RequestNo = () => {
           </div>
         </div>
       </div>
-      <CancelRequestModal ref={cancelRequestModalRef} title="ยืนยันยกเลิกคำขอ?" desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก" confirmText="ยกเลิกคำขอ" />
+      <CancelRequestModal id="" ref={cancelRequestModalRef} title="ยืนยันยกเลิกคำขอ?" desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก" confirmText="ยกเลิกคำขอ" />
     </div>
   );
 };

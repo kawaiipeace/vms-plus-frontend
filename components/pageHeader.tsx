@@ -1,8 +1,6 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
-import CancelRequestModal from "./modal/cancelRequestModal";
-import FileBackRequestModal from "./modal/fileBackModal";
-import ApproveRequestModal from "./modal/approveRequestModal";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
 
 interface Props {

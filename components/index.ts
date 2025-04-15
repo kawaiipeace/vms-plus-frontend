@@ -19,3 +19,7 @@ export { default as ApproverModal } from "./modal/approverModal";
 export { default as ApproveRequestModal } from "./modal/approveRequestModal";
 export { default as SendbackRequestModal } from "./modal/sendbackRequestModal";
 export { default as EditDriverAppointmentModal } from "./modal/editDriverAppointmentModal";
+export { default as CancelRequestModal } from "./modal/cancelRequestModal";
+
+//mobile
+export { default as MobileWaitingCard } from "./card/mobileWaitingCard";
