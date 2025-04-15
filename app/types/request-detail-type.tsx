@@ -10,6 +10,7 @@ export interface RequestDetailType {
   vehicle_user_dept_sap_short: string;
   vehicle_user_dept_sap_full: string;
   car_user_mobile_contact_number: string;
+  car_user_internal_contact_number: string;
   vehicle_license_plate: string;
   approved_request_emp_id: string;
   approved_request_emp_name: string;

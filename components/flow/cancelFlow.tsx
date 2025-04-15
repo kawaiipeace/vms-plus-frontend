@@ -9,6 +9,7 @@ import FilterModal from "@/components/modal/filterModal";
 import dayjs from "dayjs";
 import FilterCancelModal from "@/components/modal/filterCancelModal";
 import PaginationControls from "../table/pagination-control";
+import ListFlow from "./listFlow";
 
 interface PaginationType {
   limit: number;
@@ -180,12 +181,19 @@ export default function CancelFlow() {
 
       {dataRequest?.length > 0 ? (
         <>
+          <div className="hidden md:block">
           <div className="mt-2">
             <RequestListTable
               defaultData={dataRequest}
               pagination={pagination}
             />
           </div>
+          </div>
+
+          <div className="block md:hidden">
+            <ListFlow requestData={dataRequest} />
+          </div>
+        
 
           <PaginationControls
               pagination={pagination}

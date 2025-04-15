@@ -2,26 +2,43 @@ import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchVehicleUsers } from "@/services/masterService";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface Props {
   id: string;
+  requestData?: RequestDetailType;
 }
 
-export default function VehicleUserInfoCard({ id }: Props) {
+export default function VehicleUserInfoCard({ id, requestData }: Props) {
   const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetchVehicleUsers(id);
-        setVehicleUser(res.data[0]);
+        console.log('vehicledata', res);
+        let user = res.data[0];
+
+        // Override only contact numbers from requestData if available
+        if (requestData) {
+          user = {
+            ...user,
+            tel_mobile: requestData.car_user_mobile_contact_number,
+            tel_internal: requestData.car_user_internal_contact_number,
+          };
+        }
+
+        setVehicleUser(user);
       } catch (error) {
         console.error("Error fetching driver data:", error);
       }
     };
 
-    fetchData();
-  }, []);
+    if (id) {
+      fetchData();
+    }
+  }, [id, requestData]);
+
   return (
     <div className="form-card">
       <div className="form-card-body form-card-inline">
@@ -36,9 +53,7 @@ export default function VehicleUserInfoCard({ id }: Props) {
           <div className="form-plaintext-group align-self-center">
             <div className="form-label">{vehicleUser?.full_name}</div>
             <div className="supporting-text-group">
-              <div className="supporting-text">
-                {vehicleUser?.emp_id}
-              </div>
+              <div className="supporting-text">{vehicleUser?.emp_id}</div>
               <div className="supporting-text">{vehicleUser?.dept_sap_short}</div>
             </div>
           </div>
@@ -49,9 +64,7 @@ export default function VehicleUserInfoCard({ id }: Props) {
               <div className="form-group form-plaintext">
                 <i className="material-symbols-outlined">smartphone</i>
                 <div className="form-plaintext-group">
-                  <div className="form-text text-nowrap">
-                    {vehicleUser?.tel_mobile}
-                  </div>
+                  <div className="form-text text-nowrap">{vehicleUser?.tel_mobile}</div>
                 </div>
               </div>
             </div>
@@ -61,9 +74,7 @@ export default function VehicleUserInfoCard({ id }: Props) {
                 <div className="form-group form-plaintext">
                   <i className="material-symbols-outlined">call</i>
                   <div className="form-plaintext-group">
-                    <div className="form-text text-nowra">
-                      {vehicleUser?.tel_internal}
-                    </div>
+                    <div className="form-text text-nowrap">{vehicleUser?.tel_internal}</div>
                   </div>
                 </div>
               </div>

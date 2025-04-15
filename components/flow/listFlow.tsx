@@ -68,6 +68,26 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
+        
+        if (ref_request_status_name === "ยกเลิกคำขอ") {
+          return (
+            <MobileFileBackCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              imageSrc="/assets/img/graphic/status_reject_request.png"
+              imageAlt="Rejected Request"
+              cardTitle={request.ref_request_status_name || "ถูกตีกลับ"}
+              cardSubtitle={request.vehicle_license_plate || ""}
+              supportingTexts={[
+                request.work_place || "ไม่ทราบสถานที่ปฏิบัติงาน",
+                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${convertToBuddhistDateTime(request.end_datetime).date || "-"}`,
+              ]}
+              cardItemText={request?.ref_request_status_name}
+              showEditButton={true}
+            />
+          );
+        }
+
 
 
         return null; // Skip rendering if status code doesn't match

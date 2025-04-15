@@ -279,10 +279,11 @@ Props) {
                 แก้ไข
               </button>
             </div>
-
+            {updatedFormData.refCostTypeCode && 
             <DisburstmentCard
               refCostTypeCode={updatedFormData.refCostTypeCode}
             />
+}
           </div>
         </div>
 

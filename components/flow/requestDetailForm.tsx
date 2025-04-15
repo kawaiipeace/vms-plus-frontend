@@ -117,7 +117,7 @@ export default function RequestDetailForm({
                 </button>
               )}
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} />
+            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
           </div>
 
           <div className="form-section">
@@ -366,7 +366,7 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
-                      <DriverSmallInfoCard driverDetail={requestData?.driver} />
+                      <DriverSmallInfoCard driverDetail={requestData?.driver} showPhone={true} />
                     </div>
                   )
                 )}

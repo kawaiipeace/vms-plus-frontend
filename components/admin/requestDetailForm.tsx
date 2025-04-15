@@ -33,16 +33,18 @@ export default function RequestDetailForm({ status }: RequestDetailFormProps) {
     if (storedData) {
       updateFormData(JSON.parse(storedData));
     }
-
-    const fetchCostTypeFromCodeFunc =  async () => {
-      try {
-        const response = await fetchCodeTypeFromCode(formData?.refCostTypeCode || "");
-        setCostTypeData(response);
-      } catch (error) {
-        console.error("API Error:", error);
+    if(formData?.refCostTypeCode){
+      const fetchCostTypeFromCodeFunc =  async () => {
+        try {
+          const response = await fetchCodeTypeFromCode(formData?.refCostTypeCode || "");
+          setCostTypeData(response);
+        } catch (error) {
+          console.error("API Error:", error);
+        }
       }
+      fetchCostTypeFromCodeFunc();
     }
-    fetchCostTypeFromCodeFunc();
+  
    
   }, [updateFormData]);
   

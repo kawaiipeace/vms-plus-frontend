@@ -45,14 +45,7 @@ const DisbursementModal = forwardRef<
     resolver: yupResolver(schema),
   });
 
-  useEffect(() => {
-    if (requestData) {
-      reset({
-        refCostTypeCode: requestData?.ref_cost_type_code,
-      });
-      hasReset.current = true;
-    }
-  }, [requestData, reset]);
+
 
   const [costCenter, setCostCenter] = useState<string>("");
   const [costData, setCostData] = useState<
@@ -99,9 +92,15 @@ const DisbursementModal = forwardRef<
   }, []);
 
   useEffect(() => {
+    let refCode = "";
+    if(requestData){
+        refCode = requestData?.ref_cost_type_code;
+    }else{
+      refCode = String(formData.refCostTypeCode);
+    }
     if (costTypeOptions.length > 0) {
       const selectedOption = costTypeOptions.find(
-        (option) => option.value === formData.refCostTypeCode
+        (option) => option.value === refCode
       );
 
       if (selectedOption) {
@@ -116,7 +115,7 @@ const DisbursementModal = forwardRef<
         }
       }
     }
-  }, [costTypeOptions, costData, formData.refCostTypeCode]);
+  }, [costTypeOptions, costData, formData.refCostTypeCode, requestData]);
 
   const handleCostTypeChange = (option: any) => {
     setSelectedCostTypeOption(option);
@@ -133,15 +132,20 @@ const DisbursementModal = forwardRef<
     }
   };
 
+
+
   const onSubmit = async (data: any) => {
       if (requestData) {
           const payload = {
-            // reference_number: data.referenceNumber,
-            // trn_request_uid: requestData.trn_request_uid,
+            cost_no: costCenter,
+            ref_cost_type_code: data.refCostTypeCode,
+            trn_request_uid: requestData.trn_request_uid,
           };
 
           try {
+            console.log('pay',payload);
             const response = await updateCost(payload);
+            console.log('respos', response);
             if (response) {
               if (onUpdate) onUpdate(response.data);
               modalRef.current?.close();

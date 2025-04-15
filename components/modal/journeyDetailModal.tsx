@@ -106,6 +106,7 @@ const JourneyDetailModal = forwardRef<
       trip_type: parseInt(selectedTripType),
       trn_request_uid: requestData?.trn_request_uid,
       work_place: data.workPlace,
+      remark: data.remark
     };
 
     if (requestData) {
