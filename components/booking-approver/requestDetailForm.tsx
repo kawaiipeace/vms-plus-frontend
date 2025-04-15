@@ -258,13 +258,13 @@ export default function RequestDetailForm({
                     />
                   )}
 
-                {/* {(requestData?.is_admin_choose_driver &&
-                  requestData?.is_admin_choose_driver === "1") &&( */}
+                {(requestData?.is_admin_choose_driver &&
+                  requestData?.is_admin_choose_driver === "1") &&(
                     <ChooseDriverCard
                       number={requestData?.number_of_available_drivers}
-                      chooseDriver={true}
+
                     />
-                  {/* )} */}
+                  )}
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5">

@@ -56,7 +56,6 @@ export default function FirstApproveFlow() {
     closeModal: () => void;
   } | null>(null);
 
-
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
       ...prevParams,
@@ -121,7 +120,10 @@ export default function FirstApproveFlow() {
     }));
   };
 
-  const handleFilterSortSubmit = (filters: { requestNo: string; startDateTime: string }) => {
+  const handleFilterSortSubmit = (filters: {
+    requestNo: string;
+    startDateTime: string;
+  }) => {
     console.log("Filters submitted:", filters);
     // You can use filters.requestNo and filters.startDateTime to filter your data
     // Example:
@@ -160,7 +162,6 @@ export default function FirstApproveFlow() {
       }));
     }
   };
-
 
   const handleClearAllFilters = () => {
     setParams({
@@ -216,86 +217,121 @@ export default function FirstApproveFlow() {
 
   return (
     <>
-     <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
-  {summary.map((item) => {
-    const config = statusConfig[item.ref_request_status_code];
+      <div className="md:hidden block">
+        <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
+          {summary.map((item) => {
+            const config = statusConfig[item.ref_request_status_code];
 
-    if (!config) return null;
+            if (!config) return null;
 
-    return (
-      <div
-        key={item.ref_request_status_code}
-        className="min-w-[38%] flex-shrink-0"
-      >
-        <RequestStatusBox
-          iconName={config.iconName}
-          status={
-            config.status as
-              | "info"
-              | "warning"
-              | "success"
-              | "default"
-              | "error"
-          }
-          title={item.ref_request_status_name}
-          number={item.count}
-        />
+            return (
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
+                <RequestStatusBox
+                  iconName={config.iconName}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
+                  title={item.ref_request_status_name}
+                  number={item.count}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
-    );
-  })}
+
+      <div className="hidden md:block">
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          {summary.map((item) => {
+            const config = statusConfig[item.ref_request_status_code];
+
+            if (!config) return null;
+
+            return (
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
+                <RequestStatusBox
+                  iconName={config.iconName}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
+                  title={item.ref_request_status_name}
+                  number={item.count}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mt-5 md:flex-row flex-col w-full gap-3">
+  {/* Left side: Search */}
+  <div className="w-full md:w-auto">
+    <div className="input-group input-group-search hidden">
+      <div className="input-group-prepend">
+        <span className="input-group-text search-ico-info">
+          <i className="material-symbols-outlined">search</i>
+        </span>
+      </div>
+      <input
+        type="text"
+        id="myInputTextField"
+        className="form-control dt-search-input"
+        placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
+        value={params.search}
+        onChange={(e) =>
+          setParams((prevParams) => ({
+            ...prevParams,
+            search: e.target.value,
+            page: 1,
+          }))
+        }
+      />
+    </div>
+  </div>
+
+  {/* Right side on desktop, stacked below on mobile */}
+  <div className="flex gap-4 w-full md:w-auto md:ml-auto">
+    <button
+      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+      onClick={() => filterModalRef.current?.openModal()}
+    >
+      <div className="flex items-center gap-1">
+        <i className="material-symbols-outlined">filter_list</i>
+        ตัวกรอง
+        <span className="badge badge-brand badge-outline rounded-[50%]">
+          {filterNum}
+        </span>
+      </div>
+    </button>
+
+    <button
+      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+      onClick={() => filterSortModalRef.current?.openModal()}
+    >
+      <div className="flex items-center gap-1">
+        <i className="material-symbols-outlined">filter_list</i>
+        เรียงลำดับ
+      </div>
+    </button>
+  </div>
 </div>
 
-
-      <div className="flex justify-start md:justify-between items-center mt-5 md:flex-row flex-col w-full gap-3">
-        <div className="mr-auto">
-          <div className="input-group input-group-search hidden">
-            <div className="input-group-prepend">
-              <span className="input-group-text search-ico-info">
-                <i className="material-symbols-outlined">search</i>
-              </span>
-            </div>
-            <input
-              type="text"
-              id="myInputTextField"
-              className="form-control dt-search-input"
-              placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
-              value={params.search}
-              onChange={(e) =>
-                setParams((prevParams) => ({
-                  ...prevParams,
-                  search: e.target.value,
-                  page: 1, // Reset to page 1 on search
-                }))
-              }
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4 mr-auto md:ml-auto">
-          <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-            onClick={() => filterModalRef.current?.openModal()}
-          >
-            <div className="flex items-center gap-1">
-              <i className="material-symbols-outlined">filter_list</i>
-              ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">
-                {filterNum}
-              </span>
-            </div>
-          </button>
-
-          <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-            onClick={() => filterSortModalRef.current?.openModal()}
-          >
-            <div className="flex items-center gap-1">
-              <i className="material-symbols-outlined">filter_list</i>
-              เรียงลำดับ
-            </div>
-          </button>
-        </div>
-      </div>
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
@@ -335,10 +371,10 @@ export default function FirstApproveFlow() {
           </div>
 
           <PaginationControls
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </>
       ) : (
         filterNum > 0 ||
@@ -361,7 +397,7 @@ export default function FirstApproveFlow() {
         onSubmitFilter={handleFilterSubmit}
       />
 
-<FilterSortModal
+      <FilterSortModal
         ref={filterSortModalRef}
         onSubmitFilter={handleFilterSortSubmit}
       />

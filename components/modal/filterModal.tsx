@@ -92,7 +92,10 @@ const FilterModal = forwardRef<
               <div className="form-group">
                 <label className="form-label">สถานะคำขอ</label>
                 {statusData
-                  .filter((statusItem) => statusItem.ref_request_status_name !== "ยกเลิกคำขอ")
+                  .filter(
+                    (statusItem) =>
+                      statusItem.ref_request_status_name !== "ยกเลิกคำขอ"
+                  )
                   .map((statusItem, index) => (
                     <div className="custom-group" key={index}>
                       <div className="custom-control custom-checkbox custom-control-inline">
@@ -113,8 +116,12 @@ const FilterModal = forwardRef<
                           <div className="custom-control-label-group">
                             <span
                               className={`badge badge-pill-outline ${
-                                statusItem.ref_request_status_name === "รออนุมัติ"
+                                statusItem.ref_request_status_name ===
+                                "รออนุมัติ"
                                   ? "badge-info"
+                                  : statusItem.ref_request_status_name ===
+                                    "อนุมัติแล้ว"
+                                  ? "badge-success"
                                   : "badge-error"
                               }`}
                             >
@@ -142,7 +149,7 @@ const FilterModal = forwardRef<
                     </span>
                   </div>
                   <DatePicker
-                    ref={startDatePickerRef} 
+                    ref={startDatePickerRef}
                     placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
                     onChange={handleStartDateChange}
                   />
@@ -199,7 +206,11 @@ const FilterModal = forwardRef<
               type="button"
               className="btn btn-primary"
               onClick={() => {
-                onSubmitFilter({ selectedStatuses, selectedStartDate, selectedEndDate });
+                onSubmitFilter({
+                  selectedStatuses,
+                  selectedStartDate,
+                  selectedEndDate,
+                });
                 modalRef.current?.close(); // Close modal manually
               }}
             >
