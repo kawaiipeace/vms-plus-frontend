@@ -8,6 +8,7 @@ import Paginationselect from "@/components/table/paginationSelect";
 import FilterModal from "@/components/modal/filterModal";
 import dayjs from "dayjs";
 import FilterCancelModal from "@/components/modal/filterCancelModal";
+import PaginationControls from "../table/pagination-control";
 
 interface PaginationType {
   limit: number;
@@ -186,64 +187,11 @@ export default function CancelFlow() {
             />
           </div>
 
-          <div className="flex justify-between items-center mt-5 dt-bottom">
-            <div className="flex items-center gap-2">
-              <div className="dt-info" aria-live="polite" role="status">
-                แสดง{" "}
-                {Math.min(
-                  pagination.page * pagination.limit - pagination.limit + 1,
-                  pagination.total
-                )}{" "}
-                ถึง{" "}
-                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
-                จาก {pagination.total} รายการ
-              </div>
-
-              <Paginationselect
-                w="w-[5em]"
-                position="top"
-                options={["10", "25", "50", "100"]}
-                value={pagination.limit}
-                onChange={(value) => handlePageSizeChange(value)}
-              />
-            </div>
-
-            <div className="pagination flex justify-end">
-              <div className="join">
-                <button
-                  className="join-item btn btn-sm btn-outline"
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page <= 1}
-                >
-                  <i className="material-symbols-outlined">chevron_left</i>
-                </button>
-
-                {Array.from(
-                  { length: pagination.totalPages },
-                  (_, index) => index + 1
-                ).map((page) => (
-                  <button
-                    key={page}
-                    className={`join-item btn btn-sm btn-outline ${
-                      pagination.page === page
-                        ? "active !bg-primary-grayBorder"
-                        : ""
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  className="join-item btn btn-sm btn-outline"
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page >= pagination.totalPages}
-                >
-                  <i className="material-symbols-outlined">chevron_right</i>
-                </button>
-              </div>
-            </div>
-          </div>
+          <PaginationControls
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
         </>
       ) : (
         <ZeroRecord

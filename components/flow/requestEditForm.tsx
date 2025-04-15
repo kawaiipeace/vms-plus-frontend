@@ -23,13 +23,11 @@ import { fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 interface Props {
   approverCard?: boolean;
-  driverCard?: boolean;
   keyPickUpCard?: boolean;
 }
 
 export default function RequestEditForm({
   approverCard,
-  driverCard,
 }: // keyPickUpCard,
 Props) {
   const editDriverAppointmentModalRef = useRef<{
@@ -402,6 +400,7 @@ Props) {
               !updatedFormData?.isAdminChooseDriver && (
                 <div className="mt-5">
                   <DriverSmallInfoCard
+                    showPhone={true}
                     id={updatedFormData?.masCarpoolDriverUid}
                     userKeyPickup={false}
                   />
@@ -409,51 +408,6 @@ Props) {
               )
             )}
 
-            {driverCard && (
-              <div className="form-section mt-5">
-                <div className="form-section-header">
-                  <div className="form-section-header-title">ผู้ขับขี่</div>
-                </div>
-
-                <div className="card mt-3">
-                  <div className="card-body card-body-inline">
-                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                      <Image
-                        src="/assets/img/sample-avatar.png"
-                        className="rounded-md"
-                        width={100}
-                        height={100}
-                        alt=""
-                      />
-                    </div>
-                    <div className="card-content">
-                      <div className="card-content-top">
-                        <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-                        <div className="supporting-text-group">
-                          <div className="supporting-text">505291</div>
-                          <div className="supporting-text">
-                            นรค.6 กอพ.1 ฝพจ.
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="card-item-group">
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <span className="card-item-text">091-234-5678</span>
-                        </div>
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">call</i>
-                          <span className="card-item-text">6032</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           {approverCard && (
             <div className="form-section">

@@ -10,12 +10,14 @@ interface DriverSmallInfoCardProps {
   id?: string;
   seeDetail?: boolean;
   driverDetail?: DriverType;
+  showPhone?: boolean;
 }
 
 export default function DriverSmallInfoCard({
   userKeyPickup,
   seeDetail,
   driverDetail,
+  showPhone,
   id,
 }: DriverSmallInfoCardProps) {
   const driverInfoModalRef = useRef<{
@@ -29,14 +31,13 @@ export default function DriverSmallInfoCard({
 
   const [driver, setDriver] = useState<DriverType>();
 
- 
   useEffect(() => {
-    console.log('driver',driverDetail);
+    console.log("driver", driverDetail);
     if (driverDetail) {
       setDriver(driverDetail);
-      return; 
+      return;
     }
-  
+
     const fetchData = async () => {
       try {
         const res = await fetchDriverDetail(id || "");
@@ -46,10 +47,9 @@ export default function DriverSmallInfoCard({
         console.error("Error fetching driver data:", error);
       }
     };
-  
+
     fetchData();
   }, [id, driverDetail]);
-  
 
   if (!driver) {
     return;
@@ -77,33 +77,44 @@ export default function DriverSmallInfoCard({
             </div>
 
             <div className="card-item-group">
-              <div className="card-item">
-                <i className="material-symbols-outlined">star</i>
+              {showPhone ? (
+                <div className="card-item">
+                <i className="material-symbols-outlined">smartphone</i>
                 <span className="card-item-text">
-                  {driver.driver_average_satisfaction_score}
+                  {driver.driver_contact_number}
                 </span>
               </div>
-              <div className="card-item">
-                <i className="material-symbols-outlined">person</i>
-                <span className="card-item-text">{driver.age} ปี</span>
-              </div>
+              ) : (
+                <>
+                  <div className="card-item">
+                    <i className="material-symbols-outlined">star</i>
+                    <span className="card-item-text">
+                      {driver.driver_average_satisfaction_score}
+                    </span>
+                  </div>
+                  <div className="card-item">
+                    <i className="material-symbols-outlined">person</i>
+                    <span className="card-item-text">{driver.age} ปี</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
-      {seeDetail && 
-        <div className="card-actioins w-full">
-          <button
-            className="btn btn-default w-full"
-            onClick={
-              userKeyPickup
-                ? () => userKeyPickUpModalRef.current?.openModal()
-                : () => driverInfoModalRef.current?.openModal()
-            }
-          >
-            ดูรายละเอียด
-          </button>
-        </div>
-        }
+        {seeDetail && (
+          <div className="card-actioins w-full">
+            <button
+              className="btn btn-default w-full"
+              onClick={
+                userKeyPickup
+                  ? () => userKeyPickUpModalRef.current?.openModal()
+                  : () => driverInfoModalRef.current?.openModal()
+              }
+            >
+              ดูรายละเอียด
+            </button>
+          </div>
+        )}
         {userKeyPickup && (
           <>
             <hr />

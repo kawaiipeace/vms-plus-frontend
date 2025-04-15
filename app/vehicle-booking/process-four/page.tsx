@@ -82,6 +82,7 @@ export default function ProcessFour() {
       try {
         const response = await createRequest(mappedData);
         if (response.data) {
+          localStorage.removeItem("formData");
           router.push(
             "request-list?create-req=success&request-id=" +
               response.data.trn_request_uid

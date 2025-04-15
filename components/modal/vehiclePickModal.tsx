@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -13,12 +14,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { updateVehicleType } from "@/services/bookingUser";
+import Image from "next/image";
 
 const schema = yup.object().shape({
   requestedVehicleTypeName: yup.string(),
 });
 
 interface VehiclePickModelProps {
+  selectType?: string;
   requestData?: RequestDetailType;
   process: string;
   onSelect?: (vehicle: string) => void;
@@ -31,12 +34,12 @@ interface VehicleCat {
   available_units: string;
   vehicle_type_image: string;
 }
+// ...[imports unchanged]
 
 const VehiclePickModel = forwardRef<
-  { openModal: () => void; closeModal: () => void }, // Ref type
-  VehiclePickModelProps // Props type
->(({ process, onSelect, onUpdate, requestData }, ref) => {
-  // Destructure `process` from props
+  { openModal: () => void; closeModal: () => void },
+  VehiclePickModelProps
+>(({ process, onSelect, onUpdate, requestData, selectType }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -47,6 +50,16 @@ const VehiclePickModel = forwardRef<
   const { updateFormData } = useFormContext();
   const [selectedCarType, setSelectedCarType] = useState("");
   const [vehicleCatData, setVehicleCatData] = useState<VehicleCat[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const groupedVehicles = useMemo(() => {
+    const chunkSize = 6;
+    const result = [];
+    for (let i = 0; i < vehicleCatData.length; i += chunkSize) {
+      result.push(vehicleCatData.slice(i, i + chunkSize));
+    }
+    return result;
+  }, [vehicleCatData]);
 
   useEffect(() => {
     const fetchVehicleCarTypesData = async () => {
@@ -76,7 +89,6 @@ const VehiclePickModel = forwardRef<
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">
-            {" "}
             {process == "edit" ? "แก้ไข" : "เลือก"}ประเภทยานพาหนะ
           </div>
           <form method="dialog">
@@ -87,31 +99,121 @@ const VehiclePickModel = forwardRef<
         </div>
         <div className="modal-body overflow-y-auto">
           <div className="form-group">
-            <label className="form-label mb-4 text-primary">
-              <i className="material-symbols-outlined text-brand">
-                directions_car
-              </i>
-              สายงานดิจิทัล
-            </label>
+            <div className="card !bg-surface-secondary-subtle mb-3 !border-0 shadow-none outline-none">
+              <div className="card-body border-0 shadow-none outline-none">
+                {selectType === "ผู้ดูแลยานพาหนะเลือกให้" ? (
+                  <div className="flex items-center gap-5">
+                    <div className="img img-square img-avatar">
+                      <Image
+                        src={"/assets/img/admin-selected.png"}
+                        className="rounded-md"
+                        width={52}
+                        height={52}
+                        alt={"driver"}
+                      />
+                    </div>
+                    <div className="card-content">
+                      <div className="card-content-top">
+                        <div className="card-title">ผู้ดูแลเลือกยานพาหนะให้</div>
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">สายงานดิจิทัล</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-5">
+                    <div className="img img-square img-avatar">
+                      <Image
+                        src={"/assets/img/system-selected.png"}
+                        className="rounded-md"
+                        width={52}
+                        height={52}
+                        alt={"driver"}
+                      />
+                    </div>
+                    <div className="card-content">
+                      <div className="card-content-top">
+                        <div className="card-title">
+                          ระบบเลือกยานพาหนะให้อัตโนมัติ
+                        </div>
+                        <div className="supporting-text-group">
+                          <div className="supporting-text">สายงานดิจิทัล</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              {vehicleCatData.map((vehicle) => (
-                <CarTypeCard
-                  key={vehicle.ref_vehicle_type_code} // Unique key for each card
-                  imgSrc={
-                    vehicle.vehicle_type_image ||
-                    "/assets/img/graphic/category_car.png"
-                  } // Adjust this to the actual field in your data
-                  title={vehicle.ref_vehicle_type_name} // Adjust this to the actual field in your data
-                  text={vehicle.available_units} // Adjust this to the actual field in your data
-                  name="carType"
-                  selectedValue={selectedCarType}
-                  setSelectedValue={setSelectedCarType}
-                />
-              ))}
+            <div className="relative w-full">
+              <div className="relative">
+                {/* Left Arrow */}
+                {currentSlide !== 0 && (
+                  <button
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-1 shadow-sm hover:bg-gray-100 transition"
+                    style={{ width: "40px", height: "40px" }}
+                    onClick={() => setCurrentSlide((prev) => prev - 1)}
+                  >
+                    <i className="material-symbols-outlined text-lg">
+                      keyboard_arrow_left
+                    </i>
+                  </button>
+                )}
+
+                {/* Right Arrow */}
+                {currentSlide !== groupedVehicles.length - 1 && (
+                  <button
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-1 shadow-sm hover:bg-gray-100 transition"
+                    style={{ width: "40px", height: "40px" }}
+                    onClick={() => setCurrentSlide((prev) => prev + 1)}
+                  >
+                    <i className="material-symbols-outlined text-lg">
+                      keyboard_arrow_right
+                    </i>
+                  </button>
+                )}
+
+                {/* Grid */}
+                <div className="px-0">
+                  <div className="grid grid-cols-3 gap-4">
+                    {groupedVehicles[currentSlide]?.map((vehicle) => (
+                      <div key={vehicle.ref_vehicle_type_code} className="h-full">
+                        <CarTypeCard
+                          imgSrc={
+                            vehicle.vehicle_type_image ||
+                            "/assets/img/graphic/category_car.png"
+                          }
+                          title={vehicle.ref_vehicle_type_name}
+                          text={vehicle.available_units}
+                          name="carType"
+                          selectedValue={selectedCarType}
+                          setSelectedValue={setSelectedCarType}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Indicators */}
+              <div className="indicator-daisy flex justify-center mt-4 gap-2">
+                {groupedVehicles.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`btn btn-xs !rounded-full focus:outline-none border-0 !min-h-2 !min-w-2 p-0 size-2 overflow-hidden ${
+                      idx === currentSlide ? "active" : ""
+                    }`}
+                    onClick={() => setCurrentSlide(idx)}
+                  ></button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Modal Action */}
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
           <form method="dialog">
             <button className="btn btn-secondary">ปิด</button>
@@ -123,6 +225,7 @@ const VehiclePickModel = forwardRef<
             onClick={async () => {
               if (onSelect) onSelect(selectedCarType);
               setValue("requestedVehicleTypeName", selectedCarType);
+
               if (requestData) {
                 const payload = {
                   trn_request_uid: requestData.trn_request_uid,
@@ -147,7 +250,7 @@ const VehiclePickModel = forwardRef<
                   onUpdate({
                     requestedVehicleTypeName: selectedCarType,
                   });
-                modalRef.current?.close(); // Close the modal after selecting
+                modalRef.current?.close();
               }
             }}
           >
@@ -155,6 +258,7 @@ const VehiclePickModel = forwardRef<
           </button>
         </div>
       </div>
+
       <form method="dialog" className="modal-backdrop">
         <button>close</button>
       </form>
@@ -163,5 +267,4 @@ const VehiclePickModel = forwardRef<
 });
 
 VehiclePickModel.displayName = "VehiclePickModel";
-
 export default VehiclePickModel;
