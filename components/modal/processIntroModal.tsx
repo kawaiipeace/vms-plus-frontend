@@ -104,7 +104,6 @@ const ProcessIntroModal = forwardRef((_, ref) => {
               <Image
                 src={images[currentIndex].src}
                 alt={images[currentIndex].alt}
-                layout="responsive"
                 width={100}
                 height={100}
                 className="object-cover w-full"

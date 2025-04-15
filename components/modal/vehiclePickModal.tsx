@@ -11,28 +11,31 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { updateVehicleType } from "@/services/bookingUser";
 
 const schema = yup.object().shape({
-  requestedVehicleTypeName: yup.string()
+  requestedVehicleTypeName: yup.string(),
 });
 
 interface VehiclePickModelProps {
+  requestData?: RequestDetailType;
   process: string;
   onSelect?: (vehicle: string) => void;
   onUpdate?: (data: any) => void;
 }
 
-interface VehicleCat{
+interface VehicleCat {
   ref_vehicle_type_code: string;
   ref_vehicle_type_name: string;
   available_units: string;
-  vehicle_type_image:string;
+  vehicle_type_image: string;
 }
 
 const VehiclePickModel = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   VehiclePickModelProps // Props type
->(({ process, onSelect, onUpdate }, ref) => {
+>(({ process, onSelect, onUpdate, requestData }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
@@ -60,15 +63,10 @@ const VehiclePickModel = forwardRef<
     fetchVehicleCarTypesData();
   }, []);
 
-  
-
-  const {
-    setValue,
-  } = useForm({
+  const { setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
-
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -97,10 +95,13 @@ const VehiclePickModel = forwardRef<
             </label>
 
             <div className="grid grid-cols-3 gap-4">
-            {vehicleCatData.map((vehicle) => (
+              {vehicleCatData.map((vehicle) => (
                 <CarTypeCard
                   key={vehicle.ref_vehicle_type_code} // Unique key for each card
-                  imgSrc={vehicle.vehicle_type_image || "/assets/img/graphic/category_car.png"} // Adjust this to the actual field in your data
+                  imgSrc={
+                    vehicle.vehicle_type_image ||
+                    "/assets/img/graphic/category_car.png"
+                  } // Adjust this to the actual field in your data
                   title={vehicle.ref_vehicle_type_name} // Adjust this to the actual field in your data
                   text={vehicle.available_units} // Adjust this to the actual field in your data
                   name="carType"
@@ -108,7 +109,6 @@ const VehiclePickModel = forwardRef<
                   setSelectedValue={setSelectedCarType}
                 />
               ))}
-             
             </div>
           </div>
         </div>
@@ -120,17 +120,35 @@ const VehiclePickModel = forwardRef<
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => {
-              if (onSelect) onSelect(selectedCarType); 
-              setValue("requestedVehicleTypeName",selectedCarType)
-              updateFormData({
-                requestedVehicleTypeName: selectedCarType,
-              });
-              if(onUpdate)
-                onUpdate({
+            onClick={async () => {
+              if (onSelect) onSelect(selectedCarType);
+              setValue("requestedVehicleTypeName", selectedCarType);
+              if (requestData) {
+                const payload = {
+                  trn_request_uid: requestData.trn_request_uid,
+                  requested_vehicle_type_id: selectedCarType,
+                };
+
+                try {
+                  const response = await updateVehicleType(payload);
+                  if (response) {
+                    if (onUpdate) onUpdate(response.data);
+                    modalRef.current?.close();
+                  }
+                } catch (error) {
+                  console.error("Network error:", error);
+                  alert("Failed to update trip due to network error.");
+                }
+              } else {
+                updateFormData({
                   requestedVehicleTypeName: selectedCarType,
                 });
-              modalRef.current?.close(); // Close the modal after selecting
+                if (onUpdate)
+                  onUpdate({
+                    requestedVehicleTypeName: selectedCarType,
+                  });
+                modalRef.current?.close(); // Close the modal after selecting
+              }
             }}
           >
             เลือก

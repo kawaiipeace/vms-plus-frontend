@@ -1,5 +1,5 @@
 
-import { CanceledRequestType } from '@/app/types/request-action-type';
+import { CanceledRequestType, SendbackRequestType } from '@/app/types/request-action-type';
 import axiosInstance from '@/utils/axiosInstance';
 
 export const requests = async (params: {
@@ -79,6 +79,17 @@ export const cancelRequest = async (data: CanceledRequestType) => {
   }
 }
 
+export const updateSendback = async (data: SendbackRequestType) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-canceled', data);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 export const fetchMenus = async () => {
   try {
     const response = await axiosInstance.get('booking-user/menu-requests');
@@ -96,6 +107,55 @@ export const updateVehicleUser = async (data: any) => {
     throw error;
   }
 };
+
+export const updateTrip = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-trip', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updatePickup = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-pickup', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateRef = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-document', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCost = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-document', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateVehicleType = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-vehicle-type', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
 
 
 

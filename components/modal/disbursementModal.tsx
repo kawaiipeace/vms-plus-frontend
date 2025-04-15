@@ -11,8 +11,11 @@ import { useFormContext } from "@/contexts/requestFormContext";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { updateCost } from "@/services/bookingUser";
 
 interface Props {
+  requestData?: RequestDetailType;
   onUpdate?: (data: any) => void;
 }
 
@@ -23,20 +26,33 @@ const schema = yup.object().shape({
 const DisbursementModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const hasReset = useRef(false);
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
   const { formData, updateFormData } = useFormContext();
 
-  const { handleSubmit, setValue } = useForm({
+  const { handleSubmit, reset, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    if (requestData) {
+      reset({
+        refCostTypeCode: requestData?.ref_cost_type_code,
+      });
+      hasReset.current = true;
+    }
+  }, [requestData, reset]);
 
   const [costCenter, setCostCenter] = useState<string>("");
   const [costData, setCostData] = useState<
@@ -61,7 +77,7 @@ const DisbursementModal = forwardRef<
         const response = await fetchCostTypes();
         if (response.status === 200) {
           const costTypeData = response.data;
-          setCostData(costTypeData); // Fix: Ensure costData is properly set
+          setCostData(costTypeData); 
 
           const costTypeArr = costTypeData.map(
             (cost: {
@@ -117,18 +133,37 @@ const DisbursementModal = forwardRef<
     }
   };
 
-  const onSubmit = (data: any) => {
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      refCostTypeCode: data.refCostTypeCode,
-    });
+  const onSubmit = async (data: any) => {
+      if (requestData) {
+          const payload = {
+            // reference_number: data.referenceNumber,
+            // trn_request_uid: requestData.trn_request_uid,
+          };
 
-    updateFormData({
-      refCostTypeCode: data.refCostTypeCode,
-    });
-
-    modalRef.current?.close();
+          try {
+            const response = await updateCost(payload);
+            if (response) {
+              if (onUpdate) onUpdate(response.data);
+              modalRef.current?.close();
+            }
+          } catch (error) {
+            console.error("Network error:", error);
+            alert("Failed to update trip due to network error.");
+          }
+        } else{
+          if (onUpdate)
+            onUpdate({
+              ...data,
+              refCostTypeCode: data.refCostTypeCode,
+            });
+      
+          updateFormData({
+            refCostTypeCode: data.refCostTypeCode,
+          });
+      
+          modalRef.current?.close();
+        }
+ 
   };
 
   return (

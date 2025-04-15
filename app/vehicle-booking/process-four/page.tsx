@@ -55,7 +55,7 @@ export default function ProcessFour() {
           String(formData.timeEnd)
         ),
         is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
-        is_pea_employee_driver: formData.isPeaEmployeeDriver,
+        is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
         mas_carpool_driver_uid: formData.masCarpoolDriverUid || "",
         mas_vehicle_uid: formData.vehicleSelect || "",
         number_of_passengers: formData.numberOfPassenger || 0,

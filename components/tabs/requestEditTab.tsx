@@ -46,7 +46,6 @@ export default function RequestEditTabs({ requestId }: Props) {
     const fetchRequests = async () => {
       try {
         const response = await fetchLogs(requestUid, params);
-        console.log("API Response:", response.data);
         const requestList = response.data.logs;
         const { total, totalPages } = response.data;
   
@@ -63,12 +62,9 @@ export default function RequestEditTabs({ requestId }: Props) {
     };
   
     if (requestId) {
-      console.log("Fetching data for requestId:", requestId);
       fetchRequests();
     }
   }, [params, requestUid]);
-  
-  console.log("DataRequest Before Rendering:", dataRequest);
 
   const tabs = [
     {

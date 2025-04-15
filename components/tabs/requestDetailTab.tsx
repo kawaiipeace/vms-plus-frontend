@@ -62,12 +62,10 @@ export default function RequestDetailTabs({ requestId }: Props) {
     };
   
     if (requestId) {
-      console.log("Fetching data for requestId:", requestId);
       fetchRequests();
     }
   }, [params, requestUid]);
-  
-  console.log("DataRequest Before Rendering:", dataRequest);
+
 
   const tabs = [
     {

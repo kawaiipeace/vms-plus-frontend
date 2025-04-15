@@ -12,10 +12,11 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { convertToISO } from "@/utils/convertToISO";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { useRequestDetailContext } from "@/contexts/requestDetailContext";
+import { updatePickup } from "@/services/bookingUser";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface EditDriverAppointmentModalProps {
-  requestId?: string;
+  requestData?: RequestDetailType;
   onUpdate: (data: any) => void;
 }
 
@@ -27,20 +28,22 @@ const schema = yup.object().shape({
 const EditDriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditDriverAppointmentModalProps
->(({ onUpdate, requestId }, ref) => {
+>(({ onUpdate, requestData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  
+
+  const hasReset = useRef(false);
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
-  
 
   const { formData, updateFormData } = useFormContext();
-   const { requestData, fetchRequestData } = useRequestDetailContext();
 
-  const { handleSubmit,  reset, control, setValue } = useForm({
+  const { handleSubmit, reset, control, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -58,23 +61,18 @@ const EditDriverAppointmentModal = forwardRef<
     formData?.pickupDatetime ? formData.pickupDatetime.split("T")[0] : ""
   );
 
-    // useEffect(() => {
-    //   if (requestId) {
-    //     // Trigger the request data fetch when requestId changes
-    //     fetchRequestData(requestId)
-    //       .then(() => {
-    //         if (requestData) {
-    //           reset({
-    //             pickupDatetime: requestData?.pickup_datetime || "",
-    //   pickupPlace: requestData?.pickup_place || "",
-    //           });
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         console.error("Error fetching request data:", error);
-    //       });
-    //   }
-    // }, [requestId, requestData, reset, fetchRequestData]);
+  useEffect(() => {
+    if (requestData) {
+      reset({
+        pickupDatetime: requestData?.pickup_datetime || "",
+        pickupPlace: requestData?.pickup_place || "",
+      });
+      const datetime = convertToBuddhistDateTime(requestData?.pickup_datetime);
+      setSelectedDate(datetime.date);
+      setSelectedTime(datetime.time);
+      hasReset.current = true;
+    }
+  }, [requestData, reset]);
 
   useEffect(() => {
     setValue("pickupPlace", formData?.pickupPlace || "");
@@ -93,23 +91,43 @@ const EditDriverAppointmentModal = forwardRef<
     setSelectedDate(event.target.value);
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     if (!selectedDate || !selectedTime) return;
 
     const pickupISO = convertToISO(selectedDate, selectedTime);
 
-    onUpdate({
-      ...data,
-      pickupDatetime: pickupISO,
-      pickupPlace: data.pickupPlace,
-    });
+ 
+    if (requestData) {
+      const payload = {
+        pickup_datetime: pickupISO,
+        pickup_place: data.pickupPlace,
+        trn_request_uid: requestData?.trn_request_uid,
+      };
+      try {
+        const response = await updatePickup(payload);
 
-    updateFormData({
-      pickupDatetime: pickupISO,
-      pickupPlace: data.pickupPlace,
-    });
+        if (response) {
+          if (onUpdate) onUpdate(response.data);
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("Failed to update trip due to network error.");
+      }
+    } else {
+      onUpdate({
+        ...data,
+        pickupDatetime: pickupISO,
+        pickupPlace: data.pickupPlace,
+      });
 
-    modalRef.current?.close();
+      updateFormData({
+        pickupDatetime: pickupISO,
+        pickupPlace: data.pickupPlace,
+      });
+
+      modalRef.current?.close();
+    }
   };
 
   return (

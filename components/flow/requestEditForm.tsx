@@ -111,19 +111,20 @@ Props) {
 
         fetchVehicleDetailData();
       }
-      console.log( parsedData?.vehicleSelect);
-      const fetchVehicleInfoFunc = async () => {
-        try {
-          const response = await fetchVehicleInfo(
-            parsedData?.vehicleSelect || ""
-          );
-          setAvailableDriver(response.data.number_of_available_drivers);
-          console.log(response.data.number_of_available_drivers);
-        } catch (error) {
-          console.error("API Error:", error);
-        }
-      };
-      fetchVehicleInfoFunc();
+      if(parsedData?.vehicleSelect){
+        const fetchVehicleInfoFunc = async () => {
+          try {
+            const response = await fetchVehicleInfo(
+              parsedData?.vehicleSelect
+            );
+            setAvailableDriver(response.data.number_of_available_drivers);
+          } catch (error) {
+            console.error("API Error:", error);
+          }
+        };
+        fetchVehicleInfoFunc();
+      }
+  
     }
   }, []);
 

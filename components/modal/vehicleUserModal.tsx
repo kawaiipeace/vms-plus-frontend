@@ -1,15 +1,20 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import FormHelper from "@/components/formHelper";
 import { updateVehicleUser } from "@/services/bookingUser";
-import { useRequestDetailContext } from "@/contexts/requestDetailContext";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface VehicleUserModalProps {
   process: string;
-  requestId?: string;
+  requestData?: RequestDetailType;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUpdate?: (data: any) => void;
 }
@@ -27,11 +32,19 @@ const schema = yup.object().shape({
 const VehicleUserModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   VehicleUserModalProps
->(({ process, onUpdate, requestId }, ref) => {
+>(({ process, onUpdate, requestData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
-  const { requestData, fetchRequestData } = useRequestDetailContext()
 
+  const hasReset = useRef(false);
+
+  useImperativeHandle(ref, () => ({
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
+    closeModal: () => modalRef.current?.close(),
+  }));
 
   const {
     control,
@@ -49,49 +62,53 @@ const VehicleUserModal = forwardRef<
     },
   });
 
-  useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
-    closeModal: () => modalRef.current?.close(),
-  }));
-
-  
   useEffect(() => {
-    if (requestId && requestData) {
-      reset({
-        name: requestData.vehicle_user_emp_name,
-        position: requestData.vehicle_user_dept_sap,
-      });
-    }
-  }, [requestId, requestData, reset]);
-  
+ 
+          if (requestData) {
+            reset({
+              name: requestData.vehicle_user_emp_name,
+              position: requestData.vehicle_user_dept_sap,
+              internalPhone: requestData.car_user_mobile_contact_number,
+              mobilePhone: requestData.car_user_mobile_contact_number,
+            });
+            hasReset.current = true;
+          }
+       
+  }, [requestData, reset]);
 
-  useEffect(() => {
-  
-    // const fetchData = async () => { 
-    //   try {
-    //     const response = await updateVehicleUser(); 
-  
-    //   } catch (error) {
-    //     console.error("Error fetching requests:", error);
-    //   }
-    // };
-
-  
-  },[])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (data: any) => {
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      telInternal: data.internalPhone,
-      telMobile: data.mobilePhone,
-    });
+  const onSubmit = async (data: any) => {
+    if (requestData) {
+      const payload = {
+        car_user_internal_contact_number: data.internalPhon,
+        car_user_mobile_contact_number: data.mobilePhone,
+        trn_request_uid: requestData?.trn_request_uid,
+      };
+      try {
+        const response = await updateVehicleUser(payload);
+
+        if (response) {
+          if (onUpdate) onUpdate(response.data);
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("Failed to update trip due to network error.");
+      }
+    } else {
+    if (onUpdate)
+      onUpdate({
+        ...data,
+        telInternal: data.internalPhone,
+        telMobile: data.mobilePhone,
+      });
 
     data.telInternal = data.internalPhone;
     data.telMobile = data.mobilePhone;
     updateFormData(data);
     modalRef.current?.close();
+    }
   };
 
   return (
@@ -102,7 +119,9 @@ const VehicleUserModal = forwardRef<
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">
-            {process === "edit" ? "แก้ไขข้อมูลผู้ใช้ยานพาหนะ" : "ข้อมูลผู้ใช้ยานพาหนะ"}
+            {process === "edit"
+              ? "แก้ไขข้อมูลผู้ใช้ยานพาหนะ"
+              : "ข้อมูลผู้ใช้ยานพาหนะ"}
           </div>
           <form method="dialog">
             <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
@@ -120,7 +139,12 @@ const VehicleUserModal = forwardRef<
                     name="name"
                     control={control}
                     render={({ field }) => (
-                      <input type="text" className="form-control pointer-events-none" readOnly {...field} />
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none"
+                        readOnly
+                        {...field}
+                      />
                     )}
                   />
                 </div>
@@ -134,7 +158,12 @@ const VehicleUserModal = forwardRef<
                     name="position"
                     control={control}
                     render={({ field }) => (
-                      <input type="text" className="form-control pointer-events-none" readOnly {...field} />
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none"
+                        readOnly
+                        {...field}
+                      />
                     )}
                   />
                 </div>
@@ -143,27 +172,43 @@ const VehicleUserModal = forwardRef<
             <div className="col-span-12 md:col-span-6">
               <div className="form-group">
                 <label className="form-label">เบอร์ภายใน</label>
-                <div className={`input-group ${errors.internalPhone && "is-invalid"}`}>
+                <div
+                  className={`input-group ${
+                    errors.internalPhone && "is-invalid"
+                  }`}
+                >
                   <Controller
                     name="internalPhone"
                     control={control}
-                    render={({ field }) => <input type="text" className="form-control" {...field} />}
+                    render={({ field }) => (
+                      <input type="text" className="form-control" {...field} />
+                    )}
                   />
                 </div>
-                {errors.internalPhone && <FormHelper text={String(errors.internalPhone.message)} />}
+                {errors.internalPhone && (
+                  <FormHelper text={String(errors.internalPhone.message)} />
+                )}
               </div>
             </div>
             <div className="col-span-12 md:col-span-6">
               <div className="form-group">
                 <label className="form-label">เบอร์โทรศัพท์</label>
-                <div className={`input-group ${errors.mobilePhone && "is-invalid"}`}>
+                <div
+                  className={`input-group ${
+                    errors.mobilePhone && "is-invalid"
+                  }`}
+                >
                   <Controller
                     name="mobilePhone"
                     control={control}
-                    render={({ field }) => <input type="text" className="form-control" {...field} />}
+                    render={({ field }) => (
+                      <input type="text" className="form-control" {...field} />
+                    )}
                   />
                 </div>
-                {errors.mobilePhone && <FormHelper text={String(errors.mobilePhone.message)} />}
+                {errors.mobilePhone && (
+                  <FormHelper text={String(errors.mobilePhone.message)} />
+                )}
               </div>
             </div>
           </div>
@@ -172,7 +217,9 @@ const VehicleUserModal = forwardRef<
           <form method="dialog">
             <button className="btn btn-secondary">ปิด</button>
           </form>
-          <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>ยืนยัน</button>
+          <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>
+            ยืนยัน
+          </button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

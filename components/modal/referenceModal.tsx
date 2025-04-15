@@ -13,9 +13,17 @@ import { shortenFilename } from "@/utils/shortenFilename";
 import { uploadFile } from "@/services/masterService";
 import FormHelper from "@/components/formHelper";
 import { useRequestDetailContext } from "@/contexts/requestDetailContext";
+import { updateRef } from "@/services/bookingUser";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+
+interface Payload {
+  reference_number: string;
+  trn_request_uid: string;
+  attached_document?: any;
+}
 
 interface RefProps {
-  requestId?: string;
+  requestData?: RequestDetailType;
   onUpdate?: (data: any) => void;
 }
 
@@ -27,19 +35,21 @@ const schema = yup.object().shape({
 const ReferenceModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   RefProps
->(({ onUpdate, requestId }, ref) => {
+>(({ onUpdate, requestData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const hasReset = useRef(false);
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
-
   const { formData, updateFormData } = useFormContext();
   const [fileError, setFileError] = useState("");
   const [fileValue, setFileValue] = useState("");
-   const { requestData, fetchRequestData } = useRequestDetailContext();
 
-  const { handleSubmit,    reset, control, setValue } = useForm({
+  const { handleSubmit, reset, control } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -48,29 +58,23 @@ const ReferenceModal = forwardRef<
     },
   });
 
-  const [fileName, setFileName] = useState(
-    formData.attachmentFile
-      ? shortenFilename(formData.attachmentFile)
-      : "อัพโหลดเอกสารแนบ"
-  );
+  const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
 
-    // useEffect(() => {
-    //   if (requestId) {
-    //     // Trigger the request data fetch when requestId changes
-    //     fetchRequestData(requestId)
-    //       .then(() => {
-    //         if (requestData) {
-    //           reset({
-    //             referenceNumber: requestData?.reference_number,
-    //             attachmentFile: requestData?.attached_document,
-    //           });
-    //         }
-    //       })
-    //       .catch((error) => {
-    //         console.error("Error fetching request data:", error);
-    //       });
-    //   }
-    // }, [requestId, requestData, reset, fetchRequestData]);
+  useEffect(() => {
+    if (formData.attachmentFile) {
+      setFileName(shortenFilename(formData.attachmentFile));
+    }
+  }, [formData.attachmentFile]);
+
+  useEffect(() => {
+    if (requestData) {
+      reset({
+        referenceNumber: requestData?.reference_number,
+        attachmentFile: requestData?.attached_document,
+      });
+      hasReset.current = true;
+    }
+  }, [requestData, reset]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -82,30 +86,52 @@ const ReferenceModal = forwardRef<
     try {
       const response = await uploadFile(file);
       onChange(file);
-      setFileValue(response.file_url)
+      setFileValue(response.file_url);
       setFileName(shortenFilename(response.file_url));
-  
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
       setFileError(errorMessage);
     }
   };
 
-  const onSubmit = (data: any) => {
-    console.log("Submitted Data:", fileValue);
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      referenceNumber: data.referenceNumber,
-      attachmentFile: fileValue,
-    });
+  const onSubmit = async (data: any) => {
+    if (requestData) {
+      const payload: Payload = {
+        reference_number: data.referenceNumber,
+        trn_request_uid: requestData.trn_request_uid,
+      };
 
-    updateFormData({
-      referenceNumber: data.referenceNumber,
-      attachmentFile: fileValue,
-    });
+      if (fileValue) {
+        payload.attached_document = fileValue;
+      }
 
-    modalRef.current?.close();
+      try {
+        console.log("payload", payload);
+        const response = await updateRef(payload);
+        console.log(response);
+        if (response) {
+          if (onUpdate) onUpdate(response.data);
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("Failed to update trip due to network error.");
+      }
+    } else {
+      if (onUpdate)
+        onUpdate({
+          ...data,
+          referenceNumber: data.referenceNumber,
+          attachmentFile: fileValue,
+        });
+
+      updateFormData({
+        referenceNumber: data.referenceNumber,
+        attachmentFile: fileValue,
+      });
+
+      modalRef.current?.close();
+    }
   };
 
   return (

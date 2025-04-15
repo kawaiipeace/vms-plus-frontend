@@ -11,11 +11,14 @@ import * as yup from "yup";
 import NumberInput from "@/components/numberInput";
 import { useFormContext } from "@/contexts/requestFormContext";
 import RadioButton from "../radioButton";
-import { useRequestDetailContext } from "@/contexts/requestDetailContext";
+import { updateTrip } from "@/services/bookingUser";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { convertToISO } from "@/utils/convertToISO";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  requestId?: string;
+  requestData?: RequestDetailType;
   onUpdate?: (data: any) => void;
 }
 
@@ -28,30 +31,30 @@ const schema = yup.object().shape({
   purpose: yup.string().required(),
   remark: yup.string().optional(),
   tripType: yup.number(),
-  numberOfPassenger: yup.number()
+  numberOfPassenger: yup.number(),
 });
 
 const JourneyDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onUpdate, requestId }, ref) => {
+>(({ onUpdate, requestData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [contextLoaded, setContextLoaded] = useState(false);
   const { formData, updateFormData } = useFormContext();
- 
 
+  const hasReset = useRef(false);
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
-      setContextLoaded(true); // Load the context when opening the modal
+      hasReset.current = false;
       modalRef.current?.showModal();
     },
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const [passengerCount, setPassengerCount] = useState<number>(formData.numberOfPassenger || 0);
-  const [selectedTripType, setSelectedTripType] = useState<string>((formData.tripType  ?? "").toString());
-  const { requestData, fetchRequestData } = useRequestDetailContext();
+  const [passengerCount, setPassengerCount] = useState<number>(
+    formData.numberOfPassenger || 0
+  );
+  const [selectedTripType, setSelectedTripType] = useState<string>("0");
 
   const {
     control,
@@ -63,69 +66,78 @@ const JourneyDetailModal = forwardRef<
     resolver: yupResolver(schema),
     defaultValues: {
       startDate: formData.startDate || "",
-      endDate: formData.endDate || "",    
+      endDate: formData.endDate || "",
       timeStart: formData.timeStart || "",
-      timeEnd: formData.timeEnd || "",    
+      timeEnd: formData.timeEnd || "",
       workPlace: formData.workPlace || "",
-      purpose: formData.purpose || "",    
-      remark: formData.remark || "",      
+      purpose: formData.purpose || "",
+      remark: formData.remark || "",
     },
   });
 
   useEffect(() => {
-    if (contextLoaded && requestId) {
-      console.log("Fetching data for requestId:", requestId); // Debug requestId
-      fetchRequestData(requestId)
-        .then(() => {
-          console.log("Fetched requestData:", requestData); // Debug requestData
-          if (requestData) {
-            reset({
-              startDate: requestData?.start_datetime || "",
-              endDate: requestData?.end_datetime || "",
-              timeStart: requestData?.start_datetime || "",
-              timeEnd: requestData?.end_datetime || "",
-              workPlace: requestData?.work_place || "",
-              purpose: requestData?.objective || "",
-              remark: requestData?.remark || "",
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching request data:", error);
-        });
+    if (requestData) {
+      reset({
+        startDate:
+          convertToBuddhistDateTime(requestData?.start_datetime).date || "",
+        endDate:
+          convertToBuddhistDateTime(requestData?.end_datetime).date || "",
+        timeStart:
+          convertToBuddhistDateTime(requestData?.start_datetime).time || "",
+        timeEnd:
+          convertToBuddhistDateTime(requestData?.end_datetime).time || "",
+        workPlace: requestData?.work_place || "",
+        purpose: requestData?.objective || "",
+        remark: requestData?.remark || "",
+      });
+      setSelectedTripType(String(requestData?.trip_type || "0"));
+      setPassengerCount(requestData?.number_of_passengers);
+      hasReset.current = true;
     }
-  }, [contextLoaded, requestId, reset]);
-  
-  
-  const onSubmit = (data: any) => {
-    const updatedata = {
-      startDate: data.startDate,
-      endDate: data.endDate,
-      timeStart: data.timeStart,
-      timeEnd: data.timeEnd,
-      workPlace: data.workPlace,
-      purpose: data.purpose,
-      remark: data.remark,
-      numberOfPassenger: passengerCount,
-      tripType: parseInt(selectedTripType)
+  }, [requestData, reset]);
+
+  const onSubmit = async (data: any) => {
+    const payload = {
+      end_datetime: convertToISO(data.endDate, data.timeEnd),
+      number_of_passengers: passengerCount,
+      objective: data.purpose,
+      reserved_time_type: "1",
+      start_datetime: convertToISO(data.startDate, data.timeStart),
+      trip_type: parseInt(selectedTripType),
+      trn_request_uid: requestData?.trn_request_uid,
+      work_place: data.workPlace,
+    };
+
+    if (requestData) {
+      try {
+        const response = await updateTrip(payload);
+
+        if (response) {
+          if (onUpdate) onUpdate(response.data);
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("Failed to update trip due to network error.");
+      }
+    } else {
+      // fallback to form state update only
+      const updatedata = {
+        startDate: data.startDate,
+        endDate: data.endDate,
+        timeStart: data.timeStart,
+        timeEnd: data.timeEnd,
+        workPlace: data.workPlace,
+        purpose: data.purpose,
+        remark: data.remark,
+        numberOfPassenger: passengerCount,
+        tripType: parseInt(selectedTripType),
+      };
+
+      updateFormData(updatedata);
+      if (onUpdate) onUpdate(updatedata);
+      modalRef.current?.close();
     }
-
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      timeStart: data.timeStart,
-      timeEnd: data.timeEnd,
-      workPlace: data.workPlace,
-      purpose: data.purpose,
-      remark: data.remark,
-      numberOfPassenger: passengerCount,
-      tripType: parseInt(selectedTripType)
-    });
-
-    updateFormData(updatedata);
-    modalRef.current?.close();
   };
 
   return (
@@ -252,7 +264,7 @@ const JourneyDetailModal = forwardRef<
                     />
                   </div>
                   <div className="custom-control custom-radio custom-control-inline">
-                  <RadioButton
+                    <RadioButton
                       name="tripType"
                       label="ค้างแรม"
                       value="0"

@@ -17,6 +17,7 @@ export function RequestDetailProvider({ children }: { children: ReactNode }) {
   const fetchRequestData = async (request_id: string) => {
     try {
       const res = await requestDetail(request_id)
+      if(res)
       setRequestData(res.data)
     } catch (error) {
       console.error('Failed to fetch request detail:', error)
