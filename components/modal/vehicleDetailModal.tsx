@@ -10,6 +10,7 @@ import Image from "next/image";
 import CarCardItem from "@/components/carCardItem";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { fetchVehicleDetail } from "@/services/masterService";
+import useSwipeDown from "@/utils/swipeDown";
 interface VehicleDetailModelProps {
   onSelect?: (vehicle: string) => void;
   vehicleId: string;
@@ -55,10 +56,11 @@ const VehicleDetailModel = forwardRef<
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[1200px] p-0 relative bg-white">
+      <div  className="modal-box max-w-[1200px] p-0 relative bg-white">
         <div className="modal-header flex justify-between">
           <h2 className="text-lg font-bold">รายละเอียด</h2>
           <button

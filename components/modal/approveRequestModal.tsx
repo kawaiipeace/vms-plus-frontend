@@ -1,4 +1,5 @@
 import { firstApproverApproveRequest } from "@/services/bookingApprover";
+import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, {
@@ -62,11 +63,13 @@ const ApproveRequestModal = forwardRef<
     sendCancelRequest();
   };
 
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-          <div className="bottom-sheet">
+        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="bottom-sheet" {...swipeDownHandlers} >
             <div className="bottom-sheet-icon"></div>
           </div>
 

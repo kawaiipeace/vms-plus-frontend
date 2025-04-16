@@ -4,6 +4,7 @@ import CustomSelect from "@/components/customSelect";
 import RadioButton from "@/components/radioButton";
 import ImageUpload from "@/components/imageUpload";
 import ImagePreview from "@/components/imagePreview";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface Props {
   status?: boolean;
@@ -27,9 +28,11 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
   const handleDeleteImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-body overflow-y-auto text-center">
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
             <div className="modal-title">{status ? "แก้ไขข้อมูลการเติมเชื้อเพลิง" : "เพิ่มข้อมูลการเติมเชื้อเพลิง"}</div>

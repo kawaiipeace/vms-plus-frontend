@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
 import CustomSelect from "../customSelect";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface Props {
   title: string;
@@ -24,12 +25,13 @@ const PassVerifyModal = forwardRef<
     "ธนพล วิจารณ์ปรีชา (514285)",
     "ญาณิศา อุ่นสิริ (543210)",
   ];
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-          <div className="bottom-sheet">
+        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="bottom-sheet" {...swipeDownHandlers} >
             <div className="bottom-sheet-icon"></div>
           </div>
 

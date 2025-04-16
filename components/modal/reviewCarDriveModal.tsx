@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import Image from "next/image";
 import Rating from "@/components/rating";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface Props {
   displayOn?: string;
@@ -20,10 +21,11 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       setReviewSubmit(true);
     }
   }, [displayOn]);
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-body overflow-y-auto text-center">
           <div className="grid grid-cols-1 gap-3 gap-y-4">
             <div className="flex gap-3 col-span-12">

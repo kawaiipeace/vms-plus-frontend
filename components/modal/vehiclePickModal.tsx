@@ -15,6 +15,7 @@ import { useFormContext } from "@/contexts/requestFormContext";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { updateVehicleType } from "@/services/bookingUser";
 import Image from "next/image";
+import useSwipeDown from "@/utils/swipeDown";
 
 const schema = yup.object().shape({
   requestedVehicleTypeName: yup.string(),
@@ -96,11 +97,12 @@ const VehiclePickModel = forwardRef<
       hasReset.current = true;
     }
   }, [requestData]);
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
-    <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[800px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet">
+    <dialog ref={modalRef} className="modal">
+      <div  className="modal-box max-w-[800px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

@@ -11,7 +11,7 @@ export default function StatusModal(){
       >
         <div className="modal-dialog modal-dialog-scrollable modal-right">
           <div className="modal-content">
-            <div className="bottom-sheet">
+            <div className="bottom-sheet" {...swipeDownHandlers} >
               <div className="bottom-sheet-icon"></div>
             </div>
             <div className="modal-header">
