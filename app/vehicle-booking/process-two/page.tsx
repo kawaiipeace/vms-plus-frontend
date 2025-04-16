@@ -10,8 +10,7 @@ import SelectCarCard from "@/components/card/selectCarCard";
 import Pagination from "@/components/pagination";
 import CustomSelect from "@/components/customSelect";
 import ZeroRecord from "@/components/zeroRecord";
-import { fetchVehicles } from "@/services/bookingUser";
-import { fetchVehicleCarTypes } from "@/services/masterService";
+import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
 import { useFormContext } from "@/contexts/requestFormContext";
 // import Toast from "@/components/toast";
 

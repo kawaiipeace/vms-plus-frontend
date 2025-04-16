@@ -2,11 +2,11 @@
 
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
+import RadioButton from "../radioButton";
 
 interface Props {
   onSubmitFilter: (filters: {
-    requestNo: string;
-    startDateTime: string;
+    selectedSortType: string;
   }) => void;
 }
 
@@ -21,15 +21,10 @@ const FilterSortModal = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const [requestNo, setRequestNo] = useState("");
-  const [startDateTime, setStartDateTime] = useState("");
-
-  const startDatePickerRef = useRef<DatePickerRef>(null);
+  const [selectedSortType, setSelectedSortType] = useState("คำขอใหม่ล่าสุด (ค่าเริ่มต้น)");
 
   const handleResetFilters = () => {
-    setRequestNo("");
-    setStartDateTime("");
-    startDatePickerRef.current?.reset();
+    setSelectedSortType("คำขอใหม่ล่าสุด (ค่าเริ่มต้น)");
   };
 
   return (
@@ -67,36 +62,27 @@ const FilterSortModal = forwardRef<
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
               <div className="form-group">
-                <label className="form-label">เลขที่คำขอ</label>
-                <input
-                  type="text"
-                  className="input input-bordered w-full"
-                  placeholder="ระบุเลขที่คำขอ"
-                  value={requestNo}
-                  onChange={(e) => setRequestNo(e.target.value)}
-                />
-              </div>
+                                <div className="custom-group flex flex-col !gap-0">
+                                  <RadioButton
+                                    name="sortType"
+                                    label="คำขอใหม่ล่าสุด (ค่าเริ่มต้น)"
+                                    value="คำขอใหม่ล่าสุด (ค่าเริ่มต้น)"
+                                    selectedValue={selectedSortType}
+                                    setSelectedValue={setSelectedSortType}
+                                  />
+            
+                                  <RadioButton
+                                    name="sortType"
+                                    label="วันที่เริ่มต้นเดินทางใหม่ที่สุด"
+                                    value="วันที่เริ่มต้นเดินทางใหม่ที่สุด"
+                                    selectedValue={selectedSortType}
+                                    setSelectedValue={setSelectedSortType}
+                                  />
+                                </div>
+                                {/* <!-- <span className="form-helper">Helper</span> --> */}
+                              </div>
             </div>
 
-            <div className="col-span-12">
-              <div className="form-group">
-                <label className="form-label">วันที่เริ่มเดินทาง</label>
-                <div className="input-group flatpickr">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      <i className="material-symbols-outlined">
-                        calendar_month
-                      </i>
-                    </span>
-                  </div>
-                  <DatePicker
-                    ref={startDatePickerRef}
-                    placeholder={"ระบุวันที่เริ่มเดินทาง"}
-                    onChange={(dateStr: string) => setStartDateTime(dateStr)}
-                  />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -118,7 +104,7 @@ const FilterSortModal = forwardRef<
               type="button"
               className="btn btn-primary"
               onClick={() => {
-                onSubmitFilter({ requestNo, startDateTime });
+                onSubmitFilter({ selectedSortType });
                 modalRef.current?.close();
               }}
             >

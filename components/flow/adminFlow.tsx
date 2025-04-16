@@ -396,7 +396,10 @@ export default function FirstApproveFlow() {
         onSubmitFilter={handleFilterSubmit}
       />
 
-     
+      <FilterSortModal
+        ref={filterSortModalRef}
+        onSubmitFilter={handleFilterSortSubmit}
+      />
     </>
   );
 }

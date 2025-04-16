@@ -7,26 +7,34 @@ interface Props {
   statusCode?: string;
 }
 
-export default function ApproveProgress({
-  approverId,
-  statusCode,
-}: Props) {
-  const [processActive, setProcessActive] = useState(1); // Initialize with default value
+export default function ApproveProgress({ approverId, statusCode }: Props) {
+  const [processActive, setProcessActive] = useState(1);
+  const [totalSteps, setTotalSteps] = useState(3);
+  const [isRejected, setIsRejected] = useState(false);
+  const [approverData, setApproverData] = useState<ApproverUserType>();
 
   useEffect(() => {
-    // Set processActive based on statusCode
-    if (statusCode === "20" || statusCode === "21") {
-      setProcessActive(1);
-    } else if (statusCode === "30" || statusCode === "31") {
-      setProcessActive(2);
-    } else if (statusCode === "40" || statusCode === "41") {
-      setProcessActive(3);
+    if (["21", "31", "41"].includes(statusCode || "")) {
+      setIsRejected(true);
+      setTotalSteps(2);
+
+      if (statusCode === "21" || statusCode === "31") {
+        setProcessActive(1);
+      } else if (statusCode === "41") {
+        setProcessActive(2);
+      }
+    } else {
+      setIsRejected(false);
+      setTotalSteps(3);
+
+      if (statusCode === "20") setProcessActive(1);
+      else if (statusCode === "30") setProcessActive(2);
+      else if (statusCode === "40") setProcessActive(3);
     }
 
     const fetchApprover = async () => {
       try {
         const response = await fetchUserApproverUsers(approverId);
-        console.log(response);
         setApproverData(response.data[0]);
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -34,7 +42,7 @@ export default function ApproveProgress({
     };
 
     fetchApprover();
-  }, [approverId, statusCode]); // Add statusCode to the dependency array
+  }, [approverId, statusCode]);
 
   const getStepClass = (stepIndex: number) => {
     if (stepIndex < processActive) return "done";
@@ -42,14 +50,13 @@ export default function ApproveProgress({
     return "";
   };
 
-  const [approverData, setApproverData] = useState<ApproverUserType>();
-
   return (
     <div className="card card-approvalprogress">
       <div className="card-header">
         <div className="card-title">สถานะคำขอใช้</div>
       </div>
       <div className="card-body">
+        {/* Mobile View */}
         <div className="md:hidden">
           <div className="circular-progressbar d-flex">
             <div className="circular-progressbar-container">
@@ -70,27 +77,36 @@ export default function ApproveProgress({
                   r="15.9155"
                   className="circular-progressbar-progress js-circular-progressbar"
                   style={{
-                    strokeDashoffset: `${100 - (processActive / 3) * 100}px`,
+                    strokeDashoffset: `${100 - (processActive / totalSteps) * 100}px`,
                   }}
                 />
               </svg>
               <div className="circular-progressbar-text">
                 {processActive}
-                <span className="circular-progressbar-slash">/</span>3
+                <span className="circular-progressbar-slash">/</span>
+                {totalSteps}
               </div>
             </div>
             <div className="progress-steps-btn-content">
               <div className="progress-steps-btn-title">
-                {processActive === 1 && "รออนุมัติจากต้นสังกัด"}
-                {processActive === 2 && "รอผู้ดูแลยานพาหนะตรวจสอบ"}
-                {processActive === 3 && "รออนุมัติใช้ยานพาหนะ"}
+                {isRejected
+                  ? processActive === 1
+                    ? "ถูกตีกลับ"
+                    : "รออนุมัติ"
+                  : processActive === 1
+                  ? "รออนุมัติจากต้นสังกัด"
+                  : processActive === 2
+                  ? "รอผู้ดูแลยานพาหนะตรวจสอบ"
+                  : "รออนุมัติใช้ยานพาหนะ"}
               </div>
               <div className="progress-steps-btn-text">
-                {processActive < 3 && (
+                {processActive < totalSteps && (
                   <>
                     ถัดไป:{" "}
                     <span className="progress-steps-btn-label">
-                      {processActive === 1
+                      {isRejected
+                        ? "รออนุมัติ"
+                        : processActive === 1
                         ? "รอผู้ดูแลยานพาหนะตรวจสอบ"
                         : "รออนุมัติใช้ยานพาหนะ"}
                     </span>
@@ -101,42 +117,58 @@ export default function ApproveProgress({
           </div>
         </div>
 
-        {/* Desktop view */}
+        {/* Desktop View */}
         <div className="progress-steps-column d-none d-md-flex">
-          <div className={`progress-step ${getStepClass(1)}`}>
-            <span className="progress-step-no">
-              {processActive > 1 && (
-                <i className="material-symbols-outlined">check</i>
-              )}
-            </span>
-            <div className="progress-step-content">
-              <div className="progress-step-title">รออนุมัติจากต้นสังกัด</div>
-            </div>
-          </div>
-          <div className={`progress-step ${getStepClass(2)}`}>
-            <span className="progress-step-no">
-              {processActive > 2 && (
-                <i className="material-symbols-outlined">check</i>
-              )}
-            </span>
-            <div className="progress-step-content">
-              <div className="progress-step-title">
-                รอผู้ดูแลยานพาหนะตรวจสอบ
+          {isRejected ? (
+            <>
+              <div className={`progress-step ${getStepClass(1)}`}>
+                <span className="progress-step-no">
+                  {processActive > 1 && <i className="material-symbols-outlined">check</i>}
+                </span>
+                <div className="progress-step-content">
+                  <div className="progress-step-title">ถูกตีกลับ</div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className={`progress-step ${getStepClass(3)}`}>
-            <span className="progress-step-no">
-              {processActive > 3 && (
-                <i className="material-symbols-outlined">check</i>
-              )}
-            </span>
-            <div className="progress-step-content">
-              <div className="progress-step-title">รออนุมัติใช้ยานพาหนะ</div>
-            </div>
-          </div>
+              <div className={`progress-step ${getStepClass(2)}`}>
+                <span className="progress-step-no">
+                  {processActive > 2 && <i className="material-symbols-outlined">check</i>}
+                </span>
+                <div className="progress-step-content">
+                  <div className="progress-step-title">รออนุมัติ</div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={`progress-step ${getStepClass(1)}`}>
+                <span className="progress-step-no">
+                  {processActive > 1 && <i className="material-symbols-outlined">check</i>}
+                </span>
+                <div className="progress-step-content">
+                  <div className="progress-step-title">รออนุมัติจากต้นสังกัด</div>
+                </div>
+              </div>
+              <div className={`progress-step ${getStepClass(2)}`}>
+                <span className="progress-step-no">
+                  {processActive > 2 && <i className="material-symbols-outlined">check</i>}
+                </span>
+                <div className="progress-step-content">
+                  <div className="progress-step-title">รอผู้ดูแลยานพาหนะตรวจสอบ</div>
+                </div>
+              </div>
+              <div className={`progress-step ${getStepClass(3)}`}>
+                <span className="progress-step-no">
+                  {processActive > 3 && <i className="material-symbols-outlined">check</i>}
+                </span>
+                <div className="progress-step-content">
+                  <div className="progress-step-title">รออนุมัติใช้ยานพาหนะ</div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
+        {/* Approver Info */}
         {approverId === "" && (
           <div className="form-section">
             <div className="form-section-header">
@@ -158,10 +190,7 @@ export default function ApproveProgress({
               </button>
             </div>
 
-            <div
-              className="form-card d-md-block collapse"
-              id="collapseApproverDetail"
-            >
+            <div className="form-card d-md-block collapse" id="collapseApproverDetail">
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <div className="form-plaintext-group align-self-center">
@@ -178,9 +207,7 @@ export default function ApproveProgress({
                     {approverData?.tel_mobile && (
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
+                          <i className="material-symbols-outlined">smartphone</i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowrap">
                               {approverData?.tel_mobile}

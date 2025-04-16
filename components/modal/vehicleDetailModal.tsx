@@ -8,8 +8,8 @@ import React, {
 import ImgSlider from "@/components/imgSlider";
 import Image from "next/image";
 import CarCardItem from "@/components/carCardItem";
-import { fetchVehicleDetail } from "@/services/bookingUser";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import { fetchVehicleDetail } from "@/services/masterService";
 interface VehicleDetailModelProps {
   onSelect?: (vehicle: string) => void;
   vehicleId: string;

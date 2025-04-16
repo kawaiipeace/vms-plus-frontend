@@ -14,12 +14,11 @@ import JourneyDetailCard from "@/components/card/journeyDetailCard";
 import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
 import ReferenceCard from "@/components/card/referenceCard";
 import DisburstmentCard from "@/components/card/disburstmentCard";
-import { fetchVehicleDetail } from "@/services/bookingUser";
 import DriverPeaInfoCard from "@/components/card/driverPeaInfoCard";
 import { FormDataType } from "@/app/types/form-data-type";
 import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
-import { fetchVehicleInfo } from "@/services/masterService";
+import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 interface Props {
   approverCard?: boolean;

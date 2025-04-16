@@ -13,7 +13,7 @@ export const firstApproverRequests = async (params: {
   limit?: number;
 }) => {
   try {
-    const response = await axiosInstance.get('booking-approver/search-requests', { params });
+    const response = await axiosInstance.get('booking-admin/search-requests', { params });
 
     return response;
 
@@ -24,7 +24,7 @@ export const firstApproverRequests = async (params: {
 
 export const firstApproverRequestDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('booking-approver/request/' + id);
+    const response = await axiosInstance.get('booking-admin/request/' + id);
 
     return response;
 
@@ -33,9 +33,10 @@ export const firstApproverRequestDetail = async (id: string) => {
   }
 };
 
+
 export const firstApprovercancelRequest = async (data: CanceledRequestType) => {
   try {
-    const response = await axiosInstance.put('booking-approver/update-canceled',  data );
+    const response = await axiosInstance.put('booking-admin/update-canceled',  data );
     return response;
 
   } catch (error) {
@@ -45,7 +46,7 @@ export const firstApprovercancelRequest = async (data: CanceledRequestType) => {
 
 export const firstApproverSendbackRequest = async (data: SendbackRequestType) => {
   try {
-    const response = await axiosInstance.put('booking-approver/update-sended-back',  data );
+    const response = await axiosInstance.put('booking-admin/update-sended-back',  data );
     return response;
 
   } catch (error) {
@@ -55,7 +56,7 @@ export const firstApproverSendbackRequest = async (data: SendbackRequestType) =>
 
 export const firstApproverApproveRequest = async (data: ApproveRequestType) => {
   try {
-    const response = await axiosInstance.put('booking-approver/update-approved',  data );
+    const response = await axiosInstance.put('booking-admin/update-approved',  data );
     return response;
 
   } catch (error) {
@@ -65,7 +66,7 @@ export const firstApproverApproveRequest = async (data: ApproveRequestType) => {
 
 export const fetchMenus = async () => {
   try {
-    const response = await axiosInstance.get('booking-approver/menu-requests');
+    const response = await axiosInstance.get('booking-admin/menu-requests');
     return response;
   } catch (error) {
     throw error;
