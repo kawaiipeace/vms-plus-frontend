@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import RequestDetailForm from "@/components/flow/requestDetailForm";
 import { LogType } from "@/app/types/log-type";
 import LogListTable from "@/components/table/log-list-table";
 import { PaginationType } from "@/app/types/request-action-type";
 import { fetchLogs } from "@/services/masterService";
-import PaginationControls from "../table/pagination-control";
+import PaginationControls from "@/components/table/pagination-control";
+import RequestDetailForm from "@/components/admin/requestDetailForm";
 
 interface Props {
   requestId: string;

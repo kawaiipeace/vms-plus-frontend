@@ -90,10 +90,12 @@ export default function AdminApproveFlow() {
     selectedStatuses,
     selectedStartDate,
     selectedEndDate,
+    department,
   }: {
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
+    department?: string;
   }) => {
     const mappedNames = selectedStatuses.map(
       (code) =>
@@ -389,6 +391,7 @@ export default function AdminApproveFlow() {
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
+        department={true}
         onSubmitFilter={handleFilterSubmit}
       />
 

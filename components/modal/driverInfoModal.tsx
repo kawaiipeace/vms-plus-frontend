@@ -6,10 +6,11 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
-import { fetchUserDrivers } from "@/services/masterService";
+import { fetchDriverDetail, fetchDrivers, fetchUserDrivers } from "@/services/masterService";
 import { PeaDriverType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
+import { DriverType } from "@/app/types/driver-user-type";
 
 interface Props {
   id?: string;
@@ -20,7 +21,7 @@ const DriverInfoModal = forwardRef<
   Props
 >(({ id }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [vehicleUserData, setVehicleUserData] = useState<PeaDriverType>();
+  const [vehicleUserData, setVehicleUserData] = useState<DriverType>();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -28,20 +29,24 @@ const DriverInfoModal = forwardRef<
   }));
 
   useEffect(() => {
+    if (id) {
+      const fetchVehicleUserData = async () => {
 
-    const fetchVehicleUserData = async () => {
-      try {
-        const response = await fetchUserDrivers(id);
-        if (response.status === 200) {
-          const res = response.data[0];
-          setVehicleUserData(res);
+        try {
+          const response = await fetchDriverDetail(id);
+          console.log(response.data);
+          if (response.status === 200) {
+            const res = response.data;
+            setVehicleUserData(res);
+          }
+        } catch (error) {
+          console.error("Error fetching requests:", error);
         }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-    fetchVehicleUserData();
-  }, [id]);
+      };
+      fetchVehicleUserData();
+    }
+  
+  }, [name]);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -70,7 +75,7 @@ const DriverInfoModal = forwardRef<
                   <div className="form-group form-plaintext form-users">
                     <Image
                       src={
-                        vehicleUserData?.image_url ||
+                        vehicleUserData?.driver_image ||
                         "/assets/img/sample-avatar.png"
                       }
                       className="avatar avatar-md"
@@ -80,14 +85,14 @@ const DriverInfoModal = forwardRef<
                     />
                     <div className="form-plaintext-group align-self-center">
                       <div className="form-label">
-                        {vehicleUserData?.full_name || "-"}
+                        {vehicleUserData?.driver_name || "-"}
                       </div>
                       <div className="supporting-text-group">
                         <div className="supporting-text">
-                          {vehicleUserData?.emp_id || "-"}
+                          {vehicleUserData?.driver_id || "-"}
                         </div>
                         <div className="supporting-text">
-                          {vehicleUserData?.dept_sap_full || "-"}
+                          {vehicleUserData?.driver_dept_sap || "-"}
                         </div>
                       </div>
                     </div>
@@ -101,22 +106,13 @@ const DriverInfoModal = forwardRef<
                           </i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowrap">
-                              {vehicleUserData?.tel_mobile || "-"}
+                              {vehicleUserData?.driver_contact_number || "-"}
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              {vehicleUserData?.tel_internal || "-"}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                  
                     </div>
                   </div>
                 </div>
@@ -139,8 +135,8 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">เลขที่ใบอนุญาต</div>
                           <div className="form-text">
-                            {vehicleUserData?.annual_driver?.driver_license_no ||
-                              "-"}
+                            {/* {vehicleUserData?.annual_driver?.driver_license_no ||
+                              "-"} */}
                           </div>
                         </div>
                       </div>
@@ -154,10 +150,10 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-text">
-                            {convertToBuddhistDateTime(
+                            {/* {convertToBuddhistDateTime(
                               vehicleUserData?.annual_driver
                                 ?.driver_license_expire_date
-                            ).date}
+                            ).date} */}
                           </div>
                         </div>
                       </div>
@@ -183,8 +179,8 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">เลขที่คำขอ</div>
                           <div className="form-text">
-                            {vehicleUserData?.annual_driver
-                              ?.request_annual_driver_no || "-"}
+                            {/* {vehicleUserData?.annual_driver
+                              ?.request_annual_driver_no || "-"} */}
                           </div>
                         </div>
                       </div>
@@ -198,10 +194,10 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">มีผลถึงวันที่</div>
                           <div className="form-text">
-                          {convertToBuddhistDateTime(
+                          {/* {convertToBuddhistDateTime(
                               vehicleUserData?.annual_driver
                               ?.request_expire_date
-                            ).date}
+                            ).date} */}
                           </div>
                         </div>
                       </div>

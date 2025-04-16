@@ -2,29 +2,27 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
-import RequestDetailTabs from "@/components/tabs/requestDetailTab";
+import RequestDetailTabs from "@/components/booking-approver/requestDetailTab";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
-import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import PageHeader from "@/components/pageHeader";
+import { firstApproverRequestDetail } from "@/services/bookingApprover";
+import PageHeaderFirst from "@/components/pageHeaderFirst";
 
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  const request_id = String(params.request_id);
-
+  const request_id = String(params.requestId);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {
-          const response = await requestDetail(request_id);
+          const response = await firstApproverRequestDetail(request_id);
           setRequestData(response.data);
-          console.log('reqeustdetail',response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }
@@ -37,7 +35,7 @@ export default function RequestDetail() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
 
         <div
           className={`main-content ${
@@ -46,7 +44,7 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeader data={requestData} />}
+          {requestData && <PageHeaderFirst data={requestData} />}
             <RequestDetailTabs requestId={request_id} />
           </div>
         </div>

@@ -3266,6 +3266,10 @@
   }
 }
 
+.modal-box{
+  margin-right: 0px !important;
+}
+
 .media {
   gap: 0.5rem;
 }

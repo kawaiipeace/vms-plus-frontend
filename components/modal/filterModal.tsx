@@ -1,24 +1,33 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import { summaryType } from "@/app/types/request-list-type";
 import useSwipeDown from "@/utils/swipeDown";
+import CustomSelect from "../customSelect";
+import { fetchVehicleDepartments } from "@/services/masterService";
 
 interface Props {
   statusData: summaryType[];
+  department: boolean;
   onSubmitFilter: (filters: {
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
+    department?: string;
   }) => void;
-  deptSap?: string;
 }
 
 const FilterModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ statusData, onSubmitFilter }, ref) => {
+>(({ statusData, onSubmitFilter, department }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -29,6 +38,9 @@ const FilterModal = forwardRef<
   const [selectedStartDate, setSelectedStartDate] = useState<string>("");
   const [selectedEndDate, setSelectedEndDate] = useState<string>("");
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [vehicleCatOptions, setVehicleCatOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   // Separate refs for each DatePicker
   const startDatePickerRef = useRef<DatePickerRef>(null);
@@ -48,6 +60,55 @@ const FilterModal = forwardRef<
     );
   };
 
+  const [selectedVehicleOption, setSelectedVehicleOption] = useState<{
+    value: string;
+    label: string;
+  }>({ value: "", label: "ทั้งหมด" });
+
+  useEffect(() => {
+    if (department) {
+    }
+    const fetchVehicleCarTypesData = async () => {
+      try {
+        const response = await fetchVehicleDepartments();
+
+        if (response.status === 200) {
+          const vehicleCatData = response.data;
+          console.log("tt", response.data);
+          const vehicleCatArr = [
+            { value: "", label: "ทั้งหมด" },
+            ...vehicleCatData.map(
+              (cat: {
+                vehicle_owner_dept_sap: string;
+                dept_sap_short: string;
+              }) => ({
+                value: cat.vehicle_owner_dept_sap,
+                label: cat.dept_sap_short,
+              })
+            ),
+          ];
+
+          setVehicleCatOptions(vehicleCatArr);
+          setSelectedVehicleOption((prev) =>
+            prev.value ? prev : vehicleCatArr[0]
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchVehicleCarTypesData();
+  }, []);
+
+  const handleVehicleTypeChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelectedVehicleOption(selectedOption);
+    // setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
+  };
+
   // Reset function
   const handleResetFilters = () => {
     setSelectedStatuses([]);
@@ -61,8 +122,8 @@ const FilterModal = forwardRef<
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -89,8 +150,21 @@ const FilterModal = forwardRef<
             </button>
           </form>
         </div>
-        <div className="modal-body overflow-y-auto flex flex-col gap-4 h-[90vh]">
+        <div className="modal-body overflow-y-auto flex flex-col gap-4 h-[70vh] max-h-[70vh]">
           <div className="grid grid-cols-12 gap-4">
+            {department && (
+              <div className="col-span-12">
+                <div className="form-group">
+                  <label className="form-label">สังกัดยานพาหนะ</label>
+                  <CustomSelect
+                    w="md:w-full"
+                    options={vehicleCatOptions}
+                    value={selectedVehicleOption}
+                    onChange={handleVehicleTypeChange}
+                  />
+                </div>
+              </div>
+            )}
             <div className="col-span-12">
               <div className="form-group">
                 <label className="form-label">สถานะคำขอ</label>

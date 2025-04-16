@@ -2,19 +2,19 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
+import RequestDetailTabs from "@/components/tabs/requestDetailTab";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import PageHeader from "@/components/pageHeader";
-import RequestEditTabs from "@/components/tabs/requestEditTab";
 
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  const request_id = String(params.request_id);
+  const request_id = String(params.requestId);
 
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
@@ -47,7 +47,7 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeader data={requestData} />}
-            <RequestEditTabs requestId={request_id} />
+            <RequestDetailTabs requestId={request_id} />
           </div>
         </div>
       </div>

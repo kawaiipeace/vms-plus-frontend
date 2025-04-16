@@ -45,7 +45,7 @@ export const uploadFile = async (file: File) => {
 
     return response.data;
   } catch (error) {
-    console.error("Upload failed:", error);
+  console.error("Upload failed:", error);
     throw error;
   }
 };
@@ -53,6 +53,15 @@ export const uploadFile = async (file: File) => {
 export const fetchVehicleCarTypes = async () => {
   try {
     const response = await axiosInstance.get('vehicle/types');
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchVehicleDepartments = async () => {
+  try {
+    const response = await axiosInstance.get('mas/vehicle-departments');
     return response;
   } catch (error) {
     throw error;

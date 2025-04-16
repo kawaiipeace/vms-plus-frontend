@@ -4,6 +4,7 @@ import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 import { fetchDriverDetail } from "@/services/masterService";
 import { DriverType } from "@/app/types/driver-user-type";
+import { requestDetail } from "@/services/bookingUser";
 
 interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
@@ -157,7 +158,7 @@ export default function DriverSmallInfoCard({
         )}
       </div>
 
-      <DriverInfoModal ref={driverInfoModalRef} id={id} />
+      <DriverInfoModal ref={driverInfoModalRef} id={driverDetail?.mas_driver_uid} />
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>
   );

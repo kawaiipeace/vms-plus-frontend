@@ -25,10 +25,7 @@ interface Props {
   pagination: PaginationType;
 }
 
-export default function AdminListTable({
-  defaultData,
-  pagination,
-}: Props) {
+export default function AdminListTable({ defaultData, pagination }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -79,14 +76,69 @@ export default function AdminListTable({
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-          <div className="flex flex-col">
-            <div className="text-left">
-              {row.original.vehicle_license_plate}
+          {row.original.vehicle_license_plate === "" &&
+          row.original.vehicle_department_dept_sap_short === "" ? (
+            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
+                <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
+                <span className="text-color-secondary">รอเลือก</span> 
+              </div>
+          ) : (
+            <div className="flex flex-col">
+              {" "}
+              <div className="text-left">
+                {row.original.vehicle_license_plate}
+              </div>
+              <div className="">
+                {row.original.vehicle_department_dept_sap_short}
+              </div>
             </div>
-            <div className="">
-              {row.original.vehicle_department_dept_sap_short}
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "vehicle_department_dept_sap_short",
+      header: () => <div className="text-center">สังกัดยานพาหนะ</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="สังกัดยานพาหนะ">
+   
+            <div className="flex flex-col">
+              {" "}
+              <div className="text-left">
+                {row.original.vehicle_department_dept_sap_short}
+              </div>
+              {/* <div className="">
+                {row.original.vehicle_department_dept_sap_short}
+              </div> */}
             </div>
-          </div>
+        
+        </div>
+      ),
+    },
+    {
+      accessorKey: "driver",
+      header: () => <div className="text-center">ผู้ขับขี่</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="ผู้ขับขี่">
+          {row.original.vehicle_license_plate === "" &&
+          row.original.vehicle_department_dept_sap_short === "" ? (
+            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
+                <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
+                <span className="text-color-secondary">รอเลือก</span> 
+              </div>
+          ) : (
+            <div className="flex flex-col">
+              {" "}
+              <div className="text-left">
+                {row.original.vehicle_license_plate}
+              </div>
+              <div className="">
+                {row.original.vehicle_department_dept_sap_short}
+              </div>
+            </div>
+          )}
         </div>
       ),
     },
@@ -113,8 +165,13 @@ export default function AdminListTable({
         );
         return (
           <div className="text-left" data-name="วันที่เดินทาง">
-            {startDateTime.date + " " + startDateTime.time} -{" "}
-            {endDateTime.date + " " + endDateTime.time}
+            <div className="flex flex-col">
+                  <div>
+                  {startDateTime.date + " - " + endDateTime.date}
+                  </div>
+                  <div>    {endDateTime.time + " - " + startDateTime.time}</div>
+            </div>
+
           </div>
         );
       },
@@ -167,12 +224,12 @@ export default function AdminListTable({
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/booking-approver/" +
-                      row.original.trn_request_uid
+                    "/administrator/request-list/" +
+                      row.original.trn_request_uid + "/edit"
                   )
                 }
               >
-                <i className="material-symbols-outlined">stylus</i>
+                <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
             )}
 
@@ -182,7 +239,7 @@ export default function AdminListTable({
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/booking-approver/" +
+                    "/administrator/request-list/" +
                       row.original.trn_request_uid +
                       "?status=" +
                       statusValue
@@ -199,7 +256,7 @@ export default function AdminListTable({
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/booking-approver/" +
+                    "/administrator/request-list/" +
                       row.original.trn_request_uid +
                       "?status=" +
                       statusValue
