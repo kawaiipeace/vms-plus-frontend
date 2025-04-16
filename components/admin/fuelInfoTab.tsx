@@ -65,7 +65,7 @@ export default function FuelInfoTab({ requestType }: FuelDataProps) {
         <ZeroRecord imgSrc="/assets/img/graphic/fuel_img.svg" title="เพิ่มข้อมูลเติมการเชื้อเพลิง" desc={<>กรุณาระบุเลขไมล์และข้อมูลใบเสร็จทุกครั้งที่เติมน้ำมัน เพื่อใช้ในการเบิกค่าใช้จ่าย</>} button="เพิ่มข้อมูล" icon="add" link="process-one" displayBtn={true} useModal={() => recordTravelAddModalRef.current?.openModal()} />
       )}
       <RecordTravelAddModal status={statusEdit} ref={recordTravelAddModalRef} />
-      <CancelRequestModal title="ยืนยันลบข้อมูลการเติมเชื้อเพลิง" desc="ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ 57980006561  จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" cancleFor="recordTravel" ref={cancelRequestModalRef} />
+      <CancelRequestModal id="" title="ยืนยันลบข้อมูลการเติมเชื้อเพลิง" desc="ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ 57980006561  จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" cancleFor="recordTravel" ref={cancelRequestModalRef} />
     </>
   );
 }

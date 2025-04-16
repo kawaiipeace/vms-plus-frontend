@@ -10,6 +10,7 @@ import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import { firstApproverSendbackRequest } from "@/services/bookingApprover";
 import useSwipeDown from "@/utils/swipeDown";
+import { adminSendbackRequest } from "@/services/bookingAdmin";
 
 interface Props {
   id: string;
@@ -56,19 +57,26 @@ const FileBackRequestModal = forwardRef<
         const res =
           role === "firstApprover"
             ? await firstApproverSendbackRequest(payload)
+            : role === "admin"
+            ? await adminSendbackRequest(payload)
             : await firstApproverSendbackRequest(payload);
-            const data = res.data;
+        const data = res.data;
         if (data) {
           modalRef.current?.close();
 
           role === "firstApprover"
             ? router.push(
                 "/administrator/booking-approver?sendback-req=success&request-id=" +
-                   data.result?.request_no
+                  data.result?.request_no
+              )
+            : role === "admin"
+            ? router.push(
+                "/administrator/request-list?sendback-req=success&request-id=" +
+                  data.result?.request_no
               )
             : router.push(
                 "/vehicle-booking/request-list?sendback-req=success&request-id=" +
-                   data.result?.request_no
+                  data.result?.request_no
               );
         }
       } catch (error) {
@@ -83,8 +91,8 @@ const FileBackRequestModal = forwardRef<
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-          <div className="bottom-sheet" {...swipeDownHandlers} >
+        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
 
@@ -112,9 +120,11 @@ const FileBackRequestModal = forwardRef<
               </div>
             </div>
             <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
-            <form method="dialog" className="col-span-1">
-              <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
-            </form>
+              <form method="dialog" className="col-span-1">
+                <button className="btn btn-secondary w-full">
+                  ไม่ใช่ตอนนี้
+                </button>
+              </form>
               <button
                 type="button"
                 className="btn btn-primary col-span-1"

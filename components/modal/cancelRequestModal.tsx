@@ -11,6 +11,7 @@ import { cancelRequest } from "@/services/bookingUser";
 import { useRouter } from "next/navigation";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import useSwipeDown from "@/utils/swipeDown";
+import { adminCancelRequest } from "@/services/bookingAdmin";
 
 interface Props {
   id: string;
@@ -58,20 +59,26 @@ const CancelRequestModal = forwardRef<
         const res =
           role === "firstApprover"
             ? await firstApprovercancelRequest(payload)
+            : role === "admin"
+            ? await adminCancelRequest(payload)
             : await cancelRequest(payload);
         const data = res.data;
-
         if (data) {
           modalRef.current?.close();
 
           role === "firstApprover"
             ? router.push(
                 "/administrator/booking-approver?cancel-req=success&request-id=" +
-                data.result?.request_no
+                  data.result?.request_no
+              )
+            :  role === "admin"
+            ? router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
               )
             : router.push(
                 "/vehicle-booking/request-list?cancel-req=success&request-id=" +
-                data.result?.request_no
+                  data.result?.request_no
               );
         }
       } catch (error) {
@@ -86,8 +93,8 @@ const CancelRequestModal = forwardRef<
 
   return (
     <dialog ref={modalRef} className={`modal modal-middle`}>
-      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col !bg-white">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col !bg-white">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
 

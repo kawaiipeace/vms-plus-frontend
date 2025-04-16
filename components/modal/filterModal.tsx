@@ -15,7 +15,7 @@ import { fetchVehicleDepartments } from "@/services/masterService";
 
 interface Props {
   statusData: summaryType[];
-  department: boolean;
+  department?: boolean;
   onSubmitFilter: (filters: {
     selectedStatuses: string[];
     selectedStartDate: string;

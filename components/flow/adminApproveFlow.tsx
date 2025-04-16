@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
 import FilterSortModal from "@/components/modal/filterSortModal";
-import { FetchRequests } from "@/services/bookingAdmin";
+import { fetchRequests } from "@/services/bookingAdmin";
 import AdminListTable from "@/components/table/admin-list-table";
 
 interface PaginationType {
@@ -186,9 +186,9 @@ export default function AdminApproveFlow() {
   };
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    const fetchRequestsData = async () => {
       try {
-        const response = await FetchRequests(params);
+        const response = await fetchRequests(params);
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
@@ -209,7 +209,7 @@ export default function AdminApproveFlow() {
       }
     };
 
-    fetchRequests();
+    fetchRequestsData();
   }, [params]);
 
   useEffect(() => {

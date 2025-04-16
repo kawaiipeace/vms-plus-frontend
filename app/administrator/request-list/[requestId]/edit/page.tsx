@@ -5,8 +5,8 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import PageHeaderAdmin from "@/components/pageAdmin";
-import { FetchRequestDetail } from "@/services/bookingAdmin";
+import PageHeaderAdmin from "@/components/pageHeaderAdmin";
+import { fetchRequestDetail } from "@/services/bookingAdmin";
 import RequestEditTabs from "@/components/admin/requestEditTab";
 
 
@@ -23,7 +23,7 @@ export default function RequestDetail() {
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {
-          const response = await FetchRequestDetail(request_id);
+          const response = await fetchRequestDetail(request_id);
        
           setRequestData(response.data);
         } catch (error) {

@@ -2,8 +2,8 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
 import CancelRequestModal from "./modal/cancelRequestModal";
 import FileBackRequestModal from "./modal/fileBackModal";
-import ApproveRequestModal from "./modal/approveRequestModal";
 import { useRef, useState } from "react";
+import PassVerifyModal from "./modal/passVerifyModal";
 
 interface Props {
   data: RequestDetailType;
@@ -97,14 +97,14 @@ export default function PageHeaderAdmin({ data }: Props) {
             ))}
         </div>
 
-        {data?.can_cancel_request && (
+     
           <button
             className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
             onClick={() => cancelRequestModalRef.current?.openModal()}
           >
             ยกเลิกคำขอ
           </button>
-        )}
+       
         <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
@@ -122,7 +122,7 @@ export default function PageHeaderAdmin({ data }: Props) {
           onClick={() => approveRequestModalRef.current?.openModal()}
         >
           <i className="material-symbols-outlined">check</i>
-          อนุมัติคำขอ
+          ผ่านการตรวจสอบ
         </button>
       </div>
       <CancelRequestModal
@@ -130,26 +130,30 @@ export default function PageHeaderAdmin({ data }: Props) {
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
-        role="firstApprover"
+        role="admin"
         confirmText="ยกเลิกคำขอ"
       />
       <FileBackRequestModal
         id={data?.trn_request_uid}
         ref={fileBackRequestModalRef}
         title="ยืนยันตีกลับคำขอ"
-        role="firstApprover"
+        role="admin"
         desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
         placeholder="โปรดระบุเหตุผลที่ตีกลับ"
         confirmText="ตีกลับคำขอ"
       />
 
-      <ApproveRequestModal
+      <PassVerifyModal
         id={data?.trn_request_uid}
         ref={approveRequestModalRef}
-        title={"ยืนยันอนุมัติคำขอ"}
-        role="firstApprover"
-        desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"}
-        confirmText="อนุมัติคำขอ"
+        title={"ยืนยันผ่านการตรวจสอบ"}
+        role="admin"
+        desc={<>คุณต้องการยืนยันผ่านการตรวจสอบ<br></br>และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่?</>  }
+        confirmText="ผ่านการตรวจสอบ"
+        place={data?.received_key_place}
+        statusCode={data?.ref_request_status_code}
+        start_datetime={data?.received_key_start_datetime}
+        end_datetime={data?.received_key_end_datetime}
       />
     </div>
   );
