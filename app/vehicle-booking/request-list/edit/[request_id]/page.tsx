@@ -76,7 +76,7 @@ export default function RequestDetail() {
         </div>
       </div>
       <PassVerifyModal ref={passVerifyModalRef} title="ยืนยันผ่านการตรวจสอบ" desc="คุณต้องการยืนยันผ่านการตรวจสอบ และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่ ?"/>
-      <CancelRequestModal ref={cancelRequestModalRef} title="ยกเลิกคำขอ" desc="ยกเลิกคำขอ" confirmText="ยกเลิกคำขอ" />
+      <CancelRequestModal id="" ref={cancelRequestModalRef} title="ยกเลิกคำขอ" desc="ยกเลิกคำขอ" confirmText="ยกเลิกคำขอ" />
     </div>
   );
 }

@@ -21,9 +21,8 @@ export default function SideBar({ menuName }: SidebarProps) {
         setOpenMenus(["collapseLink2"]);
       } else if (
         [
-          "ตรวจสอบคำขอ",
+          "ตรวจสอบและจัดการคำขอ",
           "อนุมัติใช้ยานพาหนะ",
-          "ให้กุญแจและรับคืนยานพาหนะ",
         ].includes(menuName)
       ) {
         setOpenMenus(["collapseLink3"]);
@@ -136,9 +135,9 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                { title: "ตรวจสอบคำขอ", link: "/administrator" },
+                { title: "ตรวจสอบและจัดการคำขอ", link: "/administrator/request-list" },
                 { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/final-approver" },
-                { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
+                // { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },
             {

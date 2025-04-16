@@ -8,18 +8,6 @@ import { summaryType } from "@/app/types/request-list-type";
 
 export default function ApproveVehicleTabs() {
 
-  // const tabs = [
-  //   {
-  //     label: "คำขอใช้ยานพาหนะ",
-  //     content: <FirstApproveFlow />,
-  //     badge: "4",
-  //   },
-  //   {
-  //     label: "ใบอนุญาตขับขี่",
-  //     content: <div></div>,
-  //   },
-  // ];
-
     const [statusData, setStatusData] = useState<summaryType[]>([]);
 
     useEffect(() => {
@@ -86,35 +74,6 @@ export default function ApproveVehicleTabs() {
 
       {tabs[activeTab]?.content}
 
-        <div className="hidden">
-          <ZeroRecord
-            imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
-            title="ไม่พบคำขอใช้ยานพาหนะ"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-          />
-        </div>
-
-        <div className="dt-table-emptyrecord hidden">
-          <div className="emptystate">
-            <Image
-              src="/assets/img/empty/add_carpool.svg"
-              width={100}
-              height={100}
-              alt=""
-            />
-            <div className="emptystate-title">ไม่มีกลุ่มยานพาหนะ</div>
-            <div className="emptystate-text">
-              เริ่มสร้างกลุ่มยานพาหนะกลุ่มแรก
-            </div>
-            <div className="emptystate-action">
-              <button className="btn btn-primary">
-                <i className="material-symbols-outlined">add</i>
-                สร้างกลุ่มยานพาหนะ
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

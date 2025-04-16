@@ -3,7 +3,7 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import ToastCustom from "@/components/toastCustom";
-import Main from "@/components/finalapprove/main";
+// import Main from "@/components/finalapprove/main";
 
 export default function ApproveRequest() {
   const { isPinned } = useSidebar();
@@ -37,7 +37,7 @@ export default function ApproveRequest() {
               </div>
             </div>
 
-                <Main />
+                {/* <Main /> */}
 
           </div>
         </div>

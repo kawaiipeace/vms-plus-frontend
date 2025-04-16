@@ -221,7 +221,7 @@ export default function FirstApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config) return null;
+            if (!config || item.count === 0) return null;
 
             return (
               <div
@@ -252,7 +252,7 @@ export default function FirstApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config) return null;
+            if (!config || item.count === 0) return null;
 
             return (
               <div

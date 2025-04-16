@@ -3,13 +3,12 @@ import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
 import { useRouter } from "next/navigation";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import Paginationselect from "@/components/table/paginationSelect";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
-import { firstApproverRequests } from "@/services/bookingApprover";
-import FirstApproverListTable from "@/components/table/first-approver-list-table";
-import PaginationControls from "../table/pagination-control";
-import FilterSortModal from "../modal/filterSortModal";
+import PaginationControls from "@/components/table/pagination-control";
+import FilterSortModal from "@/components/modal/filterSortModal";
+import { FetchRequests } from "@/services/bookingAdmin";
+import AdminListTable from "@/components/table/admin-list-table";
 
 interface PaginationType {
   limit: number;
@@ -18,7 +17,7 @@ interface PaginationType {
   totalPages: number;
 }
 
-export default function FirstApproveFlow() {
+export default function AdminApproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
@@ -65,11 +64,14 @@ export default function FirstApproveFlow() {
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
-      "20": { iconName: "schedule", status: "info" },
-      "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "check", status: "success" },
-      "31": { iconName: "reply", status: "warning" },
       "40": { iconName: "check", status: "success" },
+      "41": { iconName: "check", status: "success" },
+      "50": { iconName: "vpn_key", status: "info" },
+      "51": { iconName: "vpn_key", status: "info" },
+      "60": { iconName: "directions_car", status: "info" },
+      "70": { iconName: "build", status: "warning" },
+      "71": { iconName: "build", status: "warning" },
+      "80": { iconName: "done_all", status: "success" },
       "90": { iconName: "delete", status: "default" },
     };
 
@@ -120,9 +122,7 @@ export default function FirstApproveFlow() {
     }));
   };
 
-  const handleFilterSortSubmit = (filters: {
-    selectedSortType: string;
-  }) => {
+  const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
     console.log("Filters submitted:", filters);
     // You can use filters.requestNo and filters.startDateTime to filter your data
     // Example:
@@ -186,7 +186,7 @@ export default function FirstApproveFlow() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await firstApproverRequests(params);
+        const response = await FetchRequests(params);
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
@@ -221,7 +221,7 @@ export default function FirstApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config) return null;
+            if (!config || item.count === 0) return null;
 
             return (
               <div
@@ -252,7 +252,7 @@ export default function FirstApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config) return null;
+            if (!config || item.count === 0) return null;
 
             return (
               <div
@@ -279,58 +279,57 @@ export default function FirstApproveFlow() {
       </div>
 
       <div className="flex justify-between items-center mt-5 md:flex-row flex-col w-full gap-3">
-  {/* Left side: Search */}
-  <div className="w-full md:w-auto">
-    <div className="input-group input-group-search hidden">
-      <div className="input-group-prepend">
-        <span className="input-group-text search-ico-info">
-          <i className="material-symbols-outlined">search</i>
-        </span>
-      </div>
-      <input
-        type="text"
-        id="myInputTextField"
-        className="form-control dt-search-input"
-        placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
-        value={params.search}
-        onChange={(e) =>
-          setParams((prevParams) => ({
-            ...prevParams,
-            search: e.target.value,
-            page: 1,
-          }))
-        }
-      />
-    </div>
-  </div>
+        {/* Left side: Search */}
+        <div className="w-full md:w-auto">
+          <div className="input-group input-group-search hidden">
+            <div className="input-group-prepend">
+              <span className="input-group-text search-ico-info">
+                <i className="material-symbols-outlined">search</i>
+              </span>
+            </div>
+            <input
+              type="text"
+              id="myInputTextField"
+              className="form-control dt-search-input"
+              placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
+              value={params.search}
+              onChange={(e) =>
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  search: e.target.value,
+                  page: 1,
+                }))
+              }
+            />
+          </div>
+        </div>
 
-  {/* Right side on desktop, stacked below on mobile */}
-  <div className="flex gap-4 w-full md:w-auto md:ml-auto">
-    <button
-      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-      onClick={() => filterModalRef.current?.openModal()}
-    >
-      <div className="flex items-center gap-1">
-        <i className="material-symbols-outlined">filter_list</i>
-        ตัวกรอง
-        <span className="badge badge-brand badge-outline rounded-[50%]">
-          {filterNum}
-        </span>
-      </div>
-    </button>
+        {/* Right side on desktop, stacked below on mobile */}
+        <div className="flex gap-4 w-full md:w-auto md:ml-auto">
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+            onClick={() => filterModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              ตัวกรอง
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {filterNum}
+              </span>
+            </div>
+          </button>
 
-    <button
-      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-      onClick={() => filterSortModalRef.current?.openModal()}
-    >
-      <div className="flex items-center gap-1">
-        <i className="material-symbols-outlined">filter_list</i>
-        เรียงลำดับ
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] md:hidden"
+            onClick={() => filterSortModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              เรียงลำดับ
+            </div>
+          </button>
+        </div>
       </div>
-    </button>
-  </div>
-</div>
-
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
@@ -363,10 +362,7 @@ export default function FirstApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <FirstApproverListTable
-              defaultData={dataRequest}
-              pagination={pagination}
-            />
+            <AdminListTable defaultData={dataRequest} pagination={pagination} />
           </div>
 
           <PaginationControls

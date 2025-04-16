@@ -2,7 +2,7 @@
 import { ApproveRequestType, CanceledRequestType, SendbackRequestType } from '@/app/types/request-action-type';
 import axiosInstance from '@/utils/axiosInstance';
 
-export const firstApproverRequests = async (params: {
+export const FetchRequests = async (params: {
   search?: string;
   ref_request_status_code?: string;
   startdate?: string;
@@ -22,7 +22,7 @@ export const firstApproverRequests = async (params: {
   }
 };
 
-export const firstApproverRequestDetail = async (id: string) => {
+export const FetchRequestDetail = async (id: string) => {
   try {
     const response = await axiosInstance.get('booking-admin/request/' + id);
 
@@ -34,7 +34,7 @@ export const firstApproverRequestDetail = async (id: string) => {
 };
 
 
-export const firstApprovercancelRequest = async (data: CanceledRequestType) => {
+export const CancelRequest = async (data: CanceledRequestType) => {
   try {
     const response = await axiosInstance.put('booking-admin/update-canceled',  data );
     return response;
@@ -44,7 +44,7 @@ export const firstApprovercancelRequest = async (data: CanceledRequestType) => {
   }
 }
 
-export const firstApproverSendbackRequest = async (data: SendbackRequestType) => {
+export const SendbackRequest = async (data: SendbackRequestType) => {
   try {
     const response = await axiosInstance.put('booking-admin/update-sended-back',  data );
     return response;
@@ -54,7 +54,7 @@ export const firstApproverSendbackRequest = async (data: SendbackRequestType) =>
   }
 }
 
-export const firstApproverApproveRequest = async (data: ApproveRequestType) => {
+export const ApproveRequest = async (data: ApproveRequestType) => {
   try {
     const response = await axiosInstance.put('booking-admin/update-approved',  data );
     return response;
