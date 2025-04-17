@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface MobileWaitForKeyCardProps {
-  id: string;
+  id?: string;
   title?: string;
   licensePlate: string;
   location: string;

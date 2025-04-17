@@ -23,9 +23,9 @@ export default function RequestList() {
       content: (
         <>
           <MobileFileBackCard />
-          <MobileWaitForKeyCard />
+          <MobileWaitForKeyCard licensePlate={""} location={""} dateRange={""} pickupLocation={""} pickupDate={""} />
           <MobileWaitingCard />
-          <MobileRecordTravelCard reviewCarDrive={() => reviewCarDriveModalRef.current?.openModal()} returnCarAdd={() => returnCarAddModalRef.current?.openModal()} />
+          <MobileRecordTravelCard reviewCarDrive={() => reviewCarDriveModalRef.current?.openModal()} returnCarAdd={() => returnCarAddModalRef.current?.openModal()} id={""} />
         </>
       ),
       badge: "4",
