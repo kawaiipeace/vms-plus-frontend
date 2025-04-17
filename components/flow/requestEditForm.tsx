@@ -14,61 +14,19 @@ import JourneyDetailCard from "@/components/card/journeyDetailCard";
 import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
 import ReferenceCard from "@/components/card/referenceCard";
 import DisburstmentCard from "@/components/card/disburstmentCard";
-import { fetchVehicleDetail } from "@/services/bookingUser";
 import DriverPeaInfoCard from "@/components/card/driverPeaInfoCard";
 import { FormDataType } from "@/app/types/form-data-type";
 import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
-import { fetchVehicleInfo } from "@/services/masterService";
-
-interface VehicleDetail {
-  mas_vehicle_uid?: string;
-  vehicle_brand_name?: string;
-  vehicle_model_name?: string;
-  vehicle_license_plate?: string;
-  vehicle_img?: string;
-  CarType?: string;
-  vehicle_owner_dept_sap?: string;
-  is_has_fleet_card?: string;
-  vehicle_gear?: string;
-  ref_vehicle_subtype_code?: number;
-  vehicle_user_emp_id?: string;
-  ref_fuel_type_id?: number;
-  seat?: number;
-  age?: number;
-  vehicle_imgs: string[];
-  ref_fuel_type?: {
-    ref_fuel_type_id?: number;
-    ref_fuel_type_name_th?: string;
-    ref_fuel_type_name_en?: string;
-  };
-  vehicle_department?: {
-    vehicle_mileage: string;
-    vehicle_fleet_card_no: string;
-    vehicle_pea_id: string;
-    parking_place: string;
-    vehicle_user?: {
-      emp_id: string;
-      full_name: string;
-      dept_sap: string;
-      tel_internal?: string;
-      tel_mobile: string;
-      dept_sap_short: string;
-      image_url: string;
-    };
-  };
-  is_admin_choose_driver: boolean;
-}
-
+import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
+import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 interface Props {
   approverCard?: boolean;
-  driverCard?: boolean;
   keyPickUpCard?: boolean;
 }
 
 export default function RequestEditForm({
   approverCard,
-  driverCard,
 }: // keyPickUpCard,
 Props) {
   const editDriverAppointmentModalRef = useRef<{
@@ -107,7 +65,7 @@ Props) {
 
   const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
 
-  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(
+  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetailType | null>(
     null
   );
 
@@ -150,19 +108,20 @@ Props) {
 
         fetchVehicleDetailData();
       }
-      console.log( parsedData?.vehicleSelect);
-      const fetchVehicleInfoFunc = async () => {
-        try {
-          const response = await fetchVehicleInfo(
-            parsedData?.vehicleSelect || ""
-          );
-          setAvailableDriver(response.data.number_of_available_drivers);
-          console.log(response.data.number_of_available_drivers);
-        } catch (error) {
-          console.error("API Error:", error);
-        }
-      };
-      fetchVehicleInfoFunc();
+      if(parsedData?.vehicleSelect){
+        const fetchVehicleInfoFunc = async () => {
+          try {
+            const response = await fetchVehicleInfo(
+              parsedData?.vehicleSelect
+            );
+            setAvailableDriver(response.data.number_of_available_drivers);
+          } catch (error) {
+            console.error("API Error:", error);
+          }
+        };
+        fetchVehicleInfoFunc();
+      }
+  
     }
   }, []);
 
@@ -319,10 +278,11 @@ Props) {
                 แก้ไข
               </button>
             </div>
-
+            {updatedFormData.refCostTypeCode && 
             <DisburstmentCard
               refCostTypeCode={updatedFormData.refCostTypeCode}
             />
+}
           </div>
         </div>
 
@@ -440,6 +400,7 @@ Props) {
               !updatedFormData?.isAdminChooseDriver && (
                 <div className="mt-5">
                   <DriverSmallInfoCard
+                    showPhone={true}
                     id={updatedFormData?.masCarpoolDriverUid}
                     userKeyPickup={false}
                   />
@@ -447,51 +408,6 @@ Props) {
               )
             )}
 
-            {driverCard && (
-              <div className="form-section mt-5">
-                <div className="form-section-header">
-                  <div className="form-section-header-title">ผู้ขับขี่</div>
-                </div>
-
-                <div className="card mt-3">
-                  <div className="card-body card-body-inline">
-                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                      <Image
-                        src="/assets/img/sample-avatar.png"
-                        className="rounded-md"
-                        width={100}
-                        height={100}
-                        alt=""
-                      />
-                    </div>
-                    <div className="card-content">
-                      <div className="card-content-top">
-                        <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-                        <div className="supporting-text-group">
-                          <div className="supporting-text">505291</div>
-                          <div className="supporting-text">
-                            นรค.6 กอพ.1 ฝพจ.
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="card-item-group">
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <span className="card-item-text">091-234-5678</span>
-                        </div>
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">call</i>
-                          <span className="card-item-text">6032</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           {approverCard && (
             <div className="form-section">
@@ -539,12 +455,7 @@ Props) {
         onUpdate={handleModalUpdate}
       />
       <ApproverModal ref={approverModalRef} onUpdate={handleModalUpdate} />
-      <ApproveRequestModal
-        ref={approveRequestModalRef}
-        title={"ยืนยันการส่งคำขออีกครั้ง"}
-        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
-        confirmText="ส่งคำขอ"
-      />
+
     </>
   );
 }

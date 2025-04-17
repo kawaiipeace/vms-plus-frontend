@@ -29,12 +29,23 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [reqData, setReqData] = useState<RequestListType[]>(defaultData);
 
-  // Set pagination from props
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
     pageSize: pagination.limit,
   });
+
+  useEffect(() => {
+    setReqData(defaultData);
+  }, [defaultData]);
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination.page, pagination.limit]);
 
   const requestListColumns: ColumnDef<RequestListType>[] = [
     {
@@ -45,8 +56,16 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
         </div>
       ),
       enableSorting: true,
-      cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
+      cell: ({ row }) => (
+        <div className="text-left">
+          <div className="flex flex-col">
+            <div>{row.original.request_no}</div>
+            <div className="text-left">
+              {row.original.is_have_sub_request === "1" &&
+                "ปฏิบัติงานต่อเนื่อง"}
+            </div>
+          </div>
+        </div>
       ),
     },
     {
@@ -54,9 +73,9 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-left">
-          {row.original.vehicle_user_emp_name} <br />
-          <span>{row.original.vehicle_user_dept_sap ?? ""}</span>
+        <div className="flex flex-col">
+          <div>{row.original.vehicle_user_emp_name}</div>
+          <div>{row.original.vehicle_user_dept_sap_short}</div>
         </div>
       ),
     },
@@ -102,13 +121,17 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       cell: ({ getValue }) => {
         const value = getValue() as string;
         return (
-          <div className="w-full text-center">
+          <div className="w-[80px] text-center">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับคำขอ" ? (
+            ) : value === "รออนุมัติ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
+                {value as React.ReactNode}
+              </span>
+            ) : value === "ยกเลิกคำขอ" ? (
+              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
             ) : (
@@ -135,7 +158,39 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/vehicle-booking/request-list/" + row.original.trn_request_uid
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">quick_reference_all</i>
+              </button>
+            )}
+
+            {statusValue == "ถูกตีกลับ" && (
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                data-tip="แก้ไข"
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid +
+                      "/edit"
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">stylus</i>
+              </button>
+            )}
+
+            {statusValue == "ยกเลิกคำขอ" && (
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                data-tip="ดูรายละเอียดคำขอ"
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid
                   )
                 }
               >
@@ -149,7 +204,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
   ];
 
   const table = useReactTable({
-    data: defaultData,
+    data: reqData,
     columns: requestListColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -166,7 +221,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
   });
 
   useEffect(() => {
-    console.log('page',pagination)
+    console.log("page", pagination);
   }, [pagination]);
 
   useEffect(() => {
@@ -174,7 +229,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
   }, []);
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-4 pt-0">
       {!isLoading && (
         <>
           <DataTable table={table} />

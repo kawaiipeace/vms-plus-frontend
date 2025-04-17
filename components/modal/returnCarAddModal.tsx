@@ -8,6 +8,7 @@ import DatePicker from "@/components/datePicker";
 import NumberInput from "@/components/numberInput";
 import RadioButton from "@/components/radioButton";
 import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface ReturnCarAddModalProps {
   useBy?: string;
@@ -32,11 +33,12 @@ const ReturnCarAddModal = forwardRef<
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
           <div className="modal-body overflow-y-auto text-center !bg-white">
             <form>
               <div className="form-section">

@@ -1,0 +1,91 @@
+"use client";
+import { useSidebar } from "@/contexts/sidebarContext";
+import Header from "@/components/header";
+import SideBar from "@/components/sideBar";
+import ToastCustom from "@/components/toastCustom";
+import ApproveVehicleTabs from "@/components/tabs/approveVehicleTabs";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function RequestListContent() {
+  const searchParams = useSearchParams();
+  const sendbackReq = searchParams.get("sendback-req");
+  const cancelReq = searchParams.get("cancel-req");
+  const approveReq = searchParams.get("approve-req");
+  const requestId = searchParams.get("request-id");
+
+  return (
+    <>
+      {sendbackReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ถูกตีกลับเรียบร้อยแล้ว`}
+          status="success"
+        />
+      )}
+      {approveReq === "success" && (
+        <ToastCustom
+          title="อนุมัติคำขอสำเร็จ"
+          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ผ่านการอนุมัติเรียบร้อยแล้ว`}
+          status="success"
+        />
+      )}
+      {cancelReq === "success" && (
+        <ToastCustom
+          title="ยกเลิกคำขอสำเร็จ"
+          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ถูกยกเลิกเรียบร้อยแล้ว`}
+          status="success"
+        />
+      )}
+    </>
+  );
+}
+
+export default function ApproveRequest() {
+  const { isPinned } = useSidebar();
+
+  return (
+    <div>
+      <div className="main-container">
+        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
+
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
+          <Header />
+          <div className="main-content-body">
+            <div className="page-header">
+              <div className="breadcrumbs text-sm">
+                <ul>
+                  <li className="breadcrumb-item">
+                    <a>
+                      <i className="material-symbols-outlined">home</i>
+                    </a>
+                  </li>
+                  <li className="breadcrumb-item active">
+                    <a>อนุมัติขอคำใช้และใบอนุญาต</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="page-group-header">
+                <div className="page-title">
+                  <span className="page-title-label">อนุมัติคำขอ</span>
+                  {/* <span className="badge badge-outline badge-gray">95 กลุ่ม</span> */}
+                </div>
+              </div>
+            </div>
+
+            <ApproveVehicleTabs />
+          </div>
+        </div>
+      </div>
+
+      <Suspense fallback={<div></div>}>
+        <RequestListContent />
+      </Suspense>
+    </div>
+  );
+}

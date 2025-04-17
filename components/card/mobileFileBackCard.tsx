@@ -1,21 +1,49 @@
 import Image from "next/image";
-export default function MobileFileBackCard() {
+import { useRouter } from "next/navigation";
+
+interface MobileFileBackCardProps {
+  id?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  cardTitle?: string;
+  cardSubtitle?: string;
+  supportingTexts?: string[];
+  cardItemText?: string;
+  showEditButton?: boolean;
+}
+
+export default function MobileFileBackCard({
+  id,
+  imageSrc = "/assets/img/graphic/status_reject_request.png",
+  imageAlt = "Rejected Request",
+  cardTitle = "ถูกตีกลับ",
+  cardSubtitle = "",
+  supportingTexts = [],
+  cardItemText = "ถูกตีกลับจากผู้ดูแลยานพาหนะ",
+  showEditButton = true,
+}: MobileFileBackCardProps) {
+  const router = useRouter();
+
   return (
-    <div className="card">
+    <div className="card" onClick={() => router.push('/vehicle-booking/request-list/' + id + '/edit')}>
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
-            <Image src="/assets/img/graphic/status_reject_request.png" width={100} height={100} alt="" />
+            <Image src={imageSrc} width={100} height={100} alt={imageAlt} />
           </div>
           <div className="card-content">
             <div className="card-content-top">
               <div className="card-title">
-                ถูกตีกลับ <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
+                {cardTitle}
+                <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
               </div>
-              <div className="card-subtitle">5กก 1234 กรุงเทพมหานคร</div>
+              <div className="card-subtitle">{cardSubtitle}</div>
               <div className="supporting-text-group supporting-text-column">
-                <div className="supporting-text text-truncate">การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด</div>
-                <div className="supporting-text text-truncate">01/01/2567 - 07/01/2567</div>
+                {supportingTexts.map((text, index) => (
+                  <div key={index} className="supporting-text text-truncate">
+                    {text}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -24,11 +52,11 @@ export default function MobileFileBackCard() {
         <div className="card-item-group d-flex">
           <div className="card-item">
             <i className="material-symbols-outlined">info</i>
-            <span className="card-item-text">ถูกตีกลับจากผู้ดูแลยานพาหนะ</span>
+            <span className="card-item-text">{cardItemText}</span>
           </div>
         </div>
 
-        <button className="btn btn-secondary">แก้ไข</button>
+        {showEditButton && <button className="btn btn-secondary">แก้ไข</button>}
       </div>
     </div>
   );

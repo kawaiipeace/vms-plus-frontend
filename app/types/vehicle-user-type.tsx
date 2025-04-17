@@ -24,12 +24,30 @@ export interface TripDetail {
 }
 
 export interface VehicleUserType {
-    emp_id: string;
-    full_name: string;
-    dept_sap: string;
-    tel_internal?: string;
-    tel_mobile: string;
-    dept_sap_short: string;
-    image_url: string;
-  }
+  emp_id: string;
+  full_name: string;
+  dept_sap: string;
+  tel_internal?: string;
+  tel_mobile: string;
+  dept_sap_short: string;
+  image_url: string;
+}
 
+export interface PeaDriverType {
+  emp_id: string;
+  full_name: string;
+  dept_sap: string;
+  dept_sap_short: string;
+  dept_sap_full: string;
+  tel_mobile: string;
+  tel_internal: string;
+  image_url: string;
+  annual_driver: {
+    request_annual_driver_no: string;
+    request_issue_date: string;
+    request_expire_date: string;
+    annual_yyyy: number;
+    driver_license_no: string;
+    driver_license_expire_date: string;
+  };
+}

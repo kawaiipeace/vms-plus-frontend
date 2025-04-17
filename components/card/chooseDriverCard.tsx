@@ -32,15 +32,17 @@ export default function ChooseDriverCard({ chooseDriver, number }: Props) {
               <span className="card-item-text">ว่าง {number} คน</span>
             </div>
           </div>
-          {chooseDriver && (
-            <div className="card-actions">
-              <button className="btn btn-primary w-full">
-                เลือกพนักงานขับรถ
-              </button>
-            </div>
-          )}
         </div>
       </div>
+      <div className="px-4 pb-4">
+        {chooseDriver && (
+            <div className="card-actions">
+            <button className="btn btn-primary w-full">
+              เลือกพนักงานขับรถ
+            </button>
+          </div>
+          )}
+          </div>
     </div>
   );
 }

@@ -12,8 +12,14 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { convertToISO } from "@/utils/convertToISO";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { updatePickup } from "@/services/bookingUser";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import useSwipeDown from "@/utils/swipeDown";
+import { adminUpdatePickup } from "@/services/bookingAdmin";
 
 interface EditDriverAppointmentModalProps {
+  requestData?: RequestDetailType;
+  role?: string;
   onUpdate: (data: any) => void;
 }
 
@@ -25,19 +31,22 @@ const schema = yup.object().shape({
 const EditDriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditDriverAppointmentModalProps
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  
+
+  const hasReset = useRef(false);
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
-  
 
   const { formData, updateFormData } = useFormContext();
 
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, reset, control, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -56,6 +65,19 @@ const EditDriverAppointmentModal = forwardRef<
   );
 
   useEffect(() => {
+    if (requestData) {
+      reset({
+        pickupDatetime: requestData?.pickup_datetime || "",
+        pickupPlace: requestData?.pickup_place || "",
+      });
+      const datetime = convertToBuddhistDateTime(requestData?.pickup_datetime);
+      setSelectedDate(datetime.date);
+      setSelectedTime(datetime.time);
+      hasReset.current = true;
+    }
+  }, [requestData, reset]);
+
+  useEffect(() => {
     setValue("pickupPlace", formData?.pickupPlace || "");
     if (formData?.pickupDatetime) {
       const datetime = convertToBuddhistDateTime(formData?.pickupDatetime);
@@ -72,29 +94,52 @@ const EditDriverAppointmentModal = forwardRef<
     setSelectedDate(event.target.value);
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     if (!selectedDate || !selectedTime) return;
 
     const pickupISO = convertToISO(selectedDate, selectedTime);
 
-    onUpdate({
-      ...data,
-      pickupDatetime: pickupISO,
-      pickupPlace: data.pickupPlace,
-    });
+ 
+    if (requestData) {
+      const payload = {
+        pickup_datetime: pickupISO,
+        pickup_place: data.pickupPlace,
+        trn_request_uid: requestData?.trn_request_uid,
+      };
+      try {
+        const response = role === "admin" ? await adminUpdatePickup(payload) : await updatePickup(payload);
 
-    updateFormData({
-      pickupDatetime: pickupISO,
-      pickupPlace: data.pickupPlace,
-    });
+        if (response) {
+          if (onUpdate) onUpdate(response.data);
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("Failed to update trip due to network error.");
+      }
+    } else {
+      onUpdate({
+        ...data,
+        pickupDatetime: pickupISO,
+        pickupPlace: data.pickupPlace,
+      });
 
-    modalRef.current?.close();
+      updateFormData({
+        pickupDatetime: pickupISO,
+        pickupPlace: data.pickupPlace,
+      });
+
+      modalRef.current?.close();
+    }
   };
+
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

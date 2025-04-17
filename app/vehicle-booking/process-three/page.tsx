@@ -77,7 +77,7 @@ export default function ProcessThree() {
       masCarpoolDriverUid: vehiclePoolId,
     });
   };
-  const [params, setParams] = useState({
+  const [params] = useState({
     name: "",
     page: 1,
     limit: 10,
@@ -514,7 +514,7 @@ export default function ProcessThree() {
                                 เลือกพนักงานขับรถ
                               </span>
                               <span className="badge badge-outline badge-gray page-title-status">
-                                {filteredDrivers.length} คน
+                               ว่าง {filteredDrivers.length} คน
                               </span>
                             </div>
                           </div>

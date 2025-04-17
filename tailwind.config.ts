@@ -18,6 +18,13 @@ export default {
           grayText: '#98A2B3',
 
       },
+      surface: {
+        "secondary-subtle" : "#F9FAFB",
+      },
+      color: {
+        primary: '#000000',
+        secondary: '#475467'
+      },
       secondary:{
         border: '#EAECFO,'
       },

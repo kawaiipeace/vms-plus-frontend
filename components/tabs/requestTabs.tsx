@@ -1,69 +1,85 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
-import RequestStatusBox from "@/components/requestStatusBox";
 import ArpproveFlow from "@/components/approveFlow";
-import { requests } from "@/services/bookingUser";
+import { fetchMenus, requests } from "@/services/bookingUser";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import CancelFlow from "@/components/flow/cancelFlow";
+import ProcessIntroModal from "@/components/modal/processIntroModal";
 
 export default function RequestTabs() {
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
-  const [summary, setSummary] = useState<summaryType[]>([]);
+  const [statusData, setStatusData] = useState<summaryType[]>([]);
+  // const processIntroModalRef = useRef<{
+  //   openModal: () => void;
+  //   closeModal: () => void;
+  // } | null>(null);
 
- const [params, setParams] = useState({
-      search: "",
-      vehicle_owner_dept: "",
-      car_type: "",
-      category_code: "",
-      page: 1,
-      limit: 10,
-    });
-    
+  const [params] = useState({
+    search: "",
+    vehicle_owner_dept: "",
+    car_type: "",
+    category_code: "",
+    page: 1,
+    limit: 10,
+  });
+
+  // useEffect(() => {
+  //   processIntroModalRef.current?.openModal();
+  // }, []);
+
   useEffect(() => {
+    const fetchMenuFunc = async () => {
+      try {
+        const response = await fetchMenus();
+        const result = response.data;
+        setStatusData(result);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
     const fetchRequests = async () => {
       try {
         const response = await requests(params);
-        if (response.status === 200) {
-          const requestList = response.data.requests;
-          const summaryData = response.data.summary;
-          setSummary(summaryData);
-          setDataRequest(requestList);
-        }
+        const requestList = response.data.requests;
+        setDataRequest(requestList);
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
     };
 
     fetchRequests();
+    fetchMenuFunc();
   }, [params]);
 
-  const tabs = [
-    {
-      label: "กำลังดำเนินการ",
-      content: <ArpproveFlow />,
-      badge: dataRequest.length,
-    },
-    {
-      label: "เสร็จสิ้น",
-      content: <div></div>,
-    },
-    {
-      label: "ยกเลิก",
-      content: <div></div>,
-    },
-  ];
-  
-  const [activeTab, setActiveTab] = useState(0);
-
-  const getCountByStatus = (statusName: string) => {
-    const found = summary.find(
-      (item) => item.ref_request_status_name === statusName
-    );
-    return found ? found.count : 0;
+  const getTabContent = (code: string) => {
+    switch (code) {
+      case "20": 
+      return <ArpproveFlow />;
+      case "50": // รับกุญแจ
+      case "60": // เดินทาง
+      case "70": // คืนยานพาหนะ
+        return "";
+      case "80": // เสร็จสิ้น
+        return <div>เสร็จสิ้น</div>; // Replace with your component
+      case "90": // ยกเลิก
+        return <CancelFlow />;
+      default:
+        return <div></div>;
+    }
   };
+
+  const tabs = statusData.map((item) => ({
+    label: item.ref_request_status_name,
+    badge: item.count > 0 ? item.count : undefined,
+    content: getTabContent(item.ref_request_status_code),
+  }));
+
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist">
+    <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}
@@ -74,21 +90,18 @@ export default function RequestTabs() {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && (
-                <span className="badge badge-brand badge-pill-outline">{tab.badge}</span>
+              {tab.badge !== undefined && (
+                <span className="badge badge-brand badge-pill-outline">
+                  {tab.badge}
+                </span>
               )}
             </div>
           </button>
         ))}
       </div>
-      <div className="py-4">
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <RequestStatusBox iconName="schedule" status="info" title="รออนุมัติ"  number={getCountByStatus("รออนุมัติ")} />
-          <RequestStatusBox iconName="reply" status="warning" title="ถูกตีกลับ" number={getCountByStatus("ถูกตีกลับ")} />
-          <RequestStatusBox iconName="reply" status="warning" title="ยกเลิกคำขอ" number={getCountByStatus("ถูกตีกลับ")} />
-        </div>
 
-        {tabs[activeTab].content}
+      <div className="py-4">
+        {tabs[activeTab]?.content}
 
         {dataRequest.length === 0 && (
           <ZeroRecord
@@ -99,6 +112,8 @@ export default function RequestTabs() {
           />
         )}
       </div>
+
+      {/* <ProcessIntroModal ref={processIntroModalRef} /> */}
     </div>
   );
 }

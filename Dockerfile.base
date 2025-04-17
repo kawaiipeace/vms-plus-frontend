@@ -1,4 +1,4 @@
-FROM gitlab.pea.co.th:443/developer/workpermit/web/dependency_proxy/containers/node:20-alpine AS base
+FROM gitlab.pea.co.th:443/developer/vms-plus/web/dependency_proxy/containers/node:20-alpine AS base
 
 WORKDIR /app
 
@@ -12,7 +12,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies in production mode with frozen lockfile
-RUN pnpm install --frozen-lockfile --prefer-offline --prod
+RUN pnpm install --frozen-lockfile --prefer-offline 
 
 # Set non-root user for security
 USER node
+#

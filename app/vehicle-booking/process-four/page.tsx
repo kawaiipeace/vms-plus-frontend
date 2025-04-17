@@ -22,7 +22,6 @@ export default function ProcessFour() {
 
   const [formData, setFormData] = useState<FormDataType>();
 
-  // Load formData from localStorage on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedData = localStorage.getItem("formData");
@@ -47,25 +46,27 @@ export default function ProcessFour() {
         driver_emp_dept_sap: formData.driverDeptSap || "DPT001",
         driver_emp_id: formData.driverEmpID || "700001",
         driver_emp_name: formData.driverEmpName || "John Doe",
-        driver_internal_contact_number: formData.driverInternalContact || "1234567890",
-        driver_mobile_contact_number: formData.driverMobileContact || "1234567890",
+        driver_internal_contact_number:
+          formData.driverInternalContact || "1234567890",
+        driver_mobile_contact_number:
+          formData.driverMobileContact || "1234567890",
         end_datetime: convertToISO(
           String(formData.endDate),
           String(formData.timeEnd)
         ),
         is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
-        is_pea_employee_driver: formData.isPeaEmployeeDriver,
-        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "", 
+        is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
+        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "",
         mas_vehicle_uid: formData.vehicleSelect || "",
         number_of_passengers: formData.numberOfPassenger || 0,
         objective: formData.purpose || "",
         pickup_datetime: formData.pickupDatetime || "",
-        pickup_place: formData.pickupPlace || "", 
+        pickup_place: formData.pickupPlace || "",
         ref_cost_type_code: parseInt(formData.refCostTypeCode || "") || 101,
         reference_number: formData.referenceNumber || "",
         remark: formData.remark || "",
-        requested_vehicle_type_id: 1, 
-        reserved_time_type: "1", 
+        requested_vehicle_type_id: 1,
+        reserved_time_type: "1",
         start_datetime: convertToISO(
           String(formData.startDate),
           String(formData.timeStart)
@@ -78,13 +79,14 @@ export default function ProcessFour() {
         is_system_choose_vehicle: formData.isSystemChooseVehicle || "0",
       };
 
-      console.log("Mapped Data:", mappedData);
-
       try {
         const response = await createRequest(mappedData);
-        console.log("API Response:", response.data);
         if (response.data) {
-          router.push("request-list?created=success");
+          localStorage.removeItem("formData");
+          router.push(
+            "request-list?create-req=success&request-id=" +
+              response.data.trn_request_uid
+          );
         }
       } catch (error) {
         console.error("API Error:", error);

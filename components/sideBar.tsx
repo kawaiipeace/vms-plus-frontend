@@ -21,9 +21,8 @@ export default function SideBar({ menuName }: SidebarProps) {
         setOpenMenus(["collapseLink2"]);
       } else if (
         [
-          "ตรวจสอบคำขอ",
+          "ตรวจสอบและจัดการคำขอ",
           "อนุมัติใช้ยานพาหนะ",
-          "ให้กุญแจและรับคืนยานพาหนะ",
         ].includes(menuName)
       ) {
         setOpenMenus(["collapseLink3"]);
@@ -128,7 +127,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               label: "ระบบจองยานพาหนะ",
               items: [
                 { title: "คำขอใช้ยานพาหนะ", link: "/vehicle-booking/request-list" },
-                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/first-approver" },
+                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/booking-approver" },
               ],
             },
             {
@@ -136,9 +135,9 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                { title: "ตรวจสอบคำขอ", link: "/administrator" },
+                { title: "ตรวจสอบและจัดการคำขอ", link: "/administrator/request-list" },
                 { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/final-approver" },
-                { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
+                // { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },
             {

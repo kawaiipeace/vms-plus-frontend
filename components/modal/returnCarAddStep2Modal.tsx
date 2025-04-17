@@ -2,6 +2,7 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from "react"
 import Tooltip from "@/components/tooltips";
 import ImageUpload from "@/components/imageUpload";
 import ImagePreview from "@/components/imagePreview";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
@@ -44,11 +45,12 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
   const handleDeleteImage3 = (index: number) => {
     setImages3(images3.filter((_, i) => i !== index));
   };
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
           <div className="modal-body overflow-y-auto text-center !bg-white">
             <form>
               <div className="form-section">

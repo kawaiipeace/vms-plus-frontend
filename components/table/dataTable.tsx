@@ -1,6 +1,7 @@
 "use client";
 
 import { flexRender, Table as TableType } from "@tanstack/react-table";
+import ZeroRecord from "@/components/zeroRecord";
 
 interface DataTableProps<TData> {
   table: TableType<TData>;
@@ -10,24 +11,8 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
   return (
     <>
-      {/* <div className="block md:hidden space-y-4">
-        {table.getRowModel().rows.map((row) => (
-          <div
-            key={row.id}
-            className="bg-white shadow-md rounded-lg p-4 border"
-          >
-            {row.getVisibleCells().map((cell) => (
-              <div key={cell.id} className="flex justify-between py-1">
-                <span className="font-semibold">
-                  {cell.column.columnDef.header as string}
-                </span>
-                <span>{cell.renderValue() as React.ReactNode}</span>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div> */}
-      <div className="mt-5 hidden md:block overflow-x-auto rounded-xl">
+
+      <div className="mt-5 overflow-x-auto rounded-none">
         <table className="w-full dataTable">
           {/* Table Head */}
           <thead className="bg-gray-200">
@@ -100,20 +85,18 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
                   className="text-center py-6"
                 >
                   <div className="flex flex-col items-center">
-                    <div className="bg-base-300 p-5 rounded-full">
-                      📄 {/* Placeholder for an empty state icon */}
-                    </div>
-                    <span className="mt-2 text-base-content">
-                      No Data Available
-                    </span>
+                  <ZeroRecord
+                        imgSrc="/assets/img/graphic/data_empty.svg"
+                        title="ไม่มีข้อมูล"
+                        desc={<>ไม่มีข้อมูลในตาราง</>}
+                        button={""}
+                      />
                   </div>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-
-        
       </div>
     </>
   );

@@ -9,6 +9,7 @@ interface Profile {
   first_name: string;
   last_name: string;
   dept_sap_full: string;
+
 }
 
 interface ProfileContextType {
