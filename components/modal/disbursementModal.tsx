@@ -14,9 +14,11 @@ import * as yup from "yup";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { updateCost } from "@/services/bookingUser";
 import useSwipeDown from "@/utils/swipeDown";
+import { adminUpdateCost } from "@/services/bookingAdmin";
 
 interface Props {
   requestData?: RequestDetailType;
+  role?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -27,7 +29,7 @@ const schema = yup.object().shape({
 const DisbursementModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onUpdate, requestData }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const hasReset = useRef(false);
 
@@ -144,8 +146,9 @@ const DisbursementModal = forwardRef<
           };
 
           try {
-            console.log('pay',payload);
-            const response = await updateCost(payload);
+
+            const response = role === "admin" ? await adminUpdateCost(payload) : await updateCost(payload);
+                    
             console.log('respos', response);
             if (response) {
               if (onUpdate) onUpdate(response.data);

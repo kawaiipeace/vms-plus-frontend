@@ -12,10 +12,12 @@ import FormHelper from "@/components/formHelper";
 import { updateVehicleUser } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import useSwipeDown from "@/utils/swipeDown";
+import { adminUpdateVehicleUser } from "@/services/bookingAdmin";
 
 interface VehicleUserModalProps {
   process: string;
   requestData?: RequestDetailType;
+  role?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUpdate?: (data: any) => void;
 }
@@ -33,7 +35,7 @@ const schema = yup.object().shape({
 const VehicleUserModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   VehicleUserModalProps
->(({ process, onUpdate, requestData }, ref) => {
+>(({ process, onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
 
@@ -64,19 +66,16 @@ const VehicleUserModal = forwardRef<
   });
 
   useEffect(() => {
- 
-          if (requestData) {
-            reset({
-              name: requestData.vehicle_user_emp_name,
-              position: requestData.vehicle_user_dept_sap,
-              internalPhone: requestData.car_user_mobile_contact_number,
-              mobilePhone: requestData.car_user_mobile_contact_number,
-            });
-            hasReset.current = true;
-          }
-       
+    if (requestData) {
+      reset({
+        name: requestData.vehicle_user_emp_name,
+        position: requestData.vehicle_user_dept_sap,
+        internalPhone: requestData.car_user_mobile_contact_number,
+        mobilePhone: requestData.car_user_mobile_contact_number,
+      });
+      hasReset.current = true;
+    }
   }, [requestData, reset]);
-
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
@@ -87,7 +86,10 @@ const VehicleUserModal = forwardRef<
         trn_request_uid: requestData?.trn_request_uid,
       };
       try {
-        const response = await updateVehicleUser(payload);
+        const response =
+          role === "admin"
+            ? await adminUpdateVehicleUser(payload)
+            : await updateVehicleUser(payload);
 
         if (response) {
           if (onUpdate) onUpdate(response.data);
@@ -98,25 +100,25 @@ const VehicleUserModal = forwardRef<
         alert("Failed to update trip due to network error.");
       }
     } else {
-    if (onUpdate)
-      onUpdate({
-        ...data,
-        telInternal: data.internalPhone,
-        telMobile: data.mobilePhone,
-      });
+      if (onUpdate)
+        onUpdate({
+          ...data,
+          telInternal: data.internalPhone,
+          telMobile: data.mobilePhone,
+        });
 
-    data.telInternal = data.internalPhone;
-    data.telMobile = data.mobilePhone;
-    updateFormData(data);
-    modalRef.current?.close();
+      data.telInternal = data.internalPhone;
+      data.telMobile = data.mobilePhone;
+      updateFormData(data);
+      modalRef.current?.close();
     }
   };
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

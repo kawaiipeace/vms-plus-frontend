@@ -6,7 +6,11 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
-import { fetchDriverDetail, fetchDrivers, fetchUserDrivers } from "@/services/masterService";
+import {
+  fetchDriverDetail,
+  fetchDrivers,
+  fetchUserDrivers,
+} from "@/services/masterService";
 import { PeaDriverType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
@@ -31,10 +35,9 @@ const DriverInfoModal = forwardRef<
   useEffect(() => {
     if (id) {
       const fetchVehicleUserData = async () => {
-
         try {
           const response = await fetchDriverDetail(id);
-          console.log(response.data);
+          console.log("driver---", response.data);
           if (response.status === 200) {
             const res = response.data;
             setVehicleUserData(res);
@@ -45,16 +48,14 @@ const DriverInfoModal = forwardRef<
       };
       fetchVehicleUserData();
     }
-  
   }, [name]);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-  
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -97,22 +98,67 @@ const DriverInfoModal = forwardRef<
                       </div>
                     </div>
                   </div>
-                  <div className="form-card-right align-self-center mt-4">
-                    <div className="flex flex-wrap gap-4">
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              {vehicleUserData?.driver_contact_number || "-"}
+                  <div className="grid grid-cols-2 justify-start items-center flex-wrap">
+                    <div className="form-card mt-4">
+                      <div className="flex flex-wrap gap-4">
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">
+                              smartphone
+                            </i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowrap">
+                                {vehicleUserData?.driver_contact_number || "-"}
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                  
+                    <div className="form-card mt-4">
+                      <div className="flex flex-wrap gap-4">
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">star</i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowrap">
+                                {vehicleUserData?.driver_contact_number || "-"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="form-card mt-4">
+                      <div className="flex flex-wrap gap-4">
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">person</i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowrap">
+                                {vehicleUserData?.driver_contact_number || "-"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="form-card mt-4">
+                      <div className="flex flex-wrap gap-4">
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">hotel</i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowrap">
+                                {vehicleUserData?.driver_contact_number || "-"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -135,8 +181,7 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">เลขที่ใบอนุญาต</div>
                           <div className="form-text">
-                            {/* {vehicleUserData?.annual_driver?.driver_license_no ||
-                              "-"} */}
+                            {vehicleUserData?.driver_license?.driver_license_no}
                           </div>
                         </div>
                       </div>
@@ -150,10 +195,12 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-text">
-                            {/* {convertToBuddhistDateTime(
-                              vehicleUserData?.annual_driver
-                                ?.driver_license_expire_date
-                            ).date} */}
+                            {
+                              convertToBuddhistDateTime(
+                                vehicleUserData?.driver_license
+                                  ?.driver_license_end_date
+                              ).date
+                            }
                           </div>
                         </div>
                       </div>
@@ -165,9 +212,7 @@ const DriverInfoModal = forwardRef<
 
             <div className="form-section">
               <div className="form-section-header">
-                <div className="form-section-header-title">
-                  การขออนุมัติทำหน้าที่ขับรถยนต์
-                </div>
+                <div className="form-section-header-title">สัญญาจ้าง</div>
               </div>
 
               <div className="form-card">
@@ -177,10 +222,9 @@ const DriverInfoModal = forwardRef<
                       <div className="form-group form-plaintext">
                         <i className="material-symbols-outlined">news</i>
                         <div className="form-plaintext-group">
-                          <div className="form-label">เลขที่คำขอ</div>
+                          <div className="form-label">เลขที่สัญญา</div>
                           <div className="form-text">
-                            {/* {vehicleUserData?.annual_driver
-                              ?.request_annual_driver_no || "-"} */}
+                            {vehicleUserData?.contract_no}
                           </div>
                         </div>
                       </div>
@@ -194,10 +238,41 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">มีผลถึงวันที่</div>
                           <div className="form-text">
-                          {/* {convertToBuddhistDateTime(
-                              vehicleUserData?.annual_driver
-                              ?.request_expire_date
-                            ).date} */}
+                            {
+                              convertToBuddhistDateTime(
+                                vehicleUserData?.contract_end_date
+                              ).date
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-section">
+              <div className="form-section-header">
+                <div className="form-section-header-title">ใบรับรองการอบรม</div>
+              </div>
+
+              <div className="form-card">
+                <div className="form-card-body">
+                  <div className="grid grid-cols-12">
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">
+                          developer_guide
+                        </i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">
+                            {" "}
+                            {
+                              vehicleUserData?.driver_license
+                                .driver_license_type
+                                .ref_driver_license_type_name
+                            }
                           </div>
                         </div>
                       </div>

@@ -16,6 +16,7 @@ import { useRequestDetailContext } from "@/contexts/requestDetailContext";
 import { updateRef } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import useSwipeDown from "@/utils/swipeDown"; 
+import { adminUpdateRef } from "@/services/bookingAdmin";
 
 interface Payload {
   reference_number: string;
@@ -25,6 +26,7 @@ interface Payload {
 
 interface RefProps {
   requestData?: RequestDetailType;
+  role?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -36,7 +38,7 @@ const schema = yup.object().shape({
 const ReferenceModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   RefProps
->(({ onUpdate, requestData }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const hasReset = useRef(false);
   useImperativeHandle(ref, () => ({
@@ -107,8 +109,9 @@ const ReferenceModal = forwardRef<
       }
 
       try {
-        console.log("payload", payload);
-        const response = await updateRef(payload);
+        
+        const response = role === "admin" ? await adminUpdateRef(payload) : await updateRef(payload);
+        
         console.log(response);
         if (response) {
           if (onUpdate) onUpdate(response.data);

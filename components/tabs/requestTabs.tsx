@@ -9,10 +9,10 @@ import ProcessIntroModal from "@/components/modal/processIntroModal";
 export default function RequestTabs() {
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
   const [statusData, setStatusData] = useState<summaryType[]>([]);
-  const processIntroModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+  // const processIntroModalRef = useRef<{
+  //   openModal: () => void;
+  //   closeModal: () => void;
+  // } | null>(null);
 
   const [params] = useState({
     search: "",
@@ -23,9 +23,9 @@ export default function RequestTabs() {
     limit: 10,
   });
 
-  useEffect(() => {
-    processIntroModalRef.current?.openModal();
-  }, []);
+  // useEffect(() => {
+  //   processIntroModalRef.current?.openModal();
+  // }, []);
 
   useEffect(() => {
     const fetchMenuFunc = async () => {
@@ -113,7 +113,7 @@ export default function RequestTabs() {
         )}
       </div>
 
-      <ProcessIntroModal ref={processIntroModalRef} />
+      {/* <ProcessIntroModal ref={processIntroModalRef} /> */}
     </div>
   );
 }

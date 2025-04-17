@@ -26,7 +26,7 @@ interface Props {
   statusCode?: string;
 }
 
-const PassVerifyModal = forwardRef<
+const KeyPickupModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
 >(
@@ -193,6 +193,35 @@ const PassVerifyModal = forwardRef<
                         </div>
                       </div>
                     </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group">
+                        <label className="form-label">สถานที่รับกุญแจ</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          disabled={true}
+                          placeholder=""
+                          defaultValue={place}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group">
+                        <label className="form-label">วันที่นัดรับกุญแจ</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          disabled={true}
+                          placeholder=""
+                          defaultValue={
+                            convertToBuddhistDateTime(String(start_datetime))
+                              .date
+                          }
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -225,6 +254,6 @@ const PassVerifyModal = forwardRef<
   }
 );
 
-PassVerifyModal.displayName = "PassVerifyModal";
+KeyPickupModal.displayName = "KeyPickupModal";
 
-export default PassVerifyModal;
+export default KeyPickupModal;

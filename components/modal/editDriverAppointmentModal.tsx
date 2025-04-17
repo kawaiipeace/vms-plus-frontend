@@ -15,9 +15,11 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { updatePickup } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import useSwipeDown from "@/utils/swipeDown";
+import { adminUpdatePickup } from "@/services/bookingAdmin";
 
 interface EditDriverAppointmentModalProps {
   requestData?: RequestDetailType;
+  role?: string;
   onUpdate: (data: any) => void;
 }
 
@@ -29,7 +31,7 @@ const schema = yup.object().shape({
 const EditDriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditDriverAppointmentModalProps
->(({ onUpdate, requestData }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const hasReset = useRef(false);
@@ -105,7 +107,7 @@ const EditDriverAppointmentModal = forwardRef<
         trn_request_uid: requestData?.trn_request_uid,
       };
       try {
-        const response = await updatePickup(payload);
+        const response = role === "admin" ? await adminUpdatePickup(payload) : await updatePickup(payload);
 
         if (response) {
           if (onUpdate) onUpdate(response.data);

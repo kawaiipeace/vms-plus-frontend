@@ -16,10 +16,11 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import useSwipeDown from "@/utils/swipeDown";
+import { adminUpdateTrip } from "@/services/bookingAdmin";
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   requestData?: RequestDetailType;
+  role?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -38,7 +39,7 @@ const schema = yup.object().shape({
 const JourneyDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onUpdate, requestData }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
 
@@ -112,7 +113,7 @@ const JourneyDetailModal = forwardRef<
 
     if (requestData) {
       try {
-        const response = await updateTrip(payload);
+        const response = role === "admin" ? await adminUpdateTrip(payload) : await updateTrip(payload);
 
         if (response) {
           if (onUpdate) onUpdate(response.data);

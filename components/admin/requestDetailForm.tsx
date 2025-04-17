@@ -24,6 +24,7 @@ import AlertCustom from "@/components/alertCustom";
 import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import ChooseVehicleCard from "../card/chooseVehicleCard";
 
 interface RequestDetailFormProps {
   requestId: string;
@@ -117,7 +118,10 @@ export default function RequestDetailForm({
                 </button>
               )}
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+            <VehicleUserInfoCard
+              id={requestData?.vehicle_user_emp_id || ""}
+              requestData={requestData}
+            />
           </div>
 
           <div className="form-section">
@@ -236,54 +240,12 @@ export default function RequestDetailForm({
                 </div>
 
                 {requestData?.is_admin_choose_vehicle === "1" && (
-                  <div className="card card-section-inline mt-5 mb-5">
-                    <div className="card-body card-body-inline">
-                      <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                        <Image
-                          src="/assets/img/graphic/admin_select_small.png"
-                          className="rounded-md"
-                          width={100}
-                          height={100}
-                          alt=""
-                        />
-                      </div>
-                      <div className="card-content">
-                        <div className="card-content-top card-content-top-inline">
-                          <div className="card-content-top-left">
-                            <div className="card-title">
-                              ผู้ดูแลเลือกยานพาหนะให้
-                            </div>
-                            <div className="supporting-text-group">
-                              <div className="supporting-text">
-                                สายงานดิจิทัล
-                              </div>
-                            </div>
-                          </div>
-                          {editable && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="card-item-group d-flex">
-                          <div className="card-item col-span-2">
-                            <i className="material-symbols-outlined">
-                              directions_car
-                            </i>
-                            <span className="card-item-text">
-                              {requestData.request_vehicle_type.ref_vehicle_type_name}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <ChooseVehicleCard
+                    typeName={
+                      requestData.request_vehicle_type.ref_vehicle_type_name
+                    }
+                    chooseVehicle={true}
+                  />
                 )}
                 {requestData?.is_system_choose_vehicle === "1" && (
                   <div className="card card-section-inline mt-5 mb-5">
@@ -345,6 +307,7 @@ export default function RequestDetailForm({
                 {requestData?.is_admin_choose_driver && (
                   <ChooseDriverCard
                     number={requestData?.number_of_available_drivers}
+                    chooseDriver={true}
                   />
                 )}
 
@@ -366,7 +329,10 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
-                      <DriverSmallInfoCard driverDetail={requestData?.driver} showPhone={true} />
+                      <DriverSmallInfoCard
+                        driverDetail={requestData?.driver}
+                        showPhone={true}
+                      />
                     </div>
                   )
                 )}
@@ -377,6 +343,7 @@ export default function RequestDetailForm({
       </div>
       <EditDriverAppointmentModal
         ref={editDriverAppointmentModalRef}
+        role="admin"
         requestData={requestData}
         onUpdate={handleModalUpdate}
       />
@@ -389,22 +356,26 @@ export default function RequestDetailForm({
       <JourneyDetailModal
         ref={journeyDetailModalRef}
         requestData={requestData}
+        role="admin"
         onUpdate={handleModalUpdate}
       />
       <VehicleUserModal
         requestData={requestData}
         process="edit"
+        role="admin"
         ref={vehicleUserModalRef}
         onUpdate={handleModalUpdate}
       />
       <ReferenceModal
         ref={referenceModalRef}
         requestData={requestData}
+        role="admin"
         onUpdate={handleModalUpdate}
       />
       <DisbursementModal
         ref={disbursementModalRef}
         requestData={requestData}
+        role="admin"
         onUpdate={handleModalUpdate}
       />
       <ApproverModal ref={approverModalRef} />
