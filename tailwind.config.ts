@@ -69,6 +69,7 @@ export default {
           error: "bg-red-100 text-red-600 border-red-300 hover:bg-red-200",
           warning: "bg-yellow-100 text-yellow-600 border-yellow-300 hover:bg-yellow-200",
           default: "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200",
+          primary: "bg-brand-200 text-brand-700 border-brand-300 hover:bg-brand-200",
         }
       },
       boxShadow: {

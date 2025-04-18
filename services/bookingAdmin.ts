@@ -109,6 +109,15 @@ export const adminUpdateRef = async (data: any) => {
   }
 };
 
+export const adminUpdateDriver = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-admin/update-driver', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const adminUpdateCost = async (data: any) => {
   try {
     const response = await axiosInstance.put('booking-admin/update-cost', data);

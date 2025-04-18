@@ -27,4 +27,17 @@ export interface DriverType {
       ref_driver_license_type_desc: string;
     }
   }
+  driver_status:{
+    ref_driver_status_code: number;
+    ref_driver_status_desc: string;
+  }
+  work_type: number;
+  work_type_name: string;
+  work_days: number;
+  work_count: number
+}
+
+export interface DriverWorkType{
+  description: string;
+  type: number;
 }

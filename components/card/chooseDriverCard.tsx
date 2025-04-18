@@ -1,17 +1,32 @@
 import Image from "next/image";
 import AdminDriverPickModal from "../modal/adminDriverPickModal";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import DriverInfoModal from "../modal/driverInfoModal";
 
 interface Props {
   chooseDriver?: boolean;
   number?: number;
+  reqId?: string;
 }
 
-export default function ChooseDriverCard({ chooseDriver, number }: Props) {
+export default function ChooseDriverCard({ chooseDriver, number, reqId }: Props) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const driverInfoModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const [driverId, setDriverId] = useState<string>("");
+
+  const seeDriverDetail = (id: string) => {
+    setDriverId(id);
+    adminDriverPickModalRef.current?.closeModal();
+    driverInfoModalRef.current?.openModal();
+  };
 
   return (
     <div className="card card-section-inline mt-5">
@@ -54,7 +69,18 @@ export default function ChooseDriverCard({ chooseDriver, number }: Props) {
         )}
       </div>
 
-      <AdminDriverPickModal ref={adminDriverPickModalRef} />
+      <AdminDriverPickModal
+        ref={adminDriverPickModalRef}
+        reqId={reqId}
+        onClickDetail={seeDriverDetail}
+      />
+
+      <DriverInfoModal
+        ref={driverInfoModalRef}
+        id={driverId}
+        pickable={true}
+        onBack={() => adminDriverPickModalRef.current?.openModal()}
+      />
     </div>
   );
 }

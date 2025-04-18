@@ -20,6 +20,7 @@ import useSwipeDown from "@/utils/swipeDown";
 
 interface DriverAppointmentModalProps {
   id?: string;
+  onClickDetail?: string;
   onSubmit?: (date: string, time: string) => void;
 }
 
@@ -34,7 +35,7 @@ const schema = yup.object().shape({
 const DriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   DriverAppointmentModalProps // Props type
->(({ onSubmit, id }, ref) => {
+>(({ onSubmit, id, onClickDetail}, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { updateFormData } = useFormContext();
 

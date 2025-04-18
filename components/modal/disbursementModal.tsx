@@ -149,7 +149,6 @@ const DisbursementModal = forwardRef<
 
             const response = role === "admin" ? await adminUpdateCost(payload) : await updateCost(payload);
                     
-            console.log('respos', response);
             if (response) {
               if (onUpdate) onUpdate(response.data);
               modalRef.current?.close();

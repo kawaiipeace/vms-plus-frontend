@@ -46,3 +46,8 @@ export interface FormDataType {
   driverEmpName: string;
   driverDeptSap: string;
 }
+
+export interface UpdateDriverType {
+  mas_carpool_driver_uid : string;
+  trn_request_uid : string;
+}

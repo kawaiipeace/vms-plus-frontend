@@ -16,13 +16,13 @@ import { DriverType } from "@/app/types/driver-user-type";
 interface Props {
   id?: string;
   pickable?: boolean;
-  backModal?: () => void;
+  onBack?: () => void;
 }
 
 const DriverInfoModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ id, pickable, backModal } , ref) => {
+>(({ id, pickable, onBack } , ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [vehicleUserData, setVehicleUserData] = useState<DriverType>();
 
@@ -63,8 +63,8 @@ const DriverInfoModal = forwardRef<
                 className="material-symbols-outlined cursor-pointer"
                 onClick={() => {
                   modalRef.current?.close();
-                  if (backModal) {
-                    backModal(); // Properly call backModal here
+                  if (onBack) {
+                    onBack();
                   }
                 }}
               >
@@ -77,7 +77,7 @@ const DriverInfoModal = forwardRef<
           </form>
         </div>
         {!vehicleUserData ? (
-          <div className="p-4 text-center">กำลังโหลดข้อมูล...</div>
+         <></>
         ) : (
           <div className="modal-body overflow-y-auto">
             <div className="form-section" style={{ marginTop: 0 }}>
@@ -87,7 +87,7 @@ const DriverInfoModal = forwardRef<
                     <Image
                       src={
                         vehicleUserData?.driver_image ||
-                        "/assets/img/sample-avatar.png"
+                        "/assets/img/avatar.svg"
                       }
                       className="avatar avatar-md"
                       width={100}

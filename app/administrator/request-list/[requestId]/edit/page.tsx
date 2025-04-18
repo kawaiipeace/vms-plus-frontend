@@ -19,7 +19,7 @@ export default function RequestDetail() {
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
-    console.log('res',request_id);
+
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {

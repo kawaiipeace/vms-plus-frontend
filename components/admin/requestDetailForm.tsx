@@ -306,6 +306,7 @@ export default function RequestDetailForm({
 
                 {requestData?.is_admin_choose_driver && (
                   <ChooseDriverCard
+                    reqId={requestData?.trn_request_uid}
                     number={requestData?.number_of_available_drivers}
                     chooseDriver={true}
                   />

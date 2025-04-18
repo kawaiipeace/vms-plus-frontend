@@ -33,6 +33,16 @@ export const fetchCostTypes = async () => {
   }
 };
 
+export const fetchDriverWorkType = async () => {
+  try {
+    const response = await axiosInstance.get('driver/work-type');
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const uploadFile = async (file: File) => {
   try {
     const formData = new FormData();

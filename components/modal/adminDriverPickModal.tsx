@@ -7,16 +7,20 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { fetchDrivers } from "@/services/masterService";
+import { fetchDrivers, fetchDriverWorkType } from "@/services/masterService";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Image from "next/image";
 import useSwipeDown from "@/utils/swipeDown";
-import DriverCard from "../card/driverCard";
-import { DriverType } from "@/app/types/driver-user-type";
-import EmptyDriver from "../emptyDriver";
+import { DriverType, DriverWorkType } from "@/app/types/driver-user-type";
+import EmptyDriver from "@/components/emptyDriver";
+import PickDriverCard from "@/components/card/pickDriverCard";
+import CustomSelect from "../customSelect";
+import { UpdateDriverType } from "@/app/types/form-data-type";
+import { adminUpdateDriver } from "@/services/bookingAdmin";
 
 interface Props {
-  requestData?: RequestDetailType;
+  reqId?: string;
+  onClickDetail: (id: string) => void;
   onSelect?: (vehicle: string) => void;
   onUpdate?: (data: any) => void;
 }
@@ -24,7 +28,7 @@ interface Props {
 const AdminDriverPickModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onSelect, onUpdate, requestData }, ref) => {
+>(({ onSelect, onUpdate, reqId, onClickDetail }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const hasReset = useRef(false);
 
@@ -64,9 +68,47 @@ const AdminDriverPickModal = forwardRef<
     }
     return result;
   }, [filteredDrivers]);
+  const [driverWorkTypeDatas, setdriverWorkTypeDatas] = useState<
+    DriverWorkType[]
+  >([]);
+  const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
+  const [workTypeOptions, setWorkTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
-  const handleVehicleSelection = (id: string) => {
-    console.log(id);
+  const handleVehicleSelect = async (id: string) => {
+    setSelectedDriverId(id);
+    const payload: UpdateDriverType = {
+      mas_carpool_driver_uid: id,
+      trn_request_uid: reqId || "",
+    };
+
+    try {
+      const response = await adminUpdateDriver(payload);
+
+      console.log("selected", response);
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+  const [selecteddriverWorkTypeOption, setSelecteddriverWorkTypeOption] =
+    useState<{
+      value: string;
+      label: string;
+    }>({ value: "", label: "ทั้งหมด" });
+
+  const handledriverWorkTypeChange = async (selectedOption: {
+    value: string;
+    label: string;
+  }) => {
+    setSelecteddriverWorkTypeOption(selectedOption);
+
+    const data = driverWorkTypeDatas.find(
+      (work) => String(work.type) === String(selectedOption.value)
+    );
+
+    if (data) {
+    }
   };
 
   useEffect(() => {
@@ -82,6 +124,35 @@ const AdminDriverPickModal = forwardRef<
         console.error("Error fetching requests:", error);
       }
     };
+
+    const fetchDriverWorkTypeData = async () => {
+      try {
+        const response = await fetchDriverWorkType();
+        if (response.status === 200) {
+          const workTypedata = response.data;
+          console.log("tt", response);
+          setdriverWorkTypeDatas(workTypedata);
+          const dataTypeArr = [
+            {
+              value: "",
+              label: "ทั้งหมด",
+            },
+            ...workTypedata.map(
+              (cost: { type: string; description: string }) => ({
+                value: String(cost.type),
+                label: cost.description,
+              })
+            ),
+          ];
+
+          setWorkTypeOptions(dataTypeArr);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchDriverWorkTypeData();
     fetchDriverData();
   }, [params]);
 
@@ -114,21 +185,31 @@ const AdminDriverPickModal = forwardRef<
             </div>
           </div>
           <div className="form-group">
-            <div className="input-group input-group-search hidden mb-5 w-[20em]">
-              <div className="input-group-prepend">
-                <span className="input-group-text search-ico-info">
-                  <i className="material-symbols-outlined">search</i>
-                </span>
+            <div className="flex justify-between items-top w-full">
+              <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                <div className="input-group-prepend">
+                  <span className="input-group-text search-ico-info">
+                    <i className="material-symbols-outlined">search</i>
+                  </span>
+                </div>
+
+                <input
+                  type="text"
+                  id="myInputTextField"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="form-control dt-search-input"
+                  placeholder="ค้นหาชื่อ-นามสกุล, ชื่อเล่น, บริษัท"
+                />
               </div>
-              <input
-                type="text"
-                id="myInputTextField"
-                value={searchTerm}
-                onChange={handleSearch}
-                className="form-control dt-search-input"
-                placeholder="ค้นหาชื่อ-นามสกุล, ชื่อเล่น, บริษัท"
+              <CustomSelect
+                w="w-[10rem]"
+                options={workTypeOptions}
+                value={selecteddriverWorkTypeOption}
+                onChange={handledriverWorkTypeChange}
               />
             </div>
+
             {filteredDrivers.length > 0 ? (
               <div className="relative w-full">
                 <div className="relative">
@@ -166,22 +247,33 @@ const AdminDriverPickModal = forwardRef<
                     <div className="grid grid-cols-3 gap-4">
                       {groupedDrivers[currentSlide]?.map((driver, index) => (
                         <div key={index} className="h-full">
-                          <DriverCard
+                          <PickDriverCard
                             key={index}
+                            reqId={reqId || ""}
                             id={driver.mas_driver_uid}
                             imgSrc={
                               driver.driver_image ||
                               "/assets/img/sample-driver.png"
                             }
                             name={driver.driver_name || ""}
+                            nickName={driver.driver_nickname || ""}
+                            driverStatus={
+                              driver.driver_status.ref_driver_status_desc || ""
+                            }
+                            workTypeName={driver.work_type_name || ""}
+                            workDays={driver.work_days}
+                            workCount={driver.work_count}
                             company={driver.driver_dept_sap || ""}
                             rating={
                               driver.driver_average_satisfaction_score || 0
                             }
                             age={driver.age || "-"}
                             seeDetail={true}
-                            onVehicleSelect={handleVehicleSelection}
-                           
+                            isSelected={
+                              selectedDriverId === driver.mas_driver_uid
+                            }
+                            onVehicleSelect={handleVehicleSelect}
+                            onClickSeeDetail={onClickDetail}
                           />
                         </div>
                       ))}
