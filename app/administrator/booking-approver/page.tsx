@@ -19,21 +19,39 @@ function RequestListContent() {
       {sendbackReq === "success" && (
         <ToastCustom
           title="ตีกลับคำขอสำเร็จ"
-          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ถูกตีกลับเรียบร้อยแล้ว`}
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
           status="success"
         />
       )}
       {approveReq === "success" && (
         <ToastCustom
           title="อนุมัติคำขอสำเร็จ"
-          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ผ่านการอนุมัติเรียบร้อยแล้ว`}
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ผ่านการอนุมัติเรียบร้อยแล้ว
+            </>
+          }
           status="success"
         />
       )}
       {cancelReq === "success" && (
         <ToastCustom
           title="ยกเลิกคำขอสำเร็จ"
-          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ถูกยกเลิกเรียบร้อยแล้ว`}
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ถูกยกเลิกเรียบร้อยแล้ว
+            </>
+          }
           status="success"
         />
       )}

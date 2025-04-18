@@ -4,6 +4,7 @@ import CancelRequestModal from "./modal/cancelRequestModal";
 import FileBackRequestModal from "./modal/fileBackModal";
 import { useRef, useState } from "react";
 import KeyPickupModal from "@/components/modal/keyPickUpModal";
+import PassVerifyModal from "./modal/passVerifyModal";
 
 interface Props {
   data: RequestDetailType;
@@ -11,6 +12,11 @@ interface Props {
 
 export default function PageHeaderAdmin({ data }: Props) {
   const keyPickupModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const passVerifyModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -35,6 +41,16 @@ export default function PageHeaderAdmin({ data }: Props) {
     } catch (err) {
       console.error("Copy failed:", err);
     }
+  };
+
+  const [pickupData, setPickupData] = useState<{
+    place: string;
+    datetime: string;
+  } | null>(null);
+
+  const handlePickupConfirmed = (data: { place: string; datetime: string }) => {
+    setPickupData(data);
+    passVerifyModalRef.current?.openModal();
   };
 
   return (
@@ -83,7 +99,8 @@ export default function PageHeaderAdmin({ data }: Props) {
           </div>
 
           {data?.ref_request_status_name &&
-            (data?.ref_request_status_name === "อนุมัติ" || data?.ref_request_status_name === "อนุมัติแล้ว" ? (
+            (data?.ref_request_status_name === "อนุมัติ" ||
+            data?.ref_request_status_name === "อนุมัติแล้ว" ? (
               <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
@@ -98,14 +115,13 @@ export default function PageHeaderAdmin({ data }: Props) {
             ))}
         </div>
 
-     
-          <button
-            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-            onClick={() => cancelRequestModalRef.current?.openModal()}
-          >
-            ยกเลิกคำขอ
-          </button>
-       
+        <button
+          className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+          onClick={() => cancelRequestModalRef.current?.openModal()}
+        >
+          ยกเลิกคำขอ
+        </button>
+
         <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
@@ -144,18 +160,38 @@ export default function PageHeaderAdmin({ data }: Props) {
         confirmText="ตีกลับคำขอ"
       />
 
-      <KeyPickupModal  
-        id={data?.trn_request_uid}
+      <KeyPickupModal
         ref={keyPickupModalRef}
         title={"นัดหมายรับกุญแจ"}
         role="admin"
-        desc={<>ระบบจะแจ้งข้อมูลการนัดหมายรับกุญแจให้ผู้ใช้ทราบ<br></br>เมื่อคำขอได้รับการอนุมัติในขั้นตอนสุดท้าย?</>  }
+        desc={
+          <>
+            ระบบจะแจ้งข้อมูลการนัดหมายรับกุญแจให้ผู้ใช้ทราบ<br></br>
+            เมื่อคำขอได้รับการอนุมัติในขั้นตอนสุดท้าย?
+          </>
+        }
         confirmText="ต่อไป"
         place={data?.received_key_place}
-        statusCode={data?.ref_request_status_code}
         start_datetime={data?.received_key_start_datetime}
-        end_datetime={data?.received_key_end_datetime} />
+        end_datetime={data?.received_key_end_datetime}
+        onPickupConfirmed={handlePickupConfirmed}
+      />
 
+      <PassVerifyModal
+        id={data?.trn_request_uid}
+        ref={passVerifyModalRef}
+        title={"ยืนยันผ่านการตรวจสอบ"}
+        role="admin"
+        desc={
+          <>
+            คุณต้องการยืนยันผ่านการตรวจสอบ<br></br>
+            และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่?
+          </>
+        }
+        confirmText="ผ่านการตรวจสอบ"
+        pickupData={pickupData}
+        onBack={() => keyPickupModalRef.current?.openModal()}
+      />
     </div>
   );
 }

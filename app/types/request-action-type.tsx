@@ -13,7 +13,8 @@ export interface ApproveRequestType {
 
 export interface VerifyRequestType {
   approved_request_emp_id: string;
-  ref_request_status_code: string;
+  received_key_place: string;
+  received_key_start_datetime: string;
   trn_request_uid: string;
 }
 

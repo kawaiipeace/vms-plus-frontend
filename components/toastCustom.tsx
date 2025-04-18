@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 interface ToastCustomProps {
   title: string;
-  desc: string;
+  desc: React.ReactNode;
   status: string;
   styleText?: string;
   seeDetail?: string;

@@ -21,14 +21,20 @@ function RequestListContent() {
           title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
           desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
           status="success"
-          seeDetail={"/vehicle-booking/request-list/" + requestId}
+          seeDetail={`/vehicle-booking/request-list/${requestId}`}
           seeDetailText="ดูสถานะ"
         />
       )}
       {cancelReq === "success" && (
         <ToastCustom
           title="ยกเลิกคำขอสำเร็จ"
-          desc={`คำขอใช้ยานพาหนะเลขที่ ${requestId} ถูกยกเลิกเรียบร้อยแล้ว`}
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ถูกยกเลิกเรียบร้อยแล้ว
+            </>
+          }
           status="success"
         />
       )}

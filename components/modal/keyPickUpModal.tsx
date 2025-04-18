@@ -23,13 +23,12 @@ import { adminUpdatePickup } from "@/services/bookingAdmin";
 interface Props {
   title: string;
   desc: string | React.ReactNode;
-  id: string;
   role?: string;
   confirmText: string;
   place?: string;
   start_datetime?: string;
   end_datetime?: string;
-  statusCode?: string;
+  onPickupConfirmed?: (data: { place: string; datetime: string }) => void;
 }
 
 const schema = yup.object().shape({
@@ -46,7 +45,6 @@ const KeyPickupModal = forwardRef<
 >(
   (
     {
-      id,
       title,
       role,
       desc,
@@ -54,16 +52,11 @@ const KeyPickupModal = forwardRef<
       place,
       start_datetime,
       end_datetime,
-      statusCode,
+      onPickupConfirmed
     },
     ref
   ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
-
-    const approveRequestModalRef = useRef<{
-      openModal: () => void;
-      closeModal: () => void;
-    } | null>(null);
 
     useImperativeHandle(ref, () => ({
       openModal: () => modalRef.current?.showModal(),
@@ -82,8 +75,8 @@ const KeyPickupModal = forwardRef<
       mode: "onChange",
       resolver: yupResolver(schema),
       defaultValues: {
-        pickupPlace: place
-      }
+        pickupPlace: place,
+      },
     });
 
     const handleDateChange = (dateStr: string) => {
@@ -98,26 +91,16 @@ const KeyPickupModal = forwardRef<
 
     const onSubmitForm = async (data: any) => {
       const pickup = convertToISO(selectedDate, selectedTime);
-      try {
-        const payload = {
-          trn_request_uid: id,
-          pickup_place: data.pickupPlace || "",
-          pickup_datetime: pickup || "",
-        };
 
-        const res =
-          role === "admin"
-            ? await adminUpdatePickup(payload)
-            : await adminUpdatePickup(payload);
-        console.log("approve---", res);
+      const payload = {
+        place: data.pickupPlace,
+        datetime: pickup,
+      };
 
-        if (res) {
-          modalRef.current?.close();
-        }
-      } catch (error) {
-        console.error("error:", error);
-      }
       modalRef.current?.close();
+      if (onPickupConfirmed) {
+        onPickupConfirmed(payload);
+      }
     };
 
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
@@ -215,13 +198,11 @@ const KeyPickupModal = forwardRef<
                             </div>
                             <TimePicker
                               onChange={handleTimeChange}
-                              placeholder="ระบุเวลานัดหมาย"
+                              placeholder="ระบุเวลาเริ่มต้น"
                             />
                           </div>
                           {errors.pickupTime && (
-                            <FormHelper
-                              text={String(errors.pickupTime.message)}
-                            />
+                            <FormHelper text="กรุณาเลือกเวลาเริ่มต้น" />
                           )}
                         </div>
                       </div>
@@ -239,13 +220,11 @@ const KeyPickupModal = forwardRef<
                             </div>
                             <TimePicker
                               onChange={handleTimeChange}
-                              placeholder="ระบุเวลานัดหมาย"
+                              placeholder="ระบุเวลาสิ้นสุด"
                             />
                           </div>
                           {errors.pickupTime && (
-                            <FormHelper
-                              text={String(errors.pickupTime.message)}
-                            />
+                            <FormHelper text="กรุณาเลือกเวลาสิ้นสุด" />
                           )}
                         </div>
                       </div>
@@ -273,20 +252,7 @@ const KeyPickupModal = forwardRef<
             <button>close</button>
           </form>
         </dialog>
-
-        <PassVerifyModal
-          id={id}
-          ref={approveRequestModalRef}
-          title={"ยืนยันผ่านการตรวจสอบ"}
-          role="admin"
-          desc={
-            <>
-              คุณต้องการยืนยันผ่านการตรวจสอบ<br></br>
-              และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่?
-            </>
-          }
-          confirmText="ผ่านการตรวจสอบ"
-        />
+        
       </>
     );
   }
