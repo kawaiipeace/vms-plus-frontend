@@ -6,13 +6,19 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
-import CustomSelect from "../customSelect";
+import PassVerifyModal from "@/components/modal/passVerifyModal";
 import useSwipeDown from "@/utils/swipeDown";
 import { useRouter } from "next/navigation";
-import { adminApproveRequest } from "@/services/bookingAdmin";
-import { fetchVehicleUsers } from "@/services/masterService";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import TimePicker from "../timePicker";
+import FormHelper from "../formHelper";
+import DatePicker from "../datePicker";
+import { useForm } from "react-hook-form";
+import { convertToISO } from "@/utils/convertToISO";
+import { adminUpdatePickup } from "@/services/bookingAdmin";
 
 interface Props {
   title: string;
@@ -26,112 +32,92 @@ interface Props {
   statusCode?: string;
 }
 
+const schema = yup.object().shape({
+  pickupDatetime: yup.string(),
+  pickupPlace: yup.string().required("กรุณาระบุสถานที่นัดหมาย"),
+  masCarpoolDriverUid: yup.string(),
+  pickupDate: yup.string().required("กรุณาเลือกวันที่นัดหมาย"),
+  pickupTime: yup.string().required("กรุณาเลือกเวลานัดหมาย"),
+});
+
 const KeyPickupModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
 >(
   (
-    { id, title, role, desc, confirmText, place, start_datetime, end_datetime, statusCode },
+    {
+      id,
+      title,
+      role,
+      desc,
+      confirmText,
+      place,
+      start_datetime,
+      end_datetime,
+      statusCode,
+    },
     ref
   ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
+
+    const approveRequestModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
 
     useImperativeHandle(ref, () => ({
       openModal: () => modalRef.current?.showModal(),
       closeModal: () => modalRef.current?.close(),
     }));
 
-    const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
-      []
-    );
-    const [driverOptions, setDriverOptions] = useState<
-      { value: string; label: string }[]
-    >([]);
-    const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
-      value: string;
-      label: string;
-    } | null>(null);
-    const [selectedUserDept, setSelectedUserDept] = useState("");
+    const [selectedDate, setSelectedDate] = useState<string>("");
+    const [selectedTime, setSelectedTime] = useState<string>("");
 
-    const router = useRouter();
-
-    useEffect(() => {
-      const fetchRequests = async () => {
-        try {
-          const response = await fetchVehicleUsers("");
-          if (response.status === 200) {
-            const vehicleUserData: VehicleUserType[] = response.data;
-            setVehicleUserDatas(vehicleUserData);
-            const driverOptionsArray = vehicleUserData.map((user) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.dept_sap})`,
-            }));
-            setDriverOptions(driverOptionsArray);
-
-            // Optional: Set default selected user
-            if (driverOptionsArray.length > 0) {
-              setSelectedVehicleUserOption(driverOptionsArray[0]);
-              const defaultUser = vehicleUserData.find(
-                (user) => user.emp_id === driverOptionsArray[0].value
-              );
-              if (defaultUser) {
-                setSelectedUserDept(defaultUser.dept_sap_short);
-              }
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching requests:", error);
-        }
-      };
-      fetchRequests();
-    }, []);
-
-    const handleVehicleUserChange = async (selectedOption: {
-      value: string;
-      label: string;
-    }) => {
-      setSelectedVehicleUserOption(selectedOption);
-
-      const empData = vehicleUserDatas.find(
-        (user) => user.emp_id === selectedOption.value
-      );
-
-      if (empData) {
-        setSelectedUserDept(empData.dept_sap_short || "");
+    const {
+      register,
+      handleSubmit,
+      setValue,
+      formState: { errors },
+    } = useForm({
+      mode: "onChange",
+      resolver: yupResolver(schema),
+      defaultValues: {
+        pickupPlace: place
       }
+    });
+
+    const handleDateChange = (dateStr: string) => {
+      setSelectedDate(dateStr);
+      setValue("pickupDate", dateStr);
     };
 
-    const handleConfirm = () => {
-      const sendCancelRequest = async () => {
-        try {
-          const payload = {
-            trn_request_uid: id,
-            approved_request_emp_id: selectedVehicleUserOption?.value || "",
-            ref_request_status_code: statusCode || "",
-          };
+    const handleTimeChange = (dateStr: string) => {
+      setSelectedTime(dateStr);
+      setValue("pickupTime", dateStr);
+    };
 
-          const res = await adminApproveRequest(payload);
-          console.log('approve',res);
+    const onSubmitForm = async (data: any) => {
+      const pickup = convertToISO(selectedDate, selectedTime);
+      try {
+        const payload = {
+          trn_request_uid: id,
+          pickup_place: data.pickupPlace || "",
+          pickup_datetime: pickup || "",
+        };
 
-          if (res) {
-            modalRef.current?.close();
+        const res =
+          role === "admin"
+            ? await adminUpdatePickup(payload)
+            : await adminUpdatePickup(payload);
+        console.log("approve---", res);
 
-            role === "firstApprover"
-              ? router.push(
-                  "/administrator/booking-approver?approve-req=success&request-id=" +
-                    res.data.result?.request_no
-                )
-              : router.push(
-                  "/vehicle-booking/request-list?approve-req=success&request-id=" +
-                    res.data.result?.request_no
-                );
-          }
-        } catch (error) {
-          console.error("error:", error);
+        if (res) {
+          modalRef.current?.close();
         }
-      };
-
-      sendCancelRequest();
+      } catch (error) {
+        console.error("error:", error);
+      }
+      modalRef.current?.close();
     };
 
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
@@ -145,103 +131,141 @@ const KeyPickupModal = forwardRef<
             </div>
 
             <div className="modal-body text-center overflow-y-auto !p-0">
-              <Image
-                src="/assets/img/graphic/confirm_verify.svg"
-                className="w-full confirm-img"
-                width={100}
-                height={100}
-                alt=""
-              />
-              <div className="confirm-title text-xl font-medium px-5">
-                {title}
-              </div>
-              <div className="confirm-text text-base">{desc}</div>
-              <div className="confirm-form mt-4 px-5">
-                <div className="form-group">
-                  <label className="form-label">ผู้อนุมัติใช้ยานพาหนะ</label>
-                  <div className="grid grid-cols-12 gap-4">
-                    <div className="col-span-12">
-                      <div className="form-group text-left">
-                        <CustomSelect
-                          iconName="person"
-                          w="w-full"
-                          options={driverOptions}
-                          value={selectedVehicleUserOption}
-                          onChange={handleVehicleUserChange}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-span-12">
-                      <div className="form-group">
-                        <label className="form-label">ตำแหน่ง / สังกัด</label>
-                        <div className="input-group is-readonly">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">
-                                business_center
-                              </i>
-                            </span>
+              <form
+                onSubmit={handleSubmit(onSubmitForm)}
+                method="dialog"
+                className="w-full"
+              >
+                <Image
+                  src="/assets/img/graphic/confirm_key.svg"
+                  className="w-full confirm-img"
+                  width={100}
+                  height={100}
+                  alt=""
+                />
+                <div className="confirm-title text-xl font-medium px-5">
+                  {title}
+                </div>
+                <div className="confirm-text text-base">{desc}</div>
+                <div className="confirm-form mt-4 px-5">
+                  <div className="form-group">
+                    <div className="grid grid-cols-12 gap-4">
+                      <div className="col-span-12 md:col-span-6">
+                        <div className="form-group">
+                          <label className="form-label">สถานที่รับกุญแจ</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend select-none">
+                              <span className="input-group-text">
+                                <i className="material-symbols-outlined">
+                                  location_on
+                                </i>
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control select-none"
+                              placeholder="ระบุสถานที่นัดหมาย"
+                              {...register("pickupPlace")}
+                            />
                           </div>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder=""
-                            value={selectedUserDept}
-                            readOnly
-                          />
+                          {errors.pickupPlace && (
+                            <FormHelper
+                              text={String(errors.pickupPlace.message)}
+                            />
+                          )}
                         </div>
                       </div>
-                    </div>
 
-                    <div className="col-span-12 md:col-span-6">
-                      <div className="form-group">
-                        <label className="form-label">สถานที่รับกุญแจ</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          disabled={true}
-                          placeholder=""
-                          defaultValue={place}
-                        />
+                      <div className="col-span-12 md:col-span-6">
+                        <div className="form-group">
+                          <label className="form-label">
+                            วันที่นัดรับกุญแจ
+                          </label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">
+                                <i className="material-symbols-outlined">
+                                  calendar_month
+                                </i>
+                              </span>
+                            </div>
+                            <DatePicker
+                              placeholder="01/01/2567"
+                              onChange={handleDateChange}
+                            />
+                          </div>
+                          {errors.pickupDate && (
+                            <FormHelper
+                              text={String(errors.pickupDate.message)}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="col-span-12 md:col-span-6">
-                      <div className="form-group">
-                        <label className="form-label">วันที่นัดรับกุญแจ</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          disabled={true}
-                          placeholder=""
-                          defaultValue={
-                            convertToBuddhistDateTime(String(start_datetime))
-                              .date
-                          }
-                        />
+                      <div className="col-span-12 md:col-span-6">
+                        <div className="form-group">
+                          <label className="form-label">เวลาเริ่มต้น</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">
+                                <i className="material-symbols-outlined">
+                                  schedule
+                                </i>
+                              </span>
+                            </div>
+                            <TimePicker
+                              onChange={handleTimeChange}
+                              placeholder="ระบุเวลานัดหมาย"
+                            />
+                          </div>
+                          {errors.pickupTime && (
+                            <FormHelper
+                              text={String(errors.pickupTime.message)}
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <div className="form-group">
+                          <label className="form-label">เวลาสิ้นสุด</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">
+                                <i className="material-symbols-outlined">
+                                  schedule
+                                </i>
+                              </span>
+                            </div>
+                            <TimePicker
+                              onChange={handleTimeChange}
+                              placeholder="ระบุเวลานัดหมาย"
+                            />
+                          </div>
+                          {errors.pickupTime && (
+                            <FormHelper
+                              text={String(errors.pickupTime.message)}
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="modal-action sticky bottom-0 gap-3 mt-0">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => modalRef.current?.close()}
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary col-span-1"
-                  onClick={handleConfirm}
-                >
-                  {confirmText}
-                </button>
-              </div>
+                <div className="modal-action sticky bottom-0 gap-3 mt-0">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => modalRef.current?.close()}
+                  >
+                    ยกเลิก
+                  </button>
+                  <button type="submit" className="btn btn-primary col-span-1">
+                    {confirmText}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
 
@@ -249,6 +273,20 @@ const KeyPickupModal = forwardRef<
             <button>close</button>
           </form>
         </dialog>
+
+        <PassVerifyModal
+          id={id}
+          ref={approveRequestModalRef}
+          title={"ยืนยันผ่านการตรวจสอบ"}
+          role="admin"
+          desc={
+            <>
+              คุณต้องการยืนยันผ่านการตรวจสอบ<br></br>
+              และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่?
+            </>
+          }
+          confirmText="ผ่านการตรวจสอบ"
+        />
       </>
     );
   }

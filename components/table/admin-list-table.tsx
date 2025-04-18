@@ -240,9 +240,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
                 onClick={() =>
                   router.push(
                     "/administrator/request-list/" +
-                      row.original.trn_request_uid +
-                      "?status=" +
-                      statusValue
+                      row.original.trn_request_uid
                   )
                 }
               >

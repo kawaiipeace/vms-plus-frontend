@@ -1,15 +1,18 @@
 import Image from "next/image";
+import AdminVehiclePickModal from "../modal/adminVehiclePickModal";
+import { useRef } from "react";
 
 interface Props {
   chooseVehicle?: boolean;
-  chooseType?:boolean;
+  chooseType?: boolean;
   typeName?: string;
 }
 
-export default function ChooseVehicleCard({
-  chooseVehicle,
-  typeName,
-}: Props) {
+export default function ChooseVehicleCard({ chooseVehicle, typeName }: Props) {
+  const adminVehiclePickModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   return (
     <div className="card card-section-inline mt-5">
       <div className="card-body card-body-inline">
@@ -23,19 +26,14 @@ export default function ChooseVehicleCard({
           />
         </div>
         <div className="card-content">
-
           <div className="card-content-top card-content-top-inline">
-                          <div className="card-content-top-left">
-                            <div className="card-title">
-                            ผู้ดูแลเลือกยานพาหนะให้
-                            </div>
-                            <div className="supporting-text-group">
-                              <div className="supporting-text">
-                                สายงานดิจิทัล
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+            <div className="card-content-top-left">
+              <div className="card-title">ผู้ดูแลเลือกยานพาหนะให้</div>
+              <div className="supporting-text-group">
+                <div className="supporting-text">สายงานดิจิทัล</div>
+              </div>
+            </div>
+          </div>
 
           <div className="card-item-group d-flex">
             <div className="card-item col-span-2">
@@ -43,17 +41,21 @@ export default function ChooseVehicleCard({
               <span className="card-item-text">{typeName}</span>
             </div>
           </div>
-        
         </div>
-        
       </div>
       <div className="px-4 pb-4">
         {chooseVehicle && (
-            <div className="card-actions">
-              <button className="btn btn-primary w-full">เลือกยานพาหนะ</button>
-            </div>
-          )}
+          <div className="card-actions">
+            <button
+              className="btn btn-primary w-full"
+              onClick={() => adminVehiclePickModalRef.current?.openModal()}
+            >
+              เลือกยานพาหนะ
+            </button>
           </div>
+        )}
+      </div>
+      <AdminVehiclePickModal ref={adminVehiclePickModalRef} />
     </div>
   );
 }

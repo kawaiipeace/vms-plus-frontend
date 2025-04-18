@@ -3824,6 +3824,12 @@
   line-height: 1.5;
   letter-spacing: -0.2px;
 }
+.light-mode .progress-step-no.warning {
+  border-color: #F04438 !important;
+}
+.dark-mode .progress-step-no.warning {
+  border-color: #F04438 !important;
+}
 .light-mode .progress-steps-group .progress-step .progress-step-text {
   color: #667085;
 }

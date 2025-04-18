@@ -8,22 +8,21 @@ import React, {
 import Image from "next/image";
 import {
   fetchDriverDetail,
-  fetchDrivers,
-  fetchUserDrivers,
 } from "@/services/masterService";
-import { PeaDriverType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import { DriverType } from "@/app/types/driver-user-type";
 
 interface Props {
   id?: string;
+  pickable?: boolean;
+  backModal?: () => void;
 }
 
 const DriverInfoModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ id }, ref) => {
+>(({ id, pickable, backModal } , ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [vehicleUserData, setVehicleUserData] = useState<DriverType>();
 
@@ -48,7 +47,7 @@ const DriverInfoModal = forwardRef<
       };
       fetchVehicleUserData();
     }
-  }, [name]);
+  }, [id]);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -59,7 +58,18 @@ const DriverInfoModal = forwardRef<
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">ข้อมูลผู้ขับขี่</div>
+         
+          <div className="modal-title flex items-center gap-4"> { pickable &&   <i
+                className="material-symbols-outlined cursor-pointer"
+                onClick={() => {
+                  modalRef.current?.close();
+                  if (backModal) {
+                    backModal(); // Properly call backModal here
+                  }
+                }}
+              >
+                keyboard_arrow_left
+              </i>}  ข้อมูลผู้ขับขี่</div>
           <form method="dialog">
             <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
               <i className="material-symbols-outlined">close</i>
@@ -285,9 +295,18 @@ const DriverInfoModal = forwardRef<
         )}
 
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
+         
+          {pickable ?
+          <button
+            className="btn btn-primary"
+          >
+            เลือก
+          </button>
+          : 
           <form method="dialog">
-            <button className="btn btn-secondary">ปิด</button>
-          </form>
+          <button className="btn btn-secondary">ปิด</button>
+        </form>
+           }
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

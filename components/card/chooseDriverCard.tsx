@@ -1,4 +1,6 @@
 import Image from "next/image";
+import AdminDriverPickModal from "../modal/adminDriverPickModal";
+import { useRef } from "react";
 
 interface Props {
   chooseDriver?: boolean;
@@ -6,6 +8,11 @@ interface Props {
 }
 
 export default function ChooseDriverCard({ chooseDriver, number }: Props) {
+  const adminDriverPickModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   return (
     <div className="card card-section-inline mt-5">
       <div className="card-body card-body-inline">
@@ -36,13 +43,18 @@ export default function ChooseDriverCard({ chooseDriver, number }: Props) {
       </div>
       <div className="px-4 pb-4">
         {chooseDriver && (
-            <div className="card-actions">
-            <button className="btn btn-primary w-full">
+          <div className="card-actions">
+            <button
+              className="btn btn-primary w-full"
+              onClick={() => adminDriverPickModalRef.current?.openModal()}
+            >
               เลือกพนักงานขับรถ
             </button>
           </div>
-          )}
-          </div>
+        )}
+      </div>
+
+      <AdminDriverPickModal ref={adminDriverPickModalRef} />
     </div>
   );
 }

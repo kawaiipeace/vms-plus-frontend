@@ -1,5 +1,6 @@
 import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import { ProgressRequestType } from "./progress-request-status";
 
 export interface RequestDetailType {
   trn_request_uid: string;
@@ -17,12 +18,12 @@ export interface RequestDetailType {
   approved_request_dept_sap: string;
   approved_request_dept_sap_short: string;
   approved_request_dept_sap_full: string;
-  request_vehicle_type:{
+  request_vehicle_type: {
     available_units: number;
     ref_vehicle_type_code: number;
     ref_vehicle_type_name: string;
     vehicle_type_image: string;
-  }
+  };
   start_datetime: string;
   end_datetime: string;
   date_range: string;
@@ -59,11 +60,12 @@ export interface RequestDetailType {
   received_key_start_datetime: string;
   received_key_end_datetime: string;
   can_cancel_request: boolean;
-  ref_request_status_code: string,
+  ref_request_status_code: string;
   ref_request_status: {
-    ref_request_status_code: string,
-    ref_request_status_desc: string
-  }
+    ref_request_status_code: string;
+    ref_request_status_desc: string;
+  };
+  progress_request_status: ProgressRequestType[];
   ref_request_status_name: string;
   sended_back_request_reason: string;
   canceled_request_reason: string;

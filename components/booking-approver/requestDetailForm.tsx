@@ -152,7 +152,7 @@ export default function RequestDetailForm({
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
             <ApproveProgress
-              statusCode={requestData?.ref_request_status_code}
+              progressSteps={requestData?.progress_request_status}
               approverId={`${requestData?.approved_request_emp_id}`}
             />
 

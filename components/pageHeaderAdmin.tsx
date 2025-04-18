@@ -3,17 +3,18 @@ import Link from "next/link";
 import CancelRequestModal from "./modal/cancelRequestModal";
 import FileBackRequestModal from "./modal/fileBackModal";
 import { useRef, useState } from "react";
-import PassVerifyModal from "./modal/passVerifyModal";
+import KeyPickupModal from "@/components/modal/keyPickUpModal";
 
 interface Props {
   data: RequestDetailType;
 }
 
 export default function PageHeaderAdmin({ data }: Props) {
-  const approveRequestModalRef = useRef<{
+  const keyPickupModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -119,7 +120,7 @@ export default function PageHeaderAdmin({ data }: Props) {
 
         <button
           className="btn btn-primary"
-          onClick={() => approveRequestModalRef.current?.openModal()}
+          onClick={() => keyPickupModalRef.current?.openModal()}
         >
           <i className="material-symbols-outlined">check</i>
           ผ่านการตรวจสอบ
@@ -143,18 +144,18 @@ export default function PageHeaderAdmin({ data }: Props) {
         confirmText="ตีกลับคำขอ"
       />
 
-      <PassVerifyModal
+      <KeyPickupModal  
         id={data?.trn_request_uid}
-        ref={approveRequestModalRef}
-        title={"ยืนยันผ่านการตรวจสอบ"}
+        ref={keyPickupModalRef}
+        title={"นัดหมายรับกุญแจ"}
         role="admin"
-        desc={<>คุณต้องการยืนยันผ่านการตรวจสอบ<br></br>และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่?</>  }
-        confirmText="ผ่านการตรวจสอบ"
+        desc={<>ระบบจะแจ้งข้อมูลการนัดหมายรับกุญแจให้ผู้ใช้ทราบ<br></br>เมื่อคำขอได้รับการอนุมัติในขั้นตอนสุดท้าย?</>  }
+        confirmText="ต่อไป"
         place={data?.received_key_place}
         statusCode={data?.ref_request_status_code}
         start_datetime={data?.received_key_start_datetime}
-        end_datetime={data?.received_key_end_datetime}
-      />
+        end_datetime={data?.received_key_end_datetime} />
+
     </div>
   );
 }

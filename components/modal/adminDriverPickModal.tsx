@@ -7,12 +7,13 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { fetchDrivers } from "@/services/masterService";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import Image from "next/image";
 import useSwipeDown from "@/utils/swipeDown";
 import DriverCard from "../card/driverCard";
 import { DriverType } from "@/app/types/driver-user-type";
 import EmptyDriver from "../emptyDriver";
-import { fetchVehicles } from "@/services/masterService";
 
 interface Props {
   requestData?: RequestDetailType;
@@ -20,7 +21,7 @@ interface Props {
   onUpdate?: (data: any) => void;
 }
 
-const AdminVehiclePickModal = forwardRef<
+const AdminDriverPickModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
 >(({ onSelect, onUpdate, requestData }, ref) => {
@@ -35,36 +36,34 @@ const AdminVehiclePickModal = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const [params, setParams] = useState({
-    search: "",
-    vehicle_owner_dept: "",
-    car_type: "",
-    category_code: "",
+  const [params] = useState({
+    name: "",
     page: 1,
     limit: 10,
   });
-  const [vehicle, setVehicles] = useState<DriverType[]>([]);
-  const [filteredVehicles, setFilteredVehicles] = useState<DriverType[]>([]);
+
+  const [drivers, setDrivers] = useState<DriverType[]>([]);
+  const [filteredDrivers, setFilteredDrivers] = useState<DriverType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    const filtered = vehicle.filter((driver: DriverType) =>
+    const filtered = drivers.filter((driver: DriverType) =>
       driver.driver_name.includes(value)
     );
-    setFilteredVehicles(filtered);
+    setFilteredDrivers(filtered);
   };
 
-  const groupedVehicles = useMemo(() => {
+  const groupedDrivers = useMemo(() => {
     const chunkSize = 3;
     const result = [];
-    for (let i = 0; i < filteredVehicles.length; i += chunkSize) {
-      result.push(filteredVehicles.slice(i, i + chunkSize));
+    for (let i = 0; i < filteredDrivers.length; i += chunkSize) {
+      result.push(filteredDrivers.slice(i, i + chunkSize));
     }
     return result;
-  }, [filteredVehicles]);
+  }, [filteredDrivers]);
 
   const handleVehicleSelection = (id: string) => {
     console.log(id);
@@ -73,10 +72,10 @@ const AdminVehiclePickModal = forwardRef<
   useEffect(() => {
     const fetchDriverData = async () => {
       try {
-        const response = await fetchVehicles(params);
+        const response = await fetchDrivers(params);
         if (response.status === 200) {
-          setVehicles(response.data.vehicles);
-          setFilteredVehicles(response.data.vehicles);
+          setDrivers(response.data.drivers);
+          setFilteredDrivers(response.data.drivers);
           hasReset.current = true;
         }
       } catch (error) {
@@ -95,7 +94,7 @@ const AdminVehiclePickModal = forwardRef<
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">เลือกยานพาหนะ</div>
+          <div className="modal-title">เลือกพนักงานขับรถ</div>
           <form method="dialog">
             <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
               <i className="material-symbols-outlined">close</i>
@@ -107,9 +106,9 @@ const AdminVehiclePickModal = forwardRef<
           <div className="page-section-header border-0">
             <div className="page-header-left">
               <div className="page-title">
-                <span className="page-title-label">เลือกยานพาหนะ</span>
+                <span className="page-title-label">เลือกพนักงานขับรถ</span>
                 <span className="badge badge-outline badge-gray page-title-status">
-                  ว่าง {filteredVehicles.length} คัน
+                  ว่าง {filteredDrivers.length} คน
                 </span>
               </div>
             </div>
@@ -130,7 +129,7 @@ const AdminVehiclePickModal = forwardRef<
                 placeholder="ค้นหาชื่อ-นามสกุล, ชื่อเล่น, บริษัท"
               />
             </div>
-            {filteredVehicles.length > 0 ? (
+            {filteredDrivers.length > 0 ? (
               <div className="relative w-full">
                 <div className="relative">
                   {/* Left Arrow */}
@@ -153,10 +152,10 @@ const AdminVehiclePickModal = forwardRef<
                     style={{ width: "40px", height: "40px" }}
                     onClick={() =>
                       setCurrentSlide((prev) =>
-                        Math.min(prev + 1, groupedVehicles.length - 1)
+                        Math.min(prev + 1, groupedDrivers.length - 1)
                       )
                     }
-                    disabled={currentSlide === groupedVehicles.length - 1}
+                    disabled={currentSlide === groupedDrivers.length - 1}
                   >
                     <i className="material-symbols-outlined text-lg">
                       keyboard_arrow_right
@@ -165,7 +164,7 @@ const AdminVehiclePickModal = forwardRef<
 
                   <div className="px-20">
                     <div className="grid grid-cols-3 gap-4">
-                      {groupedVehicles[currentSlide]?.map((driver, index) => (
+                      {groupedDrivers[currentSlide]?.map((driver, index) => (
                         <div key={index} className="h-full">
                           <DriverCard
                             key={index}
@@ -191,7 +190,7 @@ const AdminVehiclePickModal = forwardRef<
                 </div>
 
                 <div className="indicator-daisy flex justify-center mt-4 gap-2">
-                  {groupedVehicles.map((_, idx) => (
+                  {groupedDrivers.map((_, idx) => (
                     <button
                       key={idx}
                       className={`btn btn-xs !rounded-full focus:outline-none border-0 !min-h-2 !min-w-2 p-0 size-2 overflow-hidden ${
@@ -210,7 +209,20 @@ const AdminVehiclePickModal = forwardRef<
               />
             )}
 
-
+            {drivers.length <= 0 && (
+              <EmptyDriver
+                imgSrc="/assets/img/empty/empty_driver.svg"
+                title="ไม่พบพนักงานขับรถ"
+                desc={
+                  <>
+                    ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
+                    กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
+                    ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                  </>
+                }
+                button="ค้นหานอกสังกัด"
+              />
+            )}
           </div>
         </div>
       </div>
@@ -222,5 +234,5 @@ const AdminVehiclePickModal = forwardRef<
   );
 });
 
-AdminVehiclePickModal.displayName = "AdminVehiclePickModal";
-export default AdminVehiclePickModal;
+AdminDriverPickModal.displayName = "AdminDriverPickModal";
+export default AdminDriverPickModal;

@@ -1,37 +1,27 @@
 import { ApproverUserType } from "@/app/types/approve-user-type";
+import { ProgressRequestType } from "@/app/types/progress-request-status";
 import { fetchUserApproverUsers } from "@/services/masterService";
 import { useEffect, useState } from "react";
 
 interface Props {
   approverId?: string;
-  statusCode?: string;
+  progressSteps?: ProgressRequestType[];
 }
 
-export default function ApproveProgress({ approverId, statusCode }: Props) {
-  const [processActive, setProcessActive] = useState(1);
-  const [totalSteps, setTotalSteps] = useState(3);
-  const [isRejected, setIsRejected] = useState(false);
+export default function ApproveProgress({ approverId, progressSteps }: Props) {
   const [approverData, setApproverData] = useState<ApproverUserType>();
+  const [currentStep, setCurrentStep] = useState("");
+  const [nextPendingStep, setNextPendingStep] = useState("");
+  const doneSteps = progressSteps?.filter(step => step.progress_icon === "3").length || 0;
 
   useEffect(() => {
-    if (["21", "31", "41"].includes(statusCode || "")) {
-      setIsRejected(true);
-      setTotalSteps(2);
 
-      if (statusCode === "21" || statusCode === "31") {
-        setProcessActive(1);
-      } else if (statusCode === "41") {
-        setProcessActive(2);
-      }
-    } else {
-      setIsRejected(false);
-      setTotalSteps(3);
-
-      if (statusCode === "20") setProcessActive(1);
-      else if (statusCode === "30") setProcessActive(2);
-      else if (statusCode === "40") setProcessActive(3);
+    if(progressSteps){
+      const currentStep = progressSteps?.find(step => step.progress_icon === "1" || step.progress_icon === "2");
+      const nextPendingStep = progressSteps?.find(step => step.progress_icon === "0");  
+      setCurrentStep(currentStep?.progress_name || "");
+      setNextPendingStep(nextPendingStep?.progress_name || "");
     }
-
     const fetchApprover = async () => {
       try {
         const response = await fetchUserApproverUsers(approverId);
@@ -42,13 +32,8 @@ export default function ApproveProgress({ approverId, statusCode }: Props) {
     };
 
     fetchApprover();
-  }, [approverId, statusCode]);
+  }, [approverId, progressSteps]);
 
-  const getStepClass = (stepIndex: number) => {
-    if (stepIndex < processActive) return "done";
-    if (stepIndex === processActive) return "active";
-    return "";
-  };
 
   return (
     <div className="card card-approvalprogress">
@@ -57,7 +42,9 @@ export default function ApproveProgress({ approverId, statusCode }: Props) {
       </div>
       <div className="card-body">
         {/* Mobile View */}
-        <div className="md:hidden">
+        {progressSteps && (
+          <>
+        <div className="md:hidden block">
           <div className="circular-progressbar d-flex">
             <div className="circular-progressbar-container">
               <svg
@@ -77,96 +64,73 @@ export default function ApproveProgress({ approverId, statusCode }: Props) {
                   r="15.9155"
                   className="circular-progressbar-progress js-circular-progressbar"
                   style={{
-                    strokeDashoffset: `${100 - (processActive / totalSteps) * 100}px`,
+                    strokeDashoffset: `${
+                      100 - (doneSteps / (progressSteps?.length)) * 100
+                    }px`,
                   }}
                 />
               </svg>
               <div className="circular-progressbar-text">
-                {processActive}
+                {doneSteps}
                 <span className="circular-progressbar-slash">/</span>
-                {totalSteps}
+              {progressSteps?.length}
               </div>
             </div>
             <div className="progress-steps-btn-content">
               <div className="progress-steps-btn-title">
-                {isRejected
-                  ? processActive === 1
-                    ? "ถูกตีกลับ"
-                    : "รออนุมัติ"
-                  : processActive === 1
-                  ? "รออนุมัติจากต้นสังกัด"
-                  : processActive === 2
-                  ? "รอผู้ดูแลยานพาหนะตรวจสอบ"
-                  : "รออนุมัติใช้ยานพาหนะ"}
+              
+              {currentStep}
               </div>
               <div className="progress-steps-btn-text">
-                {processActive < totalSteps && (
+              
                   <>
                     ถัดไป:{" "}
                     <span className="progress-steps-btn-label">
-                      {isRejected
-                        ? "รออนุมัติ"
-                        : processActive === 1
-                        ? "รอผู้ดูแลยานพาหนะตรวจสอบ"
-                        : "รออนุมัติใช้ยานพาหนะ"}
+                     {nextPendingStep}
                     </span>
                   </>
-                )}
+             
               </div>
             </div>
           </div>
         </div>
 
         {/* Desktop View */}
-        <div className="progress-steps-column d-none d-md-flex">
-          {isRejected ? (
-            <>
-              <div className={`progress-step ${getStepClass(1)}`}>
-                <span className="progress-step-no">
-                  {processActive > 1 && <i className="material-symbols-outlined">check</i>}
-                </span>
-                <div className="progress-step-content">
-                  <div className="progress-step-title">ถูกตีกลับ</div>
+      
+          <div className="md:block hidden">
+          <div className="progress-steps-column">
+            {progressSteps.map((step, index) => {
+              const { progress_icon, progress_name } = step;
+              const getStepIcon = () => {
+                if (progress_icon === "3")
+                  return <i className="material-symbols-outlined">check</i>;
+                if (progress_icon === "2")
+                  return (
+                    <i className="material-symbols-outlined text-icon-error">exclamation</i>
+                  );
+                return null;
+              };
+
+              const getStepClass = () => {
+                if (progress_icon === "3") return "done";
+                if (progress_icon === "2") return "warning";
+                if (progress_icon === "1") return "active";
+                return ""; 
+              };
+
+              return (
+                <div key={index} className={`progress-step ${getStepClass()}`}>
+                  <span className={`progress-step-no ${getStepClass()}`}>{getStepIcon()}</span>
+                  <div className="progress-step-content">
+                    <div className="progress-step-title">{progress_name}</div>
+                  </div>
                 </div>
-              </div>
-              <div className={`progress-step ${getStepClass(2)}`}>
-                <span className="progress-step-no">
-                  {processActive > 2 && <i className="material-symbols-outlined">check</i>}
-                </span>
-                <div className="progress-step-content">
-                  <div className="progress-step-title">รออนุมัติ</div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={`progress-step ${getStepClass(1)}`}>
-                <span className="progress-step-no">
-                  {processActive > 1 && <i className="material-symbols-outlined">check</i>}
-                </span>
-                <div className="progress-step-content">
-                  <div className="progress-step-title">รออนุมัติจากต้นสังกัด</div>
-                </div>
-              </div>
-              <div className={`progress-step ${getStepClass(2)}`}>
-                <span className="progress-step-no">
-                  {processActive > 2 && <i className="material-symbols-outlined">check</i>}
-                </span>
-                <div className="progress-step-content">
-                  <div className="progress-step-title">รอผู้ดูแลยานพาหนะตรวจสอบ</div>
-                </div>
-              </div>
-              <div className={`progress-step ${getStepClass(3)}`}>
-                <span className="progress-step-no">
-                  {processActive > 3 && <i className="material-symbols-outlined">check</i>}
-                </span>
-                <div className="progress-step-content">
-                  <div className="progress-step-title">รออนุมัติใช้ยานพาหนะ</div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+              );
+            })}
+          </div>
+          </div>
+          </>
+        )}
 
         {/* Approver Info */}
         {approverId === "" && (
@@ -190,7 +154,10 @@ export default function ApproveProgress({ approverId, statusCode }: Props) {
               </button>
             </div>
 
-            <div className="form-card d-md-block collapse" id="collapseApproverDetail">
+            <div
+              className="form-card d-md-block collapse"
+              id="collapseApproverDetail"
+            >
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <div className="form-plaintext-group align-self-center">
@@ -207,7 +174,9 @@ export default function ApproveProgress({ approverId, statusCode }: Props) {
                     {approverData?.tel_mobile && (
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">smartphone</i>
+                          <i className="material-symbols-outlined">
+                            smartphone
+                          </i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowrap">
                               {approverData?.tel_mobile}
@@ -233,8 +202,10 @@ export default function ApproveProgress({ approverId, statusCode }: Props) {
               </div>
             </div>
           </div>
+          
         )}
       </div>
+      
     </div>
   );
 }

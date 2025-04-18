@@ -18,8 +18,15 @@ export default {
           grayText: '#98A2B3',
 
       },
+      error:{
+        border: '#F04438',
+      },
+      icon:{
+        error: '#D92D20',
+      },
       surface: {
         "secondary-subtle" : "#F9FAFB",
+        "disabled" : "#F9FAFB",
       },
       color: {
         primary: '#000000',
