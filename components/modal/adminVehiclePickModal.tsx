@@ -234,7 +234,7 @@ const AdminVehiclePickModal = forwardRef<
               </div>
               <CustomSelectBadge
                 w="md:w-[17rem]"
-                vehicleType={vehicleType?.ref_vehicle_type_name || ""}
+                vehicleType={vehicleType ? vehicleType?.ref_vehicle_type_name || "" : ""}
                 options={vehicleCatOptions}
                 value={selectedVehicleOption}
                 onChange={handleVehicleTypeChange}

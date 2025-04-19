@@ -9,7 +9,7 @@ interface SelectProps {
   options: SelectOption[];
   w: string;
   value: SelectOption | null;
-  vehicleType: string;
+  vehicleType?: string;
   onChange: (selected: SelectOption) => void;
 }
 
@@ -65,11 +65,13 @@ export default function CustomSelectBadge({
         } overflow-hidden`}
         onClick={() => setIsOpen(!isOpen)}
       >
+          { vehicleType &&
           <div className="pr-2">
           <span className="badge badge-pill-outline badge-active bg-brand-100 !border-brand-200 whitespace-nowrap !rounded-md text-brand-800">
             ผู้ใช้เลือก
           </span>
           </div>
+           }
         
      
 

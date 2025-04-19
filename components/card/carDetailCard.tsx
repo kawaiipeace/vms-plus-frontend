@@ -2,14 +2,26 @@ import { useRef } from "react";
 import Image from "next/image";
 import VehicleDetailModel from "@/components/modal/vehicleDetailModal";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import AdminVehiclePickModal from "../modal/adminVehiclePickModal";
 
 interface CarDetailCardProps {
   vehicle?: VehicleDetailType;
   seeDetail?: boolean;
+  selectVehicle?: boolean;
+  reqId?: string;
 }
 
-export default function CarDetailCard({ vehicle, seeDetail }: CarDetailCardProps) {
+export default function CarDetailCard({
+  vehicle,
+  seeDetail,
+  selectVehicle,
+  reqId,
+}: CarDetailCardProps) {
   const vehicleDetailModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const adminVehiclePickModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -24,7 +36,10 @@ export default function CarDetailCard({ vehicle, seeDetail }: CarDetailCardProps
         <div className="card-body-inline">
           <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
             <Image
-              src={vehicle?.vehicle_imgs && vehicle?.vehicle_imgs[0] || "/assets/img/sample-car.jpeg"}
+              src={
+                (vehicle?.vehicle_imgs && vehicle?.vehicle_imgs[0]) ||
+                "/assets/img/sample-car.jpeg"
+              }
               width={100}
               height={100}
               className="object-cover w-full h-full"
@@ -65,33 +80,48 @@ export default function CarDetailCard({ vehicle, seeDetail }: CarDetailCardProps
               {vehicle?.vehicle_gear && (
                 <div className="card-item col-span-2">
                   <i className="material-symbols-outlined">auto_transmission</i>
-                  <span className="card-item-text">{vehicle?.vehicle_gear === "NORMAL"
+                  <span className="card-item-text">
+                    {vehicle?.vehicle_gear === "NORMAL"
                       ? "เกียร์ธรรมดา"
-                      : "เกียร์อัตโนมัติ"}</span>
+                      : "เกียร์อัตโนมัติ"}
+                  </span>
                 </div>
               )}
-             
-                <div className="card-item col-span-2">
-                  <i className="material-symbols-outlined">
-                    airline_seat_recline_extra
-                  </i>
-                  <span className="card-item-text">{vehicle?.seat} ที่นั่ง</span>
-                </div>
-          
+
+              <div className="card-item col-span-2">
+                <i className="material-symbols-outlined">
+                  airline_seat_recline_extra
+                </i>
+                <span className="card-item-text">{vehicle?.seat} ที่นั่ง</span>
+              </div>
             </div>
           </div>
         </div>
-        { seeDetail &&
-        <div className="card-actioins w-full">
-          <button
-            className="btn btn-default w-full"
-            onClick={() => vehicleDetailModalRef.current?.openModal()}
-          >
-            ดูรายละเอียด
-          </button>
-        </div>
-         }
+
+        {seeDetail && (
+          <div className="card-actioins w-full">
+            <div className="flex gap-3">
+              <button
+                className={`btn ${
+                  selectVehicle ? "btn-secondary" : "btn-default"
+                } flex-1`}
+                onClick={() => vehicleDetailModalRef.current?.openModal()}
+              >
+                ดูรายละเอียด
+              </button>
+              {selectVehicle && (
+                <button
+                  className="btn btn-secondary flex-1"
+                  onClick={() => adminVehiclePickModalRef.current?.openModal()}
+                >
+                  เลือกยานพาหนะ
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+      <AdminVehiclePickModal reqId={reqId} ref={adminVehiclePickModalRef} />
       <VehicleDetailModel
         ref={vehicleDetailModalRef}
         vehicleId={vehicle?.mas_vehicle_uid || ""}

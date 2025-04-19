@@ -55,7 +55,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
   };
 
   return (
-    <div className="page-header">
+    <div className="page-header w-full">
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
@@ -115,21 +115,59 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               </span>
             ))}
         </div>
-        {editable && (
-          <button
-            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-            onClick={() => cancelRequestModalRef.current?.openModal()}
-          >
-            ยกเลิกคำขอ
-          </button>
-        )}
 
-        <button className="btn btn-secondary" onClick={() => window.print()}>
-          <i className="material-symbols-outlined">print</i>พิมพ์
-        </button>
-        {editable && (
-          <>
-            {" "}
+        <div className="block md:hidden">
+          <div className="dropdown">
+            <div className="btn btn-secondary px-3" tabIndex={0} role="button">
+              <i className="material-symbols-outlined icon-settings-fill-300-24">
+                more_vert
+              </i>
+            </div>
+
+            <ul
+              className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+              tabIndex={0}
+            >
+              <Link
+                className="dropdown-item"
+                href="#"
+                onClick={() => fileBackRequestModalRef.current?.openModal()}
+              >
+                <i className="material-symbols-outlined">reply</i>
+                ตีกลับให้แก้ไข
+              </Link>
+              <Link
+                className="dropdown-item"
+                href="#"
+                onClick={() => window.print()}
+              >
+                <i className="material-symbols-outlined">print</i>
+                พิมพ์
+              </Link>
+
+              <div className="divider py-0 my-0"></div>
+              <Link className="dropdown-item" href="#">
+                <i className="material-symbols-outlined">delete</i>
+                ยกเลิกคำขอ
+              </Link>
+            </ul>
+          </div>
+        </div>
+
+        <div className="md:block hidden">
+          <div className="flex gap-3">
+            <button
+              className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+              onClick={() => cancelRequestModalRef.current?.openModal()}
+            >
+              ยกเลิกคำขอ
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => window.print()}
+            >
+              <i className="material-symbols-outlined">print</i>พิมพ์
+            </button>{" "}
             <button
               className="btn btn-secondary"
               onClick={() => fileBackRequestModalRef.current?.openModal()}
@@ -137,15 +175,17 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               <i className="material-symbols-outlined">reply</i>
               ตีกลับให้แก้ไข
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => keyPickupModalRef.current?.openModal()}
-            >
-              <i className="material-symbols-outlined">check</i>
-              ผ่านการตรวจสอบ
-            </button>
-          </>
-        )}
+          </div>
+        </div>
+
+        <button
+          className="btn btn-primary"
+          disabled={editable ? false : true}
+          onClick={() => keyPickupModalRef.current?.openModal()}
+        >
+          <i className="material-symbols-outlined">check</i>
+          ผ่านการตรวจสอบ
+        </button>
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid}

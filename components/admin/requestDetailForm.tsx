@@ -299,7 +299,12 @@ export default function RequestDetailForm({
                 {requestData?.vehicle &&
                   (!requestData?.is_admin_choose_vehicle ||
                     requestData?.is_admin_choose_vehicle === "0") && (
-                    <CarDetailCard vehicle={requestData?.vehicle} />
+                    <CarDetailCard
+                      reqId={requestData?.trn_request_uid}
+                      vehicle={requestData?.vehicle}
+                      seeDetail={true}
+                      selectVehicle={true}
+                    />
                   )}
 
                 {requestData?.is_admin_choose_driver && (
@@ -311,7 +316,7 @@ export default function RequestDetailForm({
                 )}
 
                 {requestData?.is_pea_employee_driver === "1" ? (
-                  <div className="mt-5">
+                  <div className="mt-5 w-full overflow-hidden">
                     <DriverPeaInfoCard
                       role="admin"
                       driver_emp_id={requestData?.driver_emp_id}
@@ -331,9 +336,11 @@ export default function RequestDetailForm({
                   requestData?.driver && (
                     <div className="mt-5">
                       <DriverSmallInfoCard
+                        reqId={requestData?.trn_request_uid}
                         driverDetail={requestData?.driver}
                         showPhone={true}
                         seeDetail={true}
+                        selectDriver={true}
                       />
                     </div>
                   )

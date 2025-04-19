@@ -62,7 +62,7 @@ export default function DriverPeaInfoCard({
   };
 
   return (
-    <div className="card">
+    <div className="card overflow-hidden">
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -83,7 +83,7 @@ export default function DriverPeaInfoCard({
               </div>
             </div>
 
-            <div className="card-item-group">
+            <div className="card-item-group w-full !grid-cols-1 md:!grid-cols-2">
               {driver?.tel_mobile && (
                 <div className="card-item">
                   <i className="material-symbols-outlined">smartphone</i>

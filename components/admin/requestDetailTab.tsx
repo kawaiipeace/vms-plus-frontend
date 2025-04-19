@@ -32,7 +32,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden">
      <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
