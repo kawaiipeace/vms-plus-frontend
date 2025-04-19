@@ -41,10 +41,6 @@ export default function PickDriverCard({
   onVehicleSelect: (id: string) => void;
   onClickSeeDetail: (id: string) => void;
 }) {
-  const driverAppointmentRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   const driverInfoModalRef = useRef<{
     openModal: () => void;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
+import Image from "next/image";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -65,7 +66,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
           <div className="flex flex-col">
             <div>{row.original.vehicle_user_emp_name}</div>
-            <div>{row.original.vehicle_user_dept_sap_short}</div>
+            <div className="text-color-secondary text-xs">{row.original.vehicle_user_dept_sap_short}</div>
           </div>
         </div>
       ),
@@ -76,21 +77,19 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-          {row.original.vehicle_license_plate === "" &&
+          {row.original.can_choose_vehicle === true &&
           row.original.vehicle_department_dept_sap_short === "" ? (
             <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
-                <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-                <span className="text-color-secondary">รอเลือก</span> 
-              </div>
+              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
+              <span className="text-color-secondary">รอเลือก</span>
+            </div>
           ) : (
             <div className="flex flex-col">
               {" "}
               <div className="text-left">
                 {row.original.vehicle_license_plate}
               </div>
-              <div className="">
-                {row.original.vehicle_department_dept_sap_short}
-              </div>
+              <div className="text-color-secondary text-xs">{row.original.ref_vehicle_type_name}</div>
             </div>
           )}
         </div>
@@ -102,17 +101,13 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="สังกัดยานพาหนะ">
-   
-            <div className="flex flex-col">
-              {" "}
-              <div className="text-left">
-                {row.original.vehicle_department_dept_sap_short}
-              </div>
-              {/* <div className="">
-                {row.original.vehicle_department_dept_sap_short}
-              </div> */}
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">
+              {row.original.vehicle_department_dept_sap_short}
             </div>
-        
+            <div className="text-color-secondary text-xs">{row.original.vehicle_department_dept_sap_short}</div>
+          </div>
         </div>
       ),
     },
@@ -122,20 +117,35 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ขับขี่">
-          {row.original.vehicle_license_plate === "" &&
+          {row.original.can_choose_driver === true &&
           row.original.vehicle_department_dept_sap_short === "" ? (
-            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
-                <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-                <span className="text-color-secondary">รอเลือก</span> 
-              </div>
+            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-[5rem] bg-white">
+              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
+              <span className="text-color-secondary">รอเลือก</span>
+            </div>
           ) : (
-            <div className="flex flex-col">
-              {" "}
-              <div className="text-left">
-                {row.original.vehicle_license_plate}
-              </div>
+            <div className="flex items-center gap-2">
               <div className="">
-                {row.original.vehicle_department_dept_sap_short}
+                {row.original.is_pea_employee_driver === 1 ? (
+                  <Image
+                    src="/assets/img/avatar.svg"
+                    width={36}
+                    height={36}
+                    alt="User Avatar"
+                  ></Image>
+                ) : (
+                  <Image
+                    src="/assets/img/graphic/admin_select_driver_small.png"
+                    width={36}
+                    height={36}
+                    alt="User Avatar"
+                    className="rounded-full"
+                  ></Image>
+                )}{" "}
+              </div>
+              <div>
+                <div className="text-left">{row.original.driver_name}</div>
+                <div className="text-color-secondary text-xs">{row.original.driver_dept_name}</div>
               </div>
             </div>
           )}
@@ -166,12 +176,9 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
         return (
           <div className="text-left" data-name="วันที่เดินทาง">
             <div className="flex flex-col">
-                  <div>
-                  {startDateTime.date + " - " + endDateTime.date}
-                  </div>
-                  <div>    {endDateTime.time + " - " + startDateTime.time}</div>
+              <div>{startDateTime.date + " - " + endDateTime.date}</div>
+              <div className="text-color-secondary text-xs"> {endDateTime.time + " - " + startDateTime.time} ({row.original.trip_type_name})</div>
             </div>
-
           </div>
         );
       },
@@ -225,7 +232,8 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
                 onClick={() =>
                   router.push(
                     "/administrator/request-list/" +
-                      row.original.trn_request_uid + "/edit"
+                      row.original.trn_request_uid +
+                      "/edit"
                   )
                 }
               >
@@ -255,9 +263,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
                 onClick={() =>
                   router.push(
                     "/administrator/request-list/" +
-                      row.original.trn_request_uid +
-                      "?status=" +
-                      statusValue
+                      row.original.trn_request_uid
                   )
                 }
               >

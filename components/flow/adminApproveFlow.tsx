@@ -20,7 +20,7 @@ interface PaginationType {
 export default function AdminApproveFlow() {
   const [params, setParams] = useState({
     search: "",
-    vehicle_owner_dept: "",
+    vehicle_owner_dept_sap: "",
     ref_request_status_code: "",
     startdate: "",
     enddate: "",
@@ -44,7 +44,7 @@ export default function AdminApproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
-  const router = useRouter();
+
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -97,6 +97,7 @@ export default function AdminApproveFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
+    console.log('department',department);
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -115,6 +116,7 @@ export default function AdminApproveFlow() {
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
+      vehicle_owner_dept_sap: department || "",
       startdate:
         selectedStartDate &&
         dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
@@ -125,10 +127,19 @@ export default function AdminApproveFlow() {
   };
 
   const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    console.log("Filters submitted:", filters);
-    // You can use filters.requestNo and filters.startDateTime to filter your data
-    // Example:
-    // fetchData(filters.requestNo, filters.startDateTime);
+    if(filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด"){
+      setParams((prevParams) => ({
+        ...prevParams,
+        order_by: "start_datetime",
+        order_dir: "desc",
+      }));
+    }else{
+      setParams((prevParams) => ({
+        ...prevParams,
+        order_by: "request_no",
+        order_dir: "desc",
+      }));
+    }
   };
 
   const removeFilter = (filterType: string, filterValue: string) => {
@@ -167,7 +178,7 @@ export default function AdminApproveFlow() {
   const handleClearAllFilters = () => {
     setParams({
       search: "",
-      vehicle_owner_dept: "",
+      vehicle_owner_dept_sap: "",
       ref_request_status_code: "",
       startdate: "",
       enddate: "",
@@ -273,6 +284,21 @@ export default function AdminApproveFlow() {
                   }
                   title={item.ref_request_status_name}
                   number={item.count}
+                  onClick={() => {
+                    setParams((prevParams) => ({
+                      ...prevParams,
+                      ref_request_status_code: item.ref_request_status_code,
+                      page: 1, 
+                    }));
+          
+
+                    const statusName = item.ref_request_status_name;
+                    if (!filterNames.includes(statusName)) {
+                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                    }
+          
+                    setFilterNum((prevFilterNum) => prevFilterNum + 1);
+                  }}
                 />
               </div>
             );
@@ -376,7 +402,7 @@ export default function AdminApproveFlow() {
       ) : (
         filterNum > 0 ||
         filterDate ||
-        (dataRequest?.length <= 0 && (
+        (filterDate?.length <= 0 && (
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"

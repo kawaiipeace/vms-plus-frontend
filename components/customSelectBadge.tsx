@@ -8,22 +8,32 @@ interface SelectOption {
 interface SelectProps {
   options: SelectOption[];
   w: string;
-  iconName?: string;
   value: SelectOption | null;
+  vehicleType: string;
   onChange: (selected: SelectOption) => void;
 }
 
-export default function CustomSelect({
+export default function CustomSelectBadge({
   w,
   options,
-  iconName,
   value,
+  vehicleType,
   onChange,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!value && vehicleType) {
+      const matchedOption = options.find((opt) => opt.value === vehicleType);
+      if (matchedOption) {
+        onChange(matchedOption);
+      }
+    }
+  }, [vehicleType, value, options, onChange]);
+
+  
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -55,13 +65,13 @@ export default function CustomSelect({
         } overflow-hidden`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {iconName && (
-          <div className="input-group-prepend mr-1">
-            <span className="input-group-text">
-              <i className="material-symbols-outlined"> {iconName} </i>
-            </span>
+          <div className="pr-2">
+          <span className="badge badge-pill-outline badge-active bg-brand-100 !border-brand-200 whitespace-nowrap !rounded-md text-brand-800">
+            ผู้ใช้เลือก
+          </span>
           </div>
-        )}
+        
+     
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
           {value?.label || "กรุณาเลือก"}

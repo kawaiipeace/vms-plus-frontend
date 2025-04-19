@@ -9,7 +9,7 @@ interface DriverInfoProps {
   userKeyPickup?: boolean;
   seeDetail?: boolean;
   driverEmpID?: string;
-
+  role?: string;
   // fallback props
   driver_emp_id?: string;
   driver_emp_name?: string;
@@ -20,6 +20,7 @@ interface DriverInfoProps {
 }
 
 export default function DriverPeaInfoCard({
+  role,
   driverEmpID,
   userKeyPickup,
   seeDetail,
@@ -117,7 +118,7 @@ export default function DriverPeaInfoCard({
         )}
       </div>
 
-      <PeaDriverInfoModal ref={driverInfoModalRef} id={driver_emp_id} />
+      <PeaDriverInfoModal ref={driverInfoModalRef} role="admin" id={driver_emp_id} />
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>
   );

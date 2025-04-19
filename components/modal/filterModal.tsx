@@ -287,6 +287,7 @@ const FilterModal = forwardRef<
                   selectedStatuses,
                   selectedStartDate,
                   selectedEndDate,
+                  department: selectedVehicleOption.label
                 });
                 modalRef.current?.close(); // Close modal manually
               }}

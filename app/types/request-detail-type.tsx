@@ -18,12 +18,7 @@ export interface RequestDetailType {
   approved_request_dept_sap: string;
   approved_request_dept_sap_short: string;
   approved_request_dept_sap_full: string;
-  request_vehicle_type: {
-    available_units: number;
-    ref_vehicle_type_code: number;
-    ref_vehicle_type_name: string;
-    vehicle_type_image: string;
-  };
+  request_vehicle_type: RequestVehicleType;
   start_datetime: string;
   end_datetime: string;
   date_range: string;
@@ -69,4 +64,11 @@ export interface RequestDetailType {
   ref_request_status_name: string;
   sended_back_request_reason: string;
   canceled_request_reason: string;
+}
+
+export interface RequestVehicleType{
+  available_units: number;
+  ref_vehicle_type_code: number;
+  ref_vehicle_type_name: string;
+  vehicle_type_image: string;
 }

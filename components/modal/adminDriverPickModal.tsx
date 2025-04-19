@@ -43,7 +43,6 @@ const AdminDriverPickModal = forwardRef<
   const [params] = useState({
     name: "",
     page: 1,
-    limit: 10,
   });
 
   const [drivers, setDrivers] = useState<DriverType[]>([]);
@@ -124,9 +123,7 @@ const AdminDriverPickModal = forwardRef<
         const response = await fetchDrivers(params);
         if (response.status === 200) {
           setDrivers(response.data.drivers);
-          setDrivers([]);
           setFilteredDrivers(response.data.drivers);
-          setFilteredDrivers([]);
 
           hasReset.current = true;
         }

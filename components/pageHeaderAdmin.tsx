@@ -8,9 +8,10 @@ import PassVerifyModal from "./modal/passVerifyModal";
 
 interface Props {
   data: RequestDetailType;
+  editable?: boolean;
 }
 
-export default function PageHeaderAdmin({ data }: Props) {
+export default function PageHeaderAdmin({ data, editable }: Props) {
   const keyPickupModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -114,33 +115,37 @@ export default function PageHeaderAdmin({ data }: Props) {
               </span>
             ))}
         </div>
-
-        <button
-          className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-          onClick={() => cancelRequestModalRef.current?.openModal()}
-        >
-          ยกเลิกคำขอ
-        </button>
+        {editable && (
+          <button
+            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+            onClick={() => cancelRequestModalRef.current?.openModal()}
+          >
+            ยกเลิกคำขอ
+          </button>
+        )}
 
         <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
-
-        <button
-          className="btn btn-secondary"
-          onClick={() => fileBackRequestModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">reply</i>
-          ตีกลับให้แก้ไข
-        </button>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => keyPickupModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">check</i>
-          ผ่านการตรวจสอบ
-        </button>
+        {editable && (
+          <>
+            {" "}
+            <button
+              className="btn btn-secondary"
+              onClick={() => fileBackRequestModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">reply</i>
+              ตีกลับให้แก้ไข
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => keyPickupModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">check</i>
+              ผ่านการตรวจสอบ
+            </button>
+          </>
+        )}
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid}

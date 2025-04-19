@@ -6,6 +6,7 @@ export interface RequestListType{
   request_no: string;
   start_datetime: string; // ISO 8601 datetime string
   trn_request_uid: string;
+  ref_vehicle_type_name: string;
   vehicle_department_dept_sap_short: string;
   vehicle_license_plate: string;
   vehicle_license_plate_province_full: string;
@@ -14,6 +15,15 @@ export interface RequestListType{
   vehicle_user_emp_id: string;
   vehicle_user_emp_name: string;
   work_place: string;
+  driver_dept_name: string;
+  is_admin_choose_driver: number;
+  is_admin_choose_vehicle: number;
+  is_pea_employee_driver: number;
+  driver_emp_id: string;
+  driver_name: string;
+  can_choose_driver: boolean;
+  can_choose_vehicle: boolean;
+  trip_type_name: string;
 }
 
 export interface summaryType{

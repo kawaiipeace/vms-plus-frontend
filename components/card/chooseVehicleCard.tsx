@@ -1,14 +1,23 @@
 import Image from "next/image";
 import AdminVehiclePickModal from "../modal/adminVehiclePickModal";
 import { useRef } from "react";
+import { RequestVehicleType } from "@/app/types/request-detail-type";
 
 interface Props {
   chooseVehicle?: boolean;
   chooseType?: boolean;
   typeName?: string;
+  reqId?: string;
+  vehicleType?: RequestVehicleType;
 }
 
-export default function ChooseVehicleCard({ chooseVehicle, typeName }: Props) {
+export default function ChooseVehicleCard({
+  reqId,
+  chooseType,
+  chooseVehicle,
+  typeName,
+  vehicleType
+}: Props) {
   const adminVehiclePickModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -55,7 +64,7 @@ export default function ChooseVehicleCard({ chooseVehicle, typeName }: Props) {
           </div>
         )}
       </div>
-      <AdminVehiclePickModal ref={adminVehiclePickModalRef} />
+      <AdminVehiclePickModal reqId={reqId} vehicleType={vehicleType} ref={adminVehiclePickModalRef} />
     </div>
   );
 }

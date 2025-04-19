@@ -4,6 +4,7 @@ import axiosInstance from '@/utils/axiosInstance';
 
 export const fetchRequests = async (params: {
   search?: string;
+  vehicle_owner_dept_sap?: string;
   ref_request_status_code?: string;
   startdate?: string;
   enddate?: string;
@@ -130,6 +131,15 @@ export const adminUpdateCost = async (data: any) => {
 export const adminUpdateVehicleType = async (data: any) => {
   try {
     const response = await axiosInstance.put('booking-admin/update-vehicle-type', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminUpdateVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-admin/update-vehicle', data);
     return response;
   } catch (error) {
     throw error;

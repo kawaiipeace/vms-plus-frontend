@@ -120,15 +120,6 @@ export default function FirstApproveFlow() {
     }));
   };
 
-  const handleFilterSortSubmit = (filters: {
-    selectedSortType: string;
-  }) => {
-    console.log("Filters submitted:", filters);
-    // You can use filters.requestNo and filters.startDateTime to filter your data
-    // Example:
-    // fetchData(filters.requestNo, filters.startDateTime);
-  };
-
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
       setFilterNames((prevFilterNames) =>

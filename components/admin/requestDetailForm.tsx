@@ -59,10 +59,6 @@ export default function RequestDetailForm({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const approverModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   const sendbackRequestModalRef = useRef<{
     openModal: () => void;
@@ -241,10 +237,12 @@ export default function RequestDetailForm({
 
                 {requestData?.is_admin_choose_vehicle === "1" && (
                   <ChooseVehicleCard
+                    reqId={requestData?.trn_request_uid}
+                    vehicleType={requestData?.request_vehicle_type}
                     typeName={
                       requestData.request_vehicle_type.ref_vehicle_type_name
                     }
-                    chooseVehicle={true}
+                    chooseVehicle={editable && true}
                   />
                 )}
                 {requestData?.is_system_choose_vehicle === "1" && (
@@ -308,13 +306,14 @@ export default function RequestDetailForm({
                   <ChooseDriverCard
                     reqId={requestData?.trn_request_uid}
                     number={requestData?.number_of_available_drivers}
-                    chooseDriver={true}
+                    chooseDriver={editable && true}
                   />
                 )}
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5">
                     <DriverPeaInfoCard
+                      role="admin"
                       driver_emp_id={requestData?.driver_emp_id}
                       driver_emp_name={requestData?.driver_emp_name}
                       driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
@@ -325,6 +324,7 @@ export default function RequestDetailForm({
                         requestData?.driver_mobile_contact_number
                       }
                       driver_image_url={requestData?.driver_image_url}
+                      seeDetail={true}
                     />
                   </div>
                 ) : (
@@ -333,6 +333,7 @@ export default function RequestDetailForm({
                       <DriverSmallInfoCard
                         driverDetail={requestData?.driver}
                         showPhone={true}
+                        seeDetail={true}
                       />
                     </div>
                   )
@@ -379,7 +380,7 @@ export default function RequestDetailForm({
         role="admin"
         onUpdate={handleModalUpdate}
       />
-      <ApproverModal ref={approverModalRef} />
+
       <SendbackRequestModal
         id={String(requestData?.trn_request_uid)}
         ref={sendbackRequestModalRef}

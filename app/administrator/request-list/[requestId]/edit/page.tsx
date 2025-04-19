@@ -14,7 +14,6 @@ export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  console.log('tttpp',params);
   const request_id = String(params.requestId);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
@@ -47,7 +46,7 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeaderAdmin data={requestData} />}
+          {requestData && <PageHeaderAdmin editable={true} data={requestData} />}
             <RequestEditTabs requestId={request_id} />
           </div>
         </div>

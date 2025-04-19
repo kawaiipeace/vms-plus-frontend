@@ -4,7 +4,7 @@ import {
   requestHistoryLogColumns,
 } from "@/data/requestHistory";
 import TableComponent from "@/components/table";
-import RequestDetailForm from "../flow/requestDetailForm";
+import RequestDetailForm from "@/components/admin/requestDetailForm";
 
 interface Props {
   requestId: string;
