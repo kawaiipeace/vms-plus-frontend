@@ -65,7 +65,6 @@ export default function PickDriverCard({
       
       const response = await adminUpdateDriver(payload);
       
-      console.log('selected',response);
     } catch (error) {
       console.error("Network error:", error);
     }

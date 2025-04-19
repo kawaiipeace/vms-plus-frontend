@@ -12,7 +12,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Image from "next/image";
 import useSwipeDown from "@/utils/swipeDown";
 import { DriverType, DriverWorkType } from "@/app/types/driver-user-type";
-import EmptyDriver from "@/components/emptyDriver";
+import EmptyDriver from "@/components/admin/emptyDriver";
 import PickDriverCard from "@/components/card/pickDriverCard";
 import CustomSelect from "../customSelect";
 import { UpdateDriverType } from "@/app/types/form-data-type";
@@ -58,6 +58,7 @@ const AdminDriverPickModal = forwardRef<
       driver.driver_name.includes(value)
     );
     setFilteredDrivers(filtered);
+    
   };
 
   const groupedDrivers = useMemo(() => {
@@ -67,7 +68,7 @@ const AdminDriverPickModal = forwardRef<
       result.push(filteredDrivers.slice(i, i + chunkSize));
     }
     return result;
-  }, [filteredDrivers]);
+  }, [filteredDrivers, params]);
   const [driverWorkTypeDatas, setdriverWorkTypeDatas] = useState<
     DriverWorkType[]
   >([]);
@@ -85,8 +86,9 @@ const AdminDriverPickModal = forwardRef<
 
     try {
       const response = await adminUpdateDriver(payload);
-
-      console.log("selected", response);
+        if(response){
+          modalRef.current?.close();
+        }
     } catch (error) {
       console.error("Network error:", error);
     }
@@ -106,9 +108,14 @@ const AdminDriverPickModal = forwardRef<
     const data = driverWorkTypeDatas.find(
       (work) => String(work.type) === String(selectedOption.value)
     );
-
     if (data) {
+      const filtered = drivers.filter((driver: DriverType) =>
+        String(driver.work_type) === selectedOption.value
+      );
+      setFilteredDrivers(filtered);
     }
+    
+   
   };
 
   useEffect(() => {
@@ -117,20 +124,26 @@ const AdminDriverPickModal = forwardRef<
         const response = await fetchDrivers(params);
         if (response.status === 200) {
           setDrivers(response.data.drivers);
+          setDrivers([]);
           setFilteredDrivers(response.data.drivers);
+          setFilteredDrivers([]);
+
           hasReset.current = true;
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
     };
+    fetchDriverData();
+  }, [params]);
+
+  useEffect(() => {
 
     const fetchDriverWorkTypeData = async () => {
       try {
         const response = await fetchDriverWorkType();
         if (response.status === 200) {
           const workTypedata = response.data;
-          console.log("tt", response);
           setdriverWorkTypeDatas(workTypedata);
           const dataTypeArr = [
             {
@@ -153,7 +166,6 @@ const AdminDriverPickModal = forwardRef<
     };
 
     fetchDriverWorkTypeData();
-    fetchDriverData();
   }, [params]);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
@@ -210,7 +222,7 @@ const AdminDriverPickModal = forwardRef<
               />
             </div>
 
-            {filteredDrivers.length > 0 ? (
+            { filteredDrivers.length > 0  &&
               <div className="relative w-full">
                 <div className="relative">
                   {/* Left Arrow */}
@@ -293,18 +305,22 @@ const AdminDriverPickModal = forwardRef<
                   ))}
                 </div>
               </div>
-            ) : (
+}
+
+              { (filteredDrivers.length <= 0 && drivers.length > 0) &&
               <EmptyDriver
                 imgSrc="/assets/img/empty/search_not_found.png"
                 title="ไม่พบข้อมูล"
                 desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
               />
-            )}
+            }
+            
 
-            {drivers.length <= 0 && (
+            {drivers.length === 0 && (
               <EmptyDriver
                 imgSrc="/assets/img/empty/empty_driver.svg"
                 title="ไม่พบพนักงานขับรถ"
+                reqId={reqId}
                 desc={
                   <>
                     ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
@@ -313,6 +329,8 @@ const AdminDriverPickModal = forwardRef<
                   </>
                 }
                 button="ค้นหานอกสังกัด"
+                onCloseParentModal={() => modalRef.current?.close()} 
+                onOpenParentModal={() => modalRef.current?.showModal()}
               />
             )}
           </div>
