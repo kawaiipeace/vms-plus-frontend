@@ -7,7 +7,6 @@ import VehicleUserModal from "@/components/modal/vehicleUserModal";
 import ReferenceModal from "@/components/modal/referenceModal";
 import DisbursementModal from "@/components/modal/disbursementModal";
 import ApproverModal from "@/components/modal/approverModal";
-import ApproveRequestModal from "@/components/modal/approveRequestModal";
 import CarDetailCard from "@/components/card/carDetailCard";
 import DriverSmallInfoCard from "@/components/card/driverSmallInfoCard";
 import JourneyDetailCard from "@/components/card/journeyDetailCard";
@@ -95,7 +94,6 @@ Props) {
         const fetchVehicleDetailData = async () => {
           try {
             if (parsedData?.vehicleSelect) {
-              // Ensure parsedData is an object before accessing vehicleSelect
               const response = await fetchVehicleDetail(
                 parsedData.vehicleSelect
               );

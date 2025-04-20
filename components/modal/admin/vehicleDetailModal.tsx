@@ -33,19 +33,21 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
 
     // Fetch vehicle details when component mounts
     useEffect(() => {
-      const fetchVehicleDetailData = async () => {
-        try {
-          const response = await fetchVehicleDetail(vehicleId);
+      if (vehicleId) {
+        const fetchVehicleDetailData = async () => {
+          try {
+            const response = await fetchVehicleDetail(vehicleId);
 
-          if (response.status === 200) {
-            setVehicleDetail(response.data ?? {});
+            if (response.status === 200) {
+              setVehicleDetail(response.data ?? {});
+            }
+          } catch (error) {
+            console.error("Error fetching vehicle details:", error);
           }
-        } catch (error) {
-          console.error("Error fetching vehicle details:", error);
-        }
-      };
+        };
 
-      fetchVehicleDetailData();
+        fetchVehicleDetailData();
+      }
     }, [vehicleId]);
 
     // Image Handling
@@ -64,7 +66,7 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
 
       try {
         const response = await adminUpdateVehicle(payload);
-        console.log('resddd---',response);
+        console.log("resddd---", response);
         if (response) {
           modalRef.current?.close();
         }
