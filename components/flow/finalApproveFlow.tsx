@@ -63,9 +63,9 @@ export default function FinalApproveFlow() {
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
-      "40": { iconName: "check", status: "success" },
+      "40": { iconName: "schedule", status: "info" },
       "41": { iconName: "check", status: "success" },
-      "50": { iconName: "vpn_key", status: "info" },
+      "50": { iconName: "check", status: "success" },
       "51": { iconName: "vpn_key", status: "info" },
       "60": { iconName: "directions_car", status: "info" },
       "70": { iconName: "build", status: "warning" },
@@ -204,7 +204,6 @@ export default function FinalApproveFlow() {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
-          console.log('summ---',summary);
           setDataRequest(requestList);
           setSummary(summary);
           setPagination({

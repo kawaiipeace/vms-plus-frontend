@@ -3436,6 +3436,14 @@
 .alert.alert-success i {
   font-size: 20px;
 }
+.light-mode .alert.alert-success {
+  background-color: #ECFDF3;
+  border-color: #ABEFC6;
+}
+.dark-mode .alert.alert-success {
+  background-color: #ECFDF3;
+  border-color: #ABEFC6;
+}
 .light-mode .alert.alert-success i {
   color: #079455;
 }

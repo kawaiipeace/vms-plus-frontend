@@ -59,9 +59,7 @@ export default function RequestDetailForm({
 
   const fetchRequestDetailfunc = async () => {
     try {
-      // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestDetail(requestId);
-      console.log("data---", response.data);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -91,8 +89,8 @@ export default function RequestDetailForm({
         />
       )}
 
-      {requestData?.ref_request_status_name == "อนุมัติ" && (
-        <AlertCustom title="คำขอใช้ยานพาหนะนี้ถูกอนุมัติแล้ว" desc={""} />
+      {requestData?.ref_request_status_name == "อนุมัติแล้ว" && (
+        <AlertCustom title="คำขอใช้ยานพาหนะนี้ถูกอนุมัติแล้ว" status="success" desc={""} />
       )}
 
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">

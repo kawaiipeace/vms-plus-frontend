@@ -52,7 +52,7 @@ const ApproveRequestModal = forwardRef<
                   res.data.result?.request_no
               )
             : router.push(
-                "/vehicle-booking/request-list?approve-req=success&request-id=" +
+                "/administrator/booking-final?approve-req=success&request-id=" +
                   res.data.result?.request_no
               );
         }
