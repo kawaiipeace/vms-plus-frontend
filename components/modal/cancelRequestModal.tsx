@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminCancelRequest } from "@/services/bookingAdmin";
+import { finalCancelRequest } from "@/services/bookingFinal";
 
 interface Props {
   id: string;
@@ -61,6 +62,8 @@ const CancelRequestModal = forwardRef<
             ? await firstApprovercancelRequest(payload)
             : role === "admin"
             ? await adminCancelRequest(payload)
+            : role === "final"
+            ? await finalCancelRequest(payload)
             : await cancelRequest(payload);
         const data = res.data;
         if (data) {
@@ -71,9 +74,14 @@ const CancelRequestModal = forwardRef<
                 "/administrator/booking-approver?cancel-req=success&request-id=" +
                   data.result?.request_no
               )
-            :  role === "admin"
+            : role === "admin"
             ? router.push(
                 "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              )
+            : role === "final"
+            ? router.push(
+                "/administrator/booking-final?cancel-req=success&request-id=" +
                   data.result?.request_no
               )
             : router.push(

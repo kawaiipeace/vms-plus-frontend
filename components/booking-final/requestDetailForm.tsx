@@ -1,18 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
-  ApproverModal,
-  DisbursementModal,
-  JourneyDetailModal,
-  EditDriverAppointmentModal,
-  ReferenceModal,
-  VehiclePickModel,
-  VehicleUserModal,
-  SendbackRequestModal,
   AppointmentDriverCard,
   ApproveProgress,
   CarDetailCard,
-  ChooseDriverCard,
   DisburstmentCard,
   DriverPeaInfoCard,
   DriverSmallInfoCard,
@@ -23,17 +14,14 @@ import {
 import AlertCustom from "@/components/alertCustom";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import ChooseVehicleCard from "../card/chooseVehicleCard";
-import { fetchRequestDetail } from "@/services/bookingAdmin";
+import { fetchRequestDetail } from "@/services/bookingFinal";
 
 interface RequestDetailFormProps {
   requestId: string;
-  editable?: boolean;
 }
 
 export default function RequestDetailForm({
   requestId,
-  editable,
 }: RequestDetailFormProps) {
   const editDriverAppointmentModalRef = useRef<{
     openModal: () => void;
@@ -105,14 +93,6 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-              {editable && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => vehicleUserModalRef.current?.openModal()}
-                >
-                  แก้ไข
-                </button>
-              )}
             </div>
             <VehicleUserInfoCard
               id={requestData?.vehicle_user_emp_id || ""}
@@ -125,14 +105,6 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-              {editable && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => journeyDetailModalRef.current?.openModal()}
-                >
-                  แก้ไข
-                </button>
-              )}
             </div>
 
             <JourneyDetailCard
@@ -163,16 +135,6 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
-              {editable && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() =>
-                    editDriverAppointmentModalRef.current?.openModal()
-                  }
-                >
-                  แก้ไข
-                </button>
-              )}
             </div>
 
             <AppointmentDriverCard
@@ -184,14 +146,6 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
-              {editable && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                  onClick={() => referenceModalRef.current?.openModal()}
-                >
-                  แก้ไข
-                </button>
-              )}
             </div>
 
             <ReferenceCard
@@ -203,16 +157,6 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
-              {editable && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                  data-toggle="modal"
-                  data-target="#editDisbursementModal"
-                  onClick={() => disbursementModalRef.current?.openModal()}
-                >
-                  แก้ไข
-                </button>
-              )}
             </div>
             {requestData?.ref_cost_type_code && (
               <DisburstmentCard
@@ -235,16 +179,6 @@ export default function RequestDetailForm({
                   <div className="form-section-header-title">ยานพาหนะ</div>
                 </div>
 
-                {requestData?.is_admin_choose_vehicle === "1" && (
-                  <ChooseVehicleCard
-                    reqId={requestData?.trn_request_uid}
-                    vehicleType={requestData?.request_vehicle_type}
-                    typeName={
-                      requestData.request_vehicle_type.ref_vehicle_type_name
-                    }
-                    chooseVehicle={editable && true}
-                  />
-                )}
                 {requestData?.is_system_choose_vehicle === "1" && (
                   <div className="card card-section-inline mt-5 mb-5">
                     <div className="card-body card-body-inline">
@@ -269,16 +203,6 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {editable && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
                         </div>
 
                         <div className="card-item-group d-flex">
@@ -303,17 +227,10 @@ export default function RequestDetailForm({
                       reqId={requestData?.trn_request_uid}
                       vehicle={requestData?.vehicle}
                       seeDetail={true}
-                      selectVehicle={true}
                     />
                   )}
 
-                {requestData?.is_admin_choose_driver && (
-                  <ChooseDriverCard
-                    reqId={requestData?.trn_request_uid}
-                    number={requestData?.number_of_available_drivers}
-                    chooseDriver={editable && true}
-                  />
-                )}
+            
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5 w-full overflow-hidden">
@@ -340,7 +257,6 @@ export default function RequestDetailForm({
                         driverDetail={requestData?.driver}
                         showPhone={true}
                         seeDetail={true}
-                        selectDriver={true}
                       />
                     </div>
                   )
@@ -350,61 +266,7 @@ export default function RequestDetailForm({
           </div>
         </div>
       </div>
-      <EditDriverAppointmentModal
-        ref={editDriverAppointmentModalRef}
-        role="admin"
-        requestData={requestData}
-        onUpdate={handleModalUpdate}
-      />
-      <VehiclePickModel
-        process="edit"
-        ref={vehiclePickModalRef}
-        requestData={requestData}
-        onUpdate={handleModalUpdate}
-      />
-      <JourneyDetailModal
-        ref={journeyDetailModalRef}
-        requestData={requestData}
-        role="admin"
-        onUpdate={handleModalUpdate}
-      />
-      <VehicleUserModal
-        requestData={requestData}
-        process="edit"
-        role="admin"
-        ref={vehicleUserModalRef}
-        onUpdate={handleModalUpdate}
-      />
-      <ReferenceModal
-        ref={referenceModalRef}
-        requestData={requestData}
-        role="admin"
-        onUpdate={handleModalUpdate}
-      />
-      <DisbursementModal
-        ref={disbursementModalRef}
-        requestData={requestData}
-        role="admin"
-        onUpdate={handleModalUpdate}
-      />
-
-      <SendbackRequestModal
-        id={String(requestData?.trn_request_uid)}
-        ref={sendbackRequestModalRef}
-        title={"ยืนยันการส่งคำขออีกครั้ง"}
-        desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
-        confirmText="ส่งคำขอ"
-      />
-      {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
-        <div className="form-action">
-          <button
-            className="btn btn-primary"
-            onClick={() => sendbackRequestModalRef.current?.openModal()}
-          >
-            ส่งคำขออีกครั้ง
-          </button>
-        </div>
-      )}
+     
     </>
   );
 }

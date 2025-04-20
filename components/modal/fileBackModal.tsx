@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { firstApproverSendbackRequest } from "@/services/bookingApprover";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminSendbackRequest } from "@/services/bookingAdmin";
+import { finalSendbackRequest } from "@/services/bookingFinal";
 
 interface Props {
   id: string;
@@ -59,6 +60,8 @@ const FileBackRequestModal = forwardRef<
             ? await firstApproverSendbackRequest(payload)
             : role === "admin"
             ? await adminSendbackRequest(payload)
+            : role === "final"
+            ? await finalSendbackRequest(payload)
             : await firstApproverSendbackRequest(payload);
         const data = res.data;
         if (data) {
@@ -74,6 +77,11 @@ const FileBackRequestModal = forwardRef<
                 "/administrator/request-list?sendback-req=success&request-id=" +
                   data.result?.request_no
               )
+              : role === "final"
+              ? router.push(
+                  "/administrator/booking-final?sendback-req=success&request-id=" +
+                    data.result?.request_no
+                )
             : router.push(
                 "/vehicle-booking/request-list?sendback-req=success&request-id=" +
                   data.result?.request_no

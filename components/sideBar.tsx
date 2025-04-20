@@ -136,7 +136,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
                 { title: "ตรวจสอบและจัดการคำขอ", link: "/administrator/request-list" },
-                { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/final-approver" },
+                { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/booking-final" },
                 // { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },

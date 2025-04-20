@@ -1,4 +1,5 @@
 import { firstApproverApproveRequest } from "@/services/bookingApprover";
+import { finalApproveRequest } from "@/services/bookingFinal";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -40,7 +41,7 @@ const ApproveRequestModal = forwardRef<
         const res =
           role === "firstApprover"
             ? await firstApproverApproveRequest(payload)
-            : await firstApproverApproveRequest(payload);
+            : await finalApproveRequest(payload);
 
         if (res) {
           modalRef.current?.close();
