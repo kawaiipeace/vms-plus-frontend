@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
 import Image from "next/image";
@@ -66,7 +67,9 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
           <div className="flex flex-col">
             <div>{row.original.vehicle_user_emp_name}</div>
-            <div className="text-color-secondary text-xs">{row.original.vehicle_user_dept_sap_short}</div>
+            <div className="text-color-secondary text-xs">
+              {row.original.vehicle_user_dept_sap_short}
+            </div>
           </div>
         </div>
       ),
@@ -89,7 +92,9 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
               <div className="text-left">
                 {row.original.vehicle_license_plate}
               </div>
-              <div className="text-color-secondary text-xs">{row.original.ref_vehicle_type_name}</div>
+              <div className="text-color-secondary text-xs">
+                {row.original.ref_vehicle_type_name}
+              </div>
             </div>
           )}
         </div>
@@ -106,7 +111,9 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
             <div className="text-left">
               {row.original.vehicle_department_dept_sap_short}
             </div>
-            <div className="text-color-secondary text-xs">{row.original.vehicle_department_dept_sap_short}</div>
+            <div className="text-color-secondary text-xs">
+              {row.original.vehicle_department_dept_sap_short}
+            </div>
           </div>
         </div>
       ),
@@ -145,7 +152,9 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
               </div>
               <div>
                 <div className="text-left">{row.original.driver_name}</div>
-                <div className="text-color-secondary text-xs">{row.original.driver_dept_name}</div>
+                <div className="text-color-secondary text-xs">
+                  {row.original.driver_dept_name}
+                </div>
               </div>
             </div>
           )}
@@ -177,7 +186,11 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
           <div className="text-left" data-name="วันที่เดินทาง">
             <div className="flex flex-col">
               <div>{startDateTime.date + " - " + endDateTime.date}</div>
-              <div className="text-color-secondary text-xs"> {endDateTime.time + " - " + startDateTime.time} ({row.original.trip_type_name})</div>
+              <div className="text-color-secondary text-xs">
+                {" "}
+                {endDateTime.time + " - " + startDateTime.time} (
+                {row.original.trip_type_name})
+              </div>
             </div>
           </div>
         );
@@ -305,7 +318,20 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
     <div className="w-full py-4 pt-0">
       {!isLoading && (
         <>
-          <DataTable table={table} />
+          <DataTable
+            table={table}
+            onRowClick={(row) => {
+
+              const status = row.ref_request_status_name;
+              const uid = row.trn_request_uid;
+              console.log("row clicked", { status, uid }); 
+              if (status === "รออนุมัติ") {
+                router.push(`/administrator/request-list/${uid}/edit`);
+              } else {
+                router.push(`/administrator/request-list/${uid}`);
+              }
+            }}
+          />
         </>
       )}
     </div>

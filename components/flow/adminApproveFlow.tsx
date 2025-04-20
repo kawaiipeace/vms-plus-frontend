@@ -390,7 +390,7 @@ export default function AdminApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <AdminListTable defaultData={dataRequest} pagination={pagination} />
+            <AdminListTable defaultData={dataRequest} pagination={pagination}  />
           </div>
 
           <PaginationControls

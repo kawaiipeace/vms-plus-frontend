@@ -66,7 +66,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
                   className={`hover:bg-base-200 ${
                     onRowClick ? "cursor-pointer" : ""
                   }`}
-                  onClick={() => onRowClick?.(row.original)}
+                  onClick={() => {onRowClick?.(row.original)}}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-3 border-b">
