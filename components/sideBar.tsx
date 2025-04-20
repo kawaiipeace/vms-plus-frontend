@@ -40,6 +40,13 @@ export default function SideBar({ menuName }: SidebarProps) {
     }
   }, [menuName]);
 
+  useEffect(() => {
+    if (isPinned) {
+      setIsExpanded(true);
+    }
+  }, [isPinned]);
+  
+
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
       prev.includes(menuId)
