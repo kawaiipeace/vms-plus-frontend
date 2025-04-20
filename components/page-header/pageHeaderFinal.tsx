@@ -48,9 +48,7 @@ export default function PageHeaderFinal({ data, editable }: Props) {
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="/administrator/booking-final">
-              อนุมัติใช้ยานพาหนะ
-            </Link>
+            <Link href="/administrator/booking-final">อนุมัติใช้ยานพาหนะ</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             เลขที่คำขอ {data?.request_no || ""}
@@ -93,6 +91,10 @@ export default function PageHeaderFinal({ data, editable }: Props) {
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
                 {data?.ref_request_status_name}
               </span>
+            ) : data?.ref_request_status_name === "ตีกลับ" ? (
+              <span className="badge badge-pill-outline badge-warning">
+                {data?.ref_request_status_name}
+              </span>
             ) : (
               <span className="badge badge-pill-outline badge-info">
                 {data?.ref_request_status_name}
@@ -130,7 +132,11 @@ export default function PageHeaderFinal({ data, editable }: Props) {
               </Link>
 
               <div className="divider py-0 my-0"></div>
-              <Link className="dropdown-item" href="#" onClick={() => cancelRequestModalRef.current?.openModal()}>
+              <Link
+                className="dropdown-item"
+                href="#"
+                onClick={() => cancelRequestModalRef.current?.openModal()}
+              >
                 <i className="material-symbols-outlined">delete</i>
                 ยกเลิกคำขอ
               </Link>

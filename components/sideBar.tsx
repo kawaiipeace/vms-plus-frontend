@@ -50,7 +50,7 @@ export default function SideBar({ menuName }: SidebarProps) {
 
   return (
     <div
-      className={`sidebar z-10 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
+      className={`sidebar !z-50 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
         isExpanded || isPinned
           ? "w-[280px] min-w-[280px] max-w-[280px]"
           : "w-[80px]"

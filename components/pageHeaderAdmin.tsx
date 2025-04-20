@@ -55,7 +55,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
   };
 
   return (
-    <div className="page-header w-full">
+    <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
@@ -105,8 +105,12 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
-            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
+            ) : (data?.ref_request_status_name === "ยกเลิกคำขอ") ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
+                {data?.ref_request_status_name}
+              </span>
+            ) : (data?.ref_request_status_name === "ตีกลับ") ? (
+              <span className="badge badge-pill-outline badge-warning">
                 {data?.ref_request_status_name}
               </span>
             ) : (
