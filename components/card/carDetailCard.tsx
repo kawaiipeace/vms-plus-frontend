@@ -103,7 +103,7 @@ export default function CarDetailCard({
             <div className="flex gap-3">
               <button
                 className={`btn ${
-                  selectVehicle ? "btn-secondary" : "btn-default"
+                  selectVehicle ? "btn-secondary" : "btn-secondary"
                 } flex-1`}
                 onClick={() => vehicleDetailModalRef.current?.openModal()}
               >

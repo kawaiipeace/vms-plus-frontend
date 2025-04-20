@@ -15,6 +15,8 @@ import AlertCustom from "@/components/alertCustom";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { fetchRequestDetail } from "@/services/bookingFinal";
+import PickupKeyDetailCard from "@/components/card/pickupKeyDetailCard";
+import DriverWorkCard from "../card/driverWorkCard";
 
 interface RequestDetailFormProps {
   requestId: string;
@@ -88,6 +90,11 @@ export default function RequestDetailForm({
           desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
         />
       )}
+
+      {requestData?.ref_request_status_name == "อนุมัติ" && (
+        <AlertCustom title="คำขอใช้ยานพาหนะนี้ถูกอนุมัติแล้ว" desc={""} />
+      )}
+
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
           <div className="form-section">
@@ -230,12 +237,10 @@ export default function RequestDetailForm({
                     />
                   )}
 
-            
-
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5 w-full overflow-hidden">
                     <DriverPeaInfoCard
-                      role="admin"
+                      role="final"
                       driver_emp_id={requestData?.driver_emp_id}
                       driver_emp_name={requestData?.driver_emp_name}
                       driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
@@ -252,21 +257,33 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
-                      <DriverSmallInfoCard
+                      <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
+                        </div>
+                      </div>
+
+                      <DriverWorkCard
                         reqId={requestData?.trn_request_uid}
+                        id={requestData?.mas_carpool_driver_uid}
                         driverDetail={requestData?.driver}
-                        showPhone={true}
                         seeDetail={true}
                       />
                     </div>
                   )
                 )}
+                <div className="mt-5">
+                  <PickupKeyDetailCard
+                    receiveKeyPlace={requestData?.received_key_place}
+                    receiveKeyStart={requestData?.received_key_start_datetime}
+                    receiveKeyEnd={requestData?.received_key_end_datetime}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-     
     </>
   );
 }

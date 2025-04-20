@@ -3,7 +3,6 @@ import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import FileBackRequestModal from "@/components/modal/fileBackModal";
 import { useRef, useState } from "react";
-import KeyPickupModal from "@/components/modal/keyPickUpModal";
 import ApproveRequestModal from "@/components/modal/approveRequestModal";
 
 interface Props {
@@ -49,8 +48,8 @@ export default function PageHeaderFinal({ data, editable }: Props) {
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="/administrator/booking-approver">
-              อนุมัติขอคำใช้และใบอนุญาต
+            <Link href="/administrator/booking-final">
+              อนุมัติใช้ยานพาหนะ
             </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
@@ -131,7 +130,7 @@ export default function PageHeaderFinal({ data, editable }: Props) {
               </Link>
 
               <div className="divider py-0 my-0"></div>
-              <Link className="dropdown-item" href="#">
+              <Link className="dropdown-item" href="#" onClick={() => cancelRequestModalRef.current?.openModal()}>
                 <i className="material-symbols-outlined">delete</i>
                 ยกเลิกคำขอ
               </Link>

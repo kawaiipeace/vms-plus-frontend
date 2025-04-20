@@ -5,9 +5,9 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import PageHeaderAdmin from "@/components/pageHeaderAdmin";
-import { fetchRequestDetail } from "@/services/bookingAdmin";
-import RequestDetailTabs from "@/components/admin/requestDetailTab";
+import { fetchRequestDetail } from "@/services/bookingFinal";
+import PageHeaderFinal from "@/components/page-header/pageHeaderFinal";
+import RequestDetailTabs from "@/components/booking-final/requestDetailTab";
 
 
 export default function RequestDetail() {
@@ -38,7 +38,7 @@ export default function RequestDetail() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="ตรวจสอบและจัดการคำขอ" />
+        <SideBar menuName="อนุมัติใช้ยานพาหนะ" />
 
         <div
           className={`main-content ${
@@ -47,7 +47,7 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeaderAdmin data={requestData} />}
+          {requestData && <PageHeaderFinal data={requestData} />}
             <RequestDetailTabs requestId={request_id} />
           </div>
         </div>

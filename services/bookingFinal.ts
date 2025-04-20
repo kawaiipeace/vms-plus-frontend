@@ -64,7 +64,7 @@ export const finalSendbackRequest = async (data: SendbackRequestType) => {
   }
 }
 
-export const finalApproveRequest = async (data: VerifyRequestType) => {
+export const finalApproveRequest = async (data: any) => {
   try {
     const response = await axiosInstance.put('booking-final/update-approved',  data );
     return response;

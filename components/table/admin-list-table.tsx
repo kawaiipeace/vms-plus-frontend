@@ -109,10 +109,10 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
           <div className="flex flex-col">
             {" "}
             <div className="text-left">
-              {row.original.vehicle_department_dept_sap_short}
+              {row.original.vehicle_dept_name}
             </div>
             <div className="text-color-secondary text-xs">
-              {row.original.vehicle_department_dept_sap_short}
+              {row.original.vehicle_carpool_name}
             </div>
           </div>
         </div>

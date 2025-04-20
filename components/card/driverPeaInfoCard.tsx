@@ -105,7 +105,7 @@ export default function DriverPeaInfoCard({
         {seeDetail && (
           <div className="card-actions w-full">
             <button
-              className="btn btn-default w-full"
+              className="btn btn-secondary w-full"
               onClick={
                 userKeyPickup
                   ? () => userKeyPickUpModalRef.current?.openModal()
@@ -118,7 +118,7 @@ export default function DriverPeaInfoCard({
         )}
       </div>
 
-      <PeaDriverInfoModal ref={driverInfoModalRef} role="admin" id={driver_emp_id} />
+      <PeaDriverInfoModal ref={driverInfoModalRef} role={role} id={driver_emp_id} />
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>
   );

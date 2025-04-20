@@ -146,7 +146,11 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               </Link>
 
               <div className="divider py-0 my-0"></div>
-              <Link className="dropdown-item" href="#">
+              <Link
+                className="dropdown-item"
+                href="#"
+                onClick={() => cancelRequestModalRef.current?.openModal()}
+              >
                 <i className="material-symbols-outlined">delete</i>
                 ยกเลิกคำขอ
               </Link>

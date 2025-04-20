@@ -65,7 +65,7 @@ export default function ApproveRequest() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="ตรวจสอบและจัดการคำขอ" />
+        <SideBar menuName="อนุมัติใช้ยานพาหนะ" />
 
         <div
           className={`main-content ${
