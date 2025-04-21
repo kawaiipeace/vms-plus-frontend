@@ -23,7 +23,7 @@ export default function ArpproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
-    ref_request_status_code: "20,21,30,31",
+    ref_request_status_code: "",
     order_by: "request_no",
     order_dir: "desc",
     startdate: "",
@@ -61,9 +61,15 @@ export default function ArpproveFlow() {
     {
       "20": { iconName: "schedule", status: "info" },
       "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "check", status: "success" },
-      "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
+      "31": { iconName: "schedule", status: "info" },
+      "40": { iconName: "schedule", status: "info" },
+      "41": { iconName: "schedule", status: "info" },
+      "50": { iconName: "key", status: "info" },
+      "51": { iconName: "key", status: "info" },
+      "60": { iconName: "key", status: "info" },
+      "70": { iconName: "key", status: "info" },
+      "71": { iconName: "key", status: "info" },
+      "80": { iconName: "check", status: "success" },
       "90": { iconName: "delete", status: "default" },
     };
 
@@ -181,7 +187,7 @@ export default function ArpproveFlow() {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
-
+            console.log('sum',summary);
           setDataRequest(requestList);
           setSummary(summary);
           setPagination({

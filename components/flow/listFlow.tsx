@@ -13,19 +13,18 @@ interface Props {
 }
 
 export default function ListFlow({ requestData }: Props) {
+  const [travelLogSubmitted, setTravelLogSubmitted] = useState(false);
+  const [carReturned, setCarReturned] = useState(false);
 
-    const [travelLogSubmitted, setTravelLogSubmitted] = useState(false);
-    const [carReturned, setCarReturned] = useState(false);
-  
-    const handleReviewCar = () => {
-      console.log("Reviewing car drive...");
-    };
-  
-    const handleReturnCar = () => {
-      console.log("Returning the car...");
-      setCarReturned(true); // Simulate car return
-    };
-    
+  const handleReviewCar = () => {
+    console.log("Reviewing car drive...");
+  };
+
+  const handleReturnCar = () => {
+    console.log("Returning the car...");
+    setCarReturned(true); // Simulate car return
+  };
+
   return (
     <>
       {requestData.map((request, index) => {
@@ -38,11 +37,15 @@ export default function ListFlow({ requestData }: Props) {
               id={request.trn_request_uid}
               imageSrc="/assets/img/graphic/status_waiting_approval.png"
               imageAlt="Waiting Approval"
-              cardTitle={request.ref_request_status_name || "สถานะไม่ระบุ"}
+              cardTitle={request.ref_request_status_name || "รออนุมัติ"}
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
-                request.work_place || "ไม่ทราบสถานที่ปฏิบัติงาน",
-                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${convertToBuddhistDateTime(request.end_datetime).date || "-"}`,
+                request.work_place || "-",
+                `${
+                  convertToBuddhistDateTime(request.start_datetime).date || "-"
+                } - ${
+                  convertToBuddhistDateTime(request.end_datetime).date || "-"
+                }`,
               ]}
               cardItemText={request?.ref_request_status_name}
             />
@@ -59,8 +62,12 @@ export default function ListFlow({ requestData }: Props) {
               cardTitle={request.ref_request_status_name || "ถูกตีกลับ"}
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
-                request.work_place || "ไม่ทราบสถานที่ปฏิบัติงาน",
-                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${convertToBuddhistDateTime(request.end_datetime).date || "-"}`,
+                request.work_place || "-",
+                `${
+                  convertToBuddhistDateTime(request.start_datetime).date || "-"
+                } - ${
+                  convertToBuddhistDateTime(request.end_datetime).date || "-"
+                }`,
               ]}
               cardItemText={request?.ref_request_status_name}
               showEditButton={true}
@@ -68,7 +75,6 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        
         if (ref_request_status_name === "ยกเลิกคำขอ") {
           return (
             <MobileFileBackCard
@@ -76,11 +82,15 @@ export default function ListFlow({ requestData }: Props) {
               id={request.trn_request_uid}
               imageSrc="/assets/img/graphic/status_reject_request.png"
               imageAlt="Rejected Request"
-              cardTitle={request.ref_request_status_name || "ถูกตีกลับ"}
+              cardTitle={request.ref_request_status_name || "-"}
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
-                request.work_place || "ไม่ทราบสถานที่ปฏิบัติงาน",
-                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${convertToBuddhistDateTime(request.end_datetime).date || "-"}`,
+                request.work_place || "-",
+                `${
+                  convertToBuddhistDateTime(request.start_datetime).date || "-"
+                } - ${
+                  convertToBuddhistDateTime(request.end_datetime).date || "-"
+                }`,
               ]}
               cardItemText={request?.ref_request_status_name}
               showEditButton={true}
@@ -88,13 +98,28 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-
+        if (ref_request_status_name === "รับกุญแจ") {
+          return (
+            <MobileWaitForKeyCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_full
+              }
+              location={request?.work_place}
+              dateRange="01/01/2567 - 07/01/2567"
+              pickupLocation="อาคาร LED ชั้น 3"
+              pickupDate="28/12/2024"
+            />
+          );
+        }
 
         return null; // Skip rendering if status code doesn't match
       })}
 
-      
-{/* <MobileDriverCard
+      {/* <MobileDriverCard
   title="รอรับรถ"
   carRegis="กข 1234 กรุงเทพฯ"
   location="อาคาร A ชั้น 1"
@@ -127,5 +152,4 @@ export default function ListFlow({ requestData }: Props) {
       /> */}
     </>
   );
-  
 }

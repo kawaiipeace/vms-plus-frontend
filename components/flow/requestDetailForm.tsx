@@ -350,6 +350,12 @@ export default function RequestDetailForm({
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5">
+                     <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
+                        </div>
+                      </div>
+
                     <DriverPeaInfoCard
                       driver_emp_id={requestData?.driver_emp_id}
                       driver_emp_name={requestData?.driver_emp_name}
@@ -366,6 +372,12 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
+                       <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
+                        </div>
+                      </div>
+
                       <DriverSmallInfoCard driverDetail={requestData?.driver} showPhone={true} />
                     </div>
                   )

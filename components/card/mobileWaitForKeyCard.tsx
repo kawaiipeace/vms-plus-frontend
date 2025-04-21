@@ -60,24 +60,23 @@ export default function MobileWaitForKeyCard({
             <i className="material-symbols-outlined">location_on</i>
             <span className="card-item-text">{pickupLocation}</span>
           </div>
+          <div className="card-item"></div>
           <div className="card-item">
             <i className="material-symbols-outlined">calendar_month</i>
+            <span className="card-item-text">{pickupDate}</span>
+          </div>
+          <div className="card-item">
+            <i className="material-symbols-outlined">schedule</i>
             <span className="card-item-text">{pickupDate}</span>
           </div>
         </div>
 
         <div className="card-actions card-actions-column">
-          <button className="btn btn-secondary" onClick={() => router.push(`/request/${id}/travel-log`)}>
-            บันทึกเดินทาง
-          </button>
-          <button className="btn btn-secondary" onClick={() => router.push(`/request/${id}/fuel`)}>
-            เติมเชื้อเพลิง
-          </button>
-          <button className="btn btn-secondary" onClick={() => router.push(`/request/${id}/travel-card`)}>
-            บัตรเดินทาง
+          <button className="btn btn-secondary" onClick={() => router.push(`/vehicle-in-use/${id}/fuel`)}>
+          ดูนัดหมาย
           </button>
           <button className="btn btn-secondary" onClick={() => router.push(`/request/${id}/return`)}>
-            คืนยานพาหนะ{" "}
+            การรับกุญแจ
             <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">
               error
             </i>
