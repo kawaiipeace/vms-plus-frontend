@@ -84,10 +84,10 @@ const AdminDriverPickModal = forwardRef<
     };
 
     try {
-      const response = await adminUpdateDriver(payload);
-        if(response){
-          modalRef.current?.close();
-        }
+     await adminUpdateDriver(payload);
+        // if(response){
+        //   modalRef.current?.close();
+        // }
     } catch (error) {
       console.error("Network error:", error);
     }

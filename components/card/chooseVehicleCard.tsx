@@ -22,6 +22,7 @@ export default function ChooseVehicleCard({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
   return (
     <div className="card card-section-inline mt-5">
       <div className="card-body card-body-inline">
@@ -64,7 +65,7 @@ export default function ChooseVehicleCard({
           </div>
         )}
       </div>
-      <AdminVehiclePickModal reqId={reqId} vehicleType={vehicleType} ref={adminVehiclePickModalRef} />
+      <AdminVehiclePickModal reqId={reqId} vehicleType={vehicleType} typeName={typeName} ref={adminVehiclePickModalRef} />
     </div>
   );
 }

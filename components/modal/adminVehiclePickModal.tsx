@@ -31,6 +31,7 @@ interface Vehicle {
 interface Props {
   reqId?: string;
   vehicleType?: RequestVehicleType;
+  typeName?: string;
   onClickDetail?: (id: string) => void;
   onSelect?: (vehicle: string) => void;
   onUpdate?: (data: any) => void;
@@ -39,7 +40,7 @@ interface Props {
 const AdminVehiclePickModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onSelect, onUpdate,vehicleType, reqId, onClickDetail }, ref) => {
+>(({ onSelect, onUpdate,vehicleType, reqId, onClickDetail, typeName }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const hasReset = useRef(false);
 
@@ -58,6 +59,7 @@ const AdminVehiclePickModal = forwardRef<
 
   const [params, setParams] = useState({
     search: "",
+    category_code: ""
   });
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -110,10 +112,10 @@ const AdminVehiclePickModal = forwardRef<
     };
 
     try {
-      const response = await adminUpdateVehicle(payload);
-      if (response) {
-        modalRef.current?.close();
-      }
+       await adminUpdateVehicle(payload);
+      // if (response) {
+      //   modalRef.current?.close();
+      // }
     } catch (error) {
       console.error("Network error:", error);
     }
@@ -124,12 +126,14 @@ const AdminVehiclePickModal = forwardRef<
     label: string;
   }) => {
     setSelectedVehicleOption(selectedOption);
+    console.log('option',selectedOption);
     setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
   };
 
   const handleClearAllFilters = () => {
     setParams({
       search: "",
+      category_code: ""
     });
 
   };
@@ -184,7 +188,7 @@ const AdminVehiclePickModal = forwardRef<
     };
 
     fetchVehicleCarTypesData();
-  }, [params]);
+  }, []);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -234,7 +238,7 @@ const AdminVehiclePickModal = forwardRef<
               </div>
               <CustomSelectBadge
                 w="md:w-[17rem]"
-                vehicleType={vehicleType ? vehicleType?.ref_vehicle_type_name || "" : ""}
+                vehicleType={typeName}
                 options={vehicleCatOptions}
                 value={selectedVehicleOption}
                 onChange={handleVehicleTypeChange}
@@ -330,7 +334,7 @@ const AdminVehiclePickModal = forwardRef<
               </div>
             )}
 
-            {filteredVehicles.length <= 0 && vehicles.length > 0 && (
+            {vehicles.length <= 0 && (
               <ZeroRecord
                 imgSrc="/assets/img/empty/search_not_found.png"
                 title="ไม่พบข้อมูล"

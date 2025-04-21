@@ -51,21 +51,6 @@ export default function PickDriverCard({
 
   },[isSelected])
 
-  const handleSelect = async (id : string) => {
-    const payload: UpdateDriverType = {
-      mas_carpool_driver_uid: id,
-      trn_request_uid: reqId,
-    };
-
-    try {
-      
-      const response = await adminUpdateDriver(payload);
-      
-    } catch (error) {
-      console.error("Network error:", error);
-    }
-  }
-
 
   return (
     <div
@@ -118,7 +103,7 @@ export default function PickDriverCard({
         <div className="flex w-full gap-3">
           {seeDetail && (
             <button
-              className="btn btn-secondary w-50"
+              className="btn btn-secondary flex-1"
               onClick={() => {
                 onClickSeeDetail?.(id);
               }}
@@ -127,9 +112,7 @@ export default function PickDriverCard({
             </button>
           )}
           <button
-            className={`btn btn-primary ${
-              seeDetail === true ? "w-[50%]" : "w-full"
-            }`}
+            className={`btn btn-primary flex-1 ${isSelected ? 'hidden': 'block'}`}
             onClick={() => {
               onVehicleSelect(id)
             }}

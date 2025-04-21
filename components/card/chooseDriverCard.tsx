@@ -24,7 +24,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId }: Props)
 
   const seeDriverDetail = (id: string) => {
     setDriverId(id);
-    adminDriverPickModalRef.current?.closeModal();
+    // adminDriverPickModalRef.current?.closeModal();
     driverInfoModalRef.current?.openModal();
   };
 

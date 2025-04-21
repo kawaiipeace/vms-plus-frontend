@@ -66,17 +66,18 @@ export default function CustomSelectBadge({
         onClick={() => setIsOpen(!isOpen)}
       >
           { vehicleType &&
-          <div className="pr-2">
+          <div className="pr-2 flex gap-2">
           <span className="badge badge-pill-outline badge-active bg-brand-100 !border-brand-200 whitespace-nowrap !rounded-md text-brand-800">
             ผู้ใช้เลือก
           </span>
+          {vehicleType}
           </div>
            }
         
      
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {value?.label || "กรุณาเลือก"}
+          {/* {value?.label || "กรุณาเลือก"} */}
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">
@@ -87,6 +88,14 @@ export default function CustomSelectBadge({
       {/* Dropdown List */}
       {isOpen && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
+        <li>  { vehicleType &&
+          <div className="py-2 px-4 flex gap-2">
+          <span className="badge badge-pill-outline badge-active bg-brand-100 !border-brand-200 whitespace-nowrap !rounded-md text-brand-800">
+            ผู้ใช้เลือก
+          </span>
+           <span className="text-gray-700">{vehicleType}</span> 
+          </div>
+           }</li>
           {options.map((option) => (
             <li
               key={option.value}

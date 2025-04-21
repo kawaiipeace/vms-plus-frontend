@@ -32,6 +32,7 @@ export default function RequestTabs() {
       try {
         const response = await fetchMenus();
         const result = response.data;
+        console.log('tabs',result);
         setStatusData(result);
       } catch (error) {
         console.error("Error fetching status data:", error);

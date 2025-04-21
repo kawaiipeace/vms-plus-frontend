@@ -77,9 +77,9 @@ export default function SelectCarCard({
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="flex items-center gap-3">
           <button
-            className="btn btn-secondary col-span-2"
+            className="btn btn-secondary flex-1"
             onClick={() => {
               onClickSeeDetail?.(vehicleId);
             }}
@@ -87,7 +87,7 @@ export default function SelectCarCard({
             ดูรายละเอียด
           </button>
           <button
-            className="btn btn-primary col-span-2"
+            className={`btn btn-primary flex-1 ${isSelected ? 'hidden': 'block'}`}
             onClick={() => onSelect(vehicleId)}
           >
             เลือก
