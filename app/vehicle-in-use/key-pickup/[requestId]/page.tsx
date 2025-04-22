@@ -1,14 +1,48 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import KeyPickupDetailTabs from "@/components/tabs/keyPickupDetailTab";
 import PageKeyPickupHeader from "@/components/page-header/pageKeyPickupHeader";
+import ToastCustom from "@/components/toastCustom";
 
+function RequestListContent() {
+  const searchParams = useSearchParams();
+  const createReq = searchParams.get("create-req");
+  const cancelReq = searchParams.get("cancel-req");
+  const requestId = searchParams.get("request-id");
+
+  return (
+    <>
+      {createReq === "success" && (
+        <ToastCustom
+          title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
+          desc="หลังจากนี้รอสถานะการอนุมัติจากต้นสังกัด"
+          status="success"
+          seeDetail={`/vehicle-booking/request-list/${requestId}`}
+          seeDetailText="ดูสถานะ"
+        />
+      )}
+      {cancelReq === "success" && (
+        <ToastCustom
+          title="ยกเลิกคำขอสำเร็จ"
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ถูกยกเลิกเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+    </>
+  );
+}
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
@@ -24,7 +58,7 @@ export default function RequestDetail() {
         try {
           const response = await requestDetail(request_id);
           setRequestData(response.data);
-          console.log('reqeustdetail',response.data);
+          console.log("reqeustdetail", response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }
@@ -46,12 +80,14 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageKeyPickupHeader data={requestData} />}
+            {requestData && <PageKeyPickupHeader data={requestData} />}
             <KeyPickupDetailTabs requestId={request_id} />
           </div>
         </div>
       </div>
-      
+      <Suspense fallback={<div></div>}>
+        <RequestListContent />
+      </Suspense>
     </div>
   );
 }

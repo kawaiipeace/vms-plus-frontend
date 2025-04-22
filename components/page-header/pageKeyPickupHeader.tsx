@@ -142,6 +142,7 @@ export default function PageKeyPickupHeader({
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
+        role="key"
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
         confirmText="ยกเลิกคำขอ"

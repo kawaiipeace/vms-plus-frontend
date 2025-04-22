@@ -66,7 +66,7 @@ export default function ArpproveFlow() {
       "41": { iconName: "schedule", status: "info" },
       "50": { iconName: "key", status: "info" },
       "51": { iconName: "key", status: "info" },
-      "60": { iconName: "key", status: "info" },
+      "60": { iconName: "directions_car", status: "info" },
       "70": { iconName: "key", status: "info" },
       "71": { iconName: "key", status: "info" },
       "80": { iconName: "check", status: "success" },

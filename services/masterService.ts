@@ -177,3 +177,22 @@ export const fetchVehicleDetail = async (id: string) => {
   }
 };
 
+export const fetchRequestKeyDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get('received-key-user/request/' + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const cancelKeyPickup = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-canceled/', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+

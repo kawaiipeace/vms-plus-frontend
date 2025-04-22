@@ -13,7 +13,7 @@ interface Props {
   requestId: string;
 }
 
-export default function KeyPickupDetailTabs({ requestId }: Props) {
+export default function KeyPickupEditTabs({ requestId }: Props) {
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -44,13 +44,14 @@ export default function KeyPickupDetailTabs({ requestId }: Props) {
     }));
   };
 
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await fetchLogs(requestUid, params);
         const requestList = response.data.logs;
         const { total, totalPages } = response.data;
-
+  
         setDataRequest(requestList);
         setPagination({
           limit: params.limit,
@@ -62,28 +63,29 @@ export default function KeyPickupDetailTabs({ requestId }: Props) {
         console.error("Error fetching requests:", error);
       }
     };
-
+  
     if (requestId) {
       fetchRequests();
     }
   }, [params, requestUid]);
 
+
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
-      content: <KeyPickUpDetailForm requestId={requestId} />,
+      content: <KeyPickUpDetailForm requestId={requestId} editable={true} />,
       constent: "",
       badge: "",
     },
     {
       label: "การรับกุญแจ",
-      content: <KeyPickUp requestId={requestId} />,
+      content: <KeyPickUp status="detail" />,
       constent: "",
       badge: "",
     },
     {
       label: "การนัดหมายเดินทาง",
-      content: <KeyPickUpAppointment requestId={requestId} />,
+      content: <KeyPickUpAppointment />,
       constent: "",
       badge: "",
     },
@@ -107,7 +109,7 @@ export default function KeyPickupDetailTabs({ requestId }: Props) {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full">
       <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button

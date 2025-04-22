@@ -167,7 +167,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               </button>
             )}
 
-            {statusValue == "รับกุญแจ" && (
+            {statusValue == "รอรับกุญแจ" && (
               <>
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"

@@ -1,22 +1,31 @@
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchVehicleUsers } from "@/services/masterService";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import { CallToDriverModal } from "../modal/callToDriverModal";
 
 interface Props {
   id: string;
   requestData?: RequestDetailType;
+  callable?: boolean;
 }
 
-export default function VehicleUserInfoCard({ id, requestData }: Props) {
+export default function VehicleUserInfoCard({
+  id,
+  requestData,
+  callable,
+}: Props) {
   const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
-
+  const callToDriverModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetchVehicleUsers(id);
-        console.log('vehicledata', res);
+        console.log("vehicledata", res);
         let user = res.data[0];
 
         // Override only contact numbers from requestData if available
@@ -54,7 +63,9 @@ export default function VehicleUserInfoCard({ id, requestData }: Props) {
             <div className="form-label">{vehicleUser?.full_name}</div>
             <div className="supporting-text-group">
               <div className="supporting-text">{vehicleUser?.emp_id}</div>
-              <div className="supporting-text">{vehicleUser?.dept_sap_short}</div>
+              <div className="supporting-text">
+                {vehicleUser?.dept_sap_short}
+              </div>
             </div>
           </div>
         </div>
@@ -64,7 +75,9 @@ export default function VehicleUserInfoCard({ id, requestData }: Props) {
               <div className="form-group form-plaintext">
                 <i className="material-symbols-outlined">smartphone</i>
                 <div className="form-plaintext-group">
-                  <div className="form-text text-nowrap">{vehicleUser?.tel_mobile}</div>
+                  <div className="form-text text-nowrap">
+                    {vehicleUser?.tel_mobile}
+                  </div>
                 </div>
               </div>
             </div>
@@ -74,14 +87,27 @@ export default function VehicleUserInfoCard({ id, requestData }: Props) {
                 <div className="form-group form-plaintext">
                   <i className="material-symbols-outlined">call</i>
                   <div className="form-plaintext-group">
-                    <div className="form-text text-nowrap">{vehicleUser?.tel_internal}</div>
+                    <div className="form-text text-nowrap">
+                      {vehicleUser?.tel_internal}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
+          {callable && (
+            <div className="flex w-full justify-end col-span-1">
+              <button
+                className="btn btn-primary"
+                onClick={() => callToDriverModalRef.current?.openModal()}
+              >
+                <i className="material-symbols-outlined">call</i>
+              </button>
+            </div>
+          )}
         </div>
       </div>
+      <CallToDriverModal ref={callToDriverModalRef} />
     </div>
   );
 }
