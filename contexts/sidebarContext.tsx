@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface SidebarContextProps {
   isPinned: boolean;
@@ -9,7 +9,19 @@ interface SidebarContextProps {
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
 export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isPinned, setIsPinned] = useState<boolean>(false);
+  const [isPinned, setIsPinnedState] = useState<boolean>(false);
+
+  useEffect(() => {
+    const storedPinned = localStorage.getItem("sidebar-pinned");
+    if (storedPinned !== null) {
+      setIsPinnedState(JSON.parse(storedPinned));
+    }
+  }, []);
+
+  const setIsPinned = (pinned: boolean) => {
+    setIsPinnedState(pinned);
+    localStorage.setItem("sidebar-pinned", JSON.stringify(pinned));
+  };
 
   return (
     <SidebarContext.Provider value={{ isPinned, setIsPinned }}>

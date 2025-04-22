@@ -17,7 +17,7 @@ export default function AutoCarCard({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
+console.log('tttttitle',title);
 
   return (
     <div className="card">
@@ -48,7 +48,7 @@ export default function AutoCarCard({
           </button>
         </div>
       </div>
-      <VehiclePickModel process="add" ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
+      <VehiclePickModel process="add" selectType={title} ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
     </div>
   );
 }

@@ -56,7 +56,7 @@ const RecordTravelTab = () => {
           </>
         )}
         <RecordTravelAddModal ref={recordTravelAddModalRef} />
-        <CancelRequestModal title="ยืนยันลบข้อมูลการเดินทาง" desc="ข้อมูลการเดินทางวันที่ 05/01/2567 08:00 จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" ref={cancelRequestModalRef} cancleFor="recordTravel" />
+        <CancelRequestModal title="ยืนยันลบข้อมูลการเดินทาง" desc="ข้อมูลการเดินทางวันที่ 05/01/2567 08:00 จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" ref={cancelRequestModalRef} cancleFor="recordTravel" id={""} />
         <ToastCustom title="เพิ่มข้อมูลการเดินทางสำเร็จ" desc="เพิ่มข้อมูลการเดินทางวันที่ 05/01/2567 เรียบร้อยแล้ว" status="success" styleText="!mx-auto" />
       </div>
     </>

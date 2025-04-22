@@ -6,15 +6,18 @@ interface Props {
 export default function DisburstmentCard({ refCostTypeCode }: Props) {
   const [costTypeData, setCostTypeData] = useState<any>();
   useEffect(() => {
-    const fetchCostTypeFromCodeFunc = async () => {
-      try {
-        const response = await fetchCodeTypeFromCode(refCostTypeCode || "");
-        setCostTypeData(response.data);
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    };
-    fetchCostTypeFromCodeFunc();
+    if(refCostTypeCode){
+      const fetchCostTypeFromCodeFunc = async () => {
+        try {
+          const response = await fetchCodeTypeFromCode(refCostTypeCode);
+          setCostTypeData(response.data);
+        } catch (error) {
+          console.error("API Error:", error);
+        }
+      };
+      fetchCostTypeFromCodeFunc();
+    }
+   
   }, [refCostTypeCode]);
 
   return (

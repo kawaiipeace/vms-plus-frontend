@@ -1,16 +1,72 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RequestDetailForm from "@/components/flow/requestDetailForm";
-import {
-  requestHistoryLog,
-  requestHistoryLogColumns,
-} from "@/data/requestHistory";
-import TableComponent from "@/components/table";
+import { LogType } from "@/app/types/log-type";
+import LogListTable from "@/components/table/log-list-table";
+import { PaginationType } from "@/app/types/request-action-type";
+import { fetchLogs } from "@/services/masterService";
+import PaginationControls from "../table/pagination-control";
 
 interface Props {
   requestId: string;
 }
 
 export default function RequestDetailTabs({ requestId }: Props) {
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 10,
+  });
+  const [requestUid] = useState(requestId);
+  const [dataRequest, setDataRequest] = useState<LogType[]>([]);
+  const [pagination, setPagination] = useState<PaginationType>({
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
+
+  const handlePageChange = (newPage: number) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
+  };
+
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1,
+    }));
+  };
+
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetchLogs(requestUid, params);
+        const requestList = response.data.logs;
+        const { total, totalPages } = response.data;
+  
+        setDataRequest(requestList);
+        setPagination({
+          limit: params.limit,
+          page: params.page,
+          total,
+          totalPages,
+        });
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+  
+    if (requestId) {
+      fetchRequests();
+    }
+  }, [params, requestUid]);
+
+
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
@@ -21,10 +77,16 @@ export default function RequestDetailTabs({ requestId }: Props) {
     {
       label: "ประวัติการดำเนินการ",
       content: (
-        <TableComponent
-          data={requestHistoryLog}
-          columns={requestHistoryLogColumns}
-        />
+        <>
+          <LogListTable defaultData={dataRequest} pagination={pagination} />
+          {dataRequest.length > 0 && (
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          )}
+        </>
       ),
       badge: "",
     },
@@ -33,7 +95,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist z-[10]">
+      <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}

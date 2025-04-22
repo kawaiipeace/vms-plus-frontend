@@ -10,6 +10,7 @@ import { SidebarProvider } from "@/contexts/sidebarContext";
 import { FormProvider } from "@/contexts/requestFormContext";
 import { ProfileProvider } from "@/contexts/profileContext";
 import Script from "next/script";
+import { RequestDetailProvider } from "@/contexts/requestDetailContext";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -33,10 +34,12 @@ export default function RootLayout({
       <body className="light-mode">
         <ProfileProvider>
           <SidebarProvider>
-            <FormProvider>{children}</FormProvider>
+            <RequestDetailProvider>
+              <FormProvider>{children}</FormProvider>
+            </RequestDetailProvider>
           </SidebarProvider>
         </ProfileProvider>
-        <Script id="env-config" src={'/env/env-config.js'} />
+        <Script id="env-config" src={"/env/env-config.js"} />
       </body>
     </html>
   );

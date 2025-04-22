@@ -6,6 +6,7 @@ import ImageUpload from "@/components/imageUpload";
 import ImagePreview from "@/components/imagePreview";
 import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
 import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
+import useSwipeDown from "@/utils/swipeDown";
 interface ReceiveCarVehicleModalProps {
   status?: string;
 }
@@ -47,11 +48,12 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
   const handleDeleteImage2 = (index: number) => {
     setImages2(images2.filter((_, i) => i !== index));
   };
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
           <div className="modal-body overflow-y-auto text-center !bg-white">
             <form>
               <div className="form-section">

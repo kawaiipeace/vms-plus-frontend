@@ -1,8 +1,33 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-export default function MobileWaitForKeyCard() {
+interface MobileWaitForKeyCardProps {
+  id?: string;
+  title?: string;
+  licensePlate: string;
+  location: string;
+  dateRange: string;
+  pickupLocation: string;
+  pickupDate: string;
+}
+
+export default function MobileWaitForKeyCard({
+  id,
+  title = "รอรับกุญแจ",
+  licensePlate,
+  location,
+  dateRange,
+  pickupLocation,
+  pickupDate,
+}: MobileWaitForKeyCardProps) {
+  const router = useRouter();
+
+  const goToDetail = () => {
+    router.push(`/request/${id}`);
+  };
+
   return (
-    <div className="card">
+    <div className="card cursor-pointer" onClick={goToDetail}>
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
@@ -10,25 +35,21 @@ export default function MobileWaitForKeyCard() {
               src="/assets/img/graphic/status_key_pickup.png"
               width={100}
               height={100}
-              alt=""
+              alt="status key pickup"
             />
           </div>
           <div className="card-content">
             <div className="card-content-top">
               <div className="card-title">
-                รอรับกุญแจ{" "}
+                {title}{" "}
                 <i className="material-symbols-outlined icon-settings-400-20">
                   keyboard_arrow_right
                 </i>
               </div>
-              <div className="card-subtitle">5กก 1234 กรุงเทพมหานคร</div>
+              <div className="card-subtitle">{licensePlate}</div>
               <div className="supporting-text-group supporting-text-column">
-                <div className="supporting-text text-truncate">
-                  การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด
-                </div>
-                <div className="supporting-text text-truncate">
-                  01/01/2567 - 07/01/2567
-                </div>
+                <div className="supporting-text text-truncate">{location}</div>
+                <div className="supporting-text text-truncate">{dateRange}</div>
               </div>
             </div>
           </div>
@@ -37,20 +58,25 @@ export default function MobileWaitForKeyCard() {
         <div className="card-item-group d-flex flex-column">
           <div className="card-item">
             <i className="material-symbols-outlined">location_on</i>
-            <span className="card-item-text">อาคาร LED ชั้น 3</span>
+            <span className="card-item-text">{pickupLocation}</span>
           </div>
+          <div className="card-item"></div>
           <div className="card-item">
             <i className="material-symbols-outlined">calendar_month</i>
-            <span className="card-item-text">28/12/2024</span>
+            <span className="card-item-text">{pickupDate}</span>
+          </div>
+          <div className="card-item">
+            <i className="material-symbols-outlined">schedule</i>
+            <span className="card-item-text">{pickupDate}</span>
           </div>
         </div>
 
         <div className="card-actions card-actions-column">
-          <button className="btn btn-secondary">บันทึกเดินทาง</button>
-          <button className="btn btn-secondary">เติมเชื้อเพลิง</button>
-          <button className="btn btn-secondary">บัตรเดินทาง</button>
-          <button className="btn btn-secondary">
-            คืนยานพาหนะ{" "}
+          <button className="btn btn-secondary" onClick={() => router.push(`/vehicle-in-use/${id}/fuel`)}>
+          ดูนัดหมาย
+          </button>
+          <button className="btn btn-secondary" onClick={() => router.push(`/request/${id}/return`)}>
+            การรับกุญแจ
             <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">
               error
             </i>

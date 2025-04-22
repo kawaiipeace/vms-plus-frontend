@@ -23,9 +23,9 @@ export default function RequestList() {
       content: (
         <>
           <MobileFileBackCard />
-          <MobileWaitForKeyCard />
+          <MobileWaitForKeyCard licensePlate={""} location={""} dateRange={""} pickupLocation={""} pickupDate={""} />
           <MobileWaitingCard />
-          <MobileRecordTravelCard reviewCarDrive={() => reviewCarDriveModalRef.current?.openModal()} returnCarAdd={() => returnCarAddModalRef.current?.openModal()} />
+          <MobileRecordTravelCard reviewCarDrive={() => reviewCarDriveModalRef.current?.openModal()} returnCarAdd={() => returnCarAddModalRef.current?.openModal()} id={""} />
         </>
       ),
       badge: "4",
@@ -99,7 +99,7 @@ export default function RequestList() {
             </div>
 
             <div className="w-full">
-              <div className="flex border-b tablist">
+            <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
                 {tabs.map((tab, index) => (
                   <button key={index} className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`} onClick={() => setActiveTab(index)}>
                     <div className="flex gap-2 items-center">

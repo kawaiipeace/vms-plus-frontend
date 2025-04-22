@@ -1,4 +1,10 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import TimePicker from "@/components/timePicker";
 import DatePicker from "@/components/datePicker";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -7,9 +13,14 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { convertToISO } from "@/utils/convertToISO";
 import FormHelper from "@/components/formHelper";
+import Image from "next/image";
+import { fetchDriverDetail, fetchDrivers } from "@/services/masterService";
+import { DriverType } from "@/app/types/driver-user-type";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface DriverAppointmentModalProps {
   id?: string;
+  onClickDetail?: string;
   onSubmit?: (date: string, time: string) => void;
 }
 
@@ -24,7 +35,7 @@ const schema = yup.object().shape({
 const DriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   DriverAppointmentModalProps // Props type
->(({ onSubmit }, ref) => {
+>(({ onSubmit, id, onClickDetail}, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { updateFormData } = useFormContext();
 
@@ -45,16 +56,40 @@ const DriverAppointmentModal = forwardRef<
 
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [driver, setDriver] = useState<DriverType>();
+  const [params] = useState({
+    name: "",
+    page: 1,
+    limit: 10,
+  });
 
   const handleDateChange = (dateStr: string) => {
     setSelectedDate(dateStr);
-    setValue("pickupDate", dateStr); 
+    setValue("pickupDate", dateStr);
   };
 
   const handleTimeChange = (dateStr: string) => {
     setSelectedTime(dateStr);
     setValue("pickupTime", dateStr);
   };
+
+  useEffect(() => {
+    if(id){
+      const fetchDriverData = async () => {
+        try {
+          const response = await fetchDriverDetail(String(id));
+          if (response.status === 200) {
+            setDriver(response.data);
+            console.log(response.data);
+          }
+        } catch (error) {
+          console.error("Error fetching requests:", error);
+        }
+      };
+      fetchDriverData();
+    }
+
+  },[id]);
 
   const onSubmitForm = (data: any) => {
     const pickup = convertToISO(selectedDate, selectedTime);
@@ -67,10 +102,13 @@ const DriverAppointmentModal = forwardRef<
     modalRef.current?.close();
   };
 
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
+
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -82,7 +120,42 @@ const DriverAppointmentModal = forwardRef<
           </form>
         </div>
         <div className="modal-body overflow-y-auto">
-          <form onSubmit={handleSubmit(onSubmitForm)} method="dialog" className="w-full">
+          {id && (
+            <div className="card !bg-surface-secondary-subtle mb-3 !border-0 shadow-none outline-none">
+              <div className="card-body border-0 shadow-none outline-none">
+                <div className="flex items-center gap-5">
+                  <div className="img img-square img-avatar">
+                    <Image
+                      src={`${driver?.driver_image || "/assets/img/avatar.svg"}`}
+                      className="rounded-md"
+                      width={64}
+                      height={64}
+                      alt={"driver"}
+                    />
+                  </div>
+                  <div className="card-content">
+                    <div className="card-content-top">
+                      <div className="card-title">{driver?.driver_name}</div>
+                      <div className="supporting-text-group">
+                        <div className="supporting-text">{driver?.driver_dept_sap}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="card-item w-full flex items-center gap-2">
+                  <i className="material-symbols-outlined text-brand-900">
+                    smartphone
+                  </i>
+                  <span className="card-item-text">{driver?.driver_contact_number}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <form
+            onSubmit={handleSubmit(onSubmitForm)}
+            method="dialog"
+            className="w-full"
+          >
             <div className="grid grid-cols-12 pb-5 gap-4">
               <div className="col-span-12">
                 <div className="form-group">
@@ -100,7 +173,9 @@ const DriverAppointmentModal = forwardRef<
                       {...register("pickupPlace")}
                     />
                   </div>
-                  {errors.pickupPlace && <FormHelper text={String(errors.pickupPlace.message)} />}
+                  {errors.pickupPlace && (
+                    <FormHelper text={String(errors.pickupPlace.message)} />
+                  )}
                 </div>
               </div>
 
@@ -110,12 +185,19 @@ const DriverAppointmentModal = forwardRef<
                   <div className="input-group">
                     <div className="input-group-prepend">
                       <span className="input-group-text">
-                        <i className="material-symbols-outlined">calendar_month</i>
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
                       </span>
                     </div>
-                    <DatePicker placeholder="01/01/2567" onChange={handleDateChange} />
+                    <DatePicker
+                      placeholder="01/01/2567"
+                      onChange={handleDateChange}
+                    />
                   </div>
-                  {errors.pickupDate && <FormHelper text={String(errors.pickupDate.message)} />}
+                  {errors.pickupDate && (
+                    <FormHelper text={String(errors.pickupDate.message)} />
+                  )}
                 </div>
               </div>
 
@@ -128,16 +210,25 @@ const DriverAppointmentModal = forwardRef<
                         <i className="material-symbols-outlined">schedule</i>
                       </span>
                     </div>
-                    <TimePicker onChange={handleTimeChange} placeholder="ระบุเวลานัดหมาย" />
+                    <TimePicker
+                      onChange={handleTimeChange}
+                      placeholder="ระบุเวลานัดหมาย"
+                    />
                   </div>
-                  {errors.pickupTime && <FormHelper text={String(errors.pickupTime.message)} />}
+                  {errors.pickupTime && (
+                    <FormHelper text={String(errors.pickupTime.message)} />
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="modal-action sticky bottom-0 gap-3 mt-0 w-full">
-              <button type="button" className="btn btn-secondary">ยกเลิก</button>
-              <button type="submit" className="btn btn-primary">ยืนยัน</button>
+              <button type="button" className="btn btn-secondary">
+                ยกเลิก
+              </button>
+              <button type="submit" className="btn btn-primary">
+                ยืนยัน
+              </button>
             </div>
           </form>
         </div>

@@ -21,9 +21,8 @@ export default function SideBar({ menuName }: SidebarProps) {
         setOpenMenus(["collapseLink2"]);
       } else if (
         [
-          "ตรวจสอบคำขอ",
+          "ตรวจสอบและจัดการคำขอ",
           "อนุมัติใช้ยานพาหนะ",
-          "ให้กุญแจและรับคืนยานพาหนะ",
         ].includes(menuName)
       ) {
         setOpenMenus(["collapseLink3"]);
@@ -41,6 +40,13 @@ export default function SideBar({ menuName }: SidebarProps) {
     }
   }, [menuName]);
 
+  useEffect(() => {
+    if (isPinned) {
+      setIsExpanded(true);
+    }
+  }, [isPinned]);
+  
+
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
       prev.includes(menuId)
@@ -51,7 +57,7 @@ export default function SideBar({ menuName }: SidebarProps) {
 
   return (
     <div
-      className={`sidebar z-10 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
+      className={`sidebar !z-50 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
         isExpanded || isPinned
           ? "w-[280px] min-w-[280px] max-w-[280px]"
           : "w-[80px]"
@@ -128,7 +134,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               label: "ระบบจองยานพาหนะ",
               items: [
                 { title: "คำขอใช้ยานพาหนะ", link: "/vehicle-booking/request-list" },
-                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/first-approver" },
+                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/booking-approver" },
               ],
             },
             {
@@ -136,9 +142,9 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                { title: "ตรวจสอบคำขอ", link: "/administrator" },
-                { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/final-approver" },
-                { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
+                { title: "ตรวจสอบและจัดการคำขอ", link: "/administrator/request-list" },
+                { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/booking-final" },
+                // { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },
             {

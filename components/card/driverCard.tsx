@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
+import DriverInfoModal from "../modal/driverInfoModal";
 
 export default function DriverCard({
   id,
@@ -10,7 +11,9 @@ export default function DriverCard({
   rating,
   age,
   company,
+  seeDetail,
   onVehicleSelect,
+  adminDriverPickModalRef,
 }: {
   id: string;
   imgSrc: string;
@@ -18,13 +21,22 @@ export default function DriverCard({
   rating: number;
   age: string;
   company: string;
+  seeDetail?: boolean;
   onVehicleSelect: (id: string) => void;
+  adminDriverPickModalRef?: React.RefObject<{
+    openModal: () => void;
+    closeModal: () => void;
+  }>;
 }) {
   const driverAppointmentRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  
+
+  const driverInfoModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const handleAppointmentSubmit = () => {
     onVehicleSelect(id);
@@ -46,37 +58,52 @@ export default function DriverCard({
           <div className="card-content-top">
             <div className="card-title">{name}</div>
             <div className="card-supporting-text-group">
-              <div className="card-supporting-text">{ company }</div>
+              <div className="card-supporting-text">{company}</div>
             </div>
           </div>
 
-          <div className="card-item-group">
+          <div className="card-item-group grid !grid-cols-2">
             <div className="card-item">
               <i className="material-symbols-outlined">star</i>
               <span className="card-item-text">{rating}</span>
             </div>
             <div className="card-item">
-              <i className="material-symbols-outlined">
-                person
-              </i>
+              <i className="material-symbols-outlined">person</i>
               <span className="card-item-text">{age}</span>
             </div>
           </div>
         </div>
-        <div className="w-full">
+        <div className="flex w-full gap-3">
+          {seeDetail && (
+            <button
+              className="btn btn-secondary w-50"
+              onClick={() => {
+                if (adminDriverPickModalRef) {
+                  adminDriverPickModalRef.current?.closeModal();
+                }
+
+                driverInfoModalRef.current?.openModal();
+              }}
+            >
+              ดูรายละเอียด
+            </button>
+          )}
           <button
-            className="btn btn-primary w-full"
+            className={`btn btn-primary ${
+              seeDetail === true ? "w-[50%]" : "w-full"
+            }`}
             onClick={() => driverAppointmentRef.current?.openModal()}
           >
             เลือก
           </button>
         </div>
       </div>
-      <DriverAppointmentModal 
-        ref={driverAppointmentRef} 
-        id={id} 
+      <DriverAppointmentModal
+        ref={driverAppointmentRef}
+        id={id}
         onSubmit={handleAppointmentSubmit}
       />
+      <DriverInfoModal ref={driverInfoModalRef} id={id} pickable={true} />
     </div>
   );
 }

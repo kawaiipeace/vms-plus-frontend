@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -10,9 +11,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { shortenFilename } from "@/utils/shortenFilename";
 import { uploadFile } from "@/services/masterService";
-import FormHelper from "../formHelper";
+import FormHelper from "@/components/formHelper";
+import { useRequestDetailContext } from "@/contexts/requestDetailContext";
+import { updateRef } from "@/services/bookingUser";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import useSwipeDown from "@/utils/swipeDown"; 
+import { adminUpdateRef } from "@/services/bookingAdmin";
+
+interface Payload {
+  reference_number: string;
+  trn_request_uid: string;
+  attached_document?: any;
+}
 
 interface RefProps {
+  requestData?: RequestDetailType;
+  role?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -24,18 +38,21 @@ const schema = yup.object().shape({
 const ReferenceModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   RefProps
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const hasReset = useRef(false);
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
-
   const { formData, updateFormData } = useFormContext();
   const [fileError, setFileError] = useState("");
   const [fileValue, setFileValue] = useState("");
 
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, reset, control } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -44,11 +61,23 @@ const ReferenceModal = forwardRef<
     },
   });
 
-  const [fileName, setFileName] = useState(
-    formData.attachmentFile
-      ? shortenFilename(formData.attachmentFile)
-      : "อัพโหลดเอกสารแนบ"
-  );
+  const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
+
+  useEffect(() => {
+    if (formData.attachmentFile) {
+      setFileName(shortenFilename(formData.attachmentFile));
+    }
+  }, [formData.attachmentFile]);
+
+  useEffect(() => {
+    if (requestData) {
+      reset({
+        referenceNumber: requestData?.reference_number,
+        attachmentFile: requestData?.attached_document,
+      });
+      hasReset.current = true;
+    }
+  }, [requestData, reset]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -60,37 +89,63 @@ const ReferenceModal = forwardRef<
     try {
       const response = await uploadFile(file);
       onChange(file);
-      setFileValue(response.file_url)
+      setFileValue(response.file_url);
       setFileName(shortenFilename(response.file_url));
-  
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
       setFileError(errorMessage);
     }
   };
 
-  const onSubmit = (data: any) => {
-    console.log("Submitted Data:", fileValue);
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      referenceNumber: data.referenceNumber,
-      attachmentFile: fileValue,
-    });
+  const onSubmit = async (data: any) => {
+    if (requestData) {
+      const payload: Payload = {
+        reference_number: data.referenceNumber,
+        trn_request_uid: requestData.trn_request_uid,
+      };
 
-    updateFormData({
-      referenceNumber: data.referenceNumber,
-      attachmentFile: fileValue,
-    });
+      if (fileValue) {
+        payload.attached_document = fileValue;
+      }
 
-    modalRef.current?.close();
+      try {
+        
+        const response = role === "admin" ? await adminUpdateRef(payload) : await updateRef(payload);
+        
+        console.log(response);
+        if (response) {
+          if (onUpdate) onUpdate(response.data);
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("Failed to update trip due to network error.");
+      }
+    } else {
+      if (onUpdate)
+        onUpdate({
+          ...data,
+          referenceNumber: data.referenceNumber,
+          attachmentFile: fileValue,
+        });
+
+      updateFormData({
+        referenceNumber: data.referenceNumber,
+        attachmentFile: fileValue,
+      });
+
+      modalRef.current?.close();
+    }
   };
+  
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
       <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet">
-          <div className="bottom-sheet-icon"></div>
+        <div className="bottom-sheet" {...swipeDownHandlers} >
+          <div className="bottom-sheet-icon" >
+          </div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">

@@ -495,7 +495,7 @@ export default function RequestForm() {
 
                 <div className="col-span-12 md:col-span-3 journey-time">
                   <div className="form-group">
-                    <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
+                    <label className="form-label">เวลาที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
                       <TimePicker
                         defaultValue={formData.timeEnd}

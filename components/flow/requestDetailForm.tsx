@@ -1,46 +1,43 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import JourneyDetailModal from "@/components/modal/journeyDetailModal";
-import VehiclePickModel from "@/components/modal/vehiclePickModal";
-import VehicleUserModal from "@/components/modal/vehicleUserModal";
-import ReferenceModal from "@/components/modal/referenceModal";
-import DisbursementModal from "@/components/modal/disbursementModal";
-import ApproverModal from "@/components/modal/approverModal";
+import {
+  ApproverModal,
+  DisbursementModal,
+  JourneyDetailModal,
+  EditDriverAppointmentModal,
+  ReferenceModal,
+  VehiclePickModel,
+  VehicleUserModal,
+  SendbackRequestModal,
+  AppointmentDriverCard,
+  ApproveProgress,
+  CarDetailCard,
+  ChooseDriverCard,
+  DisburstmentCard,
+  DriverPeaInfoCard,
+  DriverSmallInfoCard,
+  JourneyDetailCard,
+  ReferenceCard,
+  VehicleUserInfoCard,
+} from "@/components";
 import AlertCustom from "@/components/alertCustom";
-import ApproveRequestModal from "@/components/modal/approveRequestModal";
-import CarDetailCard from "@/components/card/carDetailCard";
-import DriverSmallInfoCard from "@/components/card/driverSmallInfoCard";
-import JourneyDetailCard from "@/components/card/journeyDetailCard";
-import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
-import ReferenceCard from "@/components/card/referenceCard";
-import DisburstmentCard from "@/components/card/disburstmentCard";
-import ApproveProgress from "@/components/approveProgress";
 import { requestDetail } from "@/services/bookingUser";
-import DriverPeaInfoCard from "../card/driverPeaInfoCard";
-import ApproverInfoCard from "../card/approverInfoCard";
-import { fetchVehicleUsers } from "@/services/masterService";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import VehicleUserInfoCard from "../card/vehicleUserInfoCard";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface RequestDetailFormProps {
   requestId: string;
-  approverCard?: boolean;
-  driverCard?: boolean;
-  keyPickUpCard?: boolean;
-  requestAgain?: boolean;
+  editable?: boolean;
 }
 
 export default function RequestDetailForm({
   requestId,
-  approverCard,
-  driverCard,
-  keyPickUpCard,
-  requestAgain
-}: // keyPickUpCard,
-RequestDetailFormProps) {
-  const carSelect = "true";
-
+  editable,
+}: RequestDetailFormProps) {
+  const editDriverAppointmentModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   const vehicleUserModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -66,45 +63,61 @@ RequestDetailFormProps) {
     closeModal: () => void;
   } | null>(null);
 
-  const approveRequestModalRef = useRef<{
+  const sendbackRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
 
- 
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
-  useEffect(() => {
-      const fetchRequestDetailfunc = async () => {
-        try {
-          // Ensure parsedData is an object before accessing vehicleSelect
-          const response = await requestDetail(requestId);
-          setRequestData(response.data);
-        } catch (error) {
-          console.error("Error fetching vehicle details:", error);
-        }
-      };
+  const fetchRequestDetailfunc = async () => {
+    try {
+      // Ensure parsedData is an object before accessing vehicleSelect
+      const response = await requestDetail(requestId);
+      console.log("data---", response.data);
+      setRequestData(response.data);
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+    }
+  };
 
-      fetchRequestDetailfunc();
+  useEffect(() => {
+    fetchRequestDetailfunc();
   }, [requestId]);
 
+  const handleModalUpdate = () => {
+    fetchRequestDetailfunc();
+  };
 
   return (
     <>
-
-        {/* <AlertCustom
+      {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
+        <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
-          desc="เหตุผล: แก้วัตถุประสงค์และสถานที่ปฏิบัติงานตามเอกสารอ้างอิง"
-        /> */}
-
+          desc={`เหตุผล: ${requestData?.sended_back_request_reason}`}
+        />
+      )}
+      {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
+        <AlertCustom
+          title="คำขอใช้ถูกยกเลิกแล้ว"
+          desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
+        />
+      )}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
+              {editable && (
+                <button
+                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                  onClick={() => vehicleUserModalRef.current?.openModal()}
+                >
+                  แก้ไข
+                </button>
+              )}
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} />
-            
+            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
           </div>
 
           <div className="form-section">
@@ -112,13 +125,31 @@ RequestDetailFormProps) {
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
+              {editable && (
+                <button
+                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                  onClick={() => journeyDetailModalRef.current?.openModal()}
+                >
+                  แก้ไข
+                </button>
+              )}
             </div>
 
             <JourneyDetailCard
-              startDate={convertToBuddhistDateTime(requestData?.start_datetime || "").date}
-              endDate={convertToBuddhistDateTime(requestData?.end_datetime || "").date}
-              timeStart={convertToBuddhistDateTime(requestData?.start_datetime || "").time}
-              timeEnd={convertToBuddhistDateTime(requestData?.end_datetime || "").time}
+              startDate={
+                convertToBuddhistDateTime(requestData?.start_datetime || "")
+                  .date
+              }
+              endDate={
+                convertToBuddhistDateTime(requestData?.end_datetime || "").date
+              }
+              timeStart={
+                convertToBuddhistDateTime(requestData?.start_datetime || "")
+                  .time
+              }
+              timeEnd={
+                convertToBuddhistDateTime(requestData?.end_datetime || "").time
+              }
               workPlace={requestData?.work_place}
               purpose={requestData?.objective}
               remark={requestData?.remark}
@@ -132,6 +163,16 @@ RequestDetailFormProps) {
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
+              {editable && (
+                <button
+                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                  onClick={() =>
+                    editDriverAppointmentModalRef.current?.openModal()
+                  }
+                >
+                  แก้ไข
+                </button>
+              )}
             </div>
 
             <AppointmentDriverCard
@@ -143,62 +184,82 @@ RequestDetailFormProps) {
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
+              {editable && (
+                <button
+                  className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
+                  onClick={() => referenceModalRef.current?.openModal()}
+                >
+                  แก้ไข
+                </button>
+              )}
             </div>
 
-            <ReferenceCard refNum={requestData?.reference_number} file={requestData?.attached_document} />
+            <ReferenceCard
+              refNum={requestData?.reference_number}
+              file={requestData?.attached_document}
+            />
           </div>
 
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
+              {editable && (
+                <button
+                  className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
+                  data-toggle="modal"
+                  data-target="#editDisbursementModal"
+                  onClick={() => disbursementModalRef.current?.openModal()}
+                >
+                  แก้ไข
+                </button>
+              )}
             </div>
-
-            {/* <DisburstmentCard
-              refCostTypeCode={requestData?.ref_cost_type_code}
-            /> */}
+            {requestData?.ref_cost_type_code && (
+              <DisburstmentCard
+                refCostTypeCode={requestData?.ref_cost_type_code}
+              />
+            )}
           </div>
         </div>
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-         <ApproveProgress />
+            <ApproveProgress
+              progressSteps={requestData?.progress_request_status}
+              approverId={`${requestData?.approved_request_emp_id}`}
+            />
 
-            <>
-              {carSelect == "true" ? (
-                <>
-                  <div className="form-section-header">
-                    <div className="form-section-header-title">ยานพาหนะ</div>
-                  </div>
+            <div className="col-span-1 row-start-1 md:row-start-2">
+              <div className="form-section">
+                <div className="form-section-header">
+                  <div className="form-section-header-title">ยานพาหนะ</div>
+                </div>
 
-                  {/* {requestData?.vehicleSelect && vehicleDetail && (
-                    <CarDetailCard vehicle={vehicleDetail} />
-                  )} */}
-
-                  {requestData?.is_admin_choose_driver === "1" && (
-                    <div className="card card-section-inline mt-5 mb-5">
-                      <div className="card-body card-body-inline">
-                        <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                          <Image
-                            src="/assets/img/graphic/admin_select_small.png"
-                            className="rounded-md"
-                            width={100}
-                            height={100}
-                            alt=""
-                          />
-                        </div>
-                        <div className="card-content">
-                          <div className="card-content-top card-content-top-inline">
-                            <div className="card-content-top-left">
-                              <div className="card-title">
-                                ผู้ดูแลเลือกยานพาหนะให้
-                              </div>
-                              <div className="supporting-text-group">
-                                <div className="supporting-text">
-                                  สายงานดิจิทัล
-                                </div>
+                {requestData?.is_admin_choose_vehicle === "1" && (
+                  <div className="card card-section-inline mt-5 mb-5">
+                    <div className="card-body card-body-inline">
+                      <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                        <Image
+                          src="/assets/img/graphic/admin_select_small.png"
+                          className="rounded-md"
+                          width={100}
+                          height={100}
+                          alt=""
+                        />
+                      </div>
+                      <div className="card-content">
+                        <div className="card-content-top card-content-top-inline">
+                          <div className="card-content-top-left">
+                            <div className="card-title">
+                              ผู้ดูแลเลือกยานพาหนะให้
+                            </div>
+                            <div className="supporting-text-group">
+                              <div className="supporting-text">
+                                สายงานดิจิทัล
                               </div>
                             </div>
-
+                          </div>
+                          {editable && (
                             <button
                               className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                               onClick={() =>
@@ -207,30 +268,29 @@ RequestDetailFormProps) {
                             >
                               เลือกประเภทยานพาหนะ
                             </button>
-                          </div>
+                          )}
+                        </div>
 
-                          <div className="card-item-group d-flex">
-                            <div className="card-item col-span-2">
-                              <i className="material-symbols-outlined">
-                                directions_car
-                              </i>
-                              <span className="card-item-text">
-                                รถแวนตรวจการ (รถเก๋ง, SUV)
-                              </span>
-                            </div>
+                        <div className="card-item-group d-flex">
+                          <div className="card-item col-span-2">
+                            <i className="material-symbols-outlined">
+                              directions_car
+                            </i>
+                            <span className="card-item-text">
+                              {requestData.request_vehicle_type.ref_vehicle_type_name}
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="card card-section-inline mt-5">
+                  </div>
+                )}
+                {requestData?.is_system_choose_vehicle === "1" && (
+                  <div className="card card-section-inline mt-5 mb-5">
                     <div className="card-body card-body-inline">
                       <div className="img img-square img-avatar flex-grow-1 align-self-start">
                         <Image
-                          src="/assets/img/graphic/admin_select_driver_small.png"
+                          src="/assets/img/system-selected.png"
                           className="rounded-md"
                           width={100}
                           height={100}
@@ -238,139 +298,145 @@ RequestDetailFormProps) {
                         />
                       </div>
                       <div className="card-content">
-                        <div className="card-content-top">
-                          <div className="card-title">
-                            ผู้ดูแลเลือกพนักงานขับรถให้
+                        <div className="card-content-top card-content-top-inline">
+                          <div className="card-content-top-left">
+                            <div className="card-title">
+                              ระบบเลือกยานพาหนะให้อัตโนมัติ
+                            </div>
+                            <div className="supporting-text-group">
+                              <div className="supporting-text">
+                                สายงานดิจิทัล
+                              </div>
+                            </div>
                           </div>
-                          <div className="supporting-text-group">
-                            <div className="supporting-text">สายงานดิจิทัล</div>
-                          </div>
+                          {editable && (
+                            <button
+                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                              onClick={() =>
+                                vehiclePickModalRef.current?.openModal()
+                              }
+                            >
+                              เลือกประเภทยานพาหนะ
+                            </button>
+                          )}
                         </div>
 
                         <div className="card-item-group d-flex">
-                          <div className="card-item">
-                            <i className="material-symbols-outlined">group</i>
-                            <span className="card-item-text">ว่าง 2 คน</span>
+                          <div className="card-item col-span-2">
+                            <i className="material-symbols-outlined">
+                              directions_car
+                            </i>
+                            <span className="card-item-text">
+                              {/* {requestData.requestedVehicleTypeName} */}
+                            </span>
                           </div>
-                        </div>
-                        <div className="card-actions">
-                          <button className="btn btn-primary w-full">
-                            เลือกพนักงานขับรถ
-                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </>
-              )}
-            </>
-            {requestData?.is_pea_employee_driver === "1" ? (
-              <div className="mt-5">
-                {/* <DriverPeaInfoCard driverEmpID={requestData?.vehicle_user_emp_id} /> */}
-              </div>
-            ) : (
-              <div className="mt-5">
-                {/* <DriverSmallInfoCard
-                  id={requestData?.mas_carpool_driver_uid}
-                  userKeyPickup={false}
-                /> */}
-              </div>
-            )}
+                )}
 
-            {driverCard && (
-              <div className="form-section mt-5">
-                <div className="form-section-header">
-                  <div className="form-section-header-title">ผู้ขับขี่</div>
-                </div>
+                {requestData?.vehicle &&
+                  (!requestData?.is_admin_choose_vehicle ||
+                    requestData?.is_admin_choose_vehicle === "0") && (
+                    <CarDetailCard vehicle={requestData?.vehicle} />
+                  )}
 
-                <div className="card mt-3">
-                  <div className="card-body card-body-inline">
-                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                      <Image
-                        src="/assets/img/sample-avatar.png"
-                        className="rounded-md"
-                        width={100}
-                        height={100}
-                        alt=""
-                      />
-                    </div>
-                    <div className="card-content">
-                      <div className="card-content-top">
-                        <div className="card-title">ธนพล วิจารณ์ปรีชา</div>
-                        <div className="supporting-text-group">
-                          <div className="supporting-text">505291</div>
-                          <div className="supporting-text">
-                            นรค.6 กอพ.1 ฝพจ.
-                          </div>
+                {requestData?.is_admin_choose_driver && (
+                  <ChooseDriverCard
+                    number={requestData?.number_of_available_drivers}
+                  />
+                )}
+
+                {requestData?.is_pea_employee_driver === "1" ? (
+                  <div className="mt-5">
+                     <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
                         </div>
                       </div>
 
-                      <div className="card-item-group">
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <span className="card-item-text">091-234-5678</span>
-                        </div>
-                        <div className="card-item">
-                          <i className="material-symbols-outlined">call</i>
-                          <span className="card-item-text">6032</span>
-                        </div>
-                      </div>
-                    </div>
+                    <DriverPeaInfoCard
+                      driver_emp_id={requestData?.driver_emp_id}
+                      driver_emp_name={requestData?.driver_emp_name}
+                      driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
+                      driver_internal_contact_number={
+                        requestData?.driver_internal_contact_number
+                      }
+                      driver_mobile_contact_number={
+                        requestData?.driver_mobile_contact_number
+                      }
+                      driver_image_url={requestData?.driver_image_url}
+                    />
                   </div>
-                </div>
+                ) : (
+                  requestData?.driver && (
+                    <div className="mt-5">
+                       <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
+                        </div>
+                      </div>
+
+                      <DriverSmallInfoCard driverDetail={requestData?.driver} showPhone={true} />
+                    </div>
+                  )
+                )}
               </div>
-            )}
-          </div>
-          {approverCard && (
-            <div className="form-section">
-              <div className="form-section-header">
-                <div className="form-section-header-title">
-                  ผู้อนุมัติต้นสังกัด
-                </div>
-              </div>
-              {approverCard && (
-                <ApproverInfoCard
-                  emp_id={requestData?.approved_request_emp_id || ""}
-                />
-              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
-
-        {requestAgain && 
-        <div className="form-action">
-          <button
-            className="btn btn-primary"
-            onClick={() => approveRequestModalRef.current?.openModal()}
-          >
-            ส่งคำขออีกครั้ง
-          </button>
-        </div>
-        }
-
-
-      <VehiclePickModel process="edit" ref={vehiclePickModalRef} />
+      <EditDriverAppointmentModal
+        ref={editDriverAppointmentModalRef}
+        requestData={requestData}
+        onUpdate={handleModalUpdate}
+      />
+      <VehiclePickModel
+        process="edit"
+        ref={vehiclePickModalRef}
+        requestData={requestData}
+        onUpdate={handleModalUpdate}
+      />
       <JourneyDetailModal
         ref={journeyDetailModalRef}
+        requestData={requestData}
+        onUpdate={handleModalUpdate}
       />
       <VehicleUserModal
+        requestData={requestData}
         process="edit"
         ref={vehicleUserModalRef}
+        onUpdate={handleModalUpdate}
       />
-      <ReferenceModal ref={referenceModalRef} />
+      <ReferenceModal
+        ref={referenceModalRef}
+        requestData={requestData}
+        onUpdate={handleModalUpdate}
+      />
       <DisbursementModal
         ref={disbursementModalRef}
+        requestData={requestData}
+        onUpdate={handleModalUpdate}
       />
       <ApproverModal ref={approverModalRef} />
-      <ApproveRequestModal
-        ref={approveRequestModalRef}
+      <SendbackRequestModal
+        id={String(requestData?.trn_request_uid)}
+        ref={sendbackRequestModalRef}
         title={"ยืนยันการส่งคำขออีกครั้ง"}
         desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"}
         confirmText="ส่งคำขอ"
       />
+      {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
+        <div className="form-action">
+          <button
+            className="btn btn-primary"
+            onClick={() => sendbackRequestModalRef.current?.openModal()}
+          >
+            ส่งคำขออีกครั้ง
+          </button>
+        </div>
+      )}
     </>
   );
 }

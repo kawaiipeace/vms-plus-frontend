@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
 import ToastCustom from "@/components/toastCustom";
+import useSwipeDown from "@/utils/swipeDown";
 
 const TravelCardModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -9,10 +10,11 @@ const TravelCardModal = forwardRef<{ openModal: () => void; closeModal: () => vo
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-body overflow-y-auto text-center">
           <div className="form-section">
             <div className="page-section-header border-0">

@@ -1,39 +1,34 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
-import CancelRequestModal from "./modal/cancelRequestModal";
-import FileBackRequestModal from "./modal/fileBackModal";
-import ApproveRequestModal from "./modal/approveRequestModal";
-import { useRef } from "react";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
+import { useRef, useState } from "react";
 
 interface Props {
-  copyRequest?: boolean;
-  returnRequest?: boolean;
-  cancelRequest?: boolean;
-  approveRequest?: boolean;
-  status?: string;
   data: RequestDetailType;
 }
 
 export default function PageHeader({
-  copyRequest,
-  returnRequest,
-  cancelRequest,
-  approveRequest,
-  status,
   data,
 }: Props) {
-  const approveRequestModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const fileBackRequestModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyRequestNo = async (text?: string) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // hide tooltip after 2 seconds
+    } catch (err) {
+      console.error("Copy failed:", err);
+    }
+  };
 
   return (
     <div className="page-header">
@@ -45,7 +40,7 @@ export default function PageHeader({
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="../request-list">คำขอใช้ยานพาหนะ</Link>
+            <Link href="/vehicle-booking/request-list">คำขอใช้ยานพาหนะ</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             เลขที่คำขอ {data?.request_no || ""}
@@ -58,21 +53,43 @@ export default function PageHeader({
           <span className="page-title-label">
             เลขที่คำขอ {data?.request_no || ""}
           </span>
-          {copyRequest && (
-            <button className="text-sm">
+
+          <div className="relative group inline-block">
+            <button
+              className="text-sm"
+              onClick={() => handleCopyRequestNo(data?.request_no)}
+            >
               <i className="material-symbols-outlined text-sm">content_copy</i>
               คัดลอก
             </button>
-          )}
 
-          {status && (
-            <span className="badge badge-pill-outline badge-info">
-              {status}
-            </span>
-          )}
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-1 
+              w-24 text-center px-2 py-1 text-xs rounded bg-base-200 text-base-content shadow
+              transition-opacity duration-300 
+              ${copied ? "opacity-100 visible" : "opacity-0 invisible"}`}
+            >
+              คัดลอกสำเร็จ
+            </div>
+          </div>
+
+          {data?.ref_request_status_name &&
+            (data?.ref_request_status_name === "อนุมัติ" ? (
+              <span className="badge badge-pill-outline badge-info">
+                {data?.ref_request_status_name}
+              </span>
+            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
+              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
+                {data?.ref_request_status_name}
+              </span>
+            ) : (
+              <span className="badge badge-pill-outline badge-info">
+                {data?.ref_request_status_name}
+              </span>
+            ))}
         </div>
 
-        {cancelRequest && (
+        {data?.ref_request_status_name !== "ยกเลิกคำขอ" && data?.can_cancel_request && (
           <button
             className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
             onClick={() => cancelRequestModalRef.current?.openModal()}
@@ -80,46 +97,16 @@ export default function PageHeader({
             ยกเลิกคำขอ
           </button>
         )}
-        <button className="btn btn-secondary">
+        <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
-        {returnRequest && (
-          <button
-            className="btn btn-secondary"
-            onClick={() => fileBackRequestModalRef.current?.openModal()}
-          >
-            <i className="material-symbols-outlined">reply</i>
-            ตีกลับให้แก้ไข
-          </button>
-        )}
-        {approveRequest && (
-          <button
-            className="btn btn-primary"
-            onClick={() => approveRequestModalRef.current?.openModal()}
-          >
-            <i className="material-symbols-outlined">check</i>
-            อนุมัติคำขอ
-          </button>
-        )}
       </div>
       <CancelRequestModal
+        id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
         confirmText="ยกเลิกคำขอ"
-      />
-      <FileBackRequestModal
-        ref={fileBackRequestModalRef}
-        title="ยืนยันตีกลับคำขอ"
-        desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
-        confirmText="โปรดระบุเหตุผลที่ตีกลับ"
-      />
-
-      <ApproveRequestModal
-        ref={approveRequestModalRef}
-        title={"ยืนยันอนุมัติคำขอ"}
-        desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"}
-        confirmText="อนุมัติคำขอ"
       />
     </div>
   );
