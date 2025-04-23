@@ -3,18 +3,16 @@ import { fetchVehicleUsers } from "@/services/masterService";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { CallToDriverModal } from "../modal/callToDriverModal";
+import CallToDriverModal from "../modal/callToDriverModal";
 
 interface Props {
   id: string;
   requestData?: RequestDetailType;
-  callable?: boolean;
 }
 
 export default function VehicleUserInfoCard({
   id,
   requestData,
-  callable,
 }: Props) {
   const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
   const callToDriverModalRef = useRef<{
@@ -95,19 +93,10 @@ export default function VehicleUserInfoCard({
               </div>
             )}
           </div>
-          {callable && (
-            <div className="flex w-full justify-end col-span-1">
-              <button
-                className="btn btn-primary"
-                onClick={() => callToDriverModalRef.current?.openModal()}
-              >
-                <i className="material-symbols-outlined">call</i>
-              </button>
-            </div>
-          )}
+
         </div>
       </div>
-      <CallToDriverModal ref={callToDriverModalRef} />
+
     </div>
   );
 }

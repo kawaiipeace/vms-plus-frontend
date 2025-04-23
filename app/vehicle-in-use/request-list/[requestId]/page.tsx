@@ -23,7 +23,7 @@ const RequestNo = () => {
       label: "รายละเอียดคำขอ",
       content: (
         <>
-          <KeyPickUpDetailForm status="detail" />
+          {/* <KeyPickUpDetailForm status="detail" /> */}
         </>
       ),
       badge: "",
@@ -32,7 +32,7 @@ const RequestNo = () => {
       label: "การรับกุญแจ",
       content: (
         <>
-          <KeyPickUp status="detail" />
+          {/* <KeyPickUp status="detail" /> */}
         </>
       ),
       badge: "",

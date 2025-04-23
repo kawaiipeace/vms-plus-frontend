@@ -195,4 +195,31 @@ export const cancelKeyPickup = async (data: any) => {
   }
 };
 
+export const updateKeyPickupDriver = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-key-pickup-driver', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyPickupPea = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-key-pickup-pea', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyPickupOutsider = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-key-pickup-outsider', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 

@@ -12,6 +12,9 @@ import { fetchRequestKeyDetail } from "@/services/masterService";
 import VehicleUserInfoCard from "../card/vehicleUserInfoCard";
 import PickupKeyCard from "../card/pickupKeyCard";
 import PickupKeyDetailCard from "../card/pickupKeyDetailCard";
+import DriverPassengerInfoCard from "../card/driverPassengerInfoCard";
+import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
+import KeyPickUpEditModal from "../modal/keyPickUpEditModal";
 
 interface RequestDetailFormProps {
   editable?: boolean;
@@ -33,6 +36,10 @@ export default function KeyPickUp({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const keyPickUpEditModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  }>(null);
 
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [pickupDatePassed, setPickupDatePassed] = useState(false);
@@ -55,8 +62,13 @@ export default function KeyPickUp({
   };
 
   useEffect(() => {
+    console.log("re-", requestId);
     fetchRequestDetailfunc();
   }, [requestId]);
+
+  const handleModalUpdate = () => {
+    fetchRequestDetailfunc();
+  };
   return (
     <>
       {pickupDatePassed && (
@@ -89,10 +101,10 @@ export default function KeyPickUp({
             </div>
 
             <PickupKeyDetailCard
-                    receiveKeyPlace={requestData?.received_key_place}
-                    receiveKeyStart={requestData?.received_key_start_datetime}
-                    receiveKeyEnd={requestData?.received_key_end_datetime}
-                  />
+              receiveKeyPlace={requestData?.received_key_place}
+              receiveKeyStart={requestData?.received_key_start_datetime}
+              receiveKeyEnd={requestData?.received_key_end_datetime}
+            />
           </div>
 
           {/* <div className="form-section">
@@ -159,12 +171,17 @@ export default function KeyPickUp({
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ดูแลยานพาหนะ</div>
             </div>
-
-            <VehicleUserInfoCard
-              id={requestData?.vehicle_user_emp_id || ""}
-              requestData={requestData}
-              callable={true}
-            />
+            {requestData?.is_pea_employee_driver === "1" ? (
+              <DriverPassengerPeaInfoCard
+                id={requestData?.vehicle_user_emp_id || ""}
+                requestData={requestData}
+              />
+            ) : (
+              <DriverPassengerInfoCard
+                id={requestData?.mas_carpool_driver_uid || ""}
+                requestData={requestData}
+              />
+            )}
           </div>
         </div>
 
@@ -174,15 +191,49 @@ export default function KeyPickUp({
               <div className="form-section-header-title">ยานพาหนะ</div>
             </div>
 
-            <CarDetailCard2 />
+            <CarDetailCard2
+              reqId={requestData?.trn_request_uid}
+              vehicle={requestData?.vehicle}
+            />
           </div>
         </div>
       </div>
-      <button className="btn btn-primary w-full mt-5" onClick={() => keyPickupDetailModalRef.current?.openModal()}>รับกุญแจ</button>
+      <button
+        className="btn btn-primary w-full mt-5"
+        onClick={() => keyPickupDetailModalRef.current?.openModal()}
+      >
+        รับกุญแจ
+      </button>
       <DriverAppointmentModal ref={driverAppointmentModalRef} id="2" />
-      <KeyPickupDetailModal userPickUpType="บุคคลภายนอก" ref={keyPickupDetailModalRef} />
+      <KeyPickupDetailModal
+        reqId={requestData?.trn_request_uid || ""}
+        imgSrc={requestData?.received_key_image_url || "/assets/img/avatar.svg"}
+        ref={keyPickupDetailModalRef}
+        id={requestData?.received_key_emp_id || ""}
+        name={requestData?.received_key_emp_name || ""}
+        deptSap={requestData?.received_key_dept_sap || ""}
+        phone={requestData?.received_key_mobile_contact_number || ""}
+        onEdit={() => {
+          keyPickUpEditModalRef.current?.openModal();
+        }}
+      />
+      <KeyPickUpEditModal
+        ref={keyPickUpEditModalRef}
+        reqId={requestData?.trn_request_uid || ""}
+        onBack={() => {
+          keyPickupDetailModalRef.current?.openModal();
+        }}
+        onSubmit={() => {
+          handleModalUpdate();
+          keyPickupDetailModalRef.current?.openModal();
+        }}
+        name={requestData?.driver_emp_name || ""}
+        deptSap={requestData?.driver_emp_dept_sap || ""}
+        phone={requestData?.driver_mobile_contact_number || ""}
+        imgSrc={requestData?.driver_image_url || "/assets/img/avatar.svg"}
+      />
+
       <ApproverModal ref={approverModalRef} />
-      {/* <ApproveRequestModal ref={approveRequestModalRef} title={"ยืนยันการส่งคำขออีกครั้ง"} desc={"ระบบจะทำการส่งคำขอนี้ ไปให้ต้นสังกัดอนุมัติอีกครั้ง"} confirmText="ส่งคำขอ" /> */}
     </>
   );
 }
