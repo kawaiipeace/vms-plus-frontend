@@ -79,7 +79,7 @@ export default function KeyPickupEditTabs({ requestId }: Props) {
     },
     {
       label: "การรับกุญแจ",
-      content: <KeyPickUp status="detail" />,
+      content: <KeyPickUp />,
       constent: "",
       badge: "",
     },

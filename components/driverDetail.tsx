@@ -147,7 +147,7 @@ const DriverDetailContent = ({ progressType }: DriverDetailContentProps) => {
                     <p>ผู้โดยสาร</p>
                   </div>
                 </div>
-                <DriverPassengerInfoCard displayOn="waitCar" />
+                {/* <DriverPassengerInfoCard displayOn="waitCar" /> */}
               </div>
               <div className="col-span-12">
                 <button type="button" className="btn btn-primary w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
