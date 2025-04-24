@@ -3,6 +3,7 @@ import CustomSelect from "@/components/customSelect";
 import Link from "next/link";
 import RadioButton from "@/components/radioButton";
 import Image from "next/image";
+import useSwipeDown from "@/utils/swipeDown";
 // import KeyPickupDetailModal from "./keyPickUpDetailModal";
 const KeyPickUpEditModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -19,11 +20,12 @@ const KeyPickUpEditModal = forwardRef((_, ref) => {
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

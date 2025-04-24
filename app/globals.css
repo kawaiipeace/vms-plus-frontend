@@ -1243,6 +1243,30 @@
 }
 
 @media (max-width: 767px) {
+
+/*   
+  .modal.show {
+    transform: translateY(0); 
+  }
+  
+  .modal-closing {
+    transform: translateY(100%); 
+  }
+  
+  .bottom-sheet {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  } */
+
+  
   .form-header .form-header-title {
     width: 100%;
   }
@@ -1844,6 +1868,22 @@
 }
 .dataTable.dt-custom-list tbody tr:nth-child(even) td {
   background-color: transparent;
+}
+
+@media screen and (max-width: 767px) {
+  /* covert from table to card */
+  .dataTable {border-radius: 0; }
+  .dataTable thead { display: none; }
+  .dataTable tbody { display: flex; flex-direction: column; gap: 2rem; }
+  .dataTable tbody tr { display: flex; flex-direction: column; border: 1px solid #eaecf0; border-radius: .5rem; overflow: hidden; }
+  .dataTable tbody tr td { border: 0; padding: .5rem !important; }
+  .dataTable tbody tr td + td { border-top: 1px solid #eaecf0; }
+  .dataTable tbody tr td [data-name] { display: flex; justify-content: space-between; width: 100%; gap: .5rem; text-align: right; }
+  .dataTable tbody tr td [data-name]::before { content: attr(data-name); font-weight: 600; width: calc(50% - .25rem); text-align: left; }
+  .dataTable tbody tr td .dataTable-action { text-align: center; min-height: 40px; }
+
+  .dark-mode .dataTable tbody tr { border-color: #333741; }
+  .dark-mode .dataTable tbody tr td + td { border-color: #333741; }
 }
 
 .btn.dropdown-toggle {
@@ -3155,6 +3195,22 @@
 }
 
 @media (max-width: 767px) {
+  .modal{
+    align-items: end;
+    /* transform: translateY(100%);  */
+  }
+
+  .modal.show {
+    transform: translateY(0);  /* Slide in to visible position */
+    opacity: 1;
+}
+
+  .modal-box{
+    width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+ 
   .modal .confirm-title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -3182,7 +3238,6 @@
   .modal .modal-body {
     padding: 1rem !important;
     padding-top: 0rem !important;
-    padding-bottom: 0rem !important;
   }
 
   .bottom-sheet {
@@ -3209,6 +3264,10 @@
   .modal.fade:not(.show) .modal-box {
     transform: translate(0, 50px);
   }
+}
+
+.modal-box{
+  margin-right: 0px !important;
 }
 
 .media {
@@ -3377,6 +3436,14 @@
 .alert.alert-success i {
   font-size: 20px;
 }
+.light-mode .alert.alert-success {
+  background-color: #ECFDF3;
+  border-color: #ABEFC6;
+}
+.dark-mode .alert.alert-success {
+  background-color: #ECFDF3;
+  border-color: #ABEFC6;
+}
 .light-mode .alert.alert-success i {
   color: #079455;
 }
@@ -3448,11 +3515,11 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  max-width: calc(478px + 3rem);
+  max-width: calc(28vw + 3rem);
   width: 100%;
 }
 .toast-container .toast {
-  max-width: 478px;
+  max-width: 28vw;
   width: 100%;
   margin: 1.5rem;
   margin-bottom: -0.75rem;
@@ -3764,6 +3831,12 @@
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: -0.2px;
+}
+.light-mode .progress-step-no.warning {
+  border-color: #F04438 !important;
+}
+.dark-mode .progress-step-no.warning {
+  border-color: #F04438 !important;
 }
 .light-mode .progress-steps-group .progress-step .progress-step-text {
   color: #667085;
@@ -5445,3 +5518,13 @@ select option {
   border-radius: 8px;
   object-fit: cover;
 }
+
+/* globals.css */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+

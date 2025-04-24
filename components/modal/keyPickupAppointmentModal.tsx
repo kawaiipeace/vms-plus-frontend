@@ -2,6 +2,7 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from "react"
 import Image from "next/image";
 import CustomSelect from "@/components/customSelect";
 import RadioButton from "@/components/radioButton";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface KeyPickUpAppointmentModalProps {
   process: string;
@@ -21,11 +22,12 @@ const KeyPickUpAppointmentModal = forwardRef<
   }));
 
   const [keyPickUpUserType, setKeyPickUpUserType] = useState("");
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh] !bg-white">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh] !bg-white">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

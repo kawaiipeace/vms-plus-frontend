@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, ColumnDef, SortingState, PaginationState } from "@tanstack/react-table";
-import Paginationselect from "./paginationSelect";
+import Paginationselect from "./table/paginationSelect";
 import Link from "next/link";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
 import EditKeyAppointmentModal from "./modal/editKeyAppointmentModal";

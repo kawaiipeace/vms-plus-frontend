@@ -65,7 +65,7 @@ export default function TravelInfoTab({ requestType }: TravelDataProps) {
         <ZeroRecord imgSrc="/assets/img/graphic/record_travel_img.svg" title="เพิ่มข้อมูลการเดินทาง" desc={<>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</>} button="เพิ่มข้อมูล" icon="add" link="process-one" displayBtn={true} useModal={() => recordTravelAddModalRef.current?.openModal()} />
       )}
       <RecordTravelAddModal status={statusEdit} ref={recordTravelAddModalRef} />
-      <CancelRequestModal title="ยืนยันลบข้อมูลการเดินทาง" desc="ข้อมูลการเดินทางวันที่ 05/01/2567 08:00 จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" cancleFor="recordTravel" ref={cancelRequestModalRef} />
+      <CancelRequestModal id="" title="ยืนยันลบข้อมูลการเดินทาง" desc="ข้อมูลการเดินทางวันที่ 05/01/2567 08:00 จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" cancleFor="recordTravel" ref={cancelRequestModalRef} />
     </>
   );
 }

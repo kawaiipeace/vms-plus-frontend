@@ -4,18 +4,33 @@ import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 import { fetchDriverDetail } from "@/services/masterService";
 import { DriverType } from "@/app/types/driver-user-type";
+import { requestDetail } from "@/services/bookingUser";
+import AdminDriverPickModal from "../modal/adminDriverPickModal";
 
 interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
   id?: string;
   seeDetail?: boolean;
+  driverDetail?: DriverType;
+  showPhone?: boolean;
+  selectDriver?: boolean;
+  reqId?: string;
 }
 
 export default function DriverSmallInfoCard({
   userKeyPickup,
   seeDetail,
+  driverDetail,
+  showPhone,
   id,
+  selectDriver,
+  reqId,
 }: DriverSmallInfoCardProps) {
+  const adminDriverPickModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   const driverInfoModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -26,8 +41,21 @@ export default function DriverSmallInfoCard({
   } | null>(null);
 
   const [driver, setDriver] = useState<DriverType>();
+  const [driverId, setDriverId] = useState<string>("");
+  
+  const seeDriverDetail = (id: string) => {
+    setDriverId(id);
+    adminDriverPickModalRef.current?.closeModal();
+    driverInfoModalRef.current?.openModal();
+  };
+
 
   useEffect(() => {
+    if (driverDetail) {
+      setDriver(driverDetail);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const res = await fetchDriverDetail(id || "");
@@ -39,7 +67,7 @@ export default function DriverSmallInfoCard({
     };
 
     fetchData();
-  }, [id]);
+  }, [id, driverDetail]);
 
   if (!driver) {
     return;
@@ -67,33 +95,51 @@ export default function DriverSmallInfoCard({
             </div>
 
             <div className="card-item-group">
-              <div className="card-item">
-                <i className="material-symbols-outlined">star</i>
-                <span className="card-item-text">
-                  {driver.driver_average_satisfaction_score}
-                </span>
-              </div>
-              <div className="card-item">
-                <i className="material-symbols-outlined">person</i>
-                <span className="card-item-text">{driver.age} ปี</span>
-              </div>
+              {showPhone ? (
+                <div className="card-item">
+                  <i className="material-symbols-outlined">smartphone</i>
+                  <span className="card-item-text">
+                    {driver.driver_contact_number}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="card-item">
+                    <i className="material-symbols-outlined">star</i>
+                    <span className="card-item-text">
+                      {driver.driver_average_satisfaction_score}
+                    </span>
+                  </div>
+                  <div className="card-item">
+                    <i className="material-symbols-outlined">person</i>
+                    <span className="card-item-text">{driver.age} ปี</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
-      {seeDetail && 
-        <div className="card-actioins w-full">
-          <button
-            className="btn btn-default w-full"
-            onClick={
-              userKeyPickup
-                ? () => userKeyPickUpModalRef.current?.openModal()
-                : () => driverInfoModalRef.current?.openModal()
-            }
-          >
-            ดูรายละเอียด
-          </button>
-        </div>
-        }
+        {seeDetail && (
+          <div className="card-actioins w-full">
+            <div className="flex gap-3">
+              <button
+                className={`btn ${selectDriver ? "btn-secondary" : "btn-default"} flex-1`}
+                onClick={
+                  userKeyPickup
+                    ? () => userKeyPickUpModalRef.current?.openModal()
+                    : () => driverInfoModalRef.current?.openModal()
+                }
+              >
+                ดูรายละเอียด
+              </button>
+              {selectDriver && (
+                <button className="btn btn-secondary flex-1"   onClick={() => adminDriverPickModalRef.current?.openModal()}>
+                  เลือกพนักงานขับรถ
+                </button>
+              )}
+            </div>
+          </div>
+        )}
         {userKeyPickup && (
           <>
             <hr />
@@ -136,7 +182,20 @@ export default function DriverSmallInfoCard({
         )}
       </div>
 
-      <DriverInfoModal ref={driverInfoModalRef} />
+
+      <AdminDriverPickModal
+        ref={adminDriverPickModalRef}
+        reqId={reqId}
+        onClickDetail={seeDriverDetail}
+      />
+
+      <DriverInfoModal
+        ref={driverInfoModalRef}
+        id={driverDetail?.mas_driver_uid}
+        pickable={true}
+        onBack={() => adminDriverPickModalRef.current?.openModal()}
+      />
+
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>
   );

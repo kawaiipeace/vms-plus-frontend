@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import DatePicker from "@/components/datePicker";
 import CustomSelect from "../customSelect";
+import useSwipeDown from "@/utils/swipeDown";
 
 const FilterKeyHandOverModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -22,10 +23,13 @@ const FilterKeyHandOverModal = forwardRef((_, ref) => {
       setOptions([{ label: "ทั้งหมด", value: "ทั้งหมด" }]);
     }, []);
 
+    const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
+
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

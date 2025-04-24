@@ -12,7 +12,7 @@ import RadioButton from "@/components/radioButton";
 import SideBar from "@/components/sideBar";
 import Tooltip from "@/components/tooltips";
 import Link from "next/link";
-import { fetchDrivers, fetchUserDrivers, fetchVehicleUsers } from "@/services/masterService";
+import { fetchDrivers, fetchUserDrivers } from "@/services/masterService";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -77,7 +77,7 @@ export default function ProcessThree() {
       masCarpoolDriverUid: vehiclePoolId,
     });
   };
-  const [params, setParams] = useState({
+  const [params] = useState({
     name: "",
     page: 1,
     limit: 10,
@@ -514,7 +514,7 @@ export default function ProcessThree() {
                                 เลือกพนักงานขับรถ
                               </span>
                               <span className="badge badge-outline badge-gray page-title-status">
-                                {filteredDrivers.length} คน
+                               ว่าง {filteredDrivers.length} คน
                               </span>
                             </div>
                           </div>

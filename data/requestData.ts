@@ -24,6 +24,7 @@ export type RequestData = {
   attached_document: string;
   is_pea_employee_driver: string;
   is_admin_choose_driver: string;
+  is_admin_choose_vehicle: string;
   ref_cost_type_code: string;
   cost_no: string;
   mas_carpool_driver_uid: string;
@@ -113,6 +114,7 @@ export const requestData_1: RequestData[] = [
     attached_document: "0001",
     is_pea_employee_driver: "0001",
     is_admin_choose_driver: "0001",
+    is_admin_choose_vehicle: "0001",
     ref_cost_type_code: "0001",
     cost_no: "0001",
     mas_carpool_driver_uid: "0001",

@@ -12,7 +12,7 @@ import {
   SortingState,
   PaginationState,
 } from "@tanstack/react-table";
-import Paginationselect from "./paginationSelect";
+import Paginationselect from "./table/paginationSelect";
 import Link from "next/link";
 
 // Make TableComponent generic
