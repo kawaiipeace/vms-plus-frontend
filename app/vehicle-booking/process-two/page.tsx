@@ -10,8 +10,7 @@ import SelectCarCard from "@/components/card/selectCarCard";
 import Pagination from "@/components/pagination";
 import CustomSelect from "@/components/customSelect";
 import ZeroRecord from "@/components/zeroRecord";
-import { fetchVehicles } from "@/services/bookingUser";
-import { fetchVehicleCarTypes } from "@/services/masterService";
+import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
 import { useFormContext } from "@/contexts/requestFormContext";
 // import Toast from "@/components/toast";
 
@@ -32,6 +31,7 @@ interface PaginationInterface {
   page: number;
   total: number;
   totalPages: number;
+  totalGroups: number;
 }
 
 interface FormData {
@@ -51,6 +51,7 @@ export default function ProcessTwo() {
     page: 1,
     total: 0,
     totalPages: 0,
+    totalGroups: 0,
   });
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const { isPinned } = useSidebar();
@@ -246,7 +247,7 @@ export default function ProcessTwo() {
                         ข้อมูลผู้ใช้ยานพาหนะ
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
-                        {paginationData.total} คัน
+                        ว่าง {paginationData.total} คัน และ {paginationData.totalGroups} กลุ่ม
                       </span>
                     </div>
                     <div className="page-desc">

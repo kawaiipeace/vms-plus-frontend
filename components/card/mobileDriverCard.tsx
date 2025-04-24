@@ -8,9 +8,25 @@ interface MobileDriverCardProps {
   cardType: "recordTravel" | "waitCar" | "waitVerify" | "returnFail" | "waitKey" | "complete" | "cancel";
   noteText?: string;
   rating?: string;
+  locationNote?: string; // ✅ New
+  timeRange?: string;    // ✅ New
+  customIcon?: string;   // ✅ New
 }
-export default function MobileDriverCard({ title, carRegis, location, date, cardType, noteText, rating }: MobileDriverCardProps) {
+
+export default function MobileDriverCard({
+  title,
+  carRegis,
+  location,
+  date,
+  cardType,
+  noteText,
+  rating,
+  locationNote,
+  timeRange,
+  customIcon,
+}: MobileDriverCardProps) {
   let image = "car.png";
+
   switch (cardType) {
     case "recordTravel":
       image = "status_vehicle_inuse.png";
@@ -39,18 +55,23 @@ export default function MobileDriverCard({ title, carRegis, location, date, card
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start rounded-2xl overflow-hidden">
-            <Image className="object-cover object-center" src={`/assets/img/graphic/${image}`} width={200} height={200} alt="" />
+            <Image
+              className="object-cover object-center"
+              src={`/assets/img/graphic/${image}`}
+              width={200}
+              height={200}
+              alt=""
+            />
           </div>
+
           <div className="card-content">
             <div className="card-content-top">
               <div className="card-title">
                 {title}{" "}
                 {rating && (
-                  <>
-                    <div className="flex items-center">
-                      <i className="material-symbols-outlined text-[#A80689]">star</i> {rating}
-                    </div>
-                  </>
+                  <div className="flex items-center">
+                    <i className="material-symbols-outlined text-[#A80689]">star</i> {rating}
+                  </div>
                 )}
                 <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
               </div>
@@ -66,7 +87,7 @@ export default function MobileDriverCard({ title, carRegis, location, date, card
         {noteText && (
           <div className="card-item-group d-flex">
             <div className="card-item">
-              <i className="material-symbols-outlined">info</i>
+              <i className="material-symbols-outlined">{customIcon || "info"}</i>
               <span className="card-item-text">{noteText}</span>
             </div>
           </div>
@@ -76,7 +97,7 @@ export default function MobileDriverCard({ title, carRegis, location, date, card
           <div className="card-item-group d-flex">
             <div className="card-item">
               <i className="material-symbols-outlined">local_parking</i>
-              <span className="card-item-text">ล็อคที่ 5A ชั้น 2B อาคาร LED</span>
+              <span className="card-item-text">{locationNote || "ล็อคที่ 5A ชั้น 2B อาคาร LED"}</span>
             </div>
           </div>
         )}
@@ -85,16 +106,16 @@ export default function MobileDriverCard({ title, carRegis, location, date, card
           <div className="card-item-group !grid-cols-1">
             <div className="w-full card-item">
               <i className="material-symbols-outlined">location_on</i>
-              <span className="card-item-text">อาคาร LED ชั้น 3</span>
+              <span className="card-item-text">{locationNote || "อาคาร LED ชั้น 3"}</span>
             </div>
             <div className="w-full grid grid-cols-2 gap-2">
               <div className="card-item">
                 <i className="material-symbols-outlined">calendar_month</i>
-                <span className="card-item-text">28/12/2024</span>
+                <span className="card-item-text">{date}</span>
               </div>
               <div className="card-item">
                 <i className="material-symbols-outlined">schedule</i>
-                <span className="card-item-text">08:30 - 16:30</span>
+                <span className="card-item-text">{timeRange || "08:30 - 16:30"}</span>
               </div>
             </div>
           </div>

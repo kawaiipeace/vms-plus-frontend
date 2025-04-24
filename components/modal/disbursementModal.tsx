@@ -11,8 +11,14 @@ import { useFormContext } from "@/contexts/requestFormContext";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { updateCost } from "@/services/bookingUser";
+import useSwipeDown from "@/utils/swipeDown";
+import { adminUpdateCost } from "@/services/bookingAdmin";
 
 interface Props {
+  requestData?: RequestDetailType;
+  role?: string;
   onUpdate?: (data: any) => void;
 }
 
@@ -23,20 +29,26 @@ const schema = yup.object().shape({
 const DisbursementModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ onUpdate }, ref) => {
+>(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const hasReset = useRef(false);
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      hasReset.current = false;
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
   const { formData, updateFormData } = useFormContext();
 
-  const { handleSubmit, setValue } = useForm({
+  const { handleSubmit, reset, setValue } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
+
+
 
   const [costCenter, setCostCenter] = useState<string>("");
   const [costData, setCostData] = useState<
@@ -61,7 +73,7 @@ const DisbursementModal = forwardRef<
         const response = await fetchCostTypes();
         if (response.status === 200) {
           const costTypeData = response.data;
-          setCostData(costTypeData); // Fix: Ensure costData is properly set
+          setCostData(costTypeData); 
 
           const costTypeArr = costTypeData.map(
             (cost: {
@@ -83,9 +95,15 @@ const DisbursementModal = forwardRef<
   }, []);
 
   useEffect(() => {
+    let refCode = "";
+    if(requestData){
+        refCode = requestData?.ref_cost_type_code;
+    }else{
+      refCode = String(formData.refCostTypeCode);
+    }
     if (costTypeOptions.length > 0) {
       const selectedOption = costTypeOptions.find(
-        (option) => option.value === formData.refCostTypeCode
+        (option) => option.value === refCode
       );
 
       if (selectedOption) {
@@ -100,7 +118,7 @@ const DisbursementModal = forwardRef<
         }
       }
     }
-  }, [costTypeOptions, costData, formData.refCostTypeCode]);
+  }, [costTypeOptions, costData, formData.refCostTypeCode, requestData]);
 
   const handleCostTypeChange = (option: any) => {
     setSelectedCostTypeOption(option);
@@ -117,24 +135,49 @@ const DisbursementModal = forwardRef<
     }
   };
 
-  const onSubmit = (data: any) => {
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      refCostTypeCode: data.refCostTypeCode,
-    });
 
-    updateFormData({
-      refCostTypeCode: data.refCostTypeCode,
-    });
 
-    modalRef.current?.close();
+  const onSubmit = async (data: any) => {
+      if (requestData) {
+          const payload = {
+            cost_no: costCenter,
+            ref_cost_type_code: data.refCostTypeCode,
+            trn_request_uid: requestData.trn_request_uid,
+          };
+
+          try {
+
+            const response = role === "admin" ? await adminUpdateCost(payload) : await updateCost(payload);
+                    
+            if (response) {
+              if (onUpdate) onUpdate(response.data);
+              modalRef.current?.close();
+            }
+          } catch (error) {
+            console.error("Network error:", error);
+            alert("Failed to update trip due to network error.");
+          }
+        } else{
+          if (onUpdate)
+            onUpdate({
+              ...data,
+              refCostTypeCode: data.refCostTypeCode,
+            });
+      
+          updateFormData({
+            refCostTypeCode: data.refCostTypeCode,
+          });
+      
+          modalRef.current?.close();
+        }
+ 
   };
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

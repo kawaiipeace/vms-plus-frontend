@@ -1,4 +1,5 @@
 
+import { CanceledRequestType, SendbackRequestType } from '@/app/types/request-action-type';
 import axiosInstance from '@/utils/axiosInstance';
 
 export const requests = async (params: {
@@ -7,7 +8,7 @@ export const requests = async (params: {
   startdate?: string;
   enddate?: string;
   order_by?: string;
-  order_dir?: number;
+  order_dir?: string;
   page?: number;
   limit?: number;
 }) => {
@@ -35,7 +36,7 @@ export const requestDetail = async (id: string) => {
 
 export const createRequest = async (data: any) => {
   try {
-    const response = await axiosInstance.post('booking-user/create-request',  data );
+    const response = await axiosInstance.post('booking-user/create-request', data);
     return response;
 
   } catch (error) {
@@ -43,27 +44,93 @@ export const createRequest = async (data: any) => {
   }
 }
 
-export const fetchVehicles = async (params: {
-  search?: string;
-  vehicle_owner_dept?: string;
-  car_type?: string;
-  category_code?: string;
-  page?: number;
-  limit?: number;
-}) => {
+export const cancelRequest = async (data: CanceledRequestType) => {
   try {
-    const response = await axiosInstance.get('vehicle/search', { params });
+    const response = await axiosInstance.put('booking-user/update-canceled', data);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const updateSendback = async (data: SendbackRequestType) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-sended-back', data);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+export const fetchMenus = async () => {
+  try {
+    const response = await axiosInstance.get('booking-user/menu-requests');
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchVehicleDetail = async (id: string) => {
+export const updateVehicleUser = async (data: any) => {
   try {
-    const response = await axiosInstance.get('vehicle/' + id);
+    const response = await axiosInstance.put('booking-user/update-vehicle-user', data);
     return response;
   } catch (error) {
     throw error;
   }
 };
+
+export const updateTrip = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-trip', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updatePickup = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-pickup', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateRef = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-document', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCost = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-cost', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateVehicleType = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('booking-user/update-vehicle-type', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
+
+
+

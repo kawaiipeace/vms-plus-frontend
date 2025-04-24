@@ -45,7 +45,7 @@ const VehicleFinishTab = ({ data }: VehicleFinishTabProps) => {
             <div className="my-4">
               <div>
                 {data.map((item, index) => (
-                  <MobileFinishVehicleCard key={index} carRegis={item.carRegis} location={item.location} date={item.date} />
+                  <MobileFinishVehicleCard key={index} carRegis={item.carRegis} location={item.location} date={item.date} id={""} />
                 ))}
               </div>
             </div>

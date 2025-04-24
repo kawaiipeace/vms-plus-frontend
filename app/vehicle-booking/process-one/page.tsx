@@ -3,7 +3,6 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
-import StatusModal from "@/components/modal/statusModel";
 import Link from "next/link";
 import RequestForm from "@/components/flow/requestForm";
 
@@ -51,7 +50,6 @@ export default function ProcessOne() {
         </div>
       </div>
 
-      <StatusModal />
     </div>
   );
 }

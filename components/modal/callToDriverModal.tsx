@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
+import useSwipeDown from "@/utils/swipeDown";
 
 export const CallToDriverModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -9,9 +10,11 @@ export const CallToDriverModal = forwardRef((_, ref) => {
     closeModal: () => modalRef.current?.close(),
   }));
 
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div className="modal-box max-w-[500px] p-0 pb-4 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+      <div  className="modal-box max-w-[500px] p-0 pb-4 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title text-center">
             ติดต่อผู้ดูแลยานพาหนะ<p className="font-normal">คุณต้องการโทรหาผู้ดูแลยานพาหนะหรือไม่ ?</p>

@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
 import TravelCardModal from "./travelCardModal";
+import useSwipeDown from "@/utils/swipeDown";
 
 const ReceiveCarSuccessModal = forwardRef<{ openModal: () => void; closeModal: () => void }>(({}, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -14,11 +15,12 @@ const ReceiveCarSuccessModal = forwardRef<{ openModal: () => void; closeModal: (
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-        <div className="bottom-sheet">
+      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
 

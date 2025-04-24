@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import DatePicker from "@/components/datePicker";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface Props {
   status?: boolean;
@@ -11,9 +12,11 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-body overflow-y-auto text-center">
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
             <div className="modal-title">{status ? "แก้ไขข้อมูลการเดินทาง" : "เพิ่มข้อมูลการเดินทาง"}</div>

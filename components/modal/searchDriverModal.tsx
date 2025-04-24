@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { Driver } from "@/app/types/vehicle-user-type";
 import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
+import useSwipeDown from "@/utils/swipeDown";
 
 const SearchDriverModal = forwardRef(
   (
@@ -122,11 +123,12 @@ const SearchDriverModal = forwardRef(
       fetchDriverDetailFunc(mas_id);
       setSelected(mas_id);
     };
+    const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
     return (
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box max-w-[500px] relative z-1 p-0 overflow-hidden flex flex-col max-h-[90vh]">
-          <div className="bottom-sheet">
+        <div  className="modal-box max-w-[500px] relative z-1 p-0 overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bottom-sheet" {...swipeDownHandlers} >
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">

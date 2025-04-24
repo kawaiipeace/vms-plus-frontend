@@ -74,7 +74,7 @@ export default function CustomSelect({
 
       {/* Dropdown List */}
       {isOpen && (
-        <ul className="absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
+        <ul className="max-h-[16rem] overflow-y-auto absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
           {options.map((option) => (
             <li
               key={option.value}

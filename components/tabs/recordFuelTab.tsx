@@ -56,7 +56,7 @@ const RecordFuelTab = () => {
           </>
         )}
         <RecordFuelAddModal ref={recordFuelAddModalRef} />
-        <CancelRequestModal title="ยืนยันลบข้อมูลการเติมเชื้อเพลิง" desc="ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ 57980006561 จะโดนลบออกจาก ระบบ" confirmText="ลบข้อมูล" ref={cancelRequestModalRef} cancleFor="recordTravel" />
+        <CancelRequestModal title="ยืนยันลบข้อมูลการเติมเชื้อเพลิง" desc="ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ 57980006561 จะโดนลบออกจาก ระบบ" confirmText="ลบข้อมูล" ref={cancelRequestModalRef} cancleFor="recordTravel" id={""} />
         <ToastCustom title="เพิ่มข้อมูลการเดินทางสำเร็จ" desc="เพิ่มข้อมูลการเดินทางวันที่ 05/01/2567 เรียบร้อยแล้ว" status="success" styleText="!mx-auto" />
       </div>
     </>

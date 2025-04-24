@@ -1,5 +1,6 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import ImgSlider from "@/components/imgSlider";
+import useSwipeDown from "@/utils/swipeDown";
 
 interface Props {
   backModal: () => void;
@@ -12,10 +13,12 @@ const ExampleCarImageModal = forwardRef<{ openModal: () => void; closeModal: () 
     closeModal: () => modalRef.current?.close(),
   }));
   const imageUrls = ["/assets/img/sample-car.jpeg", "/assets/img/sample-car.jpeg", "/assets/img/sample-car.jpeg", "/assets/img/sample-car.jpeg"];
+  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
   return (
     <>
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box max-w-[500px] p-0 relative !bg-white">
+        <div  className="modal-box max-w-[500px] p-0 relative !bg-white">
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
             <div className="modal-title">
               <i
