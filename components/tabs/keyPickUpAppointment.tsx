@@ -3,7 +3,10 @@ import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
 import UserInfoCard from "@/components/card/userInfoCard";
 
-const KeyPickUpAppointment = () => {
+interface Props{
+  requestId?: string;
+}
+const KeyPickUpAppointment = ({requestId} : Props) => {
   return (
     <>
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">

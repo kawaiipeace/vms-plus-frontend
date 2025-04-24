@@ -1,59 +1,106 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
-import DateTimePicker from "@/components/dateTimePicker";
 import RadioButton from "@/components/radioButton";
 import KeyPickUpEditModal from "./keyPickUpEditModal";
 import ConfirmKeyHandOverModal from "@/components/modal/confirmKeyHandOverModal";
 import useSwipeDown from "@/utils/swipeDown";
+import TimePicker from "@/components/timePicker";
+import DatePicker from "@/components/datePicker";
 
-interface KeyPickUpDetail {
-  userPickUpType: "พนักงาน กฟภ." | "พนักงานขับรถ" | "บุคคลภายนอก";
+// Props for the KeyPickupDetailModal component
+interface KeyPickUpDetailProps {
+  reqId: string;
+  id: string;
+  imgSrc: string;
+  name: string;
+  deptSap: string;
+  phone: string;
+  onEdit?: () => void;
+  onSubmit?: () => void;
 }
 
-const KeyPickupDetailModal = forwardRef(({ userPickUpType }: KeyPickUpDetail, ref) => {
+// Ref methods exposed by the modal
+export interface KeyPickupDetailModalRef {
+  openModal: () => void;
+  closeModal: () => void;
+}
+
+const KeyPickupDetailModal = forwardRef<
+  KeyPickupDetailModalRef,
+  KeyPickUpDetailProps
+>((props, ref) => {
+  const { id, imgSrc, name, deptSap,phone, reqId, onEdit,onSubmit } = props;
+
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [selectedAttach, setSelectedAttach] = useState("กุญแจหลัก และบัตรเติมน้ำมัน");
-  const keyPickUpEditModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+  const [selectedAttach, setSelectedAttach] = useState<string>(
+    "กุญแจหลัก และบัตรเติมน้ำมัน"
+  );
 
   const confirmKeyHandOverModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
-  } | null>(null);
+  }>(null);
 
+  // Expose open and close methods via ref
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  // Handler for swipe-down to close
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
+  const submit = () => {
+       try {
+         
+          // await updateKeyPickupOutsider(payload);
+
+          if (onSubmit) {
+            onSubmit();
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+        }
+  }
 
   return (
     <>
       <dialog ref={modalRef} className="modal">
-        <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-          <div className="bottom-sheet" {...swipeDownHandlers} >
+        {/* Modal content */}
+        <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+          {/* Swipe down indicator */}
+          <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
+
+          {/* Header */}
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">ให้กุญแจ</div>
+            <div className="modal-title">รับกุญแจ</div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
               </button>
             </form>
           </div>
+
+          {/* Body */}
           <div className="modal-body overflow-y-auto">
+            {/* User info section */}
             <div className="form-section" style={{ marginTop: 0 }}>
               <div className="form-section-header">
-                <div className="form-section-header-title">ผู้มารับกุญแจ</div>
-
+                <div className="form-section-header-title">ผู้ไปรับกุญแจ</div>
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => {
                     modalRef.current?.close();
-                    keyPickUpEditModalRef.current?.openModal();
+                    if (onEdit) {
+                      onEdit();
+                    }
                   }}
                 >
                   แก้ไข
@@ -62,113 +109,121 @@ const KeyPickupDetailModal = forwardRef(({ userPickUpType }: KeyPickUpDetail, re
               <div className="form-card w-full">
                 <div className="form-card-body">
                   <div className="form-group form-plaintext form-users">
-                    <Image src="/assets/img/sample-avatar.png" className="avatar avatar-md" width={100} height={100} alt="" />
+                    <Image
+                      src={imgSrc}
+                      className="avatar avatar-md"
+                      width={100}
+                      height={100}
+                      alt={name}
+                    />
                     <div className="form-plaintext-group align-self-center">
-                      <div className="form-label">ศรัญยู บริรัตน์ฤทธิ์</div>
-                      {userPickUpType === "พนักงาน กฟภ." && (
-                        <div className="supporting-text-group">
-                          <div className="supporting-text">505291</div>
-                          <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
-                        </div>
-                      )}
-                      {(userPickUpType === "พนักงานขับรถ" || userPickUpType === "บุคคลภายนอก") && (
-                        <div className="supporting-text-group">
-                          <div className="supporting-text">บริษัท ยุทธศาสตร์การขับขี่ยี่สิบปี จำกัด</div>
-                        </div>
-                      )}
+                      <div className="form-label">{name}</div>
+                      <div className="supporting-text-group">
+                        <div className="supporting-text">{deptSap}</div>
+                      </div>
                     </div>
                   </div>
                   <div className="form-card-right align-self-center mt-4">
-                    <div className="flex flex-wrap gap-4">
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">smartphone</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">091-234-5678</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {userPickUpType === "พนักงาน กฟภ." && (
-                        <div className="col-span-12 md:col-span-6">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">call</i>
-                            <div className="form-plaintext-group">
-                              <div className="form-text text-nowra">6032</div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {(userPickUpType === "พนักงาน กฟภ." || userPickUpType === "บุคคลภายนอก") && (
-                        <div className="col-span-12 w-full">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">SMS</i>
-                            <div className="form-plaintext-group">
-                              <div className="form-text text-nowrap">จะไปรับกุญแจช่วงบ่ายครับ</div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                    <div className="text-error text-center">
+                      ผู้รับกุญแจมีหน้าที่ดูแลรักษา <br />
+                      ไม่ให้กุญแจและ/หรือบัตรเติมน้ำมันสูญหาย
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Date, time, and attachments section */}
             <div className="form-section">
-              <div className="grid grid-cols-1 gap-5">
-                <div className="form-group">
-                  <label className="form-label">วันที่ / เวลา</label>
-                  <div className="input-group">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">
-                        <i className="material-symbols-outlined">calendar_month</i>
-                      </span>
+              <div className="grid grid-cols-12 gap-5">
+                {/* Date picker */}
+                <div className="col-span-6">
+                  <div className="form-group">
+                    <label className="form-label">วันที่เริ่มต้นเดินทาง</label>
+                    <div className="input-group">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="material-symbols-outlined">
+                            calendar_month
+                          </i>
+                        </span>
+                      </div>
+                      <DatePicker
+                        placeholder={"ระบุวันที่"}
+                        // onChange={(dateStr) => setSelectedDate(dateStr)}
+                      />
                     </div>
-                    <DateTimePicker placeholder="ระบุวันที่" />
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">สิ่งที่ส่งมอบ</label>
+                {/* Time picker */}
+                <div className="col-span-6">
+                  <div className="form-group">
+                    <label className="form-label">เวลานัดหมาย</label>
+                    <div className="input-group">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="material-symbols-outlined">schedule</i>
+                        </span>
+                      </div>
+                      <TimePicker placeholder="ระบุเวลา"   
+                      // onChange={(dateStr) => setSelectedTime(datestr)} 
+                      />
+                    </div>
+                  </div>
+                </div>
 
-                  <RadioButton name={"key"} label={"กุญแจหลัก และบัตรเติมน้ำมัน"} value={"กุญแจหลัก และบัตรเติมน้ำมัน"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
-                  <RadioButton name={"key"} label={"กุญแจสำรอง และบัตรเติมน้ำมัน"} value={"กุญแจสำรอง และบัตรเติมน้ำมัน"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
-                  <RadioButton name={"key"} label={"กุญแจหลัก"} value={"กุญแจหลัก"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
-                  <RadioButton name={"key"} label={"กุญแจสำรอง"} value={"กุญแจสำรอง"} selectedValue={selectedAttach} setSelectedValue={setSelectedAttach} />
+                {/* Radio buttons */}
+                <div className="col-span-12">
+                  <div className="form-group">
+                    <label className="form-label">สิ่งที่ส่งมอบ</label>
+                    <RadioButton
+                      name="key"
+                      label="กุญแจหลัก และบัตรเติมน้ำมัน"
+                      value="กุญแจหลัก และบัตรเติมน้ำมัน"
+                      selectedValue={selectedAttach}
+                      setSelectedValue={setSelectedAttach}
+                    />
+                    <RadioButton
+                      name="key"
+                      label="กุญแจหลัก"
+                      value="กุญแจหลัก"
+                      selectedValue={selectedAttach}
+                      setSelectedValue={setSelectedAttach}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="modal-action sticky bottom-0 gap-3 mt-0">
-            <form method="dialog">
-              <button className="btn btn-secondary">ปิด</button>
-            </form>
 
+          {/* Actions */}
+          <div className="modal-action sticky bottom-0 gap-3 mt-0">
+            <form method="dialog" className="w-[50%] md:w-auto">
+              <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
+            </form>
             <button
-              className="btn btn-primary"
-              type="button"
+              className="btn btn-primary w-[50%] md:w-auto"
               onClick={() => {
-                if (modalRef.current) modalRef.current.close();
-                if (confirmKeyHandOverModalRef.current) confirmKeyHandOverModalRef.current.openModal();
+                modalRef.current?.close();
+                confirmKeyHandOverModalRef.current?.openModal();
               }}
             >
-              ให้กุญแจ
+              ยืนยัน
             </button>
           </div>
         </div>
+
+        {/* Backdrop */}
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>
       </dialog>
 
-      <KeyPickUpEditModal ref={keyPickUpEditModalRef} />
       <ConfirmKeyHandOverModal ref={confirmKeyHandOverModalRef} />
     </>
   );
 });
 
 KeyPickupDetailModal.displayName = "KeyPickupDetailModal";
-
 export default KeyPickupDetailModal;

@@ -98,7 +98,7 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "รับกุญแจ") {
+        if (ref_request_status_name === "รอรับกุญแจ") {
           return (
             <MobileWaitForKeyCard
               key={request.trn_request_uid || index}
@@ -109,9 +109,10 @@ export default function ListFlow({ requestData }: Props) {
                 request?.vehicle_license_plate_province_full
               }
               location={request?.work_place}
-              dateRange="01/01/2567 - 07/01/2567"
-              pickupLocation="อาคาร LED ชั้น 3"
-              pickupDate="28/12/2024"
+              dateRange={convertToBuddhistDateTime(request?.start_datetime).date + ' - ' + convertToBuddhistDateTime(request?.end_datetime).date }
+              pickupLocation={request?.received_key_place}
+              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
+              pickupTime={convertToBuddhistDateTime(request?.received_key_start_datetime).time + ' - ' + convertToBuddhistDateTime(request?.received_key_end_datetime).time }
             />
           );
         }

@@ -8,9 +8,10 @@ import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;
   displayOn?: string;
+  requestId?: string;
 }
 
-const ReceiveCarVehicleInUseTab = ({ edit, displayOn }: ReceiveCarVehicleInUseTabProps) => {
+const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVehicleInUseTabProps) => {
   const receiveCarVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -152,11 +153,11 @@ const ReceiveCarVehicleInUseTab = ({ edit, displayOn }: ReceiveCarVehicleInUseTa
           </>
         )}
 
-        {!receiveSuccess && (
-          <button className="btn btn-default w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+    
+          <button className="btn btn-primary w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
             รับยานพาหนะ
           </button>
-        )}
+      
       </div>
 
       <div className="col-span-1 row-start-1 md:row-start-2">
@@ -168,6 +169,7 @@ const ReceiveCarVehicleInUseTab = ({ edit, displayOn }: ReceiveCarVehicleInUseTa
           <CarDetailCard2 />
         </div>
       </div>
+      
       <ReceiveCarVehicleModal status={edit} ref={receiveCarVehicleModalRef} />
       <ReturnCarAddStep2Modal openStep1={() => {}} ref={returnCarAddStep2ModalRef} />
     </div>

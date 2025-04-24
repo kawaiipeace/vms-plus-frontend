@@ -167,7 +167,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               </button>
             )}
 
-            {statusValue == "รับกุญแจ" && (
+            {statusValue == "รอรับกุญแจ" && (
               <>
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
@@ -196,6 +196,39 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                   }
                 >
                   <i className="material-symbols-outlined">key</i>
+                </button>
+              </>
+            )}
+
+            {statusValue == "รอรับยานพาหนะ" && (
+              <>
+                <button
+                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                  data-tip="ดูรายละเอียดคำขอ"
+                  onClick={() =>
+                    router.push(
+                      "/vehicle-in-use/key-pickup/" +
+                        row.original.trn_request_uid
+                    )
+                  }
+                >
+                  <i className="material-symbols-outlined">
+                    quick_reference_all
+                  </i>
+                </button>
+
+                <button
+                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                  data-tip="รอรับยานพาหนะ"
+                  onClick={() =>
+                    router.push(
+                      "/vehicle-in-use/key-pickup/" +
+                        row.original.trn_request_uid +
+                        "/edit"
+                    )
+                  }
+                >
+                  <i className="material-symbols-outlined">directions_car</i>
                 </button>
               </>
             )}

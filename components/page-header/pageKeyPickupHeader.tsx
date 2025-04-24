@@ -3,13 +3,13 @@ import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
 
+
 interface Props {
   data: RequestDetailType;
+  editable?: boolean;
 }
 
-export default function PageKeyPickupHeader({
-  data,
-}: Props) {
+export default function PageHeaderAdmin({ data, editable }: Props) {
 
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
@@ -31,7 +31,7 @@ export default function PageKeyPickupHeader({
   };
 
   return (
-    <div className="page-header flex w-min">
+    <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
@@ -40,7 +40,9 @@ export default function PageKeyPickupHeader({
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="/vehicle-booking/request-list">คำขอใช้ยานพาหนะ</Link>
+            <Link href="/administrator/booking-approver">
+              อนุมัติขอคำใช้และใบอนุญาต
+            </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             เลขที่คำขอ {data?.request_no || ""}
@@ -49,14 +51,14 @@ export default function PageKeyPickupHeader({
       </div>
 
       <div className="page-group-header">
-        <div className="page-title !w-auto">
+        <div className="page-title">
           <span className="page-title-label">
             เลขที่คำขอ {data?.request_no || ""}
           </span>
 
           <div className="relative group inline-block">
             <button
-              className="text-sm hidden md:block"
+              className="text-sm"
               onClick={() => handleCopyRequestNo(data?.request_no)}
             >
               <i className="material-symbols-outlined text-sm">content_copy</i>
@@ -72,14 +74,19 @@ export default function PageKeyPickupHeader({
               คัดลอกสำเร็จ
             </div>
           </div>
-          <div className="hidden md:block">
+
           {data?.ref_request_status_name &&
-            (data?.ref_request_status_name === "อนุมัติ" ? (
-              <span className="badge badge-pill-outline badge-info">
+            (data?.ref_request_status_name === "อนุมัติ" ||
+            data?.ref_request_status_name === "อนุมัติแล้ว" ? (
+              <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
-            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
+            ) : (data?.ref_request_status_name === "ยกเลิกคำขอ") ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
+                {data?.ref_request_status_name}
+              </span>
+            ) : (data?.ref_request_status_name === "ตีกลับ") ? (
+              <span className="badge badge-pill-outline badge-warning">
                 {data?.ref_request_status_name}
               </span>
             ) : (
@@ -87,11 +94,10 @@ export default function PageKeyPickupHeader({
                 {data?.ref_request_status_name}
               </span>
             ))}
-            </div>
         </div>
 
         <div className="block md:hidden">
-          <div className="dropdown dropdown-bottom dropdown-left">
+          <div className="dropdown">
             <div className="btn btn-secondary px-3" tabIndex={0} role="button">
               <i className="material-symbols-outlined icon-settings-fill-300-24">
                 more_vert
@@ -102,6 +108,7 @@ export default function PageKeyPickupHeader({
               className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
               tabIndex={0}
             >
+
               <Link
                 className="dropdown-item"
                 href="#"
@@ -123,29 +130,36 @@ export default function PageKeyPickupHeader({
             </ul>
           </div>
         </div>
+
         <div className="md:block hidden">
-        <div className="flex gap-3">
-        {data?.ref_request_status_name !== "ยกเลิกคำขอ" && data?.can_cancel_request && (
-          <button
-            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-            onClick={() => cancelRequestModalRef.current?.openModal()}
-          >
-            ยกเลิกคำขอ
-          </button>
-        )}
-        <button className="btn btn-secondary" onClick={() => window.print()}>
-          <i className="material-symbols-outlined">print</i>พิมพ์
-        </button>
+          <div className="flex gap-3">
+            <button
+              className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+              onClick={() => cancelRequestModalRef.current?.openModal()}
+            >
+              ยกเลิกคำขอ
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => window.print()}
+            >
+              <i className="material-symbols-outlined">print</i>พิมพ์
+            </button>{" "}
+          </div>
         </div>
-        </div>
+
+
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
+        role="key"
         confirmText="ยกเลิกคำขอ"
       />
+
+
     </div>
   );
 }

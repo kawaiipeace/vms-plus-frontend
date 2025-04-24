@@ -8,12 +8,13 @@ import PaginationControls from "../table/pagination-control";
 import KeyPickUp from "../flow/keyPickUp";
 import KeyPickUpAppointment from "./keyPickUpAppointment";
 import KeyPickUpDetailForm from "../flow/keyPickUpDetailForm";
+import ReceiveCarVehicleInUseTab from "./receiveCarVehicleInUseTab";
 
 interface Props {
   requestId: string;
 }
 
-export default function KeyPickupDetailTabs({ requestId }: Props) {
+export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -85,6 +86,12 @@ export default function KeyPickupDetailTabs({ requestId }: Props) {
     {
       label: "การนัดหมายเดินทาง",
       content: <KeyPickUpAppointment requestId={requestId} />,
+      constent: "",
+      badge: "",
+    },
+    {
+      label: "การรับยานพาหนะ",
+      content:   <ReceiveCarVehicleInUseTab requestId={requestId} edit="" />,
       constent: "",
       badge: "",
     },

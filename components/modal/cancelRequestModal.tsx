@@ -13,6 +13,7 @@ import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminCancelRequest } from "@/services/bookingAdmin";
 import { finalCancelRequest } from "@/services/bookingFinal";
+import { cancelKeyPickup } from "@/services/masterService";
 
 interface Props {
   id: string;
@@ -64,6 +65,8 @@ const CancelRequestModal = forwardRef<
             ? await adminCancelRequest(payload)
             : role === "final"
             ? await finalCancelRequest(payload)
+            : role === "key"
+            ? await cancelKeyPickup(payload)
             : await cancelRequest(payload);
         const data = res.data;
         if (data) {
@@ -83,7 +86,11 @@ const CancelRequestModal = forwardRef<
             ? router.push(
                 "/administrator/booking-final?cancel-req=success&request-id=" +
                   data.result?.request_no
-              )
+              )  : role === "final"
+              ? router.push(
+                  "/vehicle-in-use/key-pickup?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                )
             : router.push(
                 "/vehicle-booking/request-list?cancel-req=success&request-id=" +
                   data.result?.request_no
