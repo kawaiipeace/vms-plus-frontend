@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 interface MobileWaitForKeyCardProps {
   id?: string;
@@ -8,7 +9,8 @@ interface MobileWaitForKeyCardProps {
   location: string;
   dateRange: string;
   pickupLocation: string;
-  pickupDate: string;
+  pickupDate: string; // expected in format 'YYYY-MM-DD' or similar
+  pickupTime: string;
 }
 
 export default function MobileWaitForKeyCard({
@@ -19,12 +21,23 @@ export default function MobileWaitForKeyCard({
   dateRange,
   pickupLocation,
   pickupDate,
+  pickupTime,
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
 
   const goToDetail = () => {
     router.push(`/request/${id}`);
   };
+
+  // Compare today's date with pickupDate
+  const isPickupDatePassed = useMemo(() => {
+    const today = new Date();
+    const pickup = new Date(pickupDate);
+    // zero out time for accurate day comparison
+    today.setHours(0, 0, 0, 0);
+    pickup.setHours(0, 0, 0, 0);
+    return today > pickup;
+  }, [pickupDate]);
 
   return (
     <div className="card cursor-pointer" onClick={goToDetail}>
@@ -67,19 +80,35 @@ export default function MobileWaitForKeyCard({
           </div>
           <div className="card-item">
             <i className="material-symbols-outlined">schedule</i>
-            <span className="card-item-text">{pickupDate}</span>
+            <span className="card-item-text">{pickupTime}</span>
           </div>
         </div>
 
-        <div className="card-actions card-actions-column">
-          <button className="btn btn-secondary" onClick={() => router.push(`/vehicle-in-use/${id}/fuel`)}>
-          ดูนัดหมาย
-          </button>
-          <button className="btn btn-secondary" onClick={() => router.push(`/request/${id}/return`)}>
+        <div className="card-actions flex w-full">
+          {!isPickupDatePassed && (
+            <button
+              className="btn btn-secondary flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/vehicle-in-use/key-pickup/${id}?activeTab=การนัดหมายเดินทาง`);
+              }}
+            >
+              ดูนัดหมาย
+            </button>
+          )}
+          <button
+            className="btn btn-secondary flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/vehicle-in-use/key-pickup/${id}?activeTab=วันที่นัดรับกุญแจ`);
+            }}
+          >
             การรับกุญแจ
-            <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">
-              error
-            </i>
+            {isPickupDatePassed && (
+              <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">
+                error
+              </i>
+            )}
           </button>
         </div>
       </div>

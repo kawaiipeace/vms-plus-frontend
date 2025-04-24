@@ -14,7 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { convertToISO } from "@/utils/convertToISO";
 import FormHelper from "@/components/formHelper";
 import Image from "next/image";
-import { fetchDriverDetail, fetchDrivers } from "@/services/masterService";
+import { fetchDriverDetail } from "@/services/masterService";
 import { DriverType } from "@/app/types/driver-user-type";
 import useSwipeDown from "@/utils/swipeDown";
 

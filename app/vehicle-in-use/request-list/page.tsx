@@ -23,7 +23,7 @@ export default function RequestList() {
       content: (
         <>
           <MobileFileBackCard />
-          <MobileWaitForKeyCard licensePlate={""} location={""} dateRange={""} pickupLocation={""} pickupDate={""} />
+          {/* <MobileWaitForKeyCard licensePlate={""} location={""} dateRange={""} pickupLocation={""} pickupDate={""} /> */}
           <MobileWaitingCard />
           <MobileRecordTravelCard reviewCarDrive={() => reviewCarDriveModalRef.current?.openModal()} returnCarAdd={() => returnCarAddModalRef.current?.openModal()} id={""} />
         </>

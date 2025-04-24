@@ -168,7 +168,7 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
             </button>
           </div>
         </div>
-        <KeyPickupDetailModal userPickUpType="พนักงานขับรถ" ref={keyPickupDetailModalRef} />
+        {/* <KeyPickupDetailModal userPickUpType="พนักงานขับรถ" ref={keyPickupDetailModalRef} /> */}
         <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} />
       </div>
     </>

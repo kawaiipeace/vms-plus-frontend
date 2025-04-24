@@ -27,7 +27,7 @@ export default function CarDetailCard({
   } | null>(null);
 
   if (!vehicle) {
-    return null; // or show a loading/skeleton UI
+    return null; 
   }
 
   return (

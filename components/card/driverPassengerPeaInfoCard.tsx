@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { fetchDrivers } from "@/services/masterService";
-import { DriverType } from "@/app/types/driver-user-type";
+import { fetchVehicleUsers } from "@/services/masterService";
+import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import CallToDriverModal from "@/components/modal/callToDriverModal";
 
 interface DriverPassengerInfoCardProps {
@@ -11,7 +11,7 @@ interface DriverPassengerInfoCardProps {
   displayLocation?: boolean;
 }
 
-export default function DriverPassengerInfoCard({
+export default function DriverPassengerPeaInfoCard({
   id,
   requestData,
   displayLocation,
@@ -20,26 +20,31 @@ export default function DriverPassengerInfoCard({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const [params, setParams] = useState({
-    name: "",
-    page: 1,
-    limit: 10,
-  });
-  const [driver, setDriver] = useState<DriverType>();
+  const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
   useEffect(() => {
-    const fetchDriverData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetchDrivers(params);
-        if (response.status === 200) {
-          setDriver(response.data.drivers[0]);
+        const res = await fetchVehicleUsers(id);
+        console.log("vehicledata", res);
+        let user = res.data[0];
+
+        // Override only contact numbers from requestData if available
+        if (requestData) {
+          user = {
+            ...user,
+            tel_mobile: requestData.car_user_mobile_contact_number,
+            tel_internal: requestData.car_user_internal_contact_number,
+          };
         }
+
+        setVehicleUser(user);
       } catch (error) {
-        console.error("Error fetching requests:", error);
+        console.error("Error fetching driver data:", error);
       }
     };
 
     if (id) {
-      fetchDriverData();
+      fetchData();
     }
   }, [id, requestData]);
 
@@ -50,24 +55,32 @@ export default function DriverPassengerInfoCard({
           <div className="w-[80px] aspect-square overflow-hidden rounded-full">
             <Image
               className="object-cover object-center"
-              src={driver?.driver_image || "/assets/img/avatar.svg"}
+              src={vehicleUser?.image_url || "/assets/img/avatar.svg"}
               alt="driver-passenger-info"
               width={200}
               height={200}
             />
           </div>
           <div>
-            <p className="font-bold">{driver?.driver_name}</p>
-            <p className="font-light">{driver?.driver_dept_sap}</p>
+            <p className="font-bold">{vehicleUser?.full_name}</p>
+            <p className="font-light">
+              {vehicleUser?.emp_id} | {vehicleUser?.dept_sap_short}
+            </p>
           </div>
         </div>
         <div className="mt-3">
+          <div className="flex">
+            <i className="material-symbols-outlined mr-2 text-[#A80689]">
+              deskphone
+            </i>
+            <p> {vehicleUser?.tel_internal}</p>
+          </div>
           <div className="grid grid-cols-4 gap-3">
             <div className="flex items-center col-span-3">
               <i className="material-symbols-outlined mr-2 text-[#A80689]">
                 smartphone
               </i>
-              <p> {driver?.driver_contact_number}</p>
+              <p> {vehicleUser?.tel_mobile}</p>
             </div>
             <div className="col-span-1">
               <button
@@ -124,9 +137,9 @@ export default function DriverPassengerInfoCard({
         )}
       </div>
       <CallToDriverModal
-        imgSrc={driver?.driver_image || "/assets/img/avatar.svg"}
-        name={driver?.driver_name || ""}
-        phone={driver?.driver_contact_number || ""}
+        imgSrc={vehicleUser?.image_url || "/assets/img/avatar.svg"}
+        name={vehicleUser?.full_name || ""}
+        phone={vehicleUser?.tel_mobile || ""}
         ref={callToDriverModalRef}
       />
     </div>
