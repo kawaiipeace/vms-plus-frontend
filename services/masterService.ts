@@ -177,3 +177,49 @@ export const fetchVehicleDetail = async (id: string) => {
   }
 };
 
+export const fetchRequestKeyDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get('received-key-user/request/' + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const cancelKeyPickup = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-canceled/', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyPickupDriver = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-key-pickup-driver', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyPickupPea = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-key-pickup-pea', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyPickupOutsider = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-user/update-key-pickup-outsider', data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+

@@ -9,7 +9,6 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import KeyPickupDetailTabs from "@/components/tabs/keyPickupDetailTab";
 import PageKeyPickupHeader from "@/components/page-header/pageKeyPickupHeader";
 import ToastCustom from "@/components/toastCustom";
-import VehiclePickupDetailTabs from "@/components/tabs/vehiclePickupDetailTab";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -82,7 +81,7 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
             {requestData && <PageKeyPickupHeader data={requestData} />}
-            <VehiclePickupDetailTabs requestId={request_id} />
+            <KeyPickupDetailTabs requestId={request_id} />
           </div>
         </div>
       </div>

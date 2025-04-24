@@ -1,8 +1,8 @@
 import React, { useRef} from "react";
 import Image from "next/image";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
-import { CallToDriverModal } from "@/components/modal/callToDriverModal";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
+import CallToDriverModal from "../modal/callToDriverModal";
 
 interface UserInfoCardProps {
   UserType?: string;
@@ -141,7 +141,7 @@ export default function UserInfoCard({
           )
         )}
       </div>
-      <CallToDriverModal ref={callToDriverModalRef} />
+      <CallToDriverModal ref={callToDriverModalRef} imgSrc={""} name={""} phone={""} />
       <DriverInfoModal ref={driverInfoModalRef} />
     </div>
   );

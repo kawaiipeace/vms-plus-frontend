@@ -26,6 +26,9 @@ export interface RequestListType{
   can_choose_driver: boolean;
   can_choose_vehicle: boolean;
   trip_type_name: string;
+  received_key_place: string;
+  received_key_start_datetime: string;
+  received_key_end_datetime: string;
 }
 
 export interface summaryType{
