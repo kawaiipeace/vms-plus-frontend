@@ -1,0 +1,112 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+
+stages:
+  - lint
+  - audit
+  - security
+  - build
+
+variables:
+  NODE_VERSION: '20.11-slim'
+
+# Cache dependencies between jobs
+cache:
+  key: 
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store
+    - node_modules
+  policy: pull-push
+
+# Common setup for all jobs
+.setup_pnpm:
+  before_script:
+    - npm install -g pnpm
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
+
+lint:
+  extends: .setup_pnpm
+  stage: lint
+  image: node:${NODE_VERSION}
+  script:
+    - pnpm lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: 
+        - "src/**/*"
+        - ".eslintrc*"
+        - "**/*.config.{js,ts,mjs}"
+        - "tsconfig.json"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "src/**/*"
+        - ".eslintrc*"
+        - "**/*.config.{js,ts,mjs}"
+        - "tsconfig.json"
+  needs: []
+
+audit:
+  extends: .setup_pnpm
+  stage: audit
+  image: node:${NODE_VERSION}
+  script:
+    - pnpm audit
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "package.json"
+        - "pnpm-lock.yaml"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "package.json"
+        - "pnpm-lock.yaml"
+  needs: []
+
+secret_scan:
+  stage: security
+  image:
+    name: "zricethezav/gitleaks"
+    entrypoint: [""]
+  script:
+    - gitleaks detect --source . --report-path detect_secrets.json --config=gitleaks.toml -v --no-git 
+  artifacts:
+    reports:
+      secret_detection: detect_secrets.json
+    expire_in: 1 week
+    when: always
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs: []
+
+build:
+  extends: .setup_pnpm
+  stage: build
+  image: node:${NODE_VERSION}
+  script:
+    - pnpm build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "src/**/*"
+        - "public/**/*"
+        - "**/*.config.{js,ts,mjs}"
+        - "tsconfig.json"
+        - "package.json"
+        - "pnpm-lock.yaml"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "src/**/*"
+        - "public/**/*"
+        - "**/*.config.{js,ts,mjs}"
+        - "tsconfig.json"
+        - "package.json"
+        - "pnpm-lock.yaml"
