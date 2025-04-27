@@ -1,12 +1,10 @@
-import axiosInstance from '@/utils/axiosInstance';
-import { formToJSON } from 'axios';
+import axiosInstance from "@/utils/axiosInstance";
 
 export const fetchVehicleUsers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get('mas/user-vehicle-users?search=' + search);
+    const response = await axiosInstance.get("mas/user-vehicle-users?search=" + search);
 
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -14,10 +12,9 @@ export const fetchVehicleUsers = async (search?: string) => {
 
 export const fetchUserDrivers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get('mas/user-driver-users?search=' + search);
+    const response = await axiosInstance.get("mas/user-driver-users?search=" + search);
 
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -25,9 +22,8 @@ export const fetchUserDrivers = async (search?: string) => {
 
 export const fetchCostTypes = async () => {
   try {
-    const response = await axiosInstance.get('ref/cost-type');
+    const response = await axiosInstance.get("ref/cost-type");
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -35,9 +31,8 @@ export const fetchCostTypes = async () => {
 
 export const fetchDriverWorkType = async () => {
   try {
-    const response = await axiosInstance.get('driver/work-type');
+    const response = await axiosInstance.get("driver/work-type");
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -47,7 +42,7 @@ export const uploadFile = async (file: File) => {
   try {
     const formData = new FormData();
     formData.append("file", file);
-    
+
     const response = await axiosInstance.post("upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -62,7 +57,7 @@ export const uploadFile = async (file: File) => {
 
 export const fetchVehicleCarTypes = async () => {
   try {
-    const response = await axiosInstance.get('vehicle/types');
+    const response = await axiosInstance.get("vehicle/types");
     return response;
   } catch (error) {
     throw error;
@@ -71,33 +66,25 @@ export const fetchVehicleCarTypes = async () => {
 
 export const fetchVehicleDepartments = async () => {
   try {
-    const response = await axiosInstance.get('mas/vehicle-departments');
+    const response = await axiosInstance.get("mas/vehicle-departments");
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchDrivers = async (params: {
-  name?: string;
-  page?: number;
-  limit?: number;
-}) => {
+export const fetchDrivers = async (params: { name?: string; page?: number; limit?: number }) => {
   try {
-    const response = await axiosInstance.get('driver/search', { params });
+    const response = await axiosInstance.get("driver/search", { params });
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchOtherDeptDrivers = async (params: {
-  name?: string;
-  page?: number;
-  limit?: number;
-}) => {
+export const fetchOtherDeptDrivers = async (params: { name?: string; page?: number; limit?: number }) => {
   try {
-    const response = await axiosInstance.get('driver/search-other-dept', { params });
+    const response = await axiosInstance.get("driver/search-other-dept", { params });
     return response;
   } catch (error) {
     throw error;
@@ -106,7 +93,7 @@ export const fetchOtherDeptDrivers = async (params: {
 
 export const fetchDriverDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('driver/' + id);
+    const response = await axiosInstance.get("driver/" + id);
     return response;
   } catch (error) {
     throw error;
@@ -115,7 +102,16 @@ export const fetchDriverDetail = async (id: string) => {
 
 export const fetchCodeTypeFromCode = async (code: string) => {
   try {
-    const response = await axiosInstance.get('ref/cost-type/' + code);
+    const response = await axiosInstance.get("ref/cost-type/" + code);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchVehicleKeyType = async () => {
+  try {
+    const response = await axiosInstance.get("ref/vehicle-key-type");
     return response;
   } catch (error) {
     throw error;
@@ -123,12 +119,10 @@ export const fetchCodeTypeFromCode = async (code: string) => {
 };
 
 export const fetchUserApproverUsers = async (search?: string) => {
-
   try {
-    const response = await axiosInstance.get('mas/user-approval-users?search=' + search);
+    const response = await axiosInstance.get("mas/user-approval-users?search=" + search);
 
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -136,7 +130,7 @@ export const fetchUserApproverUsers = async (search?: string) => {
 
 export const fetchVehicleInfo = async (code: string) => {
   try {
-    const response = await axiosInstance.get('vehicle-info/' + code);
+    const response = await axiosInstance.get("vehicle-info/" + code);
     return response;
   } catch (error) {
     throw error;
@@ -145,7 +139,7 @@ export const fetchVehicleInfo = async (code: string) => {
 
 export const fetchLogs = async (id: string, params: any) => {
   try {
-    const response = await axiosInstance.get('log/request/' + id + "?page="+params.page+"&limit="+params.limit);
+    const response = await axiosInstance.get("log/request/" + id + "?page=" + params.page + "&limit=" + params.limit);
     return response;
   } catch (error) {
     throw error;
@@ -161,7 +155,7 @@ export const fetchVehicles = async (params: {
   limit?: number;
 }) => {
   try {
-    const response = await axiosInstance.get('vehicle/search', { params });
+    const response = await axiosInstance.get("vehicle/search", { params });
     return response;
   } catch (error) {
     throw error;
@@ -170,7 +164,7 @@ export const fetchVehicles = async (params: {
 
 export const fetchVehicleDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('vehicle/' + id);
+    const response = await axiosInstance.get("vehicle/" + id);
     return response;
   } catch (error) {
     throw error;
@@ -179,7 +173,7 @@ export const fetchVehicleDetail = async (id: string) => {
 
 export const fetchRequestKeyDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('received-key-user/request/' + id);
+    const response = await axiosInstance.get("received-key-user/request/" + id);
     return response;
   } catch (error) {
     throw error;
@@ -188,7 +182,7 @@ export const fetchRequestKeyDetail = async (id: string) => {
 
 export const cancelKeyPickup = async (data: any) => {
   try {
-    const response = await axiosInstance.put('received-key-user/update-canceled/', data);
+    const response = await axiosInstance.put("received-key-user/update-canceled/", data);
     return response;
   } catch (error) {
     throw error;
@@ -197,7 +191,7 @@ export const cancelKeyPickup = async (data: any) => {
 
 export const updateKeyPickupDriver = async (data: any) => {
   try {
-    const response = await axiosInstance.put('received-key-user/update-key-pickup-driver', data);
+    const response = await axiosInstance.put("received-key-user/update-user-driver", data);
     return response;
   } catch (error) {
     throw error;
@@ -206,7 +200,7 @@ export const updateKeyPickupDriver = async (data: any) => {
 
 export const updateKeyPickupPea = async (data: any) => {
   try {
-    const response = await axiosInstance.put('received-key-user/update-key-pickup-pea', data);
+    const response = await axiosInstance.put("received-key-user/update-user-pea", data);
     return response;
   } catch (error) {
     throw error;
@@ -215,11 +209,18 @@ export const updateKeyPickupPea = async (data: any) => {
 
 export const updateKeyPickupOutsider = async (data: any) => {
   try {
-    const response = await axiosInstance.put('received-key-user/update-key-pickup-outsider', data);
+    const response = await axiosInstance.put("received-key-user/update-user-outsider", data);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-
+export const updateReceivedKeyConfirmed = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("received-key-user/update-recieived-key-confirmed", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
