@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
-import Image from "next/image";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -14,6 +13,7 @@ import {
 import { RequestListType } from "@/app/types/request-list-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
+import EditKeyAppointmentModal from "@/components/modal/editKeyAppointmentModal";
 
 interface PaginationType {
   limit: number;
@@ -31,6 +31,11 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+
+  const editKeyAppointmentModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   // Set pagination from props
   const [paginationState, setPagination] = useState<PaginationState>({
@@ -228,12 +233,11 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="แก้ไขนัดหมายรับกุญแจ"
-                onClick={() =>
-                  router.push(
-                    "/administrator/request-list/" +
-                      row.original.trn_request_uid
-                  )
-                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  editKeyAppointmentModalRef.current?.openModal()
+
+                  }}
               >
                 <i className="material-symbols-outlined">edit_calendar</i>
               </button>
@@ -289,6 +293,7 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
           />
         </>
       )}
+             <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} />
     </div>
   );
 }

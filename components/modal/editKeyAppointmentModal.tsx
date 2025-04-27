@@ -11,22 +11,27 @@ const EditKeyAppointmentModal = forwardRef((_, ref) => {
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">แก้ไขนัดหมายรับกุญแจ</div>
-          <form method="dialog">
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-              <i className="material-symbols-outlined">close</i>
-            </button>
-          </form>
+          {/* ปุ่ม close */}
+          <button
+            type="button"
+            onClick={() => modalRef.current?.close()}
+            className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+          >
+            <i className="material-symbols-outlined">close</i>
+          </button>
         </div>
+
         <div className="modal-body overflow-y-auto">
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12 md:col-span-6">
@@ -57,18 +62,34 @@ const EditKeyAppointmentModal = forwardRef((_, ref) => {
             </div>
           </div>
         </div>
+
+        {/* ปุ่ม action ด้านล่าง */}
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
-          <form method="dialog">
-            <button className="btn btn-secondary">ปิด</button>
-          </form>
-          <form method="dialog">
-            <button className="btn btn-primary">บันทึก</button>
-          </form>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => modalRef.current?.close()}
+          >
+            ปิด
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              // ที่นี่ใส่ save logic ได้ ถ้ามี
+              modalRef.current?.close();
+            }}
+          >
+            บันทึก
+          </button>
         </div>
       </div>
-      <form method="dialog" className="modal-backdrop">
-        <button>close</button>
-      </form>
+
+      {/* BACKDROP */}
+      <div
+        className="modal-backdrop"
+        onClick={() => modalRef.current?.close()}
+      ></div>
     </dialog>
   );
 });

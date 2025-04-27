@@ -61,7 +61,9 @@ export default function ApproveVehicleForAdminTabs() {
           switch (code) {
             case "30": 
             return <AdminApproveFlow />;
-          case "50": 
+          case "51": 
+            return <AdminKeyHandOverFlow />;
+            case "50": 
             return <AdminKeyHandOverFlow />;
             case "60": // เดินทาง
             case "70": // คืนยานพาหนะ

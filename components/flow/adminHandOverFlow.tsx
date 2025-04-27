@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import { summaryType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
 import { fetchKeyRequests } from "@/services/keyAdmin";
 import AdminKeyHandOverListTable from "@/components/table/admin-key-handover-list-table";
+import { KeyHandOverListType } from "@/app/types/key-handover-list-type";
 
 interface PaginationType {
   limit: number;
@@ -24,8 +25,8 @@ export default function AdminKeyHandOverFlow() {
     enddate: "",
     car_type: "",
     category_code: "",
-    order_by: "request_no",
-    order_dir: "desc",
+    order_by: "",
+    order_dir: "",
     page: 1,
     limit: 10,
   });
@@ -37,7 +38,7 @@ export default function AdminKeyHandOverFlow() {
     totalPages: 0,
   });
 
-  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
+  const [dataRequest, setDataRequest] = useState<KeyHandOverListType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
@@ -168,12 +169,14 @@ export default function AdminKeyHandOverFlow() {
   };
 
   useEffect(() => {
+ 
     const fetchRequestsData = async () => {
       try {
         const response = await fetchKeyRequests(params);
-        console.log("param-----", params);
+   
         if (response.status === 200) {
           const requestList = response.data.requests;
+          console.log("res-----", response.data);
           console.log('list',requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
@@ -197,7 +200,7 @@ export default function AdminKeyHandOverFlow() {
 
   useEffect(() => {
     console.log("Data Request Updated:", dataRequest);
-  }, [dataRequest]); // This will log whenever dataRequest changes
+  }, [dataRequest]);
 
   return (
     <>

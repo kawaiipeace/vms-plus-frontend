@@ -65,7 +65,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
           </li>
           <li className="breadcrumb-item">
             <Link href="/administrator/booking-approver">
-              อนุมัติขอคำใช้และใบอนุญาต
+            ตรวจสอบและจัดการคำขอ
             </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
