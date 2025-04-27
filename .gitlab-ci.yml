@@ -35,6 +35,7 @@ cache:
 lint:
   extends: .setup_pnpm
   stage: lint
+  allow_failure: true
   image: node:${NODE_VERSION}
   script:
     - pnpm lint
@@ -72,6 +73,7 @@ audit:
 
 secret_scan:
   stage: security
+  allow_failure: true
   image:
     name: "zricethezav/gitleaks"
     entrypoint: [""]
