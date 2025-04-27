@@ -1,12 +1,13 @@
 import { RequestListType } from "@/app/types/request-list-type";
-import MobileWaitingCard from "@/components/card/mobileWaitingCard";
 import MobileFileBackCard from "@/components/card/mobileFileBackCard"; // Make sure this is imported
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import MobileDriverCard from "@/components/card/mobileDriverCard";
 import MobileWaitForKeyCard from "@/components/card/mobileWaitForKeyCard";
+import MobileWaitingCard from "@/components/card/mobileWaitingCard";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useState } from "react";
-import MobileRecordTravelCard from "@/components/card/mobileRecordTravelCard";
-import MobileFinishVehicleCard from "@/components/card/mobileFinishVehicleCard";
+import MobileRejectCard from "../card/mobileRejectCard";
+import MobileTravelLogCard from "../card/mobileTravelLogCard";
+import MobileWaitForVehicleCard from "../card/mobileWaitForVehicleCard";
+import MobileWaitVerifyCard from "../card/mobileWaitVerifyCard";
 
 interface Props {
   requestData: RequestListType[];
@@ -41,9 +42,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
                 request.work_place || "-",
-                `${
-                  convertToBuddhistDateTime(request.start_datetime).date || "-"
-                } - ${
+                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${
                   convertToBuddhistDateTime(request.end_datetime).date || "-"
                 }`,
               ]}
@@ -63,9 +62,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
                 request.work_place || "-",
-                `${
-                  convertToBuddhistDateTime(request.start_datetime).date || "-"
-                } - ${
+                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${
                   convertToBuddhistDateTime(request.end_datetime).date || "-"
                 }`,
               ]}
@@ -86,9 +83,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
                 request.work_place || "-",
-                `${
-                  convertToBuddhistDateTime(request.start_datetime).date || "-"
-                } - ${
+                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${
                   convertToBuddhistDateTime(request.end_datetime).date || "-"
                 }`,
               ]}
@@ -103,16 +98,100 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitForKeyCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={
-                request?.vehicle_license_plate +
-                " " +
-                request?.vehicle_license_plate_province_full
-              }
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
               location={request?.work_place}
-              dateRange={convertToBuddhistDateTime(request?.start_datetime).date + ' - ' + convertToBuddhistDateTime(request?.end_datetime).date }
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime).date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime).date
+              }
               pickupLocation={request?.received_key_place}
               pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
-              pickupTime={convertToBuddhistDateTime(request?.received_key_start_datetime).time + ' - ' + convertToBuddhistDateTime(request?.received_key_end_datetime).time }
+              pickupTime={
+                convertToBuddhistDateTime(request?.received_key_start_datetime).time +
+                " - " +
+                convertToBuddhistDateTime(request?.received_key_end_datetime).time
+              }
+            />
+          );
+        }
+
+        if (ref_request_status_name === "รอรับยานพาหนะ") {
+          return (
+            <MobileWaitForVehicleCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime).date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime).date
+              }
+              pickupLocation={request?.received_key_place}
+              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
+              pickupTime={
+                convertToBuddhistDateTime(request?.received_key_start_datetime).time +
+                " - " +
+                convertToBuddhistDateTime(request?.received_key_end_datetime).time
+              }
+            />
+          );
+        }
+
+        if (ref_request_status_name === "บันทึกการเดินทาง") {
+          return (
+            <MobileTravelLogCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime).date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime).date
+              }
+              startDate={convertToBuddhistDateTime(request?.start_datetime).date}
+              endDate={convertToBuddhistDateTime(request?.end_datetime).date}
+              pickupLocation={request?.received_key_place}
+              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
+              pickupTime={
+                convertToBuddhistDateTime(request?.received_key_start_datetime).time +
+                " - " +
+                convertToBuddhistDateTime(request?.received_key_end_datetime).time
+              }
+            />
+          );
+        }
+
+        if (ref_request_status_name === "รอตรวจสอบ") {
+          return (
+            <MobileWaitVerifyCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime).date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime).date
+              }
+            />
+          );
+        }
+
+        if (ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ") {
+          return (
+            <MobileRejectCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime).date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime).date
+              }
             />
           );
         }

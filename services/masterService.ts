@@ -10,6 +10,16 @@ export const fetchVehicleUsers = async (search?: string) => {
   }
 };
 
+export const fetchReceivedKeyUsers = async (id: string, search?: string) => {
+  try {
+    const response = await axiosInstance.get("mas/user-received-key-users?search=" + search + "&trn_request_uid=" + id);
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchUserDrivers = async (search?: string) => {
   try {
     const response = await axiosInstance.get("mas/user-driver-users?search=" + search);

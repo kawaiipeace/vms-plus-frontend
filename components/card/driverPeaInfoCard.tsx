@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 import { fetchVehicleUsers } from "@/services/masterService";
-import { VehicleUserType } from "@/app/types/vehicle-user-type";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import PeaDriverInfoModal from "../modal/peaDriverInfoModal";
 
 interface DriverInfoProps {
@@ -29,7 +29,7 @@ export default function DriverPeaInfoCard({
   driver_emp_dept_sap,
   driver_internal_contact_number,
   driver_mobile_contact_number,
-  driver_image_url
+  driver_image_url,
 }: DriverInfoProps) {
   const driverInfoModalRef = useRef<{ openModal: () => void; closeModal: () => void } | null>(null);
   const userKeyPickUpModalRef = useRef<{ openModal: () => void; closeModal: () => void } | null>(null);
@@ -41,7 +41,7 @@ export default function DriverPeaInfoCard({
       if (!driverEmpID) return;
       try {
         const res = await fetchVehicleUsers(driverEmpID);
-        console.log('driver---',res.data);
+        console.log("driver---", res.data);
         setFetchedDriver(res.data[0]);
       } catch (error) {
         console.error("Error fetching driver data:", error);
@@ -58,17 +58,17 @@ export default function DriverPeaInfoCard({
     dept_sap_short: driver_emp_dept_sap,
     tel_internal: driver_internal_contact_number,
     tel_mobile: driver_mobile_contact_number,
-    image_url: driver_image_url
+    image_url: driver_image_url,
   };
 
   return (
     <div className="card overflow-hidden">
       <div className="card-body">
         <div className="card-body-inline">
-          <div className="img img-square img-avatar flex-grow-1 align-self-start">
+          <div className="img img-square w-full md:h-[239px] md:aspect-auto !aspect-square h-auto rounded-md overflow-hidden self-start">
             <Image
               src={driver?.image_url || "/assets/img/avatar.svg"}
-              className="rounded-md"
+              className="object-cover w-full h-full"
               width={100}
               height={100}
               alt="Driver Avatar"
