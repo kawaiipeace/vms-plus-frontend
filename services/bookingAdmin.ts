@@ -1,5 +1,5 @@
 
-import { ApproveRequestType, CanceledRequestType, SendbackRequestType, VerifyRequestType } from '@/app/types/request-action-type';
+import { CanceledRequestType, SendbackRequestType, VerifyRequestType } from '@/app/types/request-action-type';
 import axiosInstance from '@/utils/axiosInstance';
 
 export const fetchRequests = async (params: {

@@ -193,8 +193,8 @@ const FilterModal = forwardRef<
                           <div className="custom-control-label-group">
                             <span
                               className={`badge badge-pill-outline ${
-                                statusItem.ref_request_status_name ===
-                                "รออนุมัติ"
+                                (statusItem.ref_request_status_name ===
+                                "รออนุมัติ" ||  statusItem.ref_request_status_name === "รอรับกุญแจ")
                                   ? "badge-info"
                                   : statusItem.ref_request_status_name ===
                                     "อนุมัติแล้ว"
