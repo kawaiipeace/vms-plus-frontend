@@ -1,16 +1,13 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import Image from "next/image";
-import RadioButton from "@/components/radioButton";
-import KeyPickUpEditModal from "./keyPickUpEditModal";
-import ConfirmKeyHandOverModal from "@/components/modal/confirmKeyHandOverModal";
-import useSwipeDown from "@/utils/swipeDown";
-import TimePicker from "@/components/timePicker";
+import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import DatePicker from "@/components/datePicker";
+import RadioButton from "@/components/radioButton";
+import TimePicker from "@/components/timePicker";
+import { fetchVehicleKeyType, updateReceivedKeyConfirmed } from "@/services/masterService";
+import { convertToISO } from "@/utils/convertToISO";
+import useSwipeDown from "@/utils/swipeDown";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 // Props for the KeyPickupDetailModal component
 interface KeyPickUpDetailProps {
@@ -20,6 +17,7 @@ interface KeyPickUpDetailProps {
   name: string;
   deptSap: string;
   phone: string;
+  vehicle?: VehicleDetailType;
   onEdit?: () => void;
   onSubmit?: () => void;
 }
@@ -30,16 +28,15 @@ export interface KeyPickupDetailModalRef {
   closeModal: () => void;
 }
 
-const KeyPickupDetailModal = forwardRef<
-  KeyPickupDetailModalRef,
-  KeyPickUpDetailProps
->((props, ref) => {
-  const { id, imgSrc, name, deptSap,phone, reqId, onEdit,onSubmit } = props;
+const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetailProps>((props, ref) => {
+  const { id, imgSrc, name, deptSap, phone, reqId, onEdit, onSubmit, vehicle } = props;
 
+  const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [selectedAttach, setSelectedAttach] = useState<string>(
-    "กุญแจหลัก และบัตรเติมน้ำมัน"
-  );
+  const [vehicleKeyTypeData, setVehicleKeyTypeData] = useState<any>([]);
+  const [selectedAttach, setSelectedAttach] = useState<string>("กุญแจหลัก และบัตรเติมน้ำมัน");
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
 
   const confirmKeyHandOverModalRef = useRef<{
     openModal: () => void;
@@ -55,18 +52,50 @@ const KeyPickupDetailModal = forwardRef<
   // Handler for swipe-down to close
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-  const submit = () => {
-       try {
-         
-          // await updateKeyPickupOutsider(payload);
-
-          if (onSubmit) {
-            onSubmit();
-          }
+  useEffect(() => {
+    if (modalRef) {
+      const fetchCostTypeFromCodeFunc = async () => {
+        try {
+          const response = await fetchVehicleKeyType();
+          setVehicleKeyTypeData(response.data);
+          setSelectedAttach(response.data[0].ref_vehicle_key_type_code);
         } catch (error) {
-          console.error("Network error:", error);
+          console.error("API Error:", error);
         }
-  }
+      };
+      fetchCostTypeFromCodeFunc();
+    }
+  }, [modalRef]);
+
+  const submit = async () => {
+    if (selectedDate && selectedTime && selectedAttach) {
+      try {
+        const dateTime = convertToISO(selectedDate, selectedTime);
+        const payload = {
+          received_key_datetime: dateTime,
+          ref_vehicle_key_type_code: Number(selectedAttach),
+          trn_request_uid: reqId,
+        };
+
+        const response = await updateReceivedKeyConfirmed(payload);
+        console.log("response", response);
+
+        if (onSubmit) {
+          onSubmit();
+        }
+
+        if (response.status === 200) {
+          router.push(
+            "/vehicle-booking/request-list?received-key=success&license-plate=" + vehicle?.vehicle_license_plate
+          );
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+      }
+    } else {
+      console.warn("No formData found!");
+    }
+  };
 
   return (
     <>
@@ -109,13 +138,7 @@ const KeyPickupDetailModal = forwardRef<
               <div className="form-card w-full">
                 <div className="form-card-body">
                   <div className="form-group form-plaintext form-users">
-                    <Image
-                      src={imgSrc}
-                      className="avatar avatar-md"
-                      width={100}
-                      height={100}
-                      alt={name}
-                    />
+                    <Image src={imgSrc} className="avatar avatar-md" width={100} height={100} alt={name} />
                     <div className="form-plaintext-group align-self-center">
                       <div className="form-label">{name}</div>
                       <div className="supporting-text-group">
@@ -124,7 +147,7 @@ const KeyPickupDetailModal = forwardRef<
                     </div>
                   </div>
                   <div className="form-card-right align-self-center mt-4">
-                    <div className="text-error text-center">
+                    <div className="text-error text-center text-sm">
                       ผู้รับกุญแจมีหน้าที่ดูแลรักษา <br />
                       ไม่ให้กุญแจและ/หรือบัตรเติมน้ำมันสูญหาย
                     </div>
@@ -139,19 +162,14 @@ const KeyPickupDetailModal = forwardRef<
                 {/* Date picker */}
                 <div className="col-span-6">
                   <div className="form-group">
-                    <label className="form-label">วันที่เริ่มต้นเดินทาง</label>
+                    <label className="form-label">วันที่</label>
                     <div className="input-group">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                            calendar_month
-                          </i>
+                          <i className="material-symbols-outlined">calendar_month</i>
                         </span>
                       </div>
-                      <DatePicker
-                        placeholder={"ระบุวันที่"}
-                        // onChange={(dateStr) => setSelectedDate(dateStr)}
-                      />
+                      <DatePicker placeholder={"ระบุวันที่"} onChange={(date) => setSelectedDate(date)} />
                     </div>
                   </div>
                 </div>
@@ -159,16 +177,14 @@ const KeyPickupDetailModal = forwardRef<
                 {/* Time picker */}
                 <div className="col-span-6">
                   <div className="form-group">
-                    <label className="form-label">เวลานัดหมาย</label>
+                    <label className="form-label">เวลา</label>
                     <div className="input-group">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="material-symbols-outlined">schedule</i>
                         </span>
                       </div>
-                      <TimePicker placeholder="ระบุเวลา"   
-                      // onChange={(dateStr) => setSelectedTime(datestr)} 
-                      />
+                      <TimePicker placeholder="ระบุเวลา" onChange={(time) => setSelectedTime(time)} />
                     </div>
                   </div>
                 </div>
@@ -176,8 +192,20 @@ const KeyPickupDetailModal = forwardRef<
                 {/* Radio buttons */}
                 <div className="col-span-12">
                   <div className="form-group">
-                    <label className="form-label">สิ่งที่ส่งมอบ</label>
-                    <RadioButton
+                    <label className="form-label">สิ่งที่ได้รับ</label>
+                    {vehicleKeyTypeData.map((item: any, index: number) => {
+                      return (
+                        <RadioButton
+                          key={index}
+                          name="key"
+                          label={item.ref_vehicle_key_type_name}
+                          value={item.ref_vehicle_key_type_code}
+                          selectedValue={selectedAttach}
+                          setSelectedValue={setSelectedAttach}
+                        />
+                      );
+                    })}
+                    {/* <RadioButton
                       name="key"
                       label="กุญแจหลัก และบัตรเติมน้ำมัน"
                       value="กุญแจหลัก และบัตรเติมน้ำมัน"
@@ -190,7 +218,7 @@ const KeyPickupDetailModal = forwardRef<
                       value="กุญแจหลัก"
                       selectedValue={selectedAttach}
                       setSelectedValue={setSelectedAttach}
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>
@@ -205,8 +233,8 @@ const KeyPickupDetailModal = forwardRef<
             <button
               className="btn btn-primary w-[50%] md:w-auto"
               onClick={() => {
-                modalRef.current?.close();
-                confirmKeyHandOverModalRef.current?.openModal();
+                submit();
+                // confirmKeyHandOverModalRef.current?.openModal();
               }}
             >
               ยืนยัน
@@ -220,7 +248,13 @@ const KeyPickupDetailModal = forwardRef<
         </form>
       </dialog>
 
-      <ConfirmKeyHandOverModal ref={confirmKeyHandOverModalRef} />
+      {/* <ConfirmKeyHandOverModal
+        ref={confirmKeyHandOverModalRef}
+        id={id}
+        selectedAttach={selectedAttach}
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+      /> */}
     </>
   );
 });

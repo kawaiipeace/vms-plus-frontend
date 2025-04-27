@@ -11,17 +11,19 @@ interface MobileWaitForKeyCardProps {
   pickupLocation: string;
   pickupDate: string; // expected in format 'YYYY-MM-DD' or similar
   pickupTime: string;
+  parkingLocation?: string;
 }
 
-export default function MobileWaitForKeyCard({
+export default function MobileWaitForVehicleCard({
   id,
-  title = "รอรับกุญแจ",
+  title = "รอรับยานพาหนะ",
   licensePlate,
   location,
   dateRange,
   pickupLocation,
   pickupDate,
   pickupTime,
+  parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
 
@@ -44,7 +46,12 @@ export default function MobileWaitForKeyCard({
       <div className="card-body">
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
-            <Image src="/assets/img/graphic/status_key_pickup.png" width={100} height={100} alt="status key pickup" />
+            <Image
+              src="/assets/img/graphic/status_vehicle_pickup.png"
+              width={100}
+              height={100}
+              alt="status key pickup"
+            />
           </div>
           <div className="card-content">
             <div className="card-content-top">
@@ -53,7 +60,7 @@ export default function MobileWaitForKeyCard({
               </div>
               <div className="card-subtitle">{licensePlate}</div>
               <div className="supporting-text-group supporting-text-column">
-                <div className="supporting-text text-truncate">{location}</div>
+                <div className="supporting-text text-truncate w-full">{location}</div>
                 <div className="supporting-text text-truncate">{dateRange}</div>
               </div>
             </div>
@@ -61,18 +68,9 @@ export default function MobileWaitForKeyCard({
         </div>
 
         <div className="card-item-group d-flex flex-column">
-          <div className="card-item">
-            <i className="material-symbols-outlined">location_on</i>
-            <span className="card-item-text">{pickupLocation}</span>
-          </div>
-          <div className="card-item"></div>
-          <div className="card-item">
-            <i className="material-symbols-outlined">calendar_month</i>
-            <span className="card-item-text">{pickupDate}</span>
-          </div>
-          <div className="card-item">
-            <i className="material-symbols-outlined">schedule</i>
-            <span className="card-item-text">{pickupTime}</span>
+          <div className="card-item ">
+            <i className="material-symbols-outlined">local_parking</i>
+            <span className="card-item-text">{parkingLocation}</span>
           </div>
         </div>
 
@@ -92,10 +90,10 @@ export default function MobileWaitForKeyCard({
             className="btn btn-secondary flex-1"
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/vehicle-in-use/user/${id}?activeTab=การรับกุญแจ`);
+              router.push(`/vehicle-in-use/user/${id}?activeTab=การรับยานพาหนะ`);
             }}
           >
-            การรับกุญแจ
+            รอรับยานพาหนะ
             {isPickupDatePassed && (
               <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
             )}

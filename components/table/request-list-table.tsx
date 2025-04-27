@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { RequestListType } from "@/app/types/request-list-type";
 import { DataTable } from "@/components/table/dataTable";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -9,9 +10,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { RequestListType } from "@/app/types/request-list-type";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 interface PaginationType {
   limit: number;
@@ -60,10 +60,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
         <div className="text-left">
           <div className="flex flex-col">
             <div>{row.original.request_no}</div>
-            <div className="text-left">
-              {row.original.is_have_sub_request === "1" &&
-                "ปฏิบัติงานต่อเนื่อง"}
-            </div>
+            <div className="text-left">{row.original.is_have_sub_request === "1" && "ปฏิบัติงานต่อเนื่อง"}</div>
           </div>
         </div>
       ),
@@ -83,33 +80,24 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       accessorKey: "vehicle_license_plate",
       header: () => <div className="text-center">ยานพาหนะ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
-      ),
+      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
     },
     {
       accessorKey: "work_place",
       header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
-      ),
+      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
     },
     {
       accessorKey: "start_datetime",
       header: () => <div className="text-center">วันที่เดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(
-          row.original.start_datetime
-        );
-        const endDateTime = convertToBuddhistDateTime(
-          row.original.end_datetime
-        );
+        const startDateTime = convertToBuddhistDateTime(row.original.start_datetime);
+        const endDateTime = convertToBuddhistDateTime(row.original.end_datetime);
         return (
           <div className="text-left">
-            {startDateTime.date + " " + startDateTime.time} -{" "}
-            {endDateTime.date + " " + endDateTime.time}
+            {startDateTime.date + " " + startDateTime.time} - {endDateTime.date + " " + endDateTime.time}
           </div>
         );
       },
@@ -123,9 +111,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
         return (
           <div className="w-[80px] text-center">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
-              <span className="badge badge-pill-outline badge-error whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
+              <span className="badge badge-pill-outline badge-error whitespace-nowrap">{value as React.ReactNode}</span>
             ) : value === "รออนุมัติ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
@@ -135,9 +121,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 {value as React.ReactNode}
               </span>
             ) : (
-              <span className="badge badge-pill-outline badge-info whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
+              <span className="badge badge-pill-outline badge-info whitespace-nowrap">{value as React.ReactNode}</span>
             )}
           </div>
         );
@@ -156,12 +140,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid
-                  )
-                }
+                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
@@ -172,28 +151,15 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/key-pickup/" +
-                        row.original.trn_request_uid
-                    )
-                  }
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">
-                    quick_reference_all
-                  </i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="การรับกุญแจ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/key-pickup/" +
-                        row.original.trn_request_uid +
-                        "/edit"
-                    )
-                  }
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
                   <i className="material-symbols-outlined">key</i>
                 </button>
@@ -205,28 +171,15 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/key-pickup/" +
-                        row.original.trn_request_uid
-                    )
-                  }
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">
-                    quick_reference_all
-                  </i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="รอรับยานพาหนะ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/key-pickup/" +
-                        row.original.trn_request_uid +
-                        "/edit"
-                    )
-                  }
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid + "/edit")}
                 >
                   <i className="material-symbols-outlined">directions_car</i>
                 </button>
@@ -237,13 +190,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="แก้ไข"
-                onClick={() =>
-                  router.push(
-                    "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid +
-                      "/edit"
-                  )
-                }
+                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid + "/edit")}
               >
                 <i className="material-symbols-outlined">stylus</i>
               </button>
@@ -253,12 +200,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid
-                  )
-                }
+                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>

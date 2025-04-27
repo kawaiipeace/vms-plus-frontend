@@ -1,10 +1,9 @@
-import React, { useRef, useEffect, useState } from "react";
-import Image from "next/image";
+import { DriverType } from "@/app/types/driver-user-type";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
 import UserKeyPickUpModal from "@/components/modal/userKeyPickUpModal";
 import { fetchDriverDetail } from "@/services/masterService";
-import { DriverType } from "@/app/types/driver-user-type";
-import { requestDetail } from "@/services/bookingUser";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import AdminDriverPickModal from "../modal/adminDriverPickModal";
 
 interface DriverSmallInfoCardProps {
@@ -42,13 +41,12 @@ export default function DriverSmallInfoCard({
 
   const [driver, setDriver] = useState<DriverType>();
   const [driverId, setDriverId] = useState<string>("");
-  
+
   const seeDriverDetail = (id: string) => {
     setDriverId(id);
     adminDriverPickModalRef.current?.closeModal();
     driverInfoModalRef.current?.openModal();
   };
-
 
   useEffect(() => {
     if (driverDetail) {
@@ -74,13 +72,13 @@ export default function DriverSmallInfoCard({
   }
 
   return (
-    <div className="card">
+    <div className="card card-section-inline gap-4 flex-col">
       <div className="card-body">
         <div className="card-body-inline">
-          <div className="img img-square img-avatar flex-grow-1 align-self-start">
+          <div className=" img img-square w-full md:h-[239px] md:aspect-auto !aspect-square h-auto rounded-md overflow-hidden self-start">
             <Image
               src={`${driver.driver_image || "/assets/img/avatar.svg"}`}
-              className="rounded-md"
+              className="object-cover w-full h-full"
               width={100}
               height={100}
               alt={driver.driver_name}
@@ -90,7 +88,7 @@ export default function DriverSmallInfoCard({
             <div className="card-content-top">
               <div className="card-title">{driver.driver_name}</div>
               <div className="supporting-text-group">
-                <div className="supporting-text">{driver.driver_dept_sap}</div>
+                <div className="supporting-text">{driver.driver_dept_sap || "-"}</div>
               </div>
             </div>
 
@@ -98,17 +96,13 @@ export default function DriverSmallInfoCard({
               {showPhone ? (
                 <div className="card-item">
                   <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">
-                    {driver.driver_contact_number}
-                  </span>
+                  <span className="card-item-text">{driver.driver_contact_number}</span>
                 </div>
               ) : (
                 <>
                   <div className="card-item">
                     <i className="material-symbols-outlined">star</i>
-                    <span className="card-item-text">
-                      {driver.driver_average_satisfaction_score}
-                    </span>
+                    <span className="card-item-text">{driver.driver_average_satisfaction_score}</span>
                   </div>
                   <div className="card-item">
                     <i className="material-symbols-outlined">person</i>
@@ -133,7 +127,10 @@ export default function DriverSmallInfoCard({
                 ดูรายละเอียด
               </button>
               {selectDriver && (
-                <button className="btn btn-secondary flex-1"   onClick={() => adminDriverPickModalRef.current?.openModal()}>
+                <button
+                  className="btn btn-secondary flex-1"
+                  onClick={() => adminDriverPickModalRef.current?.openModal()}
+                >
                   เลือกพนักงานขับรถ
                 </button>
               )}
@@ -145,9 +142,7 @@ export default function DriverSmallInfoCard({
             <hr />
             <div className="form-section">
               <div className="form-section-header">
-                <div className="form-section-header-title">
-                  การนัดหมายพนักงานขับรถ
-                </div>
+                <div className="form-section-header-title">การนัดหมายพนักงานขับรถ</div>
               </div>
 
               <div className="form-card">
@@ -165,9 +160,7 @@ export default function DriverSmallInfoCard({
 
                     <div className="col-span-12 md:col-span-12">
                       <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">
-                          calendar_month
-                        </i>
+                        <i className="material-symbols-outlined">calendar_month</i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่และเวลา</div>
                           <div className="form-text">01/01/2567</div>
@@ -182,12 +175,7 @@ export default function DriverSmallInfoCard({
         )}
       </div>
 
-
-      <AdminDriverPickModal
-        ref={adminDriverPickModalRef}
-        reqId={reqId}
-        onClickDetail={seeDriverDetail}
-      />
+      <AdminDriverPickModal ref={adminDriverPickModalRef} reqId={reqId} onClickDetail={seeDriverDetail} />
 
       <DriverInfoModal
         ref={driverInfoModalRef}
