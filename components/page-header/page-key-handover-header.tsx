@@ -1,35 +1,20 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
-import CancelRequestModal from "./modal/cancelRequestModal";
-import FileBackRequestModal from "./modal/fileBackModal";
+import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
-import KeyPickupModal from "@/components/modal/keyPickUpModal";
-import PassVerifyModal from "./modal/passVerifyModal";
 
 interface Props {
   data: RequestDetailType;
   editable?: boolean;
 }
 
-export default function PageHeaderAdmin({ data, editable }: Props) {
-  const keyPickupModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-
-  const passVerifyModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+export default function PageKeyHandOverHeader({ data, editable }: Props) {
 
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const fileBackRequestModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+
 
   const [copied, setCopied] = useState(false);
 
@@ -44,15 +29,6 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
     }
   };
 
-  const [pickupData, setPickupData] = useState<{
-    place: string;
-    datetime: string;
-  } | null>(null);
-
-  const handlePickupConfirmed = (data: { place: string; datetime: string }) => {
-    setPickupData(data);
-    passVerifyModalRef.current?.openModal();
-  };
 
   return (
     <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
@@ -135,14 +111,6 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               <Link
                 className="dropdown-item"
                 href="#"
-                onClick={() => fileBackRequestModalRef.current?.openModal()}
-              >
-                <i className="material-symbols-outlined">reply</i>
-                ตีกลับให้แก้ไข
-              </Link>
-              <Link
-                className="dropdown-item"
-                href="#"
                 onClick={() => window.print()}
               >
                 <i className="material-symbols-outlined">print</i>
@@ -176,75 +144,19 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
             >
               <i className="material-symbols-outlined">print</i>พิมพ์
             </button>{" "}
-            <button
-              className="btn btn-secondary"
-              onClick={() => fileBackRequestModalRef.current?.openModal()}
-            >
-              <i className="material-symbols-outlined">reply</i>
-              ตีกลับให้แก้ไข
-            </button>
           </div>
         </div>
 
-        <button
-          className="btn btn-primary"
-          disabled={editable ? false : true}
-          onClick={() => keyPickupModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">check</i>
-          ผ่านการตรวจสอบ
-        </button>
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
-        role="admin"
+        role="adminKey"
         confirmText="ยกเลิกคำขอ"
       />
-      <FileBackRequestModal
-        id={data?.trn_request_uid}
-        ref={fileBackRequestModalRef}
-        title="ยืนยันตีกลับคำขอ"
-        role="admin"
-        desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
-        placeholder="โปรดระบุเหตุผลที่ตีกลับ"
-        confirmText="ตีกลับคำขอ"
-      />
 
-      <KeyPickupModal
-        ref={keyPickupModalRef}
-        title={"นัดหมายรับกุญแจ"}
-        role="admin"
-        desc={
-          <>
-            ระบบจะแจ้งข้อมูลการนัดหมายรับกุญแจให้ผู้ใช้ทราบ<br></br>
-            เมื่อคำขอได้รับการอนุมัติในขั้นตอนสุดท้าย?
-          </>
-        }
-        confirmText="ต่อไป"
-        place={data?.received_key_place}
-        start_datetime={data?.received_key_start_datetime}
-        end_datetime={data?.received_key_end_datetime}
-        onPickupConfirmed={handlePickupConfirmed}
-      />
-
-      <PassVerifyModal
-        id={data?.trn_request_uid}
-        ref={passVerifyModalRef}
-        title={"ยืนยันผ่านการตรวจสอบ"}
-        role="admin"
-        desc={
-          <>
-            คุณต้องการยืนยันผ่านการตรวจสอบ<br></br>
-            และส่งคำขอไปยังผู้อนุมัติใช้ยานพาหนะหรือไม่?
-          </>
-        }
-        confirmText="ผ่านการตรวจสอบ"
-        pickupData={pickupData}
-        onBack={() => keyPickupModalRef.current?.openModal()}
-      />
     </div>
   );
 }

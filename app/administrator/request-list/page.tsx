@@ -12,6 +12,7 @@ function RequestListContent() {
   const sendbackReq = searchParams.get("sendback-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
+  const keychangeReq = searchParams.get("keychange-req");
   const requestId = searchParams.get("request-id");
 
   return (
@@ -29,6 +30,21 @@ function RequestListContent() {
           status="success"
         />
       )}
+
+      {keychangeReq === "success" && (
+        <ToastCustom
+          title="แก้ไขนัดหมายสำเร็จ"
+          desc={
+            <>
+              แก้ไขนัดหมายรับกุญแจคำขอใช้ยานพหานะเลขที่
+              <br />
+              {requestId} เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
       {approveReq === "success" && (
         <ToastCustom
           title="อนุมัติคำขอสำเร็จ"

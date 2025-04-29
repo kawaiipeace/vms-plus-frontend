@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import {
-  requestHistoryLog,
-  requestHistoryLogColumns,
-} from "@/data/requestHistory";
-import TableComponent from "@/components/table";
-import RequestDetailForm from "@/components/admin/requestDetailForm";
+import React, { useEffect, useState } from "react";
+import RequestDetailForm from "@/components/admin/key-handover/requestDetailForm";
+import KeyHandOver from "@/components/admin/key-handover/key-handover-detail";
+import LogListTable from "@/components/table/log-list-table";
+import { useLogContext } from "@/contexts/log-context";
+import PaginationControls from "@/components/table/pagination-control";
 
 interface Props {
   requestId: string;
@@ -12,6 +11,23 @@ interface Props {
 }
 
 export default function RequestDetailTabs({ requestId, displayKeyHandover }: Props) {
+  const { dataRequest, pagination, params, setParams, loadLogs } = useLogContext();
+  const handlePageChange = (newPage: number) => {
+    setParams((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams((prev) => ({ ...prev, limit, page: 1 }));
+  };
+
+  useEffect(() => {
+    if (requestId) {
+      loadLogs(requestId);
+    }
+  }, [loadLogs, params, requestId]);
+
+    
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
@@ -21,8 +37,8 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
     ...(displayKeyHandover
       ? [
           {
-            label: "รับกุญแจ",
-            content: <RequestDetailForm requestId={requestId} />,
+            label: "การรับกุญแจ",
+            content: <KeyHandOver editable={true} requestId={requestId} />,
             badge: "",
           },
         ]
@@ -30,10 +46,16 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
     {
       label: "ประวัติการดำเนินการ",
       content: (
-        <TableComponent
-          data={requestHistoryLog}
-          columns={requestHistoryLogColumns}
-        />
+        <>
+        <LogListTable defaultData={dataRequest} pagination={pagination} />
+          {dataRequest.length > 0 && (
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          )}
+        </>
       ),
       badge: "",
     },

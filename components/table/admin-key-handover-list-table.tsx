@@ -27,7 +27,10 @@ interface Props {
   pagination: PaginationType;
 }
 
-export default function AdminKeyHandOverListTable({ defaultData, pagination }: Props) {
+export default function AdminKeyHandOverListTable({
+  defaultData,
+  pagination,
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -64,17 +67,16 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
         ).time;
 
         return (
-        
-        <div className="text-left" data-name="วันที่นัดรับกุญแจ">
-          <div className="flex flex-col">
-            <div>{startDate}</div>
-            <div className="text-color-secondary text-xs">
-             {startTime} - {endTime}
+          <div className="text-left" data-name="วันที่นัดรับกุญแจ">
+            <div className="flex flex-col">
+              <div>{startDate}</div>
+              <div className="text-color-secondary text-xs">
+                {startTime} - {endTime}
+              </div>
             </div>
           </div>
-        </div>
-        )}
-      ,
+        );
+      },
     },
     {
       accessorKey: "vehicle_user_emp_name",
@@ -82,7 +84,7 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="สถานที่รับกุญแจ">
-        {row.original.received_key_place}
+          {row.original.received_key_place}
         </div>
       ),
     },
@@ -92,17 +94,12 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้มารับกุญแจ">
-     
-            <div className="flex flex-col">
-           
-            
-                <div className="text-left">{row.original.driver_name}</div>
-                <div className="text-color-secondary text-xs">
-                  {row.original.driver_dept_name}
-                </div>
-           
+          <div className="flex flex-col">
+            <div className="text-left">{row.original.driver_name}</div>
+            <div className="text-color-secondary text-xs">
+              {row.original.driver_dept_name}
             </div>
-     
+          </div>
         </div>
       ),
     },
@@ -112,16 +109,14 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-
-            <div className="flex flex-col">
-
-              <div className="text-left">
-                {row.original.vehicle_license_plate}
-              </div>
-              <div className="text-color-secondary text-xs">
-                {row.original.ref_vehicle_type_name}
-              </div>
-              </div>
+          <div className="flex flex-col">
+            <div className="text-left">
+              {row.original.vehicle_license_plate}
+            </div>
+            <div className="text-color-secondary text-xs">
+              {row.original.ref_vehicle_type_name}
+            </div>
+          </div>
         </div>
       ),
     },
@@ -133,9 +128,7 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
         <div className="text-left" data-name="สังกัดยานพาหนะ">
           <div className="flex flex-col">
             {" "}
-            <div className="text-left">
-              {row.original.vehicle_dept_name}
-            </div>
+            <div className="text-left">{row.original.vehicle_dept_name}</div>
             <div className="text-color-secondary text-xs">
               {row.original.vehicle_carpool_name}
             </div>
@@ -157,8 +150,7 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
             <div className="flex flex-col">
               <div>{startDateTime.date}</div>
               <div className="text-color-secondary text-xs">
-                 (
-                {row.original.trip_type_name})
+                ({row.original.trip_type_name})
               </div>
             </div>
           </div>
@@ -215,33 +207,37 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
         const statusValue = row.original.ref_request_status_name;
         return (
           <div className="text-left dataTable-action">
-    
-              <button
-                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/administrator/request-list/" +
-                      row.original.trn_request_uid
-                  )
-                }
-              >
-                <i className="material-symbols-outlined">quick_reference_all</i>
-              </button>
-            
-   
-              <button
-                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="แก้ไขนัดหมายรับกุญแจ"
-                onClick={(e) => {
-                  e.preventDefault();
-                  editKeyAppointmentModalRef.current?.openModal()
+            <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              data-tip="ดูรายละเอียดคำขอ"
+              onClick={() =>
+                router.push(
+                  "/administrator/key-handover/" + row.original.trn_request_uid
+                )
+              }
+            >
+              <i className="material-symbols-outlined">quick_reference_all</i>
+            </button>
 
-                  }}
-              >
-                <i className="material-symbols-outlined">edit_calendar</i>
-              </button>
-       
+            <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              data-tip="แก้ไขนัดหมายรับกุญแจ"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                editKeyAppointmentModalRef.current?.openModal();
+              }}
+            >
+              <i className="material-symbols-outlined">edit_calendar</i>
+            </button>
+            <EditKeyAppointmentModal
+              req_id={row.original.trn_request_uid}
+              place={row.original.received_key_place}
+              date={row.original.received_key_start_datetime}
+              start_time={convertToBuddhistDateTime(row.original.received_key_start_datetime).time}
+              end_time={convertToBuddhistDateTime(row.original.received_key_end_datetime).time}
+              ref={editKeyAppointmentModalRef}
+            />
           </div>
         );
       },
@@ -280,20 +276,12 @@ export default function AdminKeyHandOverListTable({ defaultData, pagination }: P
           <DataTable
             table={table}
             onRowClick={(row) => {
-
-              const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
-              console.log("row clicked", { status, uid }); 
-              if (status === "รออนุมัติ") {
-                router.push(`/administrator/request-list/${uid}/edit`);
-              } else {
-                router.push(`/administrator/request-list/${uid}`);
-              }
+                router.push(`/administrator/key-handover/${uid}`);
             }}
           />
         </>
       )}
-             <EditKeyAppointmentModal ref={editKeyAppointmentModalRef} />
     </div>
   );
 }
