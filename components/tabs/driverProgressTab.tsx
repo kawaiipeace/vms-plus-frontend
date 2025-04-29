@@ -2,9 +2,10 @@ import React from "react";
 import MobileDriverCard from "@/components/card/mobileDriverCard";
 import Image from "next/image";
 import Link from "next/link";
+import { ReceivedKeyDriver } from "@/app/types/vehicle-in-use-driver-type";
 
 interface DriverProgressTabProps {
-  data: number[];
+  data: ReceivedKeyDriver[];
 }
 
 const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
@@ -16,17 +17,44 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
             <div>
               <h6 className="text-md font-bold my-4">เดินทาง</h6>
               <div className="grid grid-cols-1 gap-4">
-                <Link href="/vehicle-in-use/driver/1">
-                  <MobileDriverCard cardType="recordTravel" carRegis="5กก 1234 กรุงเทพมหานคร" location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..." date="01/01/2567 - 07/01/2567" title="บันทึกการเดินทาง" noteText="กรุณาบันทึกเลขไมล์และการเติมเชื้อเพลิง" />
+                <Link href="/vehicle-in-use/driver/97852739-cdb5-46c4-a280-78894fb432fd">
+                  <MobileDriverCard
+                    cardType="recordTravel"
+                    carRegis="5กก 1234 กรุงเทพมหานคร"
+                    location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
+                    date="01/01/2567 - 07/01/2567"
+                    title="บันทึกการเดินทาง"
+                    noteText="กรุณาบันทึกเลขไมล์และการเติมเชื้อเพลิง"
+                  />
                 </Link>
-                <MobileDriverCard cardType="waitCar" carRegis="5กก 1234 กรุงเทพมหานคร" location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..." date="01/01/2567 - 07/01/2567" title="รอรับยานพาหนะ" />
+                <MobileDriverCard
+                  cardType="waitCar"
+                  carRegis="5กก 1234 กรุงเทพมหานคร"
+                  location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
+                  date="01/01/2567 - 07/01/2567"
+                  title="รอรับยานพาหนะ"
+                />
               </div>
             </div>
             <div>
               <h6 className="text-md font-bold my-4">คืนยานพาหนะ</h6>
               <div className="grid grid-cols-1 gap-4">
-                <MobileDriverCard cardType="waitVerify" carRegis="5กก 1234 กรุงเทพมหานคร" location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..." date="01/01/2567 - 07/01/2567" title="รอตรวจสอบ" noteText="รอผู้ดูแลยานพาหนะตรวจสอบและปิดงาน" />
-                <MobileDriverCard cardType="returnFail" carRegis="5กก 1234 กรุงเทพมหานคร" location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..." date="01/01/2567 - 07/01/2567" title="คืนยานพาหนะไม่สำเร็จ" noteText="กรุณาเติมเชื้อเพลิงและดูแลความสะอาด ก่อนคืนยานพาหนะ" />
+                <MobileDriverCard
+                  cardType="waitVerify"
+                  carRegis="5กก 1234 กรุงเทพมหานคร"
+                  location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
+                  date="01/01/2567 - 07/01/2567"
+                  title="รอตรวจสอบ"
+                  noteText="รอผู้ดูแลยานพาหนะตรวจสอบและปิดงาน"
+                />
+                <MobileDriverCard
+                  cardType="returnFail"
+                  carRegis="5กก 1234 กรุงเทพมหานคร"
+                  location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
+                  date="01/01/2567 - 07/01/2567"
+                  title="คืนยานพาหนะไม่สำเร็จ"
+                  noteText="กรุณาเติมเชื้อเพลิงและดูแลความสะอาด ก่อนคืนยานพาหนะ"
+                />
               </div>
             </div>
           </div>
@@ -35,7 +63,12 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
         <>
           <div className="grid grid-cols-1 gap-4 text-center">
             <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image src="/assets/img/graphic/data_empty.svg" width={900} height={900} alt="" />
+              <Image
+                src="/assets/img/graphic/data_empty.svg"
+                width={900}
+                height={900}
+                alt=""
+              />
             </div>
             <div className="col-span-12">
               <p className="font-bold text-2xl">ไม่มีคำขอใช้ยานพาหนะ</p>
