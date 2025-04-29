@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
@@ -7,61 +8,123 @@ import DriverProgressTab from "@/components/tabs/driverProgressTab";
 import DriverSoonTab from "@/components/tabs/driverSoonTab";
 import DriverFinishTab from "@/components/tabs/driverFinishTab";
 import DriverCancelTab from "@/components/tabs/driverCancelTab";
+import {
+  ReceivedKeyDriver,
+  VehicleInUseDriverMenu,
+} from "@/app/types/vehicle-in-use-driver-type";
+import { fetchMenus, receivedKeyDriver } from "@/services/vehicleInUseDriver";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import "dayjs/locale/th";
+import dayjs from "dayjs";
+
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
 
 export default function DriverMain() {
-  const dataProgress: number[] = [1];
-  const dataSoon: [] = [];
-  const dataFinish: [] = [];
-  const dataCancel: [] = [];
-  const tabs = [
-    {
-      label: "กำลังดำเนินการ",
-      content: (
-        <>
-          <DriverProgressTab data={dataProgress} />
-        </>
-      ),
-      badge: "4",
-    },
-    {
-      label: "กำลังมาถึง",
-      content: (
-        <>
-          <DriverSoonTab data={dataSoon} />
-        </>
-      ),
-      badge: "3",
-    },
-    {
-      label: "เสร็จสิ้น",
-      content: (
-        <>
-          <DriverFinishTab data={dataFinish} />
-        </>
-      ),
-    },
-    {
-      label: "ยกเลิก",
-      content: (
-        <>
-          <DriverCancelTab data={dataCancel} />
-        </>
-      ),
-    },
-  ];
+  const [statusData, setStatusData] = useState<VehicleInUseDriverMenu[]>([]);
+  const [data, setData] = useState<ReceivedKeyDriver[]>([]);
   const [activeTab, setActiveTab] = useState(0);
   const { isPinned } = useSidebar();
+
+  const menuOrder: { [key: string]: string[] } = {
+    0: ["51", "60", "70", "71"],
+    1: ["50"],
+    2: ["80"],
+    3: ["90"],
+  };
+
+  const getFilterData = () => {
+    const status = menuOrder[activeTab];
+    const filter = data.filter((e) =>
+      status.includes(e.ref_request_status_code)
+    );
+
+    return data;
+    // return filter;
+  };
+
+  const filterData = getFilterData();
 
   //   const reviewCarDriveModalRef = useRef<{
   //     openModal: () => void;
   //     closeModal: () => void;
   //   } | null>(null);
 
+  useEffect(() => {
+    const fetchMenuFunc = async () => {
+      try {
+        const response = await fetchMenus();
+        const result = response.data;
+        setStatusData(result);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
+    const fetchReceivedKeyDriverFunc = async () => {
+      try {
+        const params = {};
+        const response = await receivedKeyDriver(params);
+        const result = response.data;
+        setData(result.requests ?? []);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
+    fetchMenuFunc();
+    fetchReceivedKeyDriverFunc();
+  }, []);
+
+  const getTabContent = (code: string) => {
+    switch (code) {
+      case "50":
+        return <DriverSoonTab data={filterData} />;
+      case "51":
+        return <DriverProgressTab data={filterData} />;
+      case "60":
+        return <DriverProgressTab data={filterData} />;
+      case "70":
+        return <DriverProgressTab data={filterData} />;
+      case "71":
+        return <DriverProgressTab data={filterData} />;
+      case "80":
+        return <DriverFinishTab data={filterData} />;
+      case "90":
+        return <DriverCancelTab data={filterData} />;
+      default:
+        return <></>;
+    }
+  };
+
+  const getOrder = (status_code: string) => {
+    const keys = Object.keys(menuOrder);
+    const order = keys.find((e) => menuOrder[e].includes(status_code));
+    return Number(order);
+  };
+
+  const getTabs = () => {
+    const tabs = statusData?.map((item) => ({
+      order: getOrder(item.ref_request_status_code),
+      label: item.ref_request_status_name,
+      badge: item.count > 0 ? item.count : undefined,
+      content: getTabContent(item.ref_request_status_code),
+    }));
+
+    return tabs.sort((a, b) => a.order - b.order);
+  };
+
+  const tabs = getTabs();
+
   return (
     <>
       <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <SideBar menuName="งานพนักงานขับรถ" />
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -87,18 +150,28 @@ export default function DriverMain() {
             </div>
 
             <div className="w-full">
-            <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+              <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
                 {tabs.map((tab, index) => (
-                  <button key={index} className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`} onClick={() => setActiveTab(index)}>
+                  <button
+                    key={index}
+                    className={`tab transition-colors duration-300 ease-in-out ${
+                      activeTab === index ? "active" : "text-gray-600"
+                    }`}
+                    onClick={() => setActiveTab(index)}
+                  >
                     <div className="flex gap-2 items-center">
                       {tab.label}
-                      {tab.badge && <span className="badge badge-brand badge-pill-outline">{tab.badge}</span>}{" "}
+                      {tab.badge && (
+                        <span className="badge badge-brand badge-pill-outline">
+                          {tab.badge}
+                        </span>
+                      )}{" "}
                     </div>
                   </button>
                 ))}
               </div>
 
-              {tabs[activeTab].content}
+              {tabs[activeTab]?.content}
             </div>
           </div>
         </div>

@@ -1,26 +1,56 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import DriverDetailContent from "@/components/driverDetail";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { ReceivedKeyDriverRequest } from "@/app/types/vehicle-in-use-driver-type";
+import { receivedKeyDriverRequest } from "@/services/vehicleInUseDriver";
 
 const DriverDetail = () => {
   const { isPinned } = useSidebar();
   const searchParams = useSearchParams();
+  const { trn_request_uid } = useParams();
   const progressTypeUrl = searchParams.get("progressType");
-  const [progressType, setProgressType] = useState("บันทึกการเดินทาง");
+  const [progressType, setProgressType] = useState("รอรับกุญแจ");
+  const [data, setData] = useState<ReceivedKeyDriverRequest>();
+
   useEffect(() => {
     if (progressTypeUrl) {
+      console.log("progressTypeUrl: ", progressTypeUrl, " - progressTypeUrl");
       setProgressType(progressTypeUrl);
     }
   }, [progressTypeUrl]);
+
+  useEffect(() => {
+    const receivedKeyDriverRequestFunc = async () => {
+      try {
+        const response = await receivedKeyDriverRequest(
+          trn_request_uid as string
+        );
+        const result = response.data;
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
+    if (trn_request_uid && typeof trn_request_uid === "string") {
+      receivedKeyDriverRequestFunc();
+    }
+  }, [trn_request_uid]);
+
   return (
     <>
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -49,7 +79,7 @@ const DriverDetail = () => {
             </div>
 
             <div className="w-full">
-              <DriverDetailContent progressType={progressType} />
+              <DriverDetailContent data={data} progressType={progressType} />
             </div>
           </div>
         </div>
