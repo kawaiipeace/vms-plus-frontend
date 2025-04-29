@@ -16,6 +16,7 @@ interface KeyPickUpDetailProps {
   imgSrc: string;
   name: string;
   deptSap: string;
+  deptSapShort: string;
   phone: string;
   vehicle?: VehicleDetailType;
   onEdit?: () => void;
@@ -29,7 +30,7 @@ export interface KeyPickupDetailModalRef {
 }
 
 const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetailProps>((props, ref) => {
-  const { id, imgSrc, name, deptSap, phone, reqId, onEdit, onSubmit, vehicle } = props;
+  const { id, imgSrc, name, deptSap, deptSapShort, phone, reqId, onEdit, onSubmit, vehicle } = props;
 
   const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -37,11 +38,6 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
   const [selectedAttach, setSelectedAttach] = useState<string>("กุญแจหลัก และบัตรเติมน้ำมัน");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
-
-  const confirmKeyHandOverModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  }>(null);
 
   // Expose open and close methods via ref
   useImperativeHandle(ref, () => ({
@@ -143,6 +139,7 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                       <div className="form-label">{name}</div>
                       <div className="supporting-text-group">
                         <div className="supporting-text">{deptSap}</div>
+                        <div className="supporting-text"> {deptSapShort}</div>
                       </div>
                     </div>
                   </div>

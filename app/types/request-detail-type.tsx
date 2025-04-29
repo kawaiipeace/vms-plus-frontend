@@ -56,6 +56,7 @@ export interface RequestDetailType {
   received_key_end_datetime: string;
   can_cancel_request: boolean;
   ref_request_status_code: string;
+  ref_vehicle_key_type_code: string;
   ref_request_status: {
     ref_request_status_code: string;
     ref_request_status_desc: string;
@@ -64,25 +65,25 @@ export interface RequestDetailType {
   ref_request_status_name: string;
   sended_back_request_reason: string;
   canceled_request_reason: string;
-  received_key_datetime: string;                // ISO date-time string
+  received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;
   received_key_dept_sap_full: string;
   received_key_dept_sap_short: string;
   received_key_image_url: string;
   received_key_emp_id: string;
-  received_key_emp_name: string;        // ISO date-time string
+  received_key_emp_name: string; // ISO date-time string
   received_key_internal_contact_number: string;
   received_key_mobile_contact_number: string;
-  received_key_remark: string;       // ISO date-time string
+  received_key_remark: string; // ISO date-time string
   received_vehicle_dept_sap: string;
   received_vehicle_dept_sap_full: string;
   received_vehicle_dept_sap_short: string;
   received_vehicle_emp_id: string;
   received_vehicle_emp_name: string;
-  receiver_key_type: number;   
+  receiver_key_type: number;
 }
 
-export interface RequestVehicleType{
+export interface RequestVehicleType {
   available_units: number;
   ref_vehicle_type_code: number;
   ref_vehicle_type_name: string;

@@ -1,15 +1,14 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
-import { useSidebar } from "@/contexts/sidebarContext";
-import Header from "@/components/header";
-import SideBar from "@/components/sideBar";
-import { useParams, useSearchParams } from "next/navigation";
-import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import KeyPickupDetailTabs from "@/components/tabs/keyPickupDetailTab";
+import Header from "@/components/header";
 import PageKeyPickupHeader from "@/components/page-header/pageKeyPickupHeader";
-import ToastCustom from "@/components/toastCustom";
+import SideBar from "@/components/sideBar";
 import VehiclePickupDetailTabs from "@/components/tabs/vehiclePickupDetailTab";
+import ToastCustom from "@/components/toastCustom";
+import { useSidebar } from "@/contexts/sidebarContext";
+import { requestDetail } from "@/services/bookingUser";
+import { useParams, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -74,11 +73,7 @@ export default function RequestDetail() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             {requestData && <PageKeyPickupHeader data={requestData} />}

@@ -1,4 +1,3 @@
-"use client";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import RadioButton from "@/components/radioButton";
 import {
@@ -100,7 +99,9 @@ const KeyPickUpEditModal = forwardRef<
         console.error("Error fetching requests:", error);
       }
     };
-    fetchRequests();
+    if (requestData) {
+      fetchRequests();
+    }
   }, [requestData]);
 
   const handleVehicleUserChange = async (selectedOption: VehicleUserType) => {
@@ -240,7 +241,6 @@ const KeyPickUpEditModal = forwardRef<
                       options={driverOptions}
                       value={selectedVehicleUserOption}
                       onChange={handleVehicleUserChange}
-                      data={vehicleUserDatas}
                     />
                   </div>
                 </div>
