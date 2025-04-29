@@ -75,16 +75,16 @@ export default function DriverSmallInfoCard({
     <div className="card card-section-inline gap-4 flex-col">
       <div className="card-body">
         <div className="card-body-inline">
-          <div className=" img img-square w-full md:h-[239px] md:aspect-auto !aspect-square h-auto rounded-md overflow-hidden self-start">
+          <div className="img-square w-[30%] rounded-md overflow-hidden self-start">
             <Image
               src={`${driver.driver_image || "/assets/img/avatar.svg"}`}
-              className="object-cover w-full h-full"
+              className="object-cover w-[128px] h-full"
               width={100}
               height={100}
               alt={driver.driver_name}
             />
           </div>
-          <div className="card-content">
+          <div className="card-content w-[70%]">
             <div className="card-content-top">
               <div className="card-title">{driver.driver_name}</div>
               <div className="supporting-text-group">
@@ -117,7 +117,7 @@ export default function DriverSmallInfoCard({
           <div className="card-actioins w-full">
             <div className="flex gap-3">
               <button
-                className={`btn ${selectDriver ? "btn-secondary" : "btn-default"} flex-1`}
+                className={`btn btn-secondary flex-1`}
                 onClick={
                   userKeyPickup
                     ? () => userKeyPickUpModalRef.current?.openModal()

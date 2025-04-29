@@ -2,6 +2,7 @@ import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
+import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
@@ -59,6 +60,8 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               ? await finalCancelRequest(payload)
               : role === "key"
               ? await cancelKeyPickup(payload)
+              : role === "adminKey"
+              ? await keyCancelRequest(payload)
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
@@ -72,6 +75,8 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               ? router.push("/administrator/booking-final?cancel-req=success&request-id=" + data.result?.request_no)
               : role === "final"
               ? router.push("/vehicle-in-use/user?cancel-req=success&request-id=" + data.result?.request_no)
+              : role === "adminKey"
+              ? router.push("/administrator/request-list?cancel-req=success&request-id=" + data.result?.request_no)
               : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
           }
         } catch (error) {

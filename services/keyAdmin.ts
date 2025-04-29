@@ -1,3 +1,4 @@
+import { CanceledRequestType } from "@/app/types/request-action-type";
 import axiosInstance from "@/utils/axiosInstance";
 
 export const fetchKeyRequests = async (params: {
@@ -34,3 +35,25 @@ export const updateRecivedKeyHandover = async (data: any) => {
     throw error;
   }
 };
+
+export const fetchRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get('received-key-admin/request/' + id);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const keyCancelRequest = async (data: CanceledRequestType) => {
+  try {
+    const response = await axiosInstance.put('received-key-admin/update-canceled',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+

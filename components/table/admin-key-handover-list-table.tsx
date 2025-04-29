@@ -276,15 +276,8 @@ export default function AdminKeyHandOverListTable({
           <DataTable
             table={table}
             onRowClick={(row) => {
-              console.log("row", row);
-              const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
-              console.log("row clicked", { status, uid });
-              if (status === "รออนุมัติ") {
-                router.push(`/administrator/request-list/${uid}/edit`);
-              } else {
-                router.push(`/administrator/request-list/${uid}`);
-              }
+                router.push(`/administrator/key-handover/${uid}`);
             }}
           />
         </>

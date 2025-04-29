@@ -5,16 +5,16 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import PageHeaderAdmin from "@/components/pageHeaderAdmin";
-import { fetchRequestDetail } from "@/services/bookingAdmin";
-import RequestDetailTabs from "@/components/admin/requestDetailTab";
+import RequestDetailTabs from "@/components/admin/tabs/requestKeyDetailTab";
+import PageKeyHandOverHeader from "@/components/page-header/page-key-handover-header";
+import { fetchRequestDetail } from "@/services/keyAdmin";
+import { LogProvider } from "@/contexts/log-context";
 
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  console.log('tttpp',params);
   const request_id = String(params.requestId);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
@@ -47,8 +47,10 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeaderAdmin data={requestData} />}
-            <RequestDetailTabs requestId={request_id} />
+          {requestData && <PageKeyHandOverHeader data={requestData} />}
+          <LogProvider>
+            <RequestDetailTabs displayKeyHandover={true} requestId={request_id} />
+            </LogProvider>
           </div>
         </div>
       </div>
