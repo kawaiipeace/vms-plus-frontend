@@ -25,7 +25,6 @@ const DriverDetailContent = ({
   data,
   progressType,
 }: DriverDetailContentProps) => {
-  const status = "ยกเลิก";
   const returnCarAddComplete = true;
   const [activeTab, setActiveTab] = useState(0);
 
@@ -63,10 +62,6 @@ const DriverDetailContent = ({
 
   return (
     <div>
-      {data?.can_cancel_request === false && (
-        <AlertCustom title="งานถูกยกเลิกแล้ว" desc="ยกเลิกเมื่อ 25/12/2566" />
-      )}
-
       {progressType !== "การรับยานพาหนะ" &&
         progressType !== "การคืนยานพาหนะ" && (
           <div className="flex items-center bg-[#F9FAFB] -mx-4 px-4">
@@ -88,6 +83,11 @@ const DriverDetailContent = ({
             </Link>
           </div>
         )}
+
+      {(data?.can_cancel_request === false ||
+        data?.ref_request_status_code === "90") && (
+        <AlertCustom title="งานถูกยกเลิกแล้ว" desc="ยกเลิกเมื่อ 25/12/2566" />
+      )}
 
       {progressType === "รอรับกุญแจ" && (
         <div className="grid gird-cols-1 gap-4">

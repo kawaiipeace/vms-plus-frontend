@@ -45,7 +45,7 @@ const DriverDetail = () => {
   return (
     <>
       <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <SideBar menuName="งานพนักงานขับรถ" />
         <div
           className={`main-content ${
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
@@ -79,7 +79,10 @@ const DriverDetail = () => {
             </div>
 
             <div className="w-full">
-              <DriverDetailContent data={data} progressType={progressType} />
+              <DriverDetailContent
+                data={data}
+                progressType={progressType || ""}
+              />
             </div>
           </div>
         </div>

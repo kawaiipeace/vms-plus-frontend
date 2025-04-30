@@ -39,8 +39,8 @@ export default function DriverMain() {
       status.includes(e.ref_request_status_code)
     );
 
-    return data;
-    // return filter;
+    // return data;
+    return filter;
   };
 
   const filterData = getFilterData();

@@ -48,6 +48,8 @@ export interface ReceivedKeyDriverParams {
 export interface ReceivedKeyDriver {
   trn_request_uid: string;
   request_no: string;
+  parking_place: string;
+  returned_vehicle_remark: string;
   vehicle_user_emp_id: string;
   vehicle_user_emp_name: string;
   vehicle_user_dept_sap_short: string;
