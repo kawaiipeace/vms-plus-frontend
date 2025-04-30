@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import RequestDetailForm from "@/components/flow/requestDetailForm";
 import { LogType } from "@/app/types/log-type";
-import LogListTable from "@/components/table/log-list-table";
 import { PaginationType } from "@/app/types/request-action-type";
+import LogListTable from "@/components/table/log-list-table";
 import { fetchLogs } from "@/services/masterService";
-import PaginationControls from "../table/pagination-control";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import KeyPickUp from "../flow/keyPickUp";
-import KeyPickUpAppointment from "./keyPickUpAppointment";
 import KeyPickUpDetailForm from "../flow/keyPickUpDetailForm";
+import PaginationControls from "../table/pagination-control";
+import KeyPickUpAppointment from "./keyPickUpAppointment";
 import ReceiveCarVehicleInUseTab from "./receiveCarVehicleInUseTab";
 
 interface Props {
@@ -15,11 +15,17 @@ interface Props {
 }
 
 export default function VehiclePickupDetailTabs({ requestId }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const active = searchParams.get("activeTab");
+
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
   });
   const [requestUid] = useState(requestId);
+  const [activeTab, setActiveTab] = useState(1);
   const [dataRequest, setDataRequest] = useState<LogType[]>([]);
   const [pagination, setPagination] = useState<PaginationType>({
     limit: 10,
@@ -36,15 +42,13 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({
       ...prevParams,
       limit,
       page: 1,
     }));
   };
-  
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -67,52 +71,82 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     if (requestId) {
       fetchRequests();
     }
-  }, [params, requestUid]);
-  
+  }, [params, requestId, requestUid]);
 
-  const tabs = [
-    {
-      label: "รายละเอียดคำขอ",
-      content: <KeyPickUpDetailForm requestId={requestId} />,
-      constent: "",
-      badge: "",
+  const createQueryString = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("activeTab", value);
+
+      return params.toString();
     },
-    {
-      label: "การรับกุญแจ",
-      content: <KeyPickUp requestId={requestId} />,
-      constent: "",
-      badge: "",
-    },
-    {
-      label: "การนัดหมายเดินทาง",
-      content: <KeyPickUpAppointment requestId={requestId} />,
-      constent: "",
-      badge: "",
-    },
-    {
-      label: "การรับยานพาหนะ",
-      content:   <ReceiveCarVehicleInUseTab requestId={requestId} edit="" />,
-      constent: "",
-      badge: "",
-    },
-    {
-      label: "ประวัติการดำเนินการ",
-      content: (
-        <>
-          <LogListTable defaultData={dataRequest} pagination={pagination} />
-          {dataRequest.length > 0 && (
-            <PaginationControls
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
-          )}
-        </>
-      ),
-      badge: "",
-    },
-  ];
-  const [activeTab, setActiveTab] = useState(0);
+    [searchParams]
+  );
+
+  const tabs = useMemo(
+    () => [
+      {
+        label: "รายละเอียดคำขอ",
+        content: <KeyPickUpDetailForm requestId={requestId} />,
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "การรับกุญแจ",
+        content: <KeyPickUp requestId={requestId} />,
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "การนัดหมายเดินทาง",
+        content: <KeyPickUpAppointment requestId={requestId} />,
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "การรับยานพาหนะ",
+        content: <ReceiveCarVehicleInUseTab requestId={requestId} edit="" />,
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "ข้อมูลการเดินทาง",
+        content: <></>,
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "การเติมเชื้อเพลิง",
+        content: <></>,
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "ประวัติการดำเนินการ",
+        content: (
+          <>
+            <LogListTable defaultData={dataRequest} pagination={pagination} />
+            {dataRequest.length > 0 && (
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            )}
+          </>
+        ),
+        badge: "",
+      },
+    ],
+    [dataRequest, pagination, requestId]
+  );
+
+  useEffect(() => {
+    if (active) {
+      const findActiveTab = tabs.findIndex((tab) => tab.label === active);
+      setActiveTab(findActiveTab);
+    }
+  }, [active, tabs]);
 
   return (
     <div className="w-full overflow-hidden">
@@ -123,13 +157,14 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
             className={`tab transition-colors duration-300 ease-in-out ${
               activeTab === index ? "active" : "text-gray-600"
             }`}
-            onClick={() => setActiveTab(index)}
+            onClick={() => {
+              setActiveTab(index);
+              router.push(pathname + "?" + createQueryString(tab.label));
+            }}
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && (
-                <span className="badge badge-brand badge-pill-outline">4</span>
-              )}{" "}
+              {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
             </div>
           </button>
         ))}

@@ -1,18 +1,19 @@
 "use client";
-import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
-import RequestTabs from "@/components/tabs/requestTabs";
 import SideBar from "@/components/sideBar";
+import RequestTabs from "@/components/tabs/requestTabs";
 import ToastCustom from "@/components/toastCustom";
+import { useSidebar } from "@/contexts/sidebarContext";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useRef } from "react";
-import ProcessIntroModal from "@/components/modal/processIntroModal";
+import { Suspense } from "react";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-req");
   const cancelReq = searchParams.get("cancel-req");
   const requestId = searchParams.get("request-id");
+  const receivedKey = searchParams.get("received-key");
+  const licensePlate = searchParams.get("license-plate");
 
   return (
     <>
@@ -38,6 +39,20 @@ function RequestListContent() {
           status="success"
         />
       )}
+      {receivedKey === "success" && (
+        <ToastCustom
+          title="รับกุญแจสำเร็จ"
+          desc={
+            <>
+              ได้รับ กุญแจหลักและบัตรเติมน้ำมัน
+              <br /> ยานพาหนะเลขทะเบียน {licensePlate}
+              <br /> กรุงเทพมหานคร เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+          isShowButton={true}
+        />
+      )}
     </>
   );
 }
@@ -50,11 +65,7 @@ export default function RequestList() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

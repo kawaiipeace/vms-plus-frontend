@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
-import { useRouter } from "next/navigation";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import { summaryType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
-import FilterSortModal from "@/components/modal/filterSortModal";
-import { fetchRequests } from "@/services/bookingAdmin";
-import AdminListTable from "@/components/table/admin-list-table";
+import { fetchKeyRequests } from "@/services/keyAdmin";
+import AdminKeyHandOverListTable from "@/components/table/admin-key-handover-list-table";
+import { KeyHandOverListType } from "@/app/types/key-handover-list-type";
 
 interface PaginationType {
   limit: number;
@@ -17,7 +16,7 @@ interface PaginationType {
   totalPages: number;
 }
 
-export default function AdminApproveFlow() {
+export default function AdminKeyHandOverFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
@@ -26,8 +25,8 @@ export default function AdminApproveFlow() {
     enddate: "",
     car_type: "",
     category_code: "",
-    order_by: "request_no",
-    order_dir: "desc",
+    order_by: "",
+    order_dir: "",
     page: 1,
     limit: 10,
   });
@@ -39,18 +38,13 @@ export default function AdminApproveFlow() {
     totalPages: 0,
   });
 
-  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
+  const [dataRequest, setDataRequest] = useState<KeyHandOverListType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
 
   const filterModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-
-  const filterSortModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -64,17 +58,8 @@ export default function AdminApproveFlow() {
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
-      "30": { iconName: "schedule", status: "info" },
-      "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
-      "41": { iconName: "check", status: "success" },
-      "50": { iconName: "vpn_key", status: "info" },
-      "51": { iconName: "vpn_key", status: "info" },
-      "60": { iconName: "directions_car", status: "info" },
-      "70": { iconName: "build", status: "warning" },
-      "71": { iconName: "build", status: "warning" },
-      "80": { iconName: "done_all", status: "success" },
-      "90": { iconName: "delete", status: "default" },
+      "50": { iconName: "schedule", status: "info" },
+      "50e": { iconName: "priority_high", status: "error" },
     };
 
   const handlePageSizeChange = (newLimit: string | number) => {
@@ -128,21 +113,6 @@ export default function AdminApproveFlow() {
     }));
   };
 
-  const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    if(filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด"){
-      setParams((prevParams) => ({
-        ...prevParams,
-        order_by: "start_datetime",
-        order_dir: "desc",
-      }));
-    }else{
-      setParams((prevParams) => ({
-        ...prevParams,
-        order_by: "request_no",
-        order_dir: "desc",
-      }));
-    }
-  };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
@@ -199,12 +169,15 @@ export default function AdminApproveFlow() {
   };
 
   useEffect(() => {
+ 
     const fetchRequestsData = async () => {
       try {
-        const response = await fetchRequests(params);
-        console.log("param", params);
+        const response = await fetchKeyRequests(params);
+   
         if (response.status === 200) {
           const requestList = response.data.requests;
+          console.log("res-----", response.data);
+          console.log('list',requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -227,7 +200,7 @@ export default function AdminApproveFlow() {
 
   useEffect(() => {
     console.log("Data Request Updated:", dataRequest);
-  }, [dataRequest]); // This will log whenever dataRequest changes
+  }, [dataRequest]);
 
   return (
     <>
@@ -321,7 +294,7 @@ export default function AdminApproveFlow() {
               type="text"
               id="myInputTextField"
               className="form-control dt-search-input"
-              placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
+              placeholder="ยานพาหนะ, ผู้มารับกุญแจ, เลขที่คำขอ"
               value={params.search}
               onChange={(e) =>
                 setParams((prevParams) => ({
@@ -349,15 +322,6 @@ export default function AdminApproveFlow() {
             </div>
           </button>
 
-          <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] md:hidden"
-            onClick={() => filterSortModalRef.current?.openModal()}
-          >
-            <div className="flex items-center gap-1">
-              <i className="material-symbols-outlined">filter_list</i>
-              เรียงลำดับ
-            </div>
-          </button>
         </div>
       </div>
 
@@ -392,7 +356,7 @@ export default function AdminApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <AdminListTable defaultData={dataRequest} pagination={pagination}  />
+            <AdminKeyHandOverListTable defaultData={dataRequest} pagination={pagination}  />
           </div>
 
           <PaginationControls
@@ -423,10 +387,6 @@ export default function AdminApproveFlow() {
         onSubmitFilter={handleFilterSubmit}
       />
 
-      <FilterSortModal
-        ref={filterSortModalRef}
-        onSubmitFilter={handleFilterSortSubmit}
-      />
     </>
   );
 }

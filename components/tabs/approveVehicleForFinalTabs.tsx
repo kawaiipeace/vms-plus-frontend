@@ -58,7 +58,7 @@ export default function ApproveVehicleForFinalTabs() {
   
         const getTabContent = (code: string) => {
           switch (code) {
-            case "20": 
+            case "30": 
             return <FinalApproveFlow />;
             case "50": // รับกุญแจ
             case "60": // เดินทาง

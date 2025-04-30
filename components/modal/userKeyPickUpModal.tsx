@@ -12,7 +12,7 @@ const DriverInfoModal = forwardRef((_, ref) => {
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
-    <dialog ref={modalRef} id="my_modal_1" className="modal">
+    <dialog ref={modalRef} className="modal">
       <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
         <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>

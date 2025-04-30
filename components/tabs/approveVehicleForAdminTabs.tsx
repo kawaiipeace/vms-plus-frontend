@@ -9,6 +9,8 @@ import FinishTab from "@/components/admin/finishTab";
 import { fetchMenus } from "@/services/bookingAdmin";
 import { summaryType } from "@/app/types/request-list-type";
 import AdminApproveFlow from "@/components/flow/adminApproveFlow";
+import AdminKeyHandOverFlow from "@/components/flow/adminHandOverFlow";
+import CancelFlow from "@/components/flow/cancelFlow";
 
 export default function ApproveVehicleForAdminTabs() {
   // const tabs = [
@@ -57,16 +59,19 @@ export default function ApproveVehicleForAdminTabs() {
   
         const getTabContent = (code: string) => {
           switch (code) {
-            case "20": 
+            case "30": 
             return <AdminApproveFlow />;
-            case "50": // รับกุญแจ
+          case "51": 
+            return <AdminKeyHandOverFlow />;
+            case "50": 
+            return <AdminKeyHandOverFlow />;
             case "60": // เดินทาง
             case "70": // คืนยานพาหนะ
               return "";
             case "80": // เสร็จสิ้น
               return <div>เสร็จสิ้น</div>; // Replace with your component
             case "90": // ยกเลิก
-              return <div></div>;
+              return <CancelFlow />;
             default:
               return <div></div>;
           }

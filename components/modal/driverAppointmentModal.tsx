@@ -74,6 +74,7 @@ const DriverAppointmentModal = forwardRef<
   };
 
   useEffect(() => {
+    console.log('id',id);
     if(id){
       const fetchDriverData = async () => {
         try {
@@ -211,7 +212,7 @@ const DriverAppointmentModal = forwardRef<
                       </span>
                     </div>
                     <TimePicker
-                      onChange={handleTimeChange}
+                      onChange={() => handleTimeChange}
                       placeholder="ระบุเวลานัดหมาย"
                     />
                   </div>
@@ -223,7 +224,7 @@ const DriverAppointmentModal = forwardRef<
             </div>
 
             <div className="modal-action sticky bottom-0 gap-3 mt-0 w-full">
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" onClick={() => modalRef.current?.close()}>
                 ยกเลิก
               </button>
               <button type="submit" className="btn btn-primary">

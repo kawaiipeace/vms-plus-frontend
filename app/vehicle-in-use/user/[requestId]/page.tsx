@@ -6,7 +6,6 @@ import SideBar from "@/components/sideBar";
 import { useParams, useSearchParams } from "next/navigation";
 import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import KeyPickupDetailTabs from "@/components/tabs/keyPickupDetailTab";
 import PageKeyPickupHeader from "@/components/page-header/pageKeyPickupHeader";
 import ToastCustom from "@/components/toastCustom";
 import VehiclePickupDetailTabs from "@/components/tabs/vehiclePickupDetailTab";
