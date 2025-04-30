@@ -161,7 +161,7 @@ const DriverDetailContent = ({
             deptSap={data?.received_key_dept_sap || "-"}
             phone={data?.received_key_mobile_contact_number || "-"}
             vehicle={data?.vehicle}
-            driver
+            role="driver"
           />
         </div>
       )}

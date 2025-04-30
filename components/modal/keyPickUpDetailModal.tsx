@@ -30,7 +30,7 @@ interface KeyPickUpDetailProps {
   vehicle?: VehicleDetailType;
   onEdit?: () => void;
   onSubmit?: () => void;
-  driver?: boolean;
+  role?: string;
 }
 
 // Ref methods exposed by the modal
@@ -53,7 +53,7 @@ const KeyPickupDetailModal = forwardRef<
     onEdit,
     onSubmit,
     vehicle,
-    driver = false,
+    role,
   } = props;
 
   const router = useRouter();
@@ -108,9 +108,8 @@ const KeyPickupDetailModal = forwardRef<
           trn_request_uid: reqId,
         };
 
-        if (driver) {
+        if (role === "driver") {
           const response = await requestReceivedKeyDriver(payload);
-          console.log("response", response);
 
           if (response.status === 200) {
             router.push("/vehicle-in-use/driver");
@@ -160,9 +159,9 @@ const KeyPickupDetailModal = forwardRef<
             <div className="form-section" style={{ marginTop: 0 }}>
               <div className="form-section-header">
                 <div className="form-section-header-title">
-                  {driver ? "ผู้รับกุญแจ" : "ผู้ไปรับกุญแจ"}
+                  {role === "driver" ? "ผู้รับกุญแจ" : "ผู้ไปรับกุญแจ"}
                 </div>
-                {!driver && (
+                {role !== "driver" && (
                   <button
                     className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                     onClick={() => {
