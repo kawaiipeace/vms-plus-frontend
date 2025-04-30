@@ -5,17 +5,16 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import PageHeaderAdmin from "@/components/pageHeaderAdmin";
-import { fetchRequestDetail } from "@/services/bookingAdmin";
-import RequestDetailTabs from "@/components/admin/requestDetailTab";
 import { LogProvider } from "@/contexts/log-context";
+import { fetchRequestDetail } from "@/services/adminService";
+import RequestVehiclePickupDetailTabs from "@/components/admin/tabs/requestVehiclePickupDetailTab";
+import PageVehiclePickupHeader from "@/components/page-header/page-vehicle-pickup-header";
 
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  console.log('tttpp',params);
   const request_id = String(params.requestId);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
@@ -48,9 +47,9 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeaderAdmin data={requestData} />}
-            <LogProvider>
-            <RequestDetailTabs requestId={request_id} />
+          {requestData && <PageVehiclePickupHeader data={requestData} />}
+          <LogProvider>
+            <RequestVehiclePickupDetailTabs requestId={request_id} />
             </LogProvider>
           </div>
         </div>

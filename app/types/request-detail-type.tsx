@@ -80,6 +80,7 @@ export interface RequestDetailType {
   received_vehicle_emp_id: string;
   received_vehicle_emp_name: string;
   receiver_key_type: number;   
+  ref_vehicle_key_type_code: number;
 }
 
 export interface RequestVehicleType{
