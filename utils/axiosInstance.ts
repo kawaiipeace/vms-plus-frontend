@@ -2,31 +2,36 @@
 import axios from 'axios';
 
 // Function to get the API configuration
-const getApiConfig = () => {
+export const getApiConfig = () => {
   if (typeof window !== 'undefined') {
-    const env = window as unknown as { __ENV__?: { NEXT_PUBLIC_CLIENT_API_HOST: string; NEXT_PUBLIC_API_KEY: string } };
+    const env = window as unknown as {
+      __ENV__?: {
+        NEXT_PUBLIC_CLIENT_API_HOST: string;
+        NEXT_PUBLIC_API_KEY: string;
+        NEXT_PUBLIC_CLIENT_CALLBACK: string;
+      };
+    };
 
     if (env.__ENV__) {
       return {
         baseURL: env.__ENV__.NEXT_PUBLIC_CLIENT_API_HOST,
         apiKey: env.__ENV__.NEXT_PUBLIC_API_KEY,
+        callbackURL: env.__ENV__.NEXT_PUBLIC_CLIENT_CALLBACK,
       };
     }
   }
-  
+
   return {
     baseURL: 'http://pntdev.ddns.net:28080/api',
     apiKey: '2c5SF8BDhWKzdTY5MIFXEh9PummQMhK8w2TIUobJnYbAxaUmYo1sYTc2Hwo3xNWj',
+    callbackURL: 'http://localhost:3000/callback_code_token',
   };
 };
 
-const { baseURL, apiKey } = getApiConfig();
 
 const axiosInstance = axios.create({
-  baseURL,
   headers: {
-    'accept': 'application/json',
-    'X-ApiKey': apiKey,
+    accept: 'application/json',
     'Content-Type': 'application/json',
   },
 });
@@ -34,13 +39,17 @@ const axiosInstance = axios.create({
 // Request interceptor: Attach Authorization header
 axiosInstance.interceptors.request.use(
   (config) => {
+    const { baseURL, apiKey } = getApiConfig();
+    config.baseURL = baseURL;
+    config.headers['X-ApiKey'] = apiKey;  
+
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Flag to prevent multiple refresh calls at the same time
@@ -65,7 +74,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     // If error is 401 (Unauthorized), try refreshing the token
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -90,7 +99,7 @@ axiosInstance.interceptors.response.use(
         }
 
         // Send refresh token request
-        const refreshResponse = await axios.post(`${baseURL}/refresh-token`, {
+        const refreshResponse = await axios.post(`${getApiConfig().baseURL}/refresh-token`, {
           refreshToken,
         });
 
@@ -115,7 +124,7 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
