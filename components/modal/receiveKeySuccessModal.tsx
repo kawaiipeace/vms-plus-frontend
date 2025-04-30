@@ -30,6 +30,11 @@ const ReceiveKeySuccessModal = forwardRef<
   const router = useRouter();
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
+  const handleNext = () => {
+    modalRef.current?.close();
+    router.push(`/administrator/key-handover/${id}?activeTab="รับกุญแจ"`);
+  }
+
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
@@ -57,7 +62,7 @@ const ReceiveKeySuccessModal = forwardRef<
               <button
                 type="button"
                 className="btn btn-primary col-span-1"
-                onClick={() => router.push(`/administrator/request-list/${id}?activeTab="รับกุญแจ"`)}
+                onClick={handleNext}
               >
                 {confirmText}
               </button>

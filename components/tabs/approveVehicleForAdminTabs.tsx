@@ -11,6 +11,7 @@ import { summaryType } from "@/app/types/request-list-type";
 import AdminApproveFlow from "@/components/flow/adminApproveFlow";
 import AdminKeyHandOverFlow from "@/components/flow/adminHandOverFlow";
 import CancelFlow from "@/components/flow/cancelFlow";
+import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
 
 export default function ApproveVehicleForAdminTabs() {
   // const tabs = [
@@ -65,7 +66,8 @@ export default function ApproveVehicleForAdminTabs() {
             return <AdminKeyHandOverFlow />;
             case "50": 
             return <AdminKeyHandOverFlow />;
-            case "60": // เดินทาง
+            case "60": 
+            return <AdminVehiclePickupFlow />;
             case "70": // คืนยานพาหนะ
               return "";
             case "80": // เสร็จสิ้น

@@ -7,7 +7,7 @@ interface Props {
   data: RequestDetailType;
 }
 
-export default function PageKeyHandOverHeader({ data }: Props) {
+export default function PageVehiclePickupHeader({ data }: Props) {
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;

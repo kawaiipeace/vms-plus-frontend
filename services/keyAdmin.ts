@@ -85,3 +85,14 @@ export const updateKeyAdminPickupOutsider = async (data: any) => {
   }
 };
 
+export const updateKeyAdminReceiveDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-admin/update-recieived-key-detail', data);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
