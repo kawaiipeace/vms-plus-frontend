@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import ZeroRecord from "@/components/zeroRecord";
-import ArpproveFlow from "@/components/approveFlow";
-import { fetchMenus, requests } from "@/services/bookingUser";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import ArpproveFlow from "@/components/approveFlow";
 import CancelFlow from "@/components/flow/cancelFlow";
-import ProcessIntroModal from "@/components/modal/processIntroModal";
+import ZeroRecord from "@/components/zeroRecord";
+import { fetchMenus, requests } from "@/services/bookingUser";
+import { useEffect, useState } from "react";
+import SuccessFlow from "../flow/successFlow";
 
 export default function RequestTabs() {
   const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
@@ -32,7 +32,7 @@ export default function RequestTabs() {
       try {
         const response = await fetchMenus();
         const result = response.data;
-        console.log('tabs',result);
+        console.log("tabs", result);
         setStatusData(result);
       } catch (error) {
         console.error("Error fetching status data:", error);
@@ -55,14 +55,14 @@ export default function RequestTabs() {
 
   const getTabContent = (code: string) => {
     switch (code) {
-      case "20": 
-      return <ArpproveFlow />;
+      case "20":
+        return <ArpproveFlow />;
       case "50": // รับกุญแจ
       case "60": // เดินทาง
       case "70": // คืนยานพาหนะ
         return "";
       case "80": // เสร็จสิ้น
-        return <div>เสร็จสิ้น</div>; // Replace with your component
+        return <SuccessFlow />; // Replace with your component
       case "90": // ยกเลิก
         return <CancelFlow />;
       default:
@@ -80,7 +80,7 @@ export default function RequestTabs() {
 
   return (
     <div className="w-full">
-    <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+      <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}
@@ -91,11 +91,7 @@ export default function RequestTabs() {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge !== undefined && (
-                <span className="badge badge-brand badge-pill-outline">
-                  {tab.badge}
-                </span>
-              )}
+              {tab.badge !== undefined && <span className="badge badge-brand badge-pill-outline">{tab.badge}</span>}
             </div>
           </button>
         ))}

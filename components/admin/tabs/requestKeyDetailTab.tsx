@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import RequestDetailForm from "@/components/admin/requestDetailForm";
-import LogListTable from "../table/log-list-table";
-import PaginationControls from "@/components/table/pagination-control";
+import RequestDetailForm from "@/components/admin/key-handover/requestDetailForm";
+import LogListTable from "@/components/table/log-list-table";
 import { useLogContext } from "@/contexts/log-context";
+import PaginationControls from "@/components/table/pagination-control";
+import KeyHandoverDetail from "@/components/admin/key-handover/key-handover-detail";
 
 interface Props {
   requestId: string;
@@ -10,22 +11,22 @@ interface Props {
 }
 
 export default function RequestDetailTabs({ requestId, displayKeyHandover }: Props) {
+  const { dataRequest, pagination, params, setParams, loadLogs } = useLogContext();
+  const handlePageChange = (newPage: number) => {
+    setParams((prev) => ({ ...prev, page: newPage }));
+  };
 
-    const { dataRequest, pagination, params, setParams, loadLogs } = useLogContext();
-    const handlePageChange = (newPage: number) => {
-      setParams((prev) => ({ ...prev, page: newPage }));
-    };
-  
-    const handlePageSizeChange = (newLimit: string | number) => {
-      const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
-      setParams((prev) => ({ ...prev, limit, page: 1 }));
-    };
-  
-    useEffect(() => {
-      if (requestId) {
-        loadLogs(requestId);
-      }
-    }, [loadLogs, params, requestId]);
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams((prev) => ({ ...prev, limit, page: 1 }));
+  };
+
+  useEffect(() => {
+    if (requestId) {
+      loadLogs(requestId);
+    }
+  }, [loadLogs, params, requestId]);
+
     
   const tabs = [
     {
@@ -36,8 +37,8 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
     ...(displayKeyHandover
       ? [
           {
-            label: "รับกุญแจ",
-            content: <RequestDetailForm requestId={requestId} />,
+            label: "การรับกุญแจ",
+            content: <KeyHandoverDetail editable={true} requestId={requestId} />,
             badge: "",
           },
         ]
