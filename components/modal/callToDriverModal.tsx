@@ -6,8 +6,6 @@ interface Props {
   imgSrc: string;
   name: string;
   phone: string;
-
-  
 }
 
 const CallToDriverModal = forwardRef<
@@ -61,10 +59,13 @@ const CallToDriverModal = forwardRef<
             <form method="dialog">
               <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
             </form>
-            <form method="dialog" onSubmit={(e) => {
+            <form
+              method="dialog"
+              onSubmit={(e) => {
                 e.preventDefault();
                 window.location.href = `tel:${phone}`;
-              }}>
+              }}
+            >
               <button className="btn btn-primary w-full">โทรออก</button>
             </form>
           </div>

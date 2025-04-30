@@ -6,8 +6,8 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import DriverDetailContent from "@/components/driverDetail";
 import { useParams, useSearchParams } from "next/navigation";
-import { ReceivedKeyDriverRequest } from "@/app/types/vehicle-in-use-driver-type";
 import { receivedKeyDriverRequest } from "@/services/vehicleInUseDriver";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 const DriverDetail = () => {
   const { isPinned } = useSidebar();
@@ -15,7 +15,7 @@ const DriverDetail = () => {
   const { trn_request_uid } = useParams();
   const progressTypeUrl = searchParams.get("progressType");
   const [progressType, setProgressType] = useState("รอรับกุญแจ");
-  const [data, setData] = useState<ReceivedKeyDriverRequest>();
+  const [data, setData] = useState<RequestDetailType>();
 
   useEffect(() => {
     if (progressTypeUrl) {

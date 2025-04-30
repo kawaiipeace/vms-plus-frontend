@@ -1,4 +1,7 @@
-import { ReceivedKeyDriverParams } from "@/app/types/vehicle-in-use-driver-type";
+import {
+  RequestReceivedKeyDriver,
+  ReceivedKeyDriverParams,
+} from "@/app/types/vehicle-in-use-driver-type";
 import axiosInstance from "@/utils/axiosInstance";
 
 export const fetchMenus = async () => {
@@ -29,6 +32,20 @@ export const receivedKeyDriverRequest = async (trn_request_uid: string) => {
       "received-key-driver/request/" + trn_request_uid
     );
 
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const requestReceivedKeyDriver = async (
+  data: RequestReceivedKeyDriver
+) => {
+  try {
+    const response = await axiosInstance.put(
+      "received-key-driver/update-recieived-key-confirmed",
+      data
+    );
     return response;
   } catch (error) {
     throw error;

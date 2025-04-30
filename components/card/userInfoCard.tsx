@@ -40,12 +40,14 @@ export default function UserInfoCard({
               className="rounded-md"
               width={100}
               height={100}
-              alt={vehicleUserData?.full_name || ""}
+              alt={vehicleUserData?.full_name || "-"}
             />
           </div>
           <div className="card-content">
             <div className="card-content-top">
-              <div className="card-title">{vehicleUserData?.full_name}</div>
+              <div className="card-title">
+                {vehicleUserData?.full_name || "-"}
+              </div>
               <div className="supporting-text-group">
                 {UserType == "outsource" && (
                   <div className="supporting-text">
@@ -55,10 +57,10 @@ export default function UserInfoCard({
                 {UserType != "outsource" && (
                   <>
                     <div className="supporting-text">
-                      {vehicleUserData?.emp_id}
+                      {vehicleUserData?.emp_id || "-"}
                     </div>
                     <div className="supporting-text">
-                      {vehicleUserData?.dept_sap_short}
+                      {vehicleUserData?.dept_sap_short || "-"}
                     </div>
                   </>
                 )}
@@ -70,14 +72,14 @@ export default function UserInfoCard({
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                    {vehicleUserData?.tel_mobile}
+                    {vehicleUserData?.tel_mobile || "-"}
                   </span>
                 </div>
                 {UserType != "outsource" && (
                   <div className="card-item w-full">
                     <i className="material-symbols-outlined">call</i>
                     <span className="card-item-text">
-                      {vehicleUserData?.tel_internal}
+                      {vehicleUserData?.tel_internal || "-"}
                     </span>
                   </div>
                 )}
@@ -98,14 +100,14 @@ export default function UserInfoCard({
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                    {vehicleUserData?.tel_mobile}
+                    {vehicleUserData?.tel_mobile || "-"}
                   </span>
                 </div>
                 {UserType != "outsource" && (
                   <div className="card-item w-full">
                     <i className="material-symbols-outlined">call</i>
                     <span className="card-item-text">
-                      {vehicleUserData?.tel_internal}
+                      {vehicleUserData?.tel_internal || "-"}
                     </span>
                   </div>
                 )}
@@ -161,9 +163,9 @@ export default function UserInfoCard({
       </div>
       <CallToDriverModal
         ref={callToDriverModalRef}
-        imgSrc={""}
-        name={""}
-        phone={""}
+        imgSrc={vehicleUserData?.image_url || "/assets/img/sample-avatar.png"}
+        name={vehicleUserData?.full_name || "-"}
+        phone={vehicleUserData?.tel_mobile || "-"}
       />
       <DriverInfoModal ref={driverInfoModalRef} />
     </div>

@@ -2,12 +2,22 @@ import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
 import TimePicker from "@/components/timePicker";
-import { fetchVehicleKeyType, updateReceivedKeyConfirmed } from "@/services/masterService";
+import {
+  fetchVehicleKeyType,
+  updateReceivedKeyConfirmed,
+} from "@/services/masterService";
+import { requestReceivedKeyDriver } from "@/services/vehicleInUseDriver";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 // Props for the KeyPickupDetailModal component
 interface KeyPickUpDetailProps {
@@ -20,6 +30,7 @@ interface KeyPickUpDetailProps {
   vehicle?: VehicleDetailType;
   onEdit?: () => void;
   onSubmit?: () => void;
+  driver?: boolean;
 }
 
 // Ref methods exposed by the modal
@@ -28,13 +39,29 @@ export interface KeyPickupDetailModalRef {
   closeModal: () => void;
 }
 
-const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetailProps>((props, ref) => {
-  const { id, imgSrc, name, deptSap, phone, reqId, onEdit, onSubmit, vehicle } = props;
+const KeyPickupDetailModal = forwardRef<
+  KeyPickupDetailModalRef,
+  KeyPickUpDetailProps
+>((props, ref) => {
+  const {
+    id,
+    imgSrc,
+    name,
+    deptSap,
+    phone,
+    reqId,
+    onEdit,
+    onSubmit,
+    vehicle,
+    driver = false,
+  } = props;
 
   const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
   const [vehicleKeyTypeData, setVehicleKeyTypeData] = useState<any>([]);
-  const [selectedAttach, setSelectedAttach] = useState<string>("กุญแจหลัก และบัตรเติมน้ำมัน");
+  const [selectedAttach, setSelectedAttach] = useState<string>(
+    "กุญแจหลัก และบัตรเติมน้ำมัน"
+  );
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
 
@@ -70,6 +97,10 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
   const submit = async () => {
     if (selectedDate && selectedTime && selectedAttach) {
       try {
+        if (onSubmit) {
+          onSubmit();
+        }
+
         const dateTime = convertToISO(selectedDate, selectedTime);
         const payload = {
           received_key_datetime: dateTime,
@@ -77,17 +108,23 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
           trn_request_uid: reqId,
         };
 
-        const response = await updateReceivedKeyConfirmed(payload);
-        console.log("response", response);
+        if (driver) {
+          const response = await requestReceivedKeyDriver(payload);
+          console.log("response", response);
 
-        if (onSubmit) {
-          onSubmit();
-        }
+          if (response.status === 200) {
+            router.push("/vehicle-in-use/driver");
+          }
+        } else {
+          const response = await updateReceivedKeyConfirmed(payload);
+          console.log("response", response);
 
-        if (response.status === 200) {
-          router.push(
-            "/vehicle-booking/request-list?received-key=success&license-plate=" + vehicle?.vehicle_license_plate
-          );
+          if (response.status === 200) {
+            router.push(
+              "/vehicle-booking/request-list?received-key=success&license-plate=" +
+                vehicle?.vehicle_license_plate
+            );
+          }
         }
       } catch (error) {
         console.error("Network error:", error);
@@ -138,7 +175,13 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
               <div className="form-card w-full">
                 <div className="form-card-body">
                   <div className="form-group form-plaintext form-users">
-                    <Image src={imgSrc} className="avatar avatar-md" width={100} height={100} alt={name} />
+                    <Image
+                      src={imgSrc}
+                      className="avatar avatar-md"
+                      width={100}
+                      height={100}
+                      alt={name}
+                    />
                     <div className="form-plaintext-group align-self-center">
                       <div className="form-label">{name}</div>
                       <div className="supporting-text-group">
@@ -166,10 +209,15 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                     <div className="input-group">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">calendar_month</i>
+                          <i className="material-symbols-outlined">
+                            calendar_month
+                          </i>
                         </span>
                       </div>
-                      <DatePicker placeholder={"ระบุวันที่"} onChange={(date) => setSelectedDate(date)} />
+                      <DatePicker
+                        placeholder={"ระบุวันที่"}
+                        onChange={(date) => setSelectedDate(date)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -184,7 +232,10 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                           <i className="material-symbols-outlined">schedule</i>
                         </span>
                       </div>
-                      <TimePicker placeholder="ระบุเวลา" onChange={(time) => setSelectedTime(time)} />
+                      <TimePicker
+                        placeholder="ระบุเวลา"
+                        onChange={(time) => setSelectedTime(time)}
+                      />
                     </div>
                   </div>
                 </div>

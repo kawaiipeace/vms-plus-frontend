@@ -5,7 +5,6 @@ import UserInfoCard from "@/components/card/userInfoCard";
 import Link from "next/link";
 import AlertCustom from "@/components/alertCustom";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
-import DriverPassengerInfoCard from "@/components/card/driverPassengerInfoCard";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
 import RequestStatusBox from "@/components/requestStatusBox";
 import RecordTravelTab from "@/components/tabs/recordTravelTab";
@@ -14,10 +13,11 @@ import ReturnCarAddModal from "@/components/modal/returnCarAddModal";
 import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
 import { DriverReceiveCarInfoCard } from "@/components/card/driverReceiveCarInfoCard";
 import ImagesCarCard from "@/components/card/ImagesCarCard";
-import { ReceivedKeyDriverRequest } from "@/app/types/vehicle-in-use-driver-type";
+import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface DriverDetailContentProps {
-  data?: ReceivedKeyDriverRequest;
+  data?: RequestDetailType;
   progressType: string;
 }
 
@@ -28,6 +28,10 @@ const DriverDetailContent = ({
   const returnCarAddComplete = true;
   const [activeTab, setActiveTab] = useState(0);
 
+  const keyPickupDetailModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   const receiveCarVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -144,10 +148,21 @@ const DriverDetailContent = ({
           </div>
           <button
             className="btn btn-primary w-full mt-5"
-            // onClick={() => keyPickupDetailModalRef.current?.openModal()}
+            onClick={() => keyPickupDetailModalRef.current?.openModal()}
           >
             รับกุญแจ
           </button>
+          <KeyPickupDetailModal
+            reqId={data?.trn_request_uid || ""}
+            imgSrc={data?.received_key_image_url || "/assets/img/avatar.svg"}
+            ref={keyPickupDetailModalRef}
+            id={data?.received_key_emp_id || ""}
+            name={data?.received_key_emp_name || "-"}
+            deptSap={data?.received_key_dept_sap || "-"}
+            phone={data?.received_key_mobile_contact_number || "-"}
+            vehicle={data?.vehicle}
+            driver
+          />
         </div>
       )}
 

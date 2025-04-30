@@ -281,3 +281,9 @@ export interface ReceivedKeyDriverRequest {
   canceled_request_reason: string;
   progress_request_status: string;
 }
+
+export interface RequestReceivedKeyDriver {
+  received_key_datetime: string;
+  ref_vehicle_key_type_code: number;
+  trn_request_uid: string;
+}
