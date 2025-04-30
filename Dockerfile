@@ -6,6 +6,9 @@ USER root
 # Copy application source code
 COPY . . 
 
+# Install dependencies in production mode with frozen lockfile
+RUN pnpm install --frozen-lockfile --prefer-offline 
+
 # Run production build using pnpm
 RUN pnpm run build
 
