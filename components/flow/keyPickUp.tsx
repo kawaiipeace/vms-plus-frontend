@@ -1,19 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
-import ApproverModal from "@/components/modal/approverModal";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import AlertCustom from "@/components/alertCustom";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
-import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
+import ApproverModal from "@/components/modal/approverModal";
+import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
 import KeyPickupDetailModal from "@/components/modal/keyPickUpDetailModal";
-import DriverPeaInfoCard from "../card/driverPeaInfoCard";
-import { RequestDetailType } from "@/app/types/request-detail-type";
 import { fetchRequestKeyDetail } from "@/services/masterService";
-import VehicleUserInfoCard from "../card/vehicleUserInfoCard";
-import PickupKeyCard from "../card/pickupKeyCard";
-import PickupKeyDetailCard from "../card/pickupKeyDetailCard";
+import { useEffect, useRef, useState } from "react";
 import DriverPassengerInfoCard from "../card/driverPassengerInfoCard";
 import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
+import PickupKeyDetailCard from "../card/pickupKeyDetailCard";
 import KeyPickUpEditModal from "../modal/keyPickUpEditModal";
 
 interface RequestDetailFormProps {
@@ -69,6 +64,9 @@ export default function KeyPickUp({
   const handleModalUpdate = () => {
     fetchRequestDetailfunc();
   };
+
+  console.log("requestData---", requestData);
+
   return (
     <>
       {pickupDatePassed && (
@@ -106,67 +104,7 @@ export default function KeyPickUp({
               receiveKeyEnd={requestData?.received_key_end_datetime}
             />
           </div>
-
-          {/* <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title">ผู้ไปรับกุญแจ</div>
-              {editable && (
-                <button className="btn btn-tertiary-brand bg-transparent shadow-none border-none" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
-                  แก้ไข
-                </button>
-              )}
-            </div>
-
-            <div className="form-card">
-              <div className="form-card-body form-card-inline flex-wrap">
-                <div className="w-full flex flex-wrap gap-4">
-                  <div className="form-group form-plaintext form-users">
-                    <Image src="/assets/img/sample-avatar.png" className="avatar avatar-md" width={100} height={100} alt="" />
-                    <div className="form-plaintext-group align-self-center">
-                      <div className="form-label">ศรัญยู บริรัตน์ฤทธิ์</div>
-                      <div className="supporting-text-group">
-                        <div className="supporting-text">505291</div>
-                        <div className="supporting-text">นรค.6 กอพ.1 ฝพจ.</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-card-right align-self-center">
-                    <div className="flex flex-wrap gap-4">
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">smartphone</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">091-234-5678</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowra">6032</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 w-full pt-3">
-                  <div className="col-span-12">
-                    <div className="form-group form-plaintext">
-                      <i className="material-symbols-outlined">sms</i>
-                      <div className="form-plaintext-group">
-                        <div className="form-label">หมายเหตุ</div>
-                        <div className="form-text text-nowra">จะไปรับกุญแจช่วงบ่ายครับ</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
+          
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ดูแลยานพาหนะ</div>
@@ -204,22 +142,25 @@ export default function KeyPickUp({
       >
         รับกุญแจ
       </button>
-      <DriverAppointmentModal ref={driverAppointmentModalRef} id="2" />
+      <DriverAppointmentModal
+        ref={driverAppointmentModalRef}
+        id={requestData?.driver.mas_driver_uid || ""}
+      />
       <KeyPickupDetailModal
         reqId={requestData?.trn_request_uid || ""}
         imgSrc={requestData?.received_key_image_url || "/assets/img/avatar.svg"}
         ref={keyPickupDetailModalRef}
         id={requestData?.received_key_emp_id || ""}
-        name={requestData?.received_key_emp_name || ""}
-        deptSap={requestData?.received_key_dept_sap || ""}
-        phone={requestData?.received_key_mobile_contact_number || ""}
+        name={requestData?.received_key_emp_name || "-"}
+        deptSap={requestData?.received_key_dept_sap || "-"}
+        phone={requestData?.received_key_mobile_contact_number || "-"}
+        vehicle={requestData?.vehicle}
         onEdit={() => {
           keyPickUpEditModalRef.current?.openModal();
         }}
       />
       <KeyPickUpEditModal
         ref={keyPickUpEditModalRef}
-        reqId={requestData?.trn_request_uid || ""}
         onBack={() => {
           keyPickupDetailModalRef.current?.openModal();
         }}
@@ -227,10 +168,7 @@ export default function KeyPickUp({
           handleModalUpdate();
           keyPickupDetailModalRef.current?.openModal();
         }}
-        name={requestData?.driver_emp_name || ""}
-        deptSap={requestData?.driver_emp_dept_sap || ""}
-        phone={requestData?.driver_mobile_contact_number || ""}
-        imgSrc={requestData?.driver_image_url || "/assets/img/avatar.svg"}
+        requestData={requestData}
       />
 
       <ApproverModal ref={approverModalRef} />

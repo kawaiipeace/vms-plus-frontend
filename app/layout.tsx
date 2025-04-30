@@ -24,13 +24,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-      ></meta>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+        <Script id="env-config" src="/env/env-config.js" strategy="beforeInteractive" />
+      </head>
+      
       <Head>
         <ThemeToggle />
       </Head>
+      
       <body className="light-mode">
         <ProfileProvider>
           <SidebarProvider>
@@ -39,7 +41,6 @@ export default function RootLayout({
             </RequestDetailProvider>
           </SidebarProvider>
         </ProfileProvider>
-        <Script id="env-config" src={"/env/env-config.js"} />
       </body>
     </html>
   );

@@ -152,7 +152,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "database",
               label: "ข้อมูลพนักงานและยานพาหนะ",
               items: [
-                { title: "ผู้ดูแลยานพาหนะ", link: "request-list" },
+                { title: "ผู้ดูแลยานพาหนะ", link: "/carpool-management" },
                 { title: "ข้อมูลพนักงานขับรถ", link: "request-list" },
                 { title: "ข้อมูลยานพาหนะ", link: "request-list" },
                 { title: "กลุ่มยานพาหนะ", link: "request-list" },

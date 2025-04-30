@@ -1,45 +1,49 @@
-import React, {
+"use client";
+import { VehicleUserType } from "@/app/types/vehicle-user-type";
+import RadioButton from "@/components/radioButton";
+import {
+  fetchReceivedKeyUsers,
+  updateKeyPickupDriver,
+  updateKeyPickupOutsider,
+  updateKeyPickupPea,
+} from "@/services/masterService";
+import useSwipeDown from "@/utils/swipeDown";
+import Image from "next/image";
+import Link from "next/link";
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from "react";
-import CustomSelect from "@/components/customSelect";
-import Link from "next/link";
-import RadioButton from "@/components/radioButton";
-import Image from "next/image";
-import useSwipeDown from "@/utils/swipeDown";
-import {
-  fetchVehicleUsers,
-  updateKeyPickupDriver,
-  updateKeyPickupOutsider,
-  updateKeyPickupPea,
-} from "@/services/masterService";
-import { VehicleUserType } from "@/app/types/vehicle-user-type";
-// import KeyPickupDetailModal from "./keyPickUpDetailModal";
 
-import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import CustomSelectKeyPickup from "../customSelectKeyPickup";
 import FormHelper from "../formHelper";
-
+import {
+  updateKeyAdminPickupDriver,
+  updateKeyAdminPickupOutsider,
+  updateKeyAdminPickupPea,
+} from "@/services/keyAdmin";
 
 interface Props {
-  reqId: string;
-  imgSrc: string;
-  name: string;
-  deptSap: string;
-  phone: string;
   onBack?: () => void;
   onSubmit?: () => void;
+  onUpdate?: (data: any) => void;
+  requestData?: RequestDetailType;
+  role?: string;
 }
 const KeyPickUpEditModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props // Props type
->(({ imgSrc, name, deptSap, phone, reqId, onBack, onSubmit }, ref) => {
+>(({ onBack, onSubmit, onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [selectedUserType, setSelectedUserType] = useState<string>("พนักงาน กฟภ.");
+  const [selectedUserType, setSelectedUserType] =
+    useState<string>("พนักงาน กฟภ.");
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -51,22 +55,21 @@ const KeyPickUpEditModal = forwardRef<
     name: yup.string().optional(),
     remark: yup.string().optional(),
     telMobile: yup
-    .string()
-    .when("selectedUserType", (selectedUserType: any, schema) =>
-      typeof selectedUserType === "string" && selectedUserType !== "พนักงานขับรถ"
-        ? schema
-            .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
-            .required("กรุณากรอกเบอร์โทรศัพท์")
-        : schema.optional()
-    ),
+      .string()
+      .when("selectedUserType", (selectedUserType: any, schema) =>
+        typeof selectedUserType === "string" &&
+        selectedUserType !== "พนักงานขับรถ"
+          ? schema
+              .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
+              .required("กรุณากรอกเบอร์โทรศัพท์")
+          : schema.optional()
+      ),
   });
 
-  
   const {
     register,
     handleSubmit,
-    setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
@@ -82,32 +85,36 @@ const KeyPickUpEditModal = forwardRef<
     []
   );
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
-    value: string;
-    label: string;
-  } | null>(null);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
+    useState<VehicleUserType | null>(null);
   const [selectedUserDept, setSelectedUserDept] = useState("");
-  const [driverOptions, setDriverOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [driverOptions, setDriverOptions] = useState<VehicleUserType[]>([]);
+
+  const reqId = requestData?.trn_request_uid || "";
+  const name = requestData?.driver_emp_name || "";
+  const deptSap = requestData?.driver_emp_dept_sap || "";
+  const phone = requestData?.driver_mobile_contact_number || "";
+  const imgSrc = requestData?.driver_image_url || "/assets/img/avatar.svg";
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetchVehicleUsers("");
+        const response = await fetchReceivedKeyUsers(
+          requestData?.trn_request_uid || "",
+          ""
+        );
         if (response.status === 200) {
           const vehicleUserData: VehicleUserType[] = response.data;
           setVehicleUserDatas(vehicleUserData);
-          const driverOptionsArray = vehicleUserData.map((user) => ({
-            value: user.emp_id,
-            label: `${user.full_name} (${user.dept_sap})`,
-          }));
-          setDriverOptions(driverOptionsArray);
+          console.log("requestData", requestData);
+
+          setDriverOptions(vehicleUserData);
 
           // Optional: Set default selected user
-          if (driverOptionsArray.length > 0) {
-            setSelectedVehicleUserOption(driverOptionsArray[0]);
+          if (vehicleUserData.length > 0) {
+            setSelectedVehicleUserOption(vehicleUserData[0]);
             const defaultUser = vehicleUserData.find(
-              (user) => user.emp_id === driverOptionsArray[0].value
+              (user) => user.emp_id === vehicleUserData[0].emp_id
             );
             if (defaultUser) {
               setSelectedUserDept(defaultUser.dept_sap_short);
@@ -118,18 +125,18 @@ const KeyPickUpEditModal = forwardRef<
         console.error("Error fetching requests:", error);
       }
     };
-    fetchRequests();
-  }, []);
+    if(requestData?.trn_request_uid){
+      fetchRequests();
+    }
+ 
+  }, [requestData]);
 
-  const handleVehicleUserChange = async (selectedOption: {
-    value: string;
-    label: string;
-  }) => {
+  const handleVehicleUserChange = async (selectedOption: VehicleUserType) => {
     setSelectedVehicleUserOption(selectedOption);
-    console.log('test',selectedOption);
+    console.log("test", selectedOption);
 
     const empData = vehicleUserDatas.find(
-      (user) => user.emp_id === selectedOption.value
+      (user) => user.emp_id === selectedOption.emp_id
     );
 
     if (empData) {
@@ -143,11 +150,11 @@ const KeyPickUpEditModal = forwardRef<
     if (selectedUserType === "พนักงาน กฟภ.") {
       // Handle payload for internal employee
       payload = {
-        received_key_dept_sap: selectedVehicleUserOption?.value || "",
+        received_key_dept_sap: selectedVehicleUserOption?.dept_sap || "",
         received_key_dept_sap_full: selectedUserDept || "",
         received_key_dept_sap_short: selectedUserDept || "",
-        received_key_emp_id: selectedVehicleUserOption?.value || "",
-        received_key_emp_name: selectedVehicleUserOption?.label || "",
+        received_key_emp_id: selectedVehicleUserOption?.emp_id || "",
+        received_key_emp_name: selectedVehicleUserOption?.full_name || "",
         received_key_internal_contact_number: data.telInternal || "", // Get from form data
         received_key_mobile_contact_number: data.telMobile || "", // Get from form data
         received_key_remark: data.remark || "", // Get from form data
@@ -161,23 +168,38 @@ const KeyPickUpEditModal = forwardRef<
         received_key_remark: data.remark || "", // Get from form data
         trn_request_uid: reqId || "",
       };
-    }else{
+    } else {
       payload = {
         trn_request_uid: reqId || "",
       };
     }
 
+    console.log("payload", payload);
+
     try {
-      // Update API call based on selectedUserType
       let res;
-      if (selectedUserType === "พนักงาน กฟภ.") {
-        res = await updateKeyPickupPea(payload);
-      } else if (selectedUserType === "บุคคลภายนอก") {
-        res = await updateKeyPickupOutsider(payload);
-      }else{
-        res = await updateKeyPickupDriver(payload);
+      if (role == "keyAdmin") {
+        if (selectedUserType === "พนักงาน กฟภ.") {
+          res = await updateKeyAdminPickupPea(payload);
+        } else if (selectedUserType === "บุคคลภายนอก") {
+          res = await updateKeyAdminPickupOutsider(payload);
+        } else {
+          res = await updateKeyAdminPickupDriver(payload);
+        }
+        modalRef.current?.close();
+        if (onUpdate) onUpdate(res.data);
+        console.log("API Response:ss", res);
+      } else {
+        if (selectedUserType === "พนักงาน กฟภ.") {
+          res = await updateKeyPickupPea(payload);
+        } else if (selectedUserType === "บุคคลภายนอก") {
+          res = await updateKeyPickupOutsider(payload);
+        } else {
+          res = await updateKeyPickupDriver(payload);
+        }
+        console.log("API Response:", res);
       }
-      console.log("API Response:", res);
+
       if (onSubmit) {
         onSubmit();
       }
@@ -197,20 +219,22 @@ const KeyPickUpEditModal = forwardRef<
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">
             {" "}
-            <Link href="" className="flex items-center gap-3">
-              <i
-                className="material-symbols-outlined"
-                onClick={() => {
-                  modalRef.current?.close();
-                  if (onBack) {
-                    onBack();
-                  }
-                }}
-              >
-                keyboard_arrow_left
-              </i>{" "}
-              แก้ไขผู้มารับกุญแจ{" "}
-            </Link>
+            {onBack && (
+              <Link href="" className="flex items-center gap-3">
+                <i
+                  className="material-symbols-outlined"
+                  onClick={() => {
+                    modalRef.current?.close();
+                    if (onBack) {
+                      onBack();
+                    }
+                  }}
+                >
+                  keyboard_arrow_left
+                </i>{" "}
+              </Link>
+            )}
+            แก้ไขผู้มารับกุญแจ{" "}
           </div>
           <form method="dialog">
             <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
@@ -222,7 +246,7 @@ const KeyPickUpEditModal = forwardRef<
           <div className="modal-body overflow-y-auto">
             <div className="form-section">
               <div className="form-group">
-                <div className="custom-group flex flex-col !gap-0">
+                <div className="custom-group flex gap-2">
                   <RadioButton
                     name="userType"
                     label="พนักงานขับรถ"
@@ -255,12 +279,13 @@ const KeyPickUpEditModal = forwardRef<
                   <div className="form-group">
                     <label className="form-label">ชื่อ - นามสกุล</label>
 
-                    <CustomSelect
+                    <CustomSelectKeyPickup
                       iconName="person"
                       w="w-full"
                       options={driverOptions}
                       value={selectedVehicleUserOption}
                       onChange={handleVehicleUserChange}
+                      data={vehicleUserDatas}
                     />
                   </div>
                 </div>
@@ -458,9 +483,14 @@ const KeyPickUpEditModal = forwardRef<
             )}
           </div>
           <div className="modal-action sticky bottom-0 gap-3 mt-0">
-            <form method="dialog" className="w-[50%] md:w-auto">
-              <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
-            </form>
+            <div className="w-[50%] md:w-auto">
+              <button
+                className="btn btn-secondary w-full"
+                onClick={() => modalRef.current?.close()}
+              >
+                ไม่ใช่ตอนนี้
+              </button>
+            </div>
             <button className="btn btn-primary w-[50%] md:w-auto" type="submit">
               ยืนยัน
             </button>
