@@ -17,13 +17,16 @@ export default function SideBar({ menuName }: SidebarProps) {
   useEffect(() => {
     if (menuName) {
       setActiveItem(menuName);
-      if (["คำขอใช้ยานพาหนะ", "อนุมัติขอคำใช้และใบอนุญาต"].includes(menuName)) {
+      if (
+        [
+          "คำขอใช้ยานพาหนะ",
+          "อนุมัติขอคำใช้และใบอนุญาต",
+          "งานพนักงานขับรถ",
+        ].includes(menuName)
+      ) {
         setOpenMenus(["collapseLink2"]);
       } else if (
-        [
-          "ตรวจสอบและจัดการคำขอ",
-          "อนุมัติใช้ยานพาหนะ",
-        ].includes(menuName)
+        ["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)
       ) {
         setOpenMenus(["collapseLink3"]);
       } else if (
@@ -45,7 +48,6 @@ export default function SideBar({ menuName }: SidebarProps) {
       setIsExpanded(true);
     }
   }, [isPinned]);
-  
 
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
@@ -83,13 +85,13 @@ export default function SideBar({ menuName }: SidebarProps) {
           </Link>
         ) : (
           <Link href="/">
-          <Image
-            src={"/assets/img/favicon.png"}
-            width={40}
-            height={40}
-            alt=""
-            className="transition-all duration-300 ease-in-out"
-          />
+            <Image
+              src={"/assets/img/favicon.png"}
+              width={40}
+              height={40}
+              alt=""
+              className="transition-all duration-300 ease-in-out"
+            />
           </Link>
         )}
         {/* Pin Button */}
@@ -133,8 +135,15 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "car_rental",
               label: "ระบบจองยานพาหนะ",
               items: [
-                { title: "คำขอใช้ยานพาหนะ", link: "/vehicle-booking/request-list" },
-                { title: "อนุมัติขอคำใช้และใบอนุญาต", link: "/administrator/booking-approver" },
+                {
+                  title: "คำขอใช้ยานพาหนะ",
+                  link: "/vehicle-booking/request-list",
+                },
+                {
+                  title: "อนุมัติขอคำใช้และใบอนุญาต",
+                  link: "/administrator/booking-approver",
+                },
+                { title: "งานพนักงานขับรถ", link: "/vehicle-in-use/driver" },
               ],
             },
             {
@@ -142,8 +151,14 @@ export default function SideBar({ menuName }: SidebarProps) {
               icon: "traffic_jam",
               label: "จัดการคำขอใช้ยานพาหนะ",
               items: [
-                { title: "ตรวจสอบและจัดการคำขอ", link: "/administrator/request-list" },
-                { title: "อนุมัติใช้ยานพาหนะ", link: "/administrator/booking-final" },
+                {
+                  title: "ตรวจสอบและจัดการคำขอ",
+                  link: "/administrator/request-list",
+                },
+                {
+                  title: "อนุมัติใช้ยานพาหนะ",
+                  link: "/administrator/booking-final",
+                },
                 // { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
               ],
             },
