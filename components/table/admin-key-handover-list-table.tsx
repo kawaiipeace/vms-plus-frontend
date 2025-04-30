@@ -234,8 +234,8 @@ export default function AdminKeyHandOverListTable({
               req_id={row.original.trn_request_uid}
               place={row.original.received_key_place}
               date={row.original.received_key_start_datetime}
-              start_time={convertToBuddhistDateTime(row.original.received_key_start_datetime).time}
-              end_time={convertToBuddhistDateTime(row.original.received_key_end_datetime).time}
+              start_time={row.original.received_key_start_datetime}
+              end_time={row.original.received_key_end_datetime}
               ref={editKeyAppointmentModalRef}
             />
           </div>

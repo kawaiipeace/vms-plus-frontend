@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import {
-  requestHistoryLog,
-  requestHistoryLogColumns,
-} from "@/data/requestHistory";
-import TableComponent from "@/components/table";
+import React, { useEffect, useState } from "react";
 import RequestDetailForm from "@/components/admin/requestDetailForm";
+import LogListTable from "../table/log-list-table";
+import PaginationControls from "@/components/table/pagination-control";
+import { useLogContext } from "@/contexts/log-context";
 
 interface Props {
   requestId: string;
@@ -12,6 +10,23 @@ interface Props {
 }
 
 export default function RequestDetailTabs({ requestId, displayKeyHandover }: Props) {
+
+    const { dataRequest, pagination, params, setParams, loadLogs } = useLogContext();
+    const handlePageChange = (newPage: number) => {
+      setParams((prev) => ({ ...prev, page: newPage }));
+    };
+  
+    const handlePageSizeChange = (newLimit: string | number) => {
+      const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+      setParams((prev) => ({ ...prev, limit, page: 1 }));
+    };
+  
+    useEffect(() => {
+      if (requestId) {
+        loadLogs(requestId);
+      }
+    }, [loadLogs, params, requestId]);
+    
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
@@ -30,10 +45,16 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
     {
       label: "ประวัติการดำเนินการ",
       content: (
-        <TableComponent
-          data={requestHistoryLog}
-          columns={requestHistoryLogColumns}
-        />
+        <>
+        <LogListTable defaultData={dataRequest} pagination={pagination} />
+          {dataRequest.length > 0 && (
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          )}
+        </>
       ),
       badge: "",
     },

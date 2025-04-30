@@ -200,12 +200,15 @@ const EditKeyAppointmentModal = forwardRef<
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => modalRef.current?.close()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                modalRef.current?.close()}}
             >
               ปิด
             </button>
             <button
-              type="button"
+              type="submit"
               className="btn btn-primary"
               onClick={handleSubmit(onSubmit)}
             >
