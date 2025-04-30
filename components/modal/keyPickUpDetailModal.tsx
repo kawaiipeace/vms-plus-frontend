@@ -159,18 +159,22 @@ const KeyPickupDetailModal = forwardRef<
             {/* User info section */}
             <div className="form-section" style={{ marginTop: 0 }}>
               <div className="form-section-header">
-                <div className="form-section-header-title">ผู้ไปรับกุญแจ</div>
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => {
-                    modalRef.current?.close();
-                    if (onEdit) {
-                      onEdit();
-                    }
-                  }}
-                >
-                  แก้ไข
-                </button>
+                <div className="form-section-header-title">
+                  {driver ? "ผู้รับกุญแจ" : "ผู้ไปรับกุญแจ"}
+                </div>
+                {!driver && (
+                  <button
+                    className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      if (onEdit) {
+                        onEdit();
+                      }
+                    }}
+                  >
+                    แก้ไข
+                  </button>
+                )}
               </div>
               <div className="form-card w-full">
                 <div className="form-card-body">
