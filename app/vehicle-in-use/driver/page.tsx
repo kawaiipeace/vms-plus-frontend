@@ -62,7 +62,7 @@ export default function DriverMain() {
 
     const fetchReceivedKeyDriverFunc = async () => {
       try {
-        const params = { page: 1, page_size: 100 };
+        const params = {};
         const response = await receivedKeyDriver(params);
         const result = response.data;
         setData(result.requests ?? []);
