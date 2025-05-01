@@ -63,9 +63,7 @@ const DriverDetail = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <Link href="/vehicle-in-use/driver">
-                      <a>งานของฉัน</a>
-                    </Link>
+                    <Link href="/vehicle-in-use/driver">งานของฉัน</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>{progressType}</a>
