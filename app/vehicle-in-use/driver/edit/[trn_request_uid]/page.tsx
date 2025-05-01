@@ -19,7 +19,6 @@ const DriverEdit = () => {
 
   useEffect(() => {
     if (progressTypeUrl) {
-      console.log("progressTypeUrl: ", progressTypeUrl, " - progressTypeUrl");
       setProgressType(progressTypeUrl);
     }
   }, [progressTypeUrl]);

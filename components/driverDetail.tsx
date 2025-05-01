@@ -64,8 +64,6 @@ const DriverDetailContent = ({
     },
   ];
 
-  console.log("data: ", data, " - data");
-
   return (
     <div>
       {progressType !== "การรับยานพาหนะ" &&
