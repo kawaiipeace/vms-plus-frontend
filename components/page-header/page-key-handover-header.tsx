@@ -220,7 +220,7 @@ export default function PageKeyHandOverHeader({ data }: Props) {
         onSubmit={saveImage}
       />
       <CancelRequestModal
-        id={data?.trn_request_uid}
+        id={data?.trn_request_uid || ""}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"

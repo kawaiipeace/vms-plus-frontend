@@ -14,7 +14,7 @@ import { adminSendbackRequest } from "@/services/bookingAdmin";
 import { finalSendbackRequest } from "@/services/bookingFinal";
 
 interface Props {
-  id: string;
+  id?: string;
   title: string;
   desc: string;
   link?: string;
@@ -53,7 +53,7 @@ const FileBackRequestModal = forwardRef<
       try {
         const payload = {
           sended_back_request_reason: inputValue,
-          trn_request_uid: id,
+          trn_request_uid: id || "",
         };
         const res =
           role === "firstApprover"
@@ -77,11 +77,11 @@ const FileBackRequestModal = forwardRef<
                 "/administrator/request-list?sendback-req=success&request-id=" +
                   data.result?.request_no
               )
-              : role === "final"
-              ? router.push(
-                  "/administrator/booking-final?sendback-req=success&request-id=" +
-                    data.result?.request_no
-                )
+            : role === "final"
+            ? router.push(
+                "/administrator/booking-final?sendback-req=success&request-id=" +
+                  data.result?.request_no
+              )
             : router.push(
                 "/vehicle-booking/request-list?sendback-req=success&request-id=" +
                   data.result?.request_no

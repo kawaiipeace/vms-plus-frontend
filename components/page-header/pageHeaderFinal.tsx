@@ -178,7 +178,7 @@ export default function PageHeaderFinal({ data, editable }: Props) {
         </button>
       </div>
       <CancelRequestModal
-        id={data?.trn_request_uid}
+        id={data?.trn_request_uid || ""}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
@@ -186,7 +186,7 @@ export default function PageHeaderFinal({ data, editable }: Props) {
         confirmText="ยกเลิกคำขอ"
       />
       <FileBackRequestModal
-        id={data?.trn_request_uid}
+        id={data?.trn_request_uid || ""}
         ref={fileBackRequestModalRef}
         title="ยืนยันตีกลับคำขอ"
         role="final"
@@ -196,7 +196,7 @@ export default function PageHeaderFinal({ data, editable }: Props) {
       />
 
       <ApproveRequestModal
-        id={data?.trn_request_uid}
+        id={data?.trn_request_uid || ""}
         ref={approveRequestModalRef}
         title={"ยืนยันอนุมัติคำขอ"}
         role="final"
