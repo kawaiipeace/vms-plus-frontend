@@ -95,7 +95,7 @@ const DriverDetailContent = ({
         <AlertCustom title="งานถูกยกเลิกแล้ว" desc="ยกเลิกเมื่อ 25/12/2566" />
       )}
 
-      {progressType === "รอรับกุญแจ" && (
+      {(progressType === "รอรับกุญแจ" || progressType === "ยกเลิกภารกิจ") && (
         <div className="grid gird-cols-1 gap-4">
           <div className="w-full">
             <div className="form-section">
@@ -148,12 +148,14 @@ const DriverDetailContent = ({
               />
             </div>
           </div>
-          <button
-            className="btn btn-primary w-full mt-5"
-            onClick={() => keyPickupDetailModalRef.current?.openModal()}
-          >
-            รับกุญแจ
-          </button>
+          {progressType === "รอรับกุญแจ" && (
+            <button
+              className="btn btn-primary w-full mt-5"
+              onClick={() => keyPickupDetailModalRef.current?.openModal()}
+            >
+              รับกุญแจ
+            </button>
+          )}
           <KeyPickupDetailModal
             reqId={data?.trn_request_uid || ""}
             imgSrc={data?.received_key_image_url || "/assets/img/avatar.svg"}
