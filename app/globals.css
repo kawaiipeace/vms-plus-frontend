@@ -4175,7 +4175,7 @@
   top: 0;
   right: 0;
   position: fixed;
-  z-index: 9;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

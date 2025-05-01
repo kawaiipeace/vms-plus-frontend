@@ -81,6 +81,30 @@ export interface RequestDetailType {
   received_vehicle_emp_id: string;
   received_vehicle_emp_name: string;
   receiver_key_type: number;
+  vehicle_license_plate_province_short: string;
+  vehicle_license_plate_province_full: string;
+  requested_vehicle_type_id: number;
+  vehicle_images_received: string[];
+  returned_vehicle_datetime: string;
+  mile_end: number;
+  fuel_end: number;
+  returned_cleanliness_level: number;
+  returned_vehicle_remark: string;
+  vehicle_images_returned: string[];
+  returned_vehicle_emp_id: string;
+  returned_vehicle_emp_name: string;
+  returned_vehicle_dept_sap: string;
+  returned_vehicle_dept_sap_short: string;
+  returned_vehicle_dept_sap_full: string;
+  accepted_vehicle_datetime: string;
+  accepted_vehicle_emp_id: string;
+  accepted_vehicle_emp_name: string;
+  accepted_vehicle_dept_sap: string;
+  accepted_vehicle_dept_sap_short: string;
+  accepted_vehicle_dept_sap_full: string;
+  is_use_driver: boolean;
+  canceled_request_datetime: string;
+  parking_place: string;
 }
 
 export interface RequestVehicleType {
