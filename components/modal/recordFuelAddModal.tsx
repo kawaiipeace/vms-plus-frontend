@@ -1,3 +1,4 @@
+import { UploadFileType } from "@/app/types/upload-type";
 import DatePicker from "@/components/datePicker";
 import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
@@ -61,7 +62,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       closeModal: () => modalRef.current?.close(),
     }));
     const [selectedTravelType, setSelectedTravelType] = useState("");
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<any>([]);
 
     useEffect(() => {
       const fetchRequests = async () => {
@@ -88,8 +89,8 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       }
     }, [requestId]);
 
-    const handleImageChange = (newImages: File[]) => {
-      setImages(newImages);
+    const handleImageChange = (images: UploadFileType) => {
+      // setImages(images);
     };
 
     const handleDeleteImage = (index: number) => {
@@ -101,7 +102,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       () =>
         oilStationBrandData.map((item) => {
           return {
-            value: item.ref_oil_station_brand_id,
+            value: item.ref_oil_station_brand_id.toString(),
             label: (
               <div className="flex items-center gap-1">
                 <Image src={item.ref_oil_station_brand_img || ""} alt={"oil image"} />
@@ -117,7 +118,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       () =>
         fuelData.map((item) => {
           return {
-            value: item.ref_fuel_type_id,
+            value: item.ref_fuel_type_id.toString(),
             label: item.ref_fuel_type_name_th,
           };
         }),

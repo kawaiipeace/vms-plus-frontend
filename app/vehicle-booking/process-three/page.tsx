@@ -186,7 +186,7 @@ export default function ProcessThree() {
   }, []);
 
   const handleVehicleUserChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedVehicleUserOption(selectedOption);
+    setSelectedVehicleUserOption(selectedOption as { value: string; label: string });
 
     const empData = vehicleUserDatas.find((user: { emp_id: string }) => user.emp_id === selectedOption.value);
 
