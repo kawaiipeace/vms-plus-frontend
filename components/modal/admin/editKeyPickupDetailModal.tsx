@@ -2,14 +2,13 @@ import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
 import TimePicker from "@/components/timePicker";
+import { updateKeyAdminReceiveDetail } from "@/services/keyAdmin";
 import {
   fetchVehicleKeyType,
   updateReceivedKeyConfirmed,
 } from "@/services/masterService";
-import { requestReceivedKeyDriver } from "@/services/vehicleInUseDriver";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   forwardRef,
@@ -20,43 +19,25 @@ import {
 } from "react";
 
 // Props for the KeyPickupDetailModal component
-interface KeyPickUpDetailProps {
+interface Props {
   reqId: string;
   id: string;
   imgSrc: string;
   name: string;
   deptSap: string;
-  deptSapShort: string;
   phone: string;
+  role?: string;
   vehicle?: VehicleDetailType;
   onEdit?: () => void;
   onSubmit?: () => void;
-  role?: string;
-}
-
-// Ref methods exposed by the modal
-export interface KeyPickupDetailModalRef {
-  openModal: () => void;
-  closeModal: () => void;
 }
 
 const KeyPickupDetailModal = forwardRef<
-  KeyPickupDetailModalRef,
-  KeyPickUpDetailProps
+  { openModal: () => void; closeModal: () => void }, // Ref type
+  Props
 >((props, ref) => {
-  const {
-    id,
-    imgSrc,
-    name,
-    deptSap,
-    deptSapShort,
-    phone,
-    reqId,
-    onEdit,
-    onSubmit,
-    vehicle,
-    role,
-  } = props;
+  const { id, imgSrc, name, deptSap, phone, reqId, onEdit, role, onSubmit, vehicle } =
+    props;
 
   const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -94,33 +75,36 @@ const KeyPickupDetailModal = forwardRef<
   const submit = async () => {
     if (selectedDate && selectedTime && selectedAttach) {
       try {
-        if (onSubmit) {
-          onSubmit();
-        }
-
         const dateTime = convertToISO(selectedDate, selectedTime);
         const payload = {
           received_key_datetime: dateTime,
           ref_vehicle_key_type_code: Number(selectedAttach),
           trn_request_uid: reqId,
         };
+        let response;
+        if(role === "keyAdmin"){
+          response = await updateKeyAdminReceiveDetail(payload);
+        }else{
+          response = await updateReceivedKeyConfirmed(payload);
+        }
+    
+        console.log("response", response);
 
-        if (role === "driver") {
-          const response = await requestReceivedKeyDriver(payload);
+        if (onSubmit) {
+          onSubmit();
+        }
 
-          if (response.status === 200) {
-            router.push("/vehicle-in-use/driver");
-          }
-        } else {
-          const response = await updateReceivedKeyConfirmed(payload);
-          console.log("response", response);
-
-          if (response.status === 200) {
-            router.push(
-              "/vehicle-booking/request-list?received-key=success&license-plate=" +
-                vehicle?.vehicle_license_plate
-            );
-          }
+        if (response.status === 200) {
+          if(role === "keyAdmin"){
+            if (onEdit) {
+              onEdit();
+            }
+        }else{
+          router.push(
+            "/vehicle-booking/request-list?received-key=success&license-plate=" +
+              vehicle?.vehicle_license_plate
+          );
+        }
         }
       } catch (error) {
         console.error("Network error:", error);
@@ -128,6 +112,10 @@ const KeyPickupDetailModal = forwardRef<
     } else {
       console.warn("No formData found!");
     }
+  };
+
+  const handleTimeChange = (dateStr: string) => {
+    setSelectedTime(dateStr);
   };
 
   return (
@@ -142,7 +130,7 @@ const KeyPickupDetailModal = forwardRef<
 
           {/* Header */}
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">รับกุญแจ</div>
+            <div className="modal-title">แก้ไขรายละเอียดการรับกุญแจ</div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
@@ -152,54 +140,6 @@ const KeyPickupDetailModal = forwardRef<
 
           {/* Body */}
           <div className="modal-body overflow-y-auto">
-            {/* User info section */}
-            <div className="form-section" style={{ marginTop: 0 }}>
-              <div className="form-section-header">
-                <div className="form-section-header-title">
-                  {role === "driver" ? "ผู้รับกุญแจ" : "ผู้ไปรับกุญแจ"}
-                </div>
-                {role !== "driver" && (
-                  <button
-                    className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                    onClick={() => {
-                      modalRef.current?.close();
-                      if (onEdit) {
-                        onEdit();
-                      }
-                    }}
-                  >
-                    แก้ไข
-                  </button>
-                )}
-              </div>
-              <div className="form-card w-full">
-                <div className="form-card-body">
-                  <div className="form-group form-plaintext form-users">
-                    <Image
-                      src={imgSrc}
-                      className="avatar avatar-md"
-                      width={100}
-                      height={100}
-                      alt={name}
-                    />
-                    <div className="form-plaintext-group align-self-center">
-                      <div className="form-label">{name}</div>
-                      <div className="supporting-text-group">
-                        <div className="supporting-text">{deptSap}</div>
-                        <div className="supporting-text"> {deptSapShort}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-card-right align-self-center mt-4">
-                    <div className="text-error text-center text-sm">
-                      ผู้รับกุญแจมีหน้าที่ดูแลรักษา <br />
-                      ไม่ให้กุญแจและ/หรือบัตรเติมน้ำมันสูญหาย
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Date, time, and attachments section */}
             <div className="form-section">
               <div className="grid grid-cols-12 gap-5">
@@ -235,7 +175,9 @@ const KeyPickupDetailModal = forwardRef<
                       </div>
                       <TimePicker
                         placeholder="ระบุเวลา"
-                        onChange={(time) => setSelectedTime(time)}
+                        onChange={(time: string) => {
+                          handleTimeChange(time);
+                        }}
                       />
                     </div>
                   </div>
@@ -257,20 +199,6 @@ const KeyPickupDetailModal = forwardRef<
                         />
                       );
                     })}
-                    {/* <RadioButton
-                      name="key"
-                      label="กุญแจหลัก และบัตรเติมน้ำมัน"
-                      value="กุญแจหลัก และบัตรเติมน้ำมัน"
-                      selectedValue={selectedAttach}
-                      setSelectedValue={setSelectedAttach}
-                    />
-                    <RadioButton
-                      name="key"
-                      label="กุญแจหลัก"
-                      value="กุญแจหลัก"
-                      selectedValue={selectedAttach}
-                      setSelectedValue={setSelectedAttach}
-                    /> */}
                   </div>
                 </div>
               </div>
@@ -279,9 +207,14 @@ const KeyPickupDetailModal = forwardRef<
 
           {/* Actions */}
           <div className="modal-action sticky bottom-0 gap-3 mt-0">
-            <form method="dialog" className="w-[50%] md:w-auto">
-              <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
-            </form>
+            <div className="w-[50%] md:w-auto">
+              <button
+                className="btn btn-secondary w-full"
+                onClick={() => modalRef.current?.close()}
+              >
+                ไม่ใช่ตอนนี้
+              </button>
+            </div>
             <button
               className="btn btn-primary w-[50%] md:w-auto"
               onClick={() => {

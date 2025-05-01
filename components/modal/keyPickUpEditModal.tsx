@@ -1,4 +1,3 @@
-"use client";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import RadioButton from "@/components/radioButton";
 import {
@@ -285,7 +284,6 @@ const KeyPickUpEditModal = forwardRef<
                       options={driverOptions}
                       value={selectedVehicleUserOption}
                       onChange={handleVehicleUserChange}
-                      data={vehicleUserDatas}
                     />
                   </div>
                 </div>

@@ -55,7 +55,7 @@ export default function PickupKeyDetailCard({
 
             <div className="col-span-12 md:col-span-6">
               <div className="form-group form-plaintext">
-                <i className="material-symbols-outlined">calendar_month</i>
+                <i className="material-symbols-outlined">schedule</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">ช่วงเวลา</div>
                   <div className="form-text">{timeRange}</div>

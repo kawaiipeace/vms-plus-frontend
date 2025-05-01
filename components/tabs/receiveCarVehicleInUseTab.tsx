@@ -1,9 +1,13 @@
-import React, { useRef, useState } from "react";
+"use client";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
+import ImagesCarCard from "@/components/card/ImagesCarCard";
 import UserInfoCard from "@/components/card/userInfoCard";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
-import ImagesCarCard from "@/components/card/ImagesCarCard";
 import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
+import { fetchRequestKeyDetail } from "@/services/masterService";
+import { useEffect, useRef, useState } from "react";
+import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;
@@ -21,10 +25,27 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
     closeModal: () => void;
   } | null>(null);
   const [receiveSuccess, setReceiveSuccess] = useState(true);
+  const [requestData, setRequestData] = useState<RequestDetailType>();
+
+  const fetchRequestDetailfunc = async () => {
+    try {
+      // Ensure parsedData is an object before accessing vehicleSelect
+      const response = await fetchRequestKeyDetail(requestId || "");
+      console.log("data---", response.data);
+      setRequestData(response.data);
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequestDetailfunc();
+  }, [requestId]);
+
   return (
     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-      <div className="w-full row-start-2 md:col-start-1">
-        {receiveSuccess && (
+      <div className="w-full row-start-2 md:col-start-1 flex flex-col gap-4">
+        {receiveSuccess && displayOn !== "vehicle-in-use" && (
           <>
             <div className="form-section">
               <div className="form-section-header">
@@ -33,7 +54,10 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
                 </div>
                 {edit === "edit" && (
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                      onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+                    >
                       แก้ไข
                     </button>
                   </div>
@@ -104,7 +128,10 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
                 </div>
                 {edit === "edit" && (
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddStep2ModalRef.current?.openModal()}>
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                      onClick={() => returnCarAddStep2ModalRef.current?.openModal()}
+                    >
                       แก้ไข
                     </button>
                   </div>
@@ -116,7 +143,7 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
           </>
         )}
         {displayOn !== "admin" && (
-          <>
+          <div className="">
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
@@ -128,13 +155,20 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
                 <div className="form-card-body">
                   <div className="grid grid-cols-12">
                     <div className="col-span-12 md:col-span-6">
-                      <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">calendar_month</i>
-                        <div className="form-plaintext-group">
-                          <div className="form-label">วันที่และเวลา</div>
-                          <div className="form-text">01/01/2567 08:30</div>
+                      {displayOn === "vehicle-in-use" ? (
+                        <div className="form-group form-plaintext">
+                          <i className="material-symbols-outlined">local_parking</i>
+                          <div className="form-text">{requestData?.pickup_place}</div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="form-group form-plaintext">
+                          <i className="material-symbols-outlined">calendar_month</i>
+                          <div className="form-plaintext-group">
+                            <div className="form-label">วันที่และเวลา</div>
+                            <div className="form-text">01/01/2567 08:30</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -148,16 +182,18 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
                 </div>
               </div>
 
-              <UserInfoCard UserType="outsource" displayBtnMore={true} />
+              {displayOn === "vehicle-in-use" ? (
+                <DriverPassengerPeaInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+              ) : (
+                <UserInfoCard UserType="outsource" displayBtnMore={true} />
+              )}
             </div>
-          </>
+          </div>
         )}
 
-    
-          <button className="btn btn-primary w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
-            รับยานพาหนะ
-          </button>
-      
+        <button className="btn btn-primary w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+          รับยานพาหนะ
+        </button>
       </div>
 
       <div className="col-span-1 row-start-1 md:row-start-2">
@@ -166,11 +202,11 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
             <div className="form-section-header-title">ข้อมูลยานพาหนะ</div>
           </div>
 
-          <CarDetailCard2 />
+          <CarDetailCard2 reqId={requestData?.trn_request_uid} vehicle={requestData?.vehicle} />
         </div>
       </div>
-      
-      <ReceiveCarVehicleModal status={edit} ref={receiveCarVehicleModalRef} />
+
+      <ReceiveCarVehicleModal status={edit} ref={receiveCarVehicleModalRef} requestData={requestData} />
       <ReturnCarAddStep2Modal openStep1={() => {}} ref={returnCarAddStep2ModalRef} />
     </div>
   );
