@@ -45,7 +45,7 @@ const LicenseCardModal = forwardRef<
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()} >
         <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>

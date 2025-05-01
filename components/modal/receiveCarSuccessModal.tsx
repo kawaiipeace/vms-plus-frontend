@@ -36,7 +36,7 @@ const ReceiveCarSuccessModal = forwardRef<
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()} >
         <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
@@ -65,7 +65,7 @@ const ReceiveCarSuccessModal = forwardRef<
             <div className="flex-1">
             <button
               type="button"
-              className="btn btn-secondary w-full"
+              className="btn btn-secondary !w-full"
               onClick={() => {
                 modalRef.current?.close();
               }}
@@ -76,7 +76,7 @@ const ReceiveCarSuccessModal = forwardRef<
             <div className="flex-1">
             <button
               type="button"
-              className="btn btn-primary w-full"
+              className="btn btn-primary !w-full"
               onClick={() => {
                 licenseCardModalRef.current?.openModal();
                 modalRef.current?.close();

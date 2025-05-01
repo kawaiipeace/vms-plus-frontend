@@ -14,6 +14,7 @@ import { RequestListType } from "@/app/types/request-list-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
+import Link from "next/link";
 
 interface PaginationType {
   limit: number;
@@ -215,6 +216,48 @@ export default function AdminVehiclePickupTable({
               <i className="material-symbols-outlined">quick_reference_all</i>
             </button>
 
+            {(row.original.ref_request_status_code === "60" ||
+              (row.original.ref_request_status_code === "60e") && (
+                <div className="dropdown dropdown-left dropdown-end">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                  >
+                    <i className="material-symbols-outlined icon-settings-fill-300-24">
+                      more_vert
+                    </i>
+                  </div>
+
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link className="dropdown-item" href={`/administrator/vehicle-in-use`}>
+                      <i className="material-symbols-outlined">
+                        add_location_alt
+                      </i>
+                      ข้อมูลการเดินทาง
+                    </Link>
+                    <Link className="dropdown-item" href="#">
+                      <i className="material-symbols-outlined">
+                        local_gas_station
+                      </i>
+                      การเติมเชื้อเพลิง
+                    </Link>
+                    {/* <Link className="dropdown-item" href="#">
+                      <i className="material-symbols-outlined">id_card</i>
+                      แสดงบัตรเดินทาง
+                    </Link> */}
+                    <div className="dropdown-divider"></div>
+                    <Link className="dropdown-item" href="#">
+                      <i className="material-symbols-outlined">reply</i>
+                      คืนยานพาหนะ
+                    </Link>
+                  </ul>
+                </div>
+              ))}
+
             {statusValue == "รับยานพาหนะ" && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
@@ -228,7 +271,11 @@ export default function AdminVehiclePickupTable({
                 <i className="material-symbols-outlined">directions_car</i>
               </button>
             )}
-              <ReceiveCarVehicleModal requestData={{ trn_request_uid: row.original.trn_request_uid }} ref={receiveCarVehicleModalRef} role="admin" />
+            <ReceiveCarVehicleModal
+              requestData={{ trn_request_uid: row.original.trn_request_uid }}
+              ref={receiveCarVehicleModalRef}
+              role="admin"
+            />
           </div>
         );
       },
@@ -268,7 +315,7 @@ export default function AdminVehiclePickupTable({
             table={table}
             onRowClick={(row) => {
               const uid = row.trn_request_uid;
-                router.push(`/administrator/vehicle-in-use/${uid}`);
+              router.push(`/administrator/vehicle-in-use/${uid}`);
             }}
           />
         </>
