@@ -11,8 +11,12 @@ const DriverEdit = () => {
   return (
     <>
       <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <SideBar menuName="งานพนักงานขับรถ" />
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">

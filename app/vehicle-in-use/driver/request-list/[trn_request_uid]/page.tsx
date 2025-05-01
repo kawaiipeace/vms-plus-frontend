@@ -44,7 +44,7 @@ const DriverRequestDetail = () => {
   return (
     <>
       <div className="main-container">
-        <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <SideBar menuName="งานพนักงานขับรถ" />
         <div
           className={`main-content ${
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
