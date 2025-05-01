@@ -78,7 +78,7 @@ const DriverSoonTab = ({ data }: DriverSoonTabProps) => {
                       const timeRange = getDateRange(s_date, e_date, "HH:mm");
                       const receivedKeyDate = getDateRange(receive_key_date);
 
-                      const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
+                      const link = `/vehicle-in-use/driver/${item.trn_request_uid}?progressType=รอรับกุญแจ`;
 
                       return (
                         <Link key={item.request_no} href={link}>

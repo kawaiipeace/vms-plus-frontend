@@ -77,7 +77,10 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (
-                        <Link key={item.request_no} href={link}>
+                        <Link
+                          key={item.request_no}
+                          href={link + "?progressType=ยกเลิกภารกิจ"}
+                        >
                           <MobileDriverCard
                             title={"ยกเลิกภารกิจ"}
                             carRegis={license_plate_full}

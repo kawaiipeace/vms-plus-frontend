@@ -80,7 +80,10 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (
-                        <Link key={item.request_no} href={link}>
+                        <Link
+                          key={item.request_no}
+                          href={link + "?progressType=ภารกิจสำเร็จ"}
+                        >
                           <MobileDriverCard
                             title={"ภารกิจสำเร็จ"}
                             carRegis={license_plate_full}

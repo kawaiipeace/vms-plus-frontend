@@ -83,7 +83,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                           </Link>
                         )}
                         {item.ref_request_status_code === "60" && (
-                          <Link href={link}>
+                          <Link href={link + "?progressType=รอรับยานพาหนะ"}>
                             <MobileDriverCard
                               cardType="waitCar"
                               carRegis={license_plate_full}
