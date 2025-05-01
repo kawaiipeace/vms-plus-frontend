@@ -78,16 +78,42 @@ export type RecordTravelTabProps = {
 };
 
 export type RecordFuelTabProps = {
-  dateReceipt: string;
-  receiptNo: string;
-  staionType: string;
-  fuelType: string;
-  mileNum: string;
-  literNum: string;
-  pricePerLiter: string;
-  vat: string;
-  priceTotal: string;
-  paymentType: string;
+  trn_add_fuel_uid: string;
+  trn_request_uid: string;
+  ref_oil_station_brand_id: number;
+  ref_oil_station_brand: {
+    ref_oil_station_brand_id: 1;
+    ref_oil_station_brand_name_th: string;
+    ref_oil_station_brand_name_en: string;
+    ref_oil_station_brand_name_full: string;
+    ref_oil_station_brand_img: string;
+  };
+  ref_fuel_type_id: number;
+  ref_fuel_type: {
+    ref_fuel_type_id: number;
+    ref_fuel_type_name_en: string;
+    ref_fuel_type_name_th: string;
+  };
+  mile: number;
+  tax_invoice_date: string;
+  tax_invoice_no: string;
+  price_per_liter: number;
+  sum_liter: number;
+  sum_price: number;
+  receipt_img: string;
+  ref_payment_type_code: number;
+  ref_payment_type: {
+    ref_payment_type_code: number;
+    ref_payment_type_name: string;
+  };
+  mas_vehicle_uid: string;
+  vehicle_license_plate: string;
+  vehicle_license_plate_province_short: string;
+  vehicle_license_plate_province_full: string;
+  mas_vehicle_department_uid: string;
+  add_fuel_date_time: string;
+  ref_cost_type_code: number;
+  ref_cost_type: { ref_cost_type_code: string; ref_cost_type_name: string; ref_cost_no: string };
 };
 
 export const requestData_1: RequestData[] = [
@@ -207,54 +233,53 @@ export const recordTravelDataColumns = [
 ];
 
 export const recordFuelData: RecordFuelTabProps[] = [
-  {
-    dateReceipt: "24/06/67",
-    receiptNo: "0001",
-    staionType: "PTT",
-    fuelType: "Diesel",
-    mileNum: "2,000",
-    literNum: "2,000",
-    pricePerLiter: "30",
-    vat: "107",
-    priceTotal: "60,000",
-    paymentType: "Cash",
-  },
-  {
-    dateReceipt: "24/06/67",
-    receiptNo: "0001",
-    staionType: "PTT",
-    fuelType: "Diesel",
-    mileNum: "2,000",
-    literNum: "2,000",
-    pricePerLiter: "30",
-    vat: "107",
-    priceTotal: "60,000",
-    paymentType: "Cash",
-  },
-  {
-    dateReceipt: "24/06/67",
-    receiptNo: "0001",
-    staionType: "PTT",
-    fuelType: "Diesel",
-    mileNum: "2,000",
-    literNum: "2,000",
-    pricePerLiter: "30",
-    vat: "107",
-    priceTotal: "60,000",
-    paymentType: "Cash",
-  },
+  // {
+  //   dateReceipt: "24/06/67",
+  //   receiptNo: "0001",
+  //   staionType: "PTT",
+  //   fuelType: "Diesel",
+  //   mileNum: "2,000",
+  //   literNum: "2,000",
+  //   pricePerLiter: "30",
+  //   vat: "107",
+  //   priceTotal: "60,000",
+  //   paymentType: "Cash",
+  // },
+  // {
+  //   dateReceipt: "24/06/67",
+  //   receiptNo: "0001",
+  //   staionType: "PTT",
+  //   fuelType: "Diesel",
+  //   mileNum: "2,000",
+  //   literNum: "2,000",
+  //   pricePerLiter: "30",
+  //   vat: "107",
+  //   priceTotal: "60,000",
+  //   paymentType: "Cash",
+  // },
+  // {
+  //   dateReceipt: "24/06/67",
+  //   receiptNo: "0001",
+  //   staionType: "PTT",
+  //   fuelType: "Diesel",
+  //   mileNum: "2,000",
+  //   literNum: "2,000",
+  //   pricePerLiter: "30",
+  //   vat: "107",
+  //   priceTotal: "60,000",
+  //   paymentType: "Cash",
+  // },
 ];
 
 export const recordFuelDataColumns = [
-  { accessorKey: "dateReceipt", header: "วันที่ใบเสร็จ" },
-  { accessorKey: "receiptNo", header: "เลขที่ใบเสร็จ" },
-  { accessorKey: "staionType", header: "สถานีบริการน้ำมัน" },
-  { accessorKey: "fuelType", header: "ประเภทเชื้อเพลิง" },
-  { accessorKey: "mileNum", header: "เลขไมล์" },
-  { accessorKey: "literNum", header: "จำนวนลิตร" },
-  { accessorKey: "pricePerLiter", header: "ราคาต่อลิตร" },
+  { accessorKey: "tax_invoice_date", header: "วันที่ใบเสร็จ" },
+  { accessorKey: "tax_invoice_no", header: "เลขที่ใบเสร็จ" },
+  { accessorKey: "ref_oil_station_brand_name", header: "สถานีบริการน้ำมัน" },
+  { accessorKey: "ref_fuel_type_name", header: "ประเภทเชื้อเพลิง" },
+  { accessorKey: "mile", header: "เลขไมล์" },
+  { accessorKey: "sum_liter", header: "จำนวนลิตร" },
+  { accessorKey: "price_per_liter", header: "ราคาต่อลิตร" },
   { accessorKey: "vat", header: "ภาษี" },
-  { accessorKey: "priceTotal", header: "ยอดรวมชำระ" },
-  { accessorKey: "paymentType", header: "วิธีชำระเงิน" },
-  { accessorKey: "action", header: "รายละเอียด" },
+  { accessorKey: "sum_price", header: "ยอดรวมชำระ" },
+  { accessorKey: "ref_payment_type_name", header: "วิธีชำระเงิน" },
 ];

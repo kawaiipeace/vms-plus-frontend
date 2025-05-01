@@ -9,7 +9,7 @@ interface SelectProps {
   options: CustomSelectOption[];
   w: string;
   iconName?: string;
-  value: CustomSelectOption | null;
+  value?: CustomSelectOption | null;
   onChange: (selected: CustomSelectOption) => void;
 }
 

@@ -105,6 +105,7 @@ export type RequestDetailType = Partial<{
   canceled_request_datetime: string;
   parking_place: string;
   ref_vehicle_key_type_code: number;
+  fleet_card_no: string;
 }>;
 
 export type RequestVehicleType = Partial<{
