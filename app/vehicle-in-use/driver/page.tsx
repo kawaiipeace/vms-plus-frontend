@@ -26,11 +26,11 @@ export default function DriverMain() {
   const [activeTab, setActiveTab] = useState(0);
   const { isPinned } = useSidebar();
 
-  const menuOrder: { [key: string]: string[] } = {
-    0: ["51", "60", "70", "71"],
-    1: ["50"],
-    2: ["80"],
-    3: ["90"],
+  const menuOrder: { [key: string]: string } = {
+    0: "51,60,70,71",
+    1: "50",
+    2: "80",
+    3: "90",
   };
 
   const getFilterData = () => {
