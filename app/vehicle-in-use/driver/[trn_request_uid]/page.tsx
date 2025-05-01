@@ -8,6 +8,7 @@ import DriverDetailContent from "@/components/driverDetail";
 import { useParams, useSearchParams } from "next/navigation";
 import { receivedKeyDriverRequest } from "@/services/vehicleInUseDriver";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import Link from "next/link";
 
 const DriverDetail = () => {
   const { isPinned } = useSidebar();
@@ -62,7 +63,9 @@ const DriverDetail = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>งานของฉัน</a>
+                    <Link href="/vehicle-in-use/driver">
+                      <a>งานของฉัน</a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>{progressType}</a>

@@ -7,6 +7,7 @@ import { DriverVIURequestDetail } from "@/components/driverVIURequestDetail";
 import { useParams, useSearchParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { receivedKeyDriverRequest } from "@/services/vehicleInUseDriver";
+import Link from "next/link";
 
 const DriverRequestDetail = () => {
   const { isPinned } = useSidebar();
@@ -61,7 +62,9 @@ const DriverRequestDetail = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>งานของฉัน</a>
+                    <Link href="/vehicle-in-use/driver">
+                      <a>งานของฉัน</a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>เลขที่คำขอ {data?.request_no || "-"}</a>
