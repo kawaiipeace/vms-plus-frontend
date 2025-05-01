@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { LogType } from "@/app/types/log-type";
 import { DataTable } from "@/components/table/dataTable";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -9,9 +10,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
-import { LogType } from "@/app/types/log-type";
+import { useEffect, useState } from "react";
 
 interface PaginationType {
   limit: number;
@@ -39,7 +39,7 @@ export default function LogListTable({ defaultData, pagination }: Props) {
 
   useEffect(() => {
     setReqData(defaultData);
-    console.log('defaultdata',defaultData);
+    console.log("defaultdata", defaultData);
   }, [defaultData]);
 
   useEffect(() => {
@@ -59,47 +59,33 @@ export default function LogListTable({ defaultData, pagination }: Props) {
       ),
       enableSorting: true,
       cell: ({ row }) => {
-              const startDateTime = convertToBuddhistDateTime(
-                row.original.created_at
-              );
-              return (
-                <div className="text-left">
-                  {startDateTime.date + " " + startDateTime.time}
-                </div>
-              );
-            },
+        const startDateTime = convertToBuddhistDateTime(row.original.created_at);
+        return <div className="text-left">{startDateTime.date + " " + startDateTime.time}</div>;
+      },
     },
     {
       accessorKey: "created_by_emp",
       header: () => <div className="text-left">ผู้ดำเนินการ</div>,
       enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left">{row.original.created_by_emp.emp_name}</div>
-      ),
+      cell: ({ row }) => <div className="text-left">{row.original.created_by_emp.emp_name}</div>,
     },
     {
       accessorKey: "debt_sap",
       header: () => <div className="text-center">ตำแหน่่ง/สังกัด</div>,
       enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left">{row.original.created_by_emp.dept_sap}</div>
-      ),
+      cell: ({ row }) => <div className="text-left">{row.original.created_by_emp.dept_sap}</div>,
     },
     {
       accessorKey: "status",
       header: () => <div className="text-center">รายละเอียด</div>,
       enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left">{row.original.status.ref_request_status_desc}</div>
-      ),
+      cell: ({ row }) => <div className="text-left">{row.original.status.ref_request_status_desc}</div>,
     },
     {
       accessorKey: "log_remark",
       header: () => <div className="text-center">หมายเหตุ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
-      ),
+      cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
     },
   ];
 

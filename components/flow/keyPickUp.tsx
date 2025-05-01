@@ -1,11 +1,12 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import { VehicleKeyType } from "@/app/types/vehicle-user-type";
 import AlertCustom from "@/components/alertCustom";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
 import ApproverModal from "@/components/modal/approverModal";
 import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
 import KeyPickupDetailModal from "@/components/modal/keyPickUpDetailModal";
-import { fetchRequestKeyDetail } from "@/services/masterService";
-import { useEffect, useRef, useState } from "react";
+import { fetchRequestKeyDetail, fetchVehicleKeyType } from "@/services/masterService";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DriverPassengerInfoCard from "../card/driverPassengerInfoCard";
 import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import PickupKeyDetailCard from "../card/pickupKeyDetailCard";
@@ -38,26 +39,25 @@ export default function KeyPickUp({
 
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [pickupDatePassed, setPickupDatePassed] = useState(false);
+  const [vehicleKeyTypeData, setVehicleKeyTypeData] = useState<VehicleKeyType[]>();
 
   const fetchRequestDetailfunc = async () => {
     try {
-      // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestKeyDetail(requestId || "");
-      console.log("data---", response.data);
+      const responseKeyType = await fetchVehicleKeyType();
       const today = new Date();
       const pickup = new Date(response?.data?.received_key_start_datetime);
-      // zero out time for accurate day comparison
       today.setHours(0, 0, 0, 0);
       pickup.setHours(0, 0, 0, 0);
-      setPickupDatePassed(today > pickup ? true : false);
+      setPickupDatePassed(today > pickup);
       setRequestData(response.data);
+      setVehicleKeyTypeData(responseKeyType.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
     }
   };
 
   useEffect(() => {
-    console.log("re-", requestId);
     fetchRequestDetailfunc();
   }, [requestId]);
 
@@ -65,7 +65,13 @@ export default function KeyPickUp({
     fetchRequestDetailfunc();
   };
 
-  console.log("requestData---", requestData);
+  const findVehicleKeyType: VehicleKeyType | undefined = useMemo(() => {
+    return vehicleKeyTypeData?.find(
+      (e) => e.ref_vehicle_key_type_code === requestData?.ref_vehicle_key_type_code?.toString()
+    );
+  }, [vehicleKeyTypeData, requestData]);
+  console.log(findVehicleKeyType);
+  if (!requestData) return null;
 
   return (
     <>
@@ -147,8 +153,6 @@ export default function KeyPickUp({
         id={requestData?.driver.mas_driver_uid || ""}
       />
       <KeyPickupDetailModal
-        reqId={requestData?.trn_request_uid || ""}
-        imgSrc={requestData?.received_key_image_url || "/assets/img/avatar.svg"}
         ref={keyPickupDetailModalRef}
         id={requestData?.received_key_emp_id || ""}
         name={requestData?.received_key_emp_name || "-"}
@@ -157,20 +161,16 @@ export default function KeyPickUp({
         vehicle={requestData?.vehicle}
         onEdit={() => {
           keyPickUpEditModalRef.current?.openModal();
-        }}
-      />
+        } } reqId={""} imgSrc={""} deptSapShort={""}      />
       <KeyPickUpEditModal
         ref={keyPickUpEditModalRef}
-        onBack={() => {
-          keyPickupDetailModalRef.current?.openModal();
-        }}
+        onBack={() => keyPickupDetailModalRef.current?.openModal()}
         onSubmit={() => {
           handleModalUpdate();
           keyPickupDetailModalRef.current?.openModal();
         }}
         requestData={requestData}
       />
-
       <ApproverModal ref={approverModalRef} />
     </>
   );

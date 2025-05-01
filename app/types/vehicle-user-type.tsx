@@ -51,3 +51,29 @@ export interface PeaDriverType {
     driver_license_expire_date: string;
   };
 }
+
+export interface VehicleKeyType {
+  ref_vehicle_key_type_code: string;
+  ref_vehicle_key_type_name: string;
+}
+
+export interface VehicleUserTravelCardType {
+  trn_request_uid: string;
+  start_datetime: string;
+  end_datetime: string;
+  vehicle_license_plate: string;
+  vehicle_license_plate_province_short: string;
+  vehicle_license_plate_province_full: string;
+  work_place: string;
+  vehicle_user_emp_id: string;
+  vehicle_user_emp_name: string;
+  vehicle_user_dept_sap: string;
+  vehicle_user_dept_sap_short: string;
+  vehicle_user_dept_sap_full: string;
+  vehicle_user_image_url: string;
+  approved_request_emp_id: string;
+  approved_request_emp_name: string;
+  approved_request_dept_sap: string;
+  approved_request_dept_sap_short: string;
+  approved_request_dept_sap_full: string;
+}

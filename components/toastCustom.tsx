@@ -8,18 +8,9 @@ interface ToastCustomProps {
   styleText?: string;
   seeDetail?: string;
   seeDetailText?: string;
-  isShowButton?: boolean;
 }
 
-export default function ToastCustom({
-  title,
-  desc,
-  status,
-  seeDetail,
-  seeDetailText,
-  styleText,
-  isShowButton,
-}: ToastCustomProps) {
+export default function ToastCustom({ title, desc, status, seeDetail, seeDetailText, styleText }: ToastCustomProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   const closeToast = () => {
@@ -30,12 +21,10 @@ export default function ToastCustom({
 
   return (
     <div
-      className={`toast-container  ${
-        isShowButton && "!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]"
-      }`}
+      className={`toast-container  ${"!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]  md:!left-1/4 md:!top-0 md:!translate-x-full md:!w-full md:!max-w-[calc(28vw_+_3rem)]"}`}
     >
       <div
-        className={`toast fade toast-${status} block ${styleText} ${isShowButton && " !w-[85vw] !max-w-[85vw]"}`}
+        className={`toast fade toast-${status} block ${styleText} ${" !w-[85vw] !max-w-[85vw] md:!w-full md:!max-w-[calc(28vw_+_3rem)"}`}
         role="alert"
       >
         <div className="toast-body max-w-[20px]">
