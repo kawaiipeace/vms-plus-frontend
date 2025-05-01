@@ -44,8 +44,6 @@ export default function DriverMain() {
 
   const filterData = getFilterData();
 
-  console.log("filterData: ", filterData, " - filterData");
-
   //   const reviewCarDriveModalRef = useRef<{
   //     openModal: () => void;
   //     closeModal: () => void;
@@ -81,20 +79,14 @@ export default function DriverMain() {
     switch (code) {
       case "50":
         return <DriverSoonTab data={filterData} />;
-      case "51":
-        return <DriverProgressTab data={filterData} />;
-      case "60":
-        return <DriverProgressTab data={filterData} />;
-      case "70":
-        return <DriverProgressTab data={filterData} />;
-      case "71":
+      case "51,60,70,71":
         return <DriverProgressTab data={filterData} />;
       case "80":
         return <DriverFinishTab data={filterData} />;
       case "90":
         return <DriverCancelTab data={filterData} />;
       default:
-        return <></>;
+        return <>Invalid</>;
     }
   };
 
