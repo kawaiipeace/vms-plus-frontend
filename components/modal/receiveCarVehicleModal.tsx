@@ -7,20 +7,23 @@ import ImageUpload from "@/components/imageUpload";
 import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
 import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
 import Tooltip from "@/components/tooltips";
+import { adminReceivedVehicle } from "@/services/adminService";
 import { fetchUserTravelCard, userReceivedVehicle } from "@/services/receivedVehicleUser";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TimePicker from "../timePicker";
+
 interface ReceiveCarVehicleModalProps {
   status?: string;
   requestData?: RequestDetailType;
+  role?: string;
 }
 
 const ReceiveCarVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReceiveCarVehicleModalProps
->(({ status, requestData }, ref) => {
+>(({ status, requestData, role }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const datePickerRef = useRef<DatePickerRef>(null);
@@ -39,7 +42,7 @@ const ReceiveCarVehicleModal = forwardRef<
 
   useEffect(() => {
     if (requestData) {
-      setFuelQuantity(requestData?.fuel_end);
+      setFuelQuantity(requestData?.fuel_end || 0);
     }
   }, [requestData]);
 
@@ -99,7 +102,13 @@ const ReceiveCarVehicleModal = forwardRef<
           trn_request_uid: requestData?.trn_request_uid,
           vehicle_images: imageList,
         };
-        const response = await userReceivedVehicle(formData);
+        console.log("form--", formData);
+        let response;
+        if (role === "admin") {
+          response = await adminReceivedVehicle(formData);
+        } else {
+          response = await userReceivedVehicle(formData);
+        }
 
         if (response.status === 200) {
           const response = await fetchUserTravelCard(requestData?.trn_request_uid || "");
@@ -133,7 +142,10 @@ const ReceiveCarVehicleModal = forwardRef<
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div
+          className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
@@ -329,11 +341,12 @@ const ReceiveCarVehicleModal = forwardRef<
                     </div>
                   </div>
                 </div>
-                <div className="grid w-full flex-wrap gap-5 grid-cols-12 py-3">
-                  <div className="col-span-6">
+
+                <div className="flex w-full gap-5 py-3">
+                  <div className="flex-1">
                     <button
                       type="button"
-                      className="btn btn-secondary w-full"
+                      className="btn btn-secondary !w-full"
                       onClick={() => {
                         clearForm();
                         modalRef.current?.close();
@@ -342,10 +355,10 @@ const ReceiveCarVehicleModal = forwardRef<
                       ไม่ใช่ตอนนี้
                     </button>
                   </div>
-                  <div className="col-span-6">
+                  <div className="flex-1">
                     <button
                       type="button"
-                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
+                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
                       onClick={onSubmit}
                     >
                       ยืนยัน
@@ -360,7 +373,7 @@ const ReceiveCarVehicleModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
-      <ReceiveCarSuccessModal ref={receiveCarSuccessModalRef} requestData={travelCardData} />
+      <ReceiveCarSuccessModal ref={receiveCarSuccessModalRef} requestData={travelCardData} role="admin" />
       <ExampleCarImageModal
         backModal={() => modalRef.current?.showModal()}
         ref={exampleCarImageModalRef}

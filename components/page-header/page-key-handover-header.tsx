@@ -2,19 +2,21 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
 
 interface Props {
   data: RequestDetailType;
-  editable?: boolean;
 }
 
-export default function PageKeyHandOverHeader({ data, editable }: Props) {
-
+export default function PageKeyHandOverHeader({ data }: Props) {
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
+  const receiveCarVehicleModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [copied, setCopied] = useState(false);
 
@@ -29,7 +31,6 @@ export default function PageKeyHandOverHeader({ data, editable }: Props) {
     }
   };
 
-
   return (
     <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
       <div className="breadcrumbs text-sm">
@@ -40,9 +41,7 @@ export default function PageKeyHandOverHeader({ data, editable }: Props) {
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="/administrator/request-list">
-            ตรวจสอบและจัดการคำขอ
-            </Link>
+            <Link href="/administrator/request-list">ตรวจสอบและจัดการคำขอ</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             เลขที่คำขอ {data?.request_no || ""}
@@ -81,11 +80,11 @@ export default function PageKeyHandOverHeader({ data, editable }: Props) {
               <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
-            ) : (data?.ref_request_status_name === "ยกเลิกคำขอ") ? (
+            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
                 {data?.ref_request_status_name}
               </span>
-            ) : (data?.ref_request_status_name === "ตีกลับ") ? (
+            ) : data?.ref_request_status_name === "ตีกลับ" ? (
               <span className="badge badge-pill-outline badge-warning">
                 {data?.ref_request_status_name}
               </span>
@@ -146,8 +145,18 @@ export default function PageKeyHandOverHeader({ data, editable }: Props) {
             </button>{" "}
           </div>
         </div>
-
+        {data?.ref_request_status_code === "51" && (
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+          >
+            <i className="material-symbols-outlined">directions_car</i>
+            รับยานพาหนะ
+          </button>
+        )}
       </div>
+      <ReceiveCarVehicleModal requestData={data} ref={receiveCarVehicleModalRef} role="admin" />
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}
@@ -156,7 +165,6 @@ export default function PageKeyHandOverHeader({ data, editable }: Props) {
         role="adminKey"
         confirmText="ยกเลิกคำขอ"
       />
-
     </div>
   );
 }

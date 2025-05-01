@@ -81,7 +81,7 @@ export default function CarDetailCard2({ vehicle, reqId }: Props) {
           </div>
         </div>
         <div className="card-actioins w-full md:block hidden">
-          <button className="btn btn-default w-full" onClick={() => vehicleDetailModalRef.current?.openModal()}>
+          <button className="btn btn-secondary w-full" onClick={() => vehicleDetailModalRef.current?.openModal()}>
             ดูรายละเอียด
           </button>
         </div>

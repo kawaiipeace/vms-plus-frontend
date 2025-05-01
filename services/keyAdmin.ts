@@ -57,3 +57,42 @@ export const keyCancelRequest = async (data: CanceledRequestType) => {
   }
 }
 
+
+export const updateKeyAdminPickupDriver = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("received-key-admin/update-key-pickup-driver", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyAdminPickupPea = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("received-key-admin/update-key-pickup-pea", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyAdminPickupOutsider = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("received-key-admin/update-key-pickup-outsider", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateKeyAdminReceiveDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('received-key-admin/update-recieived-key-detail', data);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+

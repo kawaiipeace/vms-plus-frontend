@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import RequestDetailForm from "@/components/admin/key-handover/requestDetailForm";
-import KeyHandOver from "@/components/admin/key-handover/key-handover-detail";
 import LogListTable from "@/components/table/log-list-table";
 import { useLogContext } from "@/contexts/log-context";
 import PaginationControls from "@/components/table/pagination-control";
+import KeyHandoverDetail from "@/components/admin/key-handover/key-handover-detail";
 
 interface Props {
   requestId: string;
@@ -25,7 +25,7 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
     if (requestId) {
       loadLogs(requestId);
     }
-  }, [loadLogs, params, requestId]);
+  }, [params, requestId]);
 
     
   const tabs = [
@@ -38,7 +38,7 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
       ? [
           {
             label: "การรับกุญแจ",
-            content: <KeyHandOver editable={true} requestId={requestId} />,
+            content: <KeyHandoverDetail editable={true} requestId={requestId} />,
             badge: "",
           },
         ]

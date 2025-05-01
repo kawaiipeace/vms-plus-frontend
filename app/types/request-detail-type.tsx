@@ -2,7 +2,7 @@ import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { ProgressRequestType } from "./progress-request-status";
 
-export interface RequestDetailType {
+export type RequestDetailType = Partial<{
   trn_request_uid: string;
   request_no: string;
   vehicle_user_emp_name: string;
@@ -56,7 +56,6 @@ export interface RequestDetailType {
   received_key_end_datetime: string;
   can_cancel_request: boolean;
   ref_request_status_code: string;
-  ref_vehicle_key_type_code: string;
   ref_request_status: {
     ref_request_status_code: string;
     ref_request_status_desc: string;
@@ -105,11 +104,12 @@ export interface RequestDetailType {
   is_use_driver: boolean;
   canceled_request_datetime: string;
   parking_place: string;
-}
+  ref_vehicle_key_type_code: number;
+}>;
 
-export interface RequestVehicleType {
+export type RequestVehicleType = Partial<{
   available_units: number;
   ref_vehicle_type_code: number;
   ref_vehicle_type_name: string;
   vehicle_type_image: string;
-}
+}>;

@@ -85,7 +85,7 @@ export default function KeyPickupEditTabs({ requestId }: Props) {
     },
     {
       label: "การนัดหมายเดินทาง",
-      content: <KeyPickUpAppointment />,
+      content: <KeyPickUpAppointment requestId={""} />,
       constent: "",
       badge: "",
     },

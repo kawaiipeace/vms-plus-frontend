@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .avatar {
   overflow: hidden;
   display: flex;
@@ -4175,7 +4176,7 @@
   top: 0;
   right: 0;
   position: fixed;
-  z-index: 9999;
+  z-index: 999;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
