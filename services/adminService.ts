@@ -1,6 +1,6 @@
 import axiosInstance from "@/utils/axiosInstance";
 
-export const fetchKeyRequests = async (params: {
+export const fetchRequests = async (params: {
   search?: string;
   vehicle_owner_dept_sap?: string;
   ref_request_status_code?: string;
