@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { VehicleKeyType } from "@/app/types/vehicle-user-type";
 import AlertCustom from "@/components/alertCustom";
@@ -16,10 +17,7 @@ interface RequestDetailFormProps {
   editable?: boolean;
   requestId?: string;
 }
-export default function KeyPickUp({
-  editable,
-  requestId,
-}: RequestDetailFormProps) {
+export default function KeyPickUp({ editable, requestId }: RequestDetailFormProps) {
   const driverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -89,8 +87,7 @@ export default function KeyPickUp({
               <div className="form-section-header-title">
                 <p>การนัดหมายรับกุญแจ</p>
                 <p className="text-sm text-gray-500 font-normal">
-                  กรุณาไปรับกุญแจตามวัน เวลา และสถานที่ที่กำหนด
-                  หรือติดต่อผู้ดูแลยานพาหนะหากต้องการแก้ไขนัดหมาย
+                  กรุณาไปรับกุญแจตามวัน เวลา และสถานที่ที่กำหนด หรือติดต่อผู้ดูแลยานพาหนะหากต้องการแก้ไขนัดหมาย
                 </p>
               </div>
 
@@ -110,21 +107,15 @@ export default function KeyPickUp({
               receiveKeyEnd={requestData?.received_key_end_datetime}
             />
           </div>
-          
+
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ดูแลยานพาหนะ</div>
             </div>
             {requestData?.is_pea_employee_driver === "1" ? (
-              <DriverPassengerPeaInfoCard
-                id={requestData?.vehicle_user_emp_id || ""}
-                requestData={requestData}
-              />
+              <DriverPassengerPeaInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
             ) : (
-              <DriverPassengerInfoCard
-                id={requestData?.mas_carpool_driver_uid || ""}
-                requestData={requestData}
-              />
+              <DriverPassengerInfoCard id={requestData?.mas_carpool_driver_uid || ""} requestData={requestData} />
             )}
           </div>
         </div>
@@ -135,23 +126,14 @@ export default function KeyPickUp({
               <div className="form-section-header-title">ยานพาหนะ</div>
             </div>
 
-            <CarDetailCard2
-              reqId={requestData?.trn_request_uid}
-              vehicle={requestData?.vehicle}
-            />
+            <CarDetailCard2 reqId={requestData?.trn_request_uid} vehicle={requestData?.vehicle} />
           </div>
         </div>
       </div>
-      <button
-        className="btn btn-primary w-full mt-5"
-        onClick={() => keyPickupDetailModalRef.current?.openModal()}
-      >
+      <button className="btn btn-primary w-full mt-5" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
         รับกุญแจ
       </button>
-      <DriverAppointmentModal
-        ref={driverAppointmentModalRef}
-        id={requestData?.driver.mas_driver_uid || ""}
-      />
+      <DriverAppointmentModal ref={driverAppointmentModalRef} id={requestData?.driver.mas_driver_uid || ""} />
       <KeyPickupDetailModal
         ref={keyPickupDetailModalRef}
         id={requestData?.received_key_emp_id || ""}
@@ -161,7 +143,11 @@ export default function KeyPickUp({
         vehicle={requestData?.vehicle}
         onEdit={() => {
           keyPickUpEditModalRef.current?.openModal();
-        } } reqId={""} imgSrc={""} deptSapShort={""}      />
+        }}
+        reqId={""}
+        imgSrc={""}
+        deptSapShort={""}
+      />
       <KeyPickUpEditModal
         ref={keyPickUpEditModalRef}
         onBack={() => keyPickupDetailModalRef.current?.openModal()}

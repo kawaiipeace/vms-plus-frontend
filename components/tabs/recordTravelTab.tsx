@@ -1,3 +1,4 @@
+"use client";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import RecordTravelAddModal from "@/components/modal/recordTravelAddModal";
 import ToastCustom from "@/components/toastCustom";

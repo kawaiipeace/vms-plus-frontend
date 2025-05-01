@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
 import { fetchRequestKeyDetail } from "@/services/masterService";
@@ -66,7 +67,7 @@ const KeyPickUpAppointment = ({ requestId }: Props) => {
             <div className="form-section-header">
               <div className="form-section-header-title">พนักงานขับรถ</div>
             </div>
-            <DriverUserAppointmentCard id={requestData?.driver.mas_driver_uid || ""} requestData={requestData} />
+            <DriverUserAppointmentCard id={requestData?.driver?.mas_driver_uid || ""} requestData={requestData} />
           </div>
           <div className="form-section">
             <div className="form-section-header">

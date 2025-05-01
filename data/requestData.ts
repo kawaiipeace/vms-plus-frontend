@@ -1,5 +1,3 @@
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-
 export type RequestData = {
   request_no: string;
   vehicle_user_emp_name: string;
@@ -200,8 +198,6 @@ export const recordTravelDataColumns = [
   {
     accessorKey: "trip_end_datetime",
     header: "วันที่ / เวลาถึงปลายทาง",
-    renderValue: ({ getValue }: any) =>
-      convertToBuddhistDateTime(getValue).date + " " + convertToBuddhistDateTime(getValue).time,
   },
   { accessorKey: "trip_departure_place", header: "สถานที่ต้นทาง" },
   { accessorKey: "trip_destination_place", header: "สถานที่ปลายทาง" },
@@ -260,5 +256,5 @@ export const recordFuelDataColumns = [
   { accessorKey: "vat", header: "ภาษี" },
   { accessorKey: "priceTotal", header: "ยอดรวมชำระ" },
   { accessorKey: "paymentType", header: "วิธีชำระเงิน" },
-  { accessorKey: "action", header: "" },
+  { accessorKey: "action", header: "รายละเอียด" },
 ];

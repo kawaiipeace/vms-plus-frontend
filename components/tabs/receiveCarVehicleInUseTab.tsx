@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
 import ImagesCarCard from "@/components/card/ImagesCarCard";

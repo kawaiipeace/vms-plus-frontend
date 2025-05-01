@@ -114,6 +114,37 @@ export default function TableRecordTravelComponent<T>({
                 </button>
               </div>
             )}
+            {listName == "fuel" && (
+              <div className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center gap-4">
+                <button
+                  className="btn btn-secondary w-full text-base font-semibold"
+                  data-tip="แก้ไข"
+                  onClick={() => {
+                    editRecordTravel?.(row.original);
+                  }}
+                >
+                  <i className="material-symbols-outlined w-5 h-5">stylus</i>แก้ไข
+                </button>
+                <button
+                  className="btn btn-secondary w-full text-base font-semibold"
+                  data-tip="ลบ"
+                  onClick={() => {
+                    deleteRecordTravel?.(row.original);
+                  }}
+                >
+                  <i className="material-symbols-outlined w-5 h-5">delete</i>ลบ
+                </button>
+                <button
+                  className="btn btn-secondary w-full text-base font-semibold col-span-2"
+                  data-tip="รูปใบเสร็จ"
+                  onClick={() => {
+                    deleteRecordTravel?.(row.original);
+                  }}
+                >
+                  <i className="material-symbols-outlined w-5 h-5">imagesmode</i>ดูรูปใบเสร็จ
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -173,14 +204,18 @@ export default function TableRecordTravelComponent<T>({
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="แก้ไข"
-                              onClick={editRecordTravel}
+                              onClick={() => {
+                                editRecordTravel?.(row.original);
+                              }}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
                             </button>
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="ลบ"
-                              onClick={deleteRecordTravel}
+                              onClick={() => {
+                                deleteRecordTravel?.(row.original);
+                              }}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">delete</i>
                             </button>
@@ -191,21 +226,27 @@ export default function TableRecordTravelComponent<T>({
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="แก้ไข"
-                              onClick={editRecordTravel}
+                              onClick={() => {
+                                editRecordTravel?.(row.original);
+                              }}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
                             </button>
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="ลบ"
-                              onClick={deleteRecordTravel}
+                              onClick={() => {
+                                deleteRecordTravel?.(row.original);
+                              }}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">delete</i>
                             </button>
                             <button
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="รูปใบเสร็จ"
-                              onClick={deleteRecordTravel}
+                              onClick={() => {
+                                deleteRecordTravel?.(row.original);
+                              }}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">imagesmode</i>
                             </button>
