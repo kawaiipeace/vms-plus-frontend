@@ -7,7 +7,7 @@ import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
 import FilterSortModal from "@/components/modal/filterSortModal";
 import { fetchRequests } from "@/services/bookingAdmin";
-import AdminListTable from "@/components/table/admin-list-table";
+import AdminVehicleInsTable from "@/components/table/admin-vehicle-ins-table";
 
 interface PaginationType {
   limit: number;
@@ -16,7 +16,7 @@ interface PaginationType {
   totalPages: number;
 }
 
-export default function AdminApproveFlow() {
+export default function AdminVehicleInsFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
@@ -391,7 +391,7 @@ export default function AdminApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <AdminListTable defaultData={dataRequest} pagination={pagination}  />
+            <AdminVehicleInsTable defaultData={dataRequest} pagination={pagination}  />
           </div>
 
           <PaginationControls
