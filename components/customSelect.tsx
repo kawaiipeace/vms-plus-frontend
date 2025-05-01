@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 export interface CustomSelectOption {
   value: string;
-  label: React.ReactNode;
+  label: React.ReactNode | string;
 }
 
 interface SelectProps {
