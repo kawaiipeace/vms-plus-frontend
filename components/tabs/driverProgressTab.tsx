@@ -71,7 +71,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                     return (
                       <React.Fragment key={item.request_no}>
                         {item.ref_request_status_code === "51" && (
-                          <Link href={link}>
+                          <Link href={link + "?progressType=บันทึกการเดินทาง"}>
                             <MobileDriverCard
                               cardType="recordTravel"
                               carRegis={license_plate_full}

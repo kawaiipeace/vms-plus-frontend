@@ -252,7 +252,7 @@ const DriverDetailContent = ({
         progressType === "ภารกิจสำเร็จ") && (
         <>
           <div className="w-full">
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-4 my-4">
               <Link
                 href={
                   progressType === "ภารกิจสำเร็จ"
