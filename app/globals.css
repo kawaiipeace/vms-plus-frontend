@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .avatar {
   overflow: hidden;
   display: flex;

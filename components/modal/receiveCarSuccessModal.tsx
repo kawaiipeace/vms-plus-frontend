@@ -3,15 +3,17 @@ import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import TravelCardModal from "./travelCardModal";
+import LicenseCardModal from "./admin/licenseCardModal";
 
 interface ReceiveCarSuccessModalProps {
   requestData?: VehicleUserTravelCardType;
+  role?: string;
 }
 
 const ReceiveCarSuccessModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReceiveCarSuccessModalProps
->(({ requestData }, ref) => {
+>(({ requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -23,6 +25,13 @@ const ReceiveCarSuccessModal = forwardRef<
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const licenseCardModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null)
+
+  
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -40,12 +49,46 @@ const ReceiveCarSuccessModal = forwardRef<
             height={100}
             alt=""
           />
-          <div className="confirm-title text-xl font-medium mt-3">รับยานพาหนะสำเร็จ</div>
+          <div className="confirm-title text-xl font-medium mt-3">
+            รับยานพาหนะสำเร็จ
+          </div>
           <div className="confirm-text">
-            ในวันเดินทาง คุณต้องนำบัตรเดินทางไปแสดง กับเจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยาม ก่อนออกจาก กฟภ.
+            {role ===
+            "admin"
+              ? "ในวันเดินทาง คุณต้องแสดงใบอนุญาตนำรถออกจาก กฟภ. กับ เจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยามก่อนออกจาก กฟฟ. ต้นสังกัด"
+              : "ในวันเดินทาง คุณต้องนำบัตรเดินทางไปแสดง กับเจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยาม ก่อนออกจาก กฟภ."}
           </div>
           <div className="modal-footer mt-5 grid grid-cols-1 gap-3">
+            {role === "admin" ?
+          <>
+          <div className="flex w-full gap-2">
+            <div className="flex-1">
             <button
+              type="button"
+              className="btn btn-secondary w-full"
+              onClick={() => {
+                modalRef.current?.close();
+              }}
+            >
+              ไว้ภายหลัง
+            </button>
+            </div>
+            <div className="flex-1">
+            <button
+              type="button"
+              className="btn btn-primary w-full"
+              onClick={() => {
+                licenseCardModalRef.current?.openModal();
+                modalRef.current?.close();
+              }}
+            >
+              แสดงใบอนุญาต
+            </button>
+            </div>
+          </div>
+          </>
+            : <>
+              <button
               type="button"
               className="btn btn-primary col-span-1"
               onClick={() => {
@@ -55,10 +98,13 @@ const ReceiveCarSuccessModal = forwardRef<
             >
               แสดงบัตรเดินทาง
             </button>
+            </>
+            }
           </div>
         </div>
       </div>
       <TravelCardModal ref={travelCardModalRef} requestData={requestData} />
+      <LicenseCardModal ref={licenseCardModalRef} requestData={requestData} />
     </dialog>
   );
 });

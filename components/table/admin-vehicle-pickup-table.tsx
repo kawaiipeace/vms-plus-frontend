@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
-import Image from "next/image";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -14,6 +13,7 @@ import {
 import { RequestListType } from "@/app/types/request-list-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
 
 interface PaginationType {
   limit: number;
@@ -27,10 +27,18 @@ interface Props {
   pagination: PaginationType;
 }
 
-export default function AdminVehiclePickupTable({ defaultData, pagination }: Props) {
+export default function AdminVehiclePickupTable({
+  defaultData,
+  pagination,
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+
+  const receiveCarVehicleModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   // Set pagination from props
   const [paginationState, setPagination] = useState<PaginationState>({
@@ -108,9 +116,7 @@ export default function AdminVehiclePickupTable({ defaultData, pagination }: Pro
         <div className="text-left" data-name="สังกัดยานพาหนะ">
           <div className="flex flex-col">
             {" "}
-            <div className="text-left">
-              {row.original.vehicle_dept_name}
-            </div>
+            <div className="text-left">{row.original.vehicle_dept_name}</div>
             <div className="text-color-secondary text-xs">
               {row.original.vehicle_carpool_name}
             </div>
@@ -168,7 +174,7 @@ export default function AdminVehiclePickupTable({ defaultData, pagination }: Pro
               </span>
             ) : value === "รับยานพาหนะ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
-                 {value as React.ReactNode}
+                {value as React.ReactNode}
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
@@ -196,36 +202,33 @@ export default function AdminVehiclePickupTable({ defaultData, pagination }: Pro
         const statusValue = row.original.ref_request_status_name;
         return (
           <div className="text-left dataTable-action">
-        
-              <button
-                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/administrator/vehicle-in-use/" +
-                      row.original.trn_request_uid
-                  )
-                }
-              >
-                <i className="material-symbols-outlined">quick_reference_all</i>
-              </button>
-        
+            <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              data-tip="ดูรายละเอียดคำขอ"
+              onClick={() =>
+                router.push(
+                  "/administrator/vehicle-in-use/" +
+                    row.original.trn_request_uid
+                )
+              }
+            >
+              <i className="material-symbols-outlined">quick_reference_all</i>
+            </button>
 
-            {(statusValue == "รับยานพาหนะ") && (
+            {statusValue == "รับยานพาหนะ" && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="รับยานพาหนะ"
-                onClick={() =>
-                  router.push(
-                    "/administrator/vehicle-in-use/" +
-                      row.original.trn_request_uid
-                  )
-                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  receiveCarVehicleModalRef.current?.openModal();
+                }}
               >
                 <i className="material-symbols-outlined">directions_car</i>
               </button>
             )}
-
+              <ReceiveCarVehicleModal requestData={{ trn_request_uid: row.original.trn_request_uid }} ref={receiveCarVehicleModalRef} role="admin" />
           </div>
         );
       },
@@ -264,14 +267,8 @@ export default function AdminVehiclePickupTable({ defaultData, pagination }: Pro
           <DataTable
             table={table}
             onRowClick={(row) => {
-
-              const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
-              if (status === "รออนุมัติ") {
                 router.push(`/administrator/vehicle-in-use/${uid}`);
-              } else {
-                router.push(`/administrator/vehicle-in-use/${uid}`);
-              }
             }}
           />
         </>

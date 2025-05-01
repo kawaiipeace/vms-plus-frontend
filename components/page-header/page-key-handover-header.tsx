@@ -2,7 +2,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
-import ReceiveCarVehicleModal from "../modal/receiveCarVehicleModal";
+import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
 
 interface Props {
   data: RequestDetailType;
@@ -156,7 +156,7 @@ export default function PageKeyHandOverHeader({ data }: Props) {
           </button>
         )}
       </div>
-      <ReceiveCarVehicleModal ref={receiveCarVehicleModalRef} />
+      <ReceiveCarVehicleModal requestData={data} ref={receiveCarVehicleModalRef} role="admin" />
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}

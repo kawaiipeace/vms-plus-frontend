@@ -33,3 +33,12 @@ export const fetchRequestDetail = async (id: string) => {
   }
 };
 
+export const adminReceivedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("received-vehicle-admin/received-vehicle", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+

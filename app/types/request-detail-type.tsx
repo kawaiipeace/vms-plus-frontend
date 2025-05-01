@@ -2,7 +2,7 @@ import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { ProgressRequestType } from "./progress-request-status";
 
-export interface RequestDetailType {
+export type RequestDetailType = Partial<{
   trn_request_uid: string;
   request_no: string;
   vehicle_user_emp_name: string;
@@ -81,11 +81,11 @@ export interface RequestDetailType {
   received_vehicle_emp_name: string;
   receiver_key_type: number;
   ref_vehicle_key_type_code: number;
-}
+}>;
 
-export interface RequestVehicleType {
+export type RequestVehicleType = Partial<{
   available_units: number;
   ref_vehicle_type_code: number;
   ref_vehicle_type_name: string;
   vehicle_type_image: string;
-}
+}>;

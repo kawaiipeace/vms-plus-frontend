@@ -70,6 +70,18 @@ export default function RequestDetailForm({
           desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
         />
       )}
+      { requestData?.ref_request_status_code === "60e" && (
+         <AlertCustom
+         title="รับยานพาหนะล่าช้า"
+         desc={`คุณต้องรับยานพาหนะก่อนจึงจะสามารถรับบัตรเดินทาง เพื่อนำไปแสดงกับเจ้าหน้าที่รักษาความปลอดภัยก่อนนำรถออกจาก กฟภ.`}
+       />
+      )  }
+        {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
+        <AlertCustom
+          title="คำขอใช้ถูกยกเลิกแล้ว"
+          desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
+        />
+      )}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
           <div className="form-section">

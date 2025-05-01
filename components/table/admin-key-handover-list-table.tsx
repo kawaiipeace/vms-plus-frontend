@@ -204,7 +204,7 @@ export default function AdminKeyHandOverListTable({
       header: () => <div className="text-center"></div>,
       enableSorting: false,
       cell: ({ row }) => {
-        const statusValue = row.original.ref_request_status_name;
+
         return (
           <div className="text-left dataTable-action">
             <button
