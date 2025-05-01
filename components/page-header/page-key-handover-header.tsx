@@ -3,6 +3,9 @@ import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
+import LicenseCardModal from "../modal/admin/licenseCardModal";
+import AlertCustom from "../alertCustom";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   data: RequestDetailType;
@@ -17,8 +20,13 @@ export default function PageKeyHandOverHeader({ data }: Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const licenseCardModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [copied, setCopied] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const handleCopyRequestNo = async (text?: string) => {
     if (!text) return;
@@ -31,8 +39,24 @@ export default function PageKeyHandOverHeader({ data }: Props) {
     }
   };
 
+  const saveImage = () => {
+    setAlertVisible(true);
+  };
+
   return (
     <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
+      {alertVisible && (
+        <ToastCustom
+          title="บันทึกใบอนุญาตสำเร็จ"
+          desc={
+            <>
+              กรุณาแสดงใบอนุญาตนำรถออกจาก กฟภ.กับเจ้าหน้าที่ <br></br>
+              รักษาความปลอดภัยก่อนออกจาก กฟฟ. ต้นสังกัด
+            </>
+          }
+          status={"success"}
+        />
+      )}
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
@@ -117,26 +141,32 @@ export default function PageKeyHandOverHeader({ data }: Props) {
               </Link>
 
               <div className="divider py-0 my-0"></div>
-              <Link
-                className="dropdown-item"
-                href="#"
-                onClick={() => cancelRequestModalRef.current?.openModal()}
-              >
-                <i className="material-symbols-outlined">delete</i>
-                ยกเลิกคำขอ
-              </Link>
+              {(data?.ref_request_status_code === "50" ||
+                data?.ref_request_status_code === "51") && (
+                <Link
+                  className="dropdown-item"
+                  href="#"
+                  onClick={() => cancelRequestModalRef.current?.openModal()}
+                >
+                  <i className="material-symbols-outlined">delete</i>
+                  ยกเลิกคำขอ
+                </Link>
+              )}
             </ul>
           </div>
         </div>
 
         <div className="md:block hidden">
           <div className="flex gap-3">
-            <button
-              className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-              onClick={() => cancelRequestModalRef.current?.openModal()}
-            >
-              ยกเลิกคำขอ
-            </button>
+            {(data?.ref_request_status_code === "50" ||
+              data?.ref_request_status_code === "51") && (
+              <button
+                className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+                onClick={() => cancelRequestModalRef.current?.openModal()}
+              >
+                ยกเลิกคำขอ
+              </button>
+            )}
             <button
               className="btn btn-secondary"
               onClick={() => window.print()}
@@ -145,6 +175,7 @@ export default function PageKeyHandOverHeader({ data }: Props) {
             </button>{" "}
           </div>
         </div>
+
         {data?.ref_request_status_code === "51" && (
           <button
             type="button"
@@ -155,8 +186,40 @@ export default function PageKeyHandOverHeader({ data }: Props) {
             รับยานพาหนะ
           </button>
         )}
+
+        {(data?.ref_request_status_code === "60" ||
+          data?.ref_request_status_code === "60e") && (
+          <>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => licenseCardModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">id_card</i>
+              ใบอนุญาตนำรถออก
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">swap_driving_apps</i>
+              คืนยานพาหนะ
+            </button>
+          </>
+        )}
       </div>
-      <ReceiveCarVehicleModal requestData={data} ref={receiveCarVehicleModalRef} role="admin" />
+      <ReceiveCarVehicleModal
+        requestData={data}
+        ref={receiveCarVehicleModalRef}
+        role="admin"
+      />
+      <LicenseCardModal
+        ref={licenseCardModalRef}
+        requestData={data}
+        onSubmit={saveImage}
+      />
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}

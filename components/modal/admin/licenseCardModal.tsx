@@ -8,12 +8,13 @@ import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 interface Props {
   requestData?: VehicleUserTravelCardType;
+  onSubmit?: () => void;
 }
 
 const LicenseCardModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ requestData }, ref) => {
+>(({ requestData, onSubmit }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const exportImgRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false); // State to manage button behavior
@@ -30,19 +31,28 @@ const LicenseCardModal = forwardRef<
   );
   const endDate = convertToBuddhistDateTime(requestData?.end_datetime || "");
 
-  const handleExportImage = () => {
-    exportElementAsImage(
-      exportImgRef.current,
-      "license-card.png",
-      () => {
-        setIsExporting(true);
-      },
-      () => {
-        setIsExporting(false);
+  const handleExportImage = async () => {
+    if (!exportImgRef.current) return;
+  
+    setIsExporting(true);
+  
+    try {
+      await exportElementAsImage(exportImgRef.current, "license-card.png");
+  
+      // success
+      if (onSubmit) {
+        onSubmit(); // This will show toast (saveImage)
       }
-    );
+  
+      modalRef.current?.close();
+    } catch (error) {
+      console.error("Error exporting image:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
-
+  
+  
   return (
     <dialog ref={modalRef} className="modal">
       <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()} >

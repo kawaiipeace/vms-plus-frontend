@@ -4,13 +4,18 @@ import LogListTable from "@/components/table/log-list-table";
 import { useLogContext } from "@/contexts/log-context";
 import PaginationControls from "@/components/table/pagination-control";
 import KeyHandoverDetail from "@/components/admin/key-handover/key-handover-detail";
+import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
+import RecordTravelTab from "@/components/tabs/recordTravelTab";
 
 interface Props {
   requestId: string;
   displayKeyHandover?: boolean;
+  displayVehiclePickup?: boolean;
+  displayTravelRecord?: boolean;
+  displayFuel?: boolean;
 }
 
-export default function RequestDetailTabs({ requestId, displayKeyHandover }: Props) {
+export default function RequestDetailTabs({ requestId,displayTravelRecord,displayFuel, displayKeyHandover, displayVehiclePickup }: Props) {
   const { dataRequest, pagination, params, setParams, loadLogs } = useLogContext();
   const handlePageChange = (newPage: number) => {
     setParams((prev) => ({ ...prev, page: newPage }));
@@ -43,6 +48,35 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
           },
         ]
       : []),
+
+      ...(displayVehiclePickup
+        ? [
+            {
+              label: "การรับยานพาหนะ",
+              content: <ReceiveCarVehicleInUseTab requestId={requestId} edit="edit" />,
+              badge: "",
+            },
+          ]
+        : []),
+        ...(displayTravelRecord
+          ? [
+              {
+                label: "ข้อมูลการเดินทาง",
+                content: <></>,
+                badge: "",
+              },
+            ]
+          : []),
+          ...(displayFuel
+            ? [
+                {
+                  label: "การเติมเชื้อเพลิง",
+                  content: <ReceiveCarVehicleInUseTab requestId={requestId} edit="edit" />,
+                  badge: "",
+                },
+              ]
+            : []),
+
     {
       label: "ประวัติการดำเนินการ",
       content: (

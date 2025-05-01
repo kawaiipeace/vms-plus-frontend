@@ -42,3 +42,13 @@ export const adminReceivedVehicle = async (data: any) => {
   }
 };
 
+export const fetchVehiclePickupRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get('received-key-admin/request/' + id);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
