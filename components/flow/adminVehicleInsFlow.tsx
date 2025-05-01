@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import { summaryType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
 import FilterSortModal from "@/components/modal/filterSortModal";
-import { fetchRequests } from "@/services/bookingAdmin";
 import AdminVehicleInsTable from "@/components/table/admin-vehicle-ins-table";
+import { fetchVehicleInsRequests } from "@/services/adminService";
+import { VehicleInsType } from "@/data/vehicleInsData";
 
 interface PaginationType {
   limit: number;
@@ -38,7 +39,7 @@ export default function AdminVehicleInsFlow() {
     totalPages: 0,
   });
 
-  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
+  const [dataRequest, setDataRequest] = useState<VehicleInsType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
@@ -200,7 +201,7 @@ export default function AdminVehicleInsFlow() {
   useEffect(() => {
     const fetchRequestsData = async () => {
       try {
-        const response = await fetchRequests(params);
+        const response = await fetchVehicleInsRequests(params);
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;

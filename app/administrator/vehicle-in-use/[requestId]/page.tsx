@@ -10,7 +10,6 @@ import PageKeyHandOverHeader from "@/components/page-header/page-key-handover-he
 import { fetchRequestDetail } from "@/services/keyAdmin";
 import { LogProvider } from "@/contexts/log-context";
 
-
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
@@ -19,12 +18,11 @@ export default function RequestDetail() {
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
-
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await fetchRequestDetail(request_id);
-          console.log('reffdsfs',response.data);
+          console.log("reffdsfs", response.data);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -47,14 +45,25 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageKeyHandOverHeader data={requestData} />}
-          <LogProvider>
-            <RequestDetailTabs displayReturnVehicle={true} displayKeyHandover={true} requestId={request_id} displayTravelRecord={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} displayVehiclePickup={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} />
+            {requestData && <PageKeyHandOverHeader data={requestData} />}
+            <LogProvider>
+              <RequestDetailTabs
+                displayKeyHandover={true}
+                requestId={request_id}
+                displayTravelRecord={
+                true
+                }
+                displayVehiclePickup={
+               true
+                }
+                displayReturnVehicle={
+                 true
+                }
+              />
             </LogProvider>
           </div>
         </div>
       </div>
-      
     </div>
   );
 }

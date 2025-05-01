@@ -73,6 +73,27 @@ export const adminDeleteTravelDetail = async (id: string) => {
   }
 };
 
+export const fetchVehicleInsRequests = async (params: {
+  search?: string;
+  vehicle_owner_dept_sap?: string;
+  ref_request_status_code?: string;
+  startdate?: string;
+  enddate?: string;
+  order_by?: string;
+  order_dir?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      "vehicle-inspection-admin/search-requests",
+      { params }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 

@@ -102,7 +102,7 @@ export default function RequestDetailTabs({
     ...(displayReturnVehicle
       ? [
           {
-            label: "ตรวจสอบการคืนยานพาหนะ",
+            label: "การคืนยานพาหนะ",
             content: <ReturnCarTab displayOn="adminTab" />,
             badge: "",
           },

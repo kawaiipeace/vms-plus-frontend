@@ -12,6 +12,7 @@ import AdminApproveFlow from "@/components/flow/adminApproveFlow";
 import AdminKeyHandOverFlow from "@/components/flow/adminHandOverFlow";
 import CancelFlow from "@/components/flow/cancelFlow";
 import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
+import AdminVehicleInsFlow from "../flow/adminVehicleInsFlow";
 
 export default function ApproveVehicleForAdminTabs() {
   // const tabs = [
@@ -66,8 +67,8 @@ export default function ApproveVehicleForAdminTabs() {
             return <AdminKeyHandOverFlow />;
             case "60": 
             return <AdminVehiclePickupFlow />;
-            case "70": // คืนยานพาหนะ
-              return "";
+            case "70,71": // คืนยานพาหนะ
+            return <AdminVehicleInsFlow />;
             case "80": // เสร็จสิ้น
               return <div>เสร็จสิ้น</div>; // Replace with your component
             case "90": // ยกเลิก

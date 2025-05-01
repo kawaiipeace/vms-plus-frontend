@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
-import Image from "next/image";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -11,9 +10,9 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { RequestListType } from "@/app/types/request-list-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
+import { VehicleInsType } from "@/data/vehicleInsData";
 
 interface PaginationType {
   limit: number;
@@ -23,11 +22,14 @@ interface PaginationType {
 }
 
 interface Props {
-  defaultData: RequestListType[];
+  defaultData: VehicleInsType[];
   pagination: PaginationType;
 }
 
-export default function AdminVehicleInsTable({ defaultData, pagination }: Props) {
+export default function AdminVehicleInsTable({
+  defaultData,
+  pagination,
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +40,91 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
     pageSize: pagination.limit,
   });
 
-  const requestListColumns: ColumnDef<RequestListType>[] = [
+  const requestListColumns: ColumnDef<VehicleInsType>[] = [
+    {
+      accessorKey: "start_datetime",
+      header: () => (
+        <div className="relative flex items-center justify-center text-center">
+          <div className="text-center">วันที่ผู้ใช้คืนยานพาหนะ</div>
+        </div>
+      ),
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="วันที่ผู้ใช้คืนยานพาหนะ">
+          <div className="flex flex-col">
+            <div>{row.original.start_datetime}</div>
+            <div className="text-left text-sm text-secondary">
+            16:35
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "vehicle_license_plate",
+      header: () => <div className="text-center">ยานพาหนะ</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="ยานพาหนะ">
+       
+            <div className="flex flex-col">
+              {" "}
+              <div className="text-left">
+                {row.original.vehicle_license_plate}
+              </div>
+              <div className="text-color-secondary text-xs">
+                {row.original.ref_vehicle_type_name}
+              </div>
+            </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "vehicle_dept_name",
+      header: () => <div className="text-center">สังกัดยานพาหนะ</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="สังกัดยานพาหนะ">
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">
+              {row.original.vehicle_dept_name}
+            </div>
+            <div className="text-color-secondary text-xs">
+              {row.original.vehicle_carpool_name}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "work_place",
+      header: () => <div className="text-center">สถานที่จอดรถ</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="สถานที่จอดรถ">
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">{row.original.work_place}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "vehicle_user_emp_name",
+      header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
+          <div className="flex flex-col">
+            <div>{row.original.vehicle_user_emp_name}</div>
+            <div className="text-color-secondary text-xs">
+              {row.original.vehicle_user_dept_sap_short}
+            </div>
+          </div>
+        </div>
+      ),
+    },
     {
       accessorKey: "request_no",
       header: () => (
@@ -60,120 +146,8 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
       ),
     },
     {
-      accessorKey: "vehicle_user_emp_name",
-      header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
-      enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
-          <div className="flex flex-col">
-            <div>{row.original.vehicle_user_emp_name}</div>
-            <div className="text-color-secondary text-xs">
-              {row.original.vehicle_user_dept_sap_short}
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "vehicle_license_plate",
-      header: () => <div className="text-center">ยานพาหนะ</div>,
-      enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left" data-name="ยานพาหนะ">
-          {row.original.can_choose_vehicle === true &&
-          row.original.vehicle_department_dept_sap_short === "" ? (
-            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
-              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-              <span className="text-color-secondary">รอเลือก</span>
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              {" "}
-              <div className="text-left">
-                {row.original.vehicle_license_plate}
-              </div>
-              <div className="text-color-secondary text-xs">
-                {row.original.ref_vehicle_type_name}
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "vehicle_department_dept_sap_short",
-      header: () => <div className="text-center">สังกัดยานพาหนะ</div>,
-      enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left" data-name="สังกัดยานพาหนะ">
-          <div className="flex flex-col">
-            {" "}
-            <div className="text-left">
-              {row.original.vehicle_dept_name}
-            </div>
-            <div className="text-color-secondary text-xs">
-              {row.original.vehicle_carpool_name}
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "driver",
-      header: () => <div className="text-center">ผู้ขับขี่</div>,
-      enableSorting: false,
-      cell: ({ row }) => (
-        <div className="text-left" data-name="ผู้ขับขี่">
-          {row.original.can_choose_driver === true &&
-          row.original.vehicle_department_dept_sap_short === "" ? (
-            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-[5rem] bg-white">
-              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-              <span className="text-color-secondary">รอเลือก</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <div className="">
-                {row.original.is_pea_employee_driver === 1 ? (
-                  <Image
-                    src="/assets/img/avatar.svg"
-                    width={36}
-                    height={36}
-                    alt="User Avatar"
-                  ></Image>
-                ) : (
-                  <Image
-                    src="/assets/img/graphic/admin_select_driver_small.png"
-                    width={36}
-                    height={36}
-                    alt="User Avatar"
-                    className="rounded-full"
-                  ></Image>
-                )}{" "}
-              </div>
-              <div>
-                <div className="text-left">{row.original.driver_name}</div>
-                <div className="text-color-secondary text-xs">
-                  {row.original.driver_dept_name}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "work_place",
-      header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
-      enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-left" data-name="สถานที่ปฏิบัติงาน">
-          {getValue() as string}
-        </div>
-      ),
-    },
-    {
       accessorKey: "start_datetime",
-      header: () => <div className="text-center">วันที่เดินทาง</div>,
+      header: () => <div className="text-center">การเดินทางถัดไป</div>,
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
@@ -183,7 +157,7 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
           row.original.end_datetime
         );
         return (
-          <div className="text-left" data-name="วันที่เดินทาง">
+          <div className="text-left" data-name="การเดินทางถัดไป">
             <div className="flex flex-col">
               <div>{startDateTime.date + " - " + endDateTime.date}</div>
               <div className="text-color-secondary text-xs">
@@ -204,23 +178,11 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
         const value = getValue() as string;
         return (
           <div className="w-[80px] text-center" data-name="สถานะคำขอ">
-            {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
+            {value === "ตีกลับยานพาหนะ" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับ" ? (
-              <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
-                ตีกลับคำขอ
-              </span>
-            ) : value === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
-            ) : value === "อนุมัติแล้ว" ? (
-              <span className="badge badge-pill-outline badge-success whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
-            ) : (
+            )  : (
               <span className="badge badge-pill-outline badge-info whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
@@ -235,16 +197,16 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
       header: () => <div className="text-center"></div>,
       enableSorting: false,
       cell: ({ row }) => {
-        const statusValue = row.original.ref_request_status_name;
+
         return (
           <div className="text-left dataTable-action">
-            {statusValue == "รออนุมัติ" && (
+
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/request-list/" +
+                    "/administrator/vehicle-in-use/" +
                       row.original.trn_request_uid +
                       "/edit"
                   )
@@ -252,37 +214,36 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
-            )}
 
-            {(statusValue == "ตีกลับ" || statusValue == "อนุมัติแล้ว") && (
+
+
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
+                data-tip="ดูรายละเอียดการตีกลับ"
                 onClick={() =>
                   router.push(
-                    "/administrator/request-list/" +
+                    "/administrator/vehicle-in-use/" +
                       row.original.trn_request_uid
                   )
                 }
               >
-                <i className="material-symbols-outlined">quick_reference_all</i>
+                <i className="material-symbols-outlined">source_notes</i>
               </button>
-            )}
 
-            {statusValue == "ยกเลิกคำขอ" && (
+              
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
+                data-tip="ตรวจสอบการคืนยานพาหนะ"
                 onClick={() =>
                   router.push(
-                    "/administrator/request-list/" +
+                    "/administrator/vehicle-in-use/" +
                       row.original.trn_request_uid
                   )
                 }
               >
-                <i className="material-symbols-outlined">quick_reference_all</i>
+                <i className="material-symbols-outlined">overview</i>
               </button>
-            )}
+
           </div>
         );
       },
@@ -321,15 +282,9 @@ export default function AdminVehicleInsTable({ defaultData, pagination }: Props)
           <DataTable
             table={table}
             onRowClick={(row) => {
-
-              const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
-              console.log("row clicked", { status, uid }); 
-              if (status === "รออนุมัติ") {
-                router.push(`/administrator/request-list/${uid}/edit`);
-              } else {
-                router.push(`/administrator/request-list/${uid}`);
-              }
+                router.push(`/administrator/vehicle-in-use/${uid}`);
+
             }}
           />
         </>
