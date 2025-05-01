@@ -75,8 +75,9 @@ const DriverDetailContent = ({
               className="ml-auto"
               href={
                 progressType === "คืนยานพาหนะไม่สำเร็จ"
-                  ? "/vehicle-in-use/driver/edit/1"
-                  : "/vehicle-in-use/driver/request-list/1"
+                  ? "/vehicle-in-use/driver/edit/" + data?.trn_request_uid
+                  : "/vehicle-in-use/driver/request-list/" +
+                    data?.trn_request_uid
               }
             >
               <button className="btn bg-transparent border-0 shadow-none text-[#A80689] p-0">

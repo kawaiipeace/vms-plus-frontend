@@ -4,6 +4,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import { fetchDrivers } from "@/services/masterService";
 import { DriverType } from "@/app/types/driver-user-type";
 import CallToDriverModal from "@/components/modal/callToDriverModal";
+import dayjs from "dayjs";
 
 interface DriverPassengerInfoCardProps {
   id?: string;
@@ -57,8 +58,8 @@ export default function DriverPassengerInfoCard({
             />
           </div>
           <div>
-            <p className="font-bold">{driver?.driver_name}</p>
-            <p className="font-light">{driver?.driver_dept_sap}</p>
+            <p className="font-bold">{driver?.driver_name || "-"}</p>
+            <p className="font-light">{driver?.driver_dept_sap || "-"}</p>
           </div>
         </div>
         <div className="mt-3">
@@ -67,7 +68,7 @@ export default function DriverPassengerInfoCard({
               <i className="material-symbols-outlined mr-2 text-[#A80689]">
                 smartphone
               </i>
-              <p> {driver?.driver_contact_number}</p>
+              <p> {driver?.driver_contact_number || "-"}</p>
             </div>
             <div className="col-span-1">
               <button
@@ -86,7 +87,9 @@ export default function DriverPassengerInfoCard({
                 <i className="material-symbols-outlined">pin_drop</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">สถานที่นัดหมาย</div>
-                  <div className="form-text">Lobby อาคาร LED</div>
+                  <div className="form-text">
+                    {requestData?.pickup_place || "-"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -96,7 +99,11 @@ export default function DriverPassengerInfoCard({
                 <i className="material-symbols-outlined">calendar_month</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">วันที่</div>
-                  <div className="form-text">28/12/2566</div>
+                  <div className="form-text">
+                    {requestData?.pickup_datetime
+                      ? dayjs(requestData.pickup_datetime).format("DD/MM/YYYY")
+                      : "-"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -106,7 +113,11 @@ export default function DriverPassengerInfoCard({
                 <i className="material-symbols-outlined">schedule</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">เวลา</div>
-                  <div className="form-text">08:30</div>
+                  <div className="form-text">
+                    {requestData?.pickup_datetime
+                      ? dayjs(requestData.pickup_datetime).format("HH:mm")
+                      : "-"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -116,7 +127,9 @@ export default function DriverPassengerInfoCard({
                 <i className="material-symbols-outlined">groups</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">จำนวนผู้โดยสาร</div>
-                  <div className="form-text">4 (รวมผู้ขับขี่)</div>
+                  <div className="form-text">
+                    {requestData?.number_of_passengers || 0} (รวมผู้ขับขี่)
+                  </div>
                 </div>
               </div>
             </div>
@@ -125,8 +138,8 @@ export default function DriverPassengerInfoCard({
       </div>
       <CallToDriverModal
         imgSrc={driver?.driver_image || "/assets/img/avatar.svg"}
-        name={driver?.driver_name || ""}
-        phone={driver?.driver_contact_number || ""}
+        name={driver?.driver_name || "-"}
+        phone={driver?.driver_contact_number || "-"}
         ref={callToDriverModalRef}
       />
     </div>
