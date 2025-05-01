@@ -8,6 +8,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 interface Props {
   requestData?: VehicleUserTravelCardType;
+  onSubmit?: () => void;
 }
 
 const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(

@@ -24,7 +24,7 @@ export default function RequestDetail() {
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await fetchRequestDetail(request_id);
-       
+          console.log('reffdsfs',response.data);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -49,7 +49,7 @@ export default function RequestDetail() {
           <div className="main-content-body">
           {requestData && <PageKeyHandOverHeader data={requestData} />}
           <LogProvider>
-            <RequestDetailTabs displayKeyHandover={true} requestId={request_id} />
+            <RequestDetailTabs displayKeyHandover={true} requestId={request_id} displayTravelRecord={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} displayVehiclePickup={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} />
             </LogProvider>
           </div>
         </div>

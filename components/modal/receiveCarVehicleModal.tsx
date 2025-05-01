@@ -8,22 +8,32 @@ import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
 import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
 import Tooltip from "@/components/tooltips";
 import { adminReceivedVehicle } from "@/services/adminService";
-import { fetchUserTravelCard, userReceivedVehicle } from "@/services/receivedVehicleUser";
+import {
+  fetchUserTravelCard,
+  userReceivedVehicle,
+} from "@/services/receivedVehicleUser";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import TimePicker from "../timePicker";
 
 interface ReceiveCarVehicleModalProps {
   status?: string;
   requestData?: RequestDetailType;
   role?: string;
+  onSubmit?: () => void;
 }
 
 const ReceiveCarVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReceiveCarVehicleModalProps
->(({ status, requestData, role }, ref) => {
+>(({ status, requestData, role, onSubmit }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const datePickerRef = useRef<DatePickerRef>(null);
@@ -38,7 +48,8 @@ const ReceiveCarVehicleModal = forwardRef<
   const [fuelQuantity, setFuelQuantity] = useState(0);
   const [imageEx, setImageEx] = useState<UploadFileType[]>();
 
-  const [travelCardData, setTravelCardData] = useState<VehicleUserTravelCardType>();
+  const [travelCardData, setTravelCardData] =
+    useState<VehicleUserTravelCardType>();
 
   useEffect(() => {
     if (requestData) {
@@ -83,8 +94,8 @@ const ReceiveCarVehicleModal = forwardRef<
     setImages2(images2.filter((_, i) => i !== index));
   };
 
-  const onSubmit = async () => {
-    if (selectedDate && selectedTime && images.length > 0 && fuelQuantity !== undefined && miles !== undefined) {
+  const onSubmitForm = async () => {
+
       try {
         const imageList = [...images, ...images2].map((item, index) => {
           return {
@@ -102,25 +113,33 @@ const ReceiveCarVehicleModal = forwardRef<
           trn_request_uid: requestData?.trn_request_uid,
           vehicle_images: imageList,
         };
-        console.log("form--", formData);
         let response;
         if (role === "admin") {
           response = await adminReceivedVehicle(formData);
         } else {
           response = await userReceivedVehicle(formData);
         }
-
+        if(onSubmit){
+          
+          onSubmit()
+        }  else{
         if (response.status === 200) {
-          const response = await fetchUserTravelCard(requestData?.trn_request_uid || "");
+          const response = await fetchUserTravelCard(
+            requestData?.trn_request_uid || ""
+          );
           setTravelCardData(response.data);
           clearForm();
-          receiveCarSuccessModalRef.current?.openModal();
-          modalRef.current?.close();
+         
+         
+            receiveCarSuccessModalRef.current?.openModal();
+            modalRef.current?.close();
+          }
+         
         }
       } catch (error) {
         console.error("Error submitting form data:", error);
       }
-    }
+    
   };
 
   const clearForm = () => {
@@ -149,22 +168,21 @@ const ReceiveCarVehicleModal = forwardRef<
           <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
+          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+            <div className="modal-title">
+              {" "}
+              {status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}
+            </div>
+            <form method="dialog">
+              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                <i className="material-symbols-outlined">close</i>
+              </button>
+            </form>
+          </div>
 
           <div className="modal-body overflow-y-auto text-center !bg-white">
             <form>
               <div className="form-section">
-                {/* <div className="page-section-header border-0">
-                  <div className="page-header-left">
-                    <div className="page-title">
-                      <span className="page-title-label"> */}
-                <div className="page-section-header pt-6 pb-2 text-xl font-semibold">
-                  {status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}
-                </div>
-                {/* </span>
-                    </div>
-                  </div>
-                </div> */}
-
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12 pb-2">
                   {/* Date picker */}
                   <div className="col-span-6">
@@ -173,7 +191,9 @@ const ReceiveCarVehicleModal = forwardRef<
                       <div className="input-group">
                         <div className="input-group-prepend">
                           <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
+                            <i className="material-symbols-outlined">
+                              calendar_month
+                            </i>
                           </span>
                         </div>
                         <DatePicker
@@ -192,7 +212,9 @@ const ReceiveCarVehicleModal = forwardRef<
                       <div className="input-group">
                         <div className="input-group-prepend">
                           <span className="input-group-text">
-                            <i className="material-symbols-outlined">schedule</i>
+                            <i className="material-symbols-outlined">
+                              schedule
+                            </i>
                           </span>
                         </div>
                         <TimePicker
@@ -211,6 +233,7 @@ const ReceiveCarVehicleModal = forwardRef<
                           type="number"
                           className="form-control"
                           placeholder="ระบุเลขไมล์ก่อนเดินทาง"
+                          defaultValue={requestData?.mile_start}
                           value={miles}
                           onChange={(e) => {
                             setMiles(e.target.value);
@@ -234,7 +257,9 @@ const ReceiveCarVehicleModal = forwardRef<
                         value={fuelQuantity}
                         className="range"
                         step={1}
-                        onChange={(e) => setFuelQuantity(Number(e.target.value))}
+                        onChange={(e) =>
+                          setFuelQuantity(Number(e.target.value))
+                        }
                       />
                       <div className="flex w-full justify-between px-2 text-xs">
                         {Array.from({ length: 9 }, (_, index) => {
@@ -255,7 +280,11 @@ const ReceiveCarVehicleModal = forwardRef<
                       </div>
                       <div className="flex w-full justify-between px-2 text-[#475467] font-semibold ">
                         {Array.from({ length: 9 }, (_, index) => {
-                          return <span key={index}>{index === 0 ? "E" : index === 8 ? "F" : ""}</span>;
+                          return (
+                            <span key={index}>
+                              {index === 0 ? "E" : index === 8 ? "F" : ""}
+                            </span>
+                          );
                         })}
                       </div>
                     </div>
@@ -267,7 +296,11 @@ const ReceiveCarVehicleModal = forwardRef<
                         <div className="form-group">
                           <label className="form-label">
                             รูปหน้าปัดเรือนไมล์
-                            <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                            <Tooltip
+                              title="รูปหน้าปัดเรือนไมล์"
+                              content="Upload ได้ 1 รูป"
+                              position="right"
+                            >
                               <i
                                 className="material-symbols-outlined"
                                 onClick={() => {
@@ -280,7 +313,9 @@ const ReceiveCarVehicleModal = forwardRef<
                               </i>
                             </Tooltip>
                           </label>
-                          {images.length < 1 && <ImageUpload onImageChange={handleImageChange} />}
+                          {images.length < 1 && (
+                            <ImageUpload onImageChange={handleImageChange} />
+                          )}
                           <div className="image-preview flex flex-wrap gap-3">
                             {images.map((image, index) => (
                               <ImagePreview
@@ -295,8 +330,13 @@ const ReceiveCarVehicleModal = forwardRef<
                       <div className="col-span-12">
                         <div className="form-group">
                           <label className="form-label">
-                            รูปยานพาหนะภายในและภายนอก<span className="font-light">(ถ้ามี)</span>
-                            <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 4 รูป" position="right">
+                            รูปยานพาหนะภายในและภายนอก
+                            <span className="font-light">(ถ้ามี)</span>
+                            <Tooltip
+                              title="รูปหน้าปัดเรือนไมล์"
+                              content="Upload ได้ 4 รูป"
+                              position="right"
+                            >
                               <i
                                 className="material-symbols-outlined"
                                 onClick={() => {
@@ -309,7 +349,9 @@ const ReceiveCarVehicleModal = forwardRef<
                               </i>
                             </Tooltip>
                           </label>
-                          {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
+                          {images2.length < 4 && (
+                            <ImageUpload onImageChange={handleImageChange2} />
+                          )}
                           <div className="image-preview flex flex-wrap gap-3">
                             {images2.map((image, index) => (
                               <ImagePreview
@@ -341,39 +383,42 @@ const ReceiveCarVehicleModal = forwardRef<
                     </div>
                   </div>
                 </div>
-
-                <div className="flex w-full gap-5 py-3">
-                  <div className="flex-1">
-                    <button
-                      type="button"
-                      className="btn btn-secondary !w-full"
-                      onClick={() => {
-                        clearForm();
-                        modalRef.current?.close();
-                      }}
-                    >
-                      ไม่ใช่ตอนนี้
-                    </button>
-                  </div>
-                  <div className="flex-1">
-                    <button
-                      type="button"
-                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
-                      onClick={onSubmit}
-                    >
-                      ยืนยัน
-                    </button>
-                  </div>
-                </div>
               </div>
             </form>
+          </div>
+          <div className="flex w-full gap-5 py-3 modal-action mt-0">
+            <div className="flex-1">
+              <button
+                type="button"
+                className="btn btn-secondary !w-full"
+                onClick={() => {
+                  clearForm();
+                  modalRef.current?.close();
+                }}
+              >
+                ปิด
+              </button>
+            </div>
+            <div className="flex-1">
+              <button
+                type="submit"
+                className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
+                onClick={onSubmitForm}
+              >
+                บันทึก
+              </button>
+            </div>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>
       </dialog>
-      <ReceiveCarSuccessModal ref={receiveCarSuccessModalRef} requestData={travelCardData} role="admin" />
+      <ReceiveCarSuccessModal
+        ref={receiveCarSuccessModalRef}
+        requestData={travelCardData}
+        role="admin"
+      />
       <ExampleCarImageModal
         backModal={() => modalRef.current?.showModal()}
         ref={exampleCarImageModalRef}

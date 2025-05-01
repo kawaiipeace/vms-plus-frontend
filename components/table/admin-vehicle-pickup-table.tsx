@@ -225,7 +225,7 @@ export default function AdminVehiclePickupTable({
                     role="button"
                   >
                     <i className="material-symbols-outlined icon-settings-fill-300-24">
-                      more_vert
+                      more_vert {row.original.ref_request_status_code}
                     </i>
                   </div>
 
