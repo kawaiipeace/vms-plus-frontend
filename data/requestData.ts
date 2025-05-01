@@ -1,4 +1,3 @@
-
 export type RequestData = {
   request_no: string;
   vehicle_user_emp_name: string;
@@ -64,16 +63,18 @@ export type RequestData = {
   received_key_place: string;
   received_key_start_datetime: string;
   received_key_end_datetime: string;
-  
 };
 
 export type RecordTravelTabProps = {
-  date1: string;
-  date2: string;
-  place: string;
-  place2: string;
-  num1: string;
-  num2: string;
+  trn_trip_detail_uid: string;
+  trn_request_uid: string;
+  trip_start_datetime: string;
+  trip_end_datetime: string;
+  trip_departure_place: string;
+  trip_destination_place: string;
+  trip_start_miles: number;
+  trip_end_miles: number;
+  trip_detail: string;
 };
 
 export type RecordFuelTabProps = {
@@ -154,15 +155,15 @@ export const requestData_1: RequestData[] = [
     received_key_place: "0001",
     received_key_start_datetime: "0001",
     received_key_end_datetime: "0001",
-    ref_request_status_name: "รออนุมัติ"
+    ref_request_status_name: "รออนุมัติ",
   },
 ];
 
 export const requestDataColumns = [
   { accessorKey: "request_no", header: "เลขที่คำขอ", enableSorting: true },
-  {accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ",  enableSorting: false },
+  { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ", enableSorting: false },
   { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ", enableSorting: false },
-  {accessorKey: "vehicle_user_dept_sap", header: "หน่วยงาน",  enableSorting: false },
+  { accessorKey: "vehicle_user_dept_sap", header: "หน่วยงาน", enableSorting: false },
   { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน", enableSorting: false },
   { accessorKey: "start_datetime", header: "วันที่เดินทาง", enableSorting: true },
   // { accessorKey: "objective", header: "รายละเอียด", enableSorting: false },
@@ -171,32 +172,38 @@ export const requestDataColumns = [
 ];
 
 export const recordData: RecordTravelTabProps[] = [
-  {
-    date1: "24/06/67",
-    date2: "27/06/67",
-    place: "กรุงเทพมหานคร",
-    place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
-    num1: "2,000",
-    num2: "2,000",
-  },
-  {
-    date1: "24/06/67",
-    date2: "27/06/67",
-    place: "กรุงเทพมหานคร",
-    place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
-    num1: "2,000",
-    num2: "2,000",
-  },
+  // {
+  //   date1: "24/06/67",
+  //   date2: "27/06/67",
+  //   place: "กรุงเทพมหานคร",
+  //   place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
+  //   num1: "2,000",
+  //   num2: "2,000",
+  // },
+  // {
+  //   date1: "24/06/67",
+  //   date2: "27/06/67",
+  //   place: "กรุงเทพมหานคร",
+  //   place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
+  //   num1: "2,000",
+  //   num2: "2,000",
+  // },
 ];
 
-export const recordDataColumns = [
-  { accessorKey: "date1", header: "วันที่ / เวลาจากต้นทาง" },
-  { accessorKey: "date2", header: "วันที่ / เวลาถึงปลายทาง" },
-  { accessorKey: "place", header: "สถานที่ต้นทาง" },
-  { accessorKey: "place2", header: "สถานที่ปลายทาง" },
-  { accessorKey: "num1", header: "เลขไมล์ต้นทาง" },
-  { accessorKey: "num2", header: "เลขไมล์ปลายทาง" },
-  { accessorKey: "action", header: "" },
+export const recordTravelDataColumns = [
+  {
+    accessorKey: "trip_start_datetime",
+    header: "วันที่ / เวลาจากต้นทาง",
+  },
+  {
+    accessorKey: "trip_end_datetime",
+    header: "วันที่ / เวลาถึงปลายทาง",
+  },
+  { accessorKey: "trip_departure_place", header: "สถานที่ต้นทาง" },
+  { accessorKey: "trip_destination_place", header: "สถานที่ปลายทาง" },
+  { accessorKey: "trip_start_miles", header: "เลขไมล์ต้นทาง" },
+  { accessorKey: "trip_end_miles", header: "เลขไมล์ปลายทาง" },
+  { accessorKey: "trip_detail", header: "รายละเอียด" },
 ];
 
 export const recordFuelData: RecordFuelTabProps[] = [
@@ -249,5 +256,5 @@ export const recordFuelDataColumns = [
   { accessorKey: "vat", header: "ภาษี" },
   { accessorKey: "priceTotal", header: "ยอดรวมชำระ" },
   { accessorKey: "paymentType", header: "วิธีชำระเงิน" },
-  { accessorKey: "action", header: "" },
+  { accessorKey: "action", header: "รายละเอียด" },
 ];

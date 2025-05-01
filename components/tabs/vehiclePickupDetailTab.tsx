@@ -11,6 +11,8 @@ import KeyPickUpDetailForm from "../flow/keyPickUpDetailForm";
 import TableComponent from "../tableKeyPickUp";
 import KeyPickUpAppointment from "./keyPickUpAppointment";
 import ReceiveCarVehicleInUseTab from "./receiveCarVehicleInUseTab";
+import RecordFuelTab from "./recordFuelTab";
+import RecordTravelTab from "./recordTravelTab";
 
 interface Props {
   requestId: string;
@@ -140,13 +142,21 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
       {
         label: "ข้อมูลการเดินทาง",
-        content: <></>,
+        content: (
+          <>
+            <RecordTravelTab requestId={requestId} />
+          </>
+        ),
         constent: "",
         badge: "",
       },
       {
         label: "การเติมเชื้อเพลิง",
-        content: <></>,
+        content: (
+          <>
+            <RecordFuelTab requestId={requestId} role="user" requestData={requestData} />
+          </>
+        ),
         constent: "",
         badge: "",
       },

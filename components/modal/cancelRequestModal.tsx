@@ -4,6 +4,7 @@ import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
+import { UserDeleteTravelDetail } from "@/services/vehicleInUseUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ import * as yup from "yup";
 
 interface Props {
   id: string;
+  tripId?: string;
   title: string;
   desc: string;
   link?: string;
@@ -19,10 +21,11 @@ interface Props {
   placeholder?: string;
   cancleFor?: string;
   role?: string;
+  datetime?: string;
 }
 
 const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ id, title, desc, confirmText, placeholder, cancleFor, role }, ref) => {
+  ({ id, title, desc, confirmText, placeholder, cancleFor, role, tripId, datetime }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
@@ -62,11 +65,14 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               ? await cancelKeyPickup(payload)
               : role === "adminKey"
               ? await keyCancelRequest(payload)
+              : role === "recordTravel"
+              ? await UserDeleteTravelDetail(tripId || "")
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
             modalRef.current?.close();
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             role === "firstApprover"
               ? router.push("/administrator/booking-approver?cancel-req=success&request-id=" + data.result?.request_no)
               : role === "admin"
@@ -77,6 +83,10 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               ? router.push("/vehicle-in-use/user?cancel-req=success&request-id=" + data.result?.request_no)
               : role === "adminKey"
               ? router.push("/administrator/request-list?cancel-req=success&request-id=" + data.result?.request_no)
+              : role === "recordTravel"
+              ? router.push(
+                  `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
+                )
               : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
           }
         } catch (error) {

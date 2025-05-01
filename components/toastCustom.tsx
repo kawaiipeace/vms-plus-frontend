@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface ToastCustomProps {
@@ -8,13 +9,27 @@ interface ToastCustomProps {
   styleText?: string;
   seeDetail?: string;
   seeDetailText?: string;
+  searchParams?: string;
 }
 
-export default function ToastCustom({ title, desc, status, seeDetail, seeDetailText, styleText }: ToastCustomProps) {
+export default function ToastCustom({
+  title,
+  desc,
+  status,
+  seeDetail,
+  seeDetailText,
+  styleText,
+  searchParams,
+}: ToastCustomProps) {
+  const router = useRouter();
+  const pathName = usePathname();
+
   const [isVisible, setIsVisible] = useState(true);
 
   const closeToast = () => {
     setIsVisible(false);
+    if (!searchParams) return; // If no searchParams, do nothing
+    router.push(pathName + `?${searchParams}`); // Navigate to the current path to remove query parameters
   };
 
   if (!isVisible) return null; // If the toast is not visible, render nothing

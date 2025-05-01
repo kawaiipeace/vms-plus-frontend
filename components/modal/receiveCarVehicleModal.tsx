@@ -1,23 +1,23 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { UploadFileType } from "@/app/types/upload-type";
 import { VehicleUserTravelCardType } from "@/app/types/vehicle-user-type";
-import DatePicker from "@/components/datePicker";
+import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
 import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
 import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
 import Tooltip from "@/components/tooltips";
-import { fetchUserTravelCard, userReceivedVehicle } from "@/services/receiVedehicleUser";
+import { adminReceivedVehicle } from "@/services/adminService";
+import { fetchUserTravelCard, userReceivedVehicle } from "@/services/receivedVehicleUser";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TimePicker from "../timePicker";
-import { adminReceivedVehicle } from "@/services/adminService";
 
 interface ReceiveCarVehicleModalProps {
   status?: string;
   requestData?: RequestDetailType;
-  role?:string;
+  role?: string;
 }
 
 const ReceiveCarVehicleModal = forwardRef<
@@ -26,6 +26,8 @@ const ReceiveCarVehicleModal = forwardRef<
 >(({ status, requestData, role }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
+  const datePickerRef = useRef<DatePickerRef>(null);
+  const fuelQuantityRef = useRef<HTMLInputElement>(null);
 
   const [miles, setMiles] = useState<string>("");
   const [remark, setRemark] = useState<string>("");
@@ -33,13 +35,23 @@ const ReceiveCarVehicleModal = forwardRef<
   const [images2, setImages2] = useState<UploadFileType[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [passengerCount, setPassengerCount] = useState(0);
+  const [fuelQuantity, setFuelQuantity] = useState(0);
   const [imageEx, setImageEx] = useState<UploadFileType[]>();
 
   const [travelCardData, setTravelCardData] = useState<VehicleUserTravelCardType>();
 
+  useEffect(() => {
+    if (requestData) {
+      setFuelQuantity(requestData?.fuel_end || 0);
+    }
+  }, [requestData]);
+
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      clearForm();
+
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
@@ -72,13 +84,7 @@ const ReceiveCarVehicleModal = forwardRef<
   };
 
   const onSubmit = async () => {
-    console.log("Selected Date:", selectedDate);
-    console.log("Selected Time:", selectedTime);
-    console.log("Selected Images:", images);
-    console.log("Selected Images2:", images2);
-    console.log("passengerCount", passengerCount);
-
-    if (selectedDate && selectedTime && images.length > 0 && passengerCount !== undefined && miles !== undefined) {
+    if (selectedDate && selectedTime && images.length > 0 && fuelQuantity !== undefined && miles !== undefined) {
       try {
         const imageList = [...images, ...images2].map((item, index) => {
           return {
@@ -89,28 +95,25 @@ const ReceiveCarVehicleModal = forwardRef<
         const pickup = convertToISO(selectedDate, selectedTime);
 
         const formData = {
-          comment_on_received_vehicle: remark,
-          fuel_start: passengerCount,
+          received_vehicle_remark: remark,
+          fuel_start: fuelQuantity,
           mile_start: Number(miles),
           pickup_datetime: pickup,
           trn_request_uid: requestData?.trn_request_uid,
           vehicle_images: imageList,
         };
-        console.log('form--',formData);
+        console.log("form--", formData);
         let response;
-        if(role === "admin"){
+        if (role === "admin") {
           response = await adminReceivedVehicle(formData);
-        }else{
+        } else {
           response = await userReceivedVehicle(formData);
         }
-     
 
         if (response.status === 200) {
           const response = await fetchUserTravelCard(requestData?.trn_request_uid || "");
-          console.log("data---", response.data);
           setTravelCardData(response.data);
-
-          console.log("Form data submitted successfully:", response.data);
+          clearForm();
           receiveCarSuccessModalRef.current?.openModal();
           modalRef.current?.close();
         }
@@ -119,12 +122,30 @@ const ReceiveCarVehicleModal = forwardRef<
       }
     }
   };
+
+  const clearForm = () => {
+    datePickerRef.current?.reset();
+    if (fuelQuantityRef.current) {
+      fuelQuantityRef.current.value = "0";
+    }
+    setMiles("");
+    setRemark("");
+    setImages([]);
+    setImages2([]);
+    setSelectedDate("");
+    setSelectedTime("");
+    setFuelQuantity(0);
+    setImageEx(undefined);
+  };
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"   onClick={(e) => e.stopPropagation()} >
+        <div
+          className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
@@ -155,7 +176,11 @@ const ReceiveCarVehicleModal = forwardRef<
                             <i className="material-symbols-outlined">calendar_month</i>
                           </span>
                         </div>
-                        <DatePicker placeholder={"ระบุวันที่"} onChange={(date) => setSelectedDate(date)} />
+                        <DatePicker
+                          placeholder={"ระบุวันที่"}
+                          onChange={(date) => setSelectedDate(date)}
+                          ref={datePickerRef}
+                        />
                       </div>
                     </div>
                   </div>
@@ -170,7 +195,11 @@ const ReceiveCarVehicleModal = forwardRef<
                             <i className="material-symbols-outlined">schedule</i>
                           </span>
                         </div>
-                        <TimePicker placeholder="ระบุเวลา" onChange={(time) => setSelectedTime(time)} />
+                        <TimePicker
+                          placeholder="ระบุเวลา"
+                          onChange={(time) => setSelectedTime(time)}
+                          defaultValue={selectedTime}
+                        />
                       </div>
                     </div>
                   </div>
@@ -194,17 +223,18 @@ const ReceiveCarVehicleModal = forwardRef<
                     <div className="form-group">
                       <label className="form-label flex justify-between items-center">
                         <span>ปริมาณเชื้อเพลิง</span>
-                        <span>{passengerCount}%</span>
+                        <span>{fuelQuantity}%</span>
                       </label>
                       <input
-                        defaultValue={passengerCount}
+                        ref={fuelQuantityRef}
+                        defaultValue={fuelQuantity}
                         type="range"
                         min={0}
                         max={100}
-                        // value={passengerCount}
+                        value={fuelQuantity}
                         className="range"
-                        step={passengerCount}
-                        onChange={(e) => setPassengerCount(Number(e.target.value))}
+                        step={1}
+                        onChange={(e) => setFuelQuantity(Number(e.target.value))}
                       />
                       <div className="flex w-full justify-between px-2 text-xs">
                         {Array.from({ length: 9 }, (_, index) => {
@@ -311,9 +341,17 @@ const ReceiveCarVehicleModal = forwardRef<
                     </div>
                   </div>
                 </div>
+
                 <div className="flex w-full gap-5 py-3">
                   <div className="flex-1">
-                    <button type="button" className="btn btn-secondary !w-full" onClick={() => modalRef.current?.close()}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary !w-full"
+                      onClick={() => {
+                        clearForm();
+                        modalRef.current?.close();
+                      }}
+                    >
                       ไม่ใช่ตอนนี้
                     </button>
                   </div>

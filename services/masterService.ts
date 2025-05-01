@@ -234,3 +234,30 @@ export const updateReceivedKeyConfirmed = async (data: any) => {
     throw error;
   }
 };
+
+export const fetchOilStationBrandType = async () => {
+  try {
+    const response = await axiosInstance.get("ref/oil-station-brand");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchFuelType = async () => {
+  try {
+    const response = await axiosInstance.get("ref/fuel-type");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchPaymentTypeCode = async () => {
+  try {
+    const response = await axiosInstance.get("ref/payment-type-code");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
 import ImagesCarCard from "@/components/card/ImagesCarCard";
@@ -40,6 +41,7 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn }: ReceiveCarVeh
   useEffect(() => {
     fetchRequestDetailfunc();
   }, [requestId]);
+
   return (
     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
       <div className="w-full row-start-2 md:col-start-1 flex flex-col gap-4">
