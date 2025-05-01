@@ -130,7 +130,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การคืนยานพาหนะ",
         content: (
           <>
-            <ReturnCarTab status="returnFail" />
+            <ReturnCarTab status="returnFail" requestId={requestId} />
           </>
         ),
         constent: "",

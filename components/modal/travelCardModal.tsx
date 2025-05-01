@@ -2,10 +2,11 @@
 import { VehicleUserTravelCardType } from "@/app/types/vehicle-user-type";
 import ToastCustom from "@/components/toastCustom";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { exportElementAsImage } from "@/utils/exportImage";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { forwardRef, Suspense, useImperativeHandle, useRef } from "react";
+import { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -22,15 +23,17 @@ function RequestListContent() {
 
 interface TravelCardModalProps {
   requestData?: VehicleUserTravelCardType;
+  title?: string;
 }
 
 const TravelCardModal = forwardRef<{ openModal: () => void; closeModal: () => void }, TravelCardModalProps>(
-  ({ requestData }, ref) => {
+  ({ requestData, title = "บัตรเดินทาง" }, ref) => {
     const router = useRouter();
     const pathName = usePathname();
 
     const modalRef = useRef<HTMLDialogElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
+    const exportImgRef = useRef<HTMLDivElement>(null);
+    const [isExporting, setIsExporting] = useState(false); // State to manage button behavior
 
     useImperativeHandle(ref, () => ({
       openModal: () => {
@@ -44,27 +47,45 @@ const TravelCardModal = forwardRef<{ openModal: () => void; closeModal: () => vo
     const startDate = convertToBuddhistDateTime(requestData?.start_datetime || "");
     const endDate = convertToBuddhistDateTime(requestData?.end_datetime || "");
 
-    const onSave = async () => {
-      if (!contentRef.current) return;
-      router.push(pathName + `?save-card=success`);
+    const handleExportImage = async () => {
+      exportElementAsImage(
+        exportImgRef.current,
+        "travel-card.png",
+        () => {
+          setIsExporting(true);
+        },
+        () => {
+          setIsExporting(false);
+        }
+      );
+      // if (!contentRef.current) return;
+      // router.push(pathName + `?save-card=success`);
     };
 
     return (
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div
+          className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
-          <div ref={contentRef} className="modal-body overflow-y-auto text-center">
+          <div className="modal-body overflow-y-auto text-center">
             <div className="form-section">
               <div className="page-section-header border-0">
                 <div className="page-header-left">
                   <div className="page-title">
-                    <span className="page-title-label">บัตรเดินทาง</span>
+                    <span className="page-title-label">{title}</span>
+                    <form method="dialog">
+                      <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                        <i className="material-symbols-outlined">close</i>
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
-              <div className="grid w-full flex-wrap gap-5 grid-cols-12">
+              <div className="grid w-full flex-wrap gap-5 grid-cols-12" ref={exportImgRef}>
                 <div className="col-span-12">
                   <div className="flex">
                     <div className="w-[60px]">
@@ -134,8 +155,12 @@ const TravelCardModal = forwardRef<{ openModal: () => void; closeModal: () => vo
                   <button className="btn btn-default w-full" onClick={() => modalRef.current?.close()}>
                     ปิด
                   </button>
-                  <button className="btn btn-primary w-full" onClick={onSave}>
-                    บันทึก
+                  <button
+                    className={`btn btn-primary flex-1 ${isExporting ? "btn-disabled" : ""}`}
+                    onClick={handleExportImage}
+                    disabled={isExporting}
+                  >
+                    {isExporting ? "กำลังบันทึก..." : "บันทึก"}
                   </button>
                 </div>
               </div>

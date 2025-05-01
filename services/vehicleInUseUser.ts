@@ -80,3 +80,21 @@ export const UserDeleteAddFuelDetail = async (id: string) => {
     throw error;
   }
 };
+
+export const UserUpdateSatisfactionSurvey = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-user/update-satisfaction-survey/" + id, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchUserTravelCard = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`vehicle-in-use-user/travel-card/` + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

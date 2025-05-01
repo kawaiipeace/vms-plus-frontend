@@ -1,16 +1,21 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import Tooltip from "@/components/tooltips";
-import ImageUpload from "@/components/imageUpload";
 import ImagePreview from "@/components/imagePreview";
+import ImageUpload from "@/components/imageUpload";
+import Tooltip from "@/components/tooltips";
 import useSwipeDown from "@/utils/swipeDown";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { ValueFormStep1 } from "./returnCarAddModal";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
   status?: string;
   useBy?: string;
+  valueFormStep1?: ValueFormStep1;
 }
 
-const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddStep2ModalProps>(({ openStep1, status, useBy }, ref) => {
+const ReturnCarAddStep2Modal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  ReturnCarAddStep2ModalProps
+>(({ openStep1, status, useBy, valueFormStep1 }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<File[]>([]);
@@ -50,7 +55,7 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
           <div className="modal-body overflow-y-auto text-center !bg-white">
             <form>
               <div className="form-section">
@@ -86,7 +91,11 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
-                      <ImageUpload images={images} onImageChange={handleImageChange} onDeleteImage={handleDeleteImage} />
+                      <ImageUpload
+                        images={images}
+                        onImageChange={handleImageChange}
+                        onDeleteImage={handleDeleteImage}
+                      />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images.map((image, index) => (
                           <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage(index)} />
@@ -102,7 +111,11 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
-                      <ImageUpload images={images2} onImageChange={handleImageChange2} onDeleteImage={handleDeleteImage2} />
+                      <ImageUpload
+                        images={images2}
+                        onImageChange={handleImageChange2}
+                        onDeleteImage={handleDeleteImage2}
+                      />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images2.map((image, index) => (
                           <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
@@ -118,7 +131,11 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
-                      <ImageUpload images={images2} onImageChange={handleImageChange2} onDeleteImage={handleDeleteImage2} />
+                      <ImageUpload
+                        images={images2}
+                        onImageChange={handleImageChange2}
+                        onDeleteImage={handleDeleteImage2}
+                      />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images2.map((image, index) => (
                           <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
@@ -134,7 +151,11 @@ const ReturnCarAddStep2Modal = forwardRef<{ openModal: () => void; closeModal: (
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
-                      <ImageUpload images={images3} onImageChange={handleImageChange3} onDeleteImage={handleDeleteImage3} />
+                      <ImageUpload
+                        images={images3}
+                        onImageChange={handleImageChange3}
+                        onDeleteImage={handleDeleteImage3}
+                      />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images3.map((image, index) => (
                           <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />

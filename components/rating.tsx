@@ -4,9 +4,17 @@ interface RatingProps {
   title: string;
   description: string;
   icon: string;
+  onChange?: (value: string) => void;
+  value: number;
+  name: string;
 }
 
-const Rating = ({ title, description, icon }: RatingProps) => {
+const Rating = ({ title, description, icon, onChange, value, name }: RatingProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("e.target.value", e.target.value);
+
+    onChange?.(e.target.value);
+  };
   return (
     <>
       <div className="col-span-12">
@@ -21,11 +29,23 @@ const Rating = ({ title, description, icon }: RatingProps) => {
             </div>
             <div className="mt-3">
               <div className="rating rating-lg gap-x-4">
-                <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="1 star" />
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <input
+                    key={num}
+                    type="radio"
+                    name={name}
+                    className={`mask mask-star-2 ${value >= num ? "bg-orange-400" : "bg-gray-300/90"}`}
+                    aria-label={`${num} star`}
+                    value={num}
+                    checked={value === num}
+                    onChange={handleChange}
+                  />
+                ))}
+                {/* <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="1 star" />
                 <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="2 star" />
                 <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="3 star" />
                 <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="4 star" />
-                <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="5 star" defaultChecked />
+                <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="5 star" defaultChecked /> */}
               </div>
             </div>
           </div>
