@@ -157,7 +157,7 @@ const ReceiveCarVehicleModal = forwardRef<{ openModal: () => void; closeModal: (
                 </div>
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12 mt-3">
                   <div className="col-span-6">
-                    <button type="button" className="btn btn-secondary w-full">
+                    <button type="button" className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
                       ไม่ใช่ตอนนี้
                     </button>
                   </div>

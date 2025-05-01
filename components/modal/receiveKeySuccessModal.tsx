@@ -32,7 +32,7 @@ const ReceiveKeySuccessModal = forwardRef<
 
   const handleNext = () => {
     modalRef.current?.close();
-    router.push(`/administrator/key-handover/${id}?activeTab="รับกุญแจ"`);
+    router.push(`/administrator/vehicle-in-use/${id}?activeTab="รับกุญแจ"`);
   }
 
   return (

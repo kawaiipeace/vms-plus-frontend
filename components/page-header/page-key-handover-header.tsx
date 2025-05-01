@@ -2,6 +2,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
+import ReceiveCarVehicleModal from "../modal/receiveCarVehicleModal";
 
 interface Props {
   data: RequestDetailType;
@@ -9,6 +10,10 @@ interface Props {
 
 export default function PageKeyHandOverHeader({ data }: Props) {
   const cancelRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const receiveCarVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -141,12 +146,17 @@ export default function PageKeyHandOverHeader({ data }: Props) {
           </div>
         </div>
         {data?.ref_request_status_code === "51" && (
-          <button type="button" className="btn btn-primary">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+          >
             <i className="material-symbols-outlined">directions_car</i>
             รับยานพาหนะ
           </button>
         )}
       </div>
+      <ReceiveCarVehicleModal ref={receiveCarVehicleModalRef} />
       <CancelRequestModal
         id={data?.trn_request_uid}
         ref={cancelRequestModalRef}

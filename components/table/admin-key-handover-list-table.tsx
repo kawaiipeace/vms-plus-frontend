@@ -212,7 +212,7 @@ export default function AdminKeyHandOverListTable({
               data-tip="ดูรายละเอียดคำขอ"
               onClick={() =>
                 router.push(
-                  "/administrator/key-handover/" + row.original.trn_request_uid
+                  "/administrator/vehicle-in-use/" + row.original.trn_request_uid
                 )
               }
             >
@@ -277,7 +277,7 @@ export default function AdminKeyHandOverListTable({
             table={table}
             onRowClick={(row) => {
               const uid = row.trn_request_uid;
-                router.push(`/administrator/key-handover/${uid}`);
+                router.push(`/administrator/vehicle-in-use/${uid}`);
             }}
           />
         </>

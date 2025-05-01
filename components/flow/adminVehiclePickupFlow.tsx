@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
-import { summaryType } from "@/app/types/request-list-type";
+import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
-import { fetchKeyRequests } from "@/services/keyAdmin";
-import AdminKeyHandOverListTable from "@/components/table/admin-key-handover-list-table";
-import { KeyHandOverListType } from "@/app/types/key-handover-list-type";
+import { fetchRequests } from "@/services/adminService";
+import AdminVehiclePickupTable from "@/components/table/admin-vehicle-pickup-table";
 
 interface PaginationType {
   limit: number;
@@ -38,7 +37,7 @@ export default function AdminVehiclePickupFlow() {
     totalPages: 0,
   });
 
-  const [dataRequest, setDataRequest] = useState<KeyHandOverListType[]>([]);
+  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
@@ -58,8 +57,9 @@ export default function AdminVehiclePickupFlow() {
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
-      "50": { iconName: "schedule", status: "info" },
-      "50e": { iconName: "priority_high", status: "error" },
+      "51": { iconName: "directions_car", status: "warning" },
+      "60": { iconName: "travel_luggage_and_bags", status: "info" },
+      "60e": { iconName: "car_crash", status: "error" },
     };
 
   const handlePageSizeChange = (newLimit: string | number) => {
@@ -172,7 +172,7 @@ export default function AdminVehiclePickupFlow() {
  
     const fetchRequestsData = async () => {
       try {
-        const response = await fetchKeyRequests(params);
+        const response = await fetchRequests(params);
    
         if (response.status === 200) {
           const requestList = response.data.requests;
@@ -294,7 +294,7 @@ export default function AdminVehiclePickupFlow() {
               type="text"
               id="myInputTextField"
               className="form-control dt-search-input"
-              placeholder="ยานพาหนะ, ผู้มารับกุญแจ, เลขที่คำขอ"
+              placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
               value={params.search}
               onChange={(e) =>
                 setParams((prevParams) => ({
@@ -356,7 +356,7 @@ export default function AdminVehiclePickupFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <AdminKeyHandOverListTable defaultData={dataRequest} pagination={pagination}  />
+              <AdminVehiclePickupTable defaultData={dataRequest} pagination={pagination}  />
           </div>
 
           <PaginationControls
