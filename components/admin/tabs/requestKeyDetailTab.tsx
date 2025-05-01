@@ -5,7 +5,7 @@ import { useLogContext } from "@/contexts/log-context";
 import PaginationControls from "@/components/table/pagination-control";
 import KeyHandoverDetail from "@/components/admin/key-handover/key-handover-detail";
 import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
-import RecordTravelTab from "@/components/tabs/recordTravelTab";
+import TravelInfoTab from "../travelInfoTab";
 
 interface Props {
   requestId: string;
@@ -53,7 +53,7 @@ export default function RequestDetailTabs({ requestId,displayTravelRecord,displa
         ? [
             {
               label: "การรับยานพาหนะ",
-              content: <ReceiveCarVehicleInUseTab requestId={requestId} edit="edit" />,
+              content: <ReceiveCarVehicleInUseTab displayOn="admin" role="admin" requestId={requestId} edit="edit" />,
               badge: "",
             },
           ]
@@ -62,7 +62,7 @@ export default function RequestDetailTabs({ requestId,displayTravelRecord,displa
           ? [
               {
                 label: "ข้อมูลการเดินทาง",
-                content: <></>,
+                content: <TravelInfoTab reqId={requestId} requestType="เสร็จสิ้น"/>,
                 badge: "",
               },
             ]

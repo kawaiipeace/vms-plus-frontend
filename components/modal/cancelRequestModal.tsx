@@ -1,3 +1,4 @@
+import { adminDeleteTravelDetail } from "@/services/adminService";
 import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
@@ -8,7 +9,13 @@ import { UserDeleteTravelDetail } from "@/services/vehicleInUseUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import * as yup from "yup";
 
 interface Props {
@@ -24,8 +31,24 @@ interface Props {
   datetime?: string;
 }
 
-const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ id, title, desc, confirmText, placeholder, cancleFor, role, tripId, datetime }, ref) => {
+const CancelRequestModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(
+  (
+    {
+      id,
+      title,
+      desc,
+      confirmText,
+      placeholder,
+      cancleFor,
+      role,
+      tripId,
+      datetime,
+    },
+    ref
+  ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
@@ -67,6 +90,8 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               ? await keyCancelRequest(payload)
               : role === "recordTravel"
               ? await UserDeleteTravelDetail(tripId || "")
+              : role === "adminRecordTravel"
+              ? await adminDeleteTravelDetail(tripId || "")
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
@@ -74,20 +99,42 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
 
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             role === "firstApprover"
-              ? router.push("/administrator/booking-approver?cancel-req=success&request-id=" + data.result?.request_no)
+              ? router.push(
+                  "/administrator/booking-approver?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                )
               : role === "admin"
-              ? router.push("/administrator/request-list?cancel-req=success&request-id=" + data.result?.request_no)
+              ? router.push(
+                  "/administrator/request-list?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                )
               : role === "final"
-              ? router.push("/administrator/booking-final?cancel-req=success&request-id=" + data.result?.request_no)
+              ? router.push(
+                  "/administrator/booking-final?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                )
               : role === "final"
-              ? router.push("/vehicle-in-use/user?cancel-req=success&request-id=" + data.result?.request_no)
+              ? router.push(
+                  "/vehicle-in-use/user?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                )
               : role === "adminKey"
-              ? router.push("/administrator/request-list?cancel-req=success&request-id=" + data.result?.request_no)
+              ? router.push(
+                  "/administrator/request-list?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                )
               : role === "recordTravel"
               ? router.push(
                   `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
                 )
-              : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
+                : role === "adminRecordTravel"
+                ? router.push(
+                    `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
+                  )
+              : router.push(
+                  "/vehicle-booking/request-list?cancel-req=success&request-id=" +
+                    data.result?.request_no
+                );
           }
         } catch (error) {
           console.error("Cancel error:", error);
@@ -101,7 +148,10 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
 
     return (
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col !bg-white">
+        <div
+          className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col !bg-white"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
@@ -117,7 +167,7 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
             <div className="confirm-title text-xl font-medium">{title}</div>
             <div className="confirm-text text-base">{desc}</div>
 
-            {cancleFor !== "recordTravel" && (
+            {(cancleFor !== "recordTravel" && cancleFor !== "adminRecordTravel") && (
               <div className="confirm-form mt-4">
                 <div className="form-group">
                   <div className="input-group">
@@ -133,14 +183,18 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               </div>
             )}
 
-            <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
-              <form method="dialog" className="col-span-1">
-                <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
-              </form>
+            <div className="modal-footer mt-5 flex justify-between gap-3">
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={() => modalRef.current?.close()}
+              >
+                ไม่ใช่ตอนนี้
+              </button>
+
               <button
                 type="button"
-                className="btn btn-primary-danger col-span-1"
-                disabled={cancleFor !== "recordTravel" && !isValid}
+                className="btn btn-primary-danger flex-1"
+                disabled={(cancleFor !== "recordTravel" && cancleFor !== "adminRecordTravel") && !isValid}
                 onClick={handleConfirm}
               >
                 {confirmText}

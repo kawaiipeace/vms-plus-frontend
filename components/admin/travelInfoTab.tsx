@@ -1,29 +1,99 @@
-import React, { useState, useRef } from "react";
-import TableRecordTravelComponent from "@/components/tableRecordTravel";
-import { travelData, travelDataColumnsAdmin, TravelData } from "@/data/travelData";
+import React, { useState, useRef, useEffect } from "react";
+import { TravelData } from "@/data/travelData";
 import ZeroRecord from "@/components/zeroRecord";
 import RecordTravelAddModal from "@/components/modal/recordTravelAddModal";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
+import PaginationControls from "../table/pagination-control";
+import { fetchTravelDetailTrips } from "@/services/adminService";
+import TravelListTable from "../table/travel-list-table";
 
 interface TravelDataProps {
   requestType?: string;
+  reqId? : string;
 }
 
-export default function TravelInfoTab({ requestType }: TravelDataProps) {
-  const [data, setData] = useState<TravelData[]>(travelData);
+interface PaginationType {
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+}
+
+
+export default function TravelInfoTab({ requestType,reqId }: TravelDataProps) {
+  const [data, setData] = useState<TravelData[]>([]);
   const [statusEdit, setStatusEdit] = useState(false);
   const recordTravelAddModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const cancelRequestModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+
+    const [params, setParams] = useState({
+      search: "",
+    });
+  
+    const [pagination, setPagination] = useState<PaginationType>({
+      limit: 10,
+      page: 1,
+      total: 0,
+      totalPages: 0,
+    });
+  
 
   function handleStatusEdit(edit?: boolean) {
     setStatusEdit(edit ? true : false);
   }
+
+    useEffect(() => {
+      if(reqId){
+        const fetchRequestsData = async () => {
+          try {
+            const response = await fetchTravelDetailTrips(reqId, params.search);
+            console.log('res-trip',response);
+            if (response.status === 200) {
+              const requestList = response.data;
+              setData(requestList);
+              setPagination({
+                limit: 100,
+                page: 1,
+                total: 1,
+                totalPages: 1,
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching requests:", error);
+          }
+        };
+    
+        fetchRequestsData();
+      }
+   
+    }, [params]);
+
+    const handlePageChange = (newPage: number) => {
+      setParams((prevParams) => ({
+        ...prevParams,
+        page: newPage,
+      }));
+    };
+
+    const handlePageSizeChange = (newLimit: string | number) => {
+      const limit =
+        typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+      setParams((prevParams) => ({
+        ...prevParams,
+        limit,
+        page: 1, // Reset to the first page when page size changes
+      }));
+      console.log(newLimit);
+    };
+  
+  
+  
+    useEffect(() => {
+      console.log("Data Request Updated:", data);
+    }, [data]);
+    
   return (
     <>
       {data.length > 0 ? (
@@ -40,32 +110,31 @@ export default function TravelInfoTab({ requestType }: TravelDataProps) {
                     <i className="material-symbols-outlined">search</i>
                   </span>
                 </div>
-                <input type="text" id="myInputTextField" className="form-control dt-search-input" placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่" />
+                <input type="text" id="myInputTextField" className="form-control dt-search-input" placeholder="ค้นหาสถานที่" />
               </div>
               {requestType === "เสร็จสิ้น" && (
-                <button className="btn btn-secondary ml-auto">
+                <button className="btn btn-secondary ml-auto" onClick={() => recordTravelAddModalRef.current?.openModal()}>
                   <i className="material-symbols-outlined">add</i>
                   เพิ่มข้อมูล
                 </button>
               )}
             </div>
           </div>
-          <TableRecordTravelComponent
-            data={travelData}
-            columns={travelDataColumnsAdmin}
-            listName="request"
-            editRecordTravel={() => {
-              recordTravelAddModalRef.current?.openModal();
-              handleStatusEdit(true);
-            }}
-            deleteRecordTravel={() => cancelRequestModalRef.current?.openModal()}
+          <div>
+          <TravelListTable defaultData={data} pagination={pagination}  />
+          <PaginationControls
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
           />
+          </div>
+          
         </>
       ) : (
         <ZeroRecord imgSrc="/assets/img/graphic/record_travel_img.svg" title="เพิ่มข้อมูลการเดินทาง" desc={<>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</>} button="เพิ่มข้อมูล" icon="add" link="process-one" displayBtn={true} useModal={() => recordTravelAddModalRef.current?.openModal()} />
       )}
       <RecordTravelAddModal status={statusEdit} ref={recordTravelAddModalRef} />
-      <CancelRequestModal id="" title="ยืนยันลบข้อมูลการเดินทาง" desc="ข้อมูลการเดินทางวันที่ 05/01/2567 08:00 จะถูกลบออกจากระบบ" confirmText="ลบข้อมูล" cancleFor="recordTravel" ref={cancelRequestModalRef} />
+    
     </>
   );
 }

@@ -52,3 +52,27 @@ export const fetchVehiclePickupRequestDetail = async (id: string) => {
     throw error;
   }
 };
+
+export const fetchTravelDetailTrips = async (id: string,search?: string) => {
+  try {
+    const response = await axiosInstance.get(`vehicle-in-use-admin/travel-details/${id}?search=`+search);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminDeleteTravelDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete("vehicle-in-use/delete-travel-detail/" + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
