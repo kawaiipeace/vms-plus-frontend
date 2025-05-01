@@ -49,7 +49,7 @@ export default function RequestDetail() {
           <div className="main-content-body">
           {requestData && <PageKeyHandOverHeader data={requestData} />}
           <LogProvider>
-            <RequestDetailTabs displayKeyHandover={true} requestId={request_id} displayVehiclePickup={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} />
+            <RequestDetailTabs displayKeyHandover={true} requestId={request_id} displayTravelRecord={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} displayVehiclePickup={(requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e") ? true : false} />
             </LogProvider>
           </div>
         </div>

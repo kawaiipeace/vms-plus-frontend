@@ -60,11 +60,9 @@ export default function ApproveVehicleForAdminTabs() {
   
         const getTabContent = (code: string) => {
           switch (code) {
-            case "30": 
+            case "30,31": 
             return <AdminApproveFlow />;
-          case "51": 
-            return <AdminKeyHandOverFlow />;
-            case "50": 
+          case "50,51": 
             return <AdminKeyHandOverFlow />;
             case "60": 
             return <AdminVehiclePickupFlow />;

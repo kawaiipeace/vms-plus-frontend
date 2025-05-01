@@ -3,9 +3,8 @@ import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
-import LicenseCardModal from "../modal/admin/licenseCardModal";
-import AlertCustom from "../alertCustom";
-import ToastCustom from "../toastCustom";
+import LicenseCardModal from "@/components/modal/admin/licenseCardModal";
+import ToastCustom from "@/components/toastCustom";
 
 interface Props {
   data: RequestDetailType;
