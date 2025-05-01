@@ -15,6 +15,7 @@ import { DriverReceiveCarInfoCard } from "@/components/card/driverReceiveCarInfo
 import ImagesCarCard from "@/components/card/ImagesCarCard";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -176,7 +177,7 @@ const DriverDetailContent = ({
                     <p>ข้อมูลยานพาหนะ</p>
                   </div>
                 </div>
-                <CarDetailCard2 />
+                <CarDetailCard2 vehicle={data?.vehicle} />
               </div>
               <div className="form-section">
                 <div className="form-section-header">
@@ -194,7 +195,7 @@ const DriverDetailContent = ({
                           </i>
                           <div className="form-plaintext-group">
                             <div className="form-text">
-                              ล็อคที่ 5A ชั้น 2B อาคาร LED
+                              {data?.pickup_place || "-"}
                             </div>
                           </div>
                         </div>
@@ -224,18 +225,21 @@ const DriverDetailContent = ({
                     <p>ผู้โดยสาร</p>
                   </div>
                 </div>
-                {/* <DriverPassengerInfoCard displayOn="waitCar" /> */}
-              </div>
-              <div className="col-span-12">
-                <button
-                  type="button"
-                  className="btn btn-primary w-full"
-                  onClick={() => receiveCarVehicleModalRef.current?.openModal()}
-                >
-                  รับยานพาหนะ
-                </button>
+                <DriverPassengerInfoCard
+                  id={data?.trn_request_uid}
+                  requestData={data}
+                />
               </div>
             </div>
+          </div>
+          <div className="mt-8">
+            <button
+              type="button"
+              className="btn btn-primary w-full"
+              onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+            >
+              รับยานพาหนะ
+            </button>
           </div>
           <ReceiveCarVehicleModal status="" ref={receiveCarVehicleModalRef} />
         </>

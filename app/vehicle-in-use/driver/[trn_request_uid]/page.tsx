@@ -14,7 +14,7 @@ const DriverDetail = () => {
   const searchParams = useSearchParams();
   const { trn_request_uid } = useParams();
   const progressTypeUrl = searchParams.get("progressType");
-  const [progressType, setProgressType] = useState("รอรับกุญแจ");
+  const [progressType, setProgressType] = useState("");
   const [data, setData] = useState<RequestDetailType>();
 
   useEffect(() => {
