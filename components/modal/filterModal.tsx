@@ -5,7 +5,7 @@ import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import { fetchVehicleDepartments } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import CustomSelect from "../customSelect";
+import CustomSelect, { CustomSelectOption } from "../customSelect";
 
 interface Props {
   statusData: summaryType[];
@@ -48,10 +48,10 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
       setSelectedStatuses((prev) => (prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]));
     };
 
-    const [selectedVehicleOption, setSelectedVehicleOption] = useState<{
-      value: string;
-      label: string;
-    }>({ value: "", label: "ทั้งหมด" });
+    const [selectedVehicleOption, setSelectedVehicleOption] = useState<CustomSelectOption>({
+      value: "",
+      label: "ทั้งหมด",
+    });
 
     useEffect(() => {
       if (department) {
@@ -247,7 +247,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                     selectedStatuses,
                     selectedStartDate,
                     selectedEndDate,
-                    department: selectedVehicleOption.label,
+                    department: selectedVehicleOption.label as string,
                   });
                   modalRef.current?.close(); // Close modal manually
                 }}

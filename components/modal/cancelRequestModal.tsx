@@ -4,7 +4,7 @@ import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
-import { UserDeleteTravelDetail } from "@/services/vehicleInUseUser";
+import { UserDeleteAddFuelDetail, UserDeleteTravelDetail } from "@/services/vehicleInUseUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ import * as yup from "yup";
 interface Props {
   id: string;
   tripId?: string;
+  fuelId?: string;
   title: string;
   desc: string;
   link?: string;
@@ -22,10 +23,11 @@ interface Props {
   cancleFor?: string;
   role?: string;
   datetime?: string;
+  tax_invoice_no?: string;
 }
 
 const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ id, title, desc, confirmText, placeholder, cancleFor, role, tripId, datetime }, ref) => {
+  ({ id, title, desc, confirmText, placeholder, cancleFor, role, tripId, fuelId, datetime, tax_invoice_no }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
@@ -67,6 +69,8 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               ? await keyCancelRequest(payload)
               : role === "recordTravel"
               ? await UserDeleteTravelDetail(tripId || "")
+              : role === "recordFuel"
+              ? await UserDeleteAddFuelDetail(fuelId || "")
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
@@ -86,6 +90,10 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               : role === "recordTravel"
               ? router.push(
                   `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
+                )
+              : role === "recordFuel"
+              ? router.push(
+                  `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
                 )
               : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
           }
@@ -117,7 +125,7 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
             <div className="confirm-title text-xl font-medium">{title}</div>
             <div className="confirm-text text-base">{desc}</div>
 
-            {cancleFor !== "recordTravel" && (
+            {cancleFor !== "recordTravel" && cancleFor !== "recordFuel" && (
               <div className="confirm-form mt-4">
                 <div className="form-group">
                   <div className="input-group">
@@ -140,7 +148,7 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               <button
                 type="button"
                 className="btn btn-primary-danger col-span-1"
-                disabled={cancleFor !== "recordTravel" && !isValid}
+                disabled={cancleFor !== "recordTravel" && cancleFor !== "recordFuel" && !isValid}
                 onClick={handleConfirm}
               >
                 {confirmText}

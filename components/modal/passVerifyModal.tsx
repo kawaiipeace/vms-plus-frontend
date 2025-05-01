@@ -28,10 +28,7 @@ const PassVerifyModal = forwardRef<{ openModal: () => void; closeModal: () => vo
 
     const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
     const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
-    const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
-      value: string;
-      label: string;
-    } | null>(null);
+    const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<CustomSelectOption | null>(null);
     const [selectedUserDept, setSelectedUserDept] = useState("");
 
     const router = useRouter();
@@ -66,7 +63,7 @@ const PassVerifyModal = forwardRef<{ openModal: () => void; closeModal: () => vo
     }, []);
 
     const handleVehicleUserChange = async (selectedOption: CustomSelectOption) => {
-      setSelectedVehicleUserOption(selectedOption as { value: string; label: string });
+      setSelectedVehicleUserOption(selectedOption);
 
       const empData = vehicleUserDatas.find((user) => user.emp_id === selectedOption.value);
 
