@@ -83,13 +83,13 @@ export type RequestDetailType = Partial<{
   vehicle_license_plate_province_short: string;
   vehicle_license_plate_province_full: string;
   requested_vehicle_type_id: number;
-  vehicle_images_received: string[];
+  vehicle_images_received: VehicleImage[];
   returned_vehicle_datetime: string;
   mile_end: number;
   fuel_end: number;
   returned_cleanliness_level: number;
   returned_vehicle_remark: string;
-  vehicle_images_returned: string[];
+  vehicle_images_returned: VehicleImage[];
   returned_vehicle_emp_id: string;
   returned_vehicle_emp_name: string;
   returned_vehicle_dept_sap: string;
@@ -112,4 +112,9 @@ export type RequestVehicleType = Partial<{
   ref_vehicle_type_code: number;
   ref_vehicle_type_name: string;
   vehicle_type_image: string;
+}>;
+
+export type VehicleImage = Partial<{
+  ref_vehicle_img_side_code: number;
+  vehicle_img_file: string;
 }>;

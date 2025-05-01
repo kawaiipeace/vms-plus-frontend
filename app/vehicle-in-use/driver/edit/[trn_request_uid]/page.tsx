@@ -1,13 +1,46 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import { DriverEditContent } from "@/components/driverEditContent";
+import { useParams, useSearchParams } from "next/navigation";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { receivedKeyDriverRequest } from "@/services/vehicleInUseDriver";
 
 const DriverEdit = () => {
   const { isPinned } = useSidebar();
-  const [progressType, setProgressType] = useState("คืนยานพาหนะไม่สำเร็จ");
+  const searchParams = useSearchParams();
+  const { trn_request_uid } = useParams();
+  const progressTypeUrl = searchParams.get("progressType");
+  const [progressType, setProgressType] = useState("");
+  const [data, setData] = useState<RequestDetailType>();
+
+  useEffect(() => {
+    if (progressTypeUrl) {
+      console.log("progressTypeUrl: ", progressTypeUrl, " - progressTypeUrl");
+      setProgressType(progressTypeUrl);
+    }
+  }, [progressTypeUrl]);
+
+  useEffect(() => {
+    const receivedKeyDriverRequestFunc = async () => {
+      try {
+        const response = await receivedKeyDriverRequest(
+          trn_request_uid as string
+        );
+        const result = response.data;
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
+    if (trn_request_uid && typeof trn_request_uid === "string") {
+      receivedKeyDriverRequestFunc();
+    }
+  }, [trn_request_uid]);
+
   return (
     <>
       <div className="main-container">
@@ -45,7 +78,7 @@ const DriverEdit = () => {
             </div>
 
             <div className="w-full">
-              <DriverEditContent progressType={progressType} />
+              <DriverEditContent data={data} progressType={progressType} />
             </div>
           </div>
         </div>

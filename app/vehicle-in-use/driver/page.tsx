@@ -39,11 +39,12 @@ export default function DriverMain() {
       status.includes(e.ref_request_status_code)
     );
 
-    // return data;
     return filter;
   };
 
   const filterData = getFilterData();
+
+  console.log("filterData: ", filterData, " - filterData");
 
   //   const reviewCarDriveModalRef = useRef<{
   //     openModal: () => void;
@@ -63,7 +64,7 @@ export default function DriverMain() {
 
     const fetchReceivedKeyDriverFunc = async () => {
       try {
-        const params = {};
+        const params = { page: 1, page_size: 100 };
         const response = await receivedKeyDriver(params);
         const result = response.data;
         setData(result.requests ?? []);

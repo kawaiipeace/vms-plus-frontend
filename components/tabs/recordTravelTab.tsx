@@ -12,8 +12,9 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import TableRecordTravelComponent from "../tableRecordTravel";
+import { fetchDriverTravelDetails } from "@/services/vehicleInUseDriver";
 
-function RequestListContent() {
+function RequestListContent({ role }: { role: string }) {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-travel-req");
   const updateReq = searchParams.get("update-travel-req");
@@ -30,7 +31,11 @@ function RequestListContent() {
           desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
           status="success"
           styleText="!mx-auto"
-          searchParams={"activeTab=ข้อมูลการเดินทาง"}
+          searchParams={
+            role === "user"
+              ? "activeTab=ข้อมูลการเดินทาง"
+              : "progressType=บันทึกการเดินทาง"
+          }
         />
       )}
 
@@ -40,7 +45,11 @@ function RequestListContent() {
           desc={`ข้อมูลเดินทางวันที่ ${formatDateTime.date} ได้รับการแก้ไขเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={"activeTab=ข้อมูลการเดินทาง"}
+          searchParams={
+            role === "user"
+              ? "activeTab=ข้อมูลการเดินทาง"
+              : "progressType=บันทึกการเดินทาง"
+          }
         />
       )}
 
@@ -50,7 +59,11 @@ function RequestListContent() {
           desc={`ข้อมูลเดินทางวันที่ ${dateTime} ถูกลบเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={"activeTab=ข้อมูลการเดินทาง"}
+          searchParams={
+            role === "user"
+              ? "activeTab=ข้อมูลการเดินทาง"
+              : "progressType=บันทึกการเดินทาง"
+          }
         />
       )}
     </>
@@ -58,9 +71,13 @@ function RequestListContent() {
 }
 interface RecordTravelPageTabProps {
   requestId?: string;
+  role?: string;
 }
 
-const RecordTravelTab = ({ requestId }: RecordTravelPageTabProps) => {
+const RecordTravelTab = ({
+  requestId,
+  role = "user",
+}: RecordTravelPageTabProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-travel-req");
   const updateReq = searchParams.get("update-travel-req");
@@ -87,7 +104,12 @@ const RecordTravelTab = ({ requestId }: RecordTravelPageTabProps) => {
   const fetchUserTravelDetailsFunc = useCallback(
     async () => {
       try {
-        const response = await fetchUserTravelDetails(requestId || "", params);
+        let response;
+        if (role === "driver") {
+          response = await fetchDriverTravelDetails(requestId || "", params);
+        } else {
+          response = await fetchUserTravelDetails(requestId || "", params);
+        }
         const sortedData = response.data.sort(
           (a: RecordTravelTabProps, b: RecordTravelTabProps) => {
             const dateA = new Date(a.trip_start_datetime);
@@ -195,16 +217,16 @@ const RecordTravelTab = ({ requestId }: RecordTravelPageTabProps) => {
           </>
         )}
         <Suspense fallback={<div></div>}>
-          <RequestListContent />
+          <RequestListContent role={role} />
         </Suspense>
         <RecordTravelAddModal
           ref={recordTravelAddModalRef}
-          role={"user"}
+          role={role}
           requestId={requestId}
         />
         <RecordTravelAddModal
           ref={recordTravelEditModalRef}
-          role={"user"}
+          role={role}
           requestId={requestId}
           dataItem={editData}
           status

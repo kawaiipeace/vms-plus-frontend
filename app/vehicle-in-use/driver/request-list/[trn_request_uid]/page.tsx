@@ -64,7 +64,7 @@ const DriverRequestDetail = () => {
                     <a>งานของฉัน</a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>เลขที่คำขอ VA67RA000001</a>
+                    <a>เลขที่คำขอ {data?.request_no || "-"}</a>
                   </li>
                 </ul>
               </div>
@@ -72,7 +72,7 @@ const DriverRequestDetail = () => {
               <div className="page-group-header">
                 <div className="page-title">
                   <span className="page-title-label">
-                    เลขที่คำขอ VA67RA000001
+                    เลขที่คำขอ {data?.request_no || "-"}
                   </span>
                   {/* <span className="badge badge-outline badge-gray">95 กลุ่ม</span> */}
                 </div>

@@ -138,7 +138,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                     return (
                       <React.Fragment key={item.request_no}>
                         {item.ref_request_status_code === "70" && (
-                          <Link href={link}>
+                          <Link href={link + "?progressType=รอตรวจสอบ"}>
                             <MobileDriverCard
                               cardType="waitVerify"
                               carRegis={license_plate_full}
@@ -150,7 +150,9 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                           </Link>
                         )}
                         {item.ref_request_status_code === "71" && (
-                          <Link href={link}>
+                          <Link
+                            href={link + "?progressType=คืนยานพาหนะไม่สำเร็จ"}
+                          >
                             <MobileDriverCard
                               cardType="returnFail"
                               carRegis={license_plate_full}

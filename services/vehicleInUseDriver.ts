@@ -51,3 +51,57 @@ export const requestReceivedKeyDriver = async (
     throw error;
   }
 };
+
+export const fetchDriverTravelDetails = async (
+  id: string,
+  params: { search?: string }
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `vehicle-in-use-driver/travel-details/` + id,
+      { params }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverCreateTravelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post(
+      "vehicle-in-use-driver/create-travel-detail",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverUpdateTravelDetail = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "vehicle-in-use-driver/update-travel-detail/" + id,
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchUserAddFuelDetails = async (
+  id: string,
+  params: { search?: string }
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `vehicle-in-use-driver/add-fuel-details/` + id,
+      { params }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

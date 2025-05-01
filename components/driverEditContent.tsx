@@ -6,12 +6,18 @@ import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
 import AlertCustom from "@/components/alertCustom";
 import { DriverReceiveCarInfoCard } from "@/components/card/driverReceiveCarInfoCard";
 import ImagesCarCard from "@/components/card/ImagesCarCard";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import dayjs from "dayjs";
 
 interface DriverEditContentProps {
+  data?: RequestDetailType;
   progressType: string;
 }
 
-export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
+export const DriverEditContent = ({
+  data,
+  progressType,
+}: DriverEditContentProps) => {
   const receiveCarVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -26,10 +32,15 @@ export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
   } | null>(null);
   return (
     <>
-      {progressType === "คืนยานพาหนะไม่สำเร็จ" && <AlertCustom title="ถูกตีกลับโดยผู้ดูแลยานพาหนะ" desc="เหตุผล: กรุณาเติมเชื้อเพลิงและดูแลความสะอาด ก่อนคืนยานพาหนะ" />}
-      <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+      {progressType === "คืนยานพาหนะไม่สำเร็จ" && (
+        <AlertCustom
+          title="ถูกตีกลับโดยผู้ดูแลยานพาหนะ"
+          desc="เหตุผล: กรุณาเติมเชื้อเพลิงและดูแลความสะอาด ก่อนคืนยานพาหนะ"
+        />
+      )}
+      <div className="grid md:grid-cols-2 gird-cols-1">
         <div className="w-full row-start-2 md:col-start-1">
-          {progressType === "รับยานพาหนะ" && (
+          {progressType === "การรับยานพาหนะ" && (
             <>
               <div className="form-section">
                 <div className="form-section-header">
@@ -38,13 +49,34 @@ export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
                   </div>
 
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                      onClick={() =>
+                        receiveCarVehicleModalRef.current?.openModal()
+                      }
+                    >
                       แก้ไข
                     </button>
                   </div>
                 </div>
 
-                <DriverReceiveCarInfoCard />
+                <DriverReceiveCarInfoCard
+                  date={
+                    data?.accepted_vehicle_datetime
+                      ? dayjs(data?.accepted_vehicle_datetime).format(
+                          "DD/MM/YYYY"
+                        )
+                      : "-"
+                  }
+                  time={
+                    data?.accepted_vehicle_datetime
+                      ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                      : "-"
+                  }
+                  mile_end={data?.mile_end?.toString() || "-"}
+                  fuel_end={data?.fuel_end?.toString() || "-"}
+                  remark={data?.remark || "-"}
+                />
               </div>
 
               <div className="form-section">
@@ -53,18 +85,30 @@ export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
                     <p>รูปยานพาหนะก่อนเดินทาง</p>
                   </div>
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddStep2ModalRef.current?.openModal()}>
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                      onClick={() =>
+                        returnCarAddStep2ModalRef.current?.openModal()
+                      }
+                    >
                       แก้ไข
                     </button>
                   </div>
                 </div>
 
-                <ImagesCarCard />
+                <ImagesCarCard
+                  images={
+                    data?.vehicle_images_received?.map(
+                      (image) => image.vehicle_img_file || ""
+                    ) || []
+                  }
+                />
               </div>
             </>
           )}
 
-          {(progressType === "การคืนยานพาหนะ" || progressType === "คืนยานพาหนะไม่สำเร็จ") && (
+          {(progressType === "การคืนยานพาหนะ" ||
+            progressType === "คืนยานพาหนะไม่สำเร็จ") && (
             <>
               <div className="form-section">
                 <div className="form-section-header">
@@ -73,13 +117,16 @@ export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
                   </div>
 
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddModalRef.current?.openModal()}>
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                      onClick={() => returnCarAddModalRef.current?.openModal()}
+                    >
                       แก้ไข
                     </button>
                   </div>
                 </div>
 
-                <ReturnCarInfoCard />
+                <ReturnCarInfoCard data={data} />
               </div>
 
               <div className="form-section">
@@ -88,17 +135,30 @@ export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
                     <p>รูปยานพาหนะก่อนเดินทาง</p>
                   </div>
                   <div className="form-section-header-actions">
-                    <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddStep2ModalRef.current?.openModal()}>
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                      onClick={() =>
+                        returnCarAddStep2ModalRef.current?.openModal()
+                      }
+                    >
                       แก้ไข
                     </button>
                   </div>
                 </div>
 
-                <ImagesCarCard />
+                <ImagesCarCard
+                  images={
+                    data?.vehicle_images_returned?.map(
+                      (image) => image.vehicle_img_file || ""
+                    ) || []
+                  }
+                />
               </div>
               {progressType === "คืนยานพาหนะไม่สำเร็จ" && (
                 <div className="w-full">
-                  <button className="btn btn-primary w-full">คืนยานพาหนะอีกครั้ง</button>
+                  <button className="btn btn-primary w-full">
+                    คืนยานพาหนะอีกครั้ง
+                  </button>
                 </div>
               )}
             </>
@@ -107,7 +167,12 @@ export const DriverEditContent = ({ progressType }: DriverEditContentProps) => {
       </div>
       <ReceiveCarVehicleModal status="edit" ref={receiveCarVehicleModalRef} />
       <ReturnCarAddModal ref={returnCarAddModalRef} />
-      <ReturnCarAddStep2Modal status="edit" useBy="driver" openStep1={() => () => {}} ref={returnCarAddStep2ModalRef} />
+      <ReturnCarAddStep2Modal
+        status="edit"
+        useBy="driver"
+        openStep1={() => () => {}}
+        ref={returnCarAddStep2ModalRef}
+      />
     </>
   );
 };

@@ -73,7 +73,7 @@ export const DriverVIURequestDetail = ({
             <KeyUserPickupCard requestData={data} />
           </div>
 
-          {/* {requestDetailType === "รอรับกุญแจ" && (
+          {progressType === "รอรับกุญแจ" && (
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
@@ -89,7 +89,13 @@ export const DriverVIURequestDetail = ({
                       </i>
                       <div className="form-plaintext-group">
                         <div className="form-label">วันที่ / เวลา</div>
-                        <div className="form-text">02/12/2566 10:30</div>
+                        <div className="form-text">
+                          {data?.received_key_datetime
+                            ? dayjs(data?.received_key_datetime).format(
+                                "DD/MM/YYYY HH:mm"
+                              )
+                            : "-"}
+                        </div>
                       </div>
                     </div>
                     <div className="form-group form-plaintext">
@@ -99,7 +105,7 @@ export const DriverVIURequestDetail = ({
                       <div className="form-plaintext-group">
                         <div className="form-label">สิ่งที่ส่งมอบ</div>
                         <div className="form-text">
-                          กุญแจหลัก และบัตรเติมน้ำมัน
+                          {data?.received_key_remark}
                         </div>
                       </div>
                     </div>
@@ -107,7 +113,7 @@ export const DriverVIURequestDetail = ({
                 </div>
               </div>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>

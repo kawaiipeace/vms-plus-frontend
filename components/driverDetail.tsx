@@ -16,6 +16,7 @@ import ImagesCarCard from "@/components/card/ImagesCarCard";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
+import dayjs from "dayjs";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -47,7 +48,7 @@ const DriverDetailContent = ({
       label: "ข้อมูลการเดินทาง",
       content: (
         <>
-          <RecordTravelTab />
+          <RecordTravelTab requestId={data?.trn_request_uid} role="driver" />
         </>
       ),
       badge: "",
@@ -56,7 +57,7 @@ const DriverDetailContent = ({
       label: "การเติมเชื้อเพลิง",
       content: (
         <>
-          <RecordFuelTab />
+          <RecordFuelTab requestId={data?.trn_request_uid} role="driver" />
         </>
       ),
       badge: "",
@@ -166,6 +167,7 @@ const DriverDetailContent = ({
             phone={data?.received_key_mobile_contact_number || "-"}
             vehicle={data?.vehicle}
             role="driver"
+            deptSapShort={data?.received_key_dept_sap_short || "-"}
           />
         </div>
       )}
@@ -259,8 +261,12 @@ const DriverDetailContent = ({
               <Link
                 href={
                   progressType === "ภารกิจสำเร็จ"
-                    ? "/vehicle-in-use/driver/1?progressType=การรับยานพาหนะ"
-                    : "/vehicle-in-use/driver/edit/1"
+                    ? "/vehicle-in-use/driver/" +
+                      data?.trn_request_uid +
+                      "?progressType=การรับยานพาหนะ"
+                    : "/vehicle-in-use/driver/edit/" +
+                      data?.trn_request_uid +
+                      "?progressType=การรับยานพาหนะ"
                 }
               >
                 <RequestStatusBox
@@ -273,8 +279,12 @@ const DriverDetailContent = ({
                 <Link
                   href={
                     progressType === "ภารกิจสำเร็จ"
-                      ? "/vehicle-in-use/driver/1?progressType=การคืนยานพาหนะ"
-                      : "/vehicle-in-use/driver/edit/1"
+                      ? "/vehicle-in-use/driver/" +
+                        data?.trn_request_uid +
+                        "?progressType=การคืนยานพาหนะ"
+                      : "/vehicle-in-use/driver/edit/" +
+                        data?.trn_request_uid +
+                        "?progressType=การคืนยานพาหนะ"
                   }
                 >
                   <RequestStatusBox
@@ -325,7 +335,7 @@ const DriverDetailContent = ({
               ))}
             </div>
           </div>
-          {tabs[activeTab].content}
+          <div className="mt-4">{tabs[activeTab].content}</div>
         </>
       )}
 
@@ -338,7 +348,21 @@ const DriverDetailContent = ({
               </div>
             </div>
 
-            <DriverReceiveCarInfoCard />
+            <DriverReceiveCarInfoCard
+              date={
+                data?.accepted_vehicle_datetime
+                  ? dayjs(data?.accepted_vehicle_datetime).format("DD/MM/YYYY")
+                  : "-"
+              }
+              time={
+                data?.accepted_vehicle_datetime
+                  ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                  : "-"
+              }
+              mile_end={data?.mile_end?.toString() || "-"}
+              fuel_end={data?.fuel_end?.toString() || "-"}
+              remark={data?.remark || "-"}
+            />
           </div>
 
           <div className="form-section">
@@ -348,7 +372,13 @@ const DriverDetailContent = ({
               </div>
             </div>
 
-            <ImagesCarCard />
+            <ImagesCarCard
+              images={
+                data?.vehicle_images_received?.map(
+                  (image) => image.vehicle_img_file || ""
+                ) || []
+              }
+            />
           </div>
         </>
       )}
@@ -362,7 +392,7 @@ const DriverDetailContent = ({
               </div>
             </div>
 
-            <ReturnCarInfoCard />
+            <ReturnCarInfoCard data={data} />
           </div>
 
           <div className="form-section">
@@ -372,7 +402,13 @@ const DriverDetailContent = ({
               </div>
             </div>
 
-            <ImagesCarCard />
+            <ImagesCarCard
+              images={
+                data?.vehicle_images_returned?.map(
+                  (image) => image.vehicle_img_file || ""
+                ) || []
+              }
+            />
           </div>
         </>
       )}
