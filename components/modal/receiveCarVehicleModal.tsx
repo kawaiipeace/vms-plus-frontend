@@ -27,12 +27,13 @@ interface ReceiveCarVehicleModalProps {
   status?: string;
   requestData?: RequestDetailType;
   role?: string;
+  onSubmit?: () => void;
 }
 
 const ReceiveCarVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReceiveCarVehicleModalProps
->(({ status, requestData, role }, ref) => {
+>(({ status, requestData, role, onSubmit }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const datePickerRef = useRef<DatePickerRef>(null);
@@ -93,51 +94,46 @@ const ReceiveCarVehicleModal = forwardRef<
     setImages2(images2.filter((_, i) => i !== index));
   };
 
-  const onSubmit = async () => {
-    if (
-      selectedDate &&
-      selectedTime &&
-      images.length > 0 &&
-      fuelQuantity !== undefined &&
-      miles !== undefined
-    ) {
-      try {
-        const imageList = [...images, ...images2].map((item, index) => {
-          return {
-            ref_vehicle_img_side_code: index + 1,
-            vehicle_img_file: item.file_url,
-          };
-        });
-        const pickup = convertToISO(selectedDate, selectedTime);
-
-        const formData = {
-          received_vehicle_remark: remark,
-          fuel_start: fuelQuantity,
-          mile_start: Number(miles),
-          pickup_datetime: pickup,
-          trn_request_uid: requestData?.trn_request_uid,
-          vehicle_images: imageList,
+  const onSubmitForm = async () => {
+    try {
+      const imageList = [...images, ...images2].map((item, index) => {
+        return {
+          ref_vehicle_img_side_code: index + 1,
+          vehicle_img_file: item.file_url,
         };
-        console.log("form--", formData);
-        let response;
-        if (role === "admin") {
-          response = await adminReceivedVehicle(formData);
-        } else {
-          response = await userReceivedVehicle(formData);
-        }
+      });
+      const pickup = convertToISO(selectedDate, selectedTime);
 
+      const formData = {
+        received_vehicle_remark: remark,
+        fuel_start: fuelQuantity,
+        mile_start: Number(miles),
+        pickup_datetime: pickup,
+        trn_request_uid: requestData?.trn_request_uid,
+        vehicle_images: imageList,
+      };
+      let response;
+      if (role === "admin") {
+        response = await adminReceivedVehicle(formData);
+      } else {
+        response = await userReceivedVehicle(formData);
+      }
+      if (onSubmit) {
+        onSubmit();
+      } else {
         if (response.status === 200) {
           const response = await fetchUserTravelCard(
             requestData?.trn_request_uid || ""
           );
           setTravelCardData(response.data);
           clearForm();
+
           receiveCarSuccessModalRef.current?.openModal();
           modalRef.current?.close();
         }
-      } catch (error) {
-        console.error("Error submitting form data:", error);
       }
+    } catch (error) {
+      console.error("Error submitting form data:", error);
     }
   };
 
@@ -167,24 +163,21 @@ const ReceiveCarVehicleModal = forwardRef<
           <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
+          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+            <div className="modal-title">
+              {" "}
+              {status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}
+            </div>
+            <form method="dialog">
+              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                <i className="material-symbols-outlined">close</i>
+              </button>
+            </form>
+          </div>
 
           <div className="modal-body overflow-y-auto text-center !bg-white">
             <form>
               <div className="form-section">
-                {/* <div className="page-section-header border-0">
-                  <div className="page-header-left">
-                    <div className="page-title">
-                      <span className="page-title-label"> */}
-                <div className="page-section-header pt-6 pb-2 text-xl font-semibold">
-                  {status === "edit"
-                    ? "แก้ไขข้อมูลการรับยานพาหนะ"
-                    : "รับยานพาหนะ"}
-                </div>
-                {/* </span>
-                    </div>
-                  </div>
-                </div> */}
-
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12 pb-2">
                   {/* Date picker */}
                   <div className="col-span-6">
@@ -235,7 +228,8 @@ const ReceiveCarVehicleModal = forwardRef<
                           type="number"
                           className="form-control"
                           placeholder="ระบุเลขไมล์ก่อนเดินทาง"
-                          defaultValue={miles}
+                          defaultValue={requestData?.mile_start}
+                          value={miles}
                           onChange={(e) => {
                             setMiles(e.target.value);
                           }}
@@ -385,32 +379,31 @@ const ReceiveCarVehicleModal = forwardRef<
                     </div>
                   </div>
                 </div>
-
-                <div className="flex w-full gap-5 py-3">
-                  <div className="flex-1">
-                    <button
-                      type="button"
-                      className="btn btn-secondary !w-full"
-                      onClick={() => {
-                        clearForm();
-                        modalRef.current?.close();
-                      }}
-                    >
-                      ไม่ใช่ตอนนี้
-                    </button>
-                  </div>
-                  <div className="flex-1">
-                    <button
-                      type="button"
-                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
-                      onClick={onSubmit}
-                    >
-                      ยืนยัน
-                    </button>
-                  </div>
-                </div>
               </div>
             </form>
+          </div>
+          <div className="flex w-full gap-5 py-3 modal-action mt-0">
+            <div className="flex-1">
+              <button
+                type="button"
+                className="btn btn-secondary !w-full"
+                onClick={() => {
+                  clearForm();
+                  modalRef.current?.close();
+                }}
+              >
+                ปิด
+              </button>
+            </div>
+            <div className="flex-1">
+              <button
+                type="submit"
+                className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
+                onClick={onSubmitForm}
+              >
+                บันทึก
+              </button>
+            </div>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">

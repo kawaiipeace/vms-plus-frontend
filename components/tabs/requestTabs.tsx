@@ -55,7 +55,7 @@ export default function RequestTabs() {
 
   const getTabContent = (code: string) => {
     switch (code) {
-      case "20":
+      case "20,21,30,31,41,50,51,60,70,71":
         return <ArpproveFlow />;
       case "50": // รับกุญแจ
       case "60": // เดินทาง

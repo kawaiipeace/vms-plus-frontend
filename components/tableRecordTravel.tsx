@@ -23,6 +23,7 @@ type TableComponentProps<T> = {
   listName?: string;
   editRecordTravel?: (data: T) => void;
   deleteRecordTravel?: (data: T) => void;
+  previewRecordTravel?: (data: T) => void;
 };
 
 export default function TableRecordTravelComponent<T>({
@@ -31,6 +32,7 @@ export default function TableRecordTravelComponent<T>({
   listName,
   editRecordTravel,
   deleteRecordTravel,
+  previewRecordTravel,
 }: TableComponentProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -71,7 +73,7 @@ export default function TableRecordTravelComponent<T>({
           <div key={row.id} className="bg-white shadow-md rounded-lg border">
             {row.getVisibleCells().map((cell) => {
               const value = cell.renderValue() as React.ReactNode;
-              const dateTime = cell.column.id.includes("datetime");
+              const dateTime = cell.column.id.includes("datetime") || cell.column.id.includes("date");
               if (dateTime) {
                 const convertDate =
                   convertToBuddhistDateTime(value as string).date +
@@ -138,7 +140,7 @@ export default function TableRecordTravelComponent<T>({
                   className="btn btn-secondary w-full text-base font-semibold col-span-2"
                   data-tip="รูปใบเสร็จ"
                   onClick={() => {
-                    deleteRecordTravel?.(row.original);
+                    previewRecordTravel?.(row.original);
                   }}
                 >
                   <i className="material-symbols-outlined w-5 h-5">imagesmode</i>ดูรูปใบเสร็จ
@@ -245,7 +247,7 @@ export default function TableRecordTravelComponent<T>({
                               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                               data-tip="รูปใบเสร็จ"
                               onClick={() => {
-                                deleteRecordTravel?.(row.original);
+                                previewRecordTravel?.(row.original);
                               }}
                             >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">imagesmode</i>

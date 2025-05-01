@@ -261,3 +261,13 @@ export const fetchPaymentTypeCode = async () => {
     throw error;
   }
 };
+
+export const fetchSatisfactionSurveyQuestions = async () => {
+  try {
+    const response = await axiosInstance.get("mas/satisfaction_survey_questions");
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

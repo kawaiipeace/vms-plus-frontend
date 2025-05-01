@@ -57,7 +57,7 @@ export interface VehicleKeyType {
   ref_vehicle_key_type_name: string;
 }
 
-export interface VehicleUserTravelCardType {
+export type VehicleUserTravelCardType = Partial<{
   trn_request_uid: string;
   start_datetime: string;
   end_datetime: string;
@@ -76,4 +76,4 @@ export interface VehicleUserTravelCardType {
   approved_request_dept_sap: string;
   approved_request_dept_sap_short: string;
   approved_request_dept_sap_full: string;
-}
+}>

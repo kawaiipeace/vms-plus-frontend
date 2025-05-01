@@ -1,3 +1,4 @@
+"use client";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import FilterModal from "@/components/modal/filterModal";
 import RequestListTable from "@/components/table/request-list-table";
@@ -190,6 +191,8 @@ export default function ArpproveFlow() {
   }, [params]);
 
   useEffect(() => {}, [dataRequest, params]);
+
+  console.log("dataRequest>>>", dataRequest);
 
   return (
     <>
