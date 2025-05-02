@@ -13,11 +13,16 @@ export default function Header() {
   const logOutFunc = async () => {
     try {
       const response = await logOut();
-      if (response.status === 201) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        if(response){
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          const logoutUrl = response.data.logout_url;
+          if (logoutUrl != "") {
+            window.open(logoutUrl, "_blank");
+          }
+        }
+ 
         router.push("/");
-      }
     } catch (error) {
       console.log(error);
     }
