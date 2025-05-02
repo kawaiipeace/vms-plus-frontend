@@ -49,14 +49,24 @@ export default function AdminVehicleInsTable({
         </div>
       ),
       enableSorting: true,
-      cell: ({ row }) => (
-        <div className="text-left" data-name="วันที่ผู้ใช้คืนยานพาหนะ">
-          <div className="flex flex-col">
-            <div>{row.original.start_datetime}</div>
-            <div className="text-left text-sm text-secondary">16:35</div>
+      cell: ({ row }) => {
+        const date = convertToBuddhistDateTime(
+          row.original.returned_vehicle_datetime
+        ).date;
+        const time = convertToBuddhistDateTime(
+          row.original.returned_vehicle_datetime
+        ).time;
+        return (
+          <div className="text-left" data-name="การเดินทางถัดไป">
+            <div className="flex flex-col">
+              <div>{date}</div>
+              <div className="text-color-secondary text-xs">
+               {time}
+              </div>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       accessorKey: "vehicle_license_plate",
@@ -93,14 +103,14 @@ export default function AdminVehicleInsTable({
       ),
     },
     {
-      accessorKey: "work_place",
+      accessorKey: "parking_place",
       header: () => <div className="text-center">สถานที่จอดรถ</div>,
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="สถานที่จอดรถ">
           <div className="flex flex-col">
             {" "}
-            <div className="text-left">{row.original.work_place}</div>
+            <div className="text-left">{row.original.parking_place}</div>
           </div>
         </div>
       ),
@@ -145,20 +155,18 @@ export default function AdminVehicleInsTable({
       header: () => <div className="text-center">การเดินทางถัดไป</div>,
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(
-          row.original.start_datetime
-        );
-        const endDateTime = convertToBuddhistDateTime(
-          row.original.end_datetime
-        );
+        const date = convertToBuddhistDateTime(
+          row.original.next_start_datetime
+        ).date;
+        const time = convertToBuddhistDateTime(
+          row.original.next_start_datetime
+        ).time;
         return (
           <div className="text-left" data-name="การเดินทางถัดไป">
             <div className="flex flex-col">
-              <div>{startDateTime.date + " - " + endDateTime.date}</div>
+              <div>{date}</div>
               <div className="text-color-secondary text-xs">
-                {" "}
-                {endDateTime.time + " - " + startDateTime.time} (
-                {row.original.trip_type_name})
+               {time}
               </div>
             </div>
           </div>

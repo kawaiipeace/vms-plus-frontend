@@ -12,7 +12,7 @@ export const requestOTP = async (phone: string) => {
 export const requestThaiID = async () => {
     try {
         const response = await axiosInstance.post('login/request-thaiid', {
-            redirect_uri: `${window.location.origin}/callback_code_token`,
+            redirect_uri: `${window.location.origin}/callback_code_token_thai`,
         });
         return response;
     } catch (error) {
