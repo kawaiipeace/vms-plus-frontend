@@ -1,3 +1,9 @@
+import { VehicleUserType } from "@/app/types/vehicle-user-type";
+import { adminApproveRequest } from "@/services/bookingAdmin";
+import { fetchVehicleUsers } from "@/services/masterService";
+import useSwipeDown from "@/utils/swipeDown";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, {
   forwardRef,
   useEffect,
@@ -5,19 +11,12 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Image from "next/image";
-import CustomSelect from "../customSelect";
-import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
-import { adminApproveRequest } from "@/services/bookingAdmin";
-import { fetchVehicleUsers } from "@/services/masterService";
-import { VehicleUserType } from "@/app/types/vehicle-user-type";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import CustomSelect, { CustomSelectOption } from "../customSelect";
 
 interface Props {
   title: string;
   desc: string | React.ReactNode;
-  id: string;
+  id?: string;
   role?: string;
   confirmText: string;
   pickupData?: { place: string; datetime: string } | null;
@@ -41,10 +40,8 @@ const PassVerifyModal = forwardRef<
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
-    value: string;
-    label: string;
-  } | null>(null);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
+    useState<CustomSelectOption | null>(null);
   const [selectedUserDept, setSelectedUserDept] = useState("");
 
   const router = useRouter();
@@ -80,10 +77,9 @@ const PassVerifyModal = forwardRef<
     fetchRequests();
   }, []);
 
-  const handleVehicleUserChange = async (selectedOption: {
-    value: string;
-    label: string;
-  }) => {
+  const handleVehicleUserChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
     setSelectedVehicleUserOption(selectedOption);
 
     const empData = vehicleUserDatas.find(
@@ -99,7 +95,7 @@ const PassVerifyModal = forwardRef<
     const sendApprove = async () => {
       try {
         const payload = {
-          trn_request_uid: id,
+          trn_request_uid: id || "",
           approved_request_emp_id: selectedVehicleUserOption?.value || "",
           received_key_place: pickupData?.place || "",
           received_key_start_datetime: pickupData?.datetime || "",

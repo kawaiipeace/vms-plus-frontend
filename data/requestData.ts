@@ -1,4 +1,3 @@
-
 export type RequestData = {
   request_no: string;
   vehicle_user_emp_name: string;
@@ -64,29 +63,57 @@ export type RequestData = {
   received_key_place: string;
   received_key_start_datetime: string;
   received_key_end_datetime: string;
-  
 };
 
 export type RecordTravelTabProps = {
-  date1: string;
-  date2: string;
-  place: string;
-  place2: string;
-  num1: string;
-  num2: string;
+  trn_trip_detail_uid: string;
+  trn_request_uid: string;
+  trip_start_datetime: string;
+  trip_end_datetime: string;
+  trip_departure_place: string;
+  trip_destination_place: string;
+  trip_start_miles: number;
+  trip_end_miles: number;
+  trip_detail: string;
 };
 
 export type RecordFuelTabProps = {
-  dateReceipt: string;
-  receiptNo: string;
-  staionType: string;
-  fuelType: string;
-  mileNum: string;
-  literNum: string;
-  pricePerLiter: string;
-  vat: string;
-  priceTotal: string;
-  paymentType: string;
+  trn_add_fuel_uid: string;
+  trn_request_uid: string;
+  ref_oil_station_brand_id: number;
+  ref_oil_station_brand: {
+    ref_oil_station_brand_id: 1;
+    ref_oil_station_brand_name_th: string;
+    ref_oil_station_brand_name_en: string;
+    ref_oil_station_brand_name_full: string;
+    ref_oil_station_brand_img: string;
+  };
+  ref_fuel_type_id: number;
+  ref_fuel_type: {
+    ref_fuel_type_id: number;
+    ref_fuel_type_name_en: string;
+    ref_fuel_type_name_th: string;
+  };
+  mile: number;
+  tax_invoice_date: string;
+  tax_invoice_no: string;
+  price_per_liter: number;
+  sum_liter: number;
+  sum_price: number;
+  receipt_img: string;
+  ref_payment_type_code: number;
+  ref_payment_type: {
+    ref_payment_type_code: number;
+    ref_payment_type_name: string;
+  };
+  mas_vehicle_uid: string;
+  vehicle_license_plate: string;
+  vehicle_license_plate_province_short: string;
+  vehicle_license_plate_province_full: string;
+  mas_vehicle_department_uid: string;
+  add_fuel_date_time: string;
+  ref_cost_type_code: number;
+  ref_cost_type: { ref_cost_type_code: string; ref_cost_type_name: string; ref_cost_no: string };
 };
 
 export const requestData_1: RequestData[] = [
@@ -154,15 +181,15 @@ export const requestData_1: RequestData[] = [
     received_key_place: "0001",
     received_key_start_datetime: "0001",
     received_key_end_datetime: "0001",
-    ref_request_status_name: "รออนุมัติ"
+    ref_request_status_name: "รออนุมัติ",
   },
 ];
 
 export const requestDataColumns = [
   { accessorKey: "request_no", header: "เลขที่คำขอ", enableSorting: true },
-  {accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ",  enableSorting: false },
+  { accessorKey: "vehicle_user_emp_name", header: "ผู้ใช้ยานพาหนะ", enableSorting: false },
   { accessorKey: "vehicle_license_plate", header: "ยานพาหนะ", enableSorting: false },
-  {accessorKey: "vehicle_user_dept_sap", header: "หน่วยงาน",  enableSorting: false },
+  { accessorKey: "vehicle_user_dept_sap", header: "หน่วยงาน", enableSorting: false },
   { accessorKey: "work_place", header: "สถานที่ปฏิบัติงาน", enableSorting: false },
   { accessorKey: "start_datetime", header: "วันที่เดินทาง", enableSorting: true },
   // { accessorKey: "objective", header: "รายละเอียด", enableSorting: false },
@@ -171,83 +198,88 @@ export const requestDataColumns = [
 ];
 
 export const recordData: RecordTravelTabProps[] = [
-  {
-    date1: "24/06/67",
-    date2: "27/06/67",
-    place: "กรุงเทพมหานคร",
-    place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
-    num1: "2,000",
-    num2: "2,000",
-  },
-  {
-    date1: "24/06/67",
-    date2: "27/06/67",
-    place: "กรุงเทพมหานคร",
-    place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
-    num1: "2,000",
-    num2: "2,000",
-  },
+  // {
+  //   date1: "24/06/67",
+  //   date2: "27/06/67",
+  //   place: "กรุงเทพมหานคร",
+  //   place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
+  //   num1: "2,000",
+  //   num2: "2,000",
+  // },
+  // {
+  //   date1: "24/06/67",
+  //   date2: "27/06/67",
+  //   place: "กรุงเทพมหานคร",
+  //   place2: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
+  //   num1: "2,000",
+  //   num2: "2,000",
+  // },
 ];
 
-export const recordDataColumns = [
-  { accessorKey: "date1", header: "วันที่ / เวลาจากต้นทาง" },
-  { accessorKey: "date2", header: "วันที่ / เวลาถึงปลายทาง" },
-  { accessorKey: "place", header: "สถานที่ต้นทาง" },
-  { accessorKey: "place2", header: "สถานที่ปลายทาง" },
-  { accessorKey: "num1", header: "เลขไมล์ต้นทาง" },
-  { accessorKey: "num2", header: "เลขไมล์ปลายทาง" },
-  { accessorKey: "action", header: "" },
+export const recordTravelDataColumns = [
+  {
+    accessorKey: "trip_start_datetime",
+    header: "วันที่ / เวลาจากต้นทาง",
+  },
+  {
+    accessorKey: "trip_end_datetime",
+    header: "วันที่ / เวลาถึงปลายทาง",
+  },
+  { accessorKey: "trip_departure_place", header: "สถานที่ต้นทาง" },
+  { accessorKey: "trip_destination_place", header: "สถานที่ปลายทาง" },
+  { accessorKey: "trip_start_miles", header: "เลขไมล์ต้นทาง" },
+  { accessorKey: "trip_end_miles", header: "เลขไมล์ปลายทาง" },
+  { accessorKey: "trip_detail", header: "รายละเอียด" },
 ];
 
 export const recordFuelData: RecordFuelTabProps[] = [
-  {
-    dateReceipt: "24/06/67",
-    receiptNo: "0001",
-    staionType: "PTT",
-    fuelType: "Diesel",
-    mileNum: "2,000",
-    literNum: "2,000",
-    pricePerLiter: "30",
-    vat: "107",
-    priceTotal: "60,000",
-    paymentType: "Cash",
-  },
-  {
-    dateReceipt: "24/06/67",
-    receiptNo: "0001",
-    staionType: "PTT",
-    fuelType: "Diesel",
-    mileNum: "2,000",
-    literNum: "2,000",
-    pricePerLiter: "30",
-    vat: "107",
-    priceTotal: "60,000",
-    paymentType: "Cash",
-  },
-  {
-    dateReceipt: "24/06/67",
-    receiptNo: "0001",
-    staionType: "PTT",
-    fuelType: "Diesel",
-    mileNum: "2,000",
-    literNum: "2,000",
-    pricePerLiter: "30",
-    vat: "107",
-    priceTotal: "60,000",
-    paymentType: "Cash",
-  },
+  // {
+  //   dateReceipt: "24/06/67",
+  //   receiptNo: "0001",
+  //   staionType: "PTT",
+  //   fuelType: "Diesel",
+  //   mileNum: "2,000",
+  //   literNum: "2,000",
+  //   pricePerLiter: "30",
+  //   vat: "107",
+  //   priceTotal: "60,000",
+  //   paymentType: "Cash",
+  // },
+  // {
+  //   dateReceipt: "24/06/67",
+  //   receiptNo: "0001",
+  //   staionType: "PTT",
+  //   fuelType: "Diesel",
+  //   mileNum: "2,000",
+  //   literNum: "2,000",
+  //   pricePerLiter: "30",
+  //   vat: "107",
+  //   priceTotal: "60,000",
+  //   paymentType: "Cash",
+  // },
+  // {
+  //   dateReceipt: "24/06/67",
+  //   receiptNo: "0001",
+  //   staionType: "PTT",
+  //   fuelType: "Diesel",
+  //   mileNum: "2,000",
+  //   literNum: "2,000",
+  //   pricePerLiter: "30",
+  //   vat: "107",
+  //   priceTotal: "60,000",
+  //   paymentType: "Cash",
+  // },
 ];
 
 export const recordFuelDataColumns = [
-  { accessorKey: "dateReceipt", header: "วันที่ใบเสร็จ" },
-  { accessorKey: "receiptNo", header: "เลขที่ใบเสร็จ" },
-  { accessorKey: "staionType", header: "สถานีบริการน้ำมัน" },
-  { accessorKey: "fuelType", header: "ประเภทเชื้อเพลิง" },
-  { accessorKey: "mileNum", header: "เลขไมล์" },
-  { accessorKey: "literNum", header: "จำนวนลิตร" },
-  { accessorKey: "pricePerLiter", header: "ราคาต่อลิตร" },
+  { accessorKey: "tax_invoice_date", header: "วันที่ใบเสร็จ" },
+  { accessorKey: "tax_invoice_no", header: "เลขที่ใบเสร็จ" },
+  { accessorKey: "ref_oil_station_brand_name", header: "สถานีบริการน้ำมัน" },
+  { accessorKey: "ref_fuel_type_name", header: "ประเภทเชื้อเพลิง" },
+  { accessorKey: "mile", header: "เลขไมล์" },
+  { accessorKey: "sum_liter", header: "จำนวนลิตร" },
+  { accessorKey: "price_per_liter", header: "ราคาต่อลิตร" },
   { accessorKey: "vat", header: "ภาษี" },
-  { accessorKey: "priceTotal", header: "ยอดรวมชำระ" },
-  { accessorKey: "paymentType", header: "วิธีชำระเงิน" },
-  { accessorKey: "action", header: "" },
+  { accessorKey: "sum_price", header: "ยอดรวมชำระ" },
+  { accessorKey: "ref_payment_type_name", header: "วิธีชำระเงิน" },
 ];

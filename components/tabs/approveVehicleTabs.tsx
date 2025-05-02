@@ -25,7 +25,7 @@ export default function ApproveVehicleTabs() {
 
       const getTabContent = (code: string) => {
         switch (code) {
-          case "20": 
+          case "20,21,30": 
           return <FirstApproveFlow />;
           case "50": // รับกุญแจ
           case "60": // เดินทาง

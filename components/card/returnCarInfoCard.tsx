@@ -1,4 +1,7 @@
-export const ReturnCarInfoCard = () => {
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import dayjs from "dayjs";
+
+export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
   return (
     <div className="form-card">
       <div className="form-card-body">
@@ -8,7 +11,11 @@ export const ReturnCarInfoCard = () => {
               <i className="material-symbols-outlined">calendar_month</i>
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่</div>
-                <div className="form-text">01/01/2567</div>
+                <div className="form-text">
+                  {data?.returned_vehicle_datetime
+                    ? dayjs(data.returned_vehicle_datetime).format("DD/MM/YYYY")
+                    : "-"}
+                </div>
               </div>
             </div>
           </div>
@@ -17,7 +24,11 @@ export const ReturnCarInfoCard = () => {
               <i className="material-symbols-outlined">schedule</i>
               <div className="form-plaintext-group">
                 <div className="form-label">เวลา</div>
-                <div className="form-text">08:30</div>
+                <div className="form-text">
+                  {data?.accepted_vehicle_datetime
+                    ? dayjs(data.accepted_vehicle_datetime).format("HH:mm")
+                    : "-"}
+                </div>
               </div>
             </div>
           </div>
@@ -28,7 +39,7 @@ export const ReturnCarInfoCard = () => {
               <i className="material-symbols-outlined">local_parking</i>
               <div className="form-plaintext-group">
                 <div className="form-label">สถานที่จอดรถ</div>
-                <div className="form-text">LED ชั้น 7</div>
+                <div className="form-text">{data?.parking_place || "-"}</div>
               </div>
             </div>
           </div>
@@ -39,7 +50,7 @@ export const ReturnCarInfoCard = () => {
               <i className="material-symbols-outlined">search_activity</i>
               <div className="form-plaintext-group">
                 <div className="form-label">เลขไมล์</div>
-                <div className="form-text">19845</div>
+                <div className="form-text">{data?.mile_end || "-"}</div>
               </div>
             </div>
           </div>
@@ -48,7 +59,7 @@ export const ReturnCarInfoCard = () => {
               <i className="material-symbols-outlined">local_gas_station</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ปริมาณเชื้อเพลิง</div>
-                <div className="form-text">100%</div>
+                <div className="form-text">{data?.fuel_end || "-"}</div>
               </div>
             </div>
           </div>
@@ -81,7 +92,7 @@ export const ReturnCarInfoCard = () => {
               <i className="material-symbols-outlined">news</i>
               <div className="form-plaintext-group">
                 <div className="form-label">หมายเหตุ</div>
-                <div className="form-text">มีรอยบุบนิดหน่อย</div>
+                <div className="form-text">{data?.remark || "-"}</div>
               </div>
             </div>
           </div>

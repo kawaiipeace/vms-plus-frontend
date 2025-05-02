@@ -1,22 +1,15 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import { useForm, Controller } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useFormContext } from "@/contexts/requestFormContext";
-import { shortenFilename } from "@/utils/shortenFilename";
-import { uploadFile } from "@/services/masterService";
-import FormHelper from "@/components/formHelper";
-import { useRequestDetailContext } from "@/contexts/requestDetailContext";
-import { updateRef } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import useSwipeDown from "@/utils/swipeDown"; 
+import FormHelper from "@/components/formHelper";
+import { useFormContext } from "@/contexts/requestFormContext";
 import { adminUpdateRef } from "@/services/bookingAdmin";
+import { updateRef } from "@/services/bookingUser";
+import { uploadFile } from "@/services/masterService";
+import { shortenFilename } from "@/utils/shortenFilename";
+import useSwipeDown from "@/utils/swipeDown";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
 
 interface Payload {
   reference_number: string;
@@ -101,7 +94,7 @@ const ReferenceModal = forwardRef<
     if (requestData) {
       const payload: Payload = {
         reference_number: data.referenceNumber,
-        trn_request_uid: requestData.trn_request_uid,
+        trn_request_uid: requestData?.trn_request_uid || "",
       };
 
       if (fileValue) {
@@ -109,9 +102,8 @@ const ReferenceModal = forwardRef<
       }
 
       try {
-        
         const response = role === "admin" ? await adminUpdateRef(payload) : await updateRef(payload);
-        
+
         console.log(response);
         if (response) {
           if (onUpdate) onUpdate(response.data);
@@ -137,15 +129,14 @@ const ReferenceModal = forwardRef<
       modalRef.current?.close();
     }
   };
-  
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
       <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
-          <div className="bottom-sheet-icon" >
-          </div>
+        <div className="bottom-sheet" {...swipeDownHandlers}>
+          <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">
@@ -175,14 +166,7 @@ const ReferenceModal = forwardRef<
                     <Controller
                       name="referenceNumber"
                       control={control}
-                      render={({ field }) => (
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder=""
-                          {...field}
-                        />
-                      )}
+                      render={({ field }) => <input type="text" className="form-control" placeholder="" {...field} />}
                     />
                   </div>
                 </div>
@@ -201,9 +185,7 @@ const ReferenceModal = forwardRef<
                         <label className="flex items-center gap-2 cursor-pointer">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">
-                                attach_file
-                              </i>
+                              <i className="material-symbols-outlined">attach_file</i>
                             </span>
                           </div>
                           <input
@@ -211,9 +193,7 @@ const ReferenceModal = forwardRef<
                             className="file-input hidden"
                             onChange={(e) => handleFileChange(e, onChange)}
                           />
-                          <div className="input-uploadfile-label w-full">
-                            {fileName}
-                          </div>
+                          <div className="input-uploadfile-label w-full">{fileName}</div>
                         </label>
                       )}
                     />
@@ -221,19 +201,13 @@ const ReferenceModal = forwardRef<
                   {fileError ? (
                     <FormHelper text={fileError} />
                   ) : (
-                    <span className="form-helper">
-                      รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB
-                    </span>
+                    <span className="form-helper">รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB</span>
                   )}
                 </div>
               </div>
             </div>
             <div className="modal-action sticky bottom-0 gap-3 mt-0">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => modalRef.current?.close()}
-              >
+              <button type="button" className="btn btn-secondary" onClick={() => modalRef.current?.close()}>
                 ยกเลิก
               </button>
               <button type="submit" className="btn btn-primary">

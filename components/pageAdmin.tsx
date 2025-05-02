@@ -7,15 +7,11 @@ interface Props {
   data: RequestDetailType;
 }
 
-export default function PageHeaderAdmin({
-  data,
-}: Props) {
-
+export default function PageHeaderAdmin({ data }: Props) {
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
 
   const [copied, setCopied] = useState(false);
 
@@ -89,20 +85,21 @@ export default function PageHeaderAdmin({
             ))}
         </div>
 
-        {data?.ref_request_status_name !== "ยกเลิกคำขอ" && data?.can_cancel_request && (
-          <button
-            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-            onClick={() => cancelRequestModalRef.current?.openModal()}
-          >
-            ยกเลิกคำขอ
-          </button>
-        )}
+        {data?.ref_request_status_name !== "ยกเลิกคำขอ" &&
+          data?.can_cancel_request && (
+            <button
+              className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+              onClick={() => cancelRequestModalRef.current?.openModal()}
+            >
+              ยกเลิกคำขอ
+            </button>
+          )}
         <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
       </div>
       <CancelRequestModal
-        id={data?.trn_request_uid}
+        id={data?.trn_request_uid || ""}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"

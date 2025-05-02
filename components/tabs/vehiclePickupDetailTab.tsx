@@ -1,14 +1,19 @@
+"use client";
 import { LogType } from "@/app/types/log-type";
-import { PaginationType } from "@/app/types/request-action-type";
-import LogListTable from "@/components/table/log-list-table";
-import { fetchLogs } from "@/services/masterService";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { RequestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import { fetchLogs, fetchRequestKeyDetail } from "@/services/masterService";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import KeyPickUp from "../flow/keyPickUp";
 import KeyPickUpDetailForm from "../flow/keyPickUpDetailForm";
-import PaginationControls from "../table/pagination-control";
+import TableComponent from "../tableKeyPickUp";
 import KeyPickUpAppointment from "./keyPickUpAppointment";
 import ReceiveCarVehicleInUseTab from "./receiveCarVehicleInUseTab";
+import RecordFuelTab from "./recordFuelTab";
+import RecordTravelTab from "./recordTravelTab";
+import ReturnCarTab from "./returnCarTab";
 
 interface Props {
   requestId: string;
@@ -20,58 +25,50 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const searchParams = useSearchParams();
   const active = searchParams.get("activeTab");
 
-  const [params, setParams] = useState({
-    page: 1,
-    limit: 10,
-  });
   const [requestUid] = useState(requestId);
   const [activeTab, setActiveTab] = useState(1);
-  const [dataRequest, setDataRequest] = useState<LogType[]>([]);
-  const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
-    page: 1,
-    total: 0,
-    totalPages: 0,
-  });
-
-  const handlePageChange = (newPage: number) => {
-    setParams((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
-  };
-
-  const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
-    setParams((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1,
-    }));
-  };
+  const [dataRequest, setDataRequest] = useState<RequestHistoryLog[]>([]);
+  const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
+    const fetchRequestDetailfunc = async () => {
+      try {
+        const response = await fetchRequestKeyDetail(requestId);
+        console.log("data---", response.data);
+        setRequestData(response.data);
+      } catch (error) {
+        console.error("Error fetching vehicle details:", error);
+      }
+    };
+
     const fetchRequests = async () => {
       try {
-        const response = await fetchLogs(requestUid, params);
+        const response = await fetchLogs(requestUid, { page: 1, limit: 100 });
         const requestList = response.data.logs;
-        const { total, totalPages } = response.data;
-        setDataRequest(requestList);
-        setPagination({
-          limit: params.limit,
-          page: params.page,
-          total,
-          totalPages,
+
+        const mapDataRequest: RequestHistoryLog[] = requestList.map((item: LogType) => {
+          const dateTime = convertToBuddhistDateTime(item.created_at);
+          return {
+            dateTime: dateTime.date + "" + dateTime.time,
+            operator: item.created_by_emp.emp_name,
+            position: item.created_by_emp.dept_sap,
+            detail: item.status.ref_request_status_desc,
+            remark: item.log_remark,
+          };
         });
+        console.log("Fetched data:", mapDataRequest);
+
+        setDataRequest(mapDataRequest);
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
     };
 
     if (requestId) {
+      fetchRequestDetailfunc();
       fetchRequests();
     }
-  }, [params, requestId, requestUid]);
+  }, [requestId, requestUid]);
 
   const createQueryString = useCallback(
     (value: string) => {
@@ -105,19 +102,37 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
       {
         label: "การรับยานพาหนะ",
-        content: <ReceiveCarVehicleInUseTab requestId={requestId} edit="" />,
+        content: <ReceiveCarVehicleInUseTab requestId={requestId} displayOn="vehicle-in-use" />,
         constent: "",
         badge: "",
       },
       {
         label: "ข้อมูลการเดินทาง",
-        content: <></>,
+        content: (
+          <>
+            <RecordTravelTab requestId={requestId} />
+          </>
+        ),
         constent: "",
         badge: "",
       },
       {
         label: "การเติมเชื้อเพลิง",
-        content: <></>,
+        content: (
+          <>
+            <RecordFuelTab requestId={requestId} role="user" requestData={requestData} />
+          </>
+        ),
+        constent: "",
+        badge: "",
+      },
+      {
+        label: "การคืนยานพาหนะ",
+        content: (
+          <>
+            <ReturnCarTab status="returnFail" requestId={requestId} />
+          </>
+        ),
         constent: "",
         badge: "",
       },
@@ -125,21 +140,20 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ประวัติการดำเนินการ",
         content: (
           <>
-            <LogListTable defaultData={dataRequest} pagination={pagination} />
-            {dataRequest.length > 0 && (
-              <PaginationControls
-                pagination={pagination}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-              />
-            )}
+            <TableComponent data={dataRequest} columns={requestHistoryLogColumns} />
           </>
         ),
         badge: "",
       },
     ],
-    [dataRequest, pagination, requestId]
+    [dataRequest, requestData, requestId]
   );
+  // .filter((tab) => {
+  //   if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver !== "1") {
+  //     return false;
+  //   }
+  //   return true;
+  // });
 
   useEffect(() => {
     if (active) {

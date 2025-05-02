@@ -3,29 +3,21 @@ import axios from 'axios';
 
 // Function to get the API configuration
 export const getApiConfig = () => {
-  if (typeof window !== 'undefined') {
-    const env = window as unknown as {
-      __ENV__?: {
-        NEXT_PUBLIC_CLIENT_API_HOST: string;
-        NEXT_PUBLIC_API_KEY: string;
-        NEXT_PUBLIC_CLIENT_CALLBACK: string;
-      };
-    };
-
-    if (env.__ENV__) {
-      return {
-        baseURL: env.__ENV__.NEXT_PUBLIC_CLIENT_API_HOST,
-        apiKey: env.__ENV__.NEXT_PUBLIC_API_KEY,
-        callbackURL: env.__ENV__.NEXT_PUBLIC_CLIENT_CALLBACK,
-      };
-    }
-  }
-
-  return {
+  const fallback = {
     baseURL: 'http://pntdev.ddns.net:28080/api',
     apiKey: '2c5SF8BDhWKzdTY5MIFXEh9PummQMhK8w2TIUobJnYbAxaUmYo1sYTc2Hwo3xNWj',
-    callbackURL: 'http://localhost:3000/callback_code_token',
+    callbackURL: 'http://localhost/callback_code_token',
   };
+
+  if (typeof window !== 'undefined' && window.__ENV__) {
+    return {
+      baseURL: window.__ENV__.NEXT_PUBLIC_CLIENT_API_HOST || fallback.baseURL,
+      apiKey: window.__ENV__.NEXT_PUBLIC_API_KEY || fallback.apiKey,
+      callbackURL: window.__ENV__.NEXT_PUBLIC_CLIENT_CALLBACK || fallback.callbackURL,
+    };
+  }
+
+  return fallback;
 };
 
 

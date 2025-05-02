@@ -8,6 +8,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import PageHeaderAdmin from "@/components/pageHeaderAdmin";
 import { fetchRequestDetail } from "@/services/bookingAdmin";
 import RequestDetailTabs from "@/components/admin/requestDetailTab";
+import { LogProvider } from "@/contexts/log-context";
 
 
 export default function RequestDetail() {
@@ -48,7 +49,9 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeaderAdmin data={requestData} />}
+            <LogProvider>
             <RequestDetailTabs requestId={request_id} />
+            </LogProvider>
           </div>
         </div>
       </div>
