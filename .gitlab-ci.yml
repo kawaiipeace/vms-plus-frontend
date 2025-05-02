@@ -42,13 +42,13 @@ lint:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: 
-        - "src/**/*"
+        - "**/*.{js,ts,tsx}"
         - ".eslintrc*"
         - "**/*.config.{js,ts,mjs}"
         - "tsconfig.json"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - "src/**/*"
+        - "**/*.{js,ts,tsx}"
         - ".eslintrc*"
         - "**/*.config.{js,ts,mjs}"
         - "tsconfig.json"
@@ -98,16 +98,14 @@ build:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
-        - "src/**/*"
-        - "public/**/*"
+        - "**/*.{js,ts,tsx}"
         - "**/*.config.{js,ts,mjs}"
         - "tsconfig.json"
         - "package.json"
         - "pnpm-lock.yaml"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - "src/**/*"
-        - "public/**/*"
+        - "**/*.{js,ts,tsx}"
         - "**/*.config.{js,ts,mjs}"
         - "tsconfig.json"
         - "package.json"
