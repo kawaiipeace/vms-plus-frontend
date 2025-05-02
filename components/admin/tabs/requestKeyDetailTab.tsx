@@ -4,20 +4,36 @@ import LogListTable from "@/components/table/log-list-table";
 import { useLogContext } from "@/contexts/log-context";
 import PaginationControls from "@/components/table/pagination-control";
 import KeyHandoverDetail from "@/components/admin/key-handover/key-handover-detail";
+import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
+import TravelInfoTab from "../travelInfoTab";
+import ReturnCarTab from "@/components/admin/returnCarTab";
 
 interface Props {
   requestId: string;
   displayKeyHandover?: boolean;
+  displayVehiclePickup?: boolean;
+  displayTravelRecord?: boolean;
+  displayFuel?: boolean;
+  displayReturnVehicle?: boolean;
 }
 
-export default function RequestDetailTabs({ requestId, displayKeyHandover }: Props) {
-  const { dataRequest, pagination, params, setParams, loadLogs } = useLogContext();
+export default function RequestDetailTabs({
+  requestId,
+  displayTravelRecord,
+  displayFuel,
+  displayKeyHandover,
+  displayVehiclePickup,
+  displayReturnVehicle,
+}: Props) {
+  const { dataRequest, pagination, params, setParams, loadLogs } =
+    useLogContext();
   const handlePageChange = (newPage: number) => {
     setParams((prev) => ({ ...prev, page: newPage }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prev) => ({ ...prev, limit, page: 1 }));
   };
 
@@ -25,9 +41,8 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
     if (requestId) {
       loadLogs(requestId);
     }
-  }, [loadLogs, params, requestId]);
+  }, [params, requestId]);
 
-    
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
@@ -38,16 +53,67 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
       ? [
           {
             label: "การรับกุญแจ",
-            content: <KeyHandoverDetail editable={true} requestId={requestId} />,
+            content: (
+              <KeyHandoverDetail editable={true} requestId={requestId} />
+            ),
             badge: "",
           },
         ]
       : []),
+
+    ...(displayVehiclePickup
+      ? [
+          {
+            label: "การรับยานพาหนะ",
+            content: (
+              <ReceiveCarVehicleInUseTab
+                displayOn="admin"
+                role="admin"
+                requestId={requestId}
+                edit="edit"
+              />
+            ),
+            badge: "",
+          },
+        ]
+      : []),
+    ...(displayTravelRecord
+      ? [
+          {
+            label: "ข้อมูลการเดินทาง",
+            content: (
+              <TravelInfoTab reqId={requestId} requestType="เสร็จสิ้น" />
+            ),
+            badge: "",
+          },
+        ]
+      : []),
+    ...(displayFuel
+      ? [
+          {
+            label: "การเติมเชื้อเพลิง",
+            content: (
+              <ReceiveCarVehicleInUseTab requestId={requestId} edit="edit" />
+            ),
+            badge: "",
+          },
+        ]
+      : []),
+    ...(displayReturnVehicle
+      ? [
+          {
+            label: "การคืนยานพาหนะ",
+            content: <ReturnCarTab displayOn="adminTab" />,
+            badge: "",
+          },
+        ]
+      : []),
+
     {
       label: "ประวัติการดำเนินการ",
       content: (
         <>
-        <LogListTable defaultData={dataRequest} pagination={pagination} />
+          <LogListTable defaultData={dataRequest} pagination={pagination} />
           {dataRequest.length > 0 && (
             <PaginationControls
               pagination={pagination}

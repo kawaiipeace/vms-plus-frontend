@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSidebar } from "@/contexts/sidebarContext";
-import { useRouter } from "next/navigation";
-import Header from "@/components/header";
-import ProcessRequestCar from "@/components/processRequestCar";
-import SideBar from "@/components/sideBar";
 import AutoCarCard from "@/components/card/autoCarCard";
 import SelectCarCard from "@/components/card/selectCarCard";
+import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
+import Header from "@/components/header";
 import Pagination from "@/components/pagination";
-import CustomSelect from "@/components/customSelect";
+import ProcessRequestCar from "@/components/processRequestCar";
+import SideBar from "@/components/sideBar";
 import ZeroRecord from "@/components/zeroRecord";
-import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
 import { useFormContext } from "@/contexts/requestFormContext";
+import { useSidebar } from "@/contexts/sidebarContext";
+import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 // import Toast from "@/components/toast";
 
 interface Vehicle {
@@ -64,9 +64,7 @@ export default function ProcessTwo() {
     limit: 10,
   });
 
-  const [vehicleCatOptions, setVehicleCatOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [vehicleCatOptions, setVehicleCatOptions] = useState<{ value: string; label: string }[]>([]);
   // const { updateFormData } = useFormContext();
 
   const orgOptions = [
@@ -83,9 +81,9 @@ export default function ProcessTwo() {
   }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
 
   useEffect(() => {
-    const processOneStatus = localStorage.getItem('processOne');
-    if (processOneStatus !== 'Done') {
-      router.push('process-one');
+    const processOneStatus = localStorage.getItem("processOne");
+    if (processOneStatus !== "Done") {
+      router.push("process-one");
     }
     setLoading(false);
   }, []);
@@ -96,19 +94,16 @@ export default function ProcessTwo() {
     if (value == "ผู้ดูแลยานพาหนะเลือกให้") {
       updatedData.isAdminChooseVehicle = "1"; // Update the data object
       updatedData.isSystemChooseVehicle = "0";
-    } else if (value == "ระบบเลือกยานพาหนะให้อัตโนมัติ"){
+    } else if (value == "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
       updatedData.isSystemChooseVehicle = "1"; // Update the data object
       updatedData.isAdminChooseVehicle = "0";
     } else {
       updatedData.vehicleSelect = value; // Update the data object
 
-      const selectedVehicleObj = vehicleCards.find(
-        (vehicle) => vehicle.mas_vehicle_uid === value
-      );
+      const selectedVehicleObj = vehicleCards.find((vehicle) => vehicle.mas_vehicle_uid === value);
 
       if (selectedVehicleObj?.is_admin_choose_driver !== undefined) {
-        updatedData.isAdminChooseDriver =
-          selectedVehicleObj.is_admin_choose_driver ? true : false;
+        updatedData.isAdminChooseDriver = selectedVehicleObj.is_admin_choose_driver ? true : false;
       }
     }
 
@@ -116,7 +111,7 @@ export default function ProcessTwo() {
   };
 
   const NextProcess = () => {
-    localStorage.setItem('processTwo','Done');
+    localStorage.setItem("processTwo", "Done");
     router.push("process-three");
   };
 
@@ -124,22 +119,16 @@ export default function ProcessTwo() {
     setParams((prev) => ({ ...prev, search: e.target.value }));
   };
 
-  const handleOrgChange = async (selectedOption: {
-    value: string;
-    label: string;
-  }) => {
-    setSelectedOrgOption(selectedOption);
+  const handleOrgChange = async (selectedOption: CustomSelectOption) => {
+    setSelectedOrgOption(selectedOption as { value: string; label: string });
     setParams((prev) => ({
       ...prev,
       vehicle_owner_dept: selectedOption.value,
     }));
   };
 
-  const handleVehicleTypeChange = async (selectedOption: {
-    value: string;
-    label: string;
-  }) => {
-    setSelectedVehicleOption(selectedOption);
+  const handleVehicleTypeChange = async (selectedOption: CustomSelectOption) => {
+    setSelectedVehicleOption(selectedOption as { value: string; label: string });
     setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
   };
 
@@ -172,21 +161,14 @@ export default function ProcessTwo() {
           console.log(response.data);
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
-            ...vehicleCatData.map(
-              (cat: {
-                ref_vehicle_type_code: string;
-                ref_vehicle_type_name: string;
-              }) => ({
-                value: cat.ref_vehicle_type_code,
-                label: cat.ref_vehicle_type_name,
-              })
-            ),
+            ...vehicleCatData.map((cat: { ref_vehicle_type_code: string; ref_vehicle_type_name: string }) => ({
+              value: cat.ref_vehicle_type_code,
+              label: cat.ref_vehicle_type_name,
+            })),
           ];
 
           setVehicleCatOptions(vehicleCatArr);
-          setSelectedVehicleOption((prev) =>
-            prev.value ? prev : vehicleCatArr[0]
-          );
+          setSelectedVehicleOption((prev) => (prev.value ? prev : vehicleCatArr[0]));
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -203,11 +185,7 @@ export default function ProcessTwo() {
     <div className="main-container">
       <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-      <div
-        className={`main-content ${
-          isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-        }`}
-      >
+      <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
         <Header />
         <div className="main-content-body">
           <div className="page-header">
@@ -243,9 +221,7 @@ export default function ProcessTwo() {
                 <div className="page-section-header border-0">
                   <div className="page-header-left">
                     <div className="page-title">
-                      <span className="page-title-label">
-                        ข้อมูลผู้ใช้ยานพาหนะ
-                      </span>
+                      <span className="page-title-label">ข้อมูลผู้ใช้ยานพาหนะ</span>
                       <span className="badge badge-outline badge-gray page-title-status">
                         ว่าง {paginationData.total} คัน และ {paginationData.totalGroups} กลุ่ม
                       </span>
@@ -311,20 +287,13 @@ export default function ProcessTwo() {
                         <SelectCarCard
                           key={vehicle.mas_vehicle_uid}
                           vehicleId={vehicle.mas_vehicle_uid}
-                          imgSrc={
-                            vehicle.vehicle_img || "/assets/img/sample-car.jpeg"
-                          }
-                          title={
-                            vehicle.vehicle_brand_name +
-                            vehicle.vehicle_model_name
-                          }
+                          imgSrc={vehicle.vehicle_img || "/assets/img/sample-car.jpeg"}
+                          title={vehicle.vehicle_brand_name + vehicle.vehicle_model_name}
                           subTitle={vehicle.vehicle_license_plate}
                           carType={vehicle.car_type}
                           deptSap={vehicle.vehicle_owner_dept_sap}
                           seat={vehicle.seat}
-                          onSelect={() =>
-                            handleVehicleSelect(vehicle.mas_vehicle_uid)
-                          }
+                          onSelect={() => handleVehicleSelect(vehicle.mas_vehicle_uid)}
                         />
                       ))}{" "}
                     </>
@@ -365,9 +334,7 @@ export default function ProcessTwo() {
               disabled={selectedVehicle === "" && formData.vehicleSelect === ""}
             >
               ต่อไป
-              <i className="material-symbols-outlined icon-settings-300-24">
-                arrow_right_alt
-              </i>
+              <i className="material-symbols-outlined icon-settings-300-24">arrow_right_alt</i>
             </button>
           </div>
         </div>

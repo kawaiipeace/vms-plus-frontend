@@ -1,13 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, ColumnDef, SortingState, PaginationState } from "@tanstack/react-table";
-import Paginationselect from "./table/paginationSelect";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 import Link from "next/link";
-import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
 import EditKeyAppointmentModal from "./modal/editKeyAppointmentModal";
+import Paginationselect from "./table/paginationSelect";
 
 // Make TableComponent generic
 type TableComponentProps<T> = {
@@ -62,11 +69,14 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
     <>
       <div className="block md:hidden space-y-4">
         {table.getRowModel().rows.map((row) => (
-          <div key={row.id} className="bg-white shadow-md rounded-lg p-4 border">
+          <div key={row.id} className="bg-white shadow-md rounded-lg border">
             {row.getVisibleCells().map((cell) => (
-              <div key={cell.id} className="flex justify-between py-1">
-                <span className="font-semibold">{cell.column.columnDef.header as string}</span>
-                <span>{cell.renderValue() as React.ReactNode}</span>
+              <div
+                key={cell.id}
+                className="grid grid-cols-2 justify-between p-4  border-b border-[#EAECF0] items-center"
+              >
+                <span className="font-semibold ">{cell.column.columnDef.header as string}</span>
+                <span className="flex justify-end ">{cell.renderValue() as React.ReactNode}</span>
               </div>
             ))}
           </div>
@@ -80,9 +90,19 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} className="p-2 cursor-pointer" onClick={header.column.getToggleSortingHandler()}>
-                    <span className={`dt-column-title flex gap-2 ${header.column.columnDef.header == "" ? "justify-center" : ""}`}>
+                    <span
+                      className={`dt-column-title flex gap-2 ${
+                        header.column.columnDef.header == "" ? "justify-center" : ""
+                      }`}
+                    >
                       {header.column.columnDef.header as string}
-                      {header.column.getIsSorted() === "asc" ? <i className="material-symbols-outlined text-black">arrow_upward_alt</i> : header.column.getIsSorted() === "desc" ? <i className="material-symbols-outlined text-black">arrow_downward_alt</i> : <i className="material-symbols-outlined">import_export</i>}
+                      {header.column.getIsSorted() === "asc" ? (
+                        <i className="material-symbols-outlined text-black">arrow_upward_alt</i>
+                      ) : header.column.getIsSorted() === "desc" ? (
+                        <i className="material-symbols-outlined text-black">arrow_downward_alt</i>
+                      ) : (
+                        <i className="material-symbols-outlined">import_export</i>
+                      )}
                     </span>
                   </th>
                 ))}
@@ -96,22 +116,51 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="p-2">
                     {cell.column.columnDef.header === "สถานะคำขอ" ? (
-                      <div className="w-full text-center">{cell.renderValue() === "เกินวันที่นัดหมาย" || cell.renderValue() === "ถูกตีกลับ" ? <span className="badge badge-pill-outline badge-error whitespace-nowrap">{cell.renderValue() as React.ReactNode}</span> : cell.renderValue() === "ตีกลับคำขอ" ? <span className="badge badge-pill-outline badge-warning whitespace-nowrap">{cell.renderValue() as React.ReactNode}</span> : <span className="badge badge-pill-outline badge-info whitespace-nowrap">{cell.renderValue() as React.ReactNode}</span>}</div>
+                      <div className="w-full text-center">
+                        {cell.renderValue() === "เกินวันที่นัดหมาย" || cell.renderValue() === "ถูกตีกลับ" ? (
+                          <span className="badge badge-pill-outline badge-error whitespace-nowrap">
+                            {cell.renderValue() as React.ReactNode}
+                          </span>
+                        ) : cell.renderValue() === "ตีกลับคำขอ" ? (
+                          <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
+                            {cell.renderValue() as React.ReactNode}
+                          </span>
+                        ) : (
+                          <span className="badge badge-pill-outline badge-info whitespace-nowrap">
+                            {cell.renderValue() as React.ReactNode}
+                          </span>
+                        )}
+                      </div>
                     ) : cell.column.columnDef.header === "" ? (
                       <>
                         <div className="dt-action">
-                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="ให้กุญแจ" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
+                          <button
+                            className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                            data-tip="ให้กุญแจ"
+                            onClick={() => keyPickupDetailModalRef.current?.openModal()}
+                          >
                             <i className="material-symbols-outlined icon-settings-fill-300-24">passkey</i>
                           </button>
-                          <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="แก้ไขนัดหมาย" onClick={() => editKeyAppointmentModalRef.current?.openModal()}>
+                          <button
+                            className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                            data-tip="แก้ไขนัดหมาย"
+                            onClick={() => editKeyAppointmentModalRef.current?.openModal()}
+                          >
                             <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
                           </button>
                           <div className="dropdown dropdown-left dropdown-end">
-                            <div className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none" tabIndex={0} role="button">
+                            <div
+                              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                              tabIndex={0}
+                              role="button"
+                            >
                               <i className="material-symbols-outlined icon-settings-fill-300-24">more_vert</i>
                             </div>
 
-                            <ul className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]" tabIndex={0}>
+                            <ul
+                              className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                              tabIndex={0}
+                            >
                               <Link className="dropdown-item" href="/administrator/request-detail/1">
                                 <i className="material-symbols-outlined">quick_reference_all</i>
                                 รายละเอียดคำขอ
@@ -143,14 +192,25 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
       <div className="flex justify-between items-center mt-5 dt-bottom">
         <div className="flex items-center gap-2">
           <div className="dt-info" aria-live="polite" id="DataTables_Table_0_info" role="status">
-            แสดง {Math.min(pageIndex * pageSize + 1, table.getRowCount())} ถึง {Math.min((pageIndex + 1) * pageSize, table.getRowCount())} จาก {table.getRowCount()} รายการ
+            แสดง {Math.min(pageIndex * pageSize + 1, table.getRowCount())} ถึง{" "}
+            {Math.min((pageIndex + 1) * pageSize, table.getRowCount())} จาก {table.getRowCount()} รายการ
           </div>
-          <Paginationselect w="w-[5em]" position="top" options={["10", "25", "50", "100"]} value={table.getState().pagination.pageSize} onChange={(selectedValue) => table.setPageSize(Number(selectedValue))} />
+          <Paginationselect
+            w="w-[5em]"
+            position="top"
+            options={["10", "25", "50", "100"]}
+            value={table.getState().pagination.pageSize}
+            onChange={(selectedValue) => table.setPageSize(Number(selectedValue))}
+          />
         </div>
 
         <div className="pagination flex justify-end">
           <div className="join">
-            <button className="join-item btn btn-sm btn-outline" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+            <button
+              className="join-item btn btn-sm btn-outline"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
               <i className="material-symbols-outlined">chevron_left</i>
             </button>
 
@@ -163,7 +223,11 @@ export default function TableComponent<T>({ data, columns }: TableComponentProps
                 {page}
               </button>
             ))}
-            <button className="join-item btn btn-sm btn-outline" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            <button
+              className="join-item btn btn-sm btn-outline"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
               <i className="material-symbols-outlined">chevron_right</i>
             </button>
           </div>

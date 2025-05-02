@@ -75,7 +75,7 @@ const RequestNo = () => {
     },
     {
       label: "การนัดหมายเดินทาง",
-      content: <KeyPickUpAppointment />,
+      content: <KeyPickUpAppointment requestId={""} />,
       badge: "",
     },
     {

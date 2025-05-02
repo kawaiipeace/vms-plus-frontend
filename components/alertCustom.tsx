@@ -1,6 +1,6 @@
 interface Props {
   title: string;
-  desc: string;
+  desc: React.ReactNode;
   icon?: string;
   status?: string;
 }

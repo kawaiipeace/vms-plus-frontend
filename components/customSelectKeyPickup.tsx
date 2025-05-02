@@ -3,14 +3,13 @@ import { useEffect, useRef, useState } from "react";
 
 interface SelectProps {
   options: VehicleUserType[];
-  data: VehicleUserType[];
   w: string;
   iconName?: string;
   value: VehicleUserType | null;
   onChange: (selected: VehicleUserType) => void;
 }
 
-export default function CustomSelectKeyPickup({ w, options, iconName, value, onChange, data }: SelectProps) {
+export default function CustomSelectKeyPickup({ w, options, iconName, value, onChange }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);

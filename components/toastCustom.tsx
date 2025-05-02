@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface ToastCustomProps {
@@ -8,7 +9,7 @@ interface ToastCustomProps {
   styleText?: string;
   seeDetail?: string;
   seeDetailText?: string;
-  isShowButton?: boolean;
+  searchParams?: string;
 }
 
 export default function ToastCustom({
@@ -18,24 +19,27 @@ export default function ToastCustom({
   seeDetail,
   seeDetailText,
   styleText,
-  isShowButton,
+  searchParams,
 }: ToastCustomProps) {
+  const router = useRouter();
+  const pathName = usePathname();
+
   const [isVisible, setIsVisible] = useState(true);
 
   const closeToast = () => {
     setIsVisible(false);
+    if (!searchParams) return; // If no searchParams, do nothing
+    router.push(pathName + `?${searchParams}`); // Navigate to the current path to remove query parameters
   };
 
   if (!isVisible) return null; // If the toast is not visible, render nothing
 
   return (
     <div
-      className={`toast-container  ${
-        isShowButton && "!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]"
-      }`}
+      className={`toast-container  ${"!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]  md:!left-1/4 md:!top-0 md:!translate-x-full md:!w-full md:!max-w-[calc(28vw_+_3rem)]"}`}
     >
       <div
-        className={`toast fade toast-${status} block ${styleText} ${isShowButton && " !w-[85vw] !max-w-[85vw]"}`}
+        className={`toast fade toast-${status} block ${styleText} ${" !w-[85vw] !max-w-[85vw] md:!w-full md:!max-w-[calc(28vw_+_3rem)"}`}
         role="alert"
       >
         <div className="toast-body max-w-[20px]">

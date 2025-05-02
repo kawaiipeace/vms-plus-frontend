@@ -2,7 +2,7 @@ import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { ProgressRequestType } from "./progress-request-status";
 
-export interface RequestDetailType {
+export type RequestDetailType = Partial<{
   trn_request_uid: string;
   request_no: string;
   vehicle_user_emp_name: string;
@@ -64,27 +64,62 @@ export interface RequestDetailType {
   ref_request_status_name: string;
   sended_back_request_reason: string;
   canceled_request_reason: string;
-  received_key_datetime: string;                // ISO date-time string
+  received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;
   received_key_dept_sap_full: string;
   received_key_dept_sap_short: string;
   received_key_image_url: string;
   received_key_emp_id: string;
-  received_key_emp_name: string;        // ISO date-time string
+  received_key_emp_name: string; // ISO date-time string
   received_key_internal_contact_number: string;
   received_key_mobile_contact_number: string;
-  received_key_remark: string;       // ISO date-time string
+  received_key_remark: string; // ISO date-time string
   received_vehicle_dept_sap: string;
   received_vehicle_dept_sap_full: string;
   received_vehicle_dept_sap_short: string;
   received_vehicle_emp_id: string;
   received_vehicle_emp_name: string;
-  receiver_key_type: number;   
-}
+  receiver_key_type: number;
+  vehicle_license_plate_province_short: string;
+  vehicle_license_plate_province_full: string;
+  requested_vehicle_type_id: number;
+  vehicle_images_received: VehicleImage[];
+  returned_vehicle_datetime: string;
+  mile_end: number;
+  fuel_end: number;
+  returned_cleanliness_level: number;
+  returned_vehicle_remark: string;
+  vehicle_images_returned: VehicleImage[];
+  returned_vehicle_emp_id: string;
+  returned_vehicle_emp_name: string;
+  returned_vehicle_dept_sap: string;
+  returned_vehicle_dept_sap_short: string;
+  returned_vehicle_dept_sap_full: string;
+  accepted_vehicle_datetime: string;
+  accepted_vehicle_emp_id: string;
+  accepted_vehicle_emp_name: string;
+  accepted_vehicle_dept_sap: string;
+  accepted_vehicle_dept_sap_short: string;
+  accepted_vehicle_dept_sap_full: string;
+  is_use_driver: boolean;
+  canceled_request_datetime: string;
+  parking_place: string;
+  ref_vehicle_key_type_code: number;
+  fleet_card_no: string;
+  is_return_overdue: boolean;
+  mile_start: number;
+  fuel_start: number;
+  received_vehicle_remark: string;
+}>;
 
-export interface RequestVehicleType{
+export type RequestVehicleType = Partial<{
   available_units: number;
   ref_vehicle_type_code: number;
   ref_vehicle_type_name: string;
   vehicle_type_image: string;
-}
+}>;
+
+export type VehicleImage = Partial<{
+  ref_vehicle_img_side_code: number;
+  vehicle_img_file: string;
+}>;

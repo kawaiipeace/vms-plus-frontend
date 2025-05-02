@@ -1,19 +1,12 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import CustomSelect from "../customSelect";
-import { fetchUserApproverUsers } from "@/services/masterService";
 import { ApproverUserType } from "@/app/types/approve-user-type";
 import { useFormContext } from "@/contexts/requestFormContext";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { fetchUserApproverUsers } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
-
+import { yupResolver } from "@hookform/resolvers/yup";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import CustomSelect from "../customSelect";
 
 interface Props {
   onUpdate?: (data: any) => void;
@@ -27,31 +20,21 @@ const schema = yup.object().shape({
   approvedRequestEmpName: yup.string(),
 });
 
-
-const ApproverModal = forwardRef<
-  { openModal: () => void; closeModal: () => void },
-  Props
->(({ onUpdate }, ref) => {
+const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
 
-    const { handleSubmit } = useForm({
-      mode: "onChange",
-      resolver: yupResolver(schema),
-    });
-    
-  const [driverOptions, setDriverOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const { handleSubmit } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+  });
+
+  const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
   const [costName, setCostName] = useState<string>("");
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-    driverOptions[0]
-  );
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
 
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>(
-    []
-  );
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>([]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -87,9 +70,7 @@ const ApproverModal = forwardRef<
             setCostName(selectedUser.dept_sap); // Set costName
           } else {
             setSelectedVehicleUserOption(driverOptionsArray[0]);
-            setCostName(
-              driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || ""
-            );
+            setCostName(driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || "");
           }
         }
       } catch (error) {
@@ -101,19 +82,16 @@ const ApproverModal = forwardRef<
   }, []);
 
   const onSubmit = (data: any) => {
-
-    const selectedUser = vehicleUserDatas.find(
-      (user) => user.emp_id === selectedVehicleUserOption?.value
-    );
-    if(onUpdate)
-    onUpdate({
-      ...data,
-      approvedRequestDeptSap: selectedUser?.dept_sap || "",
-      approvedRequestDeptSapFull: selectedUser?.dept_sap_full || "",
-      approvedRequestDeptSapShort: selectedUser?.dept_sap_short || "",
-      approvedRequestEmpId: selectedUser?.emp_id || "",
-      approvedRequestEmpName: selectedUser?.full_name || "",
-    });
+    const selectedUser = vehicleUserDatas.find((user) => user.emp_id === selectedVehicleUserOption?.value);
+    if (onUpdate)
+      onUpdate({
+        ...data,
+        approvedRequestDeptSap: selectedUser?.dept_sap || "",
+        approvedRequestDeptSapFull: selectedUser?.dept_sap_full || "",
+        approvedRequestDeptSapShort: selectedUser?.dept_sap_short || "",
+        approvedRequestEmpId: selectedUser?.emp_id || "",
+        approvedRequestEmpName: selectedUser?.full_name || "",
+      });
 
     updateFormData({
       approvedRequestDeptSap: selectedUser?.dept_sap || "",
@@ -130,8 +108,8 @@ const ApproverModal = forwardRef<
 
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -154,10 +132,8 @@ const ApproverModal = forwardRef<
                   options={driverOptions}
                   value={selectedVehicleUserOption}
                   onChange={(option) => {
-                    setSelectedVehicleUserOption(option);
-                    const selectedUser = vehicleUserDatas.find(
-                      (user) => user.emp_id === option.value
-                    );
+                    setSelectedVehicleUserOption(option as { value: string; label: string });
+                    const selectedUser = vehicleUserDatas.find((user) => user.emp_id === option.value);
                     setCostName(selectedUser?.dept_sap || ""); // Update costName when selecting an option
                   }}
                 />
@@ -170,18 +146,10 @@ const ApproverModal = forwardRef<
                 <div className="input-group is-readonly">
                   <div className="input-group-prepend">
                     <span className="input-group-text">
-                      <i className="material-symbols-outlined">
-                        business_center
-                      </i>
+                      <i className="material-symbols-outlined">business_center</i>
                     </span>
                   </div>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={costName}
-                    placeholder=""
-                    readOnly
-                  />
+                  <input type="text" className="form-control" value={costName} placeholder="" readOnly />
                 </div>
               </div>
             </div>
@@ -189,9 +157,11 @@ const ApproverModal = forwardRef<
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
           <form method="dialog" className="col-span-1">
-              <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
-            </form>
-            <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>ยืนยัน</button>
+            <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
+          </form>
+          <button className="btn btn-primary" onClick={handleSubmit(onSubmit)}>
+            ยืนยัน
+          </button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

@@ -9,6 +9,11 @@ import KeyUserPickupCard from "./key-user-pickup-card";
 import KeyPickUpEditModal from "@/components/modal/keyPickUpEditModal";
 import EditKeyAppointmentModal from "@/components/modal/editKeyAppointmentModal";
 import ReceiveKeySuccessModal from "@/components/modal/receiveKeySuccessModal";
+import KeyPickupDetailCard from "../cards/keyPickupDetailCard";
+import TravelCardModal from "@/components/modal/travelCardModal";
+import EditKeyPickupDetailModal from "@/components/modal/admin/editKeyPickupDetailModal";
+import ToastCustom from "@/components/toastCustom";
+import { useSearchParams } from "next/navigation";
 
 interface RequestDetailFormProps {
   editable?: boolean;
@@ -34,8 +39,15 @@ export default function KeyHandoverDetail({
     closeModal: () => void;
   } | null>(null);
 
+  const editKeyPickupDetailModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [pickupDatePassed, setPickupDatePassed] = useState(false);
+  const [editKeySuccess, setEditKeySuccess] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (requestId) {
@@ -69,14 +81,39 @@ export default function KeyHandoverDetail({
     };
   }, [fetchData]);
 
-  useEffect(() => {}, [requestData]);
+  useEffect(() => {
+    console.log(requestData?.ref_request_status_code);
+    if (requestData?.ref_request_status_code === "51") {
+      receiveKeySuccessModalRef.current?.openModal();
+    }
+  }, [requestData]);
 
   const handleModalUpdate = () => {
     fetchData();
   };
 
+  const handleKeyEdit = () => {
+    editKeyPickupDetailModalRef.current?.closeModal();
+    setEditKeySuccess(true);
+  }
+
   return (
     <>
+
+        {editKeySuccess && (
+            <ToastCustom
+              title="แก้ไขรายละเอียดการรับกุญแจสำเร็จ"
+              desc={
+                <>
+                  แก้ไขรายละเอียดการรับกุญแจคำขอใช้ยานพหานะ 
+                  <br />
+                  เลขที่ {requestData?.request_no} เรียบร้อยแล้ว
+                </>
+              }
+              status="success"
+            />
+          )}
+          
       {pickupDatePassed && (
         <AlertCustom
           icon="cancel"
@@ -125,6 +162,25 @@ export default function KeyHandoverDetail({
 
             <KeyUserPickupCard requestData={requestData} />
           </div>
+          {requestData?.ref_request_status_code === "51" && (
+          <div className="form-section">
+            <div className="form-section-header">
+              <div className="form-section-header-title">
+                รายละเอียดการรับกุญแจ{" "}
+              </div>
+              {editable && (
+                <button
+                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                  onClick={() => editKeyPickupDetailModalRef.current?.openModal()}
+                >
+                  แก้ไข
+                </button>
+              )}
+            </div>
+
+            <KeyPickupDetailCard requestData={requestData} />
+          </div>
+          )}
         </div>
 
         <div className="col-span-1 row-start-1 md:row-start-2">
@@ -141,6 +197,8 @@ export default function KeyHandoverDetail({
         </div>
       </div>
 
+      <TravelCardModal />
+
       <EditKeyAppointmentModal
         req_id={requestData?.trn_request_uid}
         place={requestData?.received_key_place}
@@ -148,6 +206,18 @@ export default function KeyHandoverDetail({
         start_time={requestData?.received_key_start_datetime}
         end_time={requestData?.received_key_end_datetime}
         ref={editKeyAppointmentModalRef}
+      />
+
+      <EditKeyPickupDetailModal
+        reqId={String(requestData?.trn_request_uid)}
+        id={String(requestData?.ref_vehicle_key_type_code)}
+        imgSrc={""}
+        name={""}
+        deptSap={""}
+        phone={""}
+        role="keyAdmin"
+        ref={editKeyPickupDetailModalRef}
+        onEdit={handleKeyEdit}
       />
 
       <KeyPickUpEditModal

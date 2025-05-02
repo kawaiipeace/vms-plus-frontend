@@ -1,6 +1,11 @@
+import { VehicleUserTravelCardType } from "@/app/types/vehicle-user-type";
+import { fetchRequestKeyDetail } from "@/services/masterService";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import LicenseCardModal from "../modal/admin/licenseCardModal";
+import ReturnCarAddModal from "../modal/returnCarAddModal";
+import ReviewCarDriveModal from "../modal/reviewCarDriveModal";
 
 interface MobileWaitForKeyCardProps {
   id?: string;
@@ -30,6 +35,37 @@ export default function MobileTravelLogCard({
   parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
+  const [requestData, setRequestData] = useState<VehicleUserTravelCardType>();
+
+  const reviewCarDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const returnCarAddModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const licenseCardModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const fetchRequestDetailfunc = useCallback(async () => {
+    try {
+      // Ensure parsedData is an object before accessing vehicleSelect
+      const response = await fetchRequestKeyDetail(id || "");
+      console.log("data---", response.data);
+      setRequestData(response.data);
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchRequestDetailfunc();
+  }, [fetchRequestDetailfunc]);
 
   const goToDetail = () => {
     router.push(`/vehicle-in-use/user/${id}?activeTab=รายละเอียดคำขอ`);
@@ -85,107 +121,115 @@ export default function MobileTravelLogCard({
   }, [endDate, isDriverPEA, startDate]);
 
   return (
-    <div className="card cursor-pointer" onClick={goToDetail}>
-      <div className="card-body">
-        <div className="card-body-inline">
-          <div className="img img-square img-avatar flex-grow-1 align-self-start">
-            <Image
-              src="/assets/img/graphic/status_vehicle_inuse.png"
-              width={100}
-              height={100}
-              alt="status key pickup"
-            />
-          </div>
-          <div className="card-content">
-            <div className="card-content-top">
-              <div className="card-title">
-                {title} <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
-              </div>
-              <div className="card-subtitle">{licensePlate}</div>
-              <div className="supporting-text-group supporting-text-column">
-                <div className="supporting-text text-truncate w-full">{location}</div>
-                <div className="supporting-text text-truncate">{dateRange}</div>
+    <div>
+      <div className="card cursor-pointer" onClick={goToDetail}>
+        <div className="card-body">
+          <div className="card-body-inline">
+            <div className="img img-square img-avatar flex-grow-1 align-self-start">
+              <Image
+                src="/assets/img/graphic/status_vehicle_inuse.png"
+                width={100}
+                height={100}
+                alt="status key pickup"
+              />
+            </div>
+            <div className="card-content">
+              <div className="card-content-top">
+                <div className="card-title">
+                  {title} <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
+                </div>
+                <div className="card-subtitle">{licensePlate}</div>
+                <div className="supporting-text-group supporting-text-column">
+                  <div className="supporting-text text-truncate w-full">{location}</div>
+                  <div className="supporting-text text-truncate">{dateRange}</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {isPickupDatePassed && (
-          <div className="card-item-group d-flex flex-column">
-            <div className="card-item ">
-              <i className="material-symbols-outlined">info</i>
-              <span className="card-item-text">{"กรุณาคืนยานพาหนะ"}</span>
+          {isPickupDatePassed && (
+            <div className="card-item-group d-flex flex-column">
+              <div className="card-item ">
+                <i className="material-symbols-outlined">info</i>
+                <span className="card-item-text">{"กรุณาคืนยานพาหนะ"}</span>
+              </div>
             </div>
-          </div>
-        )}
-
-        <div className="card-actions flex w-full">
-          <button
-            className="btn btn-secondary flex-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
-            }}
-          >
-            บันทึกเดินทาง
-          </button>
-          <button
-            className="btn btn-secondary flex-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/vehicle-in-use/user/${id}?activeTab=บันทึกการเดินทาง`);
-            }}
-          >
-            เติมเชื้อเพลิง
-            {isPickupDatePassed && (
-              <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
-            )}
-          </button>
-          {isDriverPEA ? (
-            <button
-              className="btn btn-secondary flex-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/vehicle-in-use/user/${id}?activeTab=บัตรเดินทาง`);
-              }}
-            >
-              บัตรเดินทาง
-            </button>
-          ) : !shouldShowRatingButton && !isPickupDatePassed ? (
-            <button
-              className="btn btn-secondary flex-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
-              }}
-            >
-              ดูนัดหมาย
-            </button>
-          ) : (
-            <button
-              className="btn btn-secondary flex-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
-              }}
-            >
-              ให้คะแนนผู้ขับขี่
-            </button>
           )}
-          <button
-            className="btn btn-secondary flex-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/vehicle-in-use/user/${id}?activeTab=บันทึกการเดินทาง`);
-            }}
-          >
-            คืนยานพาหนะ
-            {isPickupDatePassed && (
-              <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
+
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            <button
+              className="btn btn-secondary flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง`);
+              }}
+            >
+              บันทึกเดินทาง
+            </button>
+            <button
+              className="btn btn-secondary flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง`);
+              }}
+            >
+              เติมเชื้อเพลิง
+              {isPickupDatePassed && (
+                <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
+              )}
+            </button>
+            {isDriverPEA ? (
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  licenseCardModalRef.current?.openModal();
+                  // router.push(`/vehicle-in-use/user/${id}?activeTab=บัตรเดินทาง`);
+                }}
+              >
+                บัตรเดินทาง
+              </button>
+            ) : !shouldShowRatingButton && !isPickupDatePassed ? (
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
+                }}
+              >
+                ดูนัดหมาย
+              </button>
+            ) : (
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  reviewCarDriveModalRef.current?.openModal();
+                }}
+              >
+                ให้คะแนนผู้ขับขี่
+              </button>
             )}
-          </button>
+            <button
+              className="btn btn-secondary flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                returnCarAddModalRef.current?.openModal();
+                // router.push(`/vehicle-in-use/user/${id}?activeTab=การคืนยานพาหนะ`);
+              }}
+            >
+              คืนยานพาหนะ
+              {isPickupDatePassed && (
+                <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
+              )}
+            </button>
+          </div>
         </div>
       </div>
+
+      <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
+      <ReturnCarAddModal ref={returnCarAddModalRef} id={id} />
+      <LicenseCardModal ref={licenseCardModalRef} requestData={requestData} />
     </div>
   );
 }
