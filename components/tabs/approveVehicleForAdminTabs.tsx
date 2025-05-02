@@ -1,11 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import ZeroRecord from "@/components/zeroRecord";
-import ApproveFlow from "@/components/admin/approveFlow";
-import KeyHandOver from "@/components/admin/keyHandOver";
-import TravelTab from "@/components/admin/travelTab";
-import CheckCar from "@/components/admin/checkCar";
-import FinishTab from "@/components/admin/finishTab";
 import { fetchMenus } from "@/services/bookingAdmin";
 import { summaryType } from "@/app/types/request-list-type";
 import AdminApproveFlow from "@/components/flow/adminApproveFlow";
@@ -15,33 +8,6 @@ import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
 import AdminVehicleInsFlow from "../flow/adminVehicleInsFlow";
 
 export default function ApproveVehicleForAdminTabs() {
-  // const tabs = [
-  //   {
-  //     label: "ตรวจสอบคำขอ",
-  //     content: <ApproveFlow />,
-  //     badge: "4",
-  //   },
-  //   {
-  //     label: "ให้กุญแจ",
-  //     content: <KeyHandOver />,
-  //   },
-  //   {
-  //     label: "เดินทาง",
-  //     content: <TravelTab />,
-  //   },
-  //   {
-  //     label: "ตรวจสอบยานพาหนะ",
-  //     content: <CheckCar />,
-  //   },
-  //   {
-  //     label: "เสร็จสิ้น",
-  //     content: <FinishTab />,
-  //   },
-  //   {
-  //     label: "ยกเลิก",
-  //     content: <div></div>,
-  //   },
-  // ];
 
      const [statusData, setStatusData] = useState<summaryType[]>([]);
   

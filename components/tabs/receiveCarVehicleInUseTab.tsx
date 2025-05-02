@@ -11,6 +11,7 @@ import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import { fetchRequestDetail } from "@/services/keyAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import ToastCustom from "../toastCustom";
+import { useSearchParams } from "next/navigation";
 
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;
@@ -33,9 +34,14 @@ const ReceiveCarVehicleInUseTab = ({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const [receiveSuccess, setReceiveSuccess] = useState(true);
+  const [receiveSuccess] = useState(true);
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [showToast, setShowToast] = useState(false);
+  const searchParams = useSearchParams();
+  const createReq = searchParams.get("create-travel-req");
+const dateTime = searchParams.get("date-time");
+
+const formatDateTime = convertToBuddhistDateTime(dateTime || "");
 
   const fetchRequestDetailfunc = async () => {
     if (requestId) {
@@ -47,7 +53,6 @@ const ReceiveCarVehicleInUseTab = ({
           response = await fetchRequestKeyDetail(requestId);
         }
 
-        console.log("datarecieve---", response.data);
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
@@ -56,9 +61,10 @@ const ReceiveCarVehicleInUseTab = ({
   };
 
   const handleSubmit = async () => {
+    fetchRequestDetailfunc();
     receiveCarVehicleModalRef.current?.closeModal();
     setShowToast(true);
-  }
+  };
 
   useEffect(() => {
     fetchRequestDetailfunc();
@@ -67,18 +73,31 @@ const ReceiveCarVehicleInUseTab = ({
   return (
     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
       {showToast && (
-  <ToastCustom
-    title="แก้ไขข้อมูลสำเร็จ"
-    desc={
-      <>
-        แก้ไขข้อมูลการรับยานพาหนะคำขอเลขที่ 
-        <br />
-        {requestData?.request_no} ถูกตีกลับเรียบร้อยแล้ว
-      </>
-    }
-    status="success"
-  />
-)}
+        <ToastCustom
+          title="แก้ไขข้อมูลสำเร็จ"
+          desc={
+            <>
+              แก้ไขข้อมูลการรับยานพาหนะคำขอเลขที่
+              <br />
+              {requestData?.request_no} ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+          {createReq === "success" && (
+              <ToastCustom
+                title="เพิ่มข้อมูลการเดินทางสำเร็จ"
+                desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
+                status="success"
+                styleText="!mx-auto"
+                searchParams={
+                  (role === "user" || role === "admin")
+                    ? "activeTab=ข้อมูลการเดินทาง"
+                    : "progressType=บันทึกการเดินทาง"
+                }
+              />
+            )}
       <div className="w-full row-start-2 md:col-start-1 flex flex-col gap-4">
         {receiveSuccess && displayOn !== "vehicle-in-use" && (
           <>
@@ -201,7 +220,13 @@ const ReceiveCarVehicleInUseTab = ({
                 )}
               </div>
 
-              <ImagesCarCard />
+              <ImagesCarCard
+              images={
+                requestData?.vehicle_images_received?.map(
+                  (image) => image.vehicle_img_file || ""
+                ) || []
+              }
+            />
             </div>
           </>
         )}
@@ -284,15 +309,18 @@ const ReceiveCarVehicleInUseTab = ({
           />
         </div>
       </div>
+      
 
       <ReceiveCarVehicleModal
-       onSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         status={edit}
         ref={receiveCarVehicleModalRef}
         requestData={requestData}
         role={role}
       />
       <ReturnCarAddStep2Modal
+        status="edit"
+        useBy="admin"
         openStep1={() => {}}
         ref={returnCarAddStep2ModalRef}
       />

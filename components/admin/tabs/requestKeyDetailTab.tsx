@@ -9,6 +9,7 @@ import TravelInfoTab from "../travelInfoTab";
 import ReturnCarTab from "@/components/admin/returnCarTab";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react"; 
+import RecordFuelTab from "@/components/tabs/recordFuelTab";
 
 interface Props {
   requestId: string;
@@ -100,7 +101,7 @@ export default function RequestDetailTabs({
             {
               label: "การเติมเชื้อเพลิง",
               content: (
-                <ReceiveCarVehicleInUseTab requestId={requestId} edit="edit" />
+                <RecordFuelTab requestId={requestId} role="admin" />
               ),
               badge: "",
             },

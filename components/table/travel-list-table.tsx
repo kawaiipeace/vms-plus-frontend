@@ -43,7 +43,8 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const recordTravelAddModalRef = useRef<{
+
+  const recordTravelEditModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -157,7 +158,7 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                recordTravelAddModalRef.current?.openModal();
+                recordTravelEditModalRef.current?.openModal();
               }}
             >
               <i className="material-symbols-outlined">stylus</i>
@@ -174,7 +175,24 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
             >
               <i className="material-symbols-outlined">delete</i>
             </button>
-            <RecordTravelAddModal status={true} ref={recordTravelAddModalRef} />
+
+            <RecordTravelAddModal
+              ref={recordTravelEditModalRef}
+              role="admin"
+              requestId={row.original.trn_request_uid}
+              dataItem={{
+                trn_trip_detail_uid: row.original.trn_trip_detail_uid,
+                trn_request_uid: row.original.trn_request_uid,
+                trip_start_datetime: row.original.trip_start_datetime,
+                trip_end_datetime: row.original.trip_end_datetime,
+                trip_departure_place: row.original.trip_departure_place,
+                trip_destination_place: row.original.trip_destination_place,
+                trip_start_miles: row.original.trip_start_miles,
+                trip_end_miles: row.original.trip_end_miles,
+                trip_detail: row.original.trip_detail,
+              }}
+              status={true}
+            />
             <CancelRequestModal
               id={row.original.trn_request_uid}
               tripId={row.original.trn_trip_detail_uid}
