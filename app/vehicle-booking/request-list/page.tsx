@@ -50,7 +50,6 @@ function RequestListContent() {
             </>
           }
           status="success"
-          isShowButton={true}
         />
       )}
     </>

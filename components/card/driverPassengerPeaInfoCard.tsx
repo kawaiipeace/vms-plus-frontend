@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { fetchVehicleUsers } from "@/services/masterService";
-import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import CallToDriverModal from "@/components/modal/callToDriverModal";
+import Image from "next/image";
+import { useRef } from "react";
 
 interface DriverPassengerInfoCardProps {
   id?: string;
@@ -11,42 +9,54 @@ interface DriverPassengerInfoCardProps {
   displayLocation?: boolean;
 }
 
-export default function DriverPassengerPeaInfoCard({
-  id,
-  requestData,
-  displayLocation,
-}: DriverPassengerInfoCardProps) {
+export default function DriverPassengerPeaInfoCard({ id, requestData, displayLocation }: DriverPassengerInfoCardProps) {
   const callToDriverModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetchVehicleUsers(id);
-        console.log("vehicledata", res);
-        let user = res.data[0];
+  // const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await fetchVehicleUsers(id);
+  //       console.log("vehicledata", res);
+  //       let user = res.data[0];
 
-        // Override only contact numbers from requestData if available
-        if (requestData) {
-          user = {
-            ...user,
-            tel_mobile: requestData.car_user_mobile_contact_number,
-            tel_internal: requestData.car_user_internal_contact_number,
-          };
-        }
+  //       // Override only contact numbers from requestData if available
+  //       if (requestData) {
+  //         user = {
+  //           ...user,
+  //           tel_mobile: requestData.car_user_mobile_contact_number,
+  //           tel_internal: requestData.car_user_internal_contact_number,
+  //         };
+  //       }
 
-        setVehicleUser(user);
-      } catch (error) {
-        console.error("Error fetching driver data:", error);
-      }
-    };
+  //       setVehicleUser(user);
+  //     } catch (error) {
+  //       console.error("Error fetching driver data:", error);
+  //     }
+  //   };
 
-    if (id) {
-      fetchData();
-    }
-  }, [id, requestData]);
+  //   if (id) {
+  //     fetchData();
+  //   }
+  // }, [id, requestData]);
+
+  const {
+    driver,
+    is_pea_employee_driver,
+    driver_emp_name,
+    driver_mobile_contact_number,
+    driver_emp_id,
+    driver_emp_dept_sap,
+    driver_image_url,
+  } = requestData || {};
+
+  const name = is_pea_employee_driver === "1" ? driver?.driver_name : driver_emp_name;
+  const contactNumber = is_pea_employee_driver === "1" ? driver?.driver_contact_number : driver_mobile_contact_number;
+  const idDriver = is_pea_employee_driver === "1" ? driver?.driver_id : driver_emp_id;
+  const deptSap = is_pea_employee_driver === "1" ? driver?.driver_dept_sap : driver_emp_dept_sap;
+  const imageSrc = is_pea_employee_driver === "1" ? driver?.driver_image : driver_image_url;
 
   return (
     <div className="form-card">
@@ -55,38 +65,31 @@ export default function DriverPassengerPeaInfoCard({
           <div className="w-[80px] aspect-square overflow-hidden rounded-full">
             <Image
               className="object-cover object-center"
-              src={vehicleUser?.image_url || "/assets/img/avatar.svg"}
+              src={imageSrc || "/assets/img/avatar.svg"}
               alt="driver-passenger-info"
               width={200}
               height={200}
             />
           </div>
           <div>
-            <p className="font-bold">{vehicleUser?.full_name}</p>
-            <p className="font-light">
-              {vehicleUser?.emp_id} | {vehicleUser?.dept_sap_short}
-            </p>
+            <p className="font-bold">{name}</p>
+            <p className="font-light">{idDriver + "|" + deptSap}</p>
           </div>
         </div>
         <div className="mt-3">
-          <div className="flex">
-            <i className="material-symbols-outlined mr-2 text-[#A80689]">
-              deskphone
-            </i>
-            <p> {vehicleUser?.tel_internal}</p>
-          </div>
+          {is_pea_employee_driver === "1" && (
+            <div className="flex">
+              <i className="material-symbols-outlined mr-2 text-[#A80689]">deskphone</i>
+              <p> {}</p>
+            </div>
+          )}
           <div className="grid grid-cols-4 gap-3">
             <div className="flex items-center col-span-3">
-              <i className="material-symbols-outlined mr-2 text-[#A80689]">
-                smartphone
-              </i>
-              <p> {vehicleUser?.tel_mobile}</p>
+              <i className="material-symbols-outlined mr-2 text-[#A80689]">smartphone</i>
+              <p> {contactNumber}</p>
             </div>
             <div className="col-span-1">
-              <button
-                className="btn btn-primary"
-                onClick={() => callToDriverModalRef.current?.openModal()}
-              >
+              <button className="btn btn-primary" onClick={() => callToDriverModalRef.current?.openModal()}>
                 <i className="material-symbols-outlined">call</i>
               </button>
             </div>
@@ -137,9 +140,9 @@ export default function DriverPassengerPeaInfoCard({
         )}
       </div>
       <CallToDriverModal
-        imgSrc={vehicleUser?.image_url || "/assets/img/avatar.svg"}
-        name={vehicleUser?.full_name || ""}
-        phone={vehicleUser?.tel_mobile || ""}
+        imgSrc={imageSrc || "/assets/img/avatar.svg"}
+        name={name || ""}
+        phone={contactNumber || ""}
         ref={callToDriverModalRef}
       />
     </div>

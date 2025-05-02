@@ -139,7 +139,7 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "บันทึกการเดินทาง") {
+        if (ref_request_status_name === "เดินทาง") {
           return (
             <MobileTravelLogCard
               key={request.trn_request_uid || index}
@@ -180,7 +180,7 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ") {
+        if (ref_request_status_name === "ถูกตีกลับ") {
           return (
             <MobileRejectCard
               key={request.trn_request_uid || index}

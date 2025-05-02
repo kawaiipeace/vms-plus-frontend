@@ -1,21 +1,15 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import TimePicker from "@/components/timePicker";
 import { useFormContext } from "@/contexts/requestFormContext";
+import { adminUpdatePickup } from "@/services/bookingAdmin";
+import { updatePickup } from "@/services/bookingUser";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { convertToISO } from "@/utils/convertToISO";
+import useSwipeDown from "@/utils/swipeDown";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { convertToISO } from "@/utils/convertToISO";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { updatePickup } from "@/services/bookingUser";
-import { RequestDetailType } from "@/app/types/request-detail-type";
-import useSwipeDown from "@/utils/swipeDown";
-import { adminUpdatePickup } from "@/services/bookingAdmin";
 
 interface EditDriverAppointmentModalProps {
   requestData?: RequestDetailType;
@@ -56,9 +50,7 @@ const EditDriverAppointmentModal = forwardRef<
   });
 
   const [selectedTime, setSelectedTime] = useState<string>(
-    formData?.pickupDatetime
-      ? formData.pickupDatetime.split("T")[1].slice(0, 5)
-      : ""
+    formData?.pickupDatetime ? formData.pickupDatetime.split("T")[1].slice(0, 5) : ""
   );
   const [selectedDate, setSelectedDate] = useState<string>(
     formData?.pickupDatetime ? formData.pickupDatetime.split("T")[0] : ""
@@ -70,7 +62,7 @@ const EditDriverAppointmentModal = forwardRef<
         pickupDatetime: requestData?.pickup_datetime || "",
         pickupPlace: requestData?.pickup_place || "",
       });
-      const datetime = convertToBuddhistDateTime(requestData?.pickup_datetime);
+      const datetime = convertToBuddhistDateTime(requestData?.pickup_datetime || "");
       setSelectedDate(datetime.date);
       setSelectedTime(datetime.time);
       hasReset.current = true;
@@ -99,7 +91,6 @@ const EditDriverAppointmentModal = forwardRef<
 
     const pickupISO = convertToISO(selectedDate, selectedTime);
 
- 
     if (requestData) {
       const payload = {
         pickup_datetime: pickupISO,
@@ -135,11 +126,10 @@ const EditDriverAppointmentModal = forwardRef<
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -165,13 +155,7 @@ const EditDriverAppointmentModal = forwardRef<
                     <Controller
                       name="pickupPlace"
                       control={control}
-                      render={({ field }) => (
-                        <input
-                          type="text"
-                          className="form-control border-0"
-                          {...field}
-                        />
-                      )}
+                      render={({ field }) => <input type="text" className="form-control border-0" {...field} />}
                     />
                   </div>
                 </div>
@@ -183,9 +167,7 @@ const EditDriverAppointmentModal = forwardRef<
                   <div className="input-group is-readonly">
                     <div className="input-group-prepend">
                       <span className="input-group-text">
-                        <i className="material-symbols-outlined">
-                          calendar_month
-                        </i>
+                        <i className="material-symbols-outlined">calendar_month</i>
                       </span>
                     </div>
 
@@ -208,29 +190,18 @@ const EditDriverAppointmentModal = forwardRef<
                         <i className="material-symbols-outlined">schedule</i>
                       </span>
                     </div>
-                    <TimePicker
-                      defaultValue={selectedTime}
-                      onChange={handleTimeChange}
-                    />
+                    <TimePicker defaultValue={selectedTime} onChange={handleTimeChange} />
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="modal-action sticky bottom-0 gap-3 mt-0 w-full">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => modalRef.current?.close()}
-              >
+              <button type="button" className="btn btn-secondary" onClick={() => modalRef.current?.close()}>
                 ยกเลิก
               </button>
 
-              <button
-                type="submit"
-                className="btn btn-primary"
-                onClick={handleSubmit(onSubmit)}
-              >
+              <button type="submit" className="btn btn-primary" onClick={handleSubmit(onSubmit)}>
                 ยืนยัน
               </button>
             </div>

@@ -1,12 +1,11 @@
 import React, { useRef, useState } from "react";
 import TableTravel from "@/components/tableTravel";
-import { TravelData, travelDataColumns, travelData } from "@/data/travelData";
+import { TravelData } from "@/data/travelData";
 import ZeroRecord from "@/components/zeroRecord";
-import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "../requestStatusBox";
 
 export default function TravelTab() {
-  const [data, setRequestData] = useState<TravelData[]>(travelData);
+  const [data, setRequestData] = useState<TravelData[]>([]);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -45,7 +44,7 @@ export default function TravelTab() {
               </button>
             </div>
           </div>
-          <TableTravel data={data} columns={travelDataColumns} />
+          {/* <TableTravel data={data} /> */}
           {/* <FilterModal ref={filterModalRef} /> */}
         </>
       ) : (

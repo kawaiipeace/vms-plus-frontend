@@ -25,7 +25,7 @@ export default function RequestDetailTabs({ requestId, displayKeyHandover }: Pro
       if (requestId) {
         loadLogs(requestId);
       }
-    }, [loadLogs, params, requestId]);
+    }, [params, requestId]);
     
   const tabs = [
     {

@@ -92,7 +92,7 @@ const VehiclePickModel = forwardRef<
         String(requestData.request_vehicle_type.ref_vehicle_type_code)
       );
       setSelectedCarTypeName(
-        requestData.request_vehicle_type.ref_vehicle_type_name
+        requestData?.request_vehicle_type?.ref_vehicle_type_name || ""
       );
       hasReset.current = true;
     }
@@ -101,8 +101,8 @@ const VehiclePickModel = forwardRef<
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div  className="modal-box max-w-[800px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[800px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
