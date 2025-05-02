@@ -55,13 +55,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
         />
       )}
 
-{requestData?.is_return_overdue === true && (
-        <AlertCustom
-          icon="cancel"
-          title="คืนยานพาหนะล่าช้า"
-          desc=""
-        />
-      )}
+
 
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.sended_back_request_reason}`} />

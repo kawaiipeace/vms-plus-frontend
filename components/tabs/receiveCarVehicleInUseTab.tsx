@@ -47,7 +47,7 @@ const ReceiveCarVehicleInUseTab = ({
           response = await fetchRequestKeyDetail(requestId);
         }
 
-        console.log("data---", response.data);
+        console.log("datarecieve---", response.data);
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);

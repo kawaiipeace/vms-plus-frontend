@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
-import Image from "next/image";
 import {
   ColumnDef,
   getCoreRowModel,

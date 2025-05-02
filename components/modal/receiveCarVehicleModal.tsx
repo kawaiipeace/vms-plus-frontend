@@ -34,7 +34,6 @@ const ReceiveCarVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReceiveCarVehicleModalProps
 >(({ status, requestData, role, onSubmit }, ref) => {
-  // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const datePickerRef = useRef<DatePickerRef>(null);
   const fuelQuantityRef = useRef<HTMLInputElement>(null);
@@ -52,6 +51,7 @@ const ReceiveCarVehicleModal = forwardRef<
     useState<VehicleUserTravelCardType>();
 
   useEffect(() => {
+    console.log('resqu',requestData);
     if (requestData) {
       setFuelQuantity(requestData?.fuel_end || 0);
     }
