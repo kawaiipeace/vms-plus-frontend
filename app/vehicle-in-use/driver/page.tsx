@@ -8,21 +8,19 @@ import DriverProgressTab from "@/components/tabs/driverProgressTab";
 import DriverSoonTab from "@/components/tabs/driverSoonTab";
 import DriverFinishTab from "@/components/tabs/driverFinishTab";
 import DriverCancelTab from "@/components/tabs/driverCancelTab";
-import {
-  ReceivedKeyDriver,
-  VehicleInUseDriverMenu,
-} from "@/app/types/vehicle-in-use-driver-type";
+import { VehicleInUseDriverMenu } from "@/app/types/vehicle-in-use-driver-type";
 import { fetchMenus, receivedKeyDriver } from "@/services/vehicleInUseDriver";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import "dayjs/locale/th";
 import dayjs from "dayjs";
+import { RequestListType } from "@/app/types/request-list-type";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
 export default function DriverMain() {
   const [statusData, setStatusData] = useState<VehicleInUseDriverMenu[]>([]);
-  const [data, setData] = useState<ReceivedKeyDriver[]>([]);
+  const [data, setData] = useState<RequestListType[]>([]);
   const [activeTab, setActiveTab] = useState(0);
   const { isPinned } = useSidebar();
 
@@ -39,7 +37,9 @@ export default function DriverMain() {
       status.includes(e.ref_request_status_code)
     );
 
-    return filter;
+    return filter.sort(
+      (a, b) => dayjs(a.start_datetime).unix() - dayjs(b.start_datetime).unix()
+    );
   };
 
   const filterData = getFilterData();
