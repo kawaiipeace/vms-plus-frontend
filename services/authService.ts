@@ -43,6 +43,18 @@ export const getKeyCloakData = async (code: string) => {
     }
 };
 
+export const getThaiIdData = async (code: string) => {
+    try {
+        const response = await axiosInstance.post('login/authen-thaiid', {
+            code,
+            redirect_uri: `${window.location.origin}/callback_code_token_thai`,
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const verifyOTP = async ({ otp, otpId }: { otp: string; otpId: string }) => {
     try {
         const response = await axiosInstance.post('login/verify-otp', { otp, otpId });
