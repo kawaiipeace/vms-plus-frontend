@@ -53,9 +53,7 @@ export default function AdminVehicleInsTable({
         <div className="text-left" data-name="วันที่ผู้ใช้คืนยานพาหนะ">
           <div className="flex flex-col">
             <div>{row.original.start_datetime}</div>
-            <div className="text-left text-sm text-secondary">
-            16:35
-            </div>
+            <div className="text-left text-sm text-secondary">16:35</div>
           </div>
         </div>
       ),
@@ -66,16 +64,15 @@ export default function AdminVehicleInsTable({
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-       
-            <div className="flex flex-col">
-              {" "}
-              <div className="text-left">
-                {row.original.vehicle_license_plate}
-              </div>
-              <div className="text-color-secondary text-xs">
-                {row.original.ref_vehicle_type_name}
-              </div>
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">
+              {row.original.vehicle_license_plate}
             </div>
+            <div className="text-color-secondary text-xs">
+              {row.original.ref_vehicle_type_name}
+            </div>
+          </div>
         </div>
       ),
     },
@@ -87,9 +84,7 @@ export default function AdminVehicleInsTable({
         <div className="text-left" data-name="สังกัดยานพาหนะ">
           <div className="flex flex-col">
             {" "}
-            <div className="text-left">
-              {row.original.vehicle_dept_name}
-            </div>
+            <div className="text-left">{row.original.vehicle_dept_name}</div>
             <div className="text-color-secondary text-xs">
               {row.original.vehicle_carpool_name}
             </div>
@@ -182,7 +177,7 @@ export default function AdminVehicleInsTable({
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            )  : (
+            ) : (
               <span className="badge badge-pill-outline badge-info whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
@@ -197,26 +192,23 @@ export default function AdminVehicleInsTable({
       header: () => <div className="text-center"></div>,
       enableSorting: false,
       cell: ({ row }) => {
-
         return (
           <div className="text-left dataTable-action">
+            <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              data-tip="ดูรายละเอียดคำขอ"
+              onClick={() =>
+                router.push(
+                  "/administrator/vehicle-in-use/" +
+                    row.original.trn_request_uid +
+                    "/edit"
+                )
+              }
+            >
+              <i className="material-symbols-outlined">quick_reference_all</i>
+            </button>
 
-              <button
-                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/administrator/vehicle-in-use/" +
-                      row.original.trn_request_uid +
-                      "/edit"
-                  )
-                }
-              >
-                <i className="material-symbols-outlined">quick_reference_all</i>
-              </button>
-
-
-
+            {row.original.ref_request_status_code === "71" && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดการตีกลับ"
@@ -229,8 +221,9 @@ export default function AdminVehicleInsTable({
               >
                 <i className="material-symbols-outlined">source_notes</i>
               </button>
+            )}
 
-              
+            {row.original.ref_request_status_code === "70" && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ตรวจสอบการคืนยานพาหนะ"
@@ -243,7 +236,7 @@ export default function AdminVehicleInsTable({
               >
                 <i className="material-symbols-outlined">overview</i>
               </button>
-
+            )}
           </div>
         );
       },
@@ -283,8 +276,7 @@ export default function AdminVehicleInsTable({
             table={table}
             onRowClick={(row) => {
               const uid = row.trn_request_uid;
-                router.push(`/administrator/vehicle-in-use/${uid}`);
-
+              router.push(`/administrator/vehicle-in-use/${uid}`);
             }}
           />
         </>

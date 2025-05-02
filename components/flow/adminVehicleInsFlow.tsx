@@ -64,16 +64,8 @@ export default function AdminVehicleInsFlow() {
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
-      "30": { iconName: "schedule", status: "info" },
-      "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
-      "41": { iconName: "check", status: "success" },
-      "50": { iconName: "vpn_key", status: "info" },
-      "51": { iconName: "vpn_key", status: "info" },
-      "60": { iconName: "directions_car", status: "info" },
-      "70": { iconName: "build", status: "warning" },
-      "71": { iconName: "build", status: "warning" },
-      "80": { iconName: "done_all", status: "success" },
+      "70": { iconName: "schedule", status: "info" },
+      "71": { iconName: "schedule", status: "info" },
       "90": { iconName: "delete", status: "default" },
     };
 
