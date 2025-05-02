@@ -33,5 +33,9 @@ export type VehicleInsType = {
     can_choose_vehicle: boolean;
     can_choose_driver: boolean;
     canceled_request_datetime: string;
+    returned_vehicle_datetime: string;
+    retrned_vehicle_remark: string;
+    parking_place: string;
+    next_start_datetime: string;
   };
   
