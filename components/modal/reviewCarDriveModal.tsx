@@ -70,7 +70,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
     }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc]);
 
     useEffect(() => {
-      if (displayOn === "admin" || displayOn === "user") {
+      if (displayOn === "admin" || displayOn === "view") {
         setReviewSubmit(true);
       }
     }, [displayOn]);
@@ -152,6 +152,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
                     icon={iconList[index]}
                     onChange={onChange}
                     value={findValue?.survey_answer || 5}
+                    disabled={reviewSubmit}
                   />
                 );
               })}

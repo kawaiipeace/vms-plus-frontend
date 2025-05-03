@@ -9,6 +9,7 @@ interface MobileWaitForKeyCardProps {
   licensePlate: string;
   location: string;
   dateRange: string;
+  rating?: number;
 }
 
 export default function MobileRejectCard({
@@ -17,8 +18,14 @@ export default function MobileRejectCard({
   licensePlate,
   location,
   dateRange,
+  rating,
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
+
+  const reviewCarViewDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const reviewCarDriveModalRef = useRef<{
     openModal: () => void;
@@ -73,20 +80,34 @@ export default function MobileRejectCard({
             >
               แก้ไข
             </button>
-            <button
-              className="btn btn-secondary flex-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                // router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
-                reviewCarDriveModalRef.current?.openModal();
-              }}
-            >
-              ดูคะแนนผู้ขับขี่
-            </button>
+            {rating ? (
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
+                  reviewCarDriveModalRef.current?.openModal();
+                }}
+              >
+                ดูคะแนนผู้ขับขี่
+              </button>
+            ) : (
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
+                  reviewCarViewDriveModalRef.current?.openModal();
+                }}
+              >
+                ให้คะแนนผู้ขับขี่
+              </button>
+            )}
           </div>
         </div>
       </div>
-      <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} displayOn={"user"} />
+      <ReviewCarDriveModal ref={reviewCarViewDriveModalRef} id={id} displayOn={"view"} />
+      <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
     </div>
   );
 }

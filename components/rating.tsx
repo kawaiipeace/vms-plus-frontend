@@ -7,9 +7,10 @@ interface RatingProps {
   onChange?: (value: string) => void;
   value: number;
   name: string;
+  disabled?: boolean;
 }
 
-const Rating = ({ title, description, icon, onChange, value, name }: RatingProps) => {
+const Rating = ({ title, description, icon, onChange, value, name, disabled }: RatingProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("e.target.value", e.target.value);
 
@@ -39,6 +40,7 @@ const Rating = ({ title, description, icon, onChange, value, name }: RatingProps
                     value={num}
                     checked={value === num}
                     onChange={handleChange}
+                    disabled={disabled}
                   />
                 ))}
                 {/* <input type="radio" name="rating-2" className="mask mask-star-2 bg-orange-400" aria-label="1 star" />

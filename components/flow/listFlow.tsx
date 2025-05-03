@@ -182,6 +182,7 @@ export default function ListFlow({ requestData }: Props) {
                 " - " +
                 convertToBuddhistDateTime(request?.end_datetime || "").date
               }
+              rating={undefined}
             />
           );
         }
