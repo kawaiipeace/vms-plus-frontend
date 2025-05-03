@@ -196,7 +196,11 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
             )}
           </div>
           <div className="hidden md:block">
-            <RequestListTable defaultData={data} pagination={pagination} />
+            <RequestListTable
+              defaultData={data}
+              pagination={pagination}
+              role="driver"
+            />
           </div>
         </>
       ) : (
