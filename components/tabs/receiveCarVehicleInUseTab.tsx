@@ -4,13 +4,13 @@ import CarDetailCard2 from "@/components/card/carDetailCard2";
 import ImagesCarCard from "@/components/card/ImagesCarCard";
 import UserInfoCard from "@/components/card/userInfoCard";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
-import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
 import { fetchRequestKeyDetail } from "@/services/masterService";
 import { useEffect, useRef, useState } from "react";
 import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import { fetchRequestDetail } from "@/services/keyAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import ToastCustom from "../toastCustom";
+import ReturnEditCarModal from "@/components/admin/modals/returnEditCarModal";
 
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;
@@ -300,8 +300,9 @@ const ReceiveCarVehicleInUseTab = ({
         requestData={requestData}
         role={role}
       />
-      <ReturnCarAddStep2Modal
-        previewImages={requestData?.vehicle_images_received || []}
+      <ReturnEditCarModal
+        previewImages={requestData?.vehicle_images_received}
+        requestData={requestData}
         status="edit"
         useBy="admin"
         reqId={requestData?.trn_request_uid}

@@ -199,7 +199,6 @@ const ReceiveCarVehicleModal = forwardRef<
                         <DatePicker
                           placeholder={"ระบุวันที่"}
                           onChange={(date) => setSelectedDate(date)}
-                          defaultValue={selectedDate}
                           ref={datePickerRef}
                         />
                       </div>
