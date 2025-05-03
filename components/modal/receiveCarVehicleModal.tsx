@@ -22,6 +22,10 @@ import {
   useState,
 } from "react";
 import TimePicker from "../timePicker";
+import {
+  driverReceivedVehicle,
+  fetchDriverTravelCard,
+} from "@/services/vehicleInUseDriver";
 
 interface ReceiveCarVehicleModalProps {
   status?: string;
@@ -120,17 +124,26 @@ const ReceiveCarVehicleModal = forwardRef<
       let response;
       if (role === "admin") {
         response = await adminReceivedVehicle(formData);
-      } else {
+      } else if (role === "user") {
         response = await userReceivedVehicle(formData);
+      } else {
+        response = await driverReceivedVehicle(formData);
       }
       if (onSubmit) {
         onSubmit();
       } else {
         if (response.status === 200) {
-          const response = await fetchUserTravelCard(
-            requestData?.trn_request_uid || ""
-          );
-          setTravelCardData(response.data);
+          let response;
+          if (role === "driver") {
+            response = await fetchDriverTravelCard(
+              requestData?.trn_request_uid || ""
+            );
+          } else {
+            response = await fetchUserTravelCard(
+              requestData?.trn_request_uid || ""
+            );
+          }
+          setTravelCardData(response?.data);
           clearForm();
 
           receiveCarSuccessModalRef.current?.openModal();

@@ -249,7 +249,12 @@ const DriverDetailContent = ({
               รับยานพาหนะ
             </button>
           </div>
-          <ReceiveCarVehicleModal status="" ref={receiveCarVehicleModalRef} />
+          <ReceiveCarVehicleModal
+            role="driver"
+            status=""
+            requestData={data}
+            ref={receiveCarVehicleModalRef}
+          />
         </>
       )}
 

@@ -23,9 +23,14 @@ interface PaginationType {
 interface Props {
   defaultData: RequestListType[];
   pagination: PaginationType;
+  role?: string;
 }
 
-export default function RequestListTable({ defaultData, pagination }: Props) {
+export default function RequestListTable({
+  defaultData,
+  pagination,
+  role,
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +65,10 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
         <div className="text-left">
           <div className="flex flex-col">
             <div>{row.original.request_no}</div>
-            <div className="text-left">{row.original.is_have_sub_request === "1" && "ปฏิบัติงานต่อเนื่อง"}</div>
+            <div className="text-left">
+              {row.original.is_have_sub_request === "1" &&
+                "ปฏิบัติงานต่อเนื่อง"}
+            </div>
           </div>
         </div>
       ),
@@ -80,24 +88,33 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       accessorKey: "vehicle_license_plate",
       header: () => <div className="text-center">ยานพาหนะ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
+      cell: ({ getValue }) => (
+        <div className="text-center">{getValue() as string}</div>
+      ),
     },
     {
       accessorKey: "work_place",
       header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
       enableSorting: false,
-      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
+      cell: ({ getValue }) => (
+        <div className="text-center">{getValue() as string}</div>
+      ),
     },
     {
       accessorKey: "start_datetime",
       header: () => <div className="text-center">วันที่เดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(row.original.start_datetime);
-        const endDateTime = convertToBuddhistDateTime(row.original.end_datetime);
+        const startDateTime = convertToBuddhistDateTime(
+          row.original.start_datetime
+        );
+        const endDateTime = convertToBuddhistDateTime(
+          row.original.end_datetime
+        );
         return (
           <div className="text-left">
-            {startDateTime.date + " " + startDateTime.time} - {endDateTime.date + " " + endDateTime.time}
+            {startDateTime.date + " " + startDateTime.time} -{" "}
+            {endDateTime.date + " " + endDateTime.time}
           </div>
         );
       },
@@ -111,7 +128,9 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
         return (
           <div className="w-[80px] text-center">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
-              <span className="badge badge-pill-outline badge-error whitespace-nowrap">{value as React.ReactNode}</span>
+              <span className="badge badge-pill-outline badge-error whitespace-nowrap">
+                {value as React.ReactNode}
+              </span>
             ) : value === "รออนุมัติ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
@@ -121,7 +140,9 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 {value as React.ReactNode}
               </span>
             ) : (
-              <span className="badge badge-pill-outline badge-info whitespace-nowrap">{value as React.ReactNode}</span>
+              <span className="badge badge-pill-outline badge-info whitespace-nowrap">
+                {value as React.ReactNode}
+              </span>
             )}
           </div>
         );
@@ -134,13 +155,55 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
+
+        const progressType = {
+          "50": "รอรับกุญแจ",
+          "51": "รอรับยานพาหนะ",
+          "60": "บันทึกการเดินทาง",
+          "70": "รอการตรวจสอบ",
+          "71": "คืนยานพาหนะไม่สำเร็จ",
+          "80": "ภารกิจสำเร็จ",
+          "90": "ยกเลิกภารกิจ",
+        };
+
+        if (role === "driver") {
+          const statusCode = row.original.ref_request_status_code;
+          const progress = row.original.ref_request_status_code
+            ? progressType[statusCode as keyof typeof progressType]
+            : "";
+
+          return (
+            <div className="text-left">
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                data-tip={statusValue}
+                onClick={() =>
+                  router.push(
+                    "/vehicle-in-use/driver/" +
+                      row.original.trn_request_uid +
+                      "?progressType=" +
+                      progress
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">quick_reference_all</i>
+              </button>
+            </div>
+          );
+        }
+
         return (
           <div className="text-left">
             {statusValue == "รออนุมัติ" && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid
+                  )
+                }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
@@ -151,15 +214,25 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
+                  onClick={() =>
+                    router.push(
+                      "/vehicle-in-use/user/" + row.original.trn_request_uid
+                    )
+                  }
                 >
-                  <i className="material-symbols-outlined">quick_reference_all</i>
+                  <i className="material-symbols-outlined">
+                    quick_reference_all
+                  </i>
                 </button>
 
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="การรับกุญแจ"
-                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
+                  onClick={() =>
+                    router.push(
+                      "/vehicle-in-use/user/" + row.original.trn_request_uid
+                    )
+                  }
                 >
                   <i className="material-symbols-outlined">key</i>
                 </button>
@@ -171,15 +244,27 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
+                  onClick={() =>
+                    router.push(
+                      "/vehicle-in-use/user/" + row.original.trn_request_uid
+                    )
+                  }
                 >
-                  <i className="material-symbols-outlined">quick_reference_all</i>
+                  <i className="material-symbols-outlined">
+                    quick_reference_all
+                  </i>
                 </button>
 
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="รอรับยานพาหนะ"
-                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid + "/edit")}
+                  onClick={() =>
+                    router.push(
+                      "/vehicle-in-use/user/" +
+                        row.original.trn_request_uid +
+                        "/edit"
+                    )
+                  }
                 >
                   <i className="material-symbols-outlined">directions_car</i>
                 </button>
@@ -190,7 +275,13 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="แก้ไข"
-                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid + "/edit")}
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid +
+                      "/edit"
+                  )
+                }
               >
                 <i className="material-symbols-outlined">stylus</i>
               </button>
@@ -200,7 +291,12 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
+                onClick={() =>
+                  router.push(
+                    "/vehicle-booking/request-list/" +
+                      row.original.trn_request_uid
+                  )
+                }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>

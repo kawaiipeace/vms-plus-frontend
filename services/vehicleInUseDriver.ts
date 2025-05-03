@@ -105,3 +105,26 @@ export const fetchUserAddFuelDetails = async (
     throw error;
   }
 };
+
+export const driverReceivedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "received-vehicle-driver/received-vehicle",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchDriverTravelCard = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      `received-vehicle-driver/travel-card/` + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
