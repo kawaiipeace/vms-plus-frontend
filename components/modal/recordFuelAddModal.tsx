@@ -65,9 +65,6 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       { ref_payment_type_code: number; ref_payment_type_name: string }[]
     >([]);
 
-    // const fuelOptions = ["ปตท. (OR)", "บางจาก (BCP)", "พีที (PTG)", "ซัสโก้ (SUSCO)", "เชลล์ (SHELL)"];
-    // const fuelTypeOptions = ["ดีเซล", "เบนซิน"];
-
     useImperativeHandle(ref, () => ({
       openModal: () => modalRef.current?.showModal(),
       closeModal: () => modalRef.current?.close(),
@@ -81,7 +78,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
         const ref_oil_station_brand_id = oilStationBrandData.find(
           (item) => item.ref_oil_station_brand_id === dataItem.ref_oil_station_brand_id
         );
-
+        startDatePickerRef.current?.setValue(dataItem?.tax_invoice_date);
         setImages([{ file_url: dataItem.receipt_img }]);
         setSelectedTravelType(dataItem.ref_payment_type_code.toString());
         setValueForm({
@@ -111,13 +108,11 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
           tax_invoice_no: dataItem?.tax_invoice_no,
         });
       } else {
-        console.log("add");
-
         setValueForm(undefined);
         setSelectedTravelType("");
         setImages([]);
       }
-      console.log("add");
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataItem, status]);
 
     useEffect(() => {
@@ -239,7 +234,6 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       `?activeTab=${activeTab}&update-fuel-req=success&tax_invoice_no=${data.data?.tax_invoice_no}`
                   )
                 : "";
-              // : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
             }
             return;
           }
@@ -334,7 +328,6 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                         <DatePicker
                           placeholder="ระบุวันที่"
                           ref={startDatePickerRef}
-                          value={valueForm?.tax_invoice_date}
                           onChange={(date) => setValueForm((val) => ({ ...val, tax_invoice_date: date }))}
                         />
                       </div>

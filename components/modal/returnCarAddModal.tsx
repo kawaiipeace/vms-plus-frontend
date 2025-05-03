@@ -1,13 +1,15 @@
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
 import RadioButton from "@/components/radioButton";
 import useSwipeDown from "@/utils/swipeDown";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TimePicker from "../timePicker";
 
 interface ReturnCarAddModalProps {
   useBy?: string;
   id?: string;
+  requestData?: RequestDetailType;
 }
 
 export interface ValueFormStep1 {
@@ -21,19 +23,18 @@ export interface ValueFormStep1 {
 }
 
 const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddModalProps>(
-  ({ useBy, id }, ref) => {
+  ({ useBy, id, requestData }, ref) => {
     // Destructure `process` from props
     const modalRef = useRef<HTMLDialogElement>(null);
     const datePickerRef = useRef<DatePickerRef>(null);
-    const fuelQuantityRef = useRef<HTMLInputElement>(null);
 
-    const [cleanType, setCleanType] = useState("");
-    const [miles, setMiles] = useState<string>("");
-    const [remark, setRemark] = useState<string>("");
-    const [parkingLocation, setParkingLocation] = useState<string>("");
-    const [selectedDate, setSelectedDate] = useState<string>("");
-    const [selectedTime, setSelectedTime] = useState<string>("");
-    const [fuelQuantity, setFuelQuantity] = useState(0);
+    const [cleanType, setCleanType] = useState<string>();
+    const [miles, setMiles] = useState<string>();
+    const [remark, setRemark] = useState<string>();
+    const [parkingLocation, setParkingLocation] = useState<string>();
+    const [selectedDate, setSelectedDate] = useState<string>();
+    const [selectedTime, setSelectedTime] = useState<string>();
+    const [fuelQuantity, setFuelQuantity] = useState<number>(0);
 
     const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
 
@@ -42,6 +43,25 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
       closeModal: () => modalRef.current?.close(),
     }));
 
+    useEffect(() => {
+      if (requestData) {
+        defaultData(requestData);
+      }
+    }, [requestData]);
+
+    const defaultData = (data: RequestDetailType) => {
+      console.log("data", data);
+
+      datePickerRef.current?.setValue(data?.end_datetime || "");
+      setSelectedDate(data?.end_datetime || "");
+      setSelectedTime(data?.end_datetime || "");
+      setCleanType(data?.returned_cleanliness_level?.toString() || "");
+      setFuelQuantity(data?.fuel_start || 0);
+      // setParkingLocation(data?.parking_place || "");
+      // setMiles(data?.mile_end?.toString() || "");
+      // setRemark(data?.returned_vehicle_remark || "");
+    };
+
     const returnCarAddStep2ModalRef = useRef<{
       openModal: () => void;
       closeModal: () => void;
@@ -49,10 +69,22 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
     const nextStep = () => {
-      if (!selectedDate && !selectedTime && !cleanType && !parkingLocation && !fuelQuantity) return;
-      setValueFormStep1({ selectedDate, selectedTime, cleanType, parkingLocation, fuelQuantity, miles, remark });
-      returnCarAddStep2ModalRef.current?.openModal();
-      modalRef.current?.close();
+      if (selectedDate && selectedTime && cleanType && parkingLocation && fuelQuantity && miles) {
+        setValueFormStep1({ selectedDate, selectedTime, cleanType, parkingLocation, fuelQuantity, miles, remark });
+        returnCarAddStep2ModalRef.current?.openModal();
+        modalRef.current?.close();
+      }
+    };
+
+    const clearData = () => {
+      setSelectedDate("");
+      setSelectedTime("");
+      setCleanType("");
+      setParkingLocation("");
+      setFuelQuantity(0);
+      setMiles("");
+      setRemark("");
+      datePickerRef.current?.setValue("");
     };
 
     return (
@@ -146,7 +178,6 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                           <span>{fuelQuantity}%</span>
                         </label>
                         <input
-                          ref={fuelQuantityRef}
                           defaultValue={fuelQuantity}
                           type="range"
                           min={0}
@@ -190,7 +221,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                           <RadioButton
                             name="travelType"
                             label="ล้างรถและดูดฝุ่น"
-                            value="ล้างรถและดูดฝุ่น"
+                            value="0"
                             selectedValue={cleanType}
                             setSelectedValue={setCleanType}
                           />
@@ -198,7 +229,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                           <RadioButton
                             name="travelType"
                             label="ล้างภายนอก"
-                            value="ล้างภายนอก"
+                            value="1"
                             selectedValue={cleanType}
                             setSelectedValue={setCleanType}
                           />
@@ -206,7 +237,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                           <RadioButton
                             name="travelType"
                             label="ไม่ได้ดำเนินการ"
-                            value="ไม่ได้ดำเนินการ"
+                            value="2"
                             selectedValue={cleanType}
                             setSelectedValue={setCleanType}
                           />
@@ -276,7 +307,14 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                   </div>
                   <div className="grid w-full flex-wrap gap-5 grid-cols-12 mt-3">
                     <div className="col-span-6">
-                      <button type="button" className="btn btn-secondary w-full">
+                      <button
+                        type="button"
+                        className="btn btn-secondary w-full"
+                        onClick={() => {
+                          // clearData();
+                          modalRef.current?.close();
+                        }}
+                      >
                         ไม่ใช่ตอนนี้
                       </button>
                     </div>
@@ -309,6 +347,8 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
           useBy={useBy}
           ref={returnCarAddStep2ModalRef}
           valueFormStep1={valueFormStep1}
+          id={id}
+          requestData={requestData}
         />
       </>
     );

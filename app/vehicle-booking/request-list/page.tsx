@@ -14,6 +14,8 @@ function RequestListContent() {
   const requestId = searchParams.get("request-id");
   const receivedKey = searchParams.get("received-key");
   const licensePlate = searchParams.get("license-plate");
+  const returned = searchParams.get("returned");
+  const requestNo = searchParams.get("request-no");
 
   return (
     <>
@@ -50,6 +52,22 @@ function RequestListContent() {
             </>
           }
           status="success"
+        />
+      )}
+
+      {returned === "success" && (
+        <ToastCustom
+          title="คืนยานพาหนะแล้ว"
+          desc={
+            <>
+              คืนยานพาหนะคำขอเลขที่
+              <br /> {requestNo} เรียบร้อยแล้ว
+              <br /> กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
+              <br /> และยืนยันการคืน
+            </>
+          }
+          status="success"
+          searchParams=""
         />
       )}
     </>

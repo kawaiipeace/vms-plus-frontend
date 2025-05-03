@@ -28,7 +28,7 @@ export default function ToastCustom({
 
   const closeToast = () => {
     setIsVisible(false);
-    if (!searchParams) return; // If no searchParams, do nothing
+    if (!searchParams) router.push(pathName); // If no searchParams, do nothing
     router.push(pathName + `?${searchParams}`); // Navigate to the current path to remove query parameters
   };
 
