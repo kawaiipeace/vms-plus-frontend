@@ -156,7 +156,7 @@ export const DriverEditContent = ({
                 />
               </div>
               {progressType === "คืนยานพาหนะไม่สำเร็จ" && (
-                <div className="w-full">
+                <div className="w-full mt-8">
                   <button className="btn btn-primary w-full">
                     คืนยานพาหนะอีกครั้ง
                   </button>
