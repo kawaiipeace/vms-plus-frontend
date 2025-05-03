@@ -24,6 +24,7 @@ import {
 import TimePicker from "../timePicker";
 import {
   driverReceivedVehicle,
+  driverUpdateReceivedVehicle,
   fetchDriverTravelCard,
 } from "@/services/vehicleInUseDriver";
 
@@ -55,7 +56,7 @@ const ReceiveCarVehicleModal = forwardRef<
     useState<VehicleUserTravelCardType>();
 
   useEffect(() => {
-    console.log('resqu',requestData);
+    console.log("resqu", requestData);
     if (requestData) {
       setFuelQuantity(requestData?.fuel_end || 0);
       setMiles(requestData?.mile_start || 0);
@@ -127,7 +128,11 @@ const ReceiveCarVehicleModal = forwardRef<
       } else if (role === "user") {
         response = await userReceivedVehicle(formData);
       } else {
-        response = await driverReceivedVehicle(formData);
+        if (status === "edit") {
+          response = await driverUpdateReceivedVehicle(formData);
+        } else {
+          response = await driverReceivedVehicle(formData);
+        }
       }
       if (onSubmit) {
         onSubmit();

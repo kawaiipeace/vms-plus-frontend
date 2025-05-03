@@ -118,10 +118,46 @@ export const driverReceivedVehicle = async (data: any) => {
   }
 };
 
+export const driverUpdateReceivedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "vehicle-in-use-driver/update-received-vehicle",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchDriverTravelCard = async (id: string) => {
   try {
     const response = await axiosInstance.get(
       `received-vehicle-driver/travel-card/` + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const DriverReturnedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "vehicle-in-use-driver/returned-vehicle",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateReceiveVehicleImages = async (data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "vehicle-in-use-driver/update-received-vehicle-images",
+      data
     );
     return response;
   } catch (error) {

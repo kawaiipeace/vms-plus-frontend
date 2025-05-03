@@ -4,6 +4,7 @@ import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
 import Tooltip from "@/components/tooltips";
 import { AdminReturnedVehicle } from "@/services/adminService";
+import { DriverReturnedVehicle, updateReceiveVehicleImages } from "@/services/vehicleInUseDriver";
 import { UserReturnedVehicle } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
@@ -21,17 +22,20 @@ interface ReturnCarAddStep2ModalProps {
   requestData?: RequestDetailType;
   clearForm?: () => void;
   onSubmit?: () => void;
+  progress?: string;
 }
 
 const ReturnCarAddStep2Modal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReturnCarAddStep2ModalProps
->(({ openStep1, status, useBy, valueFormStep1, id, requestData, clearForm, onSubmit }, ref) => {
+>(({ openStep1, status, useBy, valueFormStep1, id, requestData, clearForm, onSubmit, progress }, ref) => {
   const router = useRouter();
   const pathName = usePathname();
   const modalRef = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<UploadFileType[]>([]);
   const [images2, setImages2] = useState<UploadFileType[]>([]);
+
+  console.log("valueFormStep1", valueFormStep1);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -90,7 +94,11 @@ const ReturnCarAddStep2Modal = forwardRef<
       } else if (useBy === "admin") {
         response = await AdminReturnedVehicle(formData);
       } else {
-        response = await UserReturnedVehicle(formData);
+        if (progress === "รับยานพาหนะ") {
+          response = await updateReceiveVehicleImages(formData);
+        } else {
+          response = await DriverReturnedVehicle(formData);
+        }
       }
       if (onSubmit) {
         onSubmit();
@@ -112,7 +120,7 @@ const ReturnCarAddStep2Modal = forwardRef<
               `${pathName}?activeTab=การคืนยานพาหนะ&returned-tabs=success&request-no=${response.data.result.request_no}`
             );
           } else {
-            modalRef.current?.close();
+            response = await DriverReturnedVehicle(formData);
           }
         }
       }

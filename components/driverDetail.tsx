@@ -286,10 +286,10 @@ const DriverDetailContent = ({
               {returnCarAddComplete ? (
                 <Link
                   href={
-                    progressType === "ภารกิจสำเร็จ"
-                      ? "/vehicle-in-use/driver/" +
+                    progressType === "คืนยานพาหนะไม่สำเร็จ"
+                      ? "/vehicle-in-use/driver/edit/" +
                         data?.trn_request_uid +
-                        "?progressType=การคืนยานพาหนะ"
+                        "?progressType=คืนยานพาหนะไม่สำเร็จ"
                       : "/vehicle-in-use/driver/edit/" +
                         data?.trn_request_uid +
                         "?progressType=การคืนยานพาหนะ"
