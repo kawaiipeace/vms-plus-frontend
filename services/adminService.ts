@@ -95,5 +95,23 @@ export const fetchVehicleInsRequests = async (params: {
   }
 };
 
+export const adminCreateTravelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("vehicle-in-use-admin/create-travel-detail", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const adminUpdateTravelDetail = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/update-travel-detail/" + id, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 

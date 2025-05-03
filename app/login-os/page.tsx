@@ -42,7 +42,6 @@ export default function LoginOS() {
     try {
       const response = await requestThaiID();
       if (response.status === 200) {
-        console.log("response thai id", response);
         router.push(response.data.url)
       }
     } catch (error) {

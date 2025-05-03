@@ -9,6 +9,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TimePicker from "../timePicker";
 
+import { adminCreateTravelDetail, adminUpdateTravelDetail } from "@/services/adminService";
+
 interface Props {
   status?: boolean;
   role?: string;
@@ -85,11 +87,13 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
               trip_start_miles: Number(startMile),
               trn_request_uid: requestId,
             };
-
+            console.log("dataid", dataItem?.trn_trip_detail_uid);
             if (status) {
               const res =
                 role === "user"
                   ? await UserUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload)
+                  : role === "admin"
+                  ? await adminUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload)
                   : await driverUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload);
               const data = res.data;
               if (data) {
@@ -99,28 +103,39 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                 role === "user"
                   ? router.push(
                       pathName +
-                        `?activeTab=${activeTab}&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                        `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                    )
+                  : role === "admin"
+                  ? router.push(
+                      pathName +
+                        `?activeTab=ข้อมูลการเดินทาง&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                     )
                   : router.push(
                       pathName +
-                        `?progressType=${progressType}&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                        `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                     );
-                // : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
               }
-              return;
             }
 
             const res =
-              role === "user" ? await UserCreateTravelDetail(payload) : await driverCreateTravelDetail(payload);
+              role === "user"
+                ? await UserCreateTravelDetail(payload)
+                : role === "admin"
+                ? await adminCreateTravelDetail(payload)
+                : await driverCreateTravelDetail(payload);
             const data = res.data;
             if (data) {
               modalRef.current?.close();
-
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               role === "user"
                 ? router.push(
                     pathName +
                       `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                  )
+                : role === "admin"
+                ? router.push(
+                    pathName +
+                      `?activeTab=ข้อมูลการเดินทาง&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                   )
                 : router.push(
                     pathName +
@@ -139,16 +154,22 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
 
     return (
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <div
+          className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="bottom-sheet" {...swipeDownHandlers}>
+            <div className="bottom-sheet-icon"></div>
+          </div>
+          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+            <div className="modal-title">{status ? "แก้ไขข้อมูลการเดินทาง" : "เพิ่มข้อมูลการเดินทาง"}</div>
+            <form method="dialog">
+              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                <i className="material-symbols-outlined">close</i>
+              </button>
+            </form>
+          </div>
           <div className="modal-body overflow-y-auto text-center">
-            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-              <div className="modal-title">{status ? "แก้ไขข้อมูลการเดินทาง" : "เพิ่มข้อมูลการเดินทาง"}</div>
-              <form method="dialog">
-                <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                  <i className="material-symbols-outlined">close</i>
-                </button>
-              </form>
-            </div>
             <form>
               <div className="grid grid-cols-1 gap-4 mt-4">
                 {/* Date picker */}
@@ -203,6 +224,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                         placeholder={"ระบุวันที่ถึงปลายทาง"}
                         onChange={(date) => setValue((val) => ({ ...val, endDate: date }))}
                         ref={endPickerRef}
+                        // value={value?.endDate}
                       />
                     </div>
                   </div>
@@ -266,7 +288,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                   </div>
                 </div>
 
-                <div className="col-span-12">
+                <div className="col-span-6">
                   <div className="form-group">
                     <label className="form-label">สถานที่ต้นทาง</label>
                     <div className="input-group">
@@ -284,7 +306,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                     </div>
                   </div>
                 </div>
-                <div className="col-span-12">
+                <div className="col-span-6">
                   <div className="form-group">
                     <label className="form-label">สถานที่ปลายทาง</label>
                     <div className="input-group">
@@ -305,39 +327,190 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                 <div className="col-span-12">
                   <div>
                     <div className="form-group">
-                      <label className="form-label">
-                        รายละเอียด<span className="font-light">(ถ้ามี)</span>
-                      </label>
+                      <label className="form-label">วันที่จากต้นทาง</label>
+                      <div className="input-group">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">calendar_month</i>
+                          </span>
+                        </div>
+                        <DatePicker
+                          placeholder={"ระบุวันที่จากต้นทาง"}
+                          onChange={(date) => setValue((val) => ({ ...val, startDate: date }))}
+                          ref={startPickerRef}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time picker */}
+                  <div className="col-span-6">
+                    <div className="form-group">
+                      <label className="form-label">เวลาจากต้นทาง</label>
+                      <div className="input-group">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">schedule</i>
+                          </span>
+                        </div>
+                        <TimePicker
+                          placeholder="ระบุเวลาจากต้นทาง"
+                          onChange={(time) => setValue((val) => ({ ...val, startTime: time }))}
+                          defaultValue={value?.startTime}
+                          value={value?.startTime}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Date picker */}
+                  <div className="col-span-6">
+                    <div className="form-group">
+                      <label className="form-label">วันที่ถึงปลายทาง</label>
+                      <div className="input-group">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">calendar_month</i>
+                          </span>
+                        </div>
+                        <DatePicker
+                          placeholder={"ระบุวันที่ถึงปลายทาง"}
+                          onChange={(date) => setValue((val) => ({ ...val, endDate: date }))}
+                          ref={endPickerRef}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time picker */}
+                  <div className="col-span-6">
+                    <div className="form-group">
+                      <label className="form-label">เวลาถึงปลายทาง</label>
+                      <div className="input-group">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">schedule</i>
+                          </span>
+                        </div>
+                        <TimePicker
+                          placeholder="ระบุเวลาถึงปลายทาง"
+                          onChange={(time) => setValue((val) => ({ ...val, endTime: time }))}
+                          defaultValue={value?.endTime}
+                          value={value?.endTime}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-6">
+                    <div className="form-group">
+                      <label className="form-label">เลขไมล์ต้นทาง</label>
                       <div className="input-group">
                         <input
-                          type="text"
+                          type="number"
                           className="form-control"
-                          value={value?.detail}
+                          value={value?.startMile}
                           onChange={(e) => {
                             setValue((val) => ({
                               ...val,
-                              detail: e.target.value,
+                              startMile: e.target.value,
                             }));
                           }}
                         />
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="col-span-12 grid grid-cols-2 gap-4">
-                  <div>
-                    <button
-                      type="button"
-                      className="btn btn-secondary w-full"
-                      onClick={() => modalRef.current?.close()}
-                    >
-                      ปิด
-                    </button>
+                  <div className="col-span-6">
+                    <div className="form-group">
+                      <label className="form-label">เลขไมล์ปลายทาง</label>
+                      <div className="input-group">
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={value?.endMile}
+                          onChange={(e) => {
+                            setValue((val) => ({
+                              ...val,
+                              endMile: e.target.value,
+                            }));
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <button type="button" className="btn btn-primary w-full" onClick={handleSubmit}>
-                      บันทึก
-                    </button>
+
+                  <div className="col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">สถานที่ต้นทาง</label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={value?.startLocation}
+                          onChange={(e) => {
+                            setValue((val) => ({
+                              ...val,
+                              startLocation: e.target.value,
+                            }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">สถานที่ปลายทาง</label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={value?.endLocation}
+                          onChange={(e) => {
+                            setValue((val) => ({
+                              ...val,
+                              endLocation: e.target.value,
+                            }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-12">
+                    <div>
+                      <div className="form-group">
+                        <label className="form-label">
+                          รายละเอียด<span className="font-light">(ถ้ามี)</span>
+                        </label>
+                        <div className="input-group">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={value?.detail}
+                            onChange={(e) => {
+                              setValue((val) => ({
+                                ...val,
+                                detail: e.target.value,
+                              }));
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-12 grid grid-cols-2 gap-4">
+                    <div>
+                      <button
+                        type="button"
+                        className="btn btn-secondary w-full"
+                        onClick={() => modalRef.current?.close()}
+                      >
+                        ปิด
+                      </button>
+                    </div>
+                    <div>
+                      <button type="button" className="btn btn-primary w-full" onClick={handleSubmit}>
+                        บันทึก
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

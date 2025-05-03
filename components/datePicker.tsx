@@ -62,11 +62,15 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, on
         },
 
         onChange: function (selectedDates, dateStr, instance) {
-          instance.input.value = dateStr;
-
+          // Update the input field value
+          // instance.input.value = dateStr;
+        
+          // Call the custom onChange function if it's provided
           if (onChange) {
             onChange(dateStr);
           }
+        
+          // Update the calendar year or perform other actions
           updateCalendarYear(instance);
         },
         onMonthChange: function (selectedDates, dateStr, instance) {

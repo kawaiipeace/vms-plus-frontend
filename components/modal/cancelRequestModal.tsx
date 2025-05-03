@@ -106,48 +106,49 @@ const CancelRequestModal = forwardRef<
           if (data) {
             modalRef.current?.close();
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            role === "firstApprover"
-              ? router.push(
-                  "/administrator/booking-approver?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "admin"
-              ? router.push(
-                  "/administrator/request-list?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "final"
-              ? router.push(
-                  "/administrator/booking-final?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "final"
-              ? router.push(
-                  "/vehicle-in-use/user?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "adminKey"
-              ? router.push(
-                  "/administrator/request-list?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "recordTravel"
-              ? router.push(
-                  `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
-                )
-              : role === "recordFuel"
-              ? router.push(
-                  `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
-                )
-              : role === "adminRecordTravel"
-              ? router.push(
-                  `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
-                )
-              : router.push(
-                  "/vehicle-booking/request-list?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                );
+            if (role === "firstApprover") {
+              router.push(
+                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "admin") {
+              router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "final") {
+              router.push(
+                "/administrator/booking-final?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "key") {
+              router.push(
+                "/vehicle-in-use/user?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "adminKey") {
+              router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "recordTravel") {
+              router.push(
+                `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
+              );
+            } else if (role === "recordFuel") {
+              router.push(
+                `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
+              );
+            } else if (role === "adminRecordTravel") {
+              router.push(
+                `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
+              );
+            } else {
+              router.push(
+                "/vehicle-booking/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            }
           }
         } catch (error) {
           console.error("Cancel error:", error);
@@ -198,7 +199,7 @@ const CancelRequestModal = forwardRef<
                 </div>
               )}
 
-            <div className="modal-footer mt-5 flex justify-between gap-3">
+            <div className="modal-actions mt-5 flex justify-between gap-3">
               <button
                 className="btn btn-secondary flex-1"
                 onClick={() => modalRef.current?.close()}
@@ -208,10 +209,10 @@ const CancelRequestModal = forwardRef<
 
               <button
                 type="button"
-                className="btn btn-primary-danger col-span-1"
+                className="btn btn-primary-danger flex-1"
                 disabled={
                   cancleFor !== "recordTravel" &&
-                  cancleFor !== "AdminRecordTravel" &&
+                  cancleFor !== "adminRecordTravel" &&
                   cancleFor !== "recordFuel" &&
                   !isValid
                 }

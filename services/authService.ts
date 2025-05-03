@@ -12,7 +12,7 @@ export const requestOTP = async (phone: string) => {
 export const requestThaiID = async () => {
     try {
         const response = await axiosInstance.post('login/request-thaiid', {
-            redirect_uri: `${window.location.origin}/callback_code_token`,
+            redirect_uri: `${window.location.origin}/callback_code_token_thai`,
         });
         return response;
     } catch (error) {
@@ -36,6 +36,18 @@ export const getKeyCloakData = async (code: string) => {
         const response = await axiosInstance.post('login/authen-keycloak', {
             code,
             redirect_uri: `${window.location.origin}/callback_code_token`,
+        });
+        return response;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getThaiIdData = async (code: string) => {
+    try {
+        const response = await axiosInstance.post('login/authen-thaiid', {
+            code,
+            redirect_uri: `${window.location.origin}/callback_code_token_thai`,
         });
         return response;
     } catch (error) {

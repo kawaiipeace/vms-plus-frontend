@@ -20,7 +20,7 @@ export default function ZeroRecord({ imgSrc, title, desc, button, icon, btnType,
         <div className="emptystate-text">{desc}</div>
         <div className="emptystate-action">
           {useModal ? (
-            <button className={`btn btn-${btnType == "secondary" ? "secondary" : "primary"}${displayBtn ? "" : " hidden"}`} onClick={useModal}>
+            <button className={`btn btn-${btnType == "secondary" ? "secondary" : "primary"} ${displayBtn ? "" : " hidden"}`} onClick={useModal}>
               {icon && <i className="material-symbols-outlined">add</i>}
               {button}
             </button>
