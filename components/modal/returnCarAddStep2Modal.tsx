@@ -9,7 +9,11 @@ import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { useRouter } from "next/navigation";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { ValueFormStep1 } from "./returnCarAddModal";
+import { UploadFileType } from "@/app/types/upload-type";
+import { ImagePreviewType } from "@/app/types/image-preview-type";
+import { adminUpdateImageDetail } from "@/services/adminService";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
@@ -46,9 +50,9 @@ const ReturnCarAddStep2Modal = forwardRef<
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleImageChange2 = (newImages: UploadFileType) => {
+  const handleImageChange2 = (newImage: UploadFileType) => {
     if (images2.length < 4) {
-      setImages2([...images2, ...[newImages]]);
+      setImages2([...images2, ...[newImage]]);
     }
   };
 
@@ -106,6 +110,12 @@ const ReturnCarAddStep2Modal = forwardRef<
     } catch (error) {
       console.error("Error submitting form:", error);
     }
+  const handleImageChange3 = (newImage: UploadFileType) => {
+    setImages3([newImage]);
+  };
+
+  const handleDeleteImage3 = (index: number) => {
+    setImages3(images3.filter((_, i) => i !== index));
   };
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
