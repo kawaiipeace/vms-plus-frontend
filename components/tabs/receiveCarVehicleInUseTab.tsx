@@ -11,7 +11,6 @@ import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import { fetchRequestDetail } from "@/services/keyAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import ToastCustom from "../toastCustom";
-import { useSearchParams } from "next/navigation";
 
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;
@@ -34,14 +33,9 @@ const ReceiveCarVehicleInUseTab = ({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const [receiveSuccess] = useState(true);
+  const [receiveSuccess, setReceiveSuccess] = useState(true);
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [showToast, setShowToast] = useState(false);
-  const searchParams = useSearchParams();
-  const createReq = searchParams.get("create-travel-req");
-const dateTime = searchParams.get("date-time");
-
-const formatDateTime = convertToBuddhistDateTime(dateTime || "");
 
   const fetchRequestDetailfunc = async () => {
     if (requestId) {
@@ -53,6 +47,7 @@ const formatDateTime = convertToBuddhistDateTime(dateTime || "");
           response = await fetchRequestKeyDetail(requestId);
         }
 
+        console.log("data---", response.data);
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
@@ -61,10 +56,11 @@ const formatDateTime = convertToBuddhistDateTime(dateTime || "");
   };
 
   const handleSubmit = async () => {
-    fetchRequestDetailfunc();
     receiveCarVehicleModalRef.current?.closeModal();
+    returnCarAddStep2ModalRef.current?.closeModal();
+    fetchRequestDetailfunc();
     setShowToast(true);
-  };
+  }
 
   useEffect(() => {
     fetchRequestDetailfunc();
@@ -73,31 +69,18 @@ const formatDateTime = convertToBuddhistDateTime(dateTime || "");
   return (
     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
       {showToast && (
-        <ToastCustom
-          title="แก้ไขข้อมูลสำเร็จ"
-          desc={
-            <>
-              แก้ไขข้อมูลการรับยานพาหนะคำขอเลขที่
-              <br />
-              {requestData?.request_no} ถูกตีกลับเรียบร้อยแล้ว
-            </>
-          }
-          status="success"
-        />
-      )}
-          {createReq === "success" && (
-              <ToastCustom
-                title="เพิ่มข้อมูลการเดินทางสำเร็จ"
-                desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
-                status="success"
-                styleText="!mx-auto"
-                searchParams={
-                  (role === "user" || role === "admin")
-                    ? "activeTab=ข้อมูลการเดินทาง"
-                    : "progressType=บันทึกการเดินทาง"
-                }
-              />
-            )}
+  <ToastCustom
+    title="แก้ไขข้อมูลสำเร็จ"
+    desc={
+      <>
+        แก้ไขข้อมูลการรับยานพาหนะคำขอเลขที่ 
+        <br />
+        {requestData?.request_no} เรียบร้อยแล้ว
+      </>
+    }
+    status="success"
+  />
+)}
       <div className="w-full row-start-2 md:col-start-1 flex flex-col gap-4">
         {receiveSuccess && displayOn !== "vehicle-in-use" && (
           <>
@@ -111,7 +94,7 @@ const formatDateTime = convertToBuddhistDateTime(dateTime || "");
                     <button
                       className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
                       onClick={() =>
-                        receiveCarVehicleModalRef.current?.openModal()
+                        returnCarAddStep2ModalRef.current?.openModal()
                       }
                     >
                       แก้ไข
@@ -221,12 +204,12 @@ const formatDateTime = convertToBuddhistDateTime(dateTime || "");
               </div>
 
               <ImagesCarCard
-              images={
-                requestData?.vehicle_images_received?.map(
-                  (image) => image.vehicle_img_file || ""
-                ) || []
-              }
-            />
+                  images={
+                    requestData?.vehicle_images_received?.map(
+                      (image) => image.vehicle_img_file || ""
+                    ) || []
+                  }
+                />
             </div>
           </>
         )}
@@ -309,19 +292,20 @@ const formatDateTime = convertToBuddhistDateTime(dateTime || "");
           />
         </div>
       </div>
-      
 
       <ReceiveCarVehicleModal
-        onSubmit={handleSubmit}
+       onSubmit={handleSubmit}
         status={edit}
         ref={receiveCarVehicleModalRef}
         requestData={requestData}
         role={role}
       />
       <ReturnCarAddStep2Modal
+        previewImages={requestData?.vehicle_images_received || []}
         status="edit"
         useBy="admin"
-        openStep1={() => {}}
+        reqId={requestData?.trn_request_uid}
+        onSubmit={handleSubmit}
         ref={returnCarAddStep2ModalRef}
       />
     </div>
