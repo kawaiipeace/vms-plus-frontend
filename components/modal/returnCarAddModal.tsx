@@ -90,19 +90,26 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
     return (
       <>
         <dialog ref={modalRef} className={`modal modal-middle`}>
-          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-            <div className="modal-body overflow-y-auto text-center !bg-white">
-              <form>
-                <div className="form-section">
-                  <div className="page-section-header border-0 pt-6">
-                    <div className="page-header-left">
-                      <div className="page-title">
-                        <span className="page-title-label">คืนยานพาหนะ</span>
+          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col" onClick={(e) => {e.preventDefault(); e.stopPropagation()}}>
+               <form>
+          <div className="bottom-sheet" {...swipeDownHandlers}>
+            <div className="bottom-sheet-icon"></div>
+          </div>
+          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+            <div className="modal-title">    
+                     คืนยานพาหนะ
                       </div>
-                      <p className="text-left font-bold">Step 1: ข้อมูลทั่วไป</p>
-                    </div>
-                  </div>
-
+                   
+            <form method="dialog">
+              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                <i className="material-symbols-outlined">close</i>
+              </button>
+            </form>
+          </div>
+            <div className="modal-body overflow-y-auto text-center !bg-white h-[70vh]">
+            <p className="text-left text-base mb-2 font-semibold">Step 1: ข้อมูลทั่วไป</p>
+           
+                <div className="form-section">
                   <div className="grid w-full flex-wrap gap-5 grid-cols-12">
                     <div className="col-span-6">
                       <div className="form-group">
@@ -222,7 +229,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             name="travelType"
                             label="ล้างรถและดูดฝุ่น"
                             value="0"
-                            selectedValue={cleanType}
+                            selectedValue={cleanType || ""}
                             setSelectedValue={setCleanType}
                           />
 
@@ -230,7 +237,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             name="travelType"
                             label="ล้างภายนอก"
                             value="1"
-                            selectedValue={cleanType}
+                            selectedValue={cleanType || ""}
                             setSelectedValue={setCleanType}
                           />
 
@@ -238,56 +245,12 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             name="travelType"
                             label="ไม่ได้ดำเนินการ"
                             value="2"
-                            selectedValue={cleanType}
+                            selectedValue={cleanType || ""}
                             setSelectedValue={setCleanType}
                           />
                         </div>
                       </div>
                     </div>
-                    {/* <div className="col-span-12">
-                      <div className="form-group">
-                        <label className="form-label">ความสะอาด</label>
-                        <div className="custom-group">
-                          <RadioButton
-                            name="travelType"
-                            label="สะอาด"
-                            value="สะอาด"
-                            selectedValue={inCarType}
-                            setSelectedValue={setInCarType}
-                          />
-
-                          <RadioButton
-                            name="travelType"
-                            label="ไม่สะอาด"
-                            value="ไม่สะอาด"
-                            selectedValue={inCarType}
-                            setSelectedValue={setInCarType}
-                          />
-                        </div>
-                      </div>
-                    </div> */}
-                    {/* <div className="col-span-12">
-                      <div className="form-group">
-                        <label className="form-label">ภายนอกยานพาหนะ</label>
-                        <div className="custom-group">
-                          <RadioButton
-                            name="travelType"
-                            label="สะอาด"
-                            value="สะอาด"
-                            selectedValue={outCarType}
-                            setSelectedValue={setOutCarType}
-                          />
-
-                          <RadioButton
-                            name="travelType"
-                            label="ไม่สะอาด"
-                            value="ไม่สะอาด"
-                            selectedValue={outCarType}
-                            setSelectedValue={setOutCarType}
-                          />
-                        </div>
-                      </div>
-                    </div> */}
                     <div className="col-span-12">
                       <div className="form-group">
                         <label className="form-label">
@@ -305,8 +268,12 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                       </div>
                     </div>
                   </div>
-                  <div className="grid w-full flex-wrap gap-5 grid-cols-12 mt-3">
-                    <div className="col-span-6">
+            
+                </div>
+            
+            </div>
+            <div className="modal-action flex w-full gap-5 mt-3 mr-auto">
+                    <div className="">
                       <button
                         type="button"
                         className="btn btn-secondary w-full"
@@ -318,25 +285,19 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                         ไม่ใช่ตอนนี้
                       </button>
                     </div>
-                    <div className="col-span-6">
+                    <div className="">
                       <button
                         type="button"
                         className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
                         onClick={() => {
-                          if (useBy !== "admin") {
                             nextStep();
-                          } else {
-                            modalRef.current?.close();
-                          }
                         }}
                       >
-                        {useBy === "admin" ? "บันทึก" : "ต่อไป"}
+                        ต่อไป
                       </button>
                     </div>
                   </div>
-                </div>
-              </form>
-            </div>
+                  </form>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>

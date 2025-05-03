@@ -123,5 +123,15 @@ export const adminUpdateImageDetail = async (data: any) => {
   }
 };
 
+export const AdminReturnedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/returned-vehicle", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 

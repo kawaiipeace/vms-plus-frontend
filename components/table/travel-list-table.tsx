@@ -153,7 +153,7 @@ export default function TravelListTable({ defaultData, pagination, editRecordTra
       enableSorting: false,
       cell: ({ row }) => {
         return (
-          <div className="text-left dataTable-action">
+          <div className="text-left dataTable-action flex items-center">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="แก้ไขข้อมูลการเดินทาง"

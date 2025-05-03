@@ -10,6 +10,7 @@ import useSwipeDown from "@/utils/swipeDown";
 import { useRouter } from "next/navigation";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ValueFormStep1 } from "./returnCarAddModal";
+import { AdminReturnedVehicle } from "@/services/adminService";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
@@ -87,7 +88,9 @@ const ReturnCarAddStep2Modal = forwardRef<
       let response;
       if (useBy === "user") {
         response = await UserReturnedVehicle(formData);
-      } else {
+      } else if(useBy === "admin") {
+        response = await AdminReturnedVehicle(formData);
+      } else{
         response = await UserReturnedVehicle(formData);
       }
       if (onSubmit) {
@@ -98,6 +101,9 @@ const ReturnCarAddStep2Modal = forwardRef<
           if (useBy === "user") {
             modalRef.current?.close();
             router.push(`/vehicle-booking/request-list?returned=success&request-no=${response.data.result.request_no}`);
+          } else if(useBy === "admin") {
+            modalRef.current?.close();
+            router.push(`/administrator/request-list?activeTab=ตรวจสอบยานพาหนะ&returned=success&request-no=${response.data.result.request_no}`);
           } else {
             modalRef.current?.close();
           }
@@ -114,17 +120,13 @@ const ReturnCarAddStep2Modal = forwardRef<
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
         <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+        <form>
         <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title"   onClick={() => {
-                        modalRef.current?.close();
-                      }}>
-
-                  
-                      <span className="page-title-label">
-                        {status === "edit" ? (
+          <div className="modal-title">
+            <div className="flex items-center gap-3">       {status === "edit" ? (
                           "แก้ไขรูปยานพาหนะก่อนเดินทาง"
                         ) : (
                           <>
@@ -133,13 +135,8 @@ const ReturnCarAddStep2Modal = forwardRef<
                             </i>{" "}
                             คืนยานพาหนะ
                           </>
-                        )}
-                      </span>
-                    
-                    {status !== "edit" && (
-                      <p className="text-left font-bold">Step 2: รูปยานพาหนะ</p>
-                    )}
-                
+                        )}</div>
+   
             </div>
 
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary" onClick={(e) => {
@@ -152,8 +149,12 @@ const ReturnCarAddStep2Modal = forwardRef<
 
           </div>
 
-          <div className="modal-body overflow-y-auto text-center !bg-white">
-            <form>
+          <div className="modal-body overflow-y-auto text-center !bg-white h-[70vh]">
+          {status !== "edit" && (
+            <p className="text-left text-base mb-2 font-semibold">Step 2: รูปยานพาหนะ</p>
+          )}
+
+          
               <div className="form-section">
 
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12">
@@ -166,14 +167,14 @@ const ReturnCarAddStep2Modal = forwardRef<
                         </Tooltip>
                       </label>
                       {images.length < 1 && <ImageUpload onImageChange={handleImageChange} />}
-                      <div className="image-preview flex flex-wrap gap-3">
+                      <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
                         {images.map((image, index) => (
                           <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage(index)} />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" && useBy !== "admin" ? "hidden" : "block"}`}>
+                  <div className={`col-span-12 ${useBy !== "driver" && useBy === "admin" ? "hidden" : "block"}`}>
                     <div className="form-group">
                       <label className="form-label">
                         รูปยานพาหนะภายในและภายนอก
@@ -182,7 +183,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                         </Tooltip>
                       </label>
                       {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
-                      <div className="image-preview flex flex-wrap gap-3">
+                      <div className="grid grid-cols-2 gap-3 mt-3">
                         {images2.map((image, index) => (
                           <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage2(index)} />
                         ))}
@@ -202,7 +203,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                         </Tooltip>
                       </label>
                       {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
-                      <div className="image-preview flex flex-wrap gap-3">
+                      <div className="grid grid-cols-2 gap-3 mt-3">
                         {images2.map((image, index) => (
                           <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage2(index)} />
                         ))}
@@ -210,8 +211,12 @@ const ReturnCarAddStep2Modal = forwardRef<
                     </div>
                   </div>
                 </div>
-                <div className="grid w-full flex-wrap gap-5 grid-cols-12 mt-3">
-                  <div className="col-span-6">
+            
+              </div>
+         
+          </div>
+          <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
+                  <div className="">
                     <button
                       type="button"
                       className="btn btn-secondary w-full"
@@ -220,22 +225,20 @@ const ReturnCarAddStep2Modal = forwardRef<
                       {useBy === "user" ? "ยกเลิก" : "ไม่ใช่ตอนนี้"}
                     </button>
                   </div>
-                  <div className="col-span-6">
+                  <div className="">
                     <button
                       type="button"
                       className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
                       onClick={() => {
                         handleSubmit();
                       }}
-                      disabled={!images.length || !images2.length || images2.length < 4}
+                      disabled={!images.length}
                     >
-                      {useBy === "admin" ? "บันทึก" : "ยืนยัน"}
+                        ยืนยัน
                     </button>
                   </div>
                 </div>
-              </div>
-            </form>
-          </div>
+                </form>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
