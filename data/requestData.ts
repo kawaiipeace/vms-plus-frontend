@@ -114,6 +114,10 @@ export type RecordFuelTabProps = {
   add_fuel_date_time: string;
   ref_cost_type_code: number;
   ref_cost_type: { ref_cost_type_code: string; ref_cost_type_name: string; ref_cost_no: string };
+  ref_oil_station_brand_name: string;
+  ref_fuel_type_name: string;
+  ref_payment_type_name: string;
+  ref_cost_type_name: string;
 };
 
 export const requestData_1: RequestData[] = [
@@ -287,4 +291,5 @@ export const recordFuelDataColumns = [
   { accessorKey: "vat", header: "ภาษี" },
   { accessorKey: "sum_price", header: "ยอดรวมชำระ" },
   { accessorKey: "ref_payment_type_name", header: "วิธีชำระเงิน" },
+  { accessorKey: "action", header: "" },
 ];

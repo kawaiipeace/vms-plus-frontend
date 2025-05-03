@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import AlertCustom from "@/components/alertCustom";
+import ImagesCarCard from "@/components/card/ImagesCarCard";
+import CarDetailCard from "@/components/card/carDetailCard";
+import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
 import UserInfoCard from "@/components/card/userInfoCard";
 import ReturnCarAddModal from "@/components/modal/returnCarAddModal";
 import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
-import AlertCustom from "@/components/alertCustom";
-import { ReturnCarInfoCard } from "@/components/card/returnCarInfoCard";
-import ImagesCarCard from "@/components/card/ImagesCarCard";
-import CarDetailCard from "@/components/card/carDetailCard";
+import { useRef } from "react";
 import ReviewCarDriveModal from "../modal/reviewCarDriveModal";
 
 interface ReturnCarTabProps {
@@ -41,7 +41,10 @@ const ReturnCarTab = ({ status, displayOn }: ReturnCarTabProps) => {
               </div>
               {(status === "returnFail" || displayOn === "adminTab") && (
                 <div className="form-section-header-actions">
-                  <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddModalRef.current?.openModal()}>
+                  <button
+                    className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                    onClick={() => returnCarAddModalRef.current?.openModal()}
+                  >
                     แก้ไข
                   </button>
                 </div>
@@ -58,7 +61,10 @@ const ReturnCarTab = ({ status, displayOn }: ReturnCarTabProps) => {
               </div>
               {(status === "returnFail" || displayOn === "adminTab") && (
                 <div className="form-section-header-actions">
-                  <button className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]" onClick={() => returnCarAddStep2ModalRef.current?.openModal()}>
+                  <button
+                    className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                    onClick={() => returnCarAddStep2ModalRef.current?.openModal()}
+                  >
                     แก้ไข
                   </button>
                 </div>
@@ -70,7 +76,11 @@ const ReturnCarTab = ({ status, displayOn }: ReturnCarTabProps) => {
         </div>
         <div className="w-full row-start-2 md:col-start-2">
           <CarDetailCard />
-          <UserInfoCard UserType="outsource" reviewDriver={() => reviewCarDriveModalRef.current?.openModal()} displayOn="admin" />
+          <UserInfoCard
+            UserType="outsource"
+            reviewDriver={() => reviewCarDriveModalRef.current?.openModal()}
+            displayOn="admin"
+          />
         </div>
         <ReviewCarDriveModal displayOn="admin" ref={reviewCarDriveModalRef} />
         <ReturnCarAddModal useBy="admin" ref={returnCarAddModalRef} />

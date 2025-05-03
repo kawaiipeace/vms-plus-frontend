@@ -52,8 +52,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
       if (status && dataItem) {
         const startDate = convertToBuddhistDateTime(dataItem?.trip_start_datetime);
         const endDate = convertToBuddhistDateTime(dataItem?.trip_end_datetime);
-        startPickerRef.current?.setValue?.(startDate.date);
-        endPickerRef.current?.setValue?.(endDate.date);
+
         setValue({
           startDate: startDate.date,
           startTime: startDate.time,
@@ -65,6 +64,8 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
           endMile: String(dataItem?.trip_end_miles),
           detail: dataItem?.trip_detail,
         });
+        startPickerRef.current?.setValue?.(startDate.date);
+        endPickerRef.current?.setValue?.(endDate.date);
       } else {
         setValue(undefined);
       }
@@ -224,7 +225,6 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                         placeholder={"ระบุวันที่ถึงปลายทาง"}
                         onChange={(date) => setValue((val) => ({ ...val, endDate: date }))}
                         ref={endPickerRef}
-                        // value={value?.endDate}
                       />
                     </div>
                   </div>

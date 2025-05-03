@@ -6,6 +6,7 @@ import { fetchLogs, fetchRequestKeyDetail } from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import ReturnCarTab from "../admin/returnCarTab";
 import KeyPickUp from "../flow/keyPickUp";
 import KeyPickUpDetailForm from "../flow/keyPickUpDetailForm";
 import TableComponent from "../tableKeyPickUp";
@@ -13,7 +14,7 @@ import KeyPickUpAppointment from "./keyPickUpAppointment";
 import ReceiveCarVehicleInUseTab from "./receiveCarVehicleInUseTab";
 import RecordFuelTab from "./recordFuelTab";
 import RecordTravelTab from "./recordTravelTab";
-import ReturnCarTab from "./returnCarTab";
+// import ReturnCarTab from "./returnCarTab";
 
 interface Props {
   requestId: string;
@@ -130,7 +131,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การคืนยานพาหนะ",
         content: (
           <>
-            <ReturnCarTab status="returnFail" requestId={requestId} />
+            <ReturnCarTab status="returnFail" displayOn="userTabs" />
           </>
         ),
         constent: "",

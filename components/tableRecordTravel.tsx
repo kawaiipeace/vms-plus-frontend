@@ -68,7 +68,7 @@ export default function TableRecordTravelComponent<T>({
 
   useEffect(() => {
     setPageCount(table.getPageCount());
-  }, [table.getPageCount()]);
+  }, [table]);
 
   return (
     <>
@@ -78,6 +78,11 @@ export default function TableRecordTravelComponent<T>({
             {row.getVisibleCells().map((cell) => {
               const value = cell.renderValue() as React.ReactNode;
               const dateTime = cell.column.id.includes("datetime") || cell.column.id.includes("date");
+              const header = table.getHeaderGroups()[0].headers.find((header) => header.id === cell.column.id);
+
+              if (header?.id === "action") {
+                return "";
+              }
               if (dateTime) {
                 const convertDate =
                   convertToBuddhistDateTime(value as string).date +
@@ -85,7 +90,9 @@ export default function TableRecordTravelComponent<T>({
                   convertToBuddhistDateTime(value as string).time;
                 return (
                   <div key={cell.id} className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center">
-                    <span className="font-semibold">{cell.column.columnDef.header as string}</span>
+                    <span className="font-semibold flex items-center justify-start">
+                      {header ? flexRender(header?.column.columnDef.header, header?.getContext()) : ""}
+                    </span>
                     <span className="flex justify-end">{value ? convertDate : "-"}</span>
                   </div>
                 );
@@ -93,7 +100,9 @@ export default function TableRecordTravelComponent<T>({
 
               return (
                 <div key={cell.id} className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center">
-                  <span className="font-semibold">{cell.column.columnDef.header as string}</span>
+                  <span className="font-semibold flex items-center justify-start">
+                    {header ? flexRender(header?.column.columnDef.header, header?.getContext()) : ""}
+                  </span>
                   <span className="flex justify-end">{value ? value : "-"}</span>
                 </div>
               );
