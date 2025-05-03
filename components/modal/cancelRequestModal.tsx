@@ -6,12 +6,16 @@ import { cancelRequest } from "@/services/bookingUser";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
 import {
+  driverDeleteAddFuelDetail,
+  driverDeleteTravelDetail,
+} from "@/services/vehicleInUseDriver";
+import {
   UserDeleteAddFuelDetail,
   UserDeleteTravelDetail,
 } from "@/services/vehicleInUseUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   forwardRef,
   useEffect,
@@ -56,6 +60,8 @@ const CancelRequestModal = forwardRef<
     },
     ref
   ) => {
+    const searchParams = useSearchParams();
+    const progressType = searchParams.get("progressType");
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
@@ -101,6 +107,10 @@ const CancelRequestModal = forwardRef<
               ? await adminDeleteTravelDetail(tripId || "")
               : role === "recordFuel"
               ? await UserDeleteAddFuelDetail(fuelId || "")
+              : role === "driver"
+              ? cancleFor === "recordTravel"
+                ? await driverDeleteTravelDetail(tripId || "")
+                : await driverDeleteAddFuelDetail(fuelId || "")
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
@@ -142,6 +152,16 @@ const CancelRequestModal = forwardRef<
             } else if (role === "adminRecordTravel") {
               router.push(
                 `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
+              );
+            } else if (role === "driver") {
+              router.push(
+                "/vehicle-in-use/driver/" +
+                  id +
+                  "?progressType=" +
+                  progressType +
+                  (cancleFor === "recordTravel"
+                    ? "&delete-travel-req=success"
+                    : "&delete-fuel-req=success")
               );
             } else {
               router.push(
