@@ -10,6 +10,8 @@ import ApproveVehicleForAdminTabs from "@/components/tabs/approveVehicleForAdmin
 function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
+  const sendbackvehicleReq = searchParams.get("sendbackvehicle-req");
+  const acceptvehicleReq = searchParams.get("acceptvehicle-req");
   const cancelReq = searchParams.get("cancel-req");
   const returned = searchParams.get("returned");
   const approveReq = searchParams.get("approve-req");
@@ -73,21 +75,49 @@ function RequestListContent() {
         />
       )}
 
-        {returned === "success" && (
-              <ToastCustom
-                title="คืนยานพาหนะแล้ว"
-                desc={
-                  <>
-                    คืนยานพาหนะคำขอเลขที่
-                    <br /> {requestId} เรียบร้อยแล้ว
-                    <br /> กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
-                    <br /> และยืนยันการคืน
-                  </>
-                }
-                status="success"
-                searchParams=""
-              />
-            )}
+      {returned === "success" && (
+        <ToastCustom
+          title="คืนยานพาหนะแล้ว"
+          desc={
+            <>
+              คืนยานพาหนะคำขอเลขที่
+              <br /> {requestId} เรียบร้อยแล้ว
+              <br /> กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
+              <br /> และยืนยันการคืน
+            </>
+          }
+          status="success"
+          searchParams=""
+        />
+      )}
+
+      {sendbackvehicleReq === "success" && (
+        <ToastCustom
+          title="ตีกลับยานพาหนะสำเร็จ"
+          desc={
+            <>
+              ตีกลับยานพาหนะคำขอเลขที่
+              <br /> {requestId} เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+          searchParams=""
+        />
+      )}
+
+      {acceptvehicleReq === "success" && (
+        <ToastCustom
+          title="ตรวจสอบยานพาหนะสำเร็จ"
+          desc={
+            <>
+              ตรวจสอบและยืนยันการคืนยานพาหนะคำขอเลขที่
+              <br /> {requestId} เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+          searchParams=""
+        />
+      )}
     </>
   );
 }
