@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
 import TableRecordTravelComponent from "../tableRecordTravel";
+import ZeroRecord from "../zeroRecord";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -322,26 +323,23 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
     <>
       <div className="w-full">
         {requestFuelData && requestFuelData.length == 0 ? (
-          <div className="grid grid-cols-1 gap-4 text-center">
-            <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image src="/assets/img/graphic/fuel_img.svg" width={900} height={900} alt="" />
-            </div>
-            <div className="col-span-12">
-              <p className="font-bold text-2xl">เพิ่มข้อมูลการเดินทาง</p>
-              <p>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</p>
-            </div>
-            <div className="col-span-12">
-              <button
-                className="btn btn-primary w-full text-xl"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordFuelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined !text-3xl">add</i> เพิ่มข้อมูล
-              </button>
-            </div>
-          </div>
+            <ZeroRecord
+                    imgSrc="/assets/img/graphic/fuel_img.svg"
+                    title="เพิ่มข้อมูลการเติมเชื้อเพลิง"
+                    desc={
+                      <>
+                        กรุณาระบุเลขไมล์และข้อมูลใบเสร็จทุกครั้ง <br></br>
+                        ที่เติมน้ำมัน เพื่อใช้ในการเบิกค่าใช้จ่าย
+                      </>
+                    }
+                    button="เพิ่มข้อมูล"
+                    icon="add"
+                    displayBtn={true}
+                    useModal={() => {
+                      setEditData(undefined);
+                      recordFuelAddModalRef.current?.openModal();
+                    }}
+                  />
         ) : (
           <>
             <div className="py-2">
@@ -350,7 +348,8 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                 ข้อมูลการเติมเชื้อเพลิง
               </h4>
             </div>
-            <div className="mt-4">
+
+            <div className="flex w-full my-4">
               <div className="input-group input-group-search hidden">
                 <div className="input-group-prepend">
                   <span className="input-group-text search-ico-info">
@@ -361,21 +360,20 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                   type="text"
                   id="myInputTextField"
                   className="form-control dt-search-input"
-                  placeholder="ค้นหาเลขที่ใบเสร็จ"
+                  placeholder="ค้นหาสถานที่"
                   onChange={(e) => setParams({ ...params, search: e.target.value })}
                 />
               </div>
-            </div>
-            <div className="mt-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordFuelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined">add</i> เพิ่มข้อมูล
-              </button>
+         
+                <button
+                  className="btn btn-secondary ml-auto"
+                  onClick={() => {   setEditData(undefined);
+                    recordFuelAddModalRef.current?.openModal();}}
+                >
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+          
             </div>
             <div className="w-full mx-auto mt-3">
               <TableRecordTravelComponent
