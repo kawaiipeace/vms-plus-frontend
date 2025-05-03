@@ -59,15 +59,15 @@ function RequestListContent() {
         <ToastCustom
           title="คืนยานพาหนะแล้ว"
           desc={
-            <>
-              คืนยานพาหนะคำขอเลขที่
-              <br /> {requestNo} เรียบร้อยแล้ว
-              <br /> กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
-              <br /> และยืนยันการคืน
-            </>
+            <div>
+              <div className="">
+                คืนยานพาหนะคำขอเลขที่ {requestNo}
+                <br /> เรียบร้อยแล้ว กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
+                <br /> และยืนยันการคืน
+              </div>
+            </div>
           }
           status="success"
-          searchParams=""
         />
       )}
     </>
