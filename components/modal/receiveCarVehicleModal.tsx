@@ -38,12 +38,11 @@ const ReceiveCarVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReceiveCarVehicleModalProps
 >(({ status, requestData, role, onSubmit }, ref) => {
-  // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const datePickerRef = useRef<DatePickerRef>(null);
   const fuelQuantityRef = useRef<HTMLInputElement>(null);
 
-  const [miles, setMiles] = useState<string>("");
+  const [miles, setMiles] = useState<number>(0);
   const [remark, setRemark] = useState<string>("");
   const [images, setImages] = useState<UploadFileType[]>([]);
   const [images2, setImages2] = useState<UploadFileType[]>([]);
@@ -56,14 +55,20 @@ const ReceiveCarVehicleModal = forwardRef<
     useState<VehicleUserTravelCardType>();
 
   useEffect(() => {
+    console.log('resqu',requestData);
     if (requestData) {
       setFuelQuantity(requestData?.fuel_end || 0);
+      setMiles(requestData?.mile_start || 0);
+      setRemark(requestData?.received_vehicle_remark || "");
+      setSelectedDate(requestData?.pickup_datetime || "");
+      setSelectedTime(requestData?.pickup_datetime || "");
+      setFuelQuantity(requestData?.fuel_start || 0);
     }
   }, [requestData]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
-      clearForm();
+      // clearForm(); ลบออกเพราะข้อมูลไม่ขึ้น
 
       modalRef.current?.showModal();
     },
@@ -106,12 +111,13 @@ const ReceiveCarVehicleModal = forwardRef<
           vehicle_img_file: item.file_url,
         };
       });
-      const pickup = convertToISO(selectedDate, selectedTime);
+      console.log('date',selectedDate,selectedTime);
+      const pickup = convertToISO( selectedDate, selectedTime);
 
       const formData = {
         received_vehicle_remark: remark,
         fuel_start: fuelQuantity,
-        mile_start: Number(miles),
+        mile_start: miles,
         pickup_datetime: pickup,
         trn_request_uid: requestData?.trn_request_uid,
         vehicle_images: imageList,
@@ -155,7 +161,7 @@ const ReceiveCarVehicleModal = forwardRef<
     if (fuelQuantityRef.current) {
       fuelQuantityRef.current.value = "0";
     }
-    setMiles("");
+    setMiles(0);
     setRemark("");
     setImages([]);
     setImages2([]);
@@ -207,6 +213,7 @@ const ReceiveCarVehicleModal = forwardRef<
                         <DatePicker
                           placeholder={"ระบุวันที่"}
                           onChange={(date) => setSelectedDate(date)}
+                          // value={selectedDate}
                           ref={datePickerRef}
                         />
                       </div>
@@ -228,7 +235,7 @@ const ReceiveCarVehicleModal = forwardRef<
                         <TimePicker
                           placeholder="ระบุเวลา"
                           onChange={(time) => setSelectedTime(time)}
-                          defaultValue={selectedTime}
+                          value={selectedTime}
                         />
                       </div>
                     </div>
@@ -241,10 +248,9 @@ const ReceiveCarVehicleModal = forwardRef<
                           type="number"
                           className="form-control"
                           placeholder="ระบุเลขไมล์ก่อนเดินทาง"
-                          defaultValue={requestData?.mile_start}
                           value={miles}
                           onChange={(e) => {
-                            setMiles(e.target.value);
+                            setMiles(Number(e.target.value));
                           }}
                         />
                       </div>
@@ -380,7 +386,7 @@ const ReceiveCarVehicleModal = forwardRef<
                       </label>
                       <div className="input-group">
                         <input
-                          value={remark}
+                          defaultValue={remark}
                           type="text"
                           className="form-control"
                           placeholder="ระบุหมายเหตุ"

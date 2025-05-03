@@ -64,9 +64,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
             </a>
           </li>
           <li className="breadcrumb-item">
-            <Link href="/administrator/request-list">
-            ตรวจสอบและจัดการคำขอ
-            </Link>
+            <Link href="/administrator/request-list">ตรวจสอบและจัดการคำขอ</Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">
             เลขที่คำขอ {data?.request_no || ""}
@@ -105,11 +103,11 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
-            ) : (data?.ref_request_status_name === "ยกเลิกคำขอ") ? (
+            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
                 {data?.ref_request_status_name}
               </span>
-            ) : (data?.ref_request_status_name === "ตีกลับ") ? (
+            ) : data?.ref_request_status_name === "ตีกลับ" ? (
               <span className="badge badge-pill-outline badge-warning">
                 {data?.ref_request_status_name}
               </span>
@@ -196,7 +194,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
         </button>
       </div>
       <CancelRequestModal
-        id={data?.trn_request_uid}
+        id={data?.trn_request_uid || ""}
         ref={cancelRequestModalRef}
         title="ยืนยันยกเลิกคำขอ?"
         desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"

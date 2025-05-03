@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterModal from "@/components/modal/filterModal";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import { summaryType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
 import FilterSortModal from "@/components/modal/filterSortModal";
-import { fetchRequests } from "@/services/bookingAdmin";
-import AdminListTable from "@/components/table/admin-list-table";
+import AdminVehicleInsTable from "@/components/table/admin-vehicle-ins-table";
+import { fetchVehicleInsRequests } from "@/services/adminService";
+import { VehicleInsType } from "@/data/vehicleInsData";
 
 interface PaginationType {
   limit: number;
@@ -16,7 +17,7 @@ interface PaginationType {
   totalPages: number;
 }
 
-export default function AdminApproveFlow() {
+export default function AdminVehicleInsFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
@@ -38,7 +39,7 @@ export default function AdminApproveFlow() {
     totalPages: 0,
   });
 
-  const [dataRequest, setDataRequest] = useState<RequestListType[]>([]);
+  const [dataRequest, setDataRequest] = useState<VehicleInsType[]>([]);
   const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
@@ -63,16 +64,8 @@ export default function AdminApproveFlow() {
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
-      "30": { iconName: "schedule", status: "info" },
-      "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
-      "41": { iconName: "check", status: "success" },
-      "50": { iconName: "vpn_key", status: "info" },
-      "51": { iconName: "vpn_key", status: "info" },
-      "60": { iconName: "directions_car", status: "info" },
-      "70": { iconName: "build", status: "warning" },
-      "71": { iconName: "build", status: "warning" },
-      "80": { iconName: "done_all", status: "success" },
+      "70": { iconName: "schedule", status: "info" },
+      "71": { iconName: "schedule", status: "info" },
       "90": { iconName: "delete", status: "default" },
     };
 
@@ -200,7 +193,7 @@ export default function AdminApproveFlow() {
   useEffect(() => {
     const fetchRequestsData = async () => {
       try {
-        const response = await fetchRequests(params);
+        const response = await fetchVehicleInsRequests(params);
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
@@ -391,7 +384,7 @@ export default function AdminApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <AdminListTable defaultData={dataRequest} pagination={pagination}  />
+            <AdminVehicleInsTable defaultData={dataRequest} pagination={pagination}  />
           </div>
 
           <PaginationControls

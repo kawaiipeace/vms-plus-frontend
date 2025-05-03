@@ -11,7 +11,7 @@ import React, {
 } from "react";
 
 interface Props {
-  id: string;
+  id?: string;
   title: string;
   role?: string;
   desc: string;
@@ -36,7 +36,7 @@ const ApproveRequestModal = forwardRef<
     const sendCancelRequest = async () => {
       try {
         const payload = {
-          trn_request_uid: id,
+          trn_request_uid: id || "",
         };
         const res =
           role === "firstApprover"
@@ -69,8 +69,8 @@ const ApproveRequestModal = forwardRef<
   return (
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div  className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-          <div className="bottom-sheet" {...swipeDownHandlers} >
+        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="bottom-sheet" {...swipeDownHandlers}>
             <div className="bottom-sheet-icon"></div>
           </div>
 

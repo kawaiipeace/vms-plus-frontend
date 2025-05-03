@@ -89,13 +89,7 @@ export default function AdminVehiclePickupTable({
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-          {row.original.can_choose_vehicle === true &&
-          row.original.vehicle_department_dept_sap_short === "" ? (
-            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
-              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-              <span className="text-color-secondary">รอเลือก</span>
-            </div>
-          ) : (
+   
             <div className="flex flex-col">
               {" "}
               <div className="text-left">
@@ -105,7 +99,7 @@ export default function AdminVehiclePickupTable({
                 {row.original.ref_vehicle_type_name}
               </div>
             </div>
-          )}
+
         </div>
       ),
     },
@@ -217,15 +211,19 @@ export default function AdminVehiclePickupTable({
             </button>
 
             {(row.original.ref_request_status_code === "60" ||
-              (row.original.ref_request_status_code === "60e") && (
+  row.original.ref_request_status_code === "60e") && (
                 <div className="dropdown dropdown-left dropdown-end">
                   <div
                     className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                     tabIndex={0}
                     role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
                   >
                     <i className="material-symbols-outlined icon-settings-fill-300-24">
-                      more_vert {row.original.ref_request_status_code}
+                      more_vert 
                     </i>
                   </div>
 
@@ -233,30 +231,43 @@ export default function AdminVehiclePickupTable({
                     className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
                     tabIndex={0}
                   >
-                    <Link className="dropdown-item" href={`/administrator/vehicle-in-use`}>
-                      <i className="material-symbols-outlined">
-                        add_location_alt
-                      </i>
-                      ข้อมูลการเดินทาง
-                    </Link>
-                    <Link className="dropdown-item" href="#">
-                      <i className="material-symbols-outlined">
-                        local_gas_station
-                      </i>
-                      การเติมเชื้อเพลิง
-                    </Link>
+                 <Link
+  className="dropdown-item"
+  href={`/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=ข้อมูลการเดินทาง`}
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=ข้อมูลการเดินทาง`);
+  }}
+>
+  <i className="material-symbols-outlined">add_location_alt</i>
+  ข้อมูลการเดินทาง
+</Link>
+
+                    <Link
+  className="dropdown-item"
+  href={`/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=การเติมเชื้อเพลิง`}
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=การเติมเชื้อเพลิง`);
+  }}
+>
+  <i className="material-symbols-outlined">local_gas_station</i>
+  การเติมเชื้อเพลิง
+</Link>
                     {/* <Link className="dropdown-item" href="#">
                       <i className="material-symbols-outlined">id_card</i>
                       แสดงบัตรเดินทาง
                     </Link> */}
-                    <div className="dropdown-divider"></div>
+                       <hr />
                     <Link className="dropdown-item" href="#">
                       <i className="material-symbols-outlined">reply</i>
                       คืนยานพาหนะ
                     </Link>
                   </ul>
                 </div>
-              ))}
+              )}
 
             {statusValue == "รับยานพาหนะ" && (
               <button

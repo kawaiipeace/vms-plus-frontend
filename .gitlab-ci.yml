@@ -39,19 +39,6 @@ lint:
   image: node:${NODE_VERSION}
   script:
     - pnpm lint
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: 
-        - "src/**/*"
-        - ".eslintrc*"
-        - "**/*.config.{js,ts,mjs}"
-        - "tsconfig.json"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - "src/**/*"
-        - ".eslintrc*"
-        - "**/*.config.{js,ts,mjs}"
-        - "tsconfig.json"
   needs: []
 
 audit:
@@ -60,15 +47,6 @@ audit:
   image: node:${NODE_VERSION}
   script:
     - pnpm audit
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes:
-        - "package.json"
-        - "pnpm-lock.yaml"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - "package.json"
-        - "pnpm-lock.yaml"
   needs: []
 
 secret_scan:
@@ -95,20 +73,3 @@ build:
   image: node:${NODE_VERSION}
   script:
     - pnpm build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes:
-        - "src/**/*"
-        - "public/**/*"
-        - "**/*.config.{js,ts,mjs}"
-        - "tsconfig.json"
-        - "package.json"
-        - "pnpm-lock.yaml"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - "src/**/*"
-        - "public/**/*"
-        - "**/*.config.{js,ts,mjs}"
-        - "tsconfig.json"
-        - "package.json"
-        - "pnpm-lock.yaml"

@@ -4,6 +4,7 @@ import Tooltip from "@/components/tooltips";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ValueFormStep1 } from "./returnCarAddModal";
+import { UploadFileType } from "@/app/types/upload-type";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
@@ -18,33 +19,33 @@ const ReturnCarAddStep2Modal = forwardRef<
 >(({ openStep1, status, useBy, valueFormStep1 }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [images, setImages] = useState<File[]>([]);
-  const [images2, setImages2] = useState<File[]>([]);
-  const [images3, setImages3] = useState<File[]>([]);
+  const [images, setImages] = useState<UploadFileType[]>([]);
+  const [images2, setImages2] = useState<UploadFileType[]>([]);
+  const [images3, setImages3] = useState<UploadFileType[]>([]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const handleImageChange = (newImages: File[]) => {
-    setImages(newImages);
+  const handleImageChange = (newImages: UploadFileType) => {
+    setImages([newImages]);
   };
 
   const handleDeleteImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleImageChange2 = (newImages: File[]) => {
-    setImages2(newImages);
+  const handleImageChange2 = (newImages: UploadFileType) => {
+    setImages2([newImages]);
   };
 
   const handleDeleteImage2 = (index: number) => {
     setImages2(images2.filter((_, i) => i !== index));
   };
 
-  const handleImageChange3 = (newImages: File[]) => {
-    setImages3(newImages);
+  const handleImageChange3 = (newImages: UploadFileType) => {
+    setImages3([newImages]);
   };
 
   const handleDeleteImage3 = (index: number) => {
@@ -73,12 +74,17 @@ const ReturnCarAddStep2Modal = forwardRef<
                           "แก้ไขรูปยานพาหนะก่อนเดินทาง"
                         ) : (
                           <>
-                            <i className="material-symbols-outlined">keyboard_arrow_left</i> คืนยานพาหนะ
+                            <i className="material-symbols-outlined">
+                              keyboard_arrow_left
+                            </i>{" "}
+                            คืนยานพาหนะ
                           </>
                         )}
                       </span>
                     </div>
-                    {status !== "edit" && <p className="text-left font-bold">Step 2: รูปยานพาหนะ</p>}
+                    {status !== "edit" && (
+                      <p className="text-left font-bold">Step 2: รูปยานพาหนะ</p>
+                    )}
                   </div>
                 </div>
 
@@ -87,78 +93,129 @@ const ReturnCarAddStep2Modal = forwardRef<
                     <div className="form-group">
                       <label className="form-label">
                         รูปหน้าปัดเรือนไมล์
-                        <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                        <Tooltip
+                          title="รูปหน้าปัดเรือนไมล์"
+                          content="Upload ได้ 1 รูป"
+                          position="right"
+                        >
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
                       <ImageUpload
-                        images={images}
+                        // images={images}
                         onImageChange={handleImageChange}
-                        onDeleteImage={handleDeleteImage}
+                        // onDeleteImage={handleDeleteImage}
                       />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images.map((image, index) => (
-                          <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage(index)} />
+                          <ImagePreview
+                            key={index}
+                            image={image.file_url}
+                            onDelete={() => handleDeleteImage(index)}
+                          />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" && useBy !== "admin" ? "hidden" : "block"}`}>
+                  <div
+                    className={`col-span-12 ${
+                      (useBy !== "driver" && useBy !== "admin")
+                        ? "hidden"
+                        : "block"
+                    }`}
+                  >
                     <div className="form-group">
                       <label className="form-label">
-                        รูปยานพาหนะภายในและภายนอก<span className="font-light">(ถ้ามี)</span>
-                        <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                        รูปยานพาหนะภายในและภายนอก
+                        <span className="font-light">(ถ้ามี)</span>
+                        <Tooltip
+                          title="รูปหน้าปัดเรือนไมล์"
+                          content="Upload ได้ 1 รูป"
+                          position="right"
+                        >
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
                       <ImageUpload
-                        images={images2}
+                        // images={images2}
                         onImageChange={handleImageChange2}
-                        onDeleteImage={handleDeleteImage2}
+                        // onDeleteImage={handleDeleteImage2}
                       />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images2.map((image, index) => (
-                          <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
+                          <ImagePreview
+                            key={index}
+                            image={image.file_url}
+                            onDelete={() => handleDeleteImage2(index)}
+                          />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" && useBy !== "admin" ? "hidden" : "block"}`}>
+                  <div
+                    className={`col-span-12 ${
+                      useBy !== "driver"
+                        ? "hidden"
+                        : "block"
+                    }`}
+                  >
                     <div className="form-group">
                       <label className="form-label">
-                        รูปยานพาหนะภายใน<span className="font-light">(ถ้ามี)</span>
-                        <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                        รูปยานพาหนะภายใน
+                        <span className="font-light">(ถ้ามี)</span>
+                        <Tooltip
+                          title="รูปหน้าปัดเรือนไมล์"
+                          content="Upload ได้ 1 รูป"
+                          position="right"
+                        >
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
                       <ImageUpload
-                        images={images2}
+                        // images={images2}
                         onImageChange={handleImageChange2}
-                        onDeleteImage={handleDeleteImage2}
+                        // onDeleteImage={handleDeleteImage2}
                       />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images2.map((image, index) => (
-                          <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
+                          <ImagePreview
+                            key={index}
+                            image={image.file_url}
+                            onDelete={() => handleDeleteImage2(index)}
+                          />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" ? "hidden" : "block"}`}>
+                  <div
+                    className={`col-span-12 ${
+                      useBy !== "driver" ? "hidden" : "block"
+                    }`}
+                  >
                     <div className="form-group">
                       <label className="form-label">
-                        รูปยานพาหนะภายนอก<span className="font-light">(ถ้ามี)</span>
-                        <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                        รูปยานพาหนะภายนอก
+                        <span className="font-light">(ถ้ามี)</span>
+                        <Tooltip
+                          title="รูปหน้าปัดเรือนไมล์"
+                          content="Upload ได้ 1 รูป"
+                          position="right"
+                        >
                           <i className="material-symbols-outlined">info</i>
                         </Tooltip>
                       </label>
                       <ImageUpload
-                        images={images3}
+                        // images={images3}
                         onImageChange={handleImageChange3}
-                        onDeleteImage={handleDeleteImage3}
+                        // onDeleteImage={handleDeleteImage3}
                       />
                       <div className="image-preview flex flex-wrap gap-3">
                         {images3.map((image, index) => (
-                          <ImagePreview key={index} image={image} onDelete={() => handleDeleteImage2(index)} />
+                          <ImagePreview
+                            key={index}
+                            image={image.file_url}
+                            onDelete={() => handleDeleteImage2(index)}
+                          />
                         ))}
                       </div>
                     </div>
@@ -166,7 +223,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                 </div>
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12 mt-3">
                   <div className="col-span-6">
-                    <button type="button" className="btn btn-secondary w-full">
+                    <button type="button" className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
                       ไม่ใช่ตอนนี้
                     </button>
                   </div>

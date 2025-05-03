@@ -73,6 +73,45 @@ export const adminDeleteTravelDetail = async (id: string) => {
   }
 };
 
+export const fetchVehicleInsRequests = async (params: {
+  search?: string;
+  vehicle_owner_dept_sap?: string;
+  ref_request_status_code?: string;
+  startdate?: string;
+  enddate?: string;
+  order_by?: string;
+  order_dir?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      "vehicle-inspection-admin/search-requests",
+      { params }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
+export const adminCreateTravelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("vehicle-in-use-admin/create-travel-detail", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const adminUpdateTravelDetail = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/update-travel-detail/" + id, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 

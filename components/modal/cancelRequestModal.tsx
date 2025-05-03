@@ -5,7 +5,10 @@ import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
-import { UserDeleteAddFuelDetail, UserDeleteTravelDetail } from "@/services/vehicleInUseUser";
+import {
+  UserDeleteAddFuelDetail,
+  UserDeleteTravelDetail,
+} from "@/services/vehicleInUseUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,7 +22,7 @@ import {
 import * as yup from "yup";
 
 interface Props {
-  id: string;
+  id?: string;
   tripId?: string;
   fuelId?: string;
   title: string;
@@ -33,8 +36,26 @@ interface Props {
   tax_invoice_no?: string;
 }
 
-const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ id, title, desc, confirmText, placeholder, cancleFor, role, tripId, fuelId, datetime, tax_invoice_no }, ref) => {
+const CancelRequestModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(
+  (
+    {
+      id,
+      title,
+      desc,
+      confirmText,
+      placeholder,
+      cancleFor,
+      role,
+      tripId,
+      fuelId,
+      datetime,
+      tax_invoice_no,
+    },
+    ref
+  ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
@@ -61,7 +82,7 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
         try {
           const payload = {
             canceled_request_reason: inputValue,
-            trn_request_uid: id,
+            trn_request_uid: id || "",
           };
           const res =
             role === "firstApprover"
@@ -85,48 +106,49 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
           if (data) {
             modalRef.current?.close();
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            role === "firstApprover"
-              ? router.push(
-                  "/administrator/booking-approver?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "admin"
-              ? router.push(
-                  "/administrator/request-list?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "final"
-              ? router.push(
-                  "/administrator/booking-final?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "final"
-              ? router.push(
-                  "/vehicle-in-use/user?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "adminKey"
-              ? router.push(
-                  "/administrator/request-list?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                )
-              : role === "recordTravel"
-              ? router.push(
-                  `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
-                )
-              : role === "recordFuel"
-              ? router.push(
-                  `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
-                )
-                : role === "adminRecordTravel"
-                ? router.push(
-                    `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
-                  )
-              : router.push(
-                  "/vehicle-booking/request-list?cancel-req=success&request-id=" +
-                    data.result?.request_no
-                );
+            if (role === "firstApprover") {
+              router.push(
+                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "admin") {
+              router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "final") {
+              router.push(
+                "/administrator/booking-final?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "key") {
+              router.push(
+                "/vehicle-in-use/user?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "adminKey") {
+              router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            } else if (role === "recordTravel") {
+              router.push(
+                `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
+              );
+            } else if (role === "recordFuel") {
+              router.push(
+                `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
+              );
+            } else if (role === "adminRecordTravel") {
+              router.push(
+                `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
+              );
+            } else {
+              router.push(
+                "/vehicle-booking/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            }
           }
         } catch (error) {
           console.error("Cancel error:", error);
@@ -159,23 +181,25 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
             <div className="confirm-title text-xl font-medium">{title}</div>
             <div className="confirm-text text-base">{desc}</div>
 
-            {(cancleFor !== "recordTravel" && cancleFor !== "adminRecordTravel") && cancleFor !== "recordFuel" && (
-              <div className="confirm-form mt-4">
-                <div className="form-group">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder={placeholder}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                    />
+            {cancleFor !== "recordTravel" &&
+              cancleFor !== "adminRecordTravel" &&
+              cancleFor !== "recordFuel" && (
+                <div className="confirm-form mt-4">
+                  <div className="form-group">
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder={placeholder}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="modal-footer mt-5 flex justify-between gap-3">
+            <div className="modal-actions mt-5 flex justify-between gap-3">
               <button
                 className="btn btn-secondary flex-1"
                 onClick={() => modalRef.current?.close()}
@@ -185,8 +209,13 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
 
               <button
                 type="button"
-                className="btn btn-primary-danger col-span-1"
-                disabled={(cancleFor !== "recordTravel" && cancleFor !== "AdminRecordTravel" && cancleFor !== "recordFuel") && !isValid}
+                className="btn btn-primary-danger flex-1"
+                disabled={
+                  cancleFor !== "recordTravel" &&
+                  cancleFor !== "adminRecordTravel" &&
+                  cancleFor !== "recordFuel" &&
+                  !isValid
+                }
                 onClick={handleConfirm}
               >
                 {confirmText}
