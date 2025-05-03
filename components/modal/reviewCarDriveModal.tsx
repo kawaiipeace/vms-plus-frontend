@@ -71,7 +71,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
     }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc]);
 
     useEffect(() => {
-      if (displayOn === "admin") {
+      if (displayOn === "admin" || displayOn === "user") {
         setReviewSubmit(true);
       }
     }, [displayOn]);

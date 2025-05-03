@@ -28,7 +28,7 @@ export default function ToastCustom({
 
   const closeToast = () => {
     setIsVisible(false);
-    if (!searchParams) return; // If no searchParams, do nothing
+    if (!searchParams) return router.push(pathName); // If no searchParams, do nothing
     router.push(pathName + `?${searchParams}`); // Navigate to the current path to remove query parameters
   };
 
@@ -36,7 +36,7 @@ export default function ToastCustom({
 
   return (
     <div
-      className={`toast-container  ${"!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]  md:!left-1/4 md:!top-0 md:!translate-x-full md:!w-full md:!max-w-[calc(28vw_+_3rem)]"}`}
+      className={`toast-container  ${"!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]  md:!left-[calc(28vw_+_3rem)] md:!top-0 md:!translate-x-full md:!w-full md:!max-w-[calc(28vw_+_3rem)]"}`}
     >
       <div
         className={`toast fade toast-${status} block ${styleText} ${" !w-[85vw] !max-w-[85vw] md:!w-full md:!max-w-[calc(28vw_+_3rem)"}`}

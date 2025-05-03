@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
+import { TravelData } from "@/data/travelData";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -10,9 +11,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
-import { TravelData } from "@/data/travelData";
+import { useEffect, useRef, useState } from "react";
 import CancelRequestModal from "../modal/cancelRequestModal";
 import RecordTravelAddModal from "../modal/recordTravelAddModal";
 
@@ -26,9 +26,11 @@ interface PaginationType {
 interface Props {
   defaultData: TravelData[];
   pagination: PaginationType;
+  deleteRecordTravel?: (value: TravelData) => void;
+  editRecordTravel?: (value: TravelData) => void;
 }
 
-export default function TravelListTable({ defaultData, pagination }: Props) {
+export default function TravelListTable({ defaultData, pagination, editRecordTravel, deleteRecordTravel }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -151,13 +153,16 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         return (
-          <div className="text-left dataTable-action">
+          <div className="text-left dataTable-action flex items-center">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="แก้ไขข้อมูลการเดินทาง"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (editRecordTravel) {
+                  return editRecordTravel(row.original);
+                }
                 recordTravelEditModalRef.current?.openModal();
               }}
             >
@@ -170,6 +175,9 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (deleteRecordTravel) {
+                  return deleteRecordTravel(row.original);
+                }
                 cancelRequestModalRef.current?.openModal();
               }}
             >
@@ -199,11 +207,9 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
               title="ยืนยันลบข้อมูลการเดินทาง"
               desc={
                 " ข้อมูลการเดินทางวันที่ " +
-                convertToBuddhistDateTime(row.original.trip_start_datetime)
-                  .date +
+                convertToBuddhistDateTime(row.original.trip_start_datetime).date +
                 " - " +
-                convertToBuddhistDateTime(row.original.trip_start_datetime)
-                  .time +
+                convertToBuddhistDateTime(row.original.trip_start_datetime).time +
                 " จะถูกลบออกจากระบบ "
               }
               confirmText="ลบข้อมูล"

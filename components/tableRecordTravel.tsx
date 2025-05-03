@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import {
   ColumnDef,
+  flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -60,11 +61,14 @@ export default function TableRecordTravelComponent<T>({
         setPageSize(updater.pageSize ?? pageSize);
       }
     },
+    defaultColumn: {
+      enableSorting: false,
+    },
   });
 
   useEffect(() => {
     setPageCount(table.getPageCount());
-  }, [table.getPageCount()]);
+  }, [table]);
 
   return (
     <>
@@ -74,6 +78,11 @@ export default function TableRecordTravelComponent<T>({
             {row.getVisibleCells().map((cell) => {
               const value = cell.renderValue() as React.ReactNode;
               const dateTime = cell.column.id.includes("datetime") || cell.column.id.includes("date");
+              const header = table.getHeaderGroups()[0].headers.find((header) => header.id === cell.column.id);
+
+              if (header?.id === "action") {
+                return "";
+              }
               if (dateTime) {
                 const convertDate =
                   convertToBuddhistDateTime(value as string).date +
@@ -81,7 +90,9 @@ export default function TableRecordTravelComponent<T>({
                   convertToBuddhistDateTime(value as string).time;
                 return (
                   <div key={cell.id} className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center">
-                    <span className="font-semibold">{cell.column.columnDef.header as string}</span>
+                    <span className="font-semibold flex items-center justify-start">
+                      {header ? flexRender(header?.column.columnDef.header, header?.getContext()) : ""}
+                    </span>
                     <span className="flex justify-end">{value ? convertDate : "-"}</span>
                   </div>
                 );
@@ -89,7 +100,9 @@ export default function TableRecordTravelComponent<T>({
 
               return (
                 <div key={cell.id} className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center">
-                  <span className="font-semibold">{cell.column.columnDef.header as string}</span>
+                  <span className="font-semibold flex items-center justify-start">
+                    {header ? flexRender(header?.column.columnDef.header, header?.getContext()) : ""}
+                  </span>
                   <span className="flex justify-end">{value ? value : "-"}</span>
                 </div>
               );
@@ -155,26 +168,27 @@ export default function TableRecordTravelComponent<T>({
         <table className="w-full dataTable">
           <thead className="bg-gray-200">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr key={headerGroup.id} className="text-base font-semibold">
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="p-2 cursor-pointer" onClick={header.column.getToggleSortingHandler()}>
-                    <span
-                      className={`dt-column-title flex gap-2 ${
-                        header.column.columnDef.header == "" ? "justify-center" : ""
-                      }`}
-                    >
-                      {header.column.columnDef.header as string}
-                      {header.column.getIsSorted() === "asc" ? (
-                        <i className="material-symbols-outlined text-black">arrow_upward_alt</i>
-                      ) : header.column.getIsSorted() === "desc" ? (
-                        <i className="material-symbols-outlined text-black">arrow_downward_alt</i>
-                      ) : (
-                        <i className="material-symbols-outlined">import_export</i>
-                      )}
-                    </span>
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="p-2 cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-3">
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      <span>
+                        {{
+                          asc: <i className="material-symbols-outlined text-black select-none">arrow_upward_alt</i>,
+                          desc: <i className="material-symbols-outlined text-black select-none">arrow_downward_alt</i>,
+                        }[header.column.getIsSorted() as string] ||
+                          (header.column.getCanSort() ? (
+                            <i className="material-symbols-outlined select-none">import_export</i>
+                          ) : null)}
+                      </span>
+                    </div>
                   </th>
                 ))}
-                <th></th>
               </tr>
             ))}
           </thead>
@@ -256,7 +270,7 @@ export default function TableRecordTravelComponent<T>({
                         )}
                       </>
                     ) : (
-                      (cell.renderValue() as React.ReactNode)
+                      flexRender(cell.column.columnDef.cell, cell.getContext())
                     )}
                   </td>
                 ))}

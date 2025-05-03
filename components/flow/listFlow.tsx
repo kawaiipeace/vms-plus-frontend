@@ -180,7 +180,7 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "ถูกตีกลับ") {
+        if (ref_request_status_name === "ตีกลับยานพาหนะ") {
           return (
             <MobileRejectCard
               key={request.trn_request_uid || index}

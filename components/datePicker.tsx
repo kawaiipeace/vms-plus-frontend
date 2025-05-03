@@ -9,27 +9,26 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 interface DatePickerProps {
   placeholder?: string;
   onChange?: (dateStr: string) => void;
-  value?: string;
 }
 
 export interface DatePickerRef {
   reset: () => void;
+  setValue: (value: string) => void;
 }
 
-const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, onChange, value }, ref) => {
+const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, onChange }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const flatpickrInstance = useRef<FlatpickrInstance | null>(null);
-
-  useEffect(() => {
-    if (value && flatpickrInstance.current) {
-      flatpickrInstance.current.setDate(value, true); // อัปเดตวันที่เวลา value เปลี่ยน
-    }
-  }, [value]);
 
   useImperativeHandle(ref, () => ({
     reset: () => {
       if (flatpickrInstance.current) {
         flatpickrInstance.current.clear(); // Clear the selected date
+      }
+    },
+    setValue: (newValue: string) => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.setDate(newValue, true); // Set the new date
       }
     },
   }));

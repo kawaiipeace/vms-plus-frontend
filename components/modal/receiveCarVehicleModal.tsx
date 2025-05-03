@@ -111,8 +111,7 @@ const ReceiveCarVehicleModal = forwardRef<
           vehicle_img_file: item.file_url,
         };
       });
-      console.log('date',selectedDate,selectedTime);
-      const pickup = convertToISO( selectedDate, selectedTime);
+      const pickup = convertToISO(selectedDate, selectedTime);
 
       const formData = {
         received_vehicle_remark: remark,
@@ -213,7 +212,6 @@ const ReceiveCarVehicleModal = forwardRef<
                         <DatePicker
                           placeholder={"ระบุวันที่"}
                           onChange={(date) => setSelectedDate(date)}
-                          // value={selectedDate}
                           ref={datePickerRef}
                         />
                       </div>
@@ -235,7 +233,7 @@ const ReceiveCarVehicleModal = forwardRef<
                         <TimePicker
                           placeholder="ระบุเวลา"
                           onChange={(time) => setSelectedTime(time)}
-                          value={selectedTime}
+                          defaultValue={selectedTime}
                         />
                       </div>
                     </div>

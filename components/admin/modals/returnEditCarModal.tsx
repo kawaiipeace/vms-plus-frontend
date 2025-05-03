@@ -3,36 +3,30 @@ import { UploadFileType } from "@/app/types/upload-type";
 import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
 import Tooltip from "@/components/tooltips";
-import { UserReturnedVehicle } from "@/services/vehicleInUseUser";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { useRouter } from "next/navigation";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { ValueFormStep1 } from "./returnCarAddModal";
-import { AdminReturnedVehicle } from "@/services/adminService";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { ImagePreviewType } from "@/app/types/image-preview-type";
+import { adminUpdateImageDetail } from "@/services/adminService";
 
-interface ReturnCarAddStep2ModalProps {
-  openStep1: () => void;
+interface Props {
   status?: string;
   useBy?: string;
-  valueFormStep1?: ValueFormStep1;
-  id?: string;
+  reqId?: string;
   requestData?: RequestDetailType;
+  previewImages?: ImagePreviewType[];
   clearForm?: () => void;
   onSubmit?: () => void;
 }
 
-const ReturnCarAddStep2Modal = forwardRef<
+const ReturnEditCarModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
-  ReturnCarAddStep2ModalProps
->(({ openStep1, status, useBy, valueFormStep1, id, requestData, clearForm, onSubmit }, ref) => {
-  const router = useRouter();
+  Props
+>(({ status, useBy, reqId, onSubmit, previewImages }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<UploadFileType[]>([]);
   const [images2, setImages2] = useState<UploadFileType[]>([]);
 
-  console.log("valueFormStep1", valueFormStep1);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -57,7 +51,7 @@ const ReturnCarAddStep2Modal = forwardRef<
     setImages2(images2.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
+  const onSubmitForm = async () => {
     try {
       const imageList = [...images, ...images2].map((item, index) => {
         return {
@@ -66,53 +60,43 @@ const ReturnCarAddStep2Modal = forwardRef<
         };
       });
 
-      const returned_vehicle_datetime =
-        valueFormStep1?.selectedDate && valueFormStep1?.selectedTime
-          ? convertToISO(
-              convertToBuddhistDateTime(valueFormStep1?.selectedDate).date,
-              convertToBuddhistDateTime(valueFormStep1?.selectedTime).time
-            )
-          : "";
-
-      const formData = {
-        fuel_end: valueFormStep1?.fuelQuantity,
-        mile_end: Number(valueFormStep1?.miles || "0"),
-        returned_cleanliness_level: valueFormStep1?.cleanType ? Number(valueFormStep1?.cleanType) : 0,
-        returned_vehicle_datetime: returned_vehicle_datetime,
-        returned_vehicle_emp_id: requestData?.returned_vehicle_emp_id,
-        returned_vehicle_remark: valueFormStep1?.remark,
-        trn_request_uid: requestData?.trn_request_uid,
+      const payload = {
+        trn_request_uid: reqId,
         vehicle_images: imageList,
       };
-      console.log("formData", formData);
       let response;
-      if (useBy === "user") {
-        response = await UserReturnedVehicle(formData);
-      } else if(useBy === "admin") {
-        response = await AdminReturnedVehicle(formData);
-      } else{
-        response = await UserReturnedVehicle(formData);
-      }
+      if (useBy === "admin") {
+        response = await adminUpdateImageDetail(payload);
+        if(response){
+            console.log('res',response.data);
+            modalRef.current?.close();
+        }
+      } 
       if (onSubmit) {
         onSubmit();
-      } else {
-        if (response.status === 200) {
-          clearForm?.();
-          if (useBy === "user") {
-            modalRef.current?.close();
-            router.push(`/vehicle-booking/request-list?returned=success&request-no=${response.data.result.request_no}`);
-          } else if(useBy === "admin") {
-            modalRef.current?.close();
-            router.push(`/administrator/request-list?activeTab=ตรวจสอบยานพาหนะ&returned=success&request-no=${response.data.result.request_no}`);
-          } else {
-            modalRef.current?.close();
-          }
-        }
-      }
+      } 
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error submitting form data:", error);
     }
-  }; // Properly closed handleSubmit function
+  };
+  useEffect(() => {
+    if (previewImages && previewImages.length > 0) {
+      // Add one image to images
+      if (images.length === 0) {
+        setImages([{ file_url: previewImages[0].vehicle_img_file || "" }]);
+      }
+  
+      // Skip the first image when setting images2
+      const image2Set = previewImages.slice(1, 5).map((img) => ({
+        file_url: img.vehicle_img_file || "",
+      }));
+      if (images2.length === 0) {
+        setImages2(image2Set);
+      }
+
+    }
+  }, [previewImages]);
+  
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -125,8 +109,13 @@ const ReturnCarAddStep2Modal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">
-            <div className="flex items-center gap-3">       {status === "edit" ? (
+            <div className="modal-title"   onClick={() => {
+                        modalRef.current?.close();
+                      }}>
+
+                  
+                      <span className="page-title-label">
+                        {status === "edit" ? (
                           "แก้ไขรูปยานพาหนะก่อนเดินทาง"
                         ) : (
                           <>
@@ -135,8 +124,13 @@ const ReturnCarAddStep2Modal = forwardRef<
                             </i>{" "}
                             คืนยานพาหนะ
                           </>
-                        )}</div>
-   
+                        )}
+                      </span>
+                    
+                    {status !== "edit" && (
+                      <p className="text-left font-bold">Step 2: รูปยานพาหนะ</p>
+                    )}
+                
             </div>
 
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary" onClick={(e) => {
@@ -150,11 +144,7 @@ const ReturnCarAddStep2Modal = forwardRef<
           </div>
 
           <div className="modal-body overflow-y-auto text-center !bg-white h-[70vh]">
-          {status !== "edit" && (
-            <p className="text-left text-base mb-2 font-semibold">Step 2: รูปยานพาหนะ</p>
-          )}
-
-          
+        
               <div className="form-section">
 
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12">
@@ -174,7 +164,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" && useBy === "admin" ? "hidden" : "block"}`}>
+                  <div className={`col-span-12 ${useBy !== "driver" && useBy !== "admin" ? "hidden" : "block"}`}>
                     <div className="form-group">
                       <label className="form-label">
                         รูปยานพาหนะภายในและภายนอก
@@ -183,58 +173,37 @@ const ReturnCarAddStep2Modal = forwardRef<
                         </Tooltip>
                       </label>
                       {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
-                      <div className="grid grid-cols-2 gap-3 mt-3">
+                      <div className="grid grid-cols-2 gap-3 w-full mt-3">
                         {images2.map((image, index) => (
                           <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage2(index)} />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <div
-                    className={`col-span-12 ${
-                      useBy !== "driver" && useBy !== "admin" && useBy !== "user" ? "hidden" : "block"
-                    }`}
-                  >
-                    <div className="form-group">
-                      <label className="form-label">
-                        รูปภายนอกยานพาหนะรอบคัน
-                        <Tooltip title="รูปภายนอกยานพาหนะรอบคัน" content="Upload ได้ 4 รูป" position="right">
-                          <i className="material-symbols-outlined">info</i>
-                        </Tooltip>
-                      </label>
-                      {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
-                      <div className="grid grid-cols-2 gap-3 mt-3">
-                        {images2.map((image, index) => (
-                          <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage2(index)} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+
                 </div>
-            
+             
+          
               </div>
-         
+          
           </div>
-          <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
-                  <div className="">
+          <div className="modal-action w-full flex-wrap gap-5 mt-3 ml-auto">
+                  <div className="col-span-6">
                     <button
                       type="button"
-                      className="btn btn-secondary w-full"
+                      className="btn btn-secondary"
                       onClick={() => modalRef.current?.close()}
                     >
-                      {useBy === "user" ? "ยกเลิก" : "ไม่ใช่ตอนนี้"}
+                         {useBy === "admin" ? "ปิด" : "ไม่ใช่ตอนนี้"}
                     </button>
                   </div>
-                  <div className="">
+                  <div className="col-span-6">
                     <button
                       type="button"
-                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
-                      onClick={() => {
-                        handleSubmit();
-                      }}
-                      disabled={!images.length}
+                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white"
+                      onClick={onSubmitForm}
                     >
-                        ยืนยัน
+                      {useBy === "admin" ? "บันทึก" : "ยืนยัน"}
                     </button>
                   </div>
                 </div>
@@ -248,6 +217,6 @@ const ReturnCarAddStep2Modal = forwardRef<
   );
 });
 
-ReturnCarAddStep2Modal.displayName = "ReturnCarAddStep2Modal";
+ReturnEditCarModal.displayName = "ReturnEditCarModal";
 
-export default ReturnCarAddStep2Modal;
+export default ReturnEditCarModal;
