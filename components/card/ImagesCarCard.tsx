@@ -21,9 +21,11 @@ const ImagesCarCard = ({ images }: { images?: string[] }) => {
                 images
                   ?.filter((_, index) => index > 0)
                   ?.map((src, index) => (
-                    <div className="w-[140px] aspect-square rounded-xl overflow-hidden">
+                    <div
+                      className="w-[140px] aspect-square rounded-xl overflow-hidden"
+                      key={index}
+                    >
                       <Image
-                        key={index}
                         className="object-cover object-center"
                         src={src || "/assets/img/sample-car.jpeg"}
                         width={900}
