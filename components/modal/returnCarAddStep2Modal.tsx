@@ -3,14 +3,14 @@ import { UploadFileType } from "@/app/types/upload-type";
 import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
 import Tooltip from "@/components/tooltips";
+import { AdminReturnedVehicle } from "@/services/adminService";
 import { UserReturnedVehicle } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ValueFormStep1 } from "./returnCarAddModal";
-import { AdminReturnedVehicle } from "@/services/adminService";
 
 interface ReturnCarAddStep2ModalProps {
   openStep1: () => void;
@@ -28,11 +28,10 @@ const ReturnCarAddStep2Modal = forwardRef<
   ReturnCarAddStep2ModalProps
 >(({ openStep1, status, useBy, valueFormStep1, id, requestData, clearForm, onSubmit }, ref) => {
   const router = useRouter();
+  const pathName = usePathname();
   const modalRef = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<UploadFileType[]>([]);
   const [images2, setImages2] = useState<UploadFileType[]>([]);
-
-  console.log("valueFormStep1", valueFormStep1);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -86,11 +85,11 @@ const ReturnCarAddStep2Modal = forwardRef<
       };
       console.log("formData", formData);
       let response;
-      if (useBy === "user") {
+      if (useBy === "user" || useBy === "userTabs") {
         response = await UserReturnedVehicle(formData);
-      } else if(useBy === "admin") {
+      } else if (useBy === "admin") {
         response = await AdminReturnedVehicle(formData);
-      } else{
+      } else {
         response = await UserReturnedVehicle(formData);
       }
       if (onSubmit) {
@@ -101,9 +100,17 @@ const ReturnCarAddStep2Modal = forwardRef<
           if (useBy === "user") {
             modalRef.current?.close();
             router.push(`/vehicle-booking/request-list?returned=success&request-no=${response.data.result.request_no}`);
-          } else if(useBy === "admin") {
+          } else if (useBy === "admin") {
             modalRef.current?.close();
-            router.push(`/administrator/request-list?activeTab=ตรวจสอบยานพาหนะ&returned=success&request-no=${response.data.result.request_no}`);
+            router.push(
+              `/administrator/request-list?activeTab=ตรวจสอบยานพาหนะ&returned=success&request-no=${response.data.result.request_no}`
+            );
+          }
+          if (useBy === "userTabs") {
+            modalRef.current?.close();
+            router.push(
+              `${pathName}?activeTab=การคืนยานพาหนะ&returned-tabs=success&request-no=${response.data.result.request_no}`
+            );
           } else {
             modalRef.current?.close();
           }
@@ -120,43 +127,44 @@ const ReturnCarAddStep2Modal = forwardRef<
     <>
       <dialog ref={modalRef} className={`modal modal-middle`}>
         <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-        <form>
-        <div className="bottom-sheet" {...swipeDownHandlers}>
-            <div className="bottom-sheet-icon"></div>
-          </div>
-          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">
-            <div className="flex items-center gap-3">       {status === "edit" ? (
-                          "แก้ไขรูปยานพาหนะก่อนเดินทาง"
-                        ) : (
-                          <>
-                            <i className="material-symbols-outlined">
-                              keyboard_arrow_left
-                            </i>{" "}
-                            คืนยานพาหนะ
-                          </>
-                        )}</div>
-   
+          <form>
+            <div className="bottom-sheet" {...swipeDownHandlers}>
+              <div className="bottom-sheet-icon"></div>
             </div>
+            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+              <div className="modal-title">
+                <div className="flex items-center gap-3">
+                  {" "}
+                  {status === "edit" ? (
+                    "แก้ไขรูปยานพาหนะก่อนเดินทาง"
+                  ) : (
+                    <div onClick={openStep1} className="flex items-center gap-3 cursor-pointer">
+                      <i className="material-symbols-outlined">keyboard_arrow_left</i> คืนยานพาหนะ
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary" onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        modalRef.current?.close();
-                      }}>
+              <button
+                className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  modalRef.current?.close();
+                }}
+              >
                 <i className="material-symbols-outlined">close</i>
               </button>
+            </div>
 
-          </div>
+            <div
+              className={`modal-body overflow-y-auto text-center !bg-white ${
+                useBy === "userTabs" ? "h-[55vh]" : "h-[70vh]"
+              } `}
+            >
+              {status !== "edit" && <p className="text-left text-base mb-2 font-semibold">Step 2: รูปยานพาหนะ</p>}
 
-          <div className="modal-body overflow-y-auto text-center !bg-white h-[70vh]">
-          {status !== "edit" && (
-            <p className="text-left text-base mb-2 font-semibold">Step 2: รูปยานพาหนะ</p>
-          )}
-
-          
               <div className="form-section">
-
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12">
                   <div className="col-span-12">
                     <div className="form-group">
@@ -174,7 +182,13 @@ const ReturnCarAddStep2Modal = forwardRef<
                       </div>
                     </div>
                   </div>
-                  <div className={`col-span-12 ${useBy !== "driver" && useBy === "admin" ? "hidden" : "block"}`}>
+                  <div
+                    className={`col-span-12 ${
+                      (useBy !== "driver" && useBy === "admin") || useBy === "user" || useBy === "userTabs"
+                        ? "hidden"
+                        : "block"
+                    }`}
+                  >
                     <div className="form-group">
                       <label className="form-label">
                         รูปยานพาหนะภายในและภายนอก
@@ -192,7 +206,9 @@ const ReturnCarAddStep2Modal = forwardRef<
                   </div>
                   <div
                     className={`col-span-12 ${
-                      useBy !== "driver" && useBy !== "admin" && useBy !== "user" ? "hidden" : "block"
+                      useBy !== "driver" && useBy !== "admin" && useBy !== "user" && useBy !== "userTabs"
+                        ? "hidden"
+                        : "block"
                     }`}
                   >
                     <div className="form-group">
@@ -211,34 +227,28 @@ const ReturnCarAddStep2Modal = forwardRef<
                     </div>
                   </div>
                 </div>
-            
               </div>
-         
-          </div>
-          <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
-                  <div className="">
-                    <button
-                      type="button"
-                      className="btn btn-secondary w-full"
-                      onClick={() => modalRef.current?.close()}
-                    >
-                      {useBy === "user" ? "ยกเลิก" : "ไม่ใช่ตอนนี้"}
-                    </button>
-                  </div>
-                  <div className="">
-                    <button
-                      type="button"
-                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
-                      onClick={() => {
-                        handleSubmit();
-                      }}
-                      disabled={!images.length}
-                    >
-                        ยืนยัน
-                    </button>
-                  </div>
-                </div>
-                </form>
+            </div>
+            <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
+              <div className="">
+                <button type="button" className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
+                  {useBy === "user" ? "ยกเลิก" : "ไม่ใช่ตอนนี้"}
+                </button>
+              </div>
+              <div className="">
+                <button
+                  type="button"
+                  className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                  disabled={!images.length}
+                >
+                  ยืนยัน
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>

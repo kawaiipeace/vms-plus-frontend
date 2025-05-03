@@ -14,49 +14,15 @@ export default function DriverPassengerPeaInfoCard({ id, requestData, displayLoc
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  // const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await fetchVehicleUsers(id);
-  //       console.log("vehicledata", res);
-  //       let user = res.data[0];
 
-  //       // Override only contact numbers from requestData if available
-  //       if (requestData) {
-  //         user = {
-  //           ...user,
-  //           tel_mobile: requestData.car_user_mobile_contact_number,
-  //           tel_internal: requestData.car_user_internal_contact_number,
-  //         };
-  //       }
+  const { vehicle_user } = requestData?.vehicle?.vehicle_department || {};
 
-  //       setVehicleUser(user);
-  //     } catch (error) {
-  //       console.error("Error fetching driver data:", error);
-  //     }
-  //   };
-
-  //   if (id) {
-  //     fetchData();
-  //   }
-  // }, [id, requestData]);
-
-  const {
-    driver,
-    is_pea_employee_driver,
-    driver_emp_name,
-    driver_mobile_contact_number,
-    driver_emp_id,
-    driver_emp_dept_sap,
-    driver_image_url,
-  } = requestData || {};
-
-  const name = is_pea_employee_driver === "1" ? driver?.driver_name : driver_emp_name;
-  const contactNumber = is_pea_employee_driver === "1" ? driver?.driver_contact_number : driver_mobile_contact_number;
-  const idDriver = is_pea_employee_driver === "1" ? driver?.driver_id : driver_emp_id;
-  const deptSap = is_pea_employee_driver === "1" ? driver?.driver_dept_sap : driver_emp_dept_sap;
-  const imageSrc = is_pea_employee_driver === "1" ? driver?.driver_image : driver_image_url;
+  const name = vehicle_user?.full_name;
+  const contactNumber = vehicle_user?.tel_mobile;
+  const internal = vehicle_user?.tel_internal;
+  const idDriver = vehicle_user?.emp_id;
+  const deptSap = vehicle_user?.dept_sap;
+  const imageSrc = vehicle_user?.image_url;
 
   return (
     <div className="form-card">
@@ -77,10 +43,10 @@ export default function DriverPassengerPeaInfoCard({ id, requestData, displayLoc
           </div>
         </div>
         <div className="mt-3">
-          {is_pea_employee_driver === "1" && (
+          {internal && (
             <div className="flex">
               <i className="material-symbols-outlined mr-2 text-[#A80689]">deskphone</i>
-              <p> {}</p>
+              <p> {internal}</p>
             </div>
           )}
           <div className="grid grid-cols-4 gap-3">

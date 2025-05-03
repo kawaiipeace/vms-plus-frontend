@@ -15,6 +15,10 @@ function RequestListContent() {
   const createReq = searchParams.get("create-req");
   const cancelReq = searchParams.get("cancel-req");
   const requestId = searchParams.get("request-id");
+  const returned = searchParams.get("returned-tabs");
+  const returnedData = searchParams.get("edit-data-returned-tabs");
+  const returnedImage = searchParams.get("edit-image-returned-tabs");
+  const requestNo = searchParams.get("request-no");
 
   return (
     <>
@@ -40,6 +44,52 @@ function RequestListContent() {
           status="success"
         />
       )}
+      {returned === "success" && (
+        <ToastCustom
+          title="คืนยานพาหนะแล้ว"
+          desc={
+            <div>
+              <div className="">
+                คืนยานพาหนะคำขอเลขที่ {requestNo}
+                <br /> เรียบร้อยแล้ว กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
+                <br /> และยืนยันการคืน
+              </div>
+            </div>
+          }
+          status="success"
+          searchParams="?activeTab=การคืนยานพาหนะ"
+        />
+      )}
+      {returnedData === "success" && (
+        <ToastCustom
+          title="แก้ไขรูปภาพสำเร็จ"
+          desc={
+            <div>
+              <div className="">
+                แก้ไขรูปยานพาหนะหลังเดินทางคำขอเลขที่
+                <br /> {requestNo} เรียบร้อยแล้ว
+              </div>
+            </div>
+          }
+          status="success"
+          searchParams="?activeTab=การคืนยานพาหนะ"
+        />
+      )}
+      {returnedImage === "success" && (
+        <ToastCustom
+          title="แก้ไขรูปภาพสำเร็จ"
+          desc={
+            <div>
+              <div className="">
+                แก้ไขรูปยานพาหนะหลังเดินทางคำขอเลขที่
+                <br /> {requestNo} เรียบร้อยแล้ว
+              </div>
+            </div>
+          }
+          status="success"
+          searchParams="?activeTab=การคืนยานพาหนะ"
+        />
+      )}
     </>
   );
 }
@@ -58,7 +108,6 @@ export default function RequestDetail() {
         try {
           const response = await requestDetail(request_id);
           setRequestData(response.data);
-          console.log("reqeustdetail", response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }

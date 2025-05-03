@@ -131,7 +131,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การคืนยานพาหนะ",
         content: (
           <>
-            <ReturnCarTab status="returnFail" displayOn="userTabs" />
+            <ReturnCarTab displayOn="userTabs" useBy={"userTabs"} requestData={requestData} />
           </>
         ),
         constent: "",

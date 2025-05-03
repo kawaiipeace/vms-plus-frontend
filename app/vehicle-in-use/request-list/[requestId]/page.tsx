@@ -1,16 +1,14 @@
 "use client";
-import { useState, useRef } from "react";
-import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
-import SideBar from "@/components/sideBar";
-import KeyPickUp from "@/components/flow/keyPickUp";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
-import KeyPickUpDetailForm from "@/components/flow/keyPickUpDetailForm";
+import SideBar from "@/components/sideBar";
 import KeyPickUpAppointment from "@/components/tabs/keyPickUpAppointment";
 import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
-import RecordTravelTab from "@/components/tabs/recordTravelTab";
 import RecordFuelTab from "@/components/tabs/recordFuelTab";
+import RecordTravelTab from "@/components/tabs/recordTravelTab";
 import ReturnCarTab from "@/components/tabs/returnCarTab";
+import { useSidebar } from "@/contexts/sidebarContext";
+import { useRef, useState } from "react";
 
 const RequestNo = () => {
   const cancelRequestModalRef = useRef<{
@@ -21,20 +19,12 @@ const RequestNo = () => {
   const tabs = [
     {
       label: "รายละเอียดคำขอ",
-      content: (
-        <>
-          {/* <KeyPickUpDetailForm status="detail" /> */}
-        </>
-      ),
+      content: <>{/* <KeyPickUpDetailForm status="detail" /> */}</>,
       badge: "",
     },
     {
       label: "การรับกุญแจ",
-      content: (
-        <>
-          {/* <KeyPickUp status="detail" /> */}
-        </>
-      ),
+      content: <>{/* <KeyPickUp status="detail" /> */}</>,
       badge: "",
     },
     {
@@ -121,7 +111,10 @@ const RequestNo = () => {
                   <span className="badge badge-pill-outline badge-info">รอรับกุญแจ</span>
                 </div>
 
-                <button className="btn btn-tertiary-danger bg-transparent shadow-none border-none" onClick={() => cancelRequestModalRef.current?.openModal()}>
+                <button
+                  className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+                  onClick={() => cancelRequestModalRef.current?.openModal()}
+                >
                   ยกเลิกคำขอ
                 </button>
                 <button className="btn btn-secondary">
@@ -131,9 +124,15 @@ const RequestNo = () => {
             </div>
 
             <div className="w-full overflow-x-auto">
-            <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+              <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
                 {tabs.map((tab, index) => (
-                  <button key={index} className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`} onClick={() => setActiveTab(index)}>
+                  <button
+                    key={index}
+                    className={`tab transition-colors duration-300 ease-in-out ${
+                      activeTab === index ? "active" : "text-gray-600"
+                    }`}
+                    onClick={() => setActiveTab(index)}
+                  >
                     <div className="flex gap-2 items-center">
                       {tab.label}
                       {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
@@ -147,7 +146,13 @@ const RequestNo = () => {
           </div>
         </div>
       </div>
-      <CancelRequestModal id="" ref={cancelRequestModalRef} title="ยืนยันยกเลิกคำขอ?" desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก" confirmText="ยกเลิกคำขอ" />
+      <CancelRequestModal
+        id=""
+        ref={cancelRequestModalRef}
+        title="ยืนยันยกเลิกคำขอ?"
+        desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
+        confirmText="ยกเลิกคำขอ"
+      />
     </div>
   );
 };

@@ -37,7 +37,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       try {
         // Ensure parsedData is an object before accessing vehicleSelect
         const response = await fetchRequestKeyDetail(id || "");
-        console.log("data---", response.data);
+
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
@@ -48,7 +48,6 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       async () => {
         try {
           const response = await fetchSatisfactionSurveyQuestions();
-          console.log("data---", response.data);
 
           setSatisfactionSurveyQuestions(response.data);
           const newRatting = response.data.map((item: SatisfactionSurveyQuestions) => {

@@ -3,13 +3,14 @@ import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
 import RadioButton from "@/components/radioButton";
 import useSwipeDown from "@/utils/swipeDown";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import TimePicker from "../timePicker";
 
 interface ReturnCarAddModalProps {
   useBy?: string;
   id?: string;
   requestData?: RequestDetailType;
+  edit?: boolean;
 }
 
 export interface ValueFormStep1 {
@@ -23,7 +24,7 @@ export interface ValueFormStep1 {
 }
 
 const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddModalProps>(
-  ({ useBy, id, requestData }, ref) => {
+  ({ useBy, id, requestData, edit }, ref) => {
     // Destructure `process` from props
     const modalRef = useRef<HTMLDialogElement>(null);
     const datePickerRef = useRef<DatePickerRef>(null);
@@ -43,24 +44,27 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
       closeModal: () => modalRef.current?.close(),
     }));
 
+    const defaultData = useCallback(
+      (data: RequestDetailType) => {
+        datePickerRef.current?.setValue(data?.end_datetime || "");
+        setSelectedDate(data?.end_datetime || "");
+        setSelectedTime(data?.end_datetime || "");
+        setCleanType(data?.returned_cleanliness_level?.toString() || "");
+        setFuelQuantity(data?.fuel_start || 0);
+        if (edit) {
+          setParkingLocation(data?.parking_place || "");
+          setMiles(data?.mile_end?.toString() || "");
+          setRemark(data?.returned_vehicle_remark || "");
+        }
+      },
+      [edit]
+    );
+
     useEffect(() => {
       if (requestData) {
         defaultData(requestData);
       }
-    }, [requestData]);
-
-    const defaultData = (data: RequestDetailType) => {
-      console.log("data", data);
-
-      datePickerRef.current?.setValue(data?.end_datetime || "");
-      setSelectedDate(data?.end_datetime || "");
-      setSelectedTime(data?.end_datetime || "");
-      setCleanType(data?.returned_cleanliness_level?.toString() || "");
-      setFuelQuantity(data?.fuel_start || 0);
-      // setParkingLocation(data?.parking_place || "");
-      // setMiles(data?.mile_end?.toString() || "");
-      // setRemark(data?.returned_vehicle_remark || "");
-    };
+    }, [defaultData, requestData]);
 
     const returnCarAddStep2ModalRef = useRef<{
       openModal: () => void;
@@ -70,6 +74,9 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
 
     const nextStep = () => {
       if (selectedDate && selectedTime && cleanType && parkingLocation && fuelQuantity && miles) {
+        if (edit) {
+          return;
+        }
         setValueFormStep1({ selectedDate, selectedTime, cleanType, parkingLocation, fuelQuantity, miles, remark });
         returnCarAddStep2ModalRef.current?.openModal();
         modalRef.current?.close();
@@ -90,25 +97,29 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
     return (
       <>
         <dialog ref={modalRef} className={`modal modal-middle`}>
-          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col" onClick={(e) => {e.preventDefault(); e.stopPropagation()}}>
-               <form>
-          <div className="bottom-sheet" {...swipeDownHandlers}>
-            <div className="bottom-sheet-icon"></div>
-          </div>
-          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">    
-                     คืนยานพาหนะ
-                      </div>
-                   
-            <form method="dialog">
-              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </form>
-          </div>
-            <div className="modal-body overflow-y-auto text-center !bg-white h-[70vh]">
-            <p className="text-left text-base mb-2 font-semibold">Step 1: ข้อมูลทั่วไป</p>
-           
+          <div
+            className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <form>
+              <div className="bottom-sheet" {...swipeDownHandlers}>
+                <div className="bottom-sheet-icon"></div>
+              </div>
+              <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+                <div className="modal-title">คืนยานพาหนะ</div>
+
+                <form method="dialog">
+                  <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                    <i className="material-symbols-outlined">close</i>
+                  </button>
+                </form>
+              </div>
+              <div className="modal-body overflow-y-auto text-center !bg-white h-[70vh]">
+                <p className="text-left text-base mb-2 font-semibold">Step 1: ข้อมูลทั่วไป</p>
+
                 <div className="form-section">
                   <div className="grid w-full flex-wrap gap-5 grid-cols-12">
                     <div className="col-span-6">
@@ -268,36 +279,34 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                       </div>
                     </div>
                   </div>
-            
                 </div>
-            
-            </div>
-            <div className="modal-action flex w-full gap-5 mt-3 mr-auto">
-                    <div className="">
-                      <button
-                        type="button"
-                        className="btn btn-secondary w-full"
-                        onClick={() => {
-                          // clearData();
-                          modalRef.current?.close();
-                        }}
-                      >
-                        ไม่ใช่ตอนนี้
-                      </button>
-                    </div>
-                    <div className="">
-                      <button
-                        type="button"
-                        className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
-                        onClick={() => {
-                            nextStep();
-                        }}
-                      >
-                        ต่อไป
-                      </button>
-                    </div>
-                  </div>
-                  </form>
+              </div>
+              <div className="modal-action flex w-full gap-5 mt-3 mr-auto">
+                <div className="">
+                  <button
+                    type="button"
+                    className="btn btn-secondary w-full"
+                    onClick={() => {
+                      // clearData();
+                      modalRef.current?.close();
+                    }}
+                  >
+                    ไม่ใช่ตอนนี้
+                  </button>
+                </div>
+                <div className="">
+                  <button
+                    type="button"
+                    className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
+                    onClick={() => {
+                      nextStep();
+                    }}
+                  >
+                    ต่อไป
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
