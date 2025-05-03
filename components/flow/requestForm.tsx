@@ -36,7 +36,7 @@ const schema = yup.object().shape({
   deptSapShort: yup.string(),
   deptSap: yup.string(),
   userImageUrl: yup.string(),
-  costOrigin: yup.string(),
+  costOrigin: yup.string().required("กรุณาระบุการเบิกค่าใช้จ่าย"),
 });
 
 interface costType {
@@ -163,16 +163,17 @@ export default function RequestForm() {
 
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
     setSelectedCostTypeOption(selectedOption as { value: string; label: string });
-
-    const data = costTypeDatas.find(
-      (cost: { ref_cost_type_code: string }) => cost.ref_cost_type_code === selectedOption.value
-    );
-
-    if (data) {
-      setValue("costOrigin", data.ref_cost_no);
-    }
+  
+    if (selectedOption.value === "1") {
+      const data = costTypeDatas.find(
+        (cost: { ref_cost_type_code: string }) => cost.ref_cost_type_code === selectedOption.value
+      );
+  
+      if (data) {
+        setValue("costOrigin", data.ref_cost_no);
+      }
+    } 
   };
-
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
     const file = event.target.files?.[0];
@@ -218,6 +219,7 @@ export default function RequestForm() {
       deptSapShort: formData.deptSapShort || "",
       deptSap: formData.vehicleUserDeptSap || "",
       userImageUrl: formData.userImageUrl || "",
+      costOrigin: formData.costNo || ""
     },
   });
 
@@ -260,6 +262,7 @@ export default function RequestForm() {
     data.approvedRequestDeptSapShort = approverData?.dept_sap_short;
     data.approvedRequestEmpId = approverData?.emp_id;
     data.approvedRequestEmpName = approverData?.full_name;
+    data.costNo = data.costOrigin;
     localStorage.setItem("processOne", "Done");
     updateFormData(data);
     router.push("process-two");
@@ -605,7 +608,7 @@ export default function RequestForm() {
                 <div className="md:col-span-3 col-span-12">
                   <div className="form-group">
                     <label className="form-label">ศูนย์ต้นทุน</label>
-                    <div className="input-group is-readonly">
+                    <div className={`input-group ${selectedCostTypeOption?.value === "1" ? 'is-readonly' : ''}`}>
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="material-symbols-outlined">crop_free</i>
