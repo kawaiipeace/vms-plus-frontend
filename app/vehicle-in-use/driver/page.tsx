@@ -34,7 +34,7 @@ export default function DriverMain() {
   const getFilterData = () => {
     const status = menuOrder[activeTab];
     const filter = data.filter((e) =>
-      status.includes(e.ref_request_status_code)
+      status.includes(e.ref_request_status_code || "")
     );
 
     return filter.sort(
@@ -62,7 +62,7 @@ export default function DriverMain() {
 
     const fetchReceivedKeyDriverFunc = async () => {
       try {
-        const params = { page: 3 };
+        const params = {};
         const response = await receivedKeyDriver(params);
         const result = response.data;
         setData(result.requests ?? []);
