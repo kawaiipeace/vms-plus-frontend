@@ -339,7 +339,9 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
                 ข้อมูลการเดินทาง
               </h4>
             </div>
-            <div className="mt-4">
+
+
+            <div className="flex w-full my-4">
               <div className="input-group input-group-search hidden">
                 <div className="input-group-prepend">
                   <span className="input-group-text search-ico-info">
@@ -354,17 +356,18 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
                   onChange={(e) => setParams({ ...params, search: e.target.value })}
                 />
               </div>
-            </div>
-            <div className="mt-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordTravelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined">add</i> เพิ่มข้อมูล
-              </button>
+
+                <button
+                  className="btn btn-secondary ml-auto"
+                  onClick={() => {
+                    setEditData(undefined);
+                    recordTravelAddModalRef.current?.openModal();
+                  }}
+                >
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+         
             </div>
             <div className="w-full mx-auto mt-3">
               <TableRecordTravelComponent

@@ -262,19 +262,24 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
     return (
       <dialog ref={modalRef} className="modal">
         <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-          <div className="modal-body overflow-y-auto text-center">
-            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-              <div className="modal-title">
-                {status ? "แก้ไขข้อมูลการเติมเชื้อเพลิง" : "เพิ่มข้อมูลการเติมเชื้อเพลิง"}
-              </div>
-              <form method="dialog">
-                <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                  <i className="material-symbols-outlined">close</i>
-                </button>
-              </form>
-            </div>
-            <form>
-              <div className="grid grid-cols-1 gap-4 mt-4">
+        <form>
+        <div className="bottom-sheet" {...swipeDownHandlers}>
+          <div className="bottom-sheet-icon"></div>
+        </div>
+        <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+          <div className="modal-title">
+          {status ? "แก้ไขข้อมูลการเติมเชื้อเพลิง" : "เพิ่มข้อมูลการเติมเชื้อเพลิง"}
+          </div>
+
+            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary" onClick={()=>modalRef.current?.close()}>
+              <i className="material-symbols-outlined">close</i>
+            </button>
+
+        </div>
+          <div className="modal-body overflow-y-auto text-center h-[70vh]">
+
+         
+              <div className="grid grid-cols-1 gap-4">
                 <div className="col-span-12">
                   <div className="form-group">
                     <label className="form-label">สถานีบริการน้ำมัน</label>
@@ -415,16 +420,20 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                     </div>
                   </div>
                 )}
-                <div className="col-span-12">
-                  <label className="form-label">รูปภาพใบเสร็จ</label>
+                <div className="col-span-12 text-left">
+                  <label className="form-label text-left text-secondary font-semibold">รูปภาพใบเสร็จ</label>
                   {images.length < 1 && <ImageUpload onImageChange={handleImageChange} />}
-                  <div className="image-preview flex flex-wrap gap-3">
+                  <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
                     {images.map((image, index) => (
                       <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage(index)} />
                     ))}
                   </div>
                 </div>
-                <div className="col-span-12 grid grid-cols-2 gap-4">
+             
+              </div>
+         
+          </div>
+          <div className="modal-action flex gap-4">
                   <div>
                     <button
                       type="button"
@@ -440,9 +449,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                     </button>
                   </div>
                 </div>
-              </div>
-            </form>
-          </div>
+          </form>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
