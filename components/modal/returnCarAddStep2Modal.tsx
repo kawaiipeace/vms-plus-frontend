@@ -121,9 +121,7 @@ const ReturnCarAddStep2Modal = forwardRef<
           }
           if (useBy === "userTabs") {
             modalRef.current?.close();
-            router.push(
-              `${pathName}?activeTab=การคืนยานพาหนะ&returned-tabs=success&request-no=${response.data.result.request_no}`
-            );
+            router.push(`${pathName}?returned=success&request-no=${response.data.result.request_no}`);
           } else {
             response = await DriverReturnedVehicle(formData);
           }

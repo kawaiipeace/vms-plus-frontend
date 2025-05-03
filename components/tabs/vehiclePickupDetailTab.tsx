@@ -111,7 +111,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ข้อมูลการเดินทาง",
         content: (
           <>
-            <RecordTravelTab requestId={requestId} />
+            <RecordTravelTab requestId={requestId} data={requestData} />
           </>
         ),
         constent: "",

@@ -109,46 +109,54 @@ export default function TableRecordTravelComponent<T>({
             })}
             {listName == "request" && (
               <div className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center gap-4">
-                <button
-                  data-tip="แก้ไข"
-                  className="btn btn-secondary w-full text-base font-semibold"
-                  onClick={() => {
-                    editRecordTravel?.(row.original);
-                  }}
-                >
-                  <i className="material-symbols-outlined  w-5 h-5 ">stylus</i>แก้ไข
-                </button>
-                <button
-                  className="btn btn-secondary w-full text-base font-semibold"
-                  data-tip="ลบ"
-                  onClick={() => {
-                    deleteRecordTravel?.(row.original);
-                  }}
-                >
-                  <i className="material-symbols-outlined  w-5 h-5">delete</i>ลบ
-                </button>
+                {editRecordTravel && (
+                  <button
+                    data-tip="แก้ไข"
+                    className="btn btn-secondary w-full text-base font-semibold"
+                    onClick={() => {
+                      editRecordTravel?.(row.original);
+                    }}
+                  >
+                    <i className="material-symbols-outlined  w-5 h-5 ">stylus</i>แก้ไข
+                  </button>
+                )}
+                {deleteRecordTravel && (
+                  <button
+                    className="btn btn-secondary w-full text-base font-semibold"
+                    data-tip="ลบ"
+                    onClick={() => {
+                      deleteRecordTravel?.(row.original);
+                    }}
+                  >
+                    <i className="material-symbols-outlined  w-5 h-5">delete</i>ลบ
+                  </button>
+                )}
               </div>
             )}
             {listName == "fuel" && (
               <div className="grid grid-cols-2  p-4 border-b border-[#EAECF0] items-center gap-4">
-                <button
-                  className="btn btn-secondary w-full text-base font-semibold"
-                  data-tip="แก้ไข"
-                  onClick={() => {
-                    editRecordTravel?.(row.original);
-                  }}
-                >
-                  <i className="material-symbols-outlined w-5 h-5">stylus</i>แก้ไข
-                </button>
-                <button
-                  className="btn btn-secondary w-full text-base font-semibold"
-                  data-tip="ลบ"
-                  onClick={() => {
-                    deleteRecordTravel?.(row.original);
-                  }}
-                >
-                  <i className="material-symbols-outlined w-5 h-5">delete</i>ลบ
-                </button>
+                {editRecordTravel && (
+                  <button
+                    className="btn btn-secondary w-full text-base font-semibold"
+                    data-tip="แก้ไข"
+                    onClick={() => {
+                      editRecordTravel?.(row.original);
+                    }}
+                  >
+                    <i className="material-symbols-outlined w-5 h-5">stylus</i>แก้ไข
+                  </button>
+                )}
+                {deleteRecordTravel && (
+                  <button
+                    className="btn btn-secondary w-full text-base font-semibold"
+                    data-tip="ลบ"
+                    onClick={() => {
+                      deleteRecordTravel?.(row.original);
+                    }}
+                  >
+                    <i className="material-symbols-outlined w-5 h-5">delete</i>ลบ
+                  </button>
+                )}
                 <button
                   className="btn btn-secondary w-full text-base font-semibold col-span-2"
                   data-tip="รูปใบเสร็จ"

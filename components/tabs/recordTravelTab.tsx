@@ -1,5 +1,5 @@
 "use client";
-import { PaginationType } from "@/app/types/request-action-type";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import RecordTravelAddModal from "@/components/modal/recordTravelAddModal";
 import ToastCustom from "@/components/toastCustom";
@@ -31,11 +31,7 @@ function RequestListContent({ role }: { role: string }) {
           desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
           status="success"
           styleText="!mx-auto"
-          searchParams={
-            role === "user"
-              ? "activeTab=ข้อมูลการเดินทาง"
-              : "progressType=บันทึกการเดินทาง"
-          }
+          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
         />
       )}
 
@@ -45,11 +41,7 @@ function RequestListContent({ role }: { role: string }) {
           desc={`ข้อมูลเดินทางวันที่ ${formatDateTime.date} ได้รับการแก้ไขเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={
-            role === "user"
-              ? "activeTab=ข้อมูลการเดินทาง"
-              : "progressType=บันทึกการเดินทาง"
-          }
+          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
         />
       )}
 
@@ -59,11 +51,7 @@ function RequestListContent({ role }: { role: string }) {
           desc={`ข้อมูลเดินทางวันที่ ${dateTime} ถูกลบเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={
-            role === "user"
-              ? "activeTab=ข้อมูลการเดินทาง"
-              : "progressType=บันทึกการเดินทาง"
-          }
+          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
         />
       )}
     </>
@@ -72,12 +60,10 @@ function RequestListContent({ role }: { role: string }) {
 interface RecordTravelPageTabProps {
   requestId?: string;
   role?: string;
+  data?: RequestDetailType;
 }
 
-const RecordTravelTab = ({
-  requestId,
-  role = "user",
-}: RecordTravelPageTabProps) => {
+const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTabProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-travel-req");
   const updateReq = searchParams.get("update-travel-req");
@@ -85,13 +71,6 @@ const RecordTravelTab = ({
   const [requestData, setRequestData] = useState<RecordTravelTabProps[]>([]);
   const [params, setParams] = useState({ search: "" });
   const [editData, setEditData] = useState<RecordTravelTabProps | undefined>();
-
-  const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
-    page: 1,
-    total: 0,
-    totalPages: 0,
-  });
 
   const recordTravelAddModalRef = useRef<{
     openModal: () => void;
@@ -117,42 +96,26 @@ const RecordTravelTab = ({
         } else {
           response = await fetchUserTravelDetails(requestId || "", params);
         }
-        const sortedData = response.data.sort(
-          (a: RecordTravelTabProps, b: RecordTravelTabProps) => {
-            const dateA = new Date(a.trip_start_datetime);
-            const dateB = new Date(b.trip_start_datetime);
-            return dateA.getTime() - dateB.getTime(); // Sort in descending order
-          }
-        );
+        const sortedData = response.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
+          const dateA = new Date(a.trip_start_datetime);
+          const dateB = new Date(b.trip_start_datetime);
+          return dateA.getTime() - dateB.getTime(); // Sort in descending order
+        });
         setRequestData(sortedData);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
       }
     },
-    [params, requestId] // Add requestId to the dependency array,
+    [params, requestId, role] // Add requestId to the dependency array,
   );
 
   useEffect(() => {
     fetchUserTravelDetailsFunc();
   }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq]);
 
-  const handlePageChange = (newPage: number) => {
-    setParams((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
-  };
-
-  const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    setParams((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
-    console.log(newLimit);
-  };
+  const isAddAndEdit = ["เดินทาง", "เสร็จสิ้น", "รอตรวจสอบ", "ตีกลับยานพาหนะ"].includes(
+    data?.ref_request_status_name || ""
+  );
 
   const requestListColumns: ColumnDef<TravelData>[] = [
     {
@@ -323,7 +286,12 @@ const RecordTravelTab = ({
       //   );
       // },
     },
-  ];
+  ].filter((e) => {
+    if (e.accessorKey === "action") {
+      return isAddAndEdit;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -331,19 +299,11 @@ const RecordTravelTab = ({
         {requestData && requestData.length == 0 ? (
           <div className="grid grid-cols-1 gap-4 text-center">
             <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image
-                src="/assets/img/graphic/record_travel_img.svg"
-                width={900}
-                height={900}
-                alt=""
-              />
+              <Image src="/assets/img/graphic/record_travel_img.svg" width={900} height={900} alt="" />
             </div>
             <div className="col-span-12">
               <p className="font-bold text-2xl">เพิ่มข้อมูลการเดินทาง</p>
-              <p>
-                ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์
-                สถานที่ี่จากต้นทางและถึงปลายทาง
-              </p>
+              <p>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</p>
             </div>
             <div className="col-span-12">
               <button
@@ -353,8 +313,7 @@ const RecordTravelTab = ({
                   recordTravelAddModalRef.current?.openModal();
                 }}
               >
-                <i className="material-symbols-outlined !text-3xl">add</i>{" "}
-                เพิ่มข้อมูล
+                <i className="material-symbols-outlined !text-3xl">add</i> เพิ่มข้อมูล
               </button>
             </div>
           </div>
@@ -379,36 +338,44 @@ const RecordTravelTab = ({
                   id="myInputTextField"
                   className="form-control dt-search-input"
                   placeholder="ค้นหาสถานที่"
-                  onChange={(e) =>
-                    setParams({ ...params, search: e.target.value })
-                  }
+                  onChange={(e) => setParams({ ...params, search: e.target.value })}
                 />
               </div>
 
-              <button
-                className="btn btn-secondary ml-auto"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordTravelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined">add</i>
-                เพิ่มข้อมูล
-              </button>
+              {isAddAndEdit && (
+                <button
+                  className="btn btn-secondary ml-auto"
+                  onClick={() => {
+                    setEditData(undefined);
+                    recordTravelAddModalRef.current?.openModal();
+                  }}
+                >
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+              )}
             </div>
             <div className="w-full mx-auto mt-3">
               <TableRecordTravelComponent
                 data={requestData || []}
                 columns={requestListColumns}
                 listName="request"
-                editRecordTravel={(dataItem: RecordTravelTabProps) => {
-                  setEditData(dataItem);
-                  recordTravelEditModalRef.current?.openModal();
-                }}
-                deleteRecordTravel={(dataItem: RecordTravelTabProps) => {
-                  setEditData(dataItem);
-                  cancelRequestModalRef.current?.openModal();
-                }}
+                editRecordTravel={
+                  isAddAndEdit
+                    ? (dataItem: RecordTravelTabProps) => {
+                        setEditData(dataItem);
+                        recordTravelEditModalRef.current?.openModal();
+                      }
+                    : undefined
+                }
+                deleteRecordTravel={
+                  isAddAndEdit
+                    ? (dataItem: RecordTravelTabProps) => {
+                        setEditData(dataItem);
+                        cancelRequestModalRef.current?.openModal();
+                      }
+                    : undefined
+                }
               />
             </div>
           </>
@@ -416,11 +383,7 @@ const RecordTravelTab = ({
         <Suspense fallback={<div></div>}>
           <RequestListContent role={role} />
         </Suspense>
-        <RecordTravelAddModal
-          ref={recordTravelAddModalRef}
-          role={role}
-          requestId={requestId}
-        />
+        <RecordTravelAddModal ref={recordTravelAddModalRef} role={role} requestId={requestId} />
         <RecordTravelAddModal
           ref={recordTravelEditModalRef}
           role={role}
@@ -431,8 +394,7 @@ const RecordTravelTab = ({
         <CancelRequestModal
           title="ยืนยันลบข้อมูลการเดินทาง"
           desc={`ข้อมูลการเดินทางวันที่ ${
-            convertToBuddhistDateTime(editData?.trip_start_datetime || "")
-              .date +
+            convertToBuddhistDateTime(editData?.trip_start_datetime || "").date +
             " " +
             convertToBuddhistDateTime(editData?.trip_start_datetime || "").time
           } จะถูกลบออกจากระบบ`}
@@ -443,8 +405,7 @@ const RecordTravelTab = ({
           id={editData?.trn_request_uid || ""}
           tripId={editData?.trn_trip_detail_uid || ""}
           datetime={
-            convertToBuddhistDateTime(editData?.trip_start_datetime || "")
-              .date +
+            convertToBuddhistDateTime(editData?.trip_start_datetime || "").date +
             " " +
             convertToBuddhistDateTime(editData?.trip_start_datetime || "").time
           }
