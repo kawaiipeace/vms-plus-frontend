@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import MobileDriverCard from "@/components/card/mobileDriverCard";
 import Image from "next/image";
 import Link from "next/link";
-import { ReceivedKeyDriver } from "@/app/types/vehicle-in-use-driver-type";
 import dayjs from "dayjs";
+import RequestListTable from "../table/request-list-table";
+import { RequestListType } from "@/app/types/request-list-type";
+import { PaginationType } from "@/app/types/request-action-type";
 
 interface DriverProgressTabProps {
-  data: ReceivedKeyDriver[];
+  data: RequestListType[];
 }
 
 const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
+  const [pagination, setPagination] = useState<PaginationType>({
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
+
   const getDateRange = (start: string, end?: string, format?: string) => {
     const startDate = dayjs(start).format(format || "DD/MM/YYYY");
     const endDate = dayjs(end).format(format || "DD/MM/YYYY");
@@ -49,7 +58,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
     <>
       {data.length !== 0 ? (
         <>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:hidden">
             {travelData.length !== 0 && (
               <div>
                 <h6 className="text-md font-bold my-4">เดินทาง</h6>
@@ -185,6 +194,13 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                 </div>
               </div>
             )}
+          </div>
+          <div className="hidden md:block">
+            <RequestListTable
+              defaultData={data}
+              pagination={pagination}
+              role="driver"
+            />
           </div>
         </>
       ) : (

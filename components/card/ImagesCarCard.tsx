@@ -1,7 +1,8 @@
 import Image from "next/image";
 
 const ImagesCarCard = ({ images }: { images?: string[] }) => {
-  const mainImage = images && images.length > 0 ? images[0] : "/assets/img/sample-car.jpeg";
+  const mainImage =
+    images && images.length > 0 ? images[0] : "/assets/img/sample-car.jpeg";
   const otherImages = images && images.length > 1 ? images.slice(1) : [];
 
   return (
