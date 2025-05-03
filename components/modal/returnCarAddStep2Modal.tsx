@@ -119,7 +119,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                   </div>
                   <div
                     className={`col-span-12 ${
-                      useBy !== "driver" && useBy !== "admin"
+                      (useBy !== "driver" && useBy !== "admin")
                         ? "hidden"
                         : "block"
                     }`}
@@ -154,7 +154,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                   </div>
                   <div
                     className={`col-span-12 ${
-                      useBy !== "driver" && useBy !== "admin"
+                      useBy !== "driver"
                         ? "hidden"
                         : "block"
                     }`}
@@ -223,7 +223,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                 </div>
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12 mt-3">
                   <div className="col-span-6">
-                    <button type="button" className="btn btn-secondary w-full">
+                    <button type="button" className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
                       ไม่ใช่ตอนนี้
                     </button>
                   </div>

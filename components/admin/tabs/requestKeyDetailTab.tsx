@@ -7,6 +7,9 @@ import KeyHandoverDetail from "@/components/admin/key-handover/key-handover-deta
 import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
 import TravelInfoTab from "../travelInfoTab";
 import ReturnCarTab from "@/components/admin/returnCarTab";
+import { useSearchParams } from "next/navigation";
+import { useMemo } from "react"; 
+import RecordFuelTab from "@/components/tabs/recordFuelTab";
 
 interface Props {
   requestId: string;
@@ -30,6 +33,8 @@ export default function RequestDetailTabs({
   const handlePageChange = (newPage: number) => {
     setParams((prev) => ({ ...prev, page: newPage }));
   };
+    const searchParams = useSearchParams();
+    const activeTabName = searchParams.get("active-tab");
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
@@ -43,91 +48,114 @@ export default function RequestDetailTabs({
     }
   }, [params, requestId]);
 
-  const tabs = [
-    {
-      label: "รายละเอียดคำขอ",
-      content: <RequestDetailForm requestId={requestId} />,
-      badge: "",
-    },
-    ...(displayKeyHandover
-      ? [
-          {
-            label: "การรับกุญแจ",
-            content: (
-              <KeyHandoverDetail editable={true} requestId={requestId} />
-            ),
-            badge: "",
-          },
-        ]
-      : []),
+  
 
-    ...(displayVehiclePickup
-      ? [
-          {
-            label: "การรับยานพาหนะ",
-            content: (
-              <ReceiveCarVehicleInUseTab
-                displayOn="admin"
-                role="admin"
-                requestId={requestId}
-                edit="edit"
+
+  const tabs = useMemo(() => {
+    return [
+      {
+        label: "รายละเอียดคำขอ",
+        content: <RequestDetailForm requestId={requestId} />,
+        badge: "",
+      },
+      ...(displayKeyHandover
+        ? [
+            {
+              label: "การรับกุญแจ",
+              content: (
+                <KeyHandoverDetail editable={true} requestId={requestId} />
+              ),
+              badge: "",
+            },
+          ]
+        : []),
+      ...(displayVehiclePickup
+        ? [
+            {
+              label: "การรับยานพาหนะ",
+              content: (
+                <ReceiveCarVehicleInUseTab
+                  displayOn="admin"
+                  role="admin"
+                  requestId={requestId}
+                  edit="edit"
+                />
+              ),
+              badge: "",
+            },
+          ]
+        : []),
+      ...(displayTravelRecord
+        ? [
+            {
+              label: "ข้อมูลการเดินทาง",
+              content: (
+                <TravelInfoTab reqId={requestId} requestType="เสร็จสิ้น" />
+              ),
+              badge: "",
+            },
+          ]
+        : []),
+      ...(displayFuel
+        ? [
+            {
+              label: "การเติมเชื้อเพลิง",
+              content: (
+                <RecordFuelTab requestId={requestId} role="admin" />
+              ),
+              badge: "",
+            },
+          ]
+        : []),
+      ...(displayReturnVehicle
+        ? [
+            {
+              label: "การคืนยานพาหนะ",
+              content: <ReturnCarTab displayOn="adminTab" />,
+              badge: "",
+            },
+          ]
+        : []),
+      {
+        label: "ประวัติการดำเนินการ",
+        content: (
+          <>
+            <LogListTable defaultData={dataRequest} pagination={pagination} />
+            {dataRequest.length > 0 && (
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
               />
-            ),
-            badge: "",
-          },
-        ]
-      : []),
-    ...(displayTravelRecord
-      ? [
-          {
-            label: "ข้อมูลการเดินทาง",
-            content: (
-              <TravelInfoTab reqId={requestId} requestType="เสร็จสิ้น" />
-            ),
-            badge: "",
-          },
-        ]
-      : []),
-    ...(displayFuel
-      ? [
-          {
-            label: "การเติมเชื้อเพลิง",
-            content: (
-              <ReceiveCarVehicleInUseTab requestId={requestId} edit="edit" />
-            ),
-            badge: "",
-          },
-        ]
-      : []),
-    ...(displayReturnVehicle
-      ? [
-          {
-            label: "การคืนยานพาหนะ",
-            content: <ReturnCarTab displayOn="adminTab" />,
-            badge: "",
-          },
-        ]
-      : []),
-
-    {
-      label: "ประวัติการดำเนินการ",
-      content: (
-        <>
-          <LogListTable defaultData={dataRequest} pagination={pagination} />
-          {dataRequest.length > 0 && (
-            <PaginationControls
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
-          )}
-        </>
-      ),
-      badge: "",
-    },
-  ];
+            )}
+          </>
+        ),
+        badge: "",
+      },
+    ];
+  }, [
+    requestId,
+    displayKeyHandover,
+    displayVehiclePickup,
+    displayTravelRecord,
+    displayFuel,
+    displayReturnVehicle,
+    dataRequest,
+    pagination,
+  ]);
+  
 
   const [activeTab, setActiveTab] = useState(0);
+
+  useEffect(() => {
+    if (activeTabName) {
+      const index = tabs.findIndex((tab) => tab.label === activeTabName);
+      if (index !== -1) {
+        setActiveTab(index);
+      }
+    }
+  }, [activeTabName, tabs]);
+
 
   return (
     <div className="w-full">
@@ -150,6 +178,7 @@ export default function RequestDetailTabs({
         ))}
       </div>
       <div className="py-4 relative">{tabs[activeTab].content}</div>
+  
     </div>
   );
 }

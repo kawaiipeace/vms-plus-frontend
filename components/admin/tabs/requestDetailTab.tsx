@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import RequestDetailForm from "@/components/admin/requestDetailForm";
-import { requestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import {
+  requestHistoryLog,
+  requestHistoryLogColumns,
+} from "@/data/requestHistory";
 import TableComponent from "@/components/table";
 import AlertCustom from "@/components/alertCustom";
 import ReceiveCarVehicleInUseTab from "@/components/tabs/receiveCarVehicleInUseTab";
@@ -42,7 +45,12 @@ export default function RequestDetailTabs({ status, requestType }: Props) {
     },
     {
       label: "ประวัติการดำเนินการ",
-      content: <TableComponent data={requestHistoryLog} columns={requestHistoryLogColumns} />,
+      content: (
+        <TableComponent
+          data={requestHistoryLog}
+          columns={requestHistoryLogColumns}
+        />
+      ),
       badge: "",
     },
   ];
@@ -50,13 +58,27 @@ export default function RequestDetailTabs({ status, requestType }: Props) {
 
   return (
     <div className="w-full">
-      {status == "edit" && <AlertCustom icon="cancel" title="รับยานพาหนะล่าช้า" desc="คุณต้องรับยานพาหนะก่อนจึงจะสามารถรับบัตรเดินทาง เพื่อนำไปแสดงกับเจ้าหน้าที่รักษาความปลอดภัยก่อนนำรถออกจาก กฟภ." />}
+      {status == "edit" && (
+        <AlertCustom
+          icon="cancel"
+          title="รับยานพาหนะล่าช้า"
+          desc="คุณต้องรับยานพาหนะก่อนจึงจะสามารถรับบัตรเดินทาง เพื่อนำไปแสดงกับเจ้าหน้าที่รักษาความปลอดภัยก่อนนำรถออกจาก กฟภ."
+        />
+      )}
       <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
-          <button key={index} className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`} onClick={() => setActiveTab(index)}>
+          <button
+            key={index}
+            className={`tab transition-colors duration-300 ease-in-out ${
+              activeTab === index ? "active" : "text-gray-600"
+            }`}
+            onClick={() => setActiveTab(index)}
+          >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
+              {tab.badge && (
+                <span className="badge badge-brand badge-pill-outline">4</span>
+              )}{" "}
             </div>
           </button>
         ))}
