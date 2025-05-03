@@ -110,11 +110,13 @@ export type RequestDetailType = Partial<{
   mile_start: number;
   fuel_start: number;
   received_vehicle_remark: string;
-  receiver_key_type_detail: {
-    ref_vehicle_key_type_code: string;
-    ref_vehicle_key_type_name: string;
-  };
+  receiver_key_type_detail: ReceiverKeyTypeDetail[];
   vehicle_image_inspect: string[];
+}>;
+
+export type ReceiverKeyTypeDetail = Partial<{
+  ref_vehicle_key_type_code: string;
+  ref_vehicle_key_type_name: string;
 }>;
 
 export type RequestVehicleType = Partial<{

@@ -118,6 +118,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
+        
         return {
           ...item,
           ref_oil_station_brand_name: item.ref_oil_station_brand.ref_oil_station_brand_name_th,
@@ -424,7 +425,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
         <RecordFuelAddModal
           ref={recordFuelAddModalRef}
           requestId={requestId}
-          isPayment={!!requestData?.fleet_card_no}
+          isPayment={true}
           role={role}
         />
         <RecordFuelAddModal

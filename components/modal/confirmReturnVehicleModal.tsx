@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 interface Props {
   id?: string;
   fleet_card_no?: string;
+  keys: ReceiverKeyTypeDetail;
 }
 
 const ConfirmReturnVehicleModal = forwardRef<{
