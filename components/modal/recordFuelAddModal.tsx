@@ -32,6 +32,7 @@ import {
   driverCreateAddFuelDetail,
   driverUpdateAddFuelDetail,
 } from "@/services/vehicleInUseDriver";
+import { getOilBrandImage } from "@/utils/getOilBrandImage";
 
 interface Props {
   status?: boolean;

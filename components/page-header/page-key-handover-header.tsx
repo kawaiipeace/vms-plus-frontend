@@ -256,6 +256,7 @@ export default function PageKeyHandOverHeader({ data }: Props) {
 
       <ConfirmReturnVehicleModal
         ref={confirmReturnVehicleModalRef}
+        keys={data?.receiver_key_type_detail}
         id={data?.trn_request_uid}
       />
 

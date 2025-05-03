@@ -7,7 +7,6 @@ import { RecordFuelTabProps } from "@/data/requestData";
 import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -137,6 +136,7 @@ const RecordFuelTab = ({
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
+        
         return {
           ...item,
           ref_oil_station_brand_name:
@@ -429,7 +429,7 @@ const RecordFuelTab = ({
         <RecordFuelAddModal
           ref={recordFuelAddModalRef}
           requestId={requestId}
-          isPayment={!!requestData?.fleet_card_no}
+          isPayment={true}
           role={role}
         />
         <RecordFuelAddModal
