@@ -130,7 +130,14 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
         <ReviewCarDriveModal displayOn={displayOn} ref={reviewCarDriveModalRef} id={requestData?.trn_request_uid} />
         <ReturnCarAddModal useBy={useBy} ref={returnCarAddModalRef} requestData={requestData} />
         <ReturnCarAddModal useBy={useBy} ref={returnCarEditDataModalRef} requestData={requestData} edit />
-        <ReturnCarAddStep2Modal useBy={useBy} openStep1={() => () => {}} ref={returnCarAddStep2ModalRef} />
+        <ReturnCarAddStep2Modal
+          useBy={useBy}
+          openStep1={() => () => {}}
+          ref={returnCarAddStep2ModalRef}
+          requestData={requestData}
+          edit
+          status="edit"
+        />
       </div>
     </>
   );

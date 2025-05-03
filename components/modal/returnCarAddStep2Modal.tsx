@@ -23,12 +23,13 @@ interface ReturnCarAddStep2ModalProps {
   clearForm?: () => void;
   onSubmit?: () => void;
   progress?: string;
+  edit?: boolean;
 }
 
 const ReturnCarAddStep2Modal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReturnCarAddStep2ModalProps
->(({ openStep1, status, useBy, valueFormStep1, id, requestData, clearForm, onSubmit, progress }, ref) => {
+>(({ openStep1, status, useBy, valueFormStep1, id, requestData, clearForm, onSubmit, progress, edit }, ref) => {
   const router = useRouter();
   const pathName = usePathname();
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -68,6 +69,10 @@ const ReturnCarAddStep2Modal = forwardRef<
           vehicle_img_file: item.file_url,
         };
       });
+
+      if (edit) {
+        return handleEditImage();
+      }
 
       const returned_vehicle_datetime =
         valueFormStep1?.selectedDate && valueFormStep1?.selectedTime
@@ -129,6 +134,39 @@ const ReturnCarAddStep2Modal = forwardRef<
     }
   }; // Properly closed handleSubmit function
 
+  const handleEditImage = async () => {
+    try {
+      const imageList = [...images, ...images2].map((item, index) => {
+        return {
+          ref_vehicle_img_side_code: index + 1,
+          vehicle_img_file: item.file_url,
+        };
+      });
+      console.log("requestData", requestData);
+
+      const formData = {
+        fuel_end: requestData?.fuel_end,
+        mile_end: Number(requestData?.mile_end || 0),
+        returned_cleanliness_level: requestData?.returned_cleanliness_level,
+        returned_vehicle_datetime: requestData?.returned_vehicle_datetime,
+        returned_vehicle_emp_id: requestData?.returned_vehicle_emp_id,
+        returned_vehicle_remark: requestData?.returned_vehicle_remark,
+        trn_request_uid: requestData?.trn_request_uid,
+        vehicle_images: imageList,
+      };
+
+      const response = await UserReturnedVehicle(formData);
+      if (response.status === 200) {
+        modalRef.current?.close();
+        router.push(
+          `${pathName}?activeTab=การคืนยานพาหนะ&edit-image-returned-tabs=success&request-no=${response.data.result.request_no}`
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -143,7 +181,7 @@ const ReturnCarAddStep2Modal = forwardRef<
               <div className="modal-title">
                 <div className="flex items-center gap-3">
                   {" "}
-                  {status === "edit" ? (
+                  {status === "edit" || edit ? (
                     "แก้ไขรูปยานพาหนะก่อนเดินทาง"
                   ) : (
                     <div onClick={openStep1} className="flex items-center gap-3 cursor-pointer">
@@ -170,7 +208,9 @@ const ReturnCarAddStep2Modal = forwardRef<
                 useBy === "userTabs" ? "h-[55vh]" : "h-[70vh]"
               } `}
             >
-              {status !== "edit" && <p className="text-left text-base mb-2 font-semibold">Step 2: รูปยานพาหนะ</p>}
+              {(status !== "edit" || !edit) && (
+                <p className="text-left text-base mb-2 font-semibold">Step 2: รูปยานพาหนะ</p>
+              )}
 
               <div className="form-section">
                 <div className="grid w-full flex-wrap gap-5 grid-cols-12">

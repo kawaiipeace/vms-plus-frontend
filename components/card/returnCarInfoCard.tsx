@@ -1,5 +1,6 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { dataClean } from "../modal/returnCarAddModal";
 
 export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
   console.log("ReturnCarInfoCard data >>>> ", data);
@@ -66,7 +67,9 @@ export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
               <i className="material-symbols-outlined">mop</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ภายในห้องโดยสาร</div>
-                <div className="form-text">สะอาด</div>
+                <div className="form-text">
+                  {dataClean.find((e) => Number(e.id) === data?.returned_cleanliness_level)?.name}
+                </div>
               </div>
             </div>
           </div>
@@ -77,7 +80,10 @@ export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
               <i className="material-symbols-outlined">local_car_wash</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ภายนอกยานพาหนะ</div>
-                <div className="form-text">สะอาด</div>
+                <div className="form-text">
+                  {" "}
+                  {dataClean.find((e) => Number(e.id) === data?.returned_cleanliness_level)?.name}
+                </div>
               </div>
             </div>
           </div>

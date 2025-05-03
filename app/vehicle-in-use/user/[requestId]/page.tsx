@@ -57,7 +57,7 @@ function RequestListContent() {
             </div>
           }
           status="success"
-          searchParams="?activeTab=การคืนยานพาหนะ"
+          searchParams="activeTab=การคืนยานพาหนะ"
         />
       )}
       {returnedData === "success" && (
@@ -72,7 +72,7 @@ function RequestListContent() {
             </div>
           }
           status="success"
-          searchParams="?activeTab=การคืนยานพาหนะ"
+          searchParams="activeTab=การคืนยานพาหนะ"
         />
       )}
       {returnedImage === "success" && (
@@ -87,7 +87,7 @@ function RequestListContent() {
             </div>
           }
           status="success"
-          searchParams="?activeTab=การคืนยานพาหนะ"
+          searchParams="activeTab=การคืนยานพาหนะ"
         />
       )}
     </>
