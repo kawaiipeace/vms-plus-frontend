@@ -149,7 +149,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     ],
     [dataRequest, requestData, requestId]
   ).filter((tab) => {
-    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver !== "1") {
+    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver === "1") {
       return false;
     }
     return true;
