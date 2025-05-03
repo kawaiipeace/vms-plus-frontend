@@ -31,7 +31,11 @@ function RequestListContent({ role }: { role: string }) {
           desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
           status="success"
           styleText="!mx-auto"
-          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
+          searchParams={
+            role === "user"
+              ? "activeTab=ข้อมูลการเดินทาง"
+              : "progressType=บันทึกการเดินทาง"
+          }
         />
       )}
 
@@ -41,7 +45,11 @@ function RequestListContent({ role }: { role: string }) {
           desc={`ข้อมูลเดินทางวันที่ ${formatDateTime.date} ได้รับการแก้ไขเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
+          searchParams={
+            role === "user"
+              ? "activeTab=ข้อมูลการเดินทาง"
+              : "progressType=บันทึกการเดินทาง"
+          }
         />
       )}
 
@@ -51,7 +59,11 @@ function RequestListContent({ role }: { role: string }) {
           desc={`ข้อมูลเดินทางวันที่ ${dateTime} ถูกลบเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
+          searchParams={
+            role === "user"
+              ? "activeTab=ข้อมูลการเดินทาง"
+              : "progressType=บันทึกการเดินทาง"
+          }
         />
       )}
     </>
@@ -62,7 +74,10 @@ interface RecordTravelPageTabProps {
   role?: string;
 }
 
-const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps) => {
+const RecordTravelTab = ({
+  requestId,
+  role = "user",
+}: RecordTravelPageTabProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-travel-req");
   const updateReq = searchParams.get("update-travel-req");
@@ -102,11 +117,13 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
         } else {
           response = await fetchUserTravelDetails(requestId || "", params);
         }
-        const sortedData = response.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
-          const dateA = new Date(a.trip_start_datetime);
-          const dateB = new Date(b.trip_start_datetime);
-          return dateA.getTime() - dateB.getTime(); // Sort in descending order
-        });
+        const sortedData = response.data.sort(
+          (a: RecordTravelTabProps, b: RecordTravelTabProps) => {
+            const dateA = new Date(a.trip_start_datetime);
+            const dateB = new Date(b.trip_start_datetime);
+            return dateA.getTime() - dateB.getTime(); // Sort in descending order
+          }
+        );
         setRequestData(sortedData);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
@@ -127,7 +144,8 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -313,11 +331,19 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
         {requestData && requestData.length == 0 ? (
           <div className="grid grid-cols-1 gap-4 text-center">
             <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image src="/assets/img/graphic/record_travel_img.svg" width={900} height={900} alt="" />
+              <Image
+                src="/assets/img/graphic/record_travel_img.svg"
+                width={900}
+                height={900}
+                alt=""
+              />
             </div>
             <div className="col-span-12">
               <p className="font-bold text-2xl">เพิ่มข้อมูลการเดินทาง</p>
-              <p>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</p>
+              <p>
+                ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์
+                สถานที่ี่จากต้นทางและถึงปลายทาง
+              </p>
             </div>
             <div className="col-span-12">
               <button
@@ -327,7 +353,8 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
                   recordTravelAddModalRef.current?.openModal();
                 }}
               >
-                <i className="material-symbols-outlined !text-3xl">add</i> เพิ่มข้อมูล
+                <i className="material-symbols-outlined !text-3xl">add</i>{" "}
+                เพิ่มข้อมูล
               </button>
             </div>
           </div>
@@ -339,7 +366,6 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
                 ข้อมูลการเดินทาง
               </h4>
             </div>
-
 
             <div className="flex w-full my-4">
               <div className="input-group input-group-search hidden">
@@ -353,21 +379,22 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
                   id="myInputTextField"
                   className="form-control dt-search-input"
                   placeholder="ค้นหาสถานที่"
-                  onChange={(e) => setParams({ ...params, search: e.target.value })}
+                  onChange={(e) =>
+                    setParams({ ...params, search: e.target.value })
+                  }
                 />
               </div>
 
-                <button
-                  className="btn btn-secondary ml-auto"
-                  onClick={() => {
-                    setEditData(undefined);
-                    recordTravelAddModalRef.current?.openModal();
-                  }}
-                >
-                  <i className="material-symbols-outlined">add</i>
-                  เพิ่มข้อมูล
-                </button>
-         
+              <button
+                className="btn btn-secondary ml-auto"
+                onClick={() => {
+                  setEditData(undefined);
+                  recordTravelAddModalRef.current?.openModal();
+                }}
+              >
+                <i className="material-symbols-outlined">add</i>
+                เพิ่มข้อมูล
+              </button>
             </div>
             <div className="w-full mx-auto mt-3">
               <TableRecordTravelComponent
@@ -389,7 +416,11 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
         <Suspense fallback={<div></div>}>
           <RequestListContent role={role} />
         </Suspense>
-        <RecordTravelAddModal ref={recordTravelAddModalRef} role={role} requestId={requestId} />
+        <RecordTravelAddModal
+          ref={recordTravelAddModalRef}
+          role={role}
+          requestId={requestId}
+        />
         <RecordTravelAddModal
           ref={recordTravelEditModalRef}
           role={role}
@@ -400,18 +431,20 @@ const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps)
         <CancelRequestModal
           title="ยืนยันลบข้อมูลการเดินทาง"
           desc={`ข้อมูลการเดินทางวันที่ ${
-            convertToBuddhistDateTime(editData?.trip_start_datetime || "").date +
+            convertToBuddhistDateTime(editData?.trip_start_datetime || "")
+              .date +
             " " +
             convertToBuddhistDateTime(editData?.trip_start_datetime || "").time
           } จะถูกลบออกจากระบบ`}
           confirmText="ลบข้อมูล"
           ref={cancelRequestModalRef}
           cancleFor="recordTravel"
-          role="recordTravel"
+          role={role || "recordTravel"}
           id={editData?.trn_request_uid || ""}
           tripId={editData?.trn_trip_detail_uid || ""}
           datetime={
-            convertToBuddhistDateTime(editData?.trip_start_datetime || "").date +
+            convertToBuddhistDateTime(editData?.trip_start_datetime || "")
+              .date +
             " " +
             convertToBuddhistDateTime(editData?.trip_start_datetime || "").time
           }

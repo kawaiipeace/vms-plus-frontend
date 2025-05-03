@@ -91,7 +91,18 @@ export const driverUpdateTravelDetail = async (id: string, data: any) => {
   }
 };
 
-export const fetchUserAddFuelDetails = async (
+export const driverDeleteTravelDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      "vehicle-in-use-driver/delete-travel-detail/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchDriverAddFuelDetails = async (
   id: string,
   params: { search?: string }
 ) => {
@@ -99,6 +110,41 @@ export const fetchUserAddFuelDetails = async (
     const response = await axiosInstance.get(
       `vehicle-in-use-driver/add-fuel-details/` + id,
       { params }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverCreateAddFuelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post(
+      "vehicle-in-use-driver/create-add-fuel",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverUpdateAddFuelDetail = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "vehicle-in-use-driver/update-add-fuel/" + id,
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverDeleteAddFuelDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      "vehicle-in-use-driver/delete-add-fuel/" + id
     );
     return response;
   } catch (error) {
