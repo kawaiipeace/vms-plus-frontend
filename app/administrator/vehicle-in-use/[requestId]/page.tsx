@@ -63,7 +63,8 @@ export default function RequestDetail() {
                 displayReturnVehicle={
                   (requestData?.ref_request_status_code === "60" ||
                     requestData?.ref_request_status_code === "60e" ||
-                    requestData?.ref_request_status_code === "50") ? true : false 
+                    requestData?.ref_request_status_code === "50" ||
+                    requestData?.ref_request_status_code === "70") ? true : false 
                 }
                 displayFuel={
                   (requestData?.ref_request_status_code === "60e" ||

@@ -151,7 +151,7 @@ export default function AdminVehicleInsTable({
       ),
     },
     {
-      accessorKey: "start_datetime",
+      accessorKey: "next_start_datetime",
       header: () => <div className="text-center">การเดินทางถัดไป</div>,
       enableSorting: true,
       cell: ({ row }) => {

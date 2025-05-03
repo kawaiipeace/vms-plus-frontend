@@ -10,7 +10,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 interface PaginationType {
@@ -35,6 +35,7 @@ export default function RequestListTable({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [reqData, setReqData] = useState<RequestListType[]>(defaultData);
+  const pathName = usePathname();
 
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
@@ -135,6 +136,10 @@ export default function RequestListTable({
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
+            ) : value === "เสร็จสิ้น" ? (
+              <span className="badge badge-pill-outline badge-success whitespace-nowrap">
+                {value as React.ReactNode}
+              </span>
             ) : value === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
                 {value as React.ReactNode}
@@ -194,13 +199,13 @@ export default function RequestListTable({
 
         return (
           <div className="text-left">
-            {statusValue == "รออนุมัติ" && (
+            {statusValue == "รออนุมัติ" || statusValue == "เสร็จสิ้น"&& (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/vehicle-booking/request-list/" +
+                    pathName+"/" +
                       row.original.trn_request_uid
                   )
                 }
