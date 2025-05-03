@@ -94,7 +94,7 @@ const ReceiveCarVehicleInUseTab = ({
                     <button
                       className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
                       onClick={() =>
-                        returnCarAddStep2ModalRef.current?.openModal()
+                        receiveCarVehicleModalRef.current?.openModal()
                       }
                     >
                       แก้ไข
