@@ -1,3 +1,4 @@
+import { SendbackRequestType } from "@/app/types/request-action-type";
 import axiosInstance from "@/utils/axiosInstance";
 
 export const fetchRequests = async (params: {
@@ -132,6 +133,23 @@ export const AdminReturnedVehicle = async (data: any) => {
   }
 };
 
+export const adminSendBackVehicle = async (data: SendbackRequestType) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-sended-back", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminAcceptVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-accepted", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 
