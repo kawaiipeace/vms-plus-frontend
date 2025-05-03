@@ -230,6 +230,11 @@ export const recordTravelDataColumns = [
   { accessorKey: "trip_start_miles", header: "เลขไมล์ต้นทาง" },
   { accessorKey: "trip_end_miles", header: "เลขไมล์ปลายทาง" },
   { accessorKey: "trip_detail", header: "รายละเอียด" },
+  {
+    accessorKey: "action",
+    header: "",
+    enableSorting: false,
+  },
 ];
 
 export const recordFuelData: RecordFuelTabProps[] = [

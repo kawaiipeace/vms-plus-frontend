@@ -1,18 +1,18 @@
 "use client";
+import { PaginationType } from "@/app/types/request-action-type";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import RecordTravelAddModal from "@/components/modal/recordTravelAddModal";
 import ToastCustom from "@/components/toastCustom";
-import {
-  recordTravelDataColumns,
-  RecordTravelTabProps,
-} from "@/data/requestData";
+import { RecordTravelTabProps } from "@/data/requestData";
+import { TravelData } from "@/data/travelData";
+import { fetchDriverTravelDetails } from "@/services/vehicleInUseDriver";
 import { fetchUserTravelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import TableRecordTravelComponent from "../tableRecordTravel";
-import { fetchDriverTravelDetails } from "@/services/vehicleInUseDriver";
 
 function RequestListContent({ role }: { role: string }) {
   const searchParams = useSearchParams();
@@ -31,11 +31,7 @@ function RequestListContent({ role }: { role: string }) {
           desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
           status="success"
           styleText="!mx-auto"
-          searchParams={
-            role === "user"
-              ? "activeTab=ข้อมูลการเดินทาง"
-              : "progressType=บันทึกการเดินทาง"
-          }
+          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
         />
       )}
 
@@ -45,11 +41,7 @@ function RequestListContent({ role }: { role: string }) {
           desc={`ข้อมูลเดินทางวันที่ ${formatDateTime.date} ได้รับการแก้ไขเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={
-            role === "user"
-              ? "activeTab=ข้อมูลการเดินทาง"
-              : "progressType=บันทึกการเดินทาง"
-          }
+          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
         />
       )}
 
@@ -59,11 +51,7 @@ function RequestListContent({ role }: { role: string }) {
           desc={`ข้อมูลเดินทางวันที่ ${dateTime} ถูกลบเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={
-            role === "user"
-              ? "activeTab=ข้อมูลการเดินทาง"
-              : "progressType=บันทึกการเดินทาง"
-          }
+          searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
         />
       )}
     </>
@@ -74,10 +62,7 @@ interface RecordTravelPageTabProps {
   role?: string;
 }
 
-const RecordTravelTab = ({
-  requestId,
-  role = "user",
-}: RecordTravelPageTabProps) => {
+const RecordTravelTab = ({ requestId, role = "user" }: RecordTravelPageTabProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-travel-req");
   const updateReq = searchParams.get("update-travel-req");
@@ -85,6 +70,13 @@ const RecordTravelTab = ({
   const [requestData, setRequestData] = useState<RecordTravelTabProps[]>([]);
   const [params, setParams] = useState({ search: "" });
   const [editData, setEditData] = useState<RecordTravelTabProps | undefined>();
+
+  const [pagination, setPagination] = useState<PaginationType>({
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
 
   const recordTravelAddModalRef = useRef<{
     openModal: () => void;
@@ -110,13 +102,11 @@ const RecordTravelTab = ({
         } else {
           response = await fetchUserTravelDetails(requestId || "", params);
         }
-        const sortedData = response.data.sort(
-          (a: RecordTravelTabProps, b: RecordTravelTabProps) => {
-            const dateA = new Date(a.trip_start_datetime);
-            const dateB = new Date(b.trip_start_datetime);
-            return dateA.getTime() - dateB.getTime(); // Sort in descending order
-          }
-        );
+        const sortedData = response.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
+          const dateA = new Date(a.trip_start_datetime);
+          const dateB = new Date(b.trip_start_datetime);
+          return dateA.getTime() - dateB.getTime(); // Sort in descending order
+        });
         setRequestData(sortedData);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
@@ -129,25 +119,205 @@ const RecordTravelTab = ({
     fetchUserTravelDetailsFunc();
   }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq]);
 
+  const handlePageChange = (newPage: number) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
+  };
+
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1, // Reset to the first page when page size changes
+    }));
+    console.log(newLimit);
+  };
+
+  const requestListColumns: ColumnDef<TravelData>[] = [
+    {
+      accessorKey: "trip_start_datetime",
+      header: () => (
+        <div className="relative flex items-center justify-center text-center">
+          <div className="text-center">วันที่ / เวลาจากต้นทาง</div>
+        </div>
+      ),
+      enableSorting: true,
+      cell: ({ row }) => {
+        const tripdate = row.original.trip_start_datetime;
+        const convertedDate = convertToBuddhistDateTime(tripdate);
+        return (
+          <div className="text-left" data-name="วันที่ / เวลาถึงปลายทาง">
+            <div className="flex flex-col">
+              {convertedDate?.date} - {convertedDate?.time}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "trip_end_datetime",
+      header: () => <div className="text-left">วันที่ / เวลาถึงปลายทาง</div>,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const tripEnd = row.original.trip_end_datetime;
+        const convertedDate = convertToBuddhistDateTime(tripEnd);
+        return (
+          <div className="text-left" data-name="วันที่ / เวลาถึงปลายทาง">
+            <div className="flex flex-col">
+              {convertedDate?.date} - {convertedDate?.time}
+            </div>
+          </div>
+        );
+      },
+    },
+
+    {
+      accessorKey: "trip_start_miles",
+      header: () => <div className="text-center">เลขไมล์ต้นทาง</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="เลขไมล์ต้นทาง">
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">{row.original.trip_start_miles}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "trip_end_miles",
+      header: () => <div className="text-center">เลขไมล์ปลายทาง</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="เลขไมล์ปลายทาง">
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">{row.original.trip_end_miles}</div>
+          </div>
+        </div>
+      ),
+    },
+
+    {
+      accessorKey: "trip_departure_place",
+      header: () => <div className="text-center">สถานที่ต้นทาง</div>,
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="สถานที่ต้นทาง">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "trip_destination_place",
+      header: () => <div className="text-center">สถานที่ปลายทาง</div>,
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="สถานที่ปลายทาง">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "trip_detail",
+      header: () => <div className="text-center">รายละเอียด</div>,
+      enableSorting: false,
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="รายละเอียด">
+          {getValue() as string}
+        </div>
+      ),
+    },
+
+    {
+      accessorKey: "action",
+      header: "",
+      enableSorting: false,
+      // cell: ({ row }) => {
+      //   return (
+      //     <div className="text-left dataTable-action">
+      //       <button
+      //         className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+      //         data-tip="แก้ไขข้อมูลการเดินทาง"
+      //         onClick={(e) => {
+      //           e.preventDefault();
+      //           e.stopPropagation();
+      //           if (editRecordTravel) {
+      //             return editRecordTravel(row.original);
+      //           }
+      //           recordTravelEditModalRef.current?.openModal();
+      //         }}
+      //       >
+      //         <i className="material-symbols-outlined">stylus</i>
+      //       </button>
+
+      //       <button
+      //         className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+      //         data-tip="ลบข้อมูลการเดินทาง"
+      //         onClick={(e) => {
+      //           e.preventDefault();
+      //           e.stopPropagation();
+      //           if (deleteRecordTravel) {
+      //             return deleteRecordTravel(row.original);
+      //           }
+      //           cancelRequestModalRef.current?.openModal();
+      //         }}
+      //       >
+      //         <i className="material-symbols-outlined">delete</i>
+      //       </button>
+
+      //       <RecordTravelAddModal
+      //         ref={recordTravelEditModalRef}
+      //         role="admin"
+      //         requestId={row.original.trn_request_uid}
+      //         dataItem={{
+      //           trn_trip_detail_uid: row.original.trn_trip_detail_uid,
+      //           trn_request_uid: row.original.trn_request_uid,
+      //           trip_start_datetime: row.original.trip_start_datetime,
+      //           trip_end_datetime: row.original.trip_end_datetime,
+      //           trip_departure_place: row.original.trip_departure_place,
+      //           trip_destination_place: row.original.trip_destination_place,
+      //           trip_start_miles: row.original.trip_start_miles,
+      //           trip_end_miles: row.original.trip_end_miles,
+      //           trip_detail: row.original.trip_detail,
+      //         }}
+      //         status={true}
+      //       />
+      //       <CancelRequestModal
+      //         id={row.original.trn_request_uid}
+      //         tripId={row.original.trn_trip_detail_uid}
+      //         title="ยืนยันลบข้อมูลการเดินทาง"
+      //         desc={
+      //           " ข้อมูลการเดินทางวันที่ " +
+      //           convertToBuddhistDateTime(row.original.trip_start_datetime).date +
+      //           " - " +
+      //           convertToBuddhistDateTime(row.original.trip_start_datetime).time +
+      //           " จะถูกลบออกจากระบบ "
+      //         }
+      //         confirmText="ลบข้อมูล"
+      //         cancleFor="adminRecordTravel"
+      //         ref={cancelRequestModalRef}
+      //       />
+      //     </div>
+      //   );
+      // },
+    },
+  ];
+
   return (
     <>
       <div className="w-full px-1">
         {requestData && requestData.length == 0 ? (
           <div className="grid grid-cols-1 gap-4 text-center">
             <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image
-                src="/assets/img/graphic/record_travel_img.svg"
-                width={900}
-                height={900}
-                alt=""
-              />
+              <Image src="/assets/img/graphic/record_travel_img.svg" width={900} height={900} alt="" />
             </div>
             <div className="col-span-12">
               <p className="font-bold text-2xl">เพิ่มข้อมูลการเดินทาง</p>
-              <p>
-                ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์
-                สถานที่ี่จากต้นทางและถึงปลายทาง
-              </p>
+              <p>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</p>
             </div>
             <div className="col-span-12">
               <button
@@ -157,8 +327,7 @@ const RecordTravelTab = ({
                   recordTravelAddModalRef.current?.openModal();
                 }}
               >
-                <i className="material-symbols-outlined !text-3xl">add</i>{" "}
-                เพิ่มข้อมูล
+                <i className="material-symbols-outlined !text-3xl">add</i> เพิ่มข้อมูล
               </button>
             </div>
           </div>
@@ -182,9 +351,7 @@ const RecordTravelTab = ({
                   id="myInputTextField"
                   className="form-control dt-search-input"
                   placeholder="ค้นหาสถานที่"
-                  onChange={(e) =>
-                    setParams({ ...params, search: e.target.value })
-                  }
+                  onChange={(e) => setParams({ ...params, search: e.target.value })}
                 />
               </div>
             </div>
@@ -202,7 +369,7 @@ const RecordTravelTab = ({
             <div className="w-full mx-auto mt-3">
               <TableRecordTravelComponent
                 data={requestData || []}
-                columns={recordTravelDataColumns}
+                columns={requestListColumns}
                 listName="request"
                 editRecordTravel={(dataItem: RecordTravelTabProps) => {
                   setEditData(dataItem);
@@ -219,11 +386,7 @@ const RecordTravelTab = ({
         <Suspense fallback={<div></div>}>
           <RequestListContent role={role} />
         </Suspense>
-        <RecordTravelAddModal
-          ref={recordTravelAddModalRef}
-          role={role}
-          requestId={requestId}
-        />
+        <RecordTravelAddModal ref={recordTravelAddModalRef} role={role} requestId={requestId} />
         <RecordTravelAddModal
           ref={recordTravelEditModalRef}
           role={role}
@@ -234,8 +397,7 @@ const RecordTravelTab = ({
         <CancelRequestModal
           title="ยืนยันลบข้อมูลการเดินทาง"
           desc={`ข้อมูลการเดินทางวันที่ ${
-            convertToBuddhistDateTime(editData?.trip_start_datetime || "")
-              .date +
+            convertToBuddhistDateTime(editData?.trip_start_datetime || "").date +
             " " +
             convertToBuddhistDateTime(editData?.trip_start_datetime || "").time
           } จะถูกลบออกจากระบบ`}
@@ -246,8 +408,7 @@ const RecordTravelTab = ({
           id={editData?.trn_request_uid || ""}
           tripId={editData?.trn_trip_detail_uid || ""}
           datetime={
-            convertToBuddhistDateTime(editData?.trip_start_datetime || "")
-              .date +
+            convertToBuddhistDateTime(editData?.trip_start_datetime || "").date +
             " " +
             convertToBuddhistDateTime(editData?.trip_start_datetime || "").time
           }

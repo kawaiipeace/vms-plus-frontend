@@ -147,13 +147,12 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
     ],
     [dataRequest, requestData, requestId]
-  );
-  // .filter((tab) => {
-  //   if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver !== "1") {
-  //     return false;
-  //   }
-  //   return true;
-  // });
+  ).filter((tab) => {
+    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver !== "1") {
+      return false;
+    }
+    return true;
+  });
 
   useEffect(() => {
     if (active) {

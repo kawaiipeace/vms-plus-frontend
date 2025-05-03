@@ -77,7 +77,8 @@ export default function MobileRejectCard({
               className="btn btn-secondary flex-1"
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
+                // router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
+                reviewCarDriveModalRef.current?.openModal();
               }}
             >
               ดูคะแนนผู้ขับขี่
@@ -85,7 +86,7 @@ export default function MobileRejectCard({
           </div>
         </div>
       </div>
-      <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
+      <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} displayOn={"user"} />
     </div>
   );
 }
