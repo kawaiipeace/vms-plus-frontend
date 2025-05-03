@@ -14,6 +14,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import CustomSelect, { CustomSelectOption } from "../customSelect";
 import Tooltip from "../tooltips";
+import { getOilBrandImage } from "@/utils/getOilBrandImage";
 
 interface Props {
   status?: boolean;
@@ -149,12 +150,13 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
     const oilOptions: CustomSelectOption[] = useMemo(
       () =>
         oilStationBrandData.map((item) => {
+          const imageSrc = getOilBrandImage(item.ref_oil_station_brand_name_th);
           return {
             value: item.ref_oil_station_brand_id.toString(),
             label: (
               <div className="flex items-center gap-1">
-                {item.ref_oil_station_brand_img && (
-                  <Image src={item.ref_oil_station_brand_img} alt={"oil-image-" + item.ref_oil_station_brand_id} />
+                {item.ref_oil_station_brand_name_th && (
+                  <Image src={imageSrc} alt={"oil-image-" + item.ref_oil_station_brand_id} width={24} height={24} />
                 )}
                 <span className="ml-2">{item.ref_oil_station_brand_name_th}</span>
               </div>
@@ -281,7 +283,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
          
               <div className="grid grid-cols-1 gap-4">
                 <div className="col-span-12">
-                  <div className="form-group">
+                  <div className="form-group text-left">
                     <label className="form-label">สถานีบริการน้ำมัน</label>
                     <CustomSelect
                       w="w-full"
@@ -292,7 +294,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                   </div>
                 </div>
                 <div className="col-span-12">
-                  <div className="form-group">
+                  <div className="form-group text-left">
                     <label className="form-label">ประเภทเชื้อเพลิง</label>
                     <CustomSelect
                       w="w-full"
@@ -403,7 +405,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                   <div className="col-span-12">
                     <div className="form-group">
                       <label className="form-label">วิธีชำระเงิน</label>
-                      <div className="custom-group">
+                      <div className="flex flex-wrap gap-2 items-center">
                         {PaymentTypeCodeData.map((item, index) => {
                           return (
                             <RadioButton
