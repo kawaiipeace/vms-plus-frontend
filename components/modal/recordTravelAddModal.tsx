@@ -172,7 +172,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
           </div>
           <div className="modal-body overflow-y-auto text-center">
             <form>
-              <div className="grid grid-cols-1 gap-4 mt-4">
+              <div className="grid grid-cols-12 gap-4 mt-4">
                 {/* Date picker */}
                 <div className="col-span-6">
                   <div className="form-group">
@@ -257,6 +257,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       <input
                         type="number"
                         className="form-control"
+                        placeholder="ระบุเลขไมล์ต้นทาง"
                         value={value?.startMile}
                         onChange={(e) => {
                           setValue((val) => ({
@@ -276,6 +277,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       <input
                         type="number"
                         className="form-control"
+                        placeholder="ระบุเลขไมล์ปลายทาง"
                         value={value?.endMile}
                         onChange={(e) => {
                           setValue((val) => ({
@@ -288,157 +290,9 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                   </div>
                 </div>
 
-                <div className="col-span-6">
-                  <div className="form-group">
-                    <label className="form-label">สถานที่ต้นทาง</label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={value?.startLocation}
-                        onChange={(e) => {
-                          setValue((val) => ({
-                            ...val,
-                            startLocation: e.target.value,
-                          }));
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-6">
-                  <div className="form-group">
-                    <label className="form-label">สถานที่ปลายทาง</label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={value?.endLocation}
-                        onChange={(e) => {
-                          setValue((val) => ({
-                            ...val,
-                            endLocation: e.target.value,
-                          }));
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-12">
-                  <div>
-                    <div className="form-group">
-                      <label className="form-label">วันที่จากต้นทาง</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
-                        </div>
-                        <DatePicker
-                          placeholder={"ระบุวันที่จากต้นทาง"}
-                          onChange={(date) => setValue((val) => ({ ...val, startDate: date }))}
-                          ref={startPickerRef}
-                        />
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Time picker */}
+               
                   <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">เวลาจากต้นทาง</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">schedule</i>
-                          </span>
-                        </div>
-                        <TimePicker
-                          placeholder="ระบุเวลาจากต้นทาง"
-                          onChange={(time) => setValue((val) => ({ ...val, startTime: time }))}
-                          defaultValue={value?.startTime}
-                          value={value?.startTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* Date picker */}
-                  <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">วันที่ถึงปลายทาง</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
-                        </div>
-                        <DatePicker
-                          placeholder={"ระบุวันที่ถึงปลายทาง"}
-                          onChange={(date) => setValue((val) => ({ ...val, endDate: date }))}
-                          ref={endPickerRef}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Time picker */}
-                  <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">เวลาถึงปลายทาง</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">schedule</i>
-                          </span>
-                        </div>
-                        <TimePicker
-                          placeholder="ระบุเวลาถึงปลายทาง"
-                          onChange={(time) => setValue((val) => ({ ...val, endTime: time }))}
-                          defaultValue={value?.endTime}
-                          value={value?.endTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">เลขไมล์ต้นทาง</label>
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={value?.startMile}
-                          onChange={(e) => {
-                            setValue((val) => ({
-                              ...val,
-                              startMile: e.target.value,
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">เลขไมล์ปลายทาง</label>
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={value?.endMile}
-                          onChange={(e) => {
-                            setValue((val) => ({
-                              ...val,
-                              endMile: e.target.value,
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12">
                     <div className="form-group">
                       <label className="form-label">สถานที่ต้นทาง</label>
                       <div className="input-group">
@@ -446,6 +300,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                           type="text"
                           className="form-control"
                           value={value?.startLocation}
+                          placeholder="ระบุสถานที่ต้นทาง"
                           onChange={(e) => {
                             setValue((val) => ({
                               ...val,
@@ -456,7 +311,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-12">
+                  <div className="col-span-6">
                     <div className="form-group">
                       <label className="form-label">สถานที่ปลายทาง</label>
                       <div className="input-group">
@@ -464,6 +319,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                           type="text"
                           className="form-control"
                           value={value?.endLocation}
+                          placeholder="ระบุเลขไมล์ปลายทาง"
                           onChange={(e) => {
                             setValue((val) => ({
                               ...val,
@@ -485,6 +341,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                             type="text"
                             className="form-control"
                             value={value?.detail}
+                            placeholder="ระบุรายละเอียด"
                             onChange={(e) => {
                               setValue((val) => ({
                                 ...val,
@@ -512,7 +369,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       </button>
                     </div>
                   </div>
-                </div>
+             
               </div>
             </form>
           </div>
