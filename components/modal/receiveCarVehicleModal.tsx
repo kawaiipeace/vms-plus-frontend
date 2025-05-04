@@ -27,6 +27,7 @@ import {
   driverUpdateReceivedVehicle,
   fetchDriverTravelCard,
 } from "@/services/vehicleInUseDriver";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface ReceiveCarVehicleModalProps {
   status?: string;
@@ -55,18 +56,27 @@ const ReceiveCarVehicleModal = forwardRef<
   const [travelCardData, setTravelCardData] =
     useState<VehicleUserTravelCardType>();
 
-  useEffect(() => {
-    console.log("resqu", requestData);
-    if (requestData) {
-      setFuelQuantity(requestData?.fuel_end || 0);
-      setMiles(requestData?.mile_start || 0);
-      setRemark(requestData?.received_vehicle_remark || "");
-      setSelectedDate(requestData?.pickup_datetime || "");
-      setSelectedTime(requestData?.pickup_datetime || "");
-      setFuelQuantity(requestData?.fuel_start || 0);
-    }
-  }, [requestData]);
-
+    useEffect(() => {
+      if (requestData) {
+        setFuelQuantity(requestData?.fuel_start || 0);
+        setMiles(requestData?.mile_start || 0);
+        setRemark(requestData?.received_vehicle_remark || "");
+  
+        // Set default date and time
+        if (requestData?.pickup_datetime && requestData.pickup_datetime !== "0001-01-01T00:00:00Z") {
+          const { date, time } = convertToBuddhistDateTime(requestData.pickup_datetime);
+          setSelectedDate(date);
+          setSelectedTime(time);
+        } else {
+          // Set current date/time as default
+          const now = new Date();
+          const { date, time } = convertToBuddhistDateTime(now.toISOString());
+          setSelectedDate(date);
+          setSelectedTime(time);
+        }
+      }
+    }, [requestData]);
+    
   useImperativeHandle(ref, () => ({
     openModal: () => {
       // clearForm(); ลบออกเพราะข้อมูลไม่ขึ้น
@@ -216,6 +226,7 @@ const ReceiveCarVehicleModal = forwardRef<
                         </div>
                         <DatePicker
                           placeholder={"ระบุวันที่"}
+                          defaultValue={selectedDate}
                           onChange={(date) => setSelectedDate(date)}
                           ref={datePickerRef}
                         />

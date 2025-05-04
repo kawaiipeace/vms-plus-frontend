@@ -13,7 +13,6 @@ import KeyPickupDetailCard from "../cards/keyPickupDetailCard";
 import TravelCardModal from "@/components/modal/travelCardModal";
 import EditKeyPickupDetailModal from "@/components/modal/admin/editKeyPickupDetailModal";
 import ToastCustom from "@/components/toastCustom";
-import { useSearchParams } from "next/navigation";
 
 interface RequestDetailFormProps {
   editable?: boolean;
@@ -162,7 +161,7 @@ export default function KeyHandoverDetail({
 
             <KeyUserPickupCard requestData={requestData} />
           </div>
-          {requestData?.ref_request_status_code === "51" && (
+          {requestData?.ref_request_status_code !== "50"  && (
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">
@@ -206,18 +205,13 @@ export default function KeyHandoverDetail({
         start_time={requestData?.received_key_start_datetime}
         end_time={requestData?.received_key_end_datetime}
         ref={editKeyAppointmentModalRef}
+        onUpdate={handleModalUpdate}
       />
 
       <EditKeyPickupDetailModal
-        reqId={String(requestData?.trn_request_uid)}
-        id={String(requestData?.ref_vehicle_key_type_code)}
-        imgSrc={""}
-        name={""}
-        deptSap={""}
-        phone={""}
-        role="keyAdmin"
+        requestData={requestData}
         ref={editKeyPickupDetailModalRef}
-        onEdit={handleKeyEdit}
+        onSubmit={handleModalUpdate}
       />
 
       <KeyPickUpEditModal

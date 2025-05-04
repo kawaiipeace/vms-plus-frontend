@@ -155,7 +155,7 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                 </div>
               </div>
             </div>
-
+              { (requestData?.vehicle_images_received?.length || 0) > 0 &&
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
@@ -177,6 +177,7 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                 images={requestData?.vehicle_images_received?.map((image) => image.vehicle_img_file || "") || []}
               />
             </div>
+}
           </>
         )}
         {displayOn !== "admin" && (

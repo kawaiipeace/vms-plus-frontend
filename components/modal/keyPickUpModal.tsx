@@ -138,7 +138,7 @@ const KeyPickupModal = forwardRef<
                     <div className="grid grid-cols-12 gap-4">
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group">
-                          <label className="form-label">สถานที่รับกุญแจss</label>
+                          <label className="form-label">สถานที่รับกุญแจ</label>
                           <div className="input-group">
                             <div className="input-group-prepend select-none">
                               <span className="input-group-text">
@@ -176,7 +176,7 @@ const KeyPickupModal = forwardRef<
                               </span>
                             </div>
                             <DatePicker
-                              placeholder="01/01/2567"
+                              placeholder="ระบุวันที่นัดรับกุญแจ"
                               onChange={handleDateChange}
                             />
                           </div>
