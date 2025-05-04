@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
 const schema = yup.object().shape({
-  telInternal: yup.string().optional(),
+  telInternal: yup.string().min(4,"กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
   telMobile: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
