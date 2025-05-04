@@ -199,7 +199,7 @@ export default function TravelListTable({ defaultData, pagination, editRecordTra
                 trip_end_miles: row.original.trip_end_miles,
                 trip_detail: row.original.trip_detail,
               }}
-              status={true}
+              status
             />
             <CancelRequestModal
               id={row.original.trn_request_uid}
