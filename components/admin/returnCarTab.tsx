@@ -15,6 +15,7 @@ import Link from "next/link";
 import ReviewCarDriveDetailModal from "./modals/reviewCarDriverDetailModal";
 import DriverWithRatingCard from "@/components/card/driverWithRatingCard";
 import Image from "next/image";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface ReturnCarTabProps {
   status?: string;
@@ -318,16 +319,14 @@ const ReturnCarTab = ({
                 )}
               </div>
             )}
-            <div className="form-section">
+              {isLoading ? <div className="skeleton h-40"></div> : 
+            <div className="form-section !mt-0">
               <div className="form-section-header items-center">
                 <div className="form-section-header-title">
                   <p>การเดินทางถัดไป</p>
                 </div>
                 <Link
-                  href="#"
-                  onClick={() =>
-                    reviewCarDriveDetailModalRef.current?.openModal()
-                  }
+                  href={'/administrator/vehicle-in-use/'+requestData?.next_request?.trn_request_uid}
                   className="text-brand-900 text-sm font-semibold"
                 >
                   ดูรายละเอียด
@@ -342,28 +341,61 @@ const ReturnCarTab = ({
                         className="rounded-md"
                         width={100}
                         height={100}
-                        alt={"star"}
+                        alt="status"
                       />
                     </div>
                     <div className="space-y-1">
-                          <p className="text-base font-semibold mb-0">รอให้กุญแจ</p>
-                          <p className="text-sm font-semibold text-color-secondary">กฟก.1 และ กฟฟ. ในสังกัด</p>
-                          <div className="text-xs text-color-secondary">
-                             <p className="mb-1">09/01/2567 - 10/01/2567 | 08:30 - 16:00</p>
-                             <div className="flex items-center gap-2">
-                                  <div className="flex items-center gap-1">
-                                  <i className="material-symbols-outlined">directions_car</i>
-                                  <span className="">9กข5432</span>
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                  <i className="material-symbols-outlined">person</i>
-                                  <span className="">ศิริพงษ์ วิไลศักย์ทิพากร (แดง)</span>
-                                  </div>
-                             </div>
+                      <p className="text-base font-semibold mb-0">
+                        {requestData?.next_request?.ref_request_status_name ||
+                          "สถานะไม่ระบุ"}
+                      </p>
+                      <p className="text-sm font-semibold text-color-secondary">
+                        {requestData?.next_request?.vehicle_user_dept_sap ||
+                          "-"}
+                      </p>
+                      <div className="text-xs text-color-secondary">
+                        <p className="mb-1">
+                          {convertToBuddhistDateTime(
+                            requestData?.next_request?.start_datetime || ""
+                          ).date +
+                            " - " +
+                            convertToBuddhistDateTime(
+                              requestData?.next_request?.end_datetime || ""
+                            ).date}{" "}
+                          |{" "}
+                          {convertToBuddhistDateTime(
+                            requestData?.next_request?.start_datetime || ""
+                          ).time +
+                            " - " +
+                            convertToBuddhistDateTime(
+                              requestData?.next_request?.end_datetime || ""
+                            ).time}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <i className="material-symbols-outlined">
+                              directions_car
+                            </i>
+                            <span>
+                              {requestData?.next_request
+                                ?.vehicle_license_plate || "-"}
+                            </span>
                           </div>
-                        
+                          <div className="flex items-center gap-1">
+                            <i className="material-symbols-outlined">person</i>
+                            <span>
+                              {requestData?.next_request
+                                ?.vehicle_user_emp_name || "-"}
+                              {requestData?.next_request?.vehicle_user_position
+                                ? ` (${requestData.next_request.vehicle_user_position})`
+                                : ""}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
+
                   <div className="form-card-body form-card-inline">
                     <div className="form-card-title text-sm font-semibold mb-3">
                       ผู้ใช้ยานพาหนะ
@@ -374,11 +406,13 @@ const ReturnCarTab = ({
                           <div className="card-content">
                             <div className="card-content-top">
                               <div className="card-title !text-sm">
-                                ญาณิศา อุ่นศิริ
+                                {requestData?.next_request
+                                  ?.vehicle_user_emp_name || "-"}
                               </div>
                               <div className="supporting-text-group">
                                 <div className="supporting-text !text-xs">
-                                  นอบ.4 กอพ.2 ฝพจ.
+                                  {requestData?.next_request
+                                    ?.vehicle_user_dept_name_full || "-"}
                                 </div>
                               </div>
                             </div>
@@ -390,7 +424,8 @@ const ReturnCarTab = ({
                                   smartphone
                                 </i>
                                 <span className="card-item-text text-xs">
-                                  0874545445
+                                  {requestData?.next_request
+                                    ?.car_user_mobile_contact_number || "-"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-4">
@@ -398,7 +433,8 @@ const ReturnCarTab = ({
                                   call
                                 </i>
                                 <span className="card-item-text text-xs">
-                                  5555
+                                  {requestData?.next_request
+                                    ?.car_user_internal_contact_number || "-"}
                                 </span>
                               </div>
                             </div>
@@ -409,7 +445,10 @@ const ReturnCarTab = ({
                   </div>
                 </div>
               </div>
+              
             </div>
+}
+            
           </div>
         )}
 

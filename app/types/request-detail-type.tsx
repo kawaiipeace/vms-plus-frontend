@@ -115,6 +115,7 @@ export type RequestDetailType = Partial<{
     ref_vehicle_key_type_name: string;
   }
   vehicle_image_inspect: string[];
+  next_request: NextRequest;
 }>;
 
 export type RequestVehicleType = Partial<{
@@ -128,3 +129,32 @@ export type VehicleImage = Partial<{
   ref_vehicle_img_side_code: number;
   vehicle_img_file: string;
 }>;
+
+export interface TripTypeName {
+  ref_trip_type_code: number;
+  ref_trip_type_name: string;
+}
+
+export interface NextRequest {
+  car_user_internal_contact_number: string;
+  car_user_mobile_contact_number: string;
+  end_datetime: string;
+  ref_request_status_code: string;
+  ref_request_status_name: string;
+  request_no: string;
+  start_datetime: string;
+  trip_type: number;
+  trip_type_name: TripTypeName;
+  trn_request_uid: string;
+  vehicle_license_plate: string;
+  vehicle_license_plate_province_full: string;
+  vehicle_license_plate_province_short: string;
+  vehicle_user_dept_name_full: string;
+  vehicle_user_dept_name_short: string;
+  vehicle_user_dept_sap: string;
+  vehicle_user_emp_id: string;
+  vehicle_user_emp_name: string;
+  vehicle_user_position: string;
+  work_place: string;
+}
+

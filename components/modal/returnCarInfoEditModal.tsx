@@ -91,7 +91,7 @@ const ReturnCarInfoEditModal = forwardRef<
       const formData = {
         fuel_end: fuelQuantity,
         mile_end: Number(miles || "0"),
-        // returned_cleanliness_level: cleanType ? Number(cleanType) : 0,
+        returned_cleanliness_level: cleanType ? Number(cleanType) : 0,
         returned_vehicle_datetime: returned_vehicle_datetime,
         received_vehicle_remark: requestData?.returned_vehicle_emp_id,
         returned_vehicle_remark: remark,
