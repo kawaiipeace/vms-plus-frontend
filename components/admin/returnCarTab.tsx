@@ -16,6 +16,7 @@ import ReviewCarDriveDetailModal from "./modals/reviewCarDriverDetailModal";
 import DriverWithRatingCard from "@/components/card/driverWithRatingCard";
 import Image from "next/image";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import ReturnInsCarModal from "./modals/returnInsCarModal";
 
 interface ReturnCarTabProps {
   status?: string;
@@ -61,6 +62,11 @@ const ReturnCarTab = ({
   } | null>(null);
 
   const reviewCarDriveDetailModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const returnInsCarModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -259,6 +265,52 @@ const ReturnCarTab = ({
               />
             )}
           </div>
+
+          {displayOn === "adminTab" && (
+            <>
+              <div className="form-section">
+                <div className="page-section-header border-0">
+                  <div className="page-header-left">
+                    <div className="page-title">
+                      <span className="page-title-label">
+                        การตรวจสอบสภาพยานพาหนะหลังส่งคืน
+                      </span>
+                    </div>
+                    <div className="page-desc">
+                      กรณีตรวจสอบพบสิ่งผิดปกติ รอยเสียหาย
+                      หรือยานพาหนะไม่พร้อมสำหรับการเดินทางถัดไป เช่น
+                      ห้องโดยสารไม่สะอาด ไม่ได้เติมน้ำมันก่อนส่งคืน
+                      คุณสามารถเพิ่มรูปภาพเพื่อเป็นหลักฐานได้ที่นี่
+                    </div>
+                  </div>
+                  <div className="page-header-right">
+                    <button
+                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689] whitespace-nowrap"
+                      onClick={() => returnInsCarModalRef.current?.openModal()}
+                    >
+                      {(requestData?.vehicle_image_inspect?.length ?? 0) > 0
+                        ? "แก้ไข"
+                        : "เพิ่มรูปภาพ"}
+                    </button>
+                  </div>
+                </div>
+
+                {isLoading ? (
+                  <Imagesdiv />
+                ) : (
+                  <ImagesCarCard
+                    images={
+                      requestData?.vehicle_image_inspect
+                        ? requestData?.vehicle_image_inspect?.map(
+                            (e) => e.vehicle_img_file || ""
+                          )
+                        : []
+                    }
+                  />
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {displayOn === "userTabs" ? (
@@ -319,136 +371,142 @@ const ReturnCarTab = ({
                 )}
               </div>
             )}
-              {isLoading ? <div className="skeleton h-40"></div> : 
-            <div className="form-section !mt-0">
-              <div className="form-section-header items-center">
-                <div className="form-section-header-title">
-                  <p>การเดินทางถัดไป</p>
+            {isLoading ? (
+              <div className="skeleton h-40"></div>
+            ) : (
+              <div className="form-section !mt-0">
+                <div className="form-section-header items-center">
+                  <div className="form-section-header-title">
+                    <p>การเดินทางถัดไป</p>
+                  </div>
+                  <Link
+                    href={
+                      "/administrator/vehicle-in-use/" +
+                      requestData?.next_request?.trn_request_uid
+                    }
+                    className="text-brand-900 text-sm font-semibold"
+                  >
+                    ดูรายละเอียด
+                  </Link>
                 </div>
-                <Link
-                  href={'/administrator/vehicle-in-use/'+requestData?.next_request?.trn_request_uid}
-                  className="text-brand-900 text-sm font-semibold"
-                >
-                  ดูรายละเอียด
-                </Link>
-              </div>
-              <div className="card">
-                <div className="card-body">
-                  <div className="card-body-inline">
-                    <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                      <Image
-                        src="/assets/img/graphic/status_key_pickup.png"
-                        className="rounded-md"
-                        width={100}
-                        height={100}
-                        alt="status"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-base font-semibold mb-0">
-                        {requestData?.next_request?.ref_request_status_name ||
-                          "สถานะไม่ระบุ"}
-                      </p>
-                      <p className="text-sm font-semibold text-color-secondary">
-                        {requestData?.next_request?.vehicle_user_dept_sap ||
-                          "-"}
-                      </p>
-                      <div className="text-xs text-color-secondary">
-                        <p className="mb-1">
-                          {convertToBuddhistDateTime(
-                            requestData?.next_request?.start_datetime || ""
-                          ).date +
-                            " - " +
-                            convertToBuddhistDateTime(
-                              requestData?.next_request?.end_datetime || ""
-                            ).date}{" "}
-                          |{" "}
-                          {convertToBuddhistDateTime(
-                            requestData?.next_request?.start_datetime || ""
-                          ).time +
-                            " - " +
-                            convertToBuddhistDateTime(
-                              requestData?.next_request?.end_datetime || ""
-                            ).time}
+                <div className="card">
+                  <div className="card-body">
+                    <div className="card-body-inline">
+                      <div className="img img-square img-avatar flex-grow-1 align-self-start">
+                        <Image
+                          src="/assets/img/graphic/status_key_pickup.png"
+                          className="rounded-md"
+                          width={100}
+                          height={100}
+                          alt="status"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-base font-semibold mb-0">
+                          {requestData?.next_request?.ref_request_status_name ||
+                            "สถานะไม่ระบุ"}
                         </p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <i className="material-symbols-outlined">
-                              directions_car
-                            </i>
-                            <span>
-                              {requestData?.next_request
-                                ?.vehicle_license_plate || "-"}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <i className="material-symbols-outlined">person</i>
-                            <span>
-                              {requestData?.next_request
-                                ?.vehicle_user_emp_name || "-"}
-                              {requestData?.next_request?.vehicle_user_position
-                                ? ` (${requestData.next_request.vehicle_user_position})`
-                                : ""}
-                            </span>
+                        <p className="text-sm font-semibold text-color-secondary">
+                          {requestData?.next_request?.vehicle_user_dept_sap ||
+                            "-"}
+                        </p>
+                        <div className="text-xs text-color-secondary">
+                          <p className="mb-1">
+                            {convertToBuddhistDateTime(
+                              requestData?.next_request?.start_datetime || ""
+                            ).date +
+                              " - " +
+                              convertToBuddhistDateTime(
+                                requestData?.next_request?.end_datetime || ""
+                              ).date}{" "}
+                            |{" "}
+                            {convertToBuddhistDateTime(
+                              requestData?.next_request?.start_datetime || ""
+                            ).time +
+                              " - " +
+                              convertToBuddhistDateTime(
+                                requestData?.next_request?.end_datetime || ""
+                              ).time}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
+                              <i className="material-symbols-outlined">
+                                directions_car
+                              </i>
+                              <span>
+                                {requestData?.next_request
+                                  ?.vehicle_license_plate || "-"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <i className="material-symbols-outlined">
+                                person
+                              </i>
+                              <span>
+                                {requestData?.next_request
+                                  ?.vehicle_user_emp_name || "-"}
+                                {requestData?.next_request
+                                  ?.vehicle_user_position
+                                  ? ` (${requestData.next_request.vehicle_user_position})`
+                                  : ""}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="form-card-body form-card-inline">
-                    <div className="form-card-title text-sm font-semibold mb-3">
-                      ผู้ใช้ยานพาหนะ
-                    </div>
-                    <div className="card !bg-surface-secondary-subtle mb-3 !border-0 shadow-none outline-none">
-                      <div className="card-body border-0 shadow-none outline-none">
-                        <div className="flex items-center gap-5 justify-between">
-                          <div className="card-content">
-                            <div className="card-content-top">
-                              <div className="card-title !text-sm">
-                                {requestData?.next_request
-                                  ?.vehicle_user_emp_name || "-"}
-                              </div>
-                              <div className="supporting-text-group">
-                                <div className="supporting-text !text-xs">
+                    <div className="form-card-body form-card-inline">
+                      <div className="form-card-title text-sm font-semibold mb-3">
+                        ผู้ใช้ยานพาหนะ
+                      </div>
+                      <div className="card !bg-surface-secondary-subtle mb-3 !border-0 shadow-none outline-none">
+                        <div className="card-body border-0 shadow-none outline-none">
+                          <div className="flex items-center gap-5 justify-between">
+                            <div className="card-content">
+                              <div className="card-content-top">
+                                <div className="card-title !text-sm">
                                   {requestData?.next_request
-                                    ?.vehicle_user_dept_name_full || "-"}
+                                    ?.vehicle_user_emp_name || "-"}
+                                </div>
+                                <div className="supporting-text-group">
+                                  <div className="supporting-text !text-xs">
+                                    {requestData?.next_request
+                                      ?.vehicle_user_dept_name_full || "-"}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="card-content">
+                              <div className="flex gap-3">
+                                <div className="flex items-center gap-4">
+                                  <i className="material-symbols-outlined text-brand-900 w-[13px]">
+                                    smartphone
+                                  </i>
+                                  <span className="card-item-text text-xs">
+                                    {requestData?.next_request
+                                      ?.car_user_mobile_contact_number || "-"}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                  <i className="material-symbols-outlined text-brand-900 w-[13px]">
+                                    call
+                                  </i>
+                                  <span className="card-item-text text-xs">
+                                    {requestData?.next_request
+                                      ?.car_user_internal_contact_number || "-"}
+                                  </span>
                                 </div>
                               </div>
                             </div>
                           </div>
-                          <div className="card-content">
-                            <div className="flex gap-3">
-                              <div className="flex items-center gap-4">
-                                <i className="material-symbols-outlined text-brand-900 w-[13px]">
-                                  smartphone
-                                </i>
-                                <span className="card-item-text text-xs">
-                                  {requestData?.next_request
-                                    ?.car_user_mobile_contact_number || "-"}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <i className="material-symbols-outlined text-brand-900 w-[13px]">
-                                  call
-                                </i>
-                                <span className="card-item-text text-xs">
-                                  {requestData?.next_request
-                                    ?.car_user_internal_contact_number || "-"}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-            </div>
-}
-            
+            )}
           </div>
         )}
 
@@ -501,6 +559,15 @@ const ReturnCarTab = ({
         useBy={useBy}
         ref={returnEditCarModalRef}
         previewImages={requestData?.vehicle_images_returned}
+        requestData={requestData}
+        onSubmit={handleSubmit}
+        status="edit"
+      />
+      <ReturnInsCarModal
+        title="การตรวจสอบสภาพยานพาหนะหลังส่งคืน"
+        useBy={useBy}
+        ref={returnInsCarModalRef}
+        previewImages={requestData?.vehicle_image_inspect}
         requestData={requestData}
         onSubmit={handleSubmit}
         status="edit"

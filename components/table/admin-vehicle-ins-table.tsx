@@ -220,11 +220,14 @@ export default function AdminVehicleInsTable({
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดการตีกลับ"
-                onClick={() =>
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
                   router.push(
                     "/administrator/vehicle-in-use/" +
-                      row.original.trn_request_uid
+                      row.original.trn_request_uid+ "?active-tab=การคืนยานพาหนะ"
                   )
+                }
                 }
               >
                 <i className="material-symbols-outlined">source_notes</i>
@@ -235,11 +238,15 @@ export default function AdminVehicleInsTable({
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ตรวจสอบการคืนยานพาหนะ"
-                onClick={() =>
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
                   router.push(
                     "/administrator/vehicle-in-use/" +
-                      row.original.trn_request_uid
+                      row.original.trn_request_uid + "?active-tab=การคืนยานพาหนะ"
                   )
+                }
+                 
                 }
               >
                 <i className="material-symbols-outlined">overview</i>
