@@ -176,6 +176,7 @@ export const DriverEditContent = ({
         useBy="driver"
         requestData={data}
         ref={returnCarAddModalRef}
+        progress={progressType}
       />
       <ReturnCarAddStep2Modal
         status="edit"

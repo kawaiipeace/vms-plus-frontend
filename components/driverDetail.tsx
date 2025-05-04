@@ -286,7 +286,11 @@ const DriverDetailContent = ({
               {returnCarAddComplete ? (
                 <Link
                   href={
-                    progressType === "คืนยานพาหนะไม่สำเร็จ"
+                    progressType === "ภารกิจสำเร็จ"
+                      ? "/vehicle-in-use/driver/" +
+                        data?.trn_request_uid +
+                        "?progressType=การคืนยานพาหนะ"
+                      : progressType === "คืนยานพาหนะไม่สำเร็จ"
                       ? "/vehicle-in-use/driver/edit/" +
                         data?.trn_request_uid +
                         "?progressType=คืนยานพาหนะไม่สำเร็จ"
@@ -420,7 +424,11 @@ const DriverDetailContent = ({
           </div>
         </>
       )}
-      <ReturnCarAddModal useBy="driver" ref={returnCarAddModalRef} />
+      <ReturnCarAddModal
+        useBy="driver"
+        progress={progressType}
+        ref={returnCarAddModalRef}
+      />
     </div>
   );
 };
