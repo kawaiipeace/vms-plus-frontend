@@ -114,7 +114,7 @@ export type RequestDetailType = Partial<{
     ref_vehicle_key_type_code: string;
     ref_vehicle_key_type_name: string;
   }
-  vehicle_image_inspect: string[];
+  vehicle_image_inspect: VehicleImage[];
   next_request: NextRequest;
 }>;
 
