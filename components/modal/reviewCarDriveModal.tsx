@@ -74,6 +74,22 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
         setReviewSubmit(true);
       }
     }, [displayOn]);
+
+    // useEffect(() => {
+    //   if (displayOn === "view") {
+    //     const rattingData = requestData?.mas_satisfaction_survey_questions.map(
+    //       (item: { mas_satisfaction_survey_questions_code: string; survey_answer: number }) => {
+    //         return {
+    //           mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code,
+    //           survey_answer: item.survey_answer,
+    //         };
+    //       }
+    //     );
+    //     setRatting(rattingData);
+    //     setReviewSubmit(true);
+    //   }
+    // }, [displayOn, requestData]);
+
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
     const onChangeRatting = (value: string, id: string) => {
@@ -180,14 +196,14 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
               /> */}
               {!reviewSubmit && (
                 <div className="col-span-12">
-                  <button type="button" className="btn btn-primary w-full" onClick={onSubmit}>
+                  <button type="button" className="btn btn-primary !w-full" onClick={onSubmit}>
                     ยืนยัน
                   </button>
                 </div>
               )}
               {reviewSubmit && (
                 <div className="col-span-12">
-                  <button type="button" className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
+                  <button type="button" className="btn btn-secondary !w-full" onClick={() => modalRef.current?.close()}>
                     ปิด
                   </button>
                 </div>

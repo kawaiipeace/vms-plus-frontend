@@ -10,8 +10,12 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import LicenseCardModal from "../modal/admin/licenseCardModal";
+import ReturnCarAddModal from "../modal/returnCarAddModal";
+import ReviewCarDriveModal from "../modal/reviewCarDriveModal";
 
 interface PaginationType {
   limit: number;
@@ -26,16 +30,32 @@ interface Props {
   role?: string;
 }
 
-export default function RequestListTable({
-  defaultData,
-  pagination,
-  role,
-}: Props) {
+export default function RequestListTable({ defaultData, pagination, role }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [reqData, setReqData] = useState<RequestListType[]>(defaultData);
   const pathName = usePathname();
+
+  const returnCarAddModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const licenseCardModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const reviewCarDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const viewCarDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
@@ -66,10 +86,7 @@ export default function RequestListTable({
         <div className="text-left">
           <div className="flex flex-col">
             <div>{row.original.request_no}</div>
-            <div className="text-left">
-              {row.original.is_have_sub_request === "1" &&
-                "ปฏิบัติงานต่อเนื่อง"}
-            </div>
+            <div className="text-left">{row.original.is_have_sub_request === "1" && "ปฏิบัติงานต่อเนื่อง"}</div>
           </div>
         </div>
       ),
@@ -89,33 +106,24 @@ export default function RequestListTable({
       accessorKey: "vehicle_license_plate",
       header: () => <div className="text-center">ยานพาหนะ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
-      ),
+      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
     },
     {
       accessorKey: "work_place",
       header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
-        <div className="text-center">{getValue() as string}</div>
-      ),
+      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
     },
     {
       accessorKey: "start_datetime",
       header: () => <div className="text-center">วันที่เดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(
-          row.original.start_datetime || ""
-        );
-        const endDateTime = convertToBuddhistDateTime(
-          row.original.end_datetime || ""
-        );
+        const startDateTime = convertToBuddhistDateTime(row.original.start_datetime || "");
+        const endDateTime = convertToBuddhistDateTime(row.original.end_datetime || "");
         return (
           <div className="text-left">
-            {startDateTime.date + " " + startDateTime.time} -{" "}
-            {endDateTime.date + " " + endDateTime.time}
+            {startDateTime.date + " " + startDateTime.time} - {endDateTime.date + " " + endDateTime.time}
           </div>
         );
       },
@@ -129,9 +137,7 @@ export default function RequestListTable({
         return (
           <div className="w-[80px] text-center">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
-              <span className="badge badge-pill-outline badge-error whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
+              <span className="badge badge-pill-outline badge-error whitespace-nowrap">{value as React.ReactNode}</span>
             ) : value === "รออนุมัติ" || value === "ตีกลับยานพาหนะ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
@@ -141,13 +147,9 @@ export default function RequestListTable({
                 {value as React.ReactNode}
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
+              <span className="badge badge-pill-outline badge-gray whitespace-nowrap">{value as React.ReactNode}</span>
             ) : (
-              <span className="badge badge-pill-outline badge-info whitespace-nowrap">
-                {value as React.ReactNode}
-              </span>
+              <span className="badge badge-pill-outline badge-info whitespace-nowrap">{value as React.ReactNode}</span>
             )}
           </div>
         );
@@ -160,6 +162,7 @@ export default function RequestListTable({
       enableSorting: false,
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
+        const id = row.original.trn_request_uid;
 
         const progressType = {
           "50": "รอรับกุญแจ",
@@ -183,12 +186,7 @@ export default function RequestListTable({
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip={statusValue}
                 onClick={() =>
-                  router.push(
-                    "/vehicle-in-use/driver/" +
-                      row.original.trn_request_uid +
-                      "?progressType=" +
-                      progress
-                  )
+                  router.push("/vehicle-in-use/driver/" + row.original.trn_request_uid + "?progressType=" + progress)
                 }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
@@ -204,13 +202,9 @@ export default function RequestListTable({
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() =>
-                    router.push(pathName + "/" + row.original.trn_request_uid)
-                  }
+                  onClick={() => router.push(pathName + "/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">
-                    quick_reference_all
-                  </i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
               ))}
 
@@ -219,30 +213,55 @@ export default function RequestListTable({
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/user/" + row.original.trn_request_uid
-                    )
-                  }
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">
-                    quick_reference_all
-                  </i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
-                <button
-                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                  data-tip="การรับกุญแจ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/user/" +
-                        row.original.trn_request_uid +
-                        "?activeTab=การรับกุญแจ"
-                    )
-                  }
-                >
-                  <i className="material-symbols-outlined">key</i>
-                </button>
+                <div className="dropdown dropdown-left dropdown-end">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">more_vert</i>
+                  </div>
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">calendar_clock</i>
+                      ดูนัดหมาย
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับกุญแจ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push("/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การรับกุญแจ");
+                      }}
+                    >
+                      <i className="material-symbols-outlined">key</i>
+                      การรับกุญแจ
+                    </Link>
+                  </ul>
+                </div>
               </>
             )}
 
@@ -251,30 +270,183 @@ export default function RequestListTable({
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                   data-tip="ดูรายละเอียดคำขอ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/user/" + row.original.trn_request_uid
-                    )
-                  }
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">
-                    quick_reference_all
-                  </i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
+                <div className="dropdown dropdown-left dropdown-end">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">more_vert</i>
+                  </div>
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">calendar_clock</i>
+                      ดูนัดหมาย
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การรับยานพาหนะ"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">directions_car</i>
+                      รับยานพาหนะ
+                    </Link>
+                  </ul>
+                </div>
+              </>
+            )}
+
+            {statusValue == "เดินทาง" && (
+              <>
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                  data-tip="รอรับยานพาหนะ"
-                  onClick={() =>
-                    router.push(
-                      "/vehicle-in-use/user/" +
-                        row.original.trn_request_uid +
-                        "?activeTab=การรับยานพาหนะ"
-                    )
-                  }
+                  data-tip="ดูรายละเอียดคำขอ"
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">directions_car</i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
+
+                <div className="dropdown dropdown-left dropdown-end">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">more_vert</i>
+                  </div>
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=ข้อมูลการเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=ข้อมูลการเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined"> add_location_alt</i>
+                      ข้อมูลการเดินทาง
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การเติมเชื้อเพลิง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การเติมเชื้อเพลิง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">local_gas_station</i>
+                      การเติมเชื้อเพลิง
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        licenseCardModalRef.current?.openModal();
+                      }}
+                    >
+                      <i className="material-symbols-outlined">id_card</i>
+                      แสดงบัตรเดินทาง
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">calendar_clock</i>
+                      ดูนัดหมาย
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        reviewCarDriveModalRef.current?.openModal();
+                      }}
+                    >
+                      <i className="material-symbols-outlined">star</i>
+                      ให้คะแนนผู้ขับขี่
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        viewCarDriveModalRef.current?.openModal();
+                      }}
+                    >
+                      <i className="material-symbols-outlined">star</i>
+                      ดูคะแนนผู้ขับขี่
+                    </Link>
+                    <hr />
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การคืนยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        returnCarAddModalRef.current?.openModal();
+                      }}
+                    >
+                      <i className="material-symbols-outlined">reply</i>
+                      คืนยานพาหนะ
+                    </Link>
+                  </ul>
+                </div>
+                <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
+                <ReviewCarDriveModal ref={viewCarDriveModalRef} id={id} displayOn="view" />
+                <ReturnCarAddModal ref={returnCarAddModalRef} id={id} useBy="user" />
+                <LicenseCardModal ref={licenseCardModalRef} id={id} />
               </>
             )}
 
@@ -282,13 +454,7 @@ export default function RequestListTable({
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="แก้ไข"
-                onClick={() =>
-                  router.push(
-                    "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid +
-                      "/edit"
-                  )
-                }
+                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid + "/edit")}
               >
                 <i className="material-symbols-outlined">stylus</i>
               </button>
@@ -298,12 +464,7 @@ export default function RequestListTable({
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/vehicle-booking/request-list/" +
-                      row.original.trn_request_uid
-                  )
-                }
+                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
