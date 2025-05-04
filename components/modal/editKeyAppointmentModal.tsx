@@ -58,8 +58,8 @@ const EditKeyAppointmentModal = forwardRef<
     defaultValues: {
       receivedKeyPlace: place,
       receivedKeyDate: date,
-      pickupStartTime: start_time,
-      pickupEndTime: end_time,
+      // pickupStartTime: start_time,
+      // pickupEndTime: end_time,
     },
   });
 

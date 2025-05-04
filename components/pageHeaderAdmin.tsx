@@ -49,7 +49,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
     datetime: string;
   } | null>(null);
 
-  const handlePickupConfirmed = (data: { place: string; datetime: string }) => {
+  const handlePickupConfirmed = (data: { place: string; datetime: string; endtime: string; }) => {
     setPickupData(data);
     passVerifyModalRef.current?.openModal();
   };
