@@ -158,12 +158,15 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                             <div className="custom-control-label-group">
                               <span
                                 className={`badge badge-pill-outline ${
-                                  statusItem.ref_request_status_name === "รออนุมัติ" ||
-                                  statusItem.ref_request_status_name === "รอรับกุญแจ"
-                                    ? "badge-info"
-                                    : statusItem.ref_request_status_name === "อนุมัติแล้ว"
+                                  statusItem.ref_request_status_name === "ถูกตีกลับ" || statusItem.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ" 
+                                    ? "badge-error"
+                                      : statusItem.ref_request_status_name === "อนุมัติแล้ว"
                                     ? "badge-success"
-                                    : "badge-error"
+                                    : statusItem.ref_request_status_name === "เสร็จสิ้น"
+                                    ? "badge-success"
+                                      : statusItem.ref_request_status_name === "รออนุมัติ" || statusItem.ref_request_status_name === "รอตรวจสอบ" 
+                                    ? "badge-warning"
+                                    : "badge-info"
                                 }`}
                               >
                                 {statusItem.ref_request_status_name}

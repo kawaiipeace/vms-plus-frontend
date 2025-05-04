@@ -23,19 +23,22 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, VehicleDetailModelP
 
     // Fetch vehicle details when component mounts
     useEffect(() => {
-      const fetchVehicleDetailData = async () => {
-        try {
-          const response = await fetchVehicleDetail(vehicleId);
-
-          if (response.status === 200) {
-            setVehicleDetail(response.data ?? {});
+      if(vehicleId){
+        const fetchVehicleDetailData = async () => {
+          try {
+            const response = await fetchVehicleDetail(vehicleId);
+  
+            if (response.status === 200) {
+              setVehicleDetail(response.data ?? {});
+            }
+          } catch (error) {
+            console.error("Error fetching vehicle details:", error);
           }
-        } catch (error) {
-          console.error("Error fetching vehicle details:", error);
-        }
-      };
-
-      fetchVehicleDetailData();
+        };
+  
+        fetchVehicleDetailData();
+      }
+     
     }, [vehicleId, ref]);
 
     // Image Handling
