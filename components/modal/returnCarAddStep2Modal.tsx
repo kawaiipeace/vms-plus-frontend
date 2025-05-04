@@ -276,6 +276,8 @@ const ReturnCarAddStep2Modal = forwardRef<
                     </div>
                     <div
                       className={`col-span-12 ${
+                        (useBy === "driver" &&
+                          progress === "คืนยานพาหนะไม่สำเร็จ") ||
                         (useBy === "driver" && progress === "การคืนยานพาหนะ") ||
                         (useBy !== "driver" && useBy === "admin") ||
                         useBy === "user" ||

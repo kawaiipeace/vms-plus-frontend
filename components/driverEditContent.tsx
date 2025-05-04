@@ -157,7 +157,10 @@ export const DriverEditContent = ({
               </div>
               {progressType === "คืนยานพาหนะไม่สำเร็จ" && (
                 <div className="w-full mt-8">
-                  <button className="btn btn-primary w-full">
+                  <button
+                    className="btn btn-primary w-full"
+                    onClick={() => returnCarAddModalRef.current?.openModal()}
+                  >
                     คืนยานพาหนะอีกครั้ง
                   </button>
                 </div>
