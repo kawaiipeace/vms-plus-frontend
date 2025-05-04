@@ -136,7 +136,7 @@ export default function FirstApproverListTable({
                 ตีกลับคำขอ
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
+              <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
             ) : value === "อนุมัติแล้ว" ? (

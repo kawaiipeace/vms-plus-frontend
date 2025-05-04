@@ -29,7 +29,7 @@ export default function Header() {
   };
 
   return (
-    <div className="header items-center !z-[999]">
+    <div className="header items-center">
       <div className="navbar p-0 items-center min-h-0">
         <div className="navbar-start">
           <div className="header-brand block md:hidden">

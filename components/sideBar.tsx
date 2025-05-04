@@ -120,7 +120,7 @@ export default function SideBar({ menuName }: SidebarProps) {
               <i className="material-symbols-outlined">home</i>
               <span
                 className={`nav-link-label transition-all duration-300 ${
-                  isExpanded || isPinned ? "opacity-100 ml-2" : "opacity-0 w-0"
+                  isExpanded || isPinned ? "opacity-100" : "opacity-0 w-0"
                 }`}
               >
                 หน้าหลัก

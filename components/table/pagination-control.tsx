@@ -52,7 +52,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
                 <button
                   key={p}
                   className={`join-item btn btn-sm btn-outline ${
-                    page === p ? "active !bg-primary-grayBorder" : ""
+                    page === p ? "active bg-primary-grayBorder" : ""
                   }`}
                   onClick={() => onPageChange(p)}
                 >
