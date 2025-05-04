@@ -218,7 +218,7 @@ export default function ProcessThree() {
       value: formData.driverEmpID,
       label: `${formData.driverEmpName} (${formData.driverDeptSap})`,
     };
-    setSelectedVehicleUserOption(selectedDriverOption);
+    // setSelectedVehicleUserOption(selectedDriverOption);
 
     const empData = vehicleUserDatas.find((user: { emp_id: string }) => user.emp_id === selectedDriverOption.value);
 
