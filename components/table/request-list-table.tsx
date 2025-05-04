@@ -218,7 +218,7 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
                   <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
-                <div className="dropdown dropdown-left dropdown-end">
+                <div className="dropdown dropdown-left ">
                   <div
                     className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                     tabIndex={0}
@@ -275,7 +275,7 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
                   <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
-                <div className="dropdown dropdown-left dropdown-end">
+                <div className="dropdown dropdown-left ">
                   <div
                     className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                     tabIndex={0}
@@ -334,7 +334,7 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
                   <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
-                <div className="dropdown dropdown-left dropdown-end">
+                <div className="dropdown dropdown-left">
                   <div
                     className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
                     tabIndex={0}

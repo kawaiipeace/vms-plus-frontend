@@ -146,7 +146,7 @@ export default function KeyPickUp({ editable, requestId }: RequestDetailFormProp
         onEdit={() => {
           keyPickUpEditModalRef.current?.openModal();
         }}
-        reqId={""}
+        reqId={requestData?.trn_request_uid || ""}
         imgSrc={""}
         deptSapShort={""}
       />
