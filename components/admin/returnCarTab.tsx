@@ -38,7 +38,9 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
     closeModal: () => void;
   } | null>(null);
 
-  const isReturnFail = requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e";
+  const isReturnFail = ["เดินทาง", "ตีกลับยานพาหนะ"].includes(requestData?.ref_request_status_name || "");
+
+  // const isReturnFail = requestData?.ref_request_status_code === "60" || requestData?.ref_request_status_code === "60e";
   return (
     <>
       {status == "returnFail" ||
@@ -52,7 +54,7 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
               <div className="form-section-header-title">
                 <p>ข้อมูลการคืนยานพาหนะ</p>
               </div>
-              {(status === "returnFail" || displayOn === "adminTab" || displayOn === "userTabs") && (
+              {(status === "returnFail" || displayOn === "adminTab" || (displayOn === "userTabs" && isReturnFail)) && (
                 <div className="form-section-header-actions">
                   <button
                     className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
@@ -72,7 +74,7 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
               <div className="form-section-header-title">
                 <p>รูปยานพาหนะหลังเดินทาง</p>
               </div>
-              {(status === "returnFail" || displayOn === "adminTab" || displayOn === "userTabs") && (
+              {(status === "returnFail" || displayOn === "adminTab" || (displayOn === "userTabs" && isReturnFail)) && (
                 <div className="form-section-header-actions">
                   <button
                     className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"

@@ -15,12 +15,16 @@ import { useRouter } from "next/navigation";
 interface Props {
   id?: string;
   fleet_card_no?: string;
+  key?: string;
 }
 
-const ConfirmReturnVehicleModal = forwardRef<{
-  openModal: () => void;
-  closeModal: () => void;
-}, Props>(({ id }, ref) => {
+const ConfirmReturnVehicleModal = forwardRef<
+  {
+    openModal: () => void;
+    closeModal: () => void;
+  },
+  Props
+>(({ id, key }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -48,7 +52,9 @@ const ConfirmReturnVehicleModal = forwardRef<{
 
   useEffect(() => {
     const today = new Date();
-    const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const localDate = `${today.getFullYear()}-${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     datePickerRef.current?.setValue(localDate);
   }, []);
 
@@ -58,36 +64,45 @@ const ConfirmReturnVehicleModal = forwardRef<{
         // selectedDate is in "DD/MM/BBBB" (Buddhist year)
         const [day, month, buddhistYear] = selectedDate.split("/");
         const gregorianYear = parseInt(buddhistYear) - 543;
-  
+
         // selectedTime is "HH:mm"
         const [hours, minutes] = selectedTime.split(":").map(Number);
-  
+
         // Create ISO Date object in UTC
-        const date = new Date(Date.UTC(gregorianYear, parseInt(month) - 1, parseInt(day), hours, minutes, 0));
-  
+        const date = new Date(
+          Date.UTC(
+            gregorianYear,
+            parseInt(month) - 1,
+            parseInt(day),
+            hours,
+            minutes,
+            0
+          )
+        );
+
         // Get ISO string like "2025-04-16T14:30:00Z"
         const acceptedVehicleDatetime = date.toISOString();
-  
+
         const payload = {
           accepted_vehicle_datetime: acceptedVehicleDatetime,
           trn_request_uid: id || "",
         };
-  
+
         const res = await adminAcceptVehicle(payload);
-  
+
         if (res) {
           modalRef.current?.close();
-          router.push(`/administrator/request-list?acceptvehicle-req=success&request-id=${res.data.result?.request_no}`);
+          router.push(
+            `/administrator/request-list?acceptvehicle-req=success&request-id=${res.data.result?.request_no}`
+          );
         }
       } catch (error) {
         console.error("error:", error);
       }
     };
-  
+
     acceptVehicle();
   };
-  
-  
 
   return (
     <>
@@ -110,7 +125,8 @@ const ConfirmReturnVehicleModal = forwardRef<{
                 ยืนยันรับคืนยานพาหนะ
               </div>
               <div className="confirm-text">
-                คุณได้ตรวจสอบการคืนยานพาหนะ<br />
+                คุณได้ตรวจสอบการคืนยานพาหนะ
+                <br />
                 และได้รับสิ่งที่ส่งมอบครบถ้วนแล้วใช่หรือไม่?
               </div>
               <div className="text-left text-secondary font-semibold mt-3">
@@ -118,13 +134,17 @@ const ConfirmReturnVehicleModal = forwardRef<{
               </div>
               <div className="card rounded-md !border-none">
                 <div className="card-item-group !border-0 !rounded-md shadow-none outline-0">
+              
+                    <div className="card-item">
+                      <i className="material-symbols-outlined">key</i>
+                      <span className="card-item-text">
+                        {key}
+                      </span>
+                    </div>
+               
                   <div className="card-item">
                     <i className="material-symbols-outlined">credit_card</i>
                     <span className="card-item-text">บัตรเติมน้ำมัน</span>
-                  </div>
-                  <div className="card-item">
-                    <i className="material-symbols-outlined">key</i>
-                    <span className="card-item-text"> กุญแจหลัก</span>
                   </div>
                 </div>
               </div>

@@ -12,6 +12,7 @@ interface MobileWaitForKeyCardProps {
   pickupDate: string; // expected in format 'YYYY-MM-DD' or similar
   pickupTime: string;
   parkingLocation?: string;
+  is_pea_employee_driver?: string;
 }
 
 export default function MobileWaitForVehicleCard({
@@ -23,6 +24,7 @@ export default function MobileWaitForVehicleCard({
   pickupLocation,
   pickupDate,
   pickupTime,
+  is_pea_employee_driver,
   parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
@@ -40,6 +42,8 @@ export default function MobileWaitForVehicleCard({
     pickup.setHours(0, 0, 0, 0);
     return today > pickup;
   }, [pickupDate]);
+
+  const pea = is_pea_employee_driver !== "1";
 
   return (
     <div className="card cursor-pointer" onClick={goToDetail}>
@@ -75,7 +79,7 @@ export default function MobileWaitForVehicleCard({
         </div>
 
         <div className="card-actions flex w-full">
-          {!isPickupDatePassed && (
+          {!pea && !isPickupDatePassed && (
             <button
               className="btn btn-secondary flex-1"
               onClick={(e) => {

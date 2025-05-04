@@ -32,6 +32,7 @@ import {
   driverCreateAddFuelDetail,
   driverUpdateAddFuelDetail,
 } from "@/services/vehicleInUseDriver";
+import { getOilBrandImage } from "@/utils/getOilBrandImage";
 
 interface Props {
   status?: boolean;
@@ -175,15 +176,13 @@ const RecordTravelAddModal = forwardRef<
   const oilOptions: CustomSelectOption[] = useMemo(
     () =>
       oilStationBrandData.map((item) => {
+        const imageSrc = getOilBrandImage(item.ref_oil_station_brand_name_th);
         return {
           value: item.ref_oil_station_brand_id.toString(),
           label: (
             <div className="flex items-center gap-1">
-              {item.ref_oil_station_brand_img && (
-                <Image
-                  src={item.ref_oil_station_brand_img}
-                  alt={"oil-image-" + item.ref_oil_station_brand_id}
-                />
+              {item.ref_oil_station_brand_name_th && (
+                <Image src={imageSrc} alt={"oil-image-" + item.ref_oil_station_brand_id} width={24} height={24} />
               )}
               <span className="ml-2">{item.ref_oil_station_brand_name_th}</span>
             </div>
@@ -344,7 +343,7 @@ const RecordTravelAddModal = forwardRef<
           <div className="modal-body overflow-y-auto text-center h-[70vh]">
             <div className="grid grid-cols-1 gap-4">
               <div className="col-span-12">
-                <div className="form-group">
+                <div className="form-group text-left">
                   <label className="form-label">สถานีบริการน้ำมัน</label>
                   <CustomSelect
                     w="w-full"
@@ -360,7 +359,7 @@ const RecordTravelAddModal = forwardRef<
                 </div>
               </div>
               <div className="col-span-12">
-                <div className="form-group">
+                <div className="form-group text-left">
                   <label className="form-label">ประเภทเชื้อเพลิง</label>
                   <CustomSelect
                     w="w-full"

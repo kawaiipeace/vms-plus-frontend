@@ -7,6 +7,7 @@ import ToastCustom from "@/components/toastCustom";
 import ReturnCarAddModal from "../modal/returnCarAddModal";
 import FileBackRequestModal from "../modal/fileBackModal";
 import ConfirmReturnVehicleModal from "../modal/confirmReturnVehicleModal";
+import ReceiveCarVehicleModal from "../modal/receiveCarVehicleModal";
 
 interface Props {
   data: RequestDetailType;
@@ -256,14 +257,16 @@ export default function PageKeyHandOverHeader({ data }: Props) {
 
       <ConfirmReturnVehicleModal
         ref={confirmReturnVehicleModalRef}
+        key={data?.receiver_key_type_detail?.ref_vehicle_key_type_name}
         id={data?.trn_request_uid}
       />
 
-      <ReturnCarAddModal
+      <ReceiveCarVehicleModal
         requestData={data}
-        useBy={"admin"}
+        role={"admin"}
         ref={receiveCarVehicleModalRef}
       />
+      
       <LicenseCardModal
         ref={licenseCardModalRef}
         requestData={data}

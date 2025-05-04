@@ -3,6 +3,7 @@ import MobileFileBackCard from "@/components/card/mobileFileBackCard"; // Make s
 import MobileWaitForKeyCard from "@/components/card/mobileWaitForKeyCard";
 import MobileWaitingCard from "@/components/card/mobileWaitingCard";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import MobileDriverCard from "../card/mobileDriverCard";
 import MobileRejectCard from "../card/mobileRejectCard";
 import MobileTravelLogCard from "../card/mobileTravelLogCard";
 import MobileWaitForVehicleCard from "../card/mobileWaitForVehicleCard";
@@ -99,6 +100,7 @@ export default function ListFlow({ requestData }: Props) {
                 " - " +
                 convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
               }
+              is_pea_employee_driver={request?.is_pea_employee_driver?.toString()}
             />
           );
         }
@@ -122,6 +124,7 @@ export default function ListFlow({ requestData }: Props) {
                 " - " +
                 convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
               }
+              is_pea_employee_driver={request?.is_pea_employee_driver?.toString()}
             />
           );
         }
@@ -179,6 +182,25 @@ export default function ListFlow({ requestData }: Props) {
                 " - " +
                 convertToBuddhistDateTime(request?.end_datetime || "").date
               }
+              rating={undefined}
+            />
+          );
+        }
+
+        if (ref_request_status_name === "เสร็จสิ้น") {
+          return (
+            <MobileDriverCard
+              key={request.trn_request_uid || index}
+              title={"เสร็จสิ้น"}
+              carRegis={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place || ""}
+              date={
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime || "").date
+              }
+              cardType="complete"
+              rating={undefined}
             />
           );
         }

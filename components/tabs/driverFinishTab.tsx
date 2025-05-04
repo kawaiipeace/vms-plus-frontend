@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import MobileDriverCard from "@/components/card/mobileDriverCard";
-import Image from "next/image";
-import dayjs from "dayjs";
-import Link from "next/link";
-import { RequestListType } from "@/app/types/request-list-type";
-import RequestListTable from "../table/request-list-table";
 import { PaginationType } from "@/app/types/request-action-type";
+import { RequestListType } from "@/app/types/request-list-type";
+import MobileDriverCard from "@/components/card/mobileDriverCard";
+import dayjs from "dayjs";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import RequestListTable from "../table/request-list-table";
 
 interface DriverFinishTabProps {
   data: RequestListType[];
@@ -69,12 +69,8 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
 
               return (
                 <div key={key}>
-                  <h6 className="text-md font-bold my-4">
-                    {getDateMMYYYY(key).format("MMMM BBBB")}
-                  </h6>
-                  <p className="font-light mb-4">
-                    {finishData[key].length} งาน
-                  </p>
+                  <h6 className="text-md font-bold my-4">{getDateMMYYYY(key).format("MMMM BBBB")}</h6>
+                  <p className="font-light mb-4">{finishData[key].length} งาน</p>
                   <div className="grid grid-cols-1 gap-4">
                     {finishData[key].map((item) => {
                       const {
@@ -89,16 +85,14 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (
-                        <Link
-                          key={item.request_no}
-                          href={link + "?progressType=ภารกิจสำเร็จ"}
-                        >
+                        <Link key={item.request_no} href={link + "?progressType=ภารกิจสำเร็จ"}>
                           <MobileDriverCard
                             title={"ภารกิจสำเร็จ"}
                             carRegis={license_plate_full}
-                            location={item.work_place}
+                            location={item?.work_place || ""}
                             date={date}
                             cardType="complete"
+                            rating={undefined}
                           />
                         </Link>
                       );
@@ -109,23 +103,14 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
             })}
           </div>
           <div className="hidden md:block">
-            <RequestListTable
-              defaultData={data}
-              pagination={pagination}
-              role="driver"
-            />
+            <RequestListTable defaultData={data} pagination={pagination} role="driver" />
           </div>
         </>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 text-center">
             <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image
-                src="/assets/img/graphic/data_empty.svg"
-                width={900}
-                height={900}
-                alt=""
-              />
+              <Image src="/assets/img/graphic/data_empty.svg" width={900} height={900} alt="" />
             </div>
             <div className="col-span-12">
               <p className="font-bold text-2xl">ไม่มีคำขอใช้ยานพาหนะ</p>

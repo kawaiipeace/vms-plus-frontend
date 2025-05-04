@@ -111,7 +111,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ข้อมูลการเดินทาง",
         content: (
           <>
-            <RecordTravelTab requestId={requestId} />
+            <RecordTravelTab requestId={requestId} data={requestData} />
           </>
         ),
         constent: "",
@@ -149,7 +149,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     ],
     [dataRequest, requestData, requestId]
   ).filter((tab) => {
-    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver !== "1") {
+    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver === "1") {
       return false;
     }
     return true;

@@ -130,9 +130,11 @@ export default function KeyPickUp({ editable, requestId }: RequestDetailFormProp
           </div>
         </div>
       </div>
-      <button className="btn btn-primary w-full mt-5" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
-        รับกุญแจ
-      </button>
+      {requestData?.ref_request_status_name === "รอรับกุญแจ" && (
+        <button className="btn btn-primary w-full mt-5" onClick={() => keyPickupDetailModalRef.current?.openModal()}>
+          รับกุญแจ
+        </button>
+      )}
       <DriverAppointmentModal ref={driverAppointmentModalRef} id={requestData?.driver?.mas_driver_uid || ""} />
       <KeyPickupDetailModal
         ref={keyPickupDetailModalRef}
