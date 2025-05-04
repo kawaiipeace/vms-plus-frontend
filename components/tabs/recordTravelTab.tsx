@@ -89,22 +89,25 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
 
   const fetchUserTravelDetailsFunc = useCallback(
     async () => {
-      try {
-        let response;
-        if (role === "driver") {
-          response = await fetchDriverTravelDetails(requestId || "", params);
-        } else {
-          response = await fetchUserTravelDetails(requestId || "", params);
+      if(requestId){
+        try {
+          let response;
+          if (role === "driver") {
+            response = await fetchDriverTravelDetails(requestId || "", params);
+          } else {
+            response = await fetchUserTravelDetails(requestId || "", params);
+          }
+          const sortedData = response.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
+            const dateA = new Date(a.trip_start_datetime);
+            const dateB = new Date(b.trip_start_datetime);
+            return dateA.getTime() - dateB.getTime(); // Sort in descending order
+          });
+          setRequestData(sortedData);
+        } catch (error) {
+          console.error("Error fetching vehicle details:", error);
         }
-        const sortedData = response.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
-          const dateA = new Date(a.trip_start_datetime);
-          const dateB = new Date(b.trip_start_datetime);
-          return dateA.getTime() - dateB.getTime(); // Sort in descending order
-        });
-        setRequestData(sortedData);
-      } catch (error) {
-        console.error("Error fetching vehicle details:", error);
       }
+    
     },
     [params, requestId, role] // Add requestId to the dependency array,
   );

@@ -56,15 +56,18 @@ export const fetchDriverTravelDetails = async (
   id: string,
   params: { search?: string }
 ) => {
-  try {
-    const response = await axiosInstance.get(
-      `vehicle-in-use-driver/travel-details/` + id,
-      { params }
-    );
-    return response;
-  } catch (error) {
-    throw error;
+  if(id){
+    try {
+      const response = await axiosInstance.get(
+        `vehicle-in-use-driver/travel-details/` + id,
+        { params }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
+
 };
 
 export const driverCreateTravelDetail = async (data: any) => {

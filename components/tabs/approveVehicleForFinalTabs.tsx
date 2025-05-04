@@ -7,7 +7,7 @@ export default function ApproveVehicleForFinalTabs() {
   return (
     <div className="w-full">
 
-      <div className="py-4">
+      <div className="pb-4">
 
       <FinalApproveFlow />
 
