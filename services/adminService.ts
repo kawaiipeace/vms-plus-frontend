@@ -133,6 +133,16 @@ export const AdminReturnedVehicle = async (data: any) => {
   }
 };
 
+export const AdminUpdateReturnedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-returned-vehicle", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 export const adminSendBackVehicle = async (data: SendbackRequestType) => {
   try {
     const response = await axiosInstance.put("vehicle-inspection-admin/update-sended-back", data);
@@ -146,6 +156,17 @@ export const adminAcceptVehicle = async (data: any) => {
   try {
     const response = await axiosInstance.put("vehicle-inspection-admin/update-accepted", data);
     return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchReviewDriverDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get("vehicle-inspection-admin/satisfaction-survey/" + id);
+
+    return response;
+
   } catch (error) {
     throw error;
   }

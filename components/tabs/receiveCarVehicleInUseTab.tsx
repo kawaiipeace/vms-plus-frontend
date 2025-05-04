@@ -28,7 +28,7 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const [receiveSuccess, setReceiveSuccess] = useState(true);
+  const [receiveSuccess] = useState(true);
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [showToast, setShowToast] = useState(false);
 
@@ -42,7 +42,6 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
           response = await fetchRequestKeyDetail(requestId);
         }
 
-        console.log("data---", response.data);
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);

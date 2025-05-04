@@ -10,6 +10,8 @@ import ReturnCarTab from "@/components/admin/returnCarTab";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react"; 
 import RecordFuelTab from "@/components/tabs/recordFuelTab";
+import { fetchRequestKeyDetail } from "@/services/masterService";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface Props {
   requestId: string;
@@ -35,6 +37,7 @@ export default function RequestDetailTabs({
   };
     const searchParams = useSearchParams();
     const activeTabName = searchParams.get("active-tab");
+      const [requestData, setRequestData] = useState<RequestDetailType>();
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
@@ -45,6 +48,18 @@ export default function RequestDetailTabs({
   useEffect(() => {
     if (requestId) {
       loadLogs(requestId);
+
+       const fetchRequestDetailfunc = async () => {
+            try {
+              const response = await fetchRequestKeyDetail(requestId);
+              console.log("data---", response.data);
+              setRequestData(response.data);
+            } catch (error) {
+              console.error("Error fetching vehicle details:", error);
+            }
+          };
+          fetchRequestDetailfunc();
+          
     }
   }, [params, requestId]);
 
@@ -111,7 +126,7 @@ export default function RequestDetailTabs({
         ? [
             {
               label: "การคืนยานพาหนะ",
-              content: <ReturnCarTab displayOn="adminTab" />,
+              content: <ReturnCarTab displayOn="adminTab" useBy="admin" requestData={requestData} />,
               badge: "",
             },
           ]

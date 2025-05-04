@@ -65,7 +65,7 @@ export default function AdminVehicleInsFlow() {
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
       "70": { iconName: "schedule", status: "info" },
-      "71": { iconName: "schedule", status: "info" },
+      "71": { iconName: "reply", status: "warning" },
       "90": { iconName: "delete", status: "default" },
     };
 
@@ -105,7 +105,7 @@ export default function AdminVehicleInsFlow() {
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
-    console.log('adminsummary',summary)
+
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
       ...prevParams,
@@ -255,7 +255,7 @@ export default function AdminVehicleInsFlow() {
       </div>
 
       <div className="hidden md:block">
-        <div className="grid grid-cols-4 gap-4 mb-4">
+        <div className="flex gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
@@ -264,7 +264,7 @@ export default function AdminVehicleInsFlow() {
             return (
               <div
                 key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
+                className="flex-1 flex-shrink-0"
               >
                 <RequestStatusBox
                   iconName={config.iconName}

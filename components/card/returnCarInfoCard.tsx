@@ -64,24 +64,10 @@ export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
         <div className="grid grid-cols-1">
           <div>
             <div className="form-group form-plaintext">
-              <i className="material-symbols-outlined">mop</i>
-              <div className="form-plaintext-group">
-                <div className="form-label">ภายในห้องโดยสาร</div>
-                <div className="form-text">
-                  {dataClean.find((e) => Number(e.id) === data?.returned_cleanliness_level)?.name}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="grid grid-cols-1">
-          <div>
-            <div className="form-group form-plaintext">
               <i className="material-symbols-outlined">local_car_wash</i>
               <div className="form-plaintext-group">
-                <div className="form-label">ภายนอกยานพาหนะ</div>
+                <div className="form-label">ความสะดาก</div>
                 <div className="form-text">
-                  {" "}
                   {dataClean.find((e) => Number(e.id) === data?.returned_cleanliness_level)?.name}
                 </div>
               </div>
