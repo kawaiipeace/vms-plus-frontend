@@ -28,7 +28,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
 
   const [requestUid] = useState(requestId);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0);
   const [dataRequest, setDataRequest] = useState<RequestHistoryLog[]>([]);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
