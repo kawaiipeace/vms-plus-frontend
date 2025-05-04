@@ -228,8 +228,10 @@ export default function RequestListTable({
 
         const start = dayjs(row.original.start_datetime);
         const end = dayjs(row.original.end_datetime);
-        const between = dayjs().isBetween(start, end, "day", "(]");
-        const traveling = between && dayjs().isSame(end, "day");
+        const between = dayjs().isBetween(start, end);
+        const traveling = between && dayjs().isSame(end);
+        const before = dayjs().isBefore(start);
+        const after = dayjs().isAfter(end);
         const isPeaEm = row.original.is_pea_employee_driver;
 
         return (
@@ -462,7 +464,7 @@ export default function RequestListTable({
                       </i>
                       การเติมเชื้อเพลิง
                     </Link>
-                    {isPeaEm && !traveling && (
+                    {isPeaEm && (
                       <Link
                         className="dropdown-item"
                         href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
@@ -476,7 +478,7 @@ export default function RequestListTable({
                         แสดงบัตรเดินทาง
                       </Link>
                     )}
-                    {!isPeaEm && !traveling && (
+                    {before && !isPeaEm && !traveling && (
                       <Link
                         className="dropdown-item"
                         href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
@@ -510,7 +512,7 @@ export default function RequestListTable({
                         ให้คะแนนผู้ขับขี่
                       </Link>
                     )}
-                    {!isPeaEm && !traveling && (
+                    {after && !isPeaEm && !traveling && (
                       <Link
                         className="dropdown-item"
                         href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
