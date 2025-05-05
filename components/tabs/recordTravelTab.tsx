@@ -28,7 +28,11 @@ function RequestListContent({ role }: { role: string }) {
       {createReq === "success" && (
         <ToastCustom
           title="เพิ่มข้อมูลการเดินทางสำเร็จ"
-          desc={<>เพิ่มข้อมูลการเดินทางวันที่ {formatDateTime.date}  <br></br>เรียบร้อยแล้ว</>}
+          desc={
+            <>
+              เพิ่มข้อมูลการเดินทางวันที่ {formatDateTime.date} <br></br>เรียบร้อยแล้ว
+            </>
+          }
           status="success"
           styleText="!mx-auto"
           searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}
@@ -89,7 +93,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
 
   const fetchUserTravelDetailsFunc = useCallback(
     async () => {
-      if(requestId){
+      if (requestId) {
         try {
           let response;
           if (role === "driver") {
@@ -107,13 +111,12 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
           console.error("Error fetching vehicle details:", error);
         }
       }
-    
     },
     [params, requestId, role] // Add requestId to the dependency array,
   );
 
   useEffect(() => {
-    if(requestId){
+    if (requestId) {
       fetchUserTravelDetailsFunc();
     }
   }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq]);
@@ -131,7 +134,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
         </div>
       ),
       enableSorting: true,
-     cell: ({ row }: { row: { original: { trip_start_datetime: string } } }) => {
+      cell: ({ row }: { row: { original: { trip_start_datetime: string } } }) => {
         const tripdate = row.original.trip_start_datetime;
         const convertedDate = convertToBuddhistDateTime(tripdate);
         return (
@@ -147,7 +150,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
       accessorKey: "trip_end_datetime",
       header: () => <div className="text-left">วันที่ / เวลาถึงปลายทาง</div>,
       enableSorting: false,
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const tripEnd = row.original.trip_end_datetime;
         const convertedDate = convertToBuddhistDateTime(tripEnd);
         return (
@@ -164,7 +167,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
       accessorKey: "trip_start_miles",
       header: () => <div className="text-center">เลขไมล์ต้นทาง</div>,
       enableSorting: false,
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <div className="text-left" data-name="เลขไมล์ต้นทาง">
           <div className="flex flex-col">
             {" "}
@@ -177,7 +180,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
       accessorKey: "trip_end_miles",
       header: () => <div className="text-center">เลขไมล์ปลายทาง</div>,
       enableSorting: false,
-      cell: ({ row }) => (
+      cell: ({ row }: any) => (
         <div className="text-left" data-name="เลขไมล์ปลายทาง">
           <div className="flex flex-col">
             {" "}
@@ -191,7 +194,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
       accessorKey: "trip_departure_place",
       header: () => <div className="text-center">สถานที่ต้นทาง</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: any) => (
         <div className="text-left" data-name="สถานที่ต้นทาง">
           {getValue() as string}
         </div>
@@ -201,7 +204,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
       accessorKey: "trip_destination_place",
       header: () => <div className="text-center">สถานที่ปลายทาง</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: any) => (
         <div className="text-left" data-name="สถานที่ปลายทาง">
           {getValue() as string}
         </div>
@@ -211,7 +214,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
       accessorKey: "trip_detail",
       header: () => <div className="text-center">รายละเอียด</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: any) => (
         <div className="text-left" data-name="รายละเอียด">
           {getValue() as string}
         </div>
@@ -302,24 +305,19 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
     <>
       <div className="w-full px-1">
         {requestData && requestData.length == 0 ? (
-           <ZeroRecord
-                   imgSrc="/assets/img/graphic/record_travel_img.svg"
-                   title="เพิ่มข้อมูลการเดินทาง"
-                   desc={
-                     <>
-                       ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์
-                       สถานที่จากต้นทางและถึงปลายทาง
-                     </>
-                   }
-                   button="เพิ่มข้อมูล"
-                   icon="add"
-                   link="process-one"
-                   displayBtn={true}
-                   useModal={() => {
-                     console.log('test');
-                     recordTravelAddModalRef.current?.openModal()}
-                   }
-                 />
+          <ZeroRecord
+            imgSrc="/assets/img/graphic/record_travel_img.svg"
+            title="เพิ่มข้อมูลการเดินทาง"
+            desc={<>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่จากต้นทางและถึงปลายทาง</>}
+            button="เพิ่มข้อมูล"
+            icon="add"
+            link="process-one"
+            displayBtn={true}
+            useModal={() => {
+              console.log("test");
+              recordTravelAddModalRef.current?.openModal();
+            }}
+          />
         ) : (
           <>
             <div className="py-2">
