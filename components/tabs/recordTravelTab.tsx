@@ -9,10 +9,10 @@ import { fetchDriverTravelDetails } from "@/services/vehicleInUseDriver";
 import { fetchUserTravelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { ColumnDef } from "@tanstack/react-table";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import TableRecordTravelComponent from "../tableRecordTravel";
+import ZeroRecord from "../zeroRecord";
 
 function RequestListContent({ role }: { role: string }) {
   const searchParams = useSearchParams();
@@ -97,7 +97,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
           } else {
             response = await fetchUserTravelDetails(requestId || "", params);
           }
-          const sortedData = response.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
+          const sortedData = response?.data.sort((a: RecordTravelTabProps, b: RecordTravelTabProps) => {
             const dateA = new Date(a.trip_start_datetime);
             const dateB = new Date(b.trip_start_datetime);
             return dateA.getTime() - dateB.getTime(); // Sort in descending order
@@ -113,7 +113,9 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
   );
 
   useEffect(() => {
-    fetchUserTravelDetailsFunc();
+    if(requestId){
+      fetchUserTravelDetailsFunc();
+    }
   }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq]);
 
   const isAddAndEdit = ["เดินทาง", "เสร็จสิ้น", "รอตรวจสอบ", "ตีกลับยานพาหนะ"].includes(
@@ -300,26 +302,24 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
     <>
       <div className="w-full px-1">
         {requestData && requestData.length == 0 ? (
-          <div className="grid grid-cols-1 gap-4 text-center">
-            <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image src="/assets/img/graphic/record_travel_img.svg" width={900} height={900} alt="" />
-            </div>
-            <div className="col-span-12">
-              <p className="font-bold text-2xl">เพิ่มข้อมูลการเดินทาง</p>
-              <p>ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์ สถานที่ี่จากต้นทางและถึงปลายทาง</p>
-            </div>
-            <div className="col-span-12">
-              <button
-                className="btn btn-primary w-full text-xl"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordTravelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined !text-3xl">add</i> เพิ่มข้อมูล
-              </button>
-            </div>
-          </div>
+           <ZeroRecord
+                   imgSrc="/assets/img/graphic/record_travel_img.svg"
+                   title="เพิ่มข้อมูลการเดินทาง"
+                   desc={
+                     <>
+                       ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์
+                       สถานที่จากต้นทางและถึงปลายทาง
+                     </>
+                   }
+                   button="เพิ่มข้อมูล"
+                   icon="add"
+                   link="process-one"
+                   displayBtn={true}
+                   useModal={() => {
+                     console.log('test');
+                     recordTravelAddModalRef.current?.openModal()}
+                   }
+                 />
         ) : (
           <>
             <div className="py-2">

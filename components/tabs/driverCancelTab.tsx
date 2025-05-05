@@ -14,7 +14,7 @@ interface DriverCancelTabProps {
 
 const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
   const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
+    limit: 100,
     page: 1,
     total: 0,
     totalPages: 0,

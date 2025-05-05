@@ -376,14 +376,14 @@ const AdminRecordFuelTab = ({
           ref={recordFuelAddModalRef}
           requestId={requestId}
           isPayment={true}
-          role={role}
+          role={"admin"}
         />
         <RecordFuelAddModal
           ref={recordFuelEditModalRef}
           requestId={requestId}
           isPayment={!!requestData?.fleet_card_no}
           dataItem={editData}
-          role={role}
+          role={"admin"}
           status
         />
         <CancelRequestModal

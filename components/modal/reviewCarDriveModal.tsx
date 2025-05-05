@@ -66,8 +66,10 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
 
     useEffect(() => {
       fetchSatisfactionSurveyQuestionsFunc();
+      if(id){
       fetchRequestDetailfunc();
-    }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc]);
+      }
+    }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc, id]);
 
     useEffect(() => {
       if (displayOn === "admin" || displayOn === "view") {

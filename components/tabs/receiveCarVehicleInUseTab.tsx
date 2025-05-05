@@ -1,7 +1,6 @@
 "use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import ReturnEditCarModal from "@/components/admin/modals/returnEditCarModal";
-import CarDetailCard2 from "@/components/card/carDetailCard2";
 import ImagesCarCard from "@/components/card/ImagesCarCard";
 import UserInfoCard from "@/components/card/userInfoCard";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";

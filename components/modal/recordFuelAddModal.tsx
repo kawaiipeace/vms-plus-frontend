@@ -1,6 +1,6 @@
 "use client";
 import { UploadFileType } from "@/app/types/upload-type";
-import DatePicker, { DatePickerRef } from "@/components/datePicker";
+import DatePicker from "@/components/datePicker";
 import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
 import RadioButton from "@/components/radioButton";
@@ -33,6 +33,7 @@ import {
   driverUpdateAddFuelDetail,
 } from "@/services/vehicleInUseDriver";
 import { getOilBrandImage } from "@/utils/getOilBrandImage";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface Props {
   status?: boolean;
@@ -53,6 +54,17 @@ interface ValueForm {
   tax_invoice_no: string;
 }
 
+const initialFormState: ValueForm = {
+  mile: '',
+  price_per_liter: '',
+  ref_fuel_type_id: { value: '', label: '' },
+  ref_oil_station_brand_id: { value: '', label: '' },
+  sum_liter: '',
+  sum_price: '',
+  tax_invoice_date: '',
+  tax_invoice_no: '',
+};
+
 const RecordTravelAddModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
@@ -64,8 +76,7 @@ const RecordTravelAddModal = forwardRef<
   const progressType = searchParams.get("progressType");
 
   const modalRef = useRef<HTMLDialogElement>(null);
-  const startDatePickerRef = useRef<DatePickerRef>(null);
-  const [valueForm, setValueForm] = useState<Partial<ValueForm>>();
+  const [valueForm, setValueForm] = useState<ValueForm>(initialFormState);
 
   const [fuelData, setFuelData] = useState<
     {
@@ -91,6 +102,7 @@ const RecordTravelAddModal = forwardRef<
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+  
   const [selectedTravelType, setSelectedTravelType] = useState("");
   const [images, setImages] = useState<UploadFileType[]>([]);
 
@@ -103,44 +115,48 @@ const RecordTravelAddModal = forwardRef<
         (item) =>
           item.ref_oil_station_brand_id === dataItem.ref_oil_station_brand_id
       );
-      startDatePickerRef.current?.setValue(dataItem?.tax_invoice_date);
-      setImages([{ file_url: dataItem.receipt_img }]);
-      setSelectedTravelType(dataItem.ref_payment_type_code.toString());
+      
+      
+      setImages(dataItem.receipt_img ? [{ file_url: dataItem.receipt_img }] : []);
+      setSelectedTravelType(dataItem.ref_payment_type_code?.toString() || "");
+      
       setValueForm({
-        mile: dataItem.mile.toString(),
-        price_per_liter: dataItem.price_per_liter.toString(),
+        mile: dataItem.mile?.toString() || '',
+        price_per_liter: dataItem.price_per_liter?.toString() || '',
         ref_fuel_type_id: {
-          value: dataItem.ref_fuel_type_id.toString() || "",
-          label: ref_fuel_type_id?.ref_fuel_type_name_th,
+          value: dataItem.ref_fuel_type_id?.toString() || '',
+          label: ref_fuel_type_id?.ref_fuel_type_name_th || '',
         },
         ref_oil_station_brand_id: {
-          value: dataItem.ref_oil_station_brand_id.toString(),
+          value: dataItem.ref_oil_station_brand_id?.toString() || '',
           label: (
             <div className="flex items-center gap-1">
               {ref_oil_station_brand_id?.ref_oil_station_brand_img && (
                 <Image
                   src={ref_oil_station_brand_id?.ref_oil_station_brand_img}
                   alt={"oil-image-" + dataItem.ref_oil_station_brand_id}
+                  width={24}
+                  height={24}
                 />
               )}
               <span className="ml-2">
-                {ref_oil_station_brand_id?.ref_oil_station_brand_name_th}
+                {ref_oil_station_brand_id?.ref_oil_station_brand_name_th || ''}
               </span>
             </div>
           ),
         },
-        sum_liter: dataItem.sum_liter.toString(),
-        sum_price: dataItem.sum_price.toString(),
-        tax_invoice_date: dataItem?.tax_invoice_date,
-        tax_invoice_no: dataItem?.tax_invoice_no,
+        sum_liter: dataItem.sum_liter?.toString() || '',
+        sum_price: dataItem.sum_price?.toString() || '',
+        tax_invoice_date: convertToBuddhistDateTime(dataItem?.tax_invoice_date).date || '',
+        tax_invoice_no: dataItem?.tax_invoice_no || '',
       });
     } else {
-      setValueForm(undefined);
+      setValueForm(initialFormState);
       setSelectedTravelType("");
       setImages([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataItem, status]);
+  }, [dataItem, status, fuelData, oilStationBrandData]);
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -182,7 +198,12 @@ const RecordTravelAddModal = forwardRef<
           label: (
             <div className="flex items-center gap-1">
               {item.ref_oil_station_brand_name_th && (
-                <Image src={imageSrc} alt={"oil-image-" + item.ref_oil_station_brand_id} width={24} height={24} />
+                <Image 
+                  src={imageSrc} 
+                  alt={"oil-image-" + item.ref_oil_station_brand_id} 
+                  width={24} 
+                  height={24} 
+                />
               )}
               <span className="ml-2">{item.ref_oil_station_brand_name_th}</span>
             </div>
@@ -204,8 +225,6 @@ const RecordTravelAddModal = forwardRef<
   );
 
   const onSubmit = () => {
-    console.log("submit");
-    console.log("valueForm", valueForm);
     const {
       mile,
       price_per_liter,
@@ -215,14 +234,14 @@ const RecordTravelAddModal = forwardRef<
       sum_price,
       tax_invoice_date,
       tax_invoice_no,
-    } = valueForm || {};
+    } = valueForm;
+    console.log('payload',tax_invoice_date);
     if (
       !mile ||
       !price_per_liter ||
-      !images ||
       images.length < 1 ||
-      !ref_fuel_type_id ||
-      !ref_oil_station_brand_id ||
+      !ref_fuel_type_id.value ||
+      !ref_oil_station_brand_id.value ||
       (!selectedTravelType && isPayment) ||
       !sum_liter ||
       !sum_price ||
@@ -248,9 +267,11 @@ const RecordTravelAddModal = forwardRef<
           trn_request_uid: requestId,
         };
 
+    
+
         if (status) {
           const res =
-            role === "user"
+            role === "user" || role === "admin"
               ? await UserUpdateAddFuelDetail(
                   dataItem?.trn_add_fuel_uid || "",
                   payload
@@ -278,6 +299,13 @@ const RecordTravelAddModal = forwardRef<
                     progressType +
                     "&update-fuel-req=success"
                 )
+                : role === "admin"
+                ? router.push(
+                    pathName +
+                      "?progressType=" +
+                      progressType +
+                      "&update-fuel-req=success"
+                  )
               : "";
           }
           return;
@@ -305,7 +333,13 @@ const RecordTravelAddModal = forwardRef<
                   "?progressType=" +
                   progressType +
                   "&create-fuel-req=success"
-              )
+              )  : role === "admin"
+              ? router.push(
+                  pathName +
+                    "?progressType=" +
+                    progressType +
+                    "&create-fuel-req=success"
+                )
             : router.push(
                 "/vehicle-booking/request-list?cancel-req=success&request-id=" +
                   data.result?.request_no
@@ -335,7 +369,11 @@ const RecordTravelAddModal = forwardRef<
 
             <button
               className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); modalRef.current?.close()}}
+              onClick={(e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                modalRef.current?.close();
+              }}
             >
               <i className="material-symbols-outlined">close</i>
             </button>
@@ -348,7 +386,7 @@ const RecordTravelAddModal = forwardRef<
                   <CustomSelect
                     w="w-full"
                     options={oilOptions}
-                    value={valueForm?.ref_oil_station_brand_id}
+                    value={valueForm.ref_oil_station_brand_id}
                     onChange={(selected) =>
                       setValueForm((val) => ({
                         ...val,
@@ -364,7 +402,7 @@ const RecordTravelAddModal = forwardRef<
                   <CustomSelect
                     w="w-full"
                     options={fuelOptions}
-                    value={valueForm?.ref_fuel_type_id}
+                    value={valueForm.ref_fuel_type_id}
                     onChange={(selected) =>
                       setValueForm((val) => ({
                         ...val,
@@ -391,7 +429,7 @@ const RecordTravelAddModal = forwardRef<
                       <input
                         type="number"
                         className="form-control"
-                        value={valueForm?.mile}
+                        value={valueForm.mile}
                         onChange={(e) =>
                           setValueForm((val) => ({
                             ...val,
@@ -415,7 +453,7 @@ const RecordTravelAddModal = forwardRef<
                       </div>
                       <DatePicker
                         placeholder="ระบุวันที่"
-                        ref={startDatePickerRef}
+                        defaultValue={convertToBuddhistDateTime(valueForm.tax_invoice_date).date}
                         onChange={(date) =>
                           setValueForm((val) => ({
                             ...val,
@@ -436,7 +474,7 @@ const RecordTravelAddModal = forwardRef<
                       type="text"
                       className="form-control"
                       placeholder="ระบุเลขที่ใบเสร็จ"
-                      value={valueForm?.tax_invoice_no}
+                      value={valueForm.tax_invoice_no}
                       onChange={(e) =>
                         setValueForm((val) => ({
                           ...val,
@@ -456,7 +494,7 @@ const RecordTravelAddModal = forwardRef<
                         type="number"
                         className="form-control"
                         placeholder="ระบุราคาต่อลิตร"
-                        value={valueForm?.price_per_liter}
+                        value={valueForm.price_per_liter}
                         onChange={(e) =>
                           setValueForm((val) => ({
                             ...val,
@@ -475,7 +513,7 @@ const RecordTravelAddModal = forwardRef<
                         type="number"
                         className="form-control"
                         placeholder="ระบุจำนวนลิตร"
-                        value={valueForm?.sum_liter}
+                        value={valueForm.sum_liter}
                         onChange={(e) =>
                           setValueForm((val) => ({
                             ...val,
@@ -495,7 +533,7 @@ const RecordTravelAddModal = forwardRef<
                       type="number"
                       className="form-control"
                       placeholder="ระบุยอดรวมชำระ"
-                      value={valueForm?.sum_price}
+                      value={valueForm.sum_price}
                       onChange={(e) =>
                         setValueForm((val) => ({
                           ...val,
@@ -505,7 +543,7 @@ const RecordTravelAddModal = forwardRef<
                     />
                   </div>
                   <p className="text-sm text-left mt-3">
-                    รวมภาษี 85.05 บาท (7%)
+                  รวมภาษี {(Number(valueForm.sum_price)+(Number(valueForm.sum_price) * (7 / 107))).toFixed(2)} บาท (7%)
                   </p>
                 </div>
               </div>
@@ -544,7 +582,7 @@ const RecordTravelAddModal = forwardRef<
                       image={image.file_url}
                       onDelete={() => handleDeleteImage(index)}
                     />
-                  ))}
+))}
                 </div>
               </div>
             </div>

@@ -9,8 +9,9 @@ interface Profile {
   first_name: string;
   last_name: string;
   dept_sap_full: string;
-
+  roles: string[];
 }
+
 
 interface ProfileContextType {
   profile: Profile | null;
@@ -28,6 +29,9 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const router = useRouter();
+
+  // Temporary addition to your SideBar component (remove before production)
+
 
   useEffect(() => {
     const initializeProfile = async () => {

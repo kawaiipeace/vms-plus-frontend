@@ -13,7 +13,7 @@ interface DriverSoonTabProps {
 
 const DriverSoonTab = ({ data }: DriverSoonTabProps) => {
   const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
+    limit: 100,
     page: 1,
     total: 0,
     totalPages: 0,
