@@ -199,7 +199,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
             </div>
           </button>
         ))}
-      </div>
+    </div>
       {loading ? (
         <div className="flex justify-center items-center h-[calc(100vh-40vh)]">
           <svg

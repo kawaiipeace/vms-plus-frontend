@@ -13,6 +13,7 @@ import KeyPickupDetailCard from "../cards/keyPickupDetailCard";
 import TravelCardModal from "@/components/modal/travelCardModal";
 import EditKeyPickupDetailModal from "@/components/modal/admin/editKeyPickupDetailModal";
 import ToastCustom from "@/components/toastCustom";
+import VehicleDetailCard from "@/components/card/vehicleDetailCard";
 
 interface RequestDetailFormProps {
   editable?: boolean;
@@ -43,7 +44,6 @@ export default function KeyHandoverDetail({
     closeModal: () => void;
   } | null>(null);
 
-  
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [pickupDatePassed, setPickupDatePassed] = useState(false);
   const [editKeySuccess, setEditKeySuccess] = useState(false);
@@ -94,25 +94,24 @@ export default function KeyHandoverDetail({
   const handleKeyEdit = () => {
     editKeyPickupDetailModalRef.current?.closeModal();
     setEditKeySuccess(true);
-  }
+  };
 
   return (
     <>
+      {editKeySuccess && (
+        <ToastCustom
+          title="แก้ไขรายละเอียดการรับกุญแจสำเร็จ"
+          desc={
+            <>
+              แก้ไขรายละเอียดการรับกุญแจคำขอใช้ยานพหานะ
+              <br />
+              เลขที่ {requestData?.request_no} เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
 
-        {editKeySuccess && (
-            <ToastCustom
-              title="แก้ไขรายละเอียดการรับกุญแจสำเร็จ"
-              desc={
-                <>
-                  แก้ไขรายละเอียดการรับกุญแจคำขอใช้ยานพหานะ 
-                  <br />
-                  เลขที่ {requestData?.request_no} เรียบร้อยแล้ว
-                </>
-              }
-              status="success"
-            />
-          )}
-          
       {pickupDatePassed && (
         <AlertCustom
           icon="cancel"
@@ -161,24 +160,26 @@ export default function KeyHandoverDetail({
 
             <KeyUserPickupCard requestData={requestData} />
           </div>
-          {requestData?.ref_request_status_code !== "50"  && (
-          <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title">
-                รายละเอียดการรับกุญแจ{" "}
+          {requestData?.ref_request_status_code !== "50" && (
+            <div className="form-section">
+              <div className="form-section-header">
+                <div className="form-section-header-title">
+                  รายละเอียดการรับกุญแจ{" "}
+                </div>
+                {editable && (
+                  <button
+                    className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                    onClick={() =>
+                      editKeyPickupDetailModalRef.current?.openModal()
+                    }
+                  >
+                    แก้ไข
+                  </button>
+                )}
               </div>
-              {editable && (
-                <button
-                  className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => editKeyPickupDetailModalRef.current?.openModal()}
-                >
-                  แก้ไข
-                </button>
-              )}
-            </div>
 
-            <KeyPickupDetailCard requestData={requestData} />
-          </div>
+              <KeyPickupDetailCard requestData={requestData} />
+            </div>
           )}
         </div>
 
@@ -188,10 +189,7 @@ export default function KeyHandoverDetail({
               <div className="form-section-header-title">ยานพาหนะ</div>
             </div>
 
-            <CarDetailCard2
-              reqId={requestData?.trn_request_uid}
-              vehicle={requestData?.vehicle}
-            />
+            <VehicleDetailCard requestData={requestData} />
           </div>
         </div>
       </div>

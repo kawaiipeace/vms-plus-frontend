@@ -235,7 +235,7 @@ export default function RequestListTable({
         const isPeaEm = row.original.is_pea_employee_driver;
 
         return (
-          <div className="text-left">
+          <div className="text-left flex">
             {statusValue == "รออนุมัติ" ||
               (statusValue == "เสร็จสิ้น" && (
                 <button
@@ -572,7 +572,7 @@ export default function RequestListTable({
               </button>
             )}
 
-            {statusValue == "ยกเลิกคำขอ" && (
+            {(statusValue == "ยกเลิกคำขอ" || statusValue == "รอตรวจสอบ" || statusValue == "รออนุมัติ") && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
@@ -586,6 +586,8 @@ export default function RequestListTable({
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
             )}
+
+            
           </div>
         );
       },

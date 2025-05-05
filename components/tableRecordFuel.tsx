@@ -100,7 +100,7 @@ export default function TableRecordFuelComponent<T>({ data, columns, listName, e
                             </button>
                           </div>
                         )}
-                        {listName == "fuel" && (
+
                           <div className="dt-action">
                             <button className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left" data-tip="แก้ไข" onClick={editRecordFuel}>
                               <i className="material-symbols-outlined icon-settings-fill-300-24">stylus</i>
@@ -112,7 +112,7 @@ export default function TableRecordFuelComponent<T>({ data, columns, listName, e
                               <i className="material-symbols-outlined icon-settings-fill-300-24">imagesmode</i>
                             </button>
                           </div>
-                        )}
+
                       </>
                     ) : (
                       (cell.renderValue() as React.ReactNode)
