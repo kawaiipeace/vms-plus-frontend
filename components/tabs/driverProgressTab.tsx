@@ -29,7 +29,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
 
   const getTravelData = () => {
     const travelData = data.filter((e) =>
-      ["51", "60"].includes(e.ref_request_status_code)
+      ["51", "60"].includes(e.ref_request_status_code || "")
     );
 
     const sort = travelData.sort(
@@ -41,7 +41,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
 
   const getReturnedData = () => {
     const returnedData = data.filter((e) =>
-      ["70", "71"].includes(e.ref_request_status_code)
+      ["70", "71"].includes(e.ref_request_status_code || "")
     );
 
     const sort = returnedData.sort(
@@ -73,7 +73,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                     } = item;
 
                     const license_plate_full = `${license_plate} ${province}`;
-                    const date = getDateRange(s_date, e_date);
+                    const date = getDateRange(s_date || "", e_date || "");
 
                     const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
@@ -84,7 +84,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                             <MobileDriverCard
                               cardType="recordTravel"
                               carRegis={license_plate_full}
-                              location={work_place}
+                              location={work_place || ""}
                               date={date}
                               title="บันทึกการเดินทาง"
                               noteText="กรุณาบันทึกเลขไมล์และการเติมเชื้อเพลิง"
@@ -96,7 +96,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                             <MobileDriverCard
                               cardType="waitCar"
                               carRegis={license_plate_full}
-                              location={work_place}
+                              location={work_place || ""}
                               date={date}
                               title="รอรับยานพาหนะ"
                               locationNote={item.parking_place}
@@ -140,7 +140,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                     } = item;
 
                     const license_plate_full = `${license_plate} ${province}`;
-                    const date = getDateRange(s_date, e_date);
+                    const date = getDateRange(s_date || "", e_date || "");
 
                     const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
@@ -151,7 +151,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                             <MobileDriverCard
                               cardType="waitVerify"
                               carRegis={license_plate_full}
-                              location={work_place}
+                              location={work_place || ""}
                               date={date}
                               title="รอตรวจสอบ"
                               noteText="รอผู้ดูแลยานพาหนะตรวจสอบและปิดงาน"
@@ -165,8 +165,8 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                             <MobileDriverCard
                               cardType="returnFail"
                               carRegis={license_plate_full}
-                              location={work_place}
-                              date={work_place}
+                              location={work_place || ""}
+                              date={date}
                               title="คืนยานพาหนะไม่สำเร็จ"
                               noteText={item.returned_vehicle_remark}
                             />

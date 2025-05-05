@@ -47,6 +47,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
   const [pickupData, setPickupData] = useState<{
     place: string;
     datetime: string;
+    endtime: string
   } | null>(null);
 
   const handlePickupConfirmed = (data: { place: string; datetime: string; endtime: string; }) => {

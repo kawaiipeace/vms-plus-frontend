@@ -7,7 +7,7 @@ import { RecordFuelTabProps } from "@/data/requestData";
 import { fetchDriverAddFuelDetails } from "@/services/vehicleInUseDriver";
 import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, CellContext } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -118,7 +118,7 @@ const AdminRecordFuelTab = ({
         console.error("Error fetching vehicle details:", error);
       }
     },
-    [params, requestId] // Add requestId to the dependency array,
+    [params, requestId, role]
   );
 
   useEffect(() => {
@@ -156,7 +156,7 @@ const AdminRecordFuelTab = ({
         </div>
       ),
       enableSorting: false,
-      cell: ({ getValue }) => {
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => {
         const tripdate = getValue() as string;
         const convertedDate = convertToBuddhistDateTime(tripdate);
         return (
@@ -170,7 +170,7 @@ const AdminRecordFuelTab = ({
       accessorKey: "tax_invoice_no",
       header: () => <div className="text-left">เลขที่ใบเสร็จ</div>,
       enableSorting: false,
-      cell: ({ row }) => {
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => {
         const tax_invoice_no = row.original.tax_invoice_no;
         return (
           <div className="text-left" data-name="เลขที่ใบเสร็จ">
@@ -179,15 +179,13 @@ const AdminRecordFuelTab = ({
         );
       },
     },
-
     {
       accessorKey: "ref_oil_station_brand_name",
       header: () => <div className="text-center">สถานีบริการน้ำมัน</div>,
       enableSorting: false,
-      cell: ({ row }) => (
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="สถานีบริการน้ำมัน">
           <div className="flex flex-col">
-            {" "}
             <div className="text-left">
               {row.original.ref_oil_station_brand_name}
             </div>
@@ -199,21 +197,19 @@ const AdminRecordFuelTab = ({
       accessorKey: "ref_fuel_type_name",
       header: () => <div className="text-center">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
-      cell: ({ row }) => (
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ประเภทเชื้อเพลิง">
           <div className="flex flex-col">
-            {" "}
             <div className="text-left">{row.original.ref_fuel_type_name}</div>
           </div>
         </div>
       ),
     },
-
     {
       accessorKey: "mile",
       header: () => <div className="text-center">เลขไมล์</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="เลขไมล์">
           {getValue() as string}
         </div>
@@ -223,7 +219,7 @@ const AdminRecordFuelTab = ({
       accessorKey: "sum_liter",
       header: () => <div className="text-center">จำนวนลิตร</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="จำนวนลิตร">
           {getValue() as string}
         </div>
@@ -233,7 +229,7 @@ const AdminRecordFuelTab = ({
       accessorKey: "price_per_liter",
       header: () => <div className="text-center">ราคาต่อลิตร</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ราคาต่อลิตร">
           {getValue() as string}
         </div>
@@ -243,7 +239,7 @@ const AdminRecordFuelTab = ({
       accessorKey: "vat",
       header: () => <div className="text-center">ภาษี</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ภาษี">
           {getValue() as string}
         </div>
@@ -253,7 +249,7 @@ const AdminRecordFuelTab = ({
       accessorKey: "sum_price",
       header: () => <div className="text-center">ยอดรวมชำระ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ยอดรวมชำระ">
           {getValue() as string}
         </div>
@@ -263,7 +259,7 @@ const AdminRecordFuelTab = ({
       accessorKey: "ref_payment_type_name",
       header: () => <div className="text-center">วิธีชำระเงิน</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="วิธีชำระเงิน">
           {getValue() as string}
         </div>
@@ -274,11 +270,7 @@ const AdminRecordFuelTab = ({
       header: "",
       enableSorting: false,
     },
-  ].filter((column) => {
-    if (column.accessorKey === "action") {
-    }
-    return true;
-  });
+  ];
 
   return (
     <>

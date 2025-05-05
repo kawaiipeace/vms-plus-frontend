@@ -177,10 +177,10 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
-          row.original.start_datetime
+          row.original.start_datetime || ""
         );
         const endDateTime = convertToBuddhistDateTime(
-          row.original.end_datetime
+          row.original.end_datetime || ""
         );
         return (
           <div className="text-left" data-name="วันที่เดินทาง">

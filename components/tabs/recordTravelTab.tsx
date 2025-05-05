@@ -131,7 +131,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
         </div>
       ),
       enableSorting: true,
-      cell: ({ row }) => {
+     cell: ({ row }: { row: { original: { trip_start_datetime: string } } }) => {
         const tripdate = row.original.trip_start_datetime;
         const convertedDate = convertToBuddhistDateTime(tripdate);
         return (

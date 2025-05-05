@@ -7,7 +7,7 @@ import { RecordFuelTabProps } from "@/data/requestData";
 import { fetchDriverAddFuelDetails } from "@/services/vehicleInUseDriver";
 import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, CellContext } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
@@ -108,7 +108,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
         console.error("Error fetching vehicle details:", error);
       }
     },
-    [params, requestId] // Add requestId to the dependency array,
+    [params, requestId, role]
   );
 
   useEffect(() => {
@@ -118,7 +118,6 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
-        
         return {
           ...item,
           ref_oil_station_brand_name: item.ref_oil_station_brand.ref_oil_station_brand_name_th,
@@ -143,7 +142,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
         </div>
       ),
       enableSorting: false,
-      cell: ({ getValue }) => {
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => {
         const tripdate = getValue() as string;
         const convertedDate = convertToBuddhistDateTime(tripdate);
         return (
@@ -157,7 +156,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "tax_invoice_no",
       header: () => <div className="text-left">เลขที่ใบเสร็จ</div>,
       enableSorting: false,
-      cell: ({ row }) => {
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => {
         const tax_invoice_no = row.original.tax_invoice_no;
         return (
           <div className="text-left" data-name="เลขที่ใบเสร็จ">
@@ -166,15 +165,13 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
         );
       },
     },
-
     {
       accessorKey: "ref_oil_station_brand_name",
       header: () => <div className="text-center">สถานีบริการน้ำมัน</div>,
       enableSorting: false,
-      cell: ({ row }) => (
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="สถานีบริการน้ำมัน">
           <div className="flex flex-col">
-            {" "}
             <div className="text-left">{row.original.ref_oil_station_brand_name}</div>
           </div>
         </div>
@@ -184,21 +181,19 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "ref_fuel_type_name",
       header: () => <div className="text-center">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
-      cell: ({ row }) => (
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ประเภทเชื้อเพลิง">
           <div className="flex flex-col">
-            {" "}
             <div className="text-left">{row.original.ref_fuel_type_name}</div>
           </div>
         </div>
       ),
     },
-
     {
       accessorKey: "mile",
       header: () => <div className="text-center">เลขไมล์</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="เลขไมล์">
           {getValue() as string}
         </div>
@@ -208,7 +203,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "sum_liter",
       header: () => <div className="text-center">จำนวนลิตร</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="จำนวนลิตร">
           {getValue() as string}
         </div>
@@ -218,7 +213,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "price_per_liter",
       header: () => <div className="text-center">ราคาต่อลิตร</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ราคาต่อลิตร">
           {getValue() as string}
         </div>
@@ -228,7 +223,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "vat",
       header: () => <div className="text-center">ภาษี</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ภาษี">
           {getValue() as string}
         </div>
@@ -238,7 +233,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "sum_price",
       header: () => <div className="text-center">ยอดรวมชำระ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ยอดรวมชำระ">
           {getValue() as string}
         </div>
@@ -248,7 +243,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "ref_payment_type_name",
       header: () => <div className="text-center">วิธีชำระเงิน</div>,
       enableSorting: false,
-      cell: ({ getValue }) => (
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="วิธีชำระเงิน">
           {getValue() as string}
         </div>
@@ -258,74 +253,6 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "action",
       header: "",
       enableSorting: false,
-      // cell: ({ row }) => {
-      //   return (
-      //     <div className="text-left dataTable-action">
-      //       <button
-      //         className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-      //         data-tip="แก้ไขข้อมูลการเดินทาง"
-      //         onClick={(e) => {
-      //           e.preventDefault();
-      //           e.stopPropagation();
-      //           if (editRecordTravel) {
-      //             return editRecordTravel(row.original);
-      //           }
-      //           recordTravelEditModalRef.current?.openModal();
-      //         }}
-      //       >
-      //         <i className="material-symbols-outlined">stylus</i>
-      //       </button>
-
-      //       <button
-      //         className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-      //         data-tip="ลบข้อมูลการเดินทาง"
-      //         onClick={(e) => {
-      //           e.preventDefault();
-      //           e.stopPropagation();
-      //           if (deleteRecordTravel) {
-      //             return deleteRecordTravel(row.original);
-      //           }
-      //           cancelRequestModalRef.current?.openModal();
-      //         }}
-      //       >
-      //         <i className="material-symbols-outlined">delete</i>
-      //       </button>
-
-      //       <RecordTravelAddModal
-      //         ref={recordTravelEditModalRef}
-      //         role="admin"
-      //         requestId={row.original.trn_request_uid}
-      //         dataItem={{
-      //           trn_trip_detail_uid: row.original.trn_trip_detail_uid,
-      //           trn_request_uid: row.original.trn_request_uid,
-      //           trip_start_datetime: row.original.trip_start_datetime,
-      //           trip_end_datetime: row.original.trip_end_datetime,
-      //           trip_departure_place: row.original.trip_departure_place,
-      //           trip_destination_place: row.original.trip_destination_place,
-      //           trip_start_miles: row.original.trip_start_miles,
-      //           trip_end_miles: row.original.trip_end_miles,
-      //           trip_detail: row.original.trip_detail,
-      //         }}
-      //         status={true}
-      //       />
-      //       <CancelRequestModal
-      //         id={row.original.trn_request_uid}
-      //         tripId={row.original.trn_trip_detail_uid}
-      //         title="ยืนยันลบข้อมูลการเดินทาง"
-      //         desc={
-      //           " ข้อมูลการเดินทางวันที่ " +
-      //           convertToBuddhistDateTime(row.original.trip_start_datetime).date +
-      //           " - " +
-      //           convertToBuddhistDateTime(row.original.trip_start_datetime).time +
-      //           " จะถูกลบออกจากระบบ "
-      //         }
-      //         confirmText="ลบข้อมูล"
-      //         cancleFor="adminRecordTravel"
-      //         ref={cancelRequestModalRef}
-      //       />
-      //     </div>
-      //   );
-      // },
     },
   ].filter((column) => {
     if (column.accessorKey === "action") {

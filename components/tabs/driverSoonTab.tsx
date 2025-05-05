@@ -83,9 +83,9 @@ const DriverSoonTab = ({ data }: DriverSoonTabProps) => {
 
                       const license_plate_full = `${license_plate} ${province}`;
 
-                      const date = getDateRange(s_date, e_date);
-                      const timeRange = getDateRange(s_date, e_date, "HH:mm");
-                      const receivedKeyDate = getDateRange(receive_key_date);
+                      const date = getDateRange(s_date || "", e_date);
+                      const timeRange = getDateRange(s_date || "", e_date, "HH:mm");
+                      const receivedKeyDate = getDateRange(receive_key_date || "");
 
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}?progressType=รอรับกุญแจ`;
 
@@ -94,7 +94,7 @@ const DriverSoonTab = ({ data }: DriverSoonTabProps) => {
                           <MobileDriverCard
                             title={"รอรับกุญแจ"}
                             carRegis={license_plate_full}
-                            location={item.work_place}
+                            location={item.work_place || ""}
                             locationNote={item.received_key_place}
                             date={date}
                             timeRange={timeRange}
