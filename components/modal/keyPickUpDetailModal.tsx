@@ -176,7 +176,7 @@ const KeyPickupDetailModal = forwardRef<
                 <div className="form-card-body">
                   <div className="form-group form-plaintext form-users">
                     <Image
-                      src={imgSrc}
+                      src={imgSrc || "/assets/img/avatar.svg"}
                       className="avatar avatar-md"
                       width={100}
                       height={100}

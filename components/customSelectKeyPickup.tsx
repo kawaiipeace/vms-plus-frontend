@@ -82,7 +82,7 @@ export default function CustomSelectKeyPickup({ w, options, iconName, value, onC
 
       {/* Dropdown List */}
       {isOpen && (
-        <ul className="max-h-[16rem] overflow-y-auto absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
+        <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg">
           {searchOption.length > 0 ? (
             searchOption.map((option) => (
               <li

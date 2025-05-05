@@ -1,4 +1,4 @@
-import { VehicleUserTravelCardType } from "@/app/types/vehicle-user-type";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import { fetchRequestKeyDetail } from "@/services/masterService";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ export default function MobileTravelLogCard({
   parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
-  const [requestData, setRequestData] = useState<VehicleUserTravelCardType>();
+  const [requestData, setRequestData] = useState<RequestDetailType>();
 
   const reviewCarDriveModalRef = useRef<{
     openModal: () => void;
@@ -56,7 +56,6 @@ export default function MobileTravelLogCard({
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestKeyDetail(id || "");
-      console.log("data---", response.data);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -228,7 +227,7 @@ export default function MobileTravelLogCard({
       </div>
 
       <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
-      <ReturnCarAddModal ref={returnCarAddModalRef} id={id} />
+      <ReturnCarAddModal ref={returnCarAddModalRef} id={id} requestData={requestData} useBy="user" />
       <LicenseCardModal ref={licenseCardModalRef} requestData={requestData} />
     </div>
   );

@@ -2,9 +2,12 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
-import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
 import LicenseCardModal from "@/components/modal/admin/licenseCardModal";
 import ToastCustom from "@/components/toastCustom";
+import ReturnCarAddModal from "../modal/returnCarAddModal";
+import FileBackRequestModal from "../modal/fileBackModal";
+import ConfirmReturnVehicleModal from "../modal/confirmReturnVehicleModal";
+import ReceiveCarVehicleModal from "../modal/receiveCarVehicleModal";
 
 interface Props {
   data: RequestDetailType;
@@ -23,9 +26,17 @@ export default function PageKeyHandOverHeader({ data }: Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const confirmReturnVehicleModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [copied, setCopied] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
+  const fileBackRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const handleCopyRequestNo = async (text?: string) => {
     if (!text) return;
@@ -56,6 +67,7 @@ export default function PageKeyHandOverHeader({ data }: Props) {
           status={"success"}
         />
       )}
+
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
@@ -104,14 +116,14 @@ export default function PageKeyHandOverHeader({ data }: Props) {
                 {data?.ref_request_status_name}
               </span>
             ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
+              <span className="badge badge-pill-outline badge-gray">
                 {data?.ref_request_status_name}
               </span>
             ) : data?.ref_request_status_name === "ตีกลับ" ? (
               <span className="badge badge-pill-outline badge-warning">
                 {data?.ref_request_status_name}
               </span>
-            ) : (
+            )  : (
               <span className="badge badge-pill-outline badge-info">
                 {data?.ref_request_status_name}
               </span>
@@ -208,12 +220,53 @@ export default function PageKeyHandOverHeader({ data }: Props) {
             </button>
           </>
         )}
+
+        {(data?.ref_request_status_code === "70" ||
+          data?.ref_request_status_code === "70e") && (
+          <>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => fileBackRequestModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">reply</i>
+              ตีกลับยานพาหนะ
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => confirmReturnVehicleModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">check</i>
+              ผ่านการตรวจสอบ
+            </button>
+          </>
+        )}
       </div>
+
+      <FileBackRequestModal
+        id={data?.trn_request_uid}
+        ref={fileBackRequestModalRef}
+        title="ยืนยันตีกลับยานพาหนะ"
+        role="vehicleAdmin"
+        desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและคืนยานพาหนะใหม่อีกครั้ง"
+        placeholder="โปรดระบุเหตุผลที่ตีกลับ"
+        confirmText="ตีกลับยานพาหนะ"
+      />
+
+      <ConfirmReturnVehicleModal
+        ref={confirmReturnVehicleModalRef}
+        key={data?.receiver_key_type_detail?.ref_vehicle_key_type_name}
+        id={data?.trn_request_uid}
+      />
+
       <ReceiveCarVehicleModal
         requestData={data}
+        role={"admin"}
         ref={receiveCarVehicleModalRef}
-        role="admin"
       />
+      
       <LicenseCardModal
         ref={licenseCardModalRef}
         requestData={data}

@@ -198,6 +198,15 @@ export default function AdminKeyHandOverFlow() {
     fetchRequestsData();
   }, [params]);
 
+  const onUpdate = () => {
+    setParams(prevParams => ({
+      ...prevParams,
+      page: 1
+    }));
+  }
+    
+
+
   useEffect(() => {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]);
@@ -356,7 +365,7 @@ export default function AdminKeyHandOverFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <AdminKeyHandOverListTable defaultData={dataRequest} pagination={pagination}  />
+            <AdminKeyHandOverListTable defaultData={dataRequest} pagination={pagination} onUpdate={onUpdate} />
           </div>
 
           <PaginationControls

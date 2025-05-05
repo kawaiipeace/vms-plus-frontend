@@ -12,6 +12,7 @@ import { firstApproverSendbackRequest } from "@/services/bookingApprover";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminSendbackRequest } from "@/services/bookingAdmin";
 import { finalSendbackRequest } from "@/services/bookingFinal";
+import { adminSendBackVehicle } from "@/services/adminService";
 
 interface Props {
   id?: string;
@@ -60,6 +61,8 @@ const FileBackRequestModal = forwardRef<
             ? await firstApproverSendbackRequest(payload)
             : role === "admin"
             ? await adminSendbackRequest(payload)
+            : role === "vehicleAdmin"
+            ? await adminSendBackVehicle(payload)
             : role === "final"
             ? await finalSendbackRequest(payload)
             : await firstApproverSendbackRequest(payload);
@@ -67,25 +70,33 @@ const FileBackRequestModal = forwardRef<
         if (data) {
           modalRef.current?.close();
 
-          role === "firstApprover"
-            ? router.push(
-                "/administrator/booking-approver?sendback-req=success&request-id=" +
-                  data.result?.request_no
-              )
-            : role === "admin"
-            ? router.push(
-                "/administrator/request-list?sendback-req=success&request-id=" +
-                  data.result?.request_no
-              )
-            : role === "final"
-            ? router.push(
-                "/administrator/booking-final?sendback-req=success&request-id=" +
-                  data.result?.request_no
-              )
-            : router.push(
-                "/vehicle-booking/request-list?sendback-req=success&request-id=" +
-                  data.result?.request_no
-              );
+          if (role === "firstApprover") {
+            router.push(
+              "/administrator/booking-approver?sendback-req=success&request-id=" +
+                data.result?.request_no
+            );
+          } else if (role === "admin") {
+            router.push(
+              "/administrator/request-list?sendback-req=success&request-id=" +
+                data.result?.request_no
+            );
+          } else if (role === "vehicleAdmin") {
+            router.push(
+              "/administrator/request-list?sendbackvehicle-req=success&request-id=" +
+                data.result?.request_no
+            );
+          }else if (role === "final") {
+            router.push(
+              "/administrator/booking-final?sendback-req=success&request-id=" +
+                data.result?.request_no
+            );
+          } else {
+            router.push(
+              "/vehicle-booking/request-list?sendback-req=success&request-id=" +
+                data.result?.request_no
+            );
+          }
+          
         }
       } catch (error) {
         console.error("error:", error);

@@ -10,7 +10,7 @@ interface FuelDataProps {
 }
 
 export default function FuelInfoTab({ requestType }: FuelDataProps) {
-  const [data, setData] = useState<FuelData[]>(fuelData);
+  const [data] = useState<FuelData[]>(fuelData);
   const [statusEdit, setStatusEdit] = useState(false);
   const recordTravelAddModalRef = useRef<{
     openModal: () => void;
@@ -53,7 +53,6 @@ export default function FuelInfoTab({ requestType }: FuelDataProps) {
           <TableRecordFuelComponent
             data={fuelData}
             columns={fuelDataColumnsAdmin}
-            listName="request"
             editRecordFuel={() => {
               recordTravelAddModalRef.current?.openModal();
               handleStatusEdit(true);

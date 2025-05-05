@@ -10,8 +10,16 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import LicenseCardModal from "../modal/admin/licenseCardModal";
+import ReturnCarAddModal from "../modal/returnCarAddModal";
+import ReviewCarDriveModal from "../modal/reviewCarDriveModal";
+
+dayjs.extend(isBetween);
 
 interface PaginationType {
   limit: number;
@@ -23,13 +31,35 @@ interface PaginationType {
 interface Props {
   defaultData: RequestListType[];
   pagination: PaginationType;
+  role?: string;
 }
 
-export default function RequestListTable({ defaultData, pagination }: Props) {
+export default function RequestListTable({ defaultData, pagination, role }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [reqData, setReqData] = useState<RequestListType[]>(defaultData);
+  const pathName = usePathname();
+
+  const returnCarAddModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const licenseCardModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const reviewCarDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const viewCarDriveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
@@ -93,8 +123,8 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       header: () => <div className="text-center">วันที่เดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(row.original.start_datetime);
-        const endDateTime = convertToBuddhistDateTime(row.original.end_datetime);
+        const startDateTime = convertToBuddhistDateTime(row.original.start_datetime || "");
+        const endDateTime = convertToBuddhistDateTime(row.original.end_datetime || "");
         return (
           <div className="text-left">
             {startDateTime.date + " " + startDateTime.time} - {endDateTime.date + " " + endDateTime.time}
@@ -112,14 +142,16 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
           <div className="w-[80px] text-center">
             {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">{value as React.ReactNode}</span>
-            ) : value === "รออนุมัติ" ? (
+            ) : value === "รออนุมัติ" || value === "ตีกลับยานพาหนะ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
+            ) : value === "เสร็จสิ้น" ? (
+              <span className="badge badge-pill-outline badge-success whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
+            ) : value === "ยกเลิกคำขอ" ? (
+              <span className="badge badge-pill-outline badge-gray whitespace-nowrap">{value as React.ReactNode}</span>
             ) : (
               <span className="badge badge-pill-outline badge-info whitespace-nowrap">{value as React.ReactNode}</span>
             )}
@@ -134,17 +166,61 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
-        return (
-          <div className="text-left">
-            {statusValue == "รออนุมัติ" && (
+        const id = row.original.trn_request_uid;
+
+        const progressType = {
+          "50": "รอรับกุญแจ",
+          "51": "รอรับยานพาหนะ",
+          "60": "บันทึกการเดินทาง",
+          "70": "รอการตรวจสอบ",
+          "71": "คืนยานพาหนะไม่สำเร็จ",
+          "80": "ภารกิจสำเร็จ",
+          "90": "ยกเลิกภารกิจ",
+        };
+
+        if (role === "driver") {
+          const statusCode = row.original.ref_request_status_code;
+          const progress = row.original.ref_request_status_code
+            ? progressType[statusCode as keyof typeof progressType]
+            : "";
+
+          return (
+            <div className="text-left">
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
-                onClick={() => router.push("/vehicle-booking/request-list/" + row.original.trn_request_uid)}
+                data-tip={statusValue}
+                onClick={() =>
+                  router.push("/vehicle-in-use/driver/" + row.original.trn_request_uid + "?progressType=" + progress)
+                }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
-            )}
+            </div>
+          );
+        }
+
+        const start = dayjs(row.original.start_datetime);
+        const end = dayjs(row.original.end_datetime);
+        const between = dayjs().isBetween(start, end);
+        const traveling = between && dayjs().isSame(end);
+        const before = dayjs().isBefore(start);
+        const after = dayjs().isAfter(end);
+        const isPeaEm = row.original.is_pea_employee_driver;
+
+        console.log(row.original);
+
+        return (
+          <div className="text-left flex">
+            {statusValue == "รออนุมัติ" ||
+              (statusValue == "เสร็จสิ้น" && (
+                <button
+                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                  data-tip="ดูรายละเอียดคำขอ"
+                  onClick={() => router.push(pathName + "/" + row.original.trn_request_uid)}
+                >
+                  <i className="material-symbols-outlined">quick_reference_all</i>
+                </button>
+              ))}
 
             {statusValue == "รอรับกุญแจ" && (
               <>
@@ -156,13 +232,50 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                   <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
-                <button
-                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                  data-tip="การรับกุญแจ"
-                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
-                >
-                  <i className="material-symbols-outlined">key</i>
-                </button>
+                <div className="dropdown dropdown-left ">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">more_vert</i>
+                  </div>
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">calendar_clock</i>
+                      ดูนัดหมาย
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับกุญแจ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push("/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การรับกุญแจ");
+                      }}
+                    >
+                      <i className="material-symbols-outlined">key</i>
+                      การรับกุญแจ
+                    </Link>
+                  </ul>
+                </div>
               </>
             )}
 
@@ -176,13 +289,186 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
                   <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
 
+                <div className="dropdown dropdown-left ">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">more_vert</i>
+                  </div>
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">calendar_clock</i>
+                      ดูนัดหมาย
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การรับยานพาหนะ"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">directions_car</i>
+                      รับยานพาหนะ
+                    </Link>
+                  </ul>
+                </div>
+              </>
+            )}
+
+            {statusValue == "เดินทาง" && (
+              <>
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                  data-tip="รอรับยานพาหนะ"
-                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid + "/edit")}
+                  data-tip="ดูรายละเอียดคำขอ"
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
                 >
-                  <i className="material-symbols-outlined">directions_car</i>
+                  <i className="material-symbols-outlined">quick_reference_all</i>
                 </button>
+
+                <div className="dropdown dropdown-left">
+                  <div
+                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">more_vert</i>
+                  </div>
+                  <ul
+                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                    tabIndex={0}
+                  >
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=ข้อมูลการเดินทาง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=ข้อมูลการเดินทาง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined"> add_location_alt</i>
+                      ข้อมูลการเดินทาง
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การเติมเชื้อเพลิง`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การเติมเชื้อเพลิง"
+                        );
+                      }}
+                    >
+                      <i className="material-symbols-outlined">local_gas_station</i>
+                      การเติมเชื้อเพลิง
+                    </Link>
+                    {isPeaEm && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          licenseCardModalRef.current?.openModal();
+                        }}
+                      >
+                        <i className="material-symbols-outlined">id_card</i>
+                        แสดงบัตรเดินทาง
+                      </Link>
+                    )}
+                    {before && !isPeaEm && !traveling && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(
+                            "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                          );
+                        }}
+                      >
+                        <i className="material-symbols-outlined">calendar_clock</i>
+                        ดูนัดหมาย
+                      </Link>
+                    )}
+                    {!isPeaEm && traveling && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          reviewCarDriveModalRef.current?.openModal();
+                        }}
+                      >
+                        <i className="material-symbols-outlined">star</i>
+                        ให้คะแนนผู้ขับขี่
+                      </Link>
+                    )}
+                    {after && !isPeaEm && !traveling && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          viewCarDriveModalRef.current?.openModal();
+                        }}
+                      >
+                        <i className="material-symbols-outlined">star</i>
+                        ดูคะแนนผู้ขับขี่
+                      </Link>
+                    )}
+                    <hr />
+                    <Link
+                      className="dropdown-item"
+                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การคืนยานพาหนะ`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        returnCarAddModalRef.current?.openModal();
+                      }}
+                    >
+                      <i className="material-symbols-outlined">reply</i>
+                      คืนยานพาหนะ
+                    </Link>
+                  </ul>
+                </div>
+                <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
+                <ReviewCarDriveModal ref={viewCarDriveModalRef} id={id} displayOn="view" />
+                <ReturnCarAddModal ref={returnCarAddModalRef} id={id} useBy="user" />
+                <LicenseCardModal ref={licenseCardModalRef} id={id} />
               </>
             )}
 
@@ -196,7 +482,7 @@ export default function RequestListTable({ defaultData, pagination }: Props) {
               </button>
             )}
 
-            {statusValue == "ยกเลิกคำขอ" && (
+            {(statusValue == "ยกเลิกคำขอ" || statusValue == "รอตรวจสอบ" || statusValue == "รออนุมัติ") && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"

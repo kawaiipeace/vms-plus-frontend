@@ -42,7 +42,7 @@ export interface ReceivedKeyDriverParams {
   order_by?: string;
   order_dir?: string;
   page?: number;
-  page_size?: number;
+  limit?: number;
 }
 
 export interface ReceivedKeyDriver {

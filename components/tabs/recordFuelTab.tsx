@@ -3,20 +3,16 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import RecordFuelAddModal from "@/components/modal/recordFuelAddModal";
 import ToastCustom from "@/components/toastCustom";
-import { recordFuelDataColumns, RecordFuelTabProps } from "@/data/requestData";
+import { RecordFuelTabProps } from "@/data/requestData";
+import { fetchDriverAddFuelDetails } from "@/services/vehicleInUseDriver";
 import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
-import Image from "next/image";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { ColumnDef, CellContext } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
 import TableRecordTravelComponent from "../tableRecordTravel";
+import ZeroRecord from "../zeroRecord";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -66,11 +62,7 @@ interface RecordFuelTabPageProps {
   requestData?: RequestDetailType;
 }
 
-const RecordFuelTab = ({
-  requestId,
-  role,
-  requestData,
-}: RecordFuelTabPageProps) => {
+const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-fuel-req");
   const updateReq = searchParams.get("update-fuel-req");
@@ -103,35 +95,32 @@ const RecordFuelTab = ({
   const fetchUserTravelDetailsFunc = useCallback(
     async () => {
       try {
-        const response = await fetchUserAddFuelDetails(requestId || "", params);
-        console.log("data---", response.data);
+        let response;
+        if (role === "driver") {
+          response = await fetchDriverAddFuelDetails(requestId || "", params);
+        } else {
+          response = await fetchUserAddFuelDetails(requestId || "", params);
+        }
+        console.log("data---", response?.data);
 
-        setRequestData(response.data);
+        setRequestData(response?.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
       }
     },
-    [params, requestId] // Add requestId to the dependency array,
+    [params, requestId, role]
   );
 
   useEffect(() => {
     fetchUserTravelDetailsFunc();
-  }, [
-    requestId,
-    params,
-    fetchUserTravelDetailsFunc,
-    createReq,
-    updateReq,
-    deleteReq,
-  ]);
+  }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq, deleteReq]);
 
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
         return {
           ...item,
-          ref_oil_station_brand_name:
-            item.ref_oil_station_brand.ref_oil_station_brand_name_th,
+          ref_oil_station_brand_name: item.ref_oil_station_brand.ref_oil_station_brand_name_th,
           ref_fuel_type_name: item.ref_fuel_type.ref_fuel_type_name_th,
           ref_payment_type_name: item.ref_payment_type.ref_payment_type_name,
           ref_cost_type_name: item.ref_cost_type.ref_cost_type_name,
@@ -140,39 +129,159 @@ const RecordFuelTab = ({
     [requestFuelData]
   );
 
+  const isAddAndEdit = ["เดินทาง", "เสร็จสิ้น", "รอตรวจสอบ", "ตีกลับยานพาหนะ"].includes(
+    requestData?.ref_request_status_name || ""
+  );
+
+  const requestListColumns: ColumnDef<RecordFuelTabProps>[] = [
+    {
+      accessorKey: "tax_invoice_date",
+      header: () => (
+        <div className="relative flex items-center justify-center text-center">
+          <div className="text-center">วันที่ใบเสร็จ</div>
+        </div>
+      ),
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => {
+        const tripdate = getValue() as string;
+        const convertedDate = convertToBuddhistDateTime(tripdate);
+        return (
+          <div className="text-left" data-name="วันที่ใบเสร็จ">
+            <div className="flex flex-col">{convertedDate?.date}</div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "tax_invoice_no",
+      header: () => <div className="text-left">เลขที่ใบเสร็จ</div>,
+      enableSorting: false,
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => {
+        const tax_invoice_no = row.original.tax_invoice_no;
+        return (
+          <div className="text-left" data-name="เลขที่ใบเสร็จ">
+            <div className="flex flex-col">{tax_invoice_no}</div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "ref_oil_station_brand_name",
+      header: () => <div className="text-center">สถานีบริการน้ำมัน</div>,
+      enableSorting: false,
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="สถานีบริการน้ำมัน">
+          <div className="flex flex-col">
+            <div className="text-left">{row.original.ref_oil_station_brand_name}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "ref_fuel_type_name",
+      header: () => <div className="text-center">ประเภทเชื้อเพลิง</div>,
+      enableSorting: false,
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="ประเภทเชื้อเพลิง">
+          <div className="flex flex-col">
+            <div className="text-left">{row.original.ref_fuel_type_name}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "mile",
+      header: () => <div className="text-center">เลขไมล์</div>,
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="เลขไมล์">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "sum_liter",
+      header: () => <div className="text-center">จำนวนลิตร</div>,
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="จำนวนลิตร">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "price_per_liter",
+      header: () => <div className="text-center">ราคาต่อลิตร</div>,
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="ราคาต่อลิตร">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "vat",
+      header: () => <div className="text-center">ภาษี</div>,
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="ภาษี">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "sum_price",
+      header: () => <div className="text-center">ยอดรวมชำระ</div>,
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="ยอดรวมชำระ">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "ref_payment_type_name",
+      header: () => <div className="text-center">วิธีชำระเงิน</div>,
+      enableSorting: false,
+      cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
+        <div className="text-left" data-name="วิธีชำระเงิน">
+          {getValue() as string}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "action",
+      header: "",
+      enableSorting: false,
+    },
+  ].filter((column) => {
+    if (column.accessorKey === "action") {
+      return isAddAndEdit;
+    }
+    return true;
+  });
+
   return (
     <>
       <div className="w-full">
         {requestFuelData && requestFuelData.length == 0 ? (
-          <div className="grid grid-cols-1 gap-4 text-center">
-            <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image
-                src="/assets/img/graphic/fuel_img.svg"
-                width={900}
-                height={900}
-                alt=""
-              />
-            </div>
-            <div className="col-span-12">
-              <p className="font-bold text-2xl">เพิ่มข้อมูลการเดินทาง</p>
-              <p>
-                ระบุข้อมูลวันที่และเวลาเดินทาง เลขไมล์
-                สถานที่ี่จากต้นทางและถึงปลายทาง
-              </p>
-            </div>
-            <div className="col-span-12">
-              <button
-                className="btn btn-primary w-full text-xl"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordFuelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined !text-3xl">add</i>{" "}
-                เพิ่มข้อมูล
-              </button>
-            </div>
-          </div>
+          <ZeroRecord
+            imgSrc="/assets/img/graphic/fuel_img.svg"
+            title="เพิ่มข้อมูลการเติมเชื้อเพลิง"
+            desc={
+              <>
+                กรุณาระบุเลขไมล์และข้อมูลใบเสร็จทุกครั้ง <br></br>
+                ที่เติมน้ำมัน เพื่อใช้ในการเบิกค่าใช้จ่าย
+              </>
+            }
+            button="เพิ่มข้อมูล"
+            icon="add"
+            displayBtn={true}
+            useModal={() => {
+              setEditData(undefined);
+              recordFuelAddModalRef.current?.openModal();
+            }}
+          />
         ) : (
           <>
             <div className="py-2">
@@ -181,7 +290,8 @@ const RecordFuelTab = ({
                 ข้อมูลการเติมเชื้อเพลิง
               </h4>
             </div>
-            <div className="mt-4">
+
+            <div className="flex w-full my-4">
               <div className="input-group input-group-search hidden">
                 <div className="input-group-prepend">
                   <span className="input-group-text search-ico-info">
@@ -192,37 +302,58 @@ const RecordFuelTab = ({
                   type="text"
                   id="myInputTextField"
                   className="form-control dt-search-input"
-                  placeholder="ค้นหาเลขที่ใบเสร็จ"
-                  onChange={(e) =>
-                    setParams({ ...params, search: e.target.value })
-                  }
+                  placeholder="ค้นหาสถานที่"
+                  onChange={(e) => setParams({ ...params, search: e.target.value })}
                 />
               </div>
-            </div>
-            <div className="mt-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setEditData(undefined);
-                  recordFuelAddModalRef.current?.openModal();
-                }}
-              >
-                <i className="material-symbols-outlined">add</i> เพิ่มข้อมูล
-              </button>
+
+              {role === "admin" && (
+                <button
+                  className="btn btn-secondary ml-auto"
+                  onClick={() => {
+                    setEditData(undefined);
+                    recordFuelAddModalRef.current?.openModal();
+                  }}
+                >
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+              )}
+
+              {isAddAndEdit && (
+                <button
+                  className="btn btn-secondary ml-auto"
+                  onClick={() => {
+                    setEditData(undefined);
+                    recordFuelAddModalRef.current?.openModal();
+                  }}
+                >
+                  <i className="material-symbols-outlined">add</i>
+                  เพิ่มข้อมูล
+                </button>
+              )}
             </div>
             <div className="w-full mx-auto mt-3">
               <TableRecordTravelComponent
                 data={mapDataRequest}
-                columns={recordFuelDataColumns}
+                columns={requestListColumns}
                 listName="fuel"
-                editRecordTravel={(data: RecordFuelTabProps) => {
-                  setEditData(data);
-                  recordFuelEditModalRef.current?.openModal();
-                }}
-                deleteRecordTravel={(data: RecordFuelTabProps) => {
-                  setEditData(data);
-                  cancelRequestModalRef.current?.openModal();
-                }}
+                editRecordTravel={
+                  isAddAndEdit
+                    ? (data: RecordFuelTabProps) => {
+                        setEditData(data);
+                        recordFuelEditModalRef.current?.openModal();
+                      }
+                    : undefined
+                }
+                deleteRecordTravel={
+                  isAddAndEdit
+                    ? (data: RecordFuelTabProps) => {
+                        setEditData(data);
+                        cancelRequestModalRef.current?.openModal();
+                      }
+                    : undefined
+                }
                 previewRecordTravel={(data: RecordFuelTabProps) => {
                   setEditData(data);
                   previewModalRef.current?.openModal();
@@ -234,15 +365,15 @@ const RecordFuelTab = ({
         <RecordFuelAddModal
           ref={recordFuelAddModalRef}
           requestId={requestId}
-          isPayment={!!requestData?.fleet_card_no}
-          role="user"
+          isPayment={true}
+          role={role}
         />
         <RecordFuelAddModal
           ref={recordFuelEditModalRef}
           requestId={requestId}
           isPayment={!!requestData?.fleet_card_no}
           dataItem={editData}
-          role="user"
+          role={role}
           status
         />
         <CancelRequestModal
@@ -251,7 +382,7 @@ const RecordFuelTab = ({
           confirmText="ลบข้อมูล"
           ref={cancelRequestModalRef}
           cancleFor="recordFuel"
-          role="recordFuel"
+          role={role || "recordFuel"}
           id={requestId || ""}
           fuelId={editData?.trn_add_fuel_uid || ""}
           tax_invoice_no={editData?.tax_invoice_no || ""}
