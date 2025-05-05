@@ -12,7 +12,16 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-// import Toast from "@/components/toast";
+
+interface Carpool {
+  mas_carpool_uid: string;
+  carpool_name: string;
+  ref_carpool_choose_car_id: number;
+  ref_carpool_choose_car: {
+    ref_carpool_choose_car_id: number;
+    type_of_choose_car: string;
+  };
+}
 
 interface Vehicle {
   mas_vehicle_uid: string;
@@ -24,6 +33,14 @@ interface Vehicle {
   vehicle_img: string;
   seat: number;
   is_admin_choose_driver?: boolean;
+}
+
+type VehicleCard = Carpool | Vehicle;
+
+interface ApiResponse {
+  carpools: Carpool[];
+  vehicles: Vehicle[];
+  pagination: PaginationInterface;
 }
 
 interface PaginationInterface {
@@ -43,7 +60,7 @@ interface FormData {
 
 export default function ProcessTwo() {
   const router = useRouter();
-  const [vehicleCards, setVehicleCards] = useState<Vehicle[]>([]);
+  const [vehicleCards, setVehicleCards] = useState<VehicleCard[]>([]);
   const [loading, setLoading] = useState(true);
   const { formData, updateFormData } = useFormContext();
   const [paginationData, setPaginationData] = useState<PaginationInterface>({
@@ -61,12 +78,11 @@ export default function ProcessTwo() {
     car_type: "",
     category_code: "",
     page: 1,
-    limit: 10,
+    limit: 10, // Set initial limit to 8
   });
 
   const [vehicleCatOptions, setVehicleCatOptions] = useState<{ value: string; label: string }[]>([]);
-  // const { updateFormData } = useFormContext();
-
+  
   const orgOptions = [
     { label: "ทุกสังกัด", value: "" },
     { label: "หน่วยงานต้นสังกัด", value: "หน่วยงานต้นสังกัด" },
@@ -91,19 +107,22 @@ export default function ProcessTwo() {
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
-    if (value == "ผู้ดูแลยานพาหนะเลือกให้") {
-      updatedData.isAdminChooseVehicle = "1"; // Update the data object
+    
+    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
+      updatedData.isAdminChooseVehicle = "1";
       updatedData.isSystemChooseVehicle = "0";
-    } else if (value == "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
-      updatedData.isSystemChooseVehicle = "1"; // Update the data object
+    } else if (value === "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
+      updatedData.isSystemChooseVehicle = "1";
       updatedData.isAdminChooseVehicle = "0";
     } else {
-      updatedData.vehicleSelect = value; // Update the data object
-
-      const selectedVehicleObj = vehicleCards.find((vehicle) => vehicle.mas_vehicle_uid === value);
+      updatedData.vehicleSelect = value;
+      // Find the selected vehicle (if it's a vehicle, not a carpool)
+      const selectedVehicleObj = vehicleCards.find(
+        (card) => 'mas_vehicle_uid' in card && card.mas_vehicle_uid === value
+      ) as Vehicle | undefined;
 
       if (selectedVehicleObj?.is_admin_choose_driver !== undefined) {
-        updatedData.isAdminChooseDriver = selectedVehicleObj.is_admin_choose_driver ? true : false;
+        updatedData.isAdminChooseDriver = selectedVehicleObj.is_admin_choose_driver;
       }
     }
 
@@ -139,12 +158,17 @@ export default function ProcessTwo() {
   useEffect(() => {
     const fetchVehicleData = async () => {
       try {
-        const response = await fetchVehicles(params);
+        // Set limit to 8 for first page, 10 for others
+        const currentLimit = params.page === 1 ? 10 : 10;
+        const response = await fetchVehicles({ ...params, limit: currentLimit });
+        
         if (response.status === 200) {
-          if (response.data.vehicles == null) {
-            setVehicleCards([]);
-          }
-          setVehicleCards(response.data.vehicles);
+          // Combine carpools and vehicles for display
+          const allCards = [
+            ...(response.data.carpools || []),
+            ...(response.data.vehicles || [])
+          ];
+          setVehicleCards(allCards);
           setPaginationData(response.data.pagination);
         }
       } catch (error) {
@@ -158,7 +182,6 @@ export default function ProcessTwo() {
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
-          console.log(response.data);
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
             ...vehicleCatData.map((cat: { ref_vehicle_type_code: string; ref_vehicle_type_name: string }) => ({
@@ -208,7 +231,6 @@ export default function ProcessTwo() {
             <div className="page-group-header">
               <div className="page-title">
                 <span className="page-title-label">สร้างคำขอใช้ยานพาหนะ</span>
-                {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
               </div>
             </div>
           </div>
@@ -269,37 +291,63 @@ export default function ProcessTwo() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
-                  {vehicleCards != null && vehicleCards.length > 0 && (
-                    <>
-                      <AutoCarCard
-                        imgSrc="/assets/img/admin-selected.png"
-                        title="ผู้ดูแลยานพาหนะเลือกให้"
-                        desc="สายงานดิจิทัล"
-                        onSelect={handleVehicleSelect}
-                      />
-                      <AutoCarCard
-                        imgSrc="/assets/img/system-selected.png"
-                        title="ระบบเลือกยานพาหนะให้อัตโนมัติ"
-                        desc="สายงานดิจิทัล"
-                        onSelect={handleVehicleSelect}
-                      />
-                      {vehicleCards.map((vehicle) => (
-                        <SelectCarCard
-                          key={vehicle.mas_vehicle_uid}
-                          vehicleId={vehicle.mas_vehicle_uid}
-                          imgSrc={vehicle.vehicle_img || "/assets/img/sample-car.jpeg"}
-                          title={vehicle.vehicle_brand_name + vehicle.vehicle_model_name}
-                          subTitle={vehicle.vehicle_license_plate}
-                          carType={vehicle.car_type}
-                          deptSap={vehicle.vehicle_owner_dept_sap}
-                          seat={vehicle.seat}
-                          onSelect={() => handleVehicleSelect(vehicle.mas_vehicle_uid)}
-                        />
-                      ))}{" "}
-                    </>
+                  {vehicleCards.length > 0 ? (
+                    vehicleCards.map((card) => {
+                      // Type guard for Carpool
+                      if ('ref_carpool_choose_car' in card) {
+                        const carpool = card;
+                        return (
+                          <AutoCarCard
+                            key={carpool.mas_carpool_uid}
+                            imgSrc={
+                              carpool.ref_carpool_choose_car_id === 3 
+                                ? "/assets/img/system-selected.png" 
+                                : "/assets/img/admin-selected.png"
+                            }
+                            title={carpool.ref_carpool_choose_car.type_of_choose_car}
+                            desc={carpool.carpool_name}
+                            onSelect={() => handleVehicleSelect(
+                              carpool.ref_carpool_choose_car_id === 3 
+                                ? "ระบบเลือกยานพาหนะให้อัตโนมัติ" 
+                                : "ผู้ดูแลยานพาหนะเลือกให้"
+                            )}
+                          />
+                        );
+                      } else {
+                        // It's a Vehicle
+                        const vehicle = card;
+                        return (
+                          <SelectCarCard
+                            key={vehicle.mas_vehicle_uid}
+                            vehicleId={vehicle.mas_vehicle_uid}
+                            imgSrc={vehicle.vehicle_img || "/assets/img/sample-car.jpeg"}
+                            title={`${vehicle.vehicle_brand_name} ${vehicle.vehicle_model_name}`}
+                            subTitle={vehicle.vehicle_license_plate}
+                            carType={vehicle.car_type}
+                            deptSap={vehicle.vehicle_owner_dept_sap}
+                            seat={vehicle.seat}
+                            onSelect={() => handleVehicleSelect(vehicle.mas_vehicle_uid)}
+                          />
+                        );
+                      }
+                    })
+                  ) : (
+                    <ZeroRecord
+                      imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
+                      title="ไม่พบยานพาหนะ"
+                      desc={
+                        <>
+                          ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
+                          <br />
+                          ลองค้นหาใหม่อีกครั้ง
+                        </>
+                      }
+                      button="ล้างคำค้นหา"
+                    />
                   )}
                 </div>
-                {vehicleCards != null && vehicleCards.length > 0 && (
+
+                {vehicleCards.length > 0 && (
                   <div className="pagination mt-[1.5rem] flex justify-end">
                     <Pagination
                       currentPage={paginationData.page}
@@ -311,21 +359,6 @@ export default function ProcessTwo() {
               </div>
             </div>
           </div>
-
-          {(vehicleCards == null || vehicleCards.length === 0) && (
-            <ZeroRecord
-              imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
-              title="ไม่พบยานพาหนะ"
-              desc={
-                <>
-                  ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
-                  <br />
-                  ลองค้นหาใหม่อีกครั้ง
-                </>
-              }
-              button="ล้างคำค้นหา"
-            />
-          )}
 
           <div className="form-action">
             <button

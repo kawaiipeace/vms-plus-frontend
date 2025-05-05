@@ -1,3 +1,4 @@
+import { SendbackRequestType } from "@/app/types/request-action-type";
 import axiosInstance from "@/utils/axiosInstance";
 
 export const fetchRequests = async (params: {
@@ -90,6 +91,91 @@ export const fetchVehicleInsRequests = async (params: {
       { params }
     );
     return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminCreateTravelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("vehicle-in-use-admin/create-travel-detail", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const adminUpdateTravelDetail = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/update-travel-detail/" + id, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminUpdateImageDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/update-received-vehicle-images", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminUpdateVehicleInsImage = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-inspect-vehicle-images", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const AdminReturnedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/returned-vehicle", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const AdminUpdateReturnedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-returned-vehicle", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const adminSendBackVehicle = async (data: SendbackRequestType) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-sended-back", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminAcceptVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-accepted", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchReviewDriverDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get("vehicle-inspection-admin/satisfaction-survey/" + id);
+
+    return response;
+
   } catch (error) {
     throw error;
   }

@@ -1,6 +1,10 @@
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import { RecordTravelTabProps } from "@/data/requestData";
 import {
+  driverCreateTravelDetail,
+  driverUpdateTravelDetail,
+} from "@/services/vehicleInUseDriver";
+import {
   UserCreateTravelDetail,
   UserUpdateTravelDetail,
 } from "@/services/vehicleInUseUser";
@@ -16,11 +20,11 @@ import {
   useState,
 } from "react";
 import TimePicker from "../timePicker";
-import { isEqual } from "lodash";
+
 import {
-  driverCreateTravelDetail,
-  driverUpdateTravelDetail,
-} from "@/services/vehicleInUseDriver";
+  adminCreateTravelDetail,
+  adminUpdateTravelDetail,
+} from "@/services/adminService";
 
 interface Props {
   status?: boolean;
@@ -51,7 +55,17 @@ const RecordTravelAddModal = forwardRef<
   const activeTab = searchParams.get("activeTab");
   const progressType = searchParams.get("progressType");
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [value, setValue] = useState<Partial<RecordTravelValueType>>();
+  const [value, setValue] = useState<Partial<RecordTravelValueType>>({
+    startDate: "",
+    startTime: "",
+    endDate: "",
+    endTime: "",
+    startLocation: "",
+    endLocation: "",
+    startMile: "",
+    endMile: "",
+    detail: "",
+  });
 
   const startPickerRef = useRef<DatePickerRef>(null);
   const endPickerRef = useRef<DatePickerRef>(null);
@@ -79,8 +93,20 @@ const RecordTravelAddModal = forwardRef<
         endMile: String(dataItem?.trip_end_miles),
         detail: dataItem?.trip_detail,
       });
+      startPickerRef.current?.setValue?.(startDate.date);
+      endPickerRef.current?.setValue?.(endDate.date);
     } else {
-      setValue(undefined);
+      setValue({
+        startDate: "",
+        startTime: "",
+        endDate: "",
+        endTime: "",
+        startLocation: "",
+        endLocation: "",
+        startMile: "",
+        endMile: "",
+        detail: "",
+      });
     }
   }, [dataItem, status]);
 
@@ -119,11 +145,16 @@ const RecordTravelAddModal = forwardRef<
             trip_start_miles: Number(startMile),
             trn_request_uid: requestId,
           };
-
+          console.log("dataid", dataItem?.trn_trip_detail_uid);
           if (status) {
             const res =
               role === "user"
                 ? await UserUpdateTravelDetail(
+                    dataItem?.trn_trip_detail_uid || "",
+                    payload
+                  )
+                : role === "admin"
+                ? await adminUpdateTravelDetail(
                     dataItem?.trn_trip_detail_uid || "",
                     payload
                   )
@@ -139,30 +170,39 @@ const RecordTravelAddModal = forwardRef<
               role === "user"
                 ? router.push(
                     pathName +
-                      `?activeTab=${activeTab}&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                      `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                  )
+                : role === "admin"
+                ? router.push(
+                    pathName +
+                      `?activeTab=ข้อมูลการเดินทาง&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                   )
                 : router.push(
                     pathName +
-                      `?progressType=${progressType}&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                      `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                   );
-              // : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
             }
-            return;
           }
 
           const res =
             role === "user"
               ? await UserCreateTravelDetail(payload)
+              : role === "admin"
+              ? await adminCreateTravelDetail(payload)
               : await driverCreateTravelDetail(payload);
           const data = res.data;
           if (data) {
             modalRef.current?.close();
-
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             role === "user"
               ? router.push(
                   pathName +
                     `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                )
+              : role === "admin"
+              ? router.push(
+                  pathName +
+                    `?activeTab=ข้อมูลการเดินทาง&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                 )
               : router.push(
                   pathName +
@@ -181,20 +221,28 @@ const RecordTravelAddModal = forwardRef<
 
   return (
     <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-        <div className="modal-body overflow-y-auto text-center">
+      <div
+        className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation()}}
+      >
+        <form>
+          <div className="bottom-sheet" {...swipeDownHandlers}>
+            <div className="bottom-sheet-icon"></div>
+          </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
             <div className="modal-title">
               {status ? "แก้ไขข้อมูลการเดินทาง" : "เพิ่มข้อมูลการเดินทาง"}
             </div>
-            <form method="dialog">
-              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </form>
+
+            <button
+              className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); modalRef.current?.close() } }
+            >
+              <i className="material-symbols-outlined">close</i>
+            </button>
           </div>
-          <form>
-            <div className="grid grid-cols-1 gap-4 mt-4">
+          <div className="modal-body overflow-y-auto text-center">
+            <div className="grid grid-cols-12 gap-4 mt-4">
               {/* Date picker */}
               <div className="col-span-6">
                 <div className="form-group">
@@ -213,7 +261,6 @@ const RecordTravelAddModal = forwardRef<
                         setValue((val) => ({ ...val, startDate: date }))
                       }
                       ref={startPickerRef}
-                      value={value?.startDate}
                     />
                   </div>
                 </div>
@@ -258,7 +305,6 @@ const RecordTravelAddModal = forwardRef<
                         setValue((val) => ({ ...val, endDate: date }))
                       }
                       ref={endPickerRef}
-                      value={value?.endDate}
                     />
                   </div>
                 </div>
@@ -293,6 +339,7 @@ const RecordTravelAddModal = forwardRef<
                     <input
                       type="number"
                       className="form-control"
+                      placeholder="ระบุเลขไมล์ต้นทาง"
                       value={value?.startMile}
                       onChange={(e) => {
                         setValue((val) => ({
@@ -312,6 +359,7 @@ const RecordTravelAddModal = forwardRef<
                     <input
                       type="number"
                       className="form-control"
+                      placeholder="ระบุเลขไมล์ปลายทาง"
                       value={value?.endMile}
                       onChange={(e) => {
                         setValue((val) => ({
@@ -324,7 +372,7 @@ const RecordTravelAddModal = forwardRef<
                 </div>
               </div>
 
-              <div className="col-span-12">
+              <div className="col-span-6">
                 <div className="form-group">
                   <label className="form-label">สถานที่ต้นทาง</label>
                   <div className="input-group">
@@ -332,6 +380,7 @@ const RecordTravelAddModal = forwardRef<
                       type="text"
                       className="form-control"
                       value={value?.startLocation}
+                      placeholder="ระบุสถานที่ต้นทาง"
                       onChange={(e) => {
                         setValue((val) => ({
                           ...val,
@@ -342,7 +391,7 @@ const RecordTravelAddModal = forwardRef<
                   </div>
                 </div>
               </div>
-              <div className="col-span-12">
+              <div className="col-span-6">
                 <div className="form-group">
                   <label className="form-label">สถานที่ปลายทาง</label>
                   <div className="input-group">
@@ -350,6 +399,7 @@ const RecordTravelAddModal = forwardRef<
                       type="text"
                       className="form-control"
                       value={value?.endLocation}
+                      placeholder="ระบุเลขไมล์ปลายทาง"
                       onChange={(e) => {
                         setValue((val) => ({
                           ...val,
@@ -371,6 +421,7 @@ const RecordTravelAddModal = forwardRef<
                         type="text"
                         className="form-control"
                         value={value?.detail}
+                        placeholder="ระบุรายละเอียด"
                         onChange={(e) => {
                           setValue((val) => ({
                             ...val,
@@ -382,29 +433,29 @@ const RecordTravelAddModal = forwardRef<
                   </div>
                 </div>
               </div>
-              <div className="col-span-12 grid grid-cols-2 gap-4">
-                <div>
-                  <button
-                    type="button"
-                    className="btn btn-secondary w-full"
-                    onClick={() => modalRef.current?.close()}
-                  >
-                    ปิด
-                  </button>
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    className="btn btn-primary w-full"
-                    onClick={handleSubmit}
-                  >
-                    บันทึก
-                  </button>
-                </div>
-              </div>
             </div>
-          </form>
-        </div>
+          </div>
+          <div className="modal-action flex items-center gap-4 !w-full mt-0">
+            <div className="flex-1 w-full">
+              <button
+                type="button"
+                className="btn btn-secondary !w-full"
+                onClick={() => modalRef.current?.close()}
+              >
+                ปิด
+              </button>
+            </div>
+            <div className="flex-1 w-full">
+              <button
+                type="button"
+                className="btn btn-primary !w-full"
+                onClick={handleSubmit}
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
       <form method="dialog" className="modal-backdrop">
         <button>close</button>

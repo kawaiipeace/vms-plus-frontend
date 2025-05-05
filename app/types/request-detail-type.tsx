@@ -1,5 +1,6 @@
 import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import { SatisfactionSurveyQuestions } from "@/components/modal/reviewCarDriveModal";
 import { ProgressRequestType } from "./progress-request-status";
 
 export type RequestDetailType = Partial<{
@@ -110,7 +111,23 @@ export type RequestDetailType = Partial<{
   mile_start: number;
   fuel_start: number;
   received_vehicle_remark: string;
+  receiver_key_type_detail: {
+    ref_vehicle_key_type_code: string;
+    ref_vehicle_key_type_name: string;
+  };
+  vehicle_image_inspect: VehicleImage[];
+  next_request: NextRequest;
+  mile_used: number;
+  add_fuels_count: number;
+  trip_details_count: number;
+  satisfaction_survey_answers: satisfactionSurveyAnswers[];
 }>;
+
+export interface satisfactionSurveyAnswers {
+  mas_satisfaction_survey_questions_code: number;
+  survey_answer: number;
+  satisfaction_survey_questions: SatisfactionSurveyQuestions;
+}
 
 export type RequestVehicleType = Partial<{
   available_units: number;
@@ -123,3 +140,31 @@ export type VehicleImage = Partial<{
   ref_vehicle_img_side_code: number;
   vehicle_img_file: string;
 }>;
+
+export interface TripTypeName {
+  ref_trip_type_code: number;
+  ref_trip_type_name: string;
+}
+
+export interface NextRequest {
+  car_user_internal_contact_number: string;
+  car_user_mobile_contact_number: string;
+  end_datetime: string;
+  ref_request_status_code: string;
+  ref_request_status_name: string;
+  request_no: string;
+  start_datetime: string;
+  trip_type: number;
+  trip_type_name: TripTypeName;
+  trn_request_uid: string;
+  vehicle_license_plate: string;
+  vehicle_license_plate_province_full: string;
+  vehicle_license_plate_province_short: string;
+  vehicle_user_dept_name_full: string;
+  vehicle_user_dept_name_short: string;
+  vehicle_user_dept_sap: string;
+  vehicle_user_emp_id: string;
+  vehicle_user_emp_name: string;
+  vehicle_user_position: string;
+  work_place: string;
+}

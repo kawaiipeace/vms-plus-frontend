@@ -217,8 +217,8 @@ export default function ArpproveFlow() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-5">
-        <div className="hidden md:block">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
+        <div className="block">
           <div className="input-group input-group-search hidden">
             <div className="input-group-prepend">
               <span className="input-group-text search-ico-info">
@@ -244,7 +244,7 @@ export default function ArpproveFlow() {
 
         <div className="flex gap-4">
           <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] block"
             onClick={() => filterModalRef.current?.openModal()}
           >
             <div className="flex items-center gap-1">
@@ -253,7 +253,7 @@ export default function ArpproveFlow() {
               <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
-          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px]">
+          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block">
             <i className="material-symbols-outlined">add</i>
             สร้างคำขอใช้
           </button>

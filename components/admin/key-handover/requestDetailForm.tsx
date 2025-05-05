@@ -11,6 +11,7 @@ import {
 } from "@/components";
 import AlertCustom from "@/components/alertCustom";
 import ChooseVehicleCard from "@/components/card/chooseVehicleCard";
+import VehicleDetailCard from "@/components/card/vehicleDetailCard";
 import { fetchRequestDetail } from "@/services/keyAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useState } from "react";
@@ -54,14 +55,14 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
           desc="กรุณาติดต่อผู้ดูแลยานพาหนะหากต้องการนัดหมายเดินทางใหม่"
         />
       )}
+   {requestData?.is_return_overdue === true && (
+              <AlertCustom
+                icon="cancel"
+                title="คืนยานพาหนะล่าช้า"
+                desc=""
+              />
+            )}
 
-{requestData?.is_return_overdue === true && (
-        <AlertCustom
-          icon="cancel"
-          title="คืนยานพาหนะล่าช้า"
-          desc=""
-        />
-      )}
 
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.sended_back_request_reason}`} />
@@ -150,10 +151,8 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
 
                 {requestData?.vehicle &&
                   (!requestData?.is_admin_choose_vehicle || requestData?.is_admin_choose_vehicle === "0") && (
-                    <CarDetailCard
-                      reqId={requestData?.trn_request_uid}
-                      vehicle={requestData?.vehicle}
-                      seeDetail={true}
+                    <VehicleDetailCard
+                      requestData={requestData}
                     />
                   )}
 

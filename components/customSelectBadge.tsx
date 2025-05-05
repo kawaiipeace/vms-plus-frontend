@@ -87,7 +87,7 @@ export default function CustomSelectBadge({
 
       {/* Dropdown List */}
       {isOpen && (
-        <ul className="max-h-[16rem] overflow-y-auto absolute flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
+        <ul className="max-h-[16rem] overflow-y-auto absolute drop-list-custom flex flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg">
         <li>  { vehicleType &&
           <div className="py-2 px-4 flex gap-2">
           <span className="badge badge-pill-outline badge-active bg-brand-100 !border-brand-200 whitespace-nowrap !rounded-md text-brand-800">

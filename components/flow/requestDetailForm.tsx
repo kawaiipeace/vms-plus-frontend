@@ -212,7 +212,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                           className="rounded-md"
                           width={100}
                           height={100}
-                          alt=""
+                          alt="adminselect"
                         />
                       </div>
                       <div className="card-content">
@@ -254,7 +254,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                           className="rounded-md"
                           width={100}
                           height={100}
-                          alt=""
+                          alt="system select"
                         />
                       </div>
                       <div className="card-content">

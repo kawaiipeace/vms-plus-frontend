@@ -46,19 +46,32 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
             {requestData && <PageKeyHandOverHeader data={requestData} />}
+            
             <LogProvider>
               <RequestDetailTabs
                 displayKeyHandover={true}
                 requestId={request_id}
                 displayTravelRecord={
-                true
+                (requestData?.ref_request_status_code === "60e" ||
+                  requestData?.ref_request_status_code === "60" ||
+                  requestData?.ref_request_status_code === "70") ? true : false 
                 }
                 displayVehiclePickup={
-               true
+                  (requestData?.ref_request_status_code === "60" ||
+                    requestData?.ref_request_status_code === "51" ||
+                    requestData?.ref_request_status_code === "60e" ||
+                    requestData?.ref_request_status_code === "70") ? true : false 
                 }
                 displayReturnVehicle={
-                 true
+                  (requestData?.ref_request_status_code === "60" ||
+                    requestData?.ref_request_status_code === "60e" ||
+                    requestData?.ref_request_status_code === "70") ? true : false 
                 }
+                displayFuel={
+                  (requestData?.ref_request_status_code === "60e" ||
+                    requestData?.ref_request_status_code === "60" ||
+                    requestData?.ref_request_status_code === "70") ? true : false 
+                  }
               />
             </LogProvider>
           </div>

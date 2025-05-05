@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import LoginHeader from "@/components/loginHeader";
 import BackButton from "@/components/backButton";
-import { requestOTP, verifyOTP } from "@/services/authService";
+import { requestOTP, verifyOTP, fetchProfile } from "@/services/authService";
 import { useRouter } from "next/navigation";
+import { useProfile } from "@/contexts/profileContext";
 
 export default function LoginAuthen() {
   const router = useRouter();
+  const { setProfile } = useProfile();
   const [otpID, setOtpID] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [referenceCode, setRefCode] = useState<string | null>(null);
@@ -14,6 +16,8 @@ export default function LoginAuthen() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [timerText, setTimerText] = useState("01:00");
   const [error, setError] = useState<string>("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -45,25 +49,37 @@ export default function LoginAuthen() {
     if (storedOtpID) setOtpID(storedOtpID);
     if (refCode) setRefCode(refCode);
 
-    return () => clearInterval(interval); // Cleanup interval on unmount or timer reset
+    return () => clearInterval(interval);
   }, [timeLeft]);
 
   const requestOTPAgain = async () => {
-    if (phone) {
-      try {
-        const response = await requestOTP(phone);
-        if (response.status === 200) {
-          sessionStorage.setItem("otpID", response.data.otpId);
-          sessionStorage.setItem("refCode", response.data.refCode);
-          setTimeLeft(60);
-        }
-      } catch (error) {
-        console.log(error);
+    if (!phone || timeLeft > 0) return;
+    
+    setIsResending(true);
+    try {
+      const response = await requestOTP(phone);
+      if (response.status === 200) {
+        sessionStorage.setItem("otpID", response.data.otpId);
+        sessionStorage.setItem("refCode", response.data.refCode);
+        setTimeLeft(60);
+        setTimerText("01:00");
+        setOtp(new Array(6).fill(""));
+        setError("");
       }
+    } catch (error) {
+      console.error("Error requesting OTP:", error);
+      setError("เกิดข้อผิดพลาดในการขอรหัส OTP ใหม่");
+    } finally {
+      setIsResending(false);
     }
   };
 
   const verifyotp = async () => {
+    if (!isOtpComplete || isVerifying) return;
+    
+    setIsVerifying(true);
+    setError("");
+    
     const otpData = {
       otp: otp.join(""),
       otpId: String(otpID),
@@ -71,28 +87,34 @@ export default function LoginAuthen() {
 
     try {
       const response = await verifyOTP(otpData);
-      console.log(response);
       if (response.status === 200) {
         localStorage.setItem('accessToken', response.data.accessToken);
         localStorage.setItem('refreshToken', response.data.refreshToken);
+        
+        // Fetch and set profile before redirecting
+        const profileResponse = await fetchProfile();
+        setProfile(profileResponse.data);
         router.push("/vehicle-booking/request-list");
       }
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
+      const errorMessage = error?.response?.data?.message || "เกิดข้อผิดพลาดในการตรวจสอบ OTP";
       setError(errorMessage);
-      if (errorMessage?.includes("หมดอายุ")) {
+      
+      if (errorMessage.includes("หมดอายุ")) {
         setOtp(new Array(6).fill(""));
         setTimeLeft(60);
         setTimerText("01:00");
-      } else if (errorMessage?.includes("5 นาที")) {
+      } else if (errorMessage.includes("5 นาที")) {
         setOtp(new Array(6).fill(""));
         setTimeLeft(300);
         setTimerText("05:00");
-      } else if (errorMessage?.includes("30 นาที")) {
+      } else if (errorMessage.includes("30 นาที")) {
         setOtp(new Array(6).fill(""));
         setTimeLeft(1800);
         setTimerText("30:00");
       }
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -107,12 +129,9 @@ export default function LoginAuthen() {
       newOtp[index] = value;
       setOtp(newOtp);
 
-      // Focus next input field if this input is filled
       if (index < otp.length - 1) {
         const nextInput = document.getElementById(`otp-input-${index + 1}`);
-        if (nextInput) {
-          nextInput.focus();
-        }
+        if (nextInput) nextInput.focus();
       }
     } else {
       e.target.value = "";
@@ -123,19 +142,9 @@ export default function LoginAuthen() {
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
-    if (e.key === "Backspace") {
-      if (otp[index] === "") {
-        // If current input is empty, move focus to the previous input
-        const prevInput = document.getElementById(`otp-input-${index - 1}`);
-        if (prevInput) {
-          prevInput.focus();
-        }
-      } else {
-        // If current input is not empty, delete the value
-        const newOtp = [...otp];
-        newOtp[index] = "";
-        setOtp(newOtp);
-      }
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
     }
   };
 
@@ -169,10 +178,10 @@ export default function LoginAuthen() {
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleOtpChange(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)} // Handle backspace
+                onKeyDown={(e) => handleKeyDown(e, index)}
                 placeholder=""
                 autoFocus={index === 0}
-                disabled={!!(error && error.includes("เกินกำหนด"))}
+                disabled={isVerifying ?? (error && error.includes("เกินกำหนด"))}
               />
             ))}
           </div>
@@ -191,20 +200,20 @@ export default function LoginAuthen() {
         <button
           className="btn btn-primary ibm-plex-sans-thai-semibold"
           onClick={verifyotp}
-          disabled={!isOtpComplete}
+          disabled={!isOtpComplete || isVerifying}
         >
-          เข้าสู่ระบบ
+          {isVerifying ? "กำลังตรวจสอบ..." : "เข้าสู่ระบบ"}
         </button>
 
         <div className="login-text">
           ยังไม่ได้รับรหัส OTP?{" "}
           <span
-            className="login-timer cursor-pointer"
-            onClick={
-              timerText === "ขอรหัสใหม่อีกครั้ง" ? requestOTPAgain : undefined
-            }
+            className={`login-timer cursor-pointer ${
+              timerText === "ขอรหัสใหม่อีกครั้ง" ? "text-primary" : ""
+            } ${isResending ? "opacity-50" : ""}`}
+            onClick={timerText === "ขอรหัสใหม่อีกครั้ง" ? requestOTPAgain : undefined}
           >
-            {timerText}
+            {isResending ? "กำลังส่งรหัสใหม่..." : timerText}
           </span>
         </div>
       </div>

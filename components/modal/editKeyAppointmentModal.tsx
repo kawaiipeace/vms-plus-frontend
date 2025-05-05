@@ -3,10 +3,9 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 import TimePicker from "@/components/timePicker";
-import DatePicker from "@/components/datePicker";
+import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import useSwipeDown from "@/utils/swipeDown";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -22,6 +21,7 @@ interface Props {
   start_time?: string;
   end_time?: string;
   req_id?: string;
+  onUpdate?: () => void;
 }
 
 const schema = yup.object().shape({
@@ -34,9 +34,10 @@ const schema = yup.object().shape({
 const EditKeyAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ place, date, start_time, end_time, req_id }, ref) => {
+>(({ place, date, start_time, end_time, req_id, onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-
+  const datePickerRef = useRef<DatePickerRef>(null);
+  
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
@@ -54,18 +55,40 @@ const EditKeyAppointmentModal = forwardRef<
     resolver: yupResolver(schema),
     defaultValues: {
       receivedKeyPlace: place,
-      receivedKeyDate: date,
-      pickupStartTime: start_time,
-      pickupEndTime: end_time,
+      receivedKeyDate: date ? convertToBuddhistDateTime(date).date : "",
+      pickupStartTime: start_time ? convertToBuddhistDateTime(start_time).time : "",
+      pickupEndTime: end_time ? convertToBuddhistDateTime(end_time).time : "",
     },
   });
 
-  const handleStartTimeChange = (dateStr: string) => {
-    setValue("pickupStartTime", dateStr);
+  // Initialize date picker with default value
+  useEffect(() => {
+    if (date) {
+      const buddhistDate = convertToBuddhistDateTime(date);
+      datePickerRef.current?.setValue(buddhistDate.date);
+      setValue("receivedKeyDate", buddhistDate.date);
+    }
+    // Initialize time values
+    if (start_time) {
+      const startTime = convertToBuddhistDateTime(start_time).time;
+      setValue("pickupStartTime", startTime);
+    }
+    if (end_time) {
+      const endTime = convertToBuddhistDateTime(end_time).time;
+      setValue("pickupEndTime", endTime);
+    }
+  }, [date, start_time, end_time, setValue]);
+
+  const handleDateChange = (dateStr: string) => {
+    setValue("receivedKeyDate", dateStr);
   };
 
-  const handleEndTimeChange = (dateStr: string) => {
-    setValue("pickupEndTime", dateStr);
+  const handleStartTimeChange = (timeStr: string) => {
+    setValue("pickupStartTime", timeStr);
+  };
+
+  const handleEndTimeChange = (timeStr: string) => {
+    setValue("pickupEndTime", timeStr);
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
@@ -75,31 +98,29 @@ const EditKeyAppointmentModal = forwardRef<
 
     const payload = {
       received_key_end_datetime: convertToISO(
-        convertToBuddhistDateTime(data.receivedKeyDate).date,
+        data.receivedKeyDate,
         data.pickupEndTime
       ),
       received_key_place: data.receivedKeyPlace,
       received_key_start_datetime: convertToISO(
-        convertToBuddhistDateTime(data.receivedKeyDate).date,
+        data.receivedKeyDate,
         data.pickupStartTime
       ),
       trn_request_uid: req_id,
     };
 
+
     try {
       const response = await updateRecivedKeyHandover(payload);
       if (response) {
         modalRef.current?.close();
-        router.push(
-          `/administrator/request-list?keychange-req=success&request-id=` +
-            response.data.result.request_no+`&activeTab=ให้กุญแจ`
-        );
+        if(onUpdate){
+          onUpdate();
+        }
       }
     } catch (error) {
       console.error("Network error:", error);
     }
-
-   
   };
 
   return (
@@ -116,7 +137,6 @@ const EditKeyAppointmentModal = forwardRef<
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">แก้ไขนัดหมายรับกุญแจ</div>
-          {/* ปุ่ม close */}
           <button
             type="button"
             onClick={() => modalRef.current?.close()}
@@ -135,6 +155,7 @@ const EditKeyAppointmentModal = forwardRef<
                     type="text"
                     className="form-control"
                     placeholder=""
+                    defaultValue={place}
                     {...register("receivedKeyPlace")}
                   />
                 </div>
@@ -151,10 +172,9 @@ const EditKeyAppointmentModal = forwardRef<
                       </span>
                     </div>
                     <DatePicker
-                      placeholder={convertToBuddhistDateTime(date || "").date}
-                      onChange={(dateStr) =>
-                        setValue("receivedKeyDate", dateStr)
-                      }
+                      placeholder={"ระบุวันที่นัดรับกุญแจ"}
+                      defaultValue={date ? convertToBuddhistDateTime(date).date : ""}
+                      onChange={handleDateChange}
                     />
                   </div>
                 </div>
@@ -170,7 +190,8 @@ const EditKeyAppointmentModal = forwardRef<
                     </div>
                     <TimePicker
                       onChange={handleStartTimeChange}
-                      placeholder={start_time}
+                      defaultValue={start_time ? convertToBuddhistDateTime(start_time).time : ""}
+                      placeholder="HH:MM"
                     />
                   </div>
                 </div>
@@ -187,7 +208,8 @@ const EditKeyAppointmentModal = forwardRef<
                     </div>
                     <TimePicker
                       onChange={handleEndTimeChange}
-                      placeholder={end_time}
+                      defaultValue={end_time ? convertToBuddhistDateTime(end_time).time : ""}
+                      placeholder="HH:MM"
                     />
                   </div>
                 </div>
@@ -195,7 +217,6 @@ const EditKeyAppointmentModal = forwardRef<
             </div>
           </div>
 
-          {/* ปุ่ม action ด้านล่าง */}
           <div className="modal-action sticky bottom-0 gap-3 mt-0">
             <button
               type="button"
@@ -203,7 +224,8 @@ const EditKeyAppointmentModal = forwardRef<
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                modalRef.current?.close()}}
+                modalRef.current?.close();
+              }}
             >
               ปิด
             </button>
@@ -218,7 +240,6 @@ const EditKeyAppointmentModal = forwardRef<
         </form>
       </div>
 
-      {/* BACKDROP */}
       <div
         className="modal-backdrop"
         onClick={() => modalRef.current?.close()}

@@ -1,31 +1,53 @@
 import { VehicleUserTravelCardType } from "@/app/types/vehicle-user-type";
 import ToastCustom from "@/components/toastCustom";
+import { fetchRequestKeyDetail } from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { exportElementAsImage } from "@/utils/exportImage";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 
 interface Props {
   requestData?: VehicleUserTravelCardType;
   onSubmit?: () => void;
+  id?: string;
 }
 
 const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ requestData }, ref) => {
+  ({ requestData, id }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const exportImgRef = useRef<HTMLDivElement>(null);
     const [isExporting, setIsExporting] = useState(false); // State to manage button behavior
+    const [requestGetData, setRequestData] = useState<VehicleUserTravelCardType>();
 
     useImperativeHandle(ref, () => ({
       openModal: () => modalRef.current?.showModal(),
       closeModal: () => modalRef.current?.close(),
     }));
 
+    const fetchRequestDetailfunc = useCallback(async () => {
+      try {
+        // Ensure parsedData is an object before accessing vehicleSelect
+        const response = await fetchRequestKeyDetail(id || "");
+        console.log("data---", response.data);
+        setRequestData(response.data);
+      } catch (error) {
+        console.error("Error fetching vehicle details:", error);
+      }
+    }, [id]);
+
+    useEffect(() => {
+      if(id){
+        fetchRequestDetailfunc();
+      }
+    }, [id]);
+
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-    const startDate = convertToBuddhistDateTime(requestData?.start_datetime || "");
-    const endDate = convertToBuddhistDateTime(requestData?.end_datetime || "");
+    const data = useMemo(() => (requestData ? requestData : requestGetData), [requestData, requestGetData]);
+
+    const startDate = convertToBuddhistDateTime(data?.start_datetime || "");
+    const endDate = convertToBuddhistDateTime(data?.end_datetime || "");
 
     const handleExportImage = () => {
       exportElementAsImage(
@@ -77,8 +99,8 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
                 </div>
                 <div className="flex justify-start col-span-12">
                   <div className="text-left">
-                    <p className="font-bold text-3xl">{requestData?.vehicle_license_plate || "-"}</p>
-                    <p>{requestData?.vehicle_license_plate_province_full || "-"}</p>
+                    <p className="font-bold text-3xl">{data?.vehicle_license_plate || "-"}</p>
+                    <p>{data?.vehicle_license_plate_province_full || "-"}</p>
                   </div>
                 </div>
                 <div className="col-span-12">
@@ -91,7 +113,7 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
                               <i className="material-symbols-outlined">calendar_month</i>
                               <div className="form-plaintext-group">
                                 <div className="form-label">สถานที่ปฏิบัติงาน</div>
-                                <div className="form-text text-left">{requestData?.work_place || "-"}</div>
+                                <div className="form-text text-left">{data?.work_place || "-"}</div>
                               </div>
                             </div>
                           </div>
@@ -101,9 +123,9 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
                               <div className="form-plaintext-group">
                                 <div className="form-label">ผู้อนุมัติ</div>
                                 <div className="form-text text-left">
-                                  {requestData?.approved_request_emp_name || "-"}
+                                  {data?.approved_request_emp_name || "-"}
                                   <br />
-                                  {requestData?.approved_request_dept_sap_short || "-"}
+                                  {data?.approved_request_dept_sap_short || "-"}
                                 </div>
                               </div>
                             </div>
@@ -117,7 +139,7 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
                 <div className="flex justify-start items-center col-span-12 mt-5">
                   <div className="w-[80px] rounded-full overflow-hidden">
                     <Image
-                      src={requestData?.vehicle_user_image_url || "/assets/img/sample-avatar.png"}
+                      src={data?.vehicle_user_image_url || "/assets/img/sample-avatar.png"}
                       className="w-full"
                       width={100}
                       height={100}
@@ -125,8 +147,8 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
                     />
                   </div>
                   <div className="text-left ml-3">
-                    <p className="font-bold text-xl">{requestData?.vehicle_user_emp_name || "-"}</p>
-                    <p>{requestData?.vehicle_user_dept_sap || "-"}</p>
+                    <p className="font-bold text-xl">{data?.vehicle_user_emp_name || "-"}</p>
+                    <p>{data?.vehicle_user_dept_sap || "-"}</p>
                   </div>
                 </div>
               </div>

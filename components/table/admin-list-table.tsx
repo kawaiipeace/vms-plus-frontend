@@ -177,10 +177,10 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
-          row.original.start_datetime
+          row.original.start_datetime || ""
         );
         const endDateTime = convertToBuddhistDateTime(
-          row.original.end_datetime
+          row.original.end_datetime || ""
         );
         return (
           <div className="text-left" data-name="วันที่เดินทาง">
@@ -213,7 +213,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
                 ตีกลับคำขอ
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
+              <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
             ) : value === "อนุมัติแล้ว" ? (

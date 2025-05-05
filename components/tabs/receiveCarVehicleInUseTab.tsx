@@ -1,16 +1,16 @@
 "use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import CarDetailCard2 from "@/components/card/carDetailCard2";
+import ReturnEditCarModal from "@/components/admin/modals/returnEditCarModal";
 import ImagesCarCard from "@/components/card/ImagesCarCard";
 import UserInfoCard from "@/components/card/userInfoCard";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
-import ReturnCarAddStep2Modal from "@/components/modal/returnCarAddStep2Modal";
+import { fetchRequestDetail } from "@/services/keyAdmin";
 import { fetchRequestKeyDetail } from "@/services/masterService";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useRef, useState } from "react";
 import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
-import { fetchRequestDetail } from "@/services/keyAdmin";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import ToastCustom from "../toastCustom";
+import VehicleDetailCard from "../card/vehicleDetailCard";
 
 interface ReceiveCarVehicleInUseTabProps {
   edit?: string;
@@ -33,7 +33,7 @@ const ReceiveCarVehicleInUseTab = ({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const [receiveSuccess, setReceiveSuccess] = useState(true);
+  const [receiveSuccess] = useState(true);
   const [requestData, setRequestData] = useState<RequestDetailType>();
   const [showToast, setShowToast] = useState(false);
 
@@ -47,7 +47,6 @@ const ReceiveCarVehicleInUseTab = ({
           response = await fetchRequestKeyDetail(requestId);
         }
 
-        console.log("data---", response.data);
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
@@ -57,8 +56,10 @@ const ReceiveCarVehicleInUseTab = ({
 
   const handleSubmit = async () => {
     receiveCarVehicleModalRef.current?.closeModal();
+    returnCarAddStep2ModalRef.current?.closeModal();
+    fetchRequestDetailfunc();
     setShowToast(true);
-  }
+  };
 
   useEffect(() => {
     fetchRequestDetailfunc();
@@ -67,18 +68,18 @@ const ReceiveCarVehicleInUseTab = ({
   return (
     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
       {showToast && (
-  <ToastCustom
-    title="แก้ไขข้อมูลสำเร็จ"
-    desc={
-      <>
-        แก้ไขข้อมูลการรับยานพาหนะคำขอเลขที่ 
-        <br />
-        {requestData?.request_no} ถูกตีกลับเรียบร้อยแล้ว
-      </>
-    }
-    status="success"
-  />
-)}
+        <ToastCustom
+          title="แก้ไขข้อมูลสำเร็จ"
+          desc={
+            <>
+              แก้ไขข้อมูลการรับยานพาหนะคำขอเลขที่
+              <br />
+              {requestData?.request_no} เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
       <div className="w-full row-start-2 md:col-start-1 flex flex-col gap-4">
         {receiveSuccess && displayOn !== "vehicle-in-use" && (
           <>
@@ -181,28 +182,35 @@ const ReceiveCarVehicleInUseTab = ({
                 </div>
               </div>
             </div>
-
-            <div className="form-section">
-              <div className="form-section-header">
-                <div className="form-section-header-title">
-                  <p>รูปยานพาหนะก่อนเดินทาง</p>
-                </div>
-                {edit === "edit" && (
-                  <div className="form-section-header-actions">
-                    <button
-                      className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
-                      onClick={() =>
-                        returnCarAddStep2ModalRef.current?.openModal()
-                      }
-                    >
-                      แก้ไข
-                    </button>
+            {(requestData?.vehicle_images_received?.length || 0) > 0 && (
+              <div className="form-section">
+                <div className="form-section-header">
+                  <div className="form-section-header-title">
+                    <p>รูปยานพาหนะก่อนเดินทาง</p>
                   </div>
-                )}
-              </div>
+                  {edit === "edit" && (
+                    <div className="form-section-header-actions">
+                      <button
+                        className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
+                        onClick={() =>
+                          returnCarAddStep2ModalRef.current?.openModal()
+                        }
+                      >
+                        แก้ไข
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-              <ImagesCarCard />
-            </div>
+                <ImagesCarCard
+                  images={
+                    requestData?.vehicle_images_received?.map(
+                      (image) => image.vehicle_img_file || ""
+                    ) || []
+                  }
+                />
+              </div>
+            )}
           </>
         )}
         {displayOn !== "admin" && (
@@ -262,14 +270,16 @@ const ReceiveCarVehicleInUseTab = ({
             </div>
           </div>
         )}
-        {displayOn !== "admin" && (
-          <button
-            className="btn btn-primary w-full"
-            onClick={() => receiveCarVehicleModalRef.current?.openModal()}
-          >
-            รับยานพาหนะ
-          </button>
-        )}
+        {(requestData?.ref_request_status_name === "รอรับยานพาหนะ" ||
+          requestData?.ref_request_status_name === "ตีกลับยานพาหนะ") &&
+          displayOn !== "admin" && (
+            <button
+              className="btn btn-primary w-full"
+              onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+            >
+              รับยานพาหนะ
+            </button>
+          )}
       </div>
 
       <div className="col-span-1 row-start-1 md:row-start-2">
@@ -278,22 +288,24 @@ const ReceiveCarVehicleInUseTab = ({
             <div className="form-section-header-title">ข้อมูลยานพาหนะ</div>
           </div>
 
-          <CarDetailCard2
-            reqId={requestData?.trn_request_uid}
-            vehicle={requestData?.vehicle}
-          />
+          <VehicleDetailCard requestData={requestData} />
         </div>
       </div>
 
       <ReceiveCarVehicleModal
-       onSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         status={edit}
         ref={receiveCarVehicleModalRef}
         requestData={requestData}
         role={role}
       />
-      <ReturnCarAddStep2Modal
-        openStep1={() => {}}
+      <ReturnEditCarModal
+        previewImages={requestData?.vehicle_images_received}
+        requestData={requestData}
+        status="edit"
+        useBy="admin"
+        reqId={requestData?.trn_request_uid}
+        onSubmit={handleSubmit}
         ref={returnCarAddStep2ModalRef}
       />
     </div>

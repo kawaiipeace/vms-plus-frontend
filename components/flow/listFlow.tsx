@@ -3,7 +3,7 @@ import MobileFileBackCard from "@/components/card/mobileFileBackCard"; // Make s
 import MobileWaitForKeyCard from "@/components/card/mobileWaitForKeyCard";
 import MobileWaitingCard from "@/components/card/mobileWaitingCard";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { useState } from "react";
+import MobileDriverCard from "../card/mobileDriverCard";
 import MobileRejectCard from "../card/mobileRejectCard";
 import MobileTravelLogCard from "../card/mobileTravelLogCard";
 import MobileWaitForVehicleCard from "../card/mobileWaitForVehicleCard";
@@ -14,18 +14,6 @@ interface Props {
 }
 
 export default function ListFlow({ requestData }: Props) {
-  const [travelLogSubmitted, setTravelLogSubmitted] = useState(false);
-  const [carReturned, setCarReturned] = useState(false);
-
-  const handleReviewCar = () => {
-    console.log("Reviewing car drive...");
-  };
-
-  const handleReturnCar = () => {
-    console.log("Returning the car...");
-    setCarReturned(true); // Simulate car return
-  };
-
   return (
     <>
       {requestData.map((request, index) => {
@@ -42,8 +30,8 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
                 request.work_place || "-",
-                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${
-                  convertToBuddhistDateTime(request.end_datetime).date || "-"
+                `${convertToBuddhistDateTime(request?.start_datetime || "").date || "-"} - ${
+                  convertToBuddhistDateTime(request.end_datetime || "").date || "-"
                 }`,
               ]}
               cardItemText={request?.ref_request_status_name}
@@ -62,8 +50,8 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
                 request.work_place || "-",
-                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${
-                  convertToBuddhistDateTime(request.end_datetime).date || "-"
+                `${convertToBuddhistDateTime(request.start_datetime || "").date || "-"} - ${
+                  convertToBuddhistDateTime(request.end_datetime || "").date || "-"
                 }`,
               ]}
               cardItemText={request?.ref_request_status_name}
@@ -83,8 +71,8 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={request.vehicle_license_plate || ""}
               supportingTexts={[
                 request.work_place || "-",
-                `${convertToBuddhistDateTime(request.start_datetime).date || "-"} - ${
-                  convertToBuddhistDateTime(request.end_datetime).date || "-"
+                `${convertToBuddhistDateTime(request.start_datetime || "").date || "-"} - ${
+                  convertToBuddhistDateTime(request.end_datetime || "").date || "-"
                 }`,
               ]}
               cardItemText={request?.ref_request_status_name}
@@ -99,19 +87,20 @@ export default function ListFlow({ requestData }: Props) {
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
               licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
-              location={request?.work_place}
+              location={request?.work_place || ""}
               dateRange={
-                convertToBuddhistDateTime(request?.start_datetime).date +
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
                 " - " +
-                convertToBuddhistDateTime(request?.end_datetime).date
+                convertToBuddhistDateTime(request?.end_datetime || "").date
               }
-              pickupLocation={request?.received_key_place}
-              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
+              pickupLocation={request?.received_key_place || ""}
+              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime || "").date}
               pickupTime={
-                convertToBuddhistDateTime(request?.received_key_start_datetime).time +
+                convertToBuddhistDateTime(request?.received_key_start_datetime || "").time +
                 " - " +
-                convertToBuddhistDateTime(request?.received_key_end_datetime).time
+                convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
               }
+              is_pea_employee_driver={request?.is_pea_employee_driver?.toString()}
             />
           );
         }
@@ -122,19 +111,20 @@ export default function ListFlow({ requestData }: Props) {
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
               licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
-              location={request?.work_place}
+              location={request?.work_place || ""}
               dateRange={
-                convertToBuddhistDateTime(request?.start_datetime).date +
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
                 " - " +
-                convertToBuddhistDateTime(request?.end_datetime).date
+                convertToBuddhistDateTime(request?.end_datetime || "").date
               }
-              pickupLocation={request?.received_key_place}
-              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
+              pickupLocation={request?.received_key_place || ""}
+              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime || "").date}
               pickupTime={
-                convertToBuddhistDateTime(request?.received_key_start_datetime).time +
+                convertToBuddhistDateTime(request?.received_key_start_datetime || "").time +
                 " - " +
-                convertToBuddhistDateTime(request?.received_key_end_datetime).time
+                convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
               }
+              is_pea_employee_driver={request?.is_pea_employee_driver?.toString()}
             />
           );
         }
@@ -145,20 +135,20 @@ export default function ListFlow({ requestData }: Props) {
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
               licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
-              location={request?.work_place}
+              location={request?.work_place || ""}
               dateRange={
-                convertToBuddhistDateTime(request?.start_datetime).date +
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
                 " - " +
-                convertToBuddhistDateTime(request?.end_datetime).date
+                convertToBuddhistDateTime(request?.end_datetime || "").date
               }
-              startDate={convertToBuddhistDateTime(request?.start_datetime).date}
-              endDate={convertToBuddhistDateTime(request?.end_datetime).date}
-              pickupLocation={request?.received_key_place}
-              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime).date}
+              startDate={convertToBuddhistDateTime(request?.start_datetime || "").date}
+              endDate={convertToBuddhistDateTime(request?.end_datetime || "").date}
+              pickupLocation={request?.received_key_place || ""}
+              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime || "").date}
               pickupTime={
-                convertToBuddhistDateTime(request?.received_key_start_datetime).time +
+                convertToBuddhistDateTime(request?.received_key_start_datetime || "").time +
                 " - " +
-                convertToBuddhistDateTime(request?.received_key_end_datetime).time
+                convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
               }
             />
           );
@@ -170,28 +160,66 @@ export default function ListFlow({ requestData }: Props) {
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
               licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
-              location={request?.work_place}
+              location={request?.work_place || ""}
               dateRange={
-                convertToBuddhistDateTime(request?.start_datetime).date +
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
                 " - " +
-                convertToBuddhistDateTime(request?.end_datetime).date
+                convertToBuddhistDateTime(request?.end_datetime || "").date
               }
             />
           );
         }
 
-        if (ref_request_status_name === "ถูกตีกลับ") {
+        if (ref_request_status_name === "ตีกลับยานพาหนะ") {
           return (
             <MobileRejectCard
+              title="ตีกลับยานพาหนะ"
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
               licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
-              location={request?.work_place}
+              location={request?.work_place || ""}
               dateRange={
-                convertToBuddhistDateTime(request?.start_datetime).date +
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
                 " - " +
-                convertToBuddhistDateTime(request?.end_datetime).date
+                convertToBuddhistDateTime(request?.end_datetime || "").date
               }
+              rating={undefined}
+            />
+          );
+        }
+
+        if (ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ") {
+          return (
+            <MobileRejectCard
+              title="คืนยานพาหนะไม่สำเร็จ"
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place || ""}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime || "").date
+              }
+              rating={undefined}
+            />
+          );
+        }
+
+        if (ref_request_status_name === "เสร็จสิ้น") {
+          return (
+            <MobileDriverCard
+              key={request.trn_request_uid || index}
+              title={"เสร็จสิ้น"}
+              carRegis={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place || ""}
+              date={
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime || "").date
+              }
+              cardType="complete"
+              rating={undefined}
             />
           );
         }

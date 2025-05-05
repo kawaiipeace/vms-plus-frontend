@@ -40,8 +40,8 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
 
   return (
     <div className="card card-approvalprogress">
-      <div className="card-header">
-        <div className="card-title">สถานะคำขอใช้</div>
+      <div className="card-header title-progress-header">
+        <div className="card-title title-progress">สถานะคำขอใช้</div>
       </div>
       <div className="card-body">
         {/* Mobile View */}

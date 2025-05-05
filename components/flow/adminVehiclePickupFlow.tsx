@@ -84,7 +84,7 @@ export default function AdminVehiclePickupFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
-    console.log('department',department);
+ 
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -98,7 +98,7 @@ export default function AdminVehiclePickupFlow() {
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
-    console.log('adminsummary',summary)
+
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
       ...prevParams,
@@ -176,8 +176,6 @@ export default function AdminVehiclePickupFlow() {
    
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log("res-----", response.data);
-          console.log('list',requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 

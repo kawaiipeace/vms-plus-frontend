@@ -218,7 +218,7 @@ export default function ProcessThree() {
       value: formData.driverEmpID,
       label: `${formData.driverEmpName} (${formData.driverDeptSap})`,
     };
-    setSelectedVehicleUserOption(selectedDriverOption);
+    // setSelectedVehicleUserOption(selectedDriverOption);
 
     const empData = vehicleUserDatas.find((user: { emp_id: string }) => user.emp_id === selectedDriverOption.value);
 
@@ -354,11 +354,6 @@ export default function ProcessThree() {
                           onChange={handleVehicleUserChange}
                         />
 
-                        {/* <!-- <div className="input-group-append">
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
-                        </div> --> */}
                       </div>
                     </div>
 
@@ -372,13 +367,9 @@ export default function ProcessThree() {
                             </span>
                           </div>
                           <input type="text" className="form-control" {...register("driverDeptSap")} placeholder="" />
-                          {/* <!-- <div className="input-group-append">
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
-                        </div> --> */}
+
                         </div>
-                        {/* <!-- <span className="form-helper">Helper</span> --> */}
+
                       </div>
                     </div>
 

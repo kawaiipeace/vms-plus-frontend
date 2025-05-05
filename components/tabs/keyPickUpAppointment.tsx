@@ -7,6 +7,7 @@ import AppointmentDriverUserCard from "../card/appointmentDriverUserCard";
 import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import DriverUserAppointmentCard from "../card/driverUserAppointmentCard";
 import CallToDriverModal from "../modal/callToDriverModal";
+import VehicleDetailCard from "../card/vehicleDetailCard";
 
 interface Props {
   requestId: string;
@@ -58,7 +59,10 @@ const KeyPickUpAppointment = ({ requestId }: Props) => {
               <div className="form-section-header-title">ข้อมูลยานพาหนะ</div>
             </div>
 
-            <CarDetailCard2 reqId={requestData?.trn_request_uid} vehicle={requestData?.vehicle} />
+            <VehicleDetailCard
+                       requestData={requestData}
+                     />
+         
           </div>
         </div>
 

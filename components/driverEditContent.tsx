@@ -9,6 +9,9 @@ import ImagesCarCard from "@/components/card/ImagesCarCard";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import dayjs from "dayjs";
 
+dayjs.extend(require("dayjs/plugin/buddhistEra"));
+dayjs.locale("th");
+
 interface DriverEditContentProps {
   data?: RequestDetailType;
   progressType: string;
@@ -63,18 +66,16 @@ export const DriverEditContent = ({
                 <DriverReceiveCarInfoCard
                   date={
                     data?.accepted_vehicle_datetime
-                      ? dayjs(data?.accepted_vehicle_datetime).format(
-                          "DD/MM/YYYY"
-                        )
+                      ? dayjs(data?.pickup_datetime).format("DD/MM/BBBB")
                       : "-"
                   }
                   time={
                     data?.accepted_vehicle_datetime
-                      ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                      ? dayjs(data?.pickup_datetime).format("HH:mm")
                       : "-"
                   }
-                  mile_end={data?.mile_end?.toString() || "-"}
-                  fuel_end={data?.fuel_end?.toString() || "-"}
+                  mile_end={data?.mile_start?.toString() || "-"}
+                  fuel_end={data?.fuel_start?.toString() || "-"}
                   remark={data?.remark || "-"}
                 />
               </div>
@@ -155,8 +156,11 @@ export const DriverEditContent = ({
                 />
               </div>
               {progressType === "คืนยานพาหนะไม่สำเร็จ" && (
-                <div className="w-full">
-                  <button className="btn btn-primary w-full">
+                <div className="w-full mt-8">
+                  <button
+                    className="btn btn-primary w-full"
+                    onClick={() => returnCarAddModalRef.current?.openModal()}
+                  >
                     คืนยานพาหนะอีกครั้ง
                   </button>
                 </div>
@@ -165,13 +169,25 @@ export const DriverEditContent = ({
           )}
         </div>
       </div>
-      <ReceiveCarVehicleModal status="edit" ref={receiveCarVehicleModalRef} />
-      <ReturnCarAddModal ref={returnCarAddModalRef} />
+      <ReceiveCarVehicleModal
+        status="edit"
+        requestData={data}
+        role="driver"
+        ref={receiveCarVehicleModalRef}
+      />
+      <ReturnCarAddModal
+        useBy="driver"
+        requestData={data}
+        ref={returnCarAddModalRef}
+        progress={progressType}
+      />
       <ReturnCarAddStep2Modal
         status="edit"
         useBy="driver"
         openStep1={() => () => {}}
+        requestData={data}
         ref={returnCarAddStep2ModalRef}
+        progress={progressType}
       />
     </>
   );
