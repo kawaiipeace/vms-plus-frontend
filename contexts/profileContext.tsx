@@ -1,5 +1,5 @@
+// contexts/profileContext.tsx
 "use client";
-
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { fetchProfile } from "@/services/authService";
 import { useRouter } from "next/navigation";
@@ -12,13 +12,13 @@ interface Profile {
   roles: string[];
 }
 
-
 interface ProfileContextType {
   profile: Profile | null;
   setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -30,38 +30,50 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const router = useRouter();
 
-  // Temporary addition to your SideBar component (remove before production)
-
-
   useEffect(() => {
-    const initializeProfile = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return;
-      }
-  
-      setIsAuthenticated(true);
-  
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken || profile) {
+      setLoading(false);
+      return;
+    }
+
+    const loadProfile = async () => {
       try {
+        setLoading(true);
         const response = await fetchProfile();
         setProfile(response.data);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        setError("Error fetching profile");
-        router.push("/");
+        setIsAuthenticated(true);
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+        setError("Failed to load user profile");
+        handleLogout();
       } finally {
         setLoading(false);
       }
     };
-  
-    initializeProfile();
-  }, []);
-  
+
+    loadProfile();
+  }, [profile]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setProfile(null);
+    setIsAuthenticated(false);
+    router.push("/");
+  };
 
   return (
-    <ProfileContext.Provider value={{ profile, setProfile, loading, error, isAuthenticated }}>
+    <ProfileContext.Provider
+      value={{
+        profile,
+        setProfile,
+        loading,
+        error,
+        isAuthenticated,
+        setIsAuthenticated,
+      }}
+    >
       {children}
     </ProfileContext.Provider>
   );

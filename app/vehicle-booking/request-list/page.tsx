@@ -3,9 +3,11 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import RequestTabs from "@/components/tabs/requestTabs";
 import ToastCustom from "@/components/toastCustom";
+import { useProfile } from "@/contexts/profileContext";
 import { useSidebar } from "@/contexts/sidebarContext";
+import { fetchProfile } from "@/services/authService";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -16,6 +18,18 @@ function RequestListContent() {
   const licensePlate = searchParams.get("license-plate");
   const returned = searchParams.get("returned");
   const requestNo = searchParams.get("request-no");
+
+  const {profile, setProfile, setIsAuthenticated} = useProfile();
+
+  useEffect(() => {
+    if (!profile && localStorage.getItem("accessToken")) {
+      fetchProfile().then(res => {
+        setProfile(res.data);
+        setIsAuthenticated(true);
+      });
+    }
+  }, []);
+  
 
   return (
     <>

@@ -5,24 +5,27 @@ import { logOut } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
+import { useEffect } from "react";
 
 export default function Header() {
   const { profile } = useProfile();
   const router = useRouter();
 
+  useEffect(() => {}, [profile]);
+
   const logOutFunc = async () => {
     try {
       const response = await logOut();
-        if(response){
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          const logoutUrl = response.data.logout_url;
-          if (logoutUrl != "") {
-            window.open(logoutUrl, "_blank");
-          }
+      if (response) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        const logoutUrl = response.data.logout_url;
+        if (logoutUrl != "") {
+          window.open(logoutUrl, "_blank");
         }
- 
-        router.push("/");
+      }
+
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
@@ -34,7 +37,12 @@ export default function Header() {
         <div className="navbar-start">
           <div className="header-brand block md:hidden">
             <a href="">
-              <Image src="/assets/img/brand.svg" width={98} height={40} alt=""></Image>
+              <Image
+                src="/assets/img/brand.svg"
+                width={98}
+                height={40}
+                alt=""
+              ></Image>
             </a>
           </div>
           <ToggleSidebar />
@@ -52,20 +60,35 @@ export default function Header() {
           <div className="header-users">
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="">
-                <Image src="/assets/img/avatar.svg" width={36} height={36} alt="User Avatar"></Image>
+                <Image
+                  src="/assets/img/avatar.svg"
+                  width={36}
+                  height={36}
+                  alt="User Avatar"
+                ></Image>
               </div>
-              <ul tabIndex={0} className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-64 p-2 shadow">
+              <ul
+                tabIndex={0}
+                className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-64 p-2 shadow"
+              >
                 {profile && (
                   <li className="nav-item">
                     <div className="nav-link sidebar-users">
                       <div className="avatar avatar-sm">
-                        <Image src="/assets/img/avatar.svg" width={36} height={36} alt="Profile Avatar"></Image>
+                        <Image
+                          src="/assets/img/avatar.svg"
+                          width={36}
+                          height={36}
+                          alt="Profile Avatar"
+                        ></Image>
                       </div>
                       <div className="sidebar-users-content">
                         <div className="sidebar-users-name">
                           {profile.first_name} {profile.last_name}
                         </div>
-                        <div className="sidebar-users-position">{profile.dept_sap_full}</div>
+                        <div className="sidebar-users-position">
+                          {profile.dept_sap_full}
+                        </div>
                       </div>
                     </div>
                   </li>
