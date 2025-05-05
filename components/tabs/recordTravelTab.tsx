@@ -28,7 +28,7 @@ function RequestListContent({ role }: { role: string }) {
       {createReq === "success" && (
         <ToastCustom
           title="เพิ่มข้อมูลการเดินทางสำเร็จ"
-          desc={`เพิ่มข้อมูลการเดินทางวันที่ ${formatDateTime.date} เรียบร้อยแล้ว`}
+          desc={<>เพิ่มข้อมูลการเดินทางวันที่ {formatDateTime.date}  <br></br>เรียบร้อยแล้ว</>}
           status="success"
           styleText="!mx-auto"
           searchParams={role === "user" ? "activeTab=ข้อมูลการเดินทาง" : "progressType=บันทึกการเดินทาง"}

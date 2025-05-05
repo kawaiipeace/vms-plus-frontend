@@ -236,7 +236,7 @@ const RecordTravelAddModal = forwardRef<
 
             <button
               className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
-              onClick={() => modalRef.current?.close}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); modalRef.current?.close() } }
             >
               <i className="material-symbols-outlined">close</i>
             </button>
