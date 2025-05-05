@@ -1,6 +1,8 @@
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { fetchRequestKeyDetail } from "@/services/masterService";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReviewCarDriveModal from "../modal/reviewCarDriveModal";
 
 interface MobileWaitForKeyCardProps {
@@ -21,6 +23,7 @@ export default function MobileRejectCard({
   rating,
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
+  const [requestData, setRequestData] = useState<RequestDetailType>();
 
   const reviewCarViewDriveModalRef = useRef<{
     openModal: () => void;
@@ -31,6 +34,20 @@ export default function MobileRejectCard({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const fetchRequestDetailfunc = useCallback(async () => {
+    try {
+      // Ensure parsedData is an object before accessing vehicleSelect
+      const response = await fetchRequestKeyDetail(id || "");
+      setRequestData(response.data);
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchRequestDetailfunc();
+  }, [fetchRequestDetailfunc]);
 
   const goToDetail = () => {
     router.push(`/vehicle-in-use/user/${id}?activeTab=รายละเอียดคำขอ`);
@@ -43,7 +60,11 @@ export default function MobileRejectCard({
           <div className="card-body-inline">
             <div className="img img-square img-avatar flex-grow-1 align-self-start">
               <Image
-                src="/assets/img/graphic/status_vehicle_inspection.png"
+                src={
+                  title === "คืนยานพาหนะไม่สำเร็จ"
+                    ? "/assets/img/graphic/status_vehicle_reject.png"
+                    : "/assets/img/graphic/status_vehicle_inspection.png"
+                }
                 width={100}
                 height={100}
                 alt="status key pickup"
@@ -80,13 +101,12 @@ export default function MobileRejectCard({
             >
               แก้ไข
             </button>
-            {rating ? (
+            {rating || (requestData?.satisfaction_survey_answers?.length || 0) > 0 ? (
               <button
                 className="btn btn-secondary flex-1"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
-                  reviewCarDriveModalRef.current?.openModal();
+                  reviewCarViewDriveModalRef.current?.openModal();
                 }}
               >
                 ดูคะแนนผู้ขับขี่
@@ -96,8 +116,7 @@ export default function MobileRejectCard({
                 className="btn btn-secondary flex-1"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
-                  reviewCarViewDriveModalRef.current?.openModal();
+                  reviewCarDriveModalRef.current?.openModal();
                 }}
               >
                 ให้คะแนนผู้ขับขี่

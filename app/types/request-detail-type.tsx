@@ -1,5 +1,6 @@
 import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import { SatisfactionSurveyQuestions } from "@/components/modal/reviewCarDriveModal";
 import { ProgressRequestType } from "./progress-request-status";
 
 export type RequestDetailType = Partial<{
@@ -113,13 +114,20 @@ export type RequestDetailType = Partial<{
   receiver_key_type_detail: {
     ref_vehicle_key_type_code: string;
     ref_vehicle_key_type_name: string;
-  }
+  };
   vehicle_image_inspect: VehicleImage[];
   next_request: NextRequest;
-  mile_used: number,
-  add_fuels_count: number,
-  trip_details_count: number
+  mile_used: number;
+  add_fuels_count: number;
+  trip_details_count: number;
+  satisfaction_survey_answers: satisfactionSurveyAnswers[];
 }>;
+
+export interface satisfactionSurveyAnswers {
+  mas_satisfaction_survey_questions_code: number;
+  survey_answer: number;
+  satisfaction_survey_questions: SatisfactionSurveyQuestions;
+}
 
 export type RequestVehicleType = Partial<{
   available_units: number;
@@ -160,4 +168,3 @@ export interface NextRequest {
   vehicle_user_position: string;
   work_place: string;
 }
-

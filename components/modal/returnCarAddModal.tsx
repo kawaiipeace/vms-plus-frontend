@@ -82,9 +82,10 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
 
     const defaultData = useCallback(
       (data: RequestDetailType) => {
-        datePickerRef.current?.setValue(data?.end_datetime || "");
-        setSelectedDate(data?.end_datetime || "");
-        setSelectedTime(data?.end_datetime || "");
+        // datePickerRef.current?.setValue(data?.end_datetime || "");
+        const { date, time } = convertToBuddhistDateTime(data?.end_datetime || "");
+        setSelectedDate(date);
+        setSelectedTime(time);
         setCleanType(data?.returned_cleanliness_level?.toLocaleString() || "");
         setFuelQuantity(data?.fuel_start || 0);
         if (edit) {
@@ -135,11 +136,10 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
     const handleSubmit = async () => {
       try {
         const imageList = data?.vehicle_images_returned;
+        console.log("selectedDate", selectedDate);
+        console.log("selectedTime", selectedTime);
 
-        const returned_vehicle_datetime =
-          selectedDate && selectedTime
-            ? convertToISO(convertToBuddhistDateTime(selectedDate).date, convertToBuddhistDateTime(selectedTime).time)
-            : "";
+        const returned_vehicle_datetime = selectedDate && selectedTime ? convertToISO(selectedDate, selectedTime) : "";
 
         const formData = {
           fuel_end: fuelQuantity,
@@ -245,7 +245,8 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                         <DatePicker
                           placeholder={"ระบุวันที่"}
                           onChange={(date) => setSelectedDate(date)}
-                          ref={datePickerRef}
+                          defaultValue={selectedDate}
+                          // ref={datePickerRef}
                         />
                       </div>
                     </div>
@@ -263,8 +264,8 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
                         </div>
                         <TimePicker
                           placeholder="ระบุเวลา"
-                          onChange={(time) => setSelectedTime(time)}
                           defaultValue={selectedTime}
+                          onChange={(time) => setSelectedTime(time)}
                         />
                       </div>
                     </div>

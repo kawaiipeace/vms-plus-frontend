@@ -173,6 +173,25 @@ export default function ListFlow({ requestData }: Props) {
         if (ref_request_status_name === "ตีกลับยานพาหนะ") {
           return (
             <MobileRejectCard
+              title="ตีกลับยานพาหนะ"
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              location={request?.work_place || ""}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime || "").date
+              }
+              rating={undefined}
+            />
+          );
+        }
+
+        if (ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ") {
+          return (
+            <MobileRejectCard
+              title="คืนยานพาหนะไม่สำเร็จ"
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
               licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
