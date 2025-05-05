@@ -7,7 +7,6 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 
 interface Props {
@@ -43,19 +42,20 @@ const ApproveRequestModal = forwardRef<
             ? await firstApproverApproveRequest(payload)
             : await finalApproveRequest(payload);
 
-        if (res) {
-          modalRef.current?.close();
-
-          role === "firstApprover"
-            ? router.push(
-                "/administrator/booking-approver?approve-req=success&request-id=" +
-                  res.data.result?.request_no
-              )
-            : router.push(
-                "/administrator/booking-final?approve-req=success&request-id=" +
-                  res.data.result?.request_no
-              );
-        }
+            if (res) {
+              modalRef.current?.close();
+            
+              const requestId = res.data?.result?.request_no;
+              if (!requestId) return; // optional: handle missing request ID
+            
+              const basePath =
+                role === "firstApprover"
+                  ? "/administrator/booking-approver"
+                  : "/administrator/booking-final";
+            
+              router.push(`${basePath}?approve-req=success&request-id=${requestId}`);
+            }
+            
       } catch (error) {
         console.error("error:", error);
       }
