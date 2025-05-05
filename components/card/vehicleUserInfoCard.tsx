@@ -22,6 +22,7 @@ export default function VehicleUserInfoCard({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('idvehicle',id);
         const res = await fetchVehicleUsers(id);
         console.log("vehicledata", res);
         let user = res.data[0];
