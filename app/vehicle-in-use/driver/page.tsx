@@ -8,17 +8,34 @@ import DriverProgressTab from "@/components/tabs/driverProgressTab";
 import DriverSoonTab from "@/components/tabs/driverSoonTab";
 import DriverFinishTab from "@/components/tabs/driverFinishTab";
 import DriverCancelTab from "@/components/tabs/driverCancelTab";
-import { VehicleInUseDriverMenu } from "@/app/types/vehicle-in-use-driver-type";
+import {
+  ReceivedKeyDriverParams,
+  VehicleInUseDriverMenu,
+} from "@/app/types/vehicle-in-use-driver-type";
 import { fetchMenus, receivedKeyDriver } from "@/services/vehicleInUseDriver";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import "dayjs/locale/th";
 import dayjs from "dayjs";
 import { RequestListType } from "@/app/types/request-list-type";
+import PaginationControls from "@/components/table/pagination-control";
+import { PaginationType } from "@/app/types/request-action-type";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
+const paginationDefault: PaginationType = {
+  limit: 10,
+  page: 1,
+  total: 0,
+  totalPages: 0,
+};
+
 export default function DriverMain() {
+  const [pagination, setPagination] =
+    useState<PaginationType>(paginationDefault);
+  const [params, setParams] = useState<ReceivedKeyDriverParams>({
+    ref_request_status_code: "51,60,70,71",
+  });
   const [statusData, setStatusData] = useState<VehicleInUseDriverMenu[]>([]);
   const [data, setData] = useState<RequestListType[]>([]);
   const [activeTab, setActiveTab] = useState(0);
@@ -62,10 +79,10 @@ export default function DriverMain() {
 
     const fetchReceivedKeyDriverFunc = async () => {
       try {
-        const params = {};
         const response = await receivedKeyDriver(params);
         const result = response.data;
         setData(result.requests ?? []);
+        setPagination({ ...result?.pagination });
       } catch (error) {
         console.error("Error fetching status data:", error);
       }
@@ -73,7 +90,7 @@ export default function DriverMain() {
 
     fetchMenuFunc();
     fetchReceivedKeyDriverFunc();
-  }, []);
+  }, [params]);
 
   const getTabContent = (code: string) => {
     switch (code) {
@@ -108,6 +125,14 @@ export default function DriverMain() {
   };
 
   const tabs = getTabs();
+
+  const handlePageChange = (page: number) => {
+    setParams({ ...params, page });
+  };
+
+  const handlePageSizeChange = (pageSize: number) => {
+    setParams({ ...params, limit: pageSize });
+  };
 
   return (
     <>
@@ -150,7 +175,14 @@ export default function DriverMain() {
                     className={`tab transition-colors duration-300 ease-in-out ${
                       activeTab === index ? "active" : "text-gray-600"
                     }`}
-                    onClick={() => setActiveTab(index)}
+                    onClick={() => {
+                      setActiveTab(index);
+                      setParams({
+                        ...params,
+                        page: 1,
+                        ref_request_status_code: menuOrder[index],
+                      });
+                    }}
                   >
                     <div className="flex gap-2 items-center">
                       {tab.label}
@@ -164,7 +196,16 @@ export default function DriverMain() {
                 ))}
               </div>
 
-              {tabs[activeTab]?.content}
+              <div>{tabs[activeTab]?.content}</div>
+              <div>
+                {data.length > 0 && (
+                  <PaginationControls
+                    pagination={pagination}
+                    onPageChange={handlePageChange}
+                    onPageSizeChange={handlePageSizeChange}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
