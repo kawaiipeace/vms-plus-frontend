@@ -56,7 +56,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         setOpenMenus(["collapseLink4"]);
       }
     }
-  }, [menuName]);
+  }, [menuName, profile]);
 
   useEffect(() => {
     if (isPinned) {
