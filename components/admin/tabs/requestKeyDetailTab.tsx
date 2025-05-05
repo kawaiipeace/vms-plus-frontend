@@ -9,9 +9,9 @@ import TravelInfoTab from "../travelInfoTab";
 import ReturnCarTab from "@/components/admin/returnCarTab";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import RecordFuelTab from "@/components/tabs/recordFuelTab";
 import { fetchRequestKeyDetail } from "@/services/masterService";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import AdminRecordFuelTab from "@/components/admin/tabs/adminRecordFuelTab";
 
 interface Props {
   requestId: string;
@@ -113,7 +113,7 @@ export default function RequestDetailTabs({
         ? [
             {
               label: "การเติมเชื้อเพลิง",
-              content: <RecordFuelTab requestId={requestId} role="admin" />,
+              content: <AdminRecordFuelTab requestId={requestId} />,
               badge: "",
             },
           ]

@@ -37,25 +37,25 @@ export default function CarDetailInsCard({ requestData }: CarDetailCardProps) {
               {/* Mileage before trip */}
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">swap_driving_apps_wheel</i>
-                <span className="card-item-text">เลขไมล์ก่อนเดินทาง: {requestData?.mile_start || 'N/A'} กม.</span>
+                <div className="card-item-text w-full !flex justify-between">เลขไมล์ก่อนเดินทาง <span className="text-color-secondary">{requestData?.mile_start || 'N/A'} </span> </div>
               </div>
               
               {/* Trip distance */}
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">road</i>
-                <span className="card-item-text">ระยะทางครั้งนี้: N/A กม.</span>
+                <div className="card-item-text w-full !flex justify-between">ระยะทางครั้งนี้ <span className="text-color-secondary">  {requestData?.mile_used} km</span></div>
               </div>
               
               {/* Fuel refill */}
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">local_gas_station</i>
-                <span className="card-item-text">เติมเชื้อเพลิง: N/A ลิตร</span>
+                <div className="card-item-text w-full !flex justify-between">เติมเชื้อเพลิงง <span className="text-color-secondary"> {requestData?.add_fuels_count} ครั้ง</span></div>
               </div>
               
               {/* Trip log */}
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">edit_location_alt</i>
-                <span className="card-item-text">บันทึกเดินทาง</span>
+                <div className="card-item-text w-full !flex justify-between">บันทึกเดินทาง <span className="text-color-secondary"> {requestData?.trip_details_count} รายการ </span></div>
               </div>
             </div>
           </div>

@@ -116,6 +116,9 @@ export type RequestDetailType = Partial<{
   }
   vehicle_image_inspect: VehicleImage[];
   next_request: NextRequest;
+  mile_used: number,
+  add_fuels_count: number,
+  trip_details_count: number
 }>;
 
 export type RequestVehicleType = Partial<{
