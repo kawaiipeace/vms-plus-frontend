@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import MobileDriverCard from "@/components/card/mobileDriverCard";
 import Image from "next/image";
-import { ReceivedKeyDriver } from "@/app/types/vehicle-in-use-driver-type";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { PaginationType } from "@/app/types/request-action-type";
+import RequestListTable from "../table/request-list-table";
+import { RequestListType } from "@/app/types/request-list-type";
 
 interface DriverCancelTabProps {
-  data: ReceivedKeyDriver[];
+  data: RequestListType[];
 }
 
 const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
+  const [pagination, setPagination] = useState<PaginationType>({
+    limit: 100,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
+
   const getDateMMYYYY = (date: string) => {
     const [month, year] = date.split("-");
     const monthNumber = parseInt(month) - 1;
@@ -30,7 +39,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
       const month_year = dayjs(n.end_datetime).format("MM-YYYY");
       if (p[month_year]) return { ...p, [month_year]: [...p[month_year], n] };
       return { ...p, [month_year]: [n] };
-    }, {} as { [key: string]: ReceivedKeyDriver[] });
+    }, {} as { [key: string]: RequestListType[] });
 
     return cancelData;
   };
@@ -53,7 +62,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
     <>
       {data.length !== 0 ? (
         <>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:hidden">
             {monthSorted.map((key) => {
               return (
                 <div key={key}>
@@ -73,7 +82,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                       } = item;
 
                       const license_plate_full = `${license_plate} ${province}`;
-                      const date = getDateRange(s_date, e_date);
+                      const date = getDateRange(s_date || "", e_date || "");
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (
@@ -84,7 +93,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                           <MobileDriverCard
                             title={"ยกเลิกภารกิจ"}
                             carRegis={license_plate_full}
-                            location={item.work_place}
+                            location={item.work_place || ""}
                             date={date}
                             cardType="cancel"
                           />
@@ -95,6 +104,13 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                 </div>
               );
             })}
+          </div>
+          <div className="hidden md:block">
+            <RequestListTable
+              defaultData={data}
+              pagination={pagination}
+              role="driver"
+            />
           </div>
         </>
       ) : (

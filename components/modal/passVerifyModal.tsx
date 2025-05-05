@@ -19,7 +19,7 @@ interface Props {
   id?: string;
   role?: string;
   confirmText: string;
-  pickupData?: { place: string; datetime: string } | null;
+  pickupData?: { place: string; datetime: string; endtime: string } | null;
   onBack?: () => void;
 }
 
@@ -99,6 +99,7 @@ const PassVerifyModal = forwardRef<
           approved_request_emp_id: selectedVehicleUserOption?.value || "",
           received_key_place: pickupData?.place || "",
           received_key_start_datetime: pickupData?.datetime || "",
+          received_key_end_datetime: pickupData?.endtime || "",
         };
 
         const res = await adminApproveRequest(payload);

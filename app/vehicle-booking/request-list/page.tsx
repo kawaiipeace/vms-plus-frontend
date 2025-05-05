@@ -3,9 +3,11 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import RequestTabs from "@/components/tabs/requestTabs";
 import ToastCustom from "@/components/toastCustom";
+import { useProfile } from "@/contexts/profileContext";
 import { useSidebar } from "@/contexts/sidebarContext";
+import { fetchProfile } from "@/services/authService";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -14,6 +16,20 @@ function RequestListContent() {
   const requestId = searchParams.get("request-id");
   const receivedKey = searchParams.get("received-key");
   const licensePlate = searchParams.get("license-plate");
+  const returned = searchParams.get("returned");
+  const requestNo = searchParams.get("request-no");
+
+  const {profile, setProfile, setIsAuthenticated} = useProfile();
+
+  useEffect(() => {
+    if (!profile && localStorage.getItem("accessToken")) {
+      fetchProfile().then(res => {
+        setProfile(res.data);
+        setIsAuthenticated(true);
+      });
+    }
+  }, []);
+  
 
   return (
     <>
@@ -48,6 +64,22 @@ function RequestListContent() {
               <br /> ยานพาหนะเลขทะเบียน {licensePlate}
               <br /> กรุงเทพมหานคร เรียบร้อยแล้ว
             </>
+          }
+          status="success"
+        />
+      )}
+
+      {returned === "success" && (
+        <ToastCustom
+          title="คืนยานพาหนะแล้ว"
+          desc={
+            <div>
+              <div className="">
+                คืนยานพาหนะคำขอเลขที่ {requestNo}
+                <br /> เรียบร้อยแล้ว กรุณารอผู้ดูแลยานพาหนะตรวจสอบ
+                <br /> และยืนยันการคืน
+              </div>
+            </div>
           }
           status="success"
         />

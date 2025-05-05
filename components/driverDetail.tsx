@@ -249,7 +249,12 @@ const DriverDetailContent = ({
               รับยานพาหนะ
             </button>
           </div>
-          <ReceiveCarVehicleModal status="" ref={receiveCarVehicleModalRef} />
+          <ReceiveCarVehicleModal
+            role="driver"
+            status=""
+            requestData={data}
+            ref={receiveCarVehicleModalRef}
+          />
         </>
       )}
 
@@ -285,6 +290,10 @@ const DriverDetailContent = ({
                       ? "/vehicle-in-use/driver/" +
                         data?.trn_request_uid +
                         "?progressType=การคืนยานพาหนะ"
+                      : progressType === "คืนยานพาหนะไม่สำเร็จ"
+                      ? "/vehicle-in-use/driver/edit/" +
+                        data?.trn_request_uid +
+                        "?progressType=คืนยานพาหนะไม่สำเร็จ"
                       : "/vehicle-in-use/driver/edit/" +
                         data?.trn_request_uid +
                         "?progressType=การคืนยานพาหนะ"
@@ -415,7 +424,11 @@ const DriverDetailContent = ({
           </div>
         </>
       )}
-      <ReturnCarAddModal useBy="driver" ref={returnCarAddModalRef} />
+      <ReturnCarAddModal
+        useBy="driver"
+        progress={progressType}
+        ref={returnCarAddModalRef}
+      />
     </div>
   );
 };

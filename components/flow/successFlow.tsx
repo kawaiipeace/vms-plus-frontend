@@ -130,9 +130,9 @@ export default function SuccessFlow() {
   }, [params]);
 
   return (
-    <>
-      <div className="flex justify-between items-center mt-5">
-        <div className="hidden md:block">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
+        <div className="block">
           <div className="input-group input-group-search hidden">
             <div className="input-group-prepend">
               <span className="input-group-text search-ico-info">
@@ -157,7 +157,7 @@ export default function SuccessFlow() {
         </div>
         <div className="flex gap-4">
           <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] block"
             onClick={() => filterModalRef.current?.openModal()}
           >
             <div className="flex items-center gap-1">
@@ -198,6 +198,6 @@ export default function SuccessFlow() {
         />
       )}
       <FilterCancelModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
-    </>
+    </div>
   );
 }

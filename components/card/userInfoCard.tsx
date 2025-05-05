@@ -35,7 +35,7 @@ export default function UserInfoCard({
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
             <Image
               src={
-                vehicleUserData?.image_url || "/assets/img/sample-avatar.png"
+                vehicleUserData?.image_url || "/assets/img/avatar.svg"
               }
               className="rounded-md"
               width={100}
@@ -51,7 +51,7 @@ export default function UserInfoCard({
               <div className="supporting-text-group">
                 {UserType == "outsource" && (
                   <div className="supporting-text">
-                    บริษัท ยุทธศาสตร์การขับขี่ยี่สิบปี จำกัด
+                     {vehicleUserData?.dept_sap || "-"}
                   </div>
                 )}
                 {UserType != "outsource" && (

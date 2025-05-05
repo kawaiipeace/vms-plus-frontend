@@ -75,7 +75,7 @@ export default function PageHeaderAdmin({ data }: Props) {
                 {data?.ref_request_status_name}
               </span>
             ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50">
+              <span className="badge badge-pill-outline badge-gray">
                 {data?.ref_request_status_name}
               </span>
             ) : (

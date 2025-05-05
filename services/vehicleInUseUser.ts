@@ -98,3 +98,12 @@ export const fetchUserTravelCard = async (id: string) => {
     throw error;
   }
 };
+
+export const UserReturnedVehicle = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-user/returned-vehicle", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

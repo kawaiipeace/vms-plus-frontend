@@ -120,7 +120,7 @@ const VehiclePickModel = forwardRef<
           <div className="form-group">
             <div className="card !bg-surface-secondary-subtle mb-3 !border-0 shadow-none outline-none">
               <div className="card-body border-0 shadow-none outline-none">
-                {selectType === "ผู้ดูแลยานพาหนะเลือกให้" ||
+                {selectType === "Admin เลือกยานพาหนะให้" ||
                 selectType === "ผู้ดูแลเลือกยานพาหนะให้" ? (
                   <div className="flex items-center gap-5">
                     <div className="img img-square img-avatar">
@@ -135,7 +135,7 @@ const VehiclePickModel = forwardRef<
                     <div className="card-content">
                       <div className="card-content-top">
                         <div className="card-title">
-                          ผู้ดูแลเลือกยานพาหนะให้
+                          {selectType}
                         </div>
                         <div className="supporting-text-group">
                           <div className="supporting-text">สายงานดิจิทัล</div>
@@ -157,7 +157,7 @@ const VehiclePickModel = forwardRef<
                     <div className="card-content">
                       <div className="card-content-top">
                         <div className="card-title">
-                          ระบบเลือกยานพาหนะให้อัตโนมัติ
+                        {selectType}
                         </div>
                         <div className="supporting-text-group">
                           <div className="supporting-text">สายงานดิจิทัล</div>

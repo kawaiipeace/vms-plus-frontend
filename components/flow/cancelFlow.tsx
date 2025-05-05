@@ -1,13 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import ZeroRecord from "@/components/zeroRecord";
-import { useRouter } from "next/navigation";
-import RequestListTable from "@/components/table/request-list-table";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import { requests } from "@/services/bookingUser";
-import Paginationselect from "@/components/table/paginationSelect";
-import FilterModal from "@/components/modal/filterModal";
-import dayjs from "dayjs";
+import { RequestListType } from "@/app/types/request-list-type";
 import FilterCancelModal from "@/components/modal/filterCancelModal";
+import RequestListTable from "@/components/table/request-list-table";
+import ZeroRecord from "@/components/zeroRecord";
+import { requests } from "@/services/bookingUser";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
 import ListFlow from "./listFlow";
 
@@ -68,12 +65,8 @@ export default function CancelFlow() {
 
     setParams((prevParams) => ({
       ...prevParams,
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
@@ -105,15 +98,13 @@ export default function CancelFlow() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
   };
-
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -139,9 +130,9 @@ export default function CancelFlow() {
   }, [params]);
 
   return (
-    <>
-      <div className="flex justify-between items-center mt-5">
-        <div className="hidden md:block">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
+        <div className="block">
           <div className="input-group input-group-search hidden">
             <div className="input-group-prepend">
               <span className="input-group-text search-ico-info">
@@ -163,43 +154,37 @@ export default function CancelFlow() {
               }
             />
           </div>
-
-         
         </div>
         <div className="flex gap-4">
-            <button
-              className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
-              onClick={() => filterModalRef.current?.openModal()}
-            >
-              <div className="flex items-center gap-1">
-                <i className="material-symbols-outlined">filter_list</i>
-                ตัวกรอง
-              </div>
-            </button>
-          </div>
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] block"
+            onClick={() => filterModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              ตัวกรอง
+            </div>
+          </button>
+        </div>
       </div>
 
       {dataRequest?.length > 0 ? (
         <>
           <div className="hidden md:block">
-          <div className="mt-2">
-            <RequestListTable
-              defaultData={dataRequest}
-              pagination={pagination}
-            />
-          </div>
+            <div className="mt-2">
+              <RequestListTable defaultData={dataRequest} pagination={pagination} />
+            </div>
           </div>
 
           <div className="block md:hidden">
             <ListFlow requestData={dataRequest} />
           </div>
-        
 
           <PaginationControls
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </>
       ) : (
         <ZeroRecord
@@ -213,6 +198,6 @@ export default function CancelFlow() {
         />
       )}
       <FilterCancelModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
-    </>
+    </div>
   );
 }

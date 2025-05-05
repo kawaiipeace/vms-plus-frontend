@@ -1,11 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import ZeroRecord from "@/components/zeroRecord";
-import ApproveFlow from "@/components/admin/approveFlow";
-import KeyHandOver from "@/components/admin/keyHandOver";
-import TravelTab from "@/components/admin/travelTab";
-import CheckCar from "@/components/admin/checkCar";
-import FinishTab from "@/components/admin/finishTab";
 import { fetchMenus } from "@/services/bookingAdmin";
 import { summaryType } from "@/app/types/request-list-type";
 import AdminApproveFlow from "@/components/flow/adminApproveFlow";
@@ -13,35 +6,9 @@ import AdminKeyHandOverFlow from "@/components/flow/adminHandOverFlow";
 import CancelFlow from "@/components/flow/cancelFlow";
 import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
 import AdminVehicleInsFlow from "../flow/adminVehicleInsFlow";
+import SuccessFlow from "../flow/successFlow";
 
 export default function ApproveVehicleForAdminTabs() {
-  // const tabs = [
-  //   {
-  //     label: "ตรวจสอบคำขอ",
-  //     content: <ApproveFlow />,
-  //     badge: "4",
-  //   },
-  //   {
-  //     label: "ให้กุญแจ",
-  //     content: <KeyHandOver />,
-  //   },
-  //   {
-  //     label: "เดินทาง",
-  //     content: <TravelTab />,
-  //   },
-  //   {
-  //     label: "ตรวจสอบยานพาหนะ",
-  //     content: <CheckCar />,
-  //   },
-  //   {
-  //     label: "เสร็จสิ้น",
-  //     content: <FinishTab />,
-  //   },
-  //   {
-  //     label: "ยกเลิก",
-  //     content: <div></div>,
-  //   },
-  // ];
 
      const [statusData, setStatusData] = useState<summaryType[]>([]);
   
@@ -70,7 +37,7 @@ export default function ApproveVehicleForAdminTabs() {
             case "70,71": // คืนยานพาหนะ
             return <AdminVehicleInsFlow />;
             case "80": // เสร็จสิ้น
-              return <div>เสร็จสิ้น</div>; // Replace with your component
+              return <SuccessFlow />; // Replace with your component
             case "90": // ยกเลิก
               return <CancelFlow />;
             default:

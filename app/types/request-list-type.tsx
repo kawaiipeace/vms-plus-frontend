@@ -1,4 +1,4 @@
-export interface RequestListType{
+export type RequestListType = Partial<{
   end_datetime: string; // ISO 8601 datetime string
   is_have_sub_request: string; // as a string, could be changed to boolean if needed
   ref_request_status_code: string;
@@ -29,10 +29,12 @@ export interface RequestListType{
   received_key_place: string;
   received_key_start_datetime: string;
   received_key_end_datetime: string;
-}
+  parking_place: string;
+  returned_vehicle_remark: string;
+}>;
 
-export interface summaryType{
-  ref_request_status_code : string;
-  ref_request_status_name : string;
+export interface summaryType {
+  ref_request_status_code: string;
+  ref_request_status_name: string;
   count: number;
 }

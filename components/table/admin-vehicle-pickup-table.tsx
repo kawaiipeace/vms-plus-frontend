@@ -15,6 +15,7 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 import ReceiveCarVehicleModal from "@/components/modal/receiveCarVehicleModal";
 import Link from "next/link";
+import ReturnCarAddModal from "../modal/returnCarAddModal";
 
 interface PaginationType {
   limit: number;
@@ -37,6 +38,11 @@ export default function AdminVehiclePickupTable({
   const [isLoading, setIsLoading] = useState(true);
 
   const receiveCarVehicleModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const returnVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -89,23 +95,15 @@ export default function AdminVehiclePickupTable({
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-          {row.original.can_choose_vehicle === true &&
-          row.original.vehicle_department_dept_sap_short === "" ? (
-            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
-              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-              <span className="text-color-secondary">รอเลือก</span>
+          <div className="flex flex-col">
+            {" "}
+            <div className="text-left">
+              {row.original.vehicle_license_plate}
             </div>
-          ) : (
-            <div className="flex flex-col">
-              {" "}
-              <div className="text-left">
-                {row.original.vehicle_license_plate}
-              </div>
-              <div className="text-color-secondary text-xs">
-                {row.original.ref_vehicle_type_name}
-              </div>
+            <div className="text-color-secondary text-xs">
+              {row.original.ref_vehicle_type_name}
             </div>
-          )}
+          </div>
         </div>
       ),
     },
@@ -142,10 +140,10 @@ export default function AdminVehiclePickupTable({
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
-          row.original.start_datetime
+          row.original.start_datetime || ""
         );
         const endDateTime = convertToBuddhistDateTime(
-          row.original.end_datetime
+          row.original.end_datetime || ""
         );
         return (
           <div className="text-left" data-name="วันที่เดินทาง">
@@ -178,7 +176,7 @@ export default function AdminVehiclePickupTable({
                 {value as React.ReactNode}
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
-              <span className="badge badge-pill-outline badge-gray !border-gray-200 !bg-gray-50 whitespace-nowrap">
+              <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
             ) : value === "อนุมัติแล้ว" ? (
@@ -202,7 +200,7 @@ export default function AdminVehiclePickupTable({
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
         return (
-          <div className="text-left dataTable-action">
+          <div className="text-left dataTable-action flex items-center">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="ดูรายละเอียดคำขอ"
@@ -217,46 +215,79 @@ export default function AdminVehiclePickupTable({
             </button>
 
             {(row.original.ref_request_status_code === "60" ||
-              (row.original.ref_request_status_code === "60e") && (
-                <div className="dropdown dropdown-left dropdown-end">
-                  <div
-                    className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
-                    tabIndex={0}
-                    role="button"
-                  >
-                    <i className="material-symbols-outlined icon-settings-fill-300-24">
-                      more_vert {row.original.ref_request_status_code}
-                    </i>
-                  </div>
+              row.original.ref_request_status_code === "60e") && (
+              <div className="dropdown dropdown-left dropdown-end">
+                <div
+                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none"
+                  tabIndex={0}
+                  role="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <i className="material-symbols-outlined icon-settings-fill-300-24">
+                    more_vert
+                  </i>
+                </div>
 
-                  <ul
-                    className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
-                    tabIndex={0}
+                <ul
+                  className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
+                  tabIndex={0}
+                >
+                  <Link
+                    className="dropdown-item"
+                    href={`/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=ข้อมูลการเดินทาง`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push(
+                        `/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=ข้อมูลการเดินทาง`
+                      );
+                    }}
                   >
-                    <Link className="dropdown-item" href={`/administrator/vehicle-in-use`}>
-                      <i className="material-symbols-outlined">
-                        add_location_alt
-                      </i>
-                      ข้อมูลการเดินทาง
-                    </Link>
-                    <Link className="dropdown-item" href="#">
-                      <i className="material-symbols-outlined">
-                        local_gas_station
-                      </i>
-                      การเติมเชื้อเพลิง
-                    </Link>
-                    {/* <Link className="dropdown-item" href="#">
+                    <i className="material-symbols-outlined">
+                      add_location_alt
+                    </i>
+                    ข้อมูลการเดินทาง
+                  </Link>
+
+                  <Link
+                    className="dropdown-item"
+                    href={`/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=การเติมเชื้อเพลิง`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push(
+                        `/administrator/vehicle-in-use/${row.original.trn_request_uid}?active-tab=การเติมเชื้อเพลิง`
+                      );
+                    }}
+                  >
+                    <i className="material-symbols-outlined">
+                      local_gas_station
+                    </i>
+                    การเติมเชื้อเพลิง
+                  </Link>
+                  {/* <Link className="dropdown-item" href="#">
                       <i className="material-symbols-outlined">id_card</i>
                       แสดงบัตรเดินทาง
                     </Link> */}
-                    <div className="dropdown-divider"></div>
-                    <Link className="dropdown-item" href="#">
-                      <i className="material-symbols-outlined">reply</i>
-                      คืนยานพาหนะ
-                    </Link>
-                  </ul>
-                </div>
-              ))}
+                  <hr />
+                  <Link
+                    className="dropdown-item"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      returnVehicleModalRef.current?.openModal();
+                    }}
+                  >
+                    <i className="material-symbols-outlined">reply</i>
+                    คืนยานพาหนะ
+                  </Link>
+                </ul>
+              </div>
+            )}
 
             {statusValue == "รับยานพาหนะ" && (
               <button
@@ -275,6 +306,10 @@ export default function AdminVehiclePickupTable({
               requestData={{ trn_request_uid: row.original.trn_request_uid }}
               ref={receiveCarVehicleModalRef}
               role="admin"
+            />
+            <ReturnCarAddModal
+              useBy={"admin"}
+              ref={returnVehicleModalRef}
             />
           </div>
         );

@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
 import { DataTable } from "@/components/table/dataTable";
-import Image from "next/image";
+import { TravelData } from "@/data/travelData";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -11,9 +11,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
-import { TravelData } from "@/data/travelData";
+import { useEffect, useRef, useState } from "react";
 import CancelRequestModal from "../modal/cancelRequestModal";
 import RecordTravelAddModal from "../modal/recordTravelAddModal";
 
@@ -27,9 +26,11 @@ interface PaginationType {
 interface Props {
   defaultData: TravelData[];
   pagination: PaginationType;
+  deleteRecordTravel?: (value: TravelData) => void;
+  editRecordTravel?: (value: TravelData) => void;
 }
 
-export default function TravelListTable({ defaultData, pagination }: Props) {
+export default function TravelListTable({ defaultData, pagination, editRecordTravel, deleteRecordTravel }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +45,8 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  const recordTravelAddModalRef = useRef<{
+
+  const recordTravelEditModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -151,14 +153,17 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         return (
-          <div className="text-left dataTable-action">
+          <div className="text-left dataTable-action flex items-center">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="แก้ไขข้อมูลการเดินทาง"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                recordTravelAddModalRef.current?.openModal();
+                if (editRecordTravel) {
+                  return editRecordTravel(row.original);
+                }
+                recordTravelEditModalRef.current?.openModal();
               }}
             >
               <i className="material-symbols-outlined">stylus</i>
@@ -170,23 +175,41 @@ export default function TravelListTable({ defaultData, pagination }: Props) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (deleteRecordTravel) {
+                  return deleteRecordTravel(row.original);
+                }
                 cancelRequestModalRef.current?.openModal();
               }}
             >
               <i className="material-symbols-outlined">delete</i>
             </button>
-            <RecordTravelAddModal status={true} ref={recordTravelAddModalRef} />
+
+            <RecordTravelAddModal
+              ref={recordTravelEditModalRef}
+              role="admin"
+              requestId={row.original.trn_request_uid}
+              dataItem={{
+                trn_trip_detail_uid: row.original.trn_trip_detail_uid,
+                trn_request_uid: row.original.trn_request_uid,
+                trip_start_datetime: row.original.trip_start_datetime,
+                trip_end_datetime: row.original.trip_end_datetime,
+                trip_departure_place: row.original.trip_departure_place,
+                trip_destination_place: row.original.trip_destination_place,
+                trip_start_miles: row.original.trip_start_miles,
+                trip_end_miles: row.original.trip_end_miles,
+                trip_detail: row.original.trip_detail,
+              }}
+              status
+            />
             <CancelRequestModal
               id={row.original.trn_request_uid}
               tripId={row.original.trn_trip_detail_uid}
               title="ยืนยันลบข้อมูลการเดินทาง"
               desc={
                 " ข้อมูลการเดินทางวันที่ " +
-                convertToBuddhistDateTime(row.original.trip_start_datetime)
-                  .date +
+                convertToBuddhistDateTime(row.original.trip_start_datetime).date +
                 " - " +
-                convertToBuddhistDateTime(row.original.trip_start_datetime)
-                  .time +
+                convertToBuddhistDateTime(row.original.trip_start_datetime).time +
                 " จะถูกลบออกจากระบบ "
               }
               confirmText="ลบข้อมูล"

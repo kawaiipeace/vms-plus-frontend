@@ -35,7 +35,7 @@ const schema = yup.object().shape({
 const DriverAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   DriverAppointmentModalProps // Props type
->(({ onSubmit, id, onClickDetail}, ref) => {
+>(({ onSubmit, id, onClickDetail }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { updateFormData } = useFormContext();
 
@@ -74,8 +74,8 @@ const DriverAppointmentModal = forwardRef<
   };
 
   useEffect(() => {
-    console.log('id',id);
-    if(id){
+    console.log("id", id);
+    if (id) {
       const fetchDriverData = async () => {
         try {
           const response = await fetchDriverDetail(String(id));
@@ -89,8 +89,7 @@ const DriverAppointmentModal = forwardRef<
       };
       fetchDriverData();
     }
-
-  },[id]);
+  }, [id]);
 
   const onSubmitForm = (data: any) => {
     const pickup = convertToISO(selectedDate, selectedTime);
@@ -105,11 +104,10 @@ const DriverAppointmentModal = forwardRef<
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-
   return (
     <dialog ref={modalRef} id="my_modal_1" className="modal">
-      <div  className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers} >
+      <div className="modal-box max-w-[500px] p-0 relative modal-vehicle-pick overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -127,7 +125,9 @@ const DriverAppointmentModal = forwardRef<
                 <div className="flex items-center gap-5">
                   <div className="img img-square img-avatar">
                     <Image
-                      src={`${driver?.driver_image || "/assets/img/avatar.svg"}`}
+                      src={`${
+                        driver?.driver_image || "/assets/img/avatar.svg"
+                      }`}
                       className="rounded-md"
                       width={64}
                       height={64}
@@ -138,7 +138,9 @@ const DriverAppointmentModal = forwardRef<
                     <div className="card-content-top">
                       <div className="card-title">{driver?.driver_name}</div>
                       <div className="supporting-text-group">
-                        <div className="supporting-text">{driver?.driver_dept_sap}</div>
+                        <div className="supporting-text">
+                          {driver?.driver_dept_sap}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -147,7 +149,9 @@ const DriverAppointmentModal = forwardRef<
                   <i className="material-symbols-outlined text-brand-900">
                     smartphone
                   </i>
-                  <span className="card-item-text">{driver?.driver_contact_number}</span>
+                  <span className="card-item-text">
+                    {driver?.driver_contact_number}
+                  </span>
                 </div>
               </div>
             </div>
@@ -212,7 +216,7 @@ const DriverAppointmentModal = forwardRef<
                       </span>
                     </div>
                     <TimePicker
-                      onChange={() => handleTimeChange}
+                      onChange={handleTimeChange}
                       placeholder="ระบุเวลานัดหมาย"
                     />
                   </div>
@@ -224,7 +228,11 @@ const DriverAppointmentModal = forwardRef<
             </div>
 
             <div className="modal-action sticky bottom-0 gap-3 mt-0 w-full">
-              <button type="button" className="btn btn-secondary" onClick={() => modalRef.current?.close()}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => modalRef.current?.close()}
+              >
                 ยกเลิก
               </button>
               <button type="submit" className="btn btn-primary">
