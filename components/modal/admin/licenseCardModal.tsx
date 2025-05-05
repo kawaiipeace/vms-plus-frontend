@@ -37,8 +37,10 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
     }, [id]);
 
     useEffect(() => {
-      fetchRequestDetailfunc();
-    }, [fetchRequestDetailfunc]);
+      if(id){
+        fetchRequestDetailfunc();
+      }
+    }, [id]);
 
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 

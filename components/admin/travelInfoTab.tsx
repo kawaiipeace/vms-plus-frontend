@@ -79,7 +79,7 @@ function RequestListContent({ role }: { role: string }) {
 
 export default function TravelInfoTab({ requestType, reqId }: TravelDataProps) {
   const [data, setData] = useState<TravelData[]>([]);
-  const [statusEdit, setStatusEdit] = useState(false);
+
   const recordTravelAddModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -96,10 +96,6 @@ export default function TravelInfoTab({ requestType, reqId }: TravelDataProps) {
     totalPages: 0,
   });
 
-  function handleStatusEdit(edit?: boolean) {
-    setStatusEdit(edit ? true : false);
-  }
-
   useEffect(() => {
     if (reqId) {
       const fetchRequestsData = async () => {
@@ -109,7 +105,6 @@ export default function TravelInfoTab({ requestType, reqId }: TravelDataProps) {
           if (response.status === 200) {
             const requestList = response.data;
             setData(requestList);
-            setEditData(requestList);
             setPagination({
               limit: 100,
               page: 1,
