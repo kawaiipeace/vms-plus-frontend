@@ -8,6 +8,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 interface DatePickerProps {
   placeholder?: string;
+  defaultValue?: string; // Add defaultValue prop
   onChange?: (dateStr: string) => void;
 }
 
@@ -16,7 +17,7 @@ export interface DatePickerRef {
   setValue: (value: string) => void;
 }
 
-const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, onChange }, ref) => {
+const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, defaultValue, onChange }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const flatpickrInstance = useRef<FlatpickrInstance | null>(null);
 
@@ -28,7 +29,9 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, on
     },
     setValue: (newValue: string) => {
       if (flatpickrInstance.current) {
-        flatpickrInstance.current.setDate(newValue, true); // Set the new date
+        // Convert Buddhist year to Gregorian year before setting the date
+        const gregorianDate = convertToGregorianYear(newValue);
+        flatpickrInstance.current.setDate(gregorianDate, true); // Set the new date
       }
     },
   }));
@@ -39,6 +42,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, on
         dateFormat: "d/m/Y",
         locale: Thai,
         static: true,
+        defaultDate: defaultValue ? convertToGregorianYear(defaultValue) : undefined, // Convert defaultValue to Gregorian
         monthSelectorType: "static",
         prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
         nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
@@ -58,19 +62,29 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, on
             return origFormatDate.call(instance, dateObj, formatStr.replace("Y", buddhistYear));
           };
 
+          // Update the input field value with the Buddhist year
+          if (instance.input) {
+            const buddhistYearDateStr = formatWithBuddhistYear(dateStr);
+            instance.input.value = buddhistYearDateStr;
+          }
+
           updateCalendarYear(instance);
         },
 
         onChange: function (selectedDates, dateStr, instance) {
-          // Update the input field value
-          // instance.input.value = dateStr;
-        
+          // Convert to Buddhist year only if it's not already in Buddhist format
+          const buddhistYearDateStr = formatWithBuddhistYear(dateStr);
+
+          // Update the input field value with the Buddhist year
+          if (instance.input) {
+            instance.input.value = buddhistYearDateStr;
+          }
+
           // Call the custom onChange function if it's provided
           if (onChange) {
-            onChange(dateStr);
+            onChange(buddhistYearDateStr);
           }
-        
-          // Update the calendar year or perform other actions
+
           updateCalendarYear(instance);
         },
         onMonthChange: function (selectedDates, dateStr, instance) {
@@ -85,7 +99,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, on
     return () => {
       flatpickrInstance.current?.destroy(); // Cleanup flatpickr instance on unmount
     };
-  }, []);
+  }, [defaultValue]); // Add defaultValue to the dependency array
 
   const updateCalendarYear = (instance: FlatpickrInstance) => {
     const calendarContainer = instance.calendarContainer;
@@ -103,6 +117,24 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, on
         element.textContent = buddhistYear.toString();
       }
     });
+  };
+
+  const formatWithBuddhistYear = (dateStr: string): string => {
+    if (!dateStr) return "";
+
+    const [day, month, year] = dateStr.split("/");
+    const yearInt = parseInt(year, 10);
+    const buddhistYear = yearInt > 2500 ? yearInt : yearInt + 543; // Avoid double conversion
+    return `${day}/${month}/${buddhistYear}`;
+  };
+
+  const convertToGregorianYear = (dateStr: string): string => {
+    if (!dateStr) return "";
+
+    const [day, month, year] = dateStr.split("/");
+    const buddhistYear = parseInt(year, 10);
+    const gregorianYear = buddhistYear > 2500 ? buddhistYear - 543 : buddhistYear; // Only convert if Buddhist year is provided
+    return `${day}/${month}/${gregorianYear}`;
   };
 
   return <input ref={inputRef} type="text" className="form-control" placeholder={placeholder} />;

@@ -62,11 +62,11 @@ function RequestListContent() {
       )}
       {returnedData === "success" && (
         <ToastCustom
-          title="แก้ไขรูปภาพสำเร็จ"
+          title="แก้ไขข้อมูลสำเร็จ"
           desc={
             <div>
               <div className="">
-                แก้ไขรูปยานพาหนะหลังเดินทางคำขอเลขที่
+                แก้ไขข้อมูลการคืนยานพาหนะคำขอเลขที่
                 <br /> {requestNo} เรียบร้อยแล้ว
               </div>
             </div>

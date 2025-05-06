@@ -1,8 +1,7 @@
-import { RequestDetailType } from "@/app/types/request-detail-type";
+import { RequestDetailType, satisfactionSurveyAnswers } from "@/app/types/request-detail-type";
 import Rating from "@/components/rating";
 import { fetchRequestKeyDetail, fetchSatisfactionSurveyQuestions } from "@/services/masterService";
 import { UserUpdateSatisfactionSurvey } from "@/services/vehicleInUseUser";
-import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 
@@ -11,7 +10,7 @@ interface Props {
   id?: string;
 }
 
-interface SatisfactionSurveyQuestions {
+export interface SatisfactionSurveyQuestions {
   mas_satisfaction_survey_questions_code: string;
   mas_satisfaction_survey_questions_title: string;
   mas_satisfaction_survey_questions_desc: string;
@@ -66,8 +65,10 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
 
     useEffect(() => {
       fetchSatisfactionSurveyQuestionsFunc();
-      fetchRequestDetailfunc();
-    }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc]);
+      if (id) {
+        fetchRequestDetailfunc();
+      }
+    }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc, id]);
 
     useEffect(() => {
       if (displayOn === "admin" || displayOn === "view") {
@@ -75,22 +76,20 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       }
     }, [displayOn]);
 
-    // useEffect(() => {
-    //   if (displayOn === "view") {
-    //     const rattingData = requestData?.mas_satisfaction_survey_questions.map(
-    //       (item: { mas_satisfaction_survey_questions_code: string; survey_answer: number }) => {
-    //         return {
-    //           mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code,
-    //           survey_answer: item.survey_answer,
-    //         };
-    //       }
-    //     );
-    //     setRatting(rattingData);
-    //     setReviewSubmit(true);
-    //   }
-    // }, [displayOn, requestData]);
+    useEffect(() => {
+      if (displayOn === "view") {
+        const rattingData = requestData?.satisfaction_survey_answers?.map((item: satisfactionSurveyAnswers) => {
+          return {
+            mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code.toString(),
+            survey_answer: item.survey_answer,
+          };
+        });
+        setRatting(rattingData);
+        setReviewSubmit(true);
+      }
+    }, [displayOn, requestData]);
 
-    const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+    // const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
     const onChangeRatting = (value: string, id: string) => {
       console.log(value, id);
@@ -120,7 +119,10 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
           }
         );
         const response = await UserUpdateSatisfactionSurvey(id || "", payLoad);
-        console.log("data---", response.data);
+        if (response.status === 200) {
+          setReviewSubmit(true);
+        }
+        // modalRef.current?.close();
         // setReviewSubmit(true);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);

@@ -5,7 +5,7 @@ import React, { useState } from "react";
 interface ToastCustomProps {
   title: string;
   desc: React.ReactNode;
-  status: string;
+  status: string; // DaisyUI supports: info, success, warning, error
   styleText?: string;
   seeDetail?: string;
   seeDetailText?: string;
@@ -28,35 +28,30 @@ export default function ToastCustom({
 
   const closeToast = () => {
     setIsVisible(false);
-    if (!searchParams) return router.push(pathName); // If no searchParams, do nothing
-    router.push(pathName + `?${searchParams}`); // Navigate to the current path to remove query parameters
+    if (!searchParams) return router.push(pathName);
+    router.push(pathName + `?${searchParams}`);
   };
 
-  if (!isVisible) return null; // If the toast is not visible, render nothing
+  if (!isVisible) return null;
 
   return (
-    <div
-      className={`toast-container  ${"!top-[85vh] left-1/2 -translate-x-1/2 !w-[100vw] !max-w-[100vw]  md:!left-[calc(28vw_+_3rem)] md:!top-0 md:!translate-x-full md:!w-full md:!max-w-[calc(28vw_+_3rem)]"}`}
-    >
-      <div
-        className={`toast fade toast-${status} block ${styleText} ${" !w-[85vw] !max-w-[85vw] md:!w-full md:!max-w-[calc(28vw_+_3rem)"}`}
-        role="alert"
-      >
-        <div className="toast-body max-w-[20px]">
-          <i className="material-symbols-outlined icon-settings-fill-300-24">check_circle</i>
-          <div className="toast-content">
-            <div className="toast-title">{title}</div>
-            <div className="toast-text">{desc}</div>
+    <div className="toast md:toast-end md:toast-top top-center top-bottom w-full md:w-auto z-[999]">
+      <div className={`alert alert-${status} ${styleText} !border-primary-grayBorder !bg-white gap-0`}>
+        <div className="flex items-start gap-2">
+        <i className="material-symbols-outlined icon-settings-fill-300-24">check_circle</i>
+        <div className="toast-content">
+            <div className="toast-title text-base font-bold mb-1">{title}</div>
+            <div className="toast-text text-color-secondary text-sm">{desc}</div>
             <Link className="text-brand-900 font-semibold text-sm" href={seeDetail ?? "#"}>
               {seeDetailText}
             </Link>
           </div>
           <button
             type="button"
-            className="close"
+            className="ml-4 text-color-secondary font-semibold"
             onClick={closeToast} // Trigger closeToast on click
           >
-            <i className="material-symbols-outlined">close</i>
+            <i className="material-symbols-outlined !text-color-secondary">close_small</i>
           </button>
         </div>
       </div>

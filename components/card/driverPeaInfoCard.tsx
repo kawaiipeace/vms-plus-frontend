@@ -65,16 +65,16 @@ export default function DriverPeaInfoCard({
     <div className="card overflow-hidden">
       <div className="card-body">
         <div className="card-body-inline">
-          <div className="img img-square w-full md:h-[239px] md:aspect-auto !aspect-square h-auto rounded-md overflow-hidden self-start">
+          <div className="img img-square !w-[30%] max-h-[108px] md:aspect-auto !aspect-square rounded-md overflow-hidden self-start">
             <Image
               src={driver?.image_url || "/assets/img/avatar.svg"}
-              className="object-cover w-full h-full"
+              className="object-cover w-[108px]"
               width={100}
               height={100}
               alt="Driver Avatar"
             />
           </div>
-          <div className="card-content">
+          <div className="card-content w-[70%]">
             <div className="card-content-top">
               <div className="card-title">{driver?.full_name}</div>
               <div className="supporting-text-group">

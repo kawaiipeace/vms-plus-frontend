@@ -3,7 +3,6 @@ import MobileDriverCard from "@/components/card/mobileDriverCard";
 import Image from "next/image";
 import dayjs from "dayjs";
 import Link from "next/link";
-import TableComponent from "../table";
 import { PaginationType } from "@/app/types/request-action-type";
 import RequestListTable from "../table/request-list-table";
 import { RequestListType } from "@/app/types/request-list-type";
@@ -14,7 +13,7 @@ interface DriverCancelTabProps {
 
 const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
   const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
+    limit: 100,
     page: 1,
     total: 0,
     totalPages: 0,
@@ -83,7 +82,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                       } = item;
 
                       const license_plate_full = `${license_plate} ${province}`;
-                      const date = getDateRange(s_date, e_date);
+                      const date = getDateRange(s_date || "", e_date || "");
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (
@@ -94,7 +93,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                           <MobileDriverCard
                             title={"ยกเลิกภารกิจ"}
                             carRegis={license_plate_full}
-                            location={item.work_place}
+                            location={item.work_place || ""}
                             date={date}
                             cardType="cancel"
                           />

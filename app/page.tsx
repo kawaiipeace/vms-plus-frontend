@@ -1,34 +1,53 @@
+// pages/index.tsx
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { requestkeyCloak } from "@/services/authService";
+import { fetchProfile, requestkeyCloak } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useProfile } from "@/contexts/profileContext";
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const { setProfile, setIsAuthenticated } = useProfile();
 
   useEffect(() => {
-    const checkLoggedin = async () => {
-      const token = localStorage?.getItem("accessToken");
+    const checkLoggedIn = async () => {
+      const token = localStorage.getItem("accessToken");
 
       if (token) {
-        router.replace("/vehicle-booking/request-list");
-        return; 
+        try {
+          const profileResponse = await fetchProfile();
+          if (profileResponse?.data) {
+            console.log("Fetched Profile:", profileResponse.data);
+            setProfile(profileResponse.data);
+            setIsAuthenticated(true);
+
+            // Ensure state is set before navigation
+            setTimeout(() => {
+              router.push("/vehicle-booking/request-list");
+            }, 0);
+          } else {
+            console.error("Profile response is invalid:", profileResponse);
+          }
+        } catch (error) {
+          console.error("Error fetching profile:", error);
+        }
+        return;
       }
 
       setLoading(false);
     };
 
-    checkLoggedin();
-  }, [router]);
+    checkLoggedIn();
+  }, [router, setProfile, setIsAuthenticated]);
 
   const requestKey = async () => {
     try {
       const response = await requestkeyCloak();
       if (response.status === 200) {
-        router.push(response.data.url);
+        router.replace(response.data.url);
       }
     } catch (error) {
       console.log(error);

@@ -9,10 +9,17 @@ import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { ColumnDef, CellContext } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
-import TableRecordTravelComponent from "../tableRecordTravel";
-import ZeroRecord from "../zeroRecord";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import ExampleFuelStringImageModal from "@/components/modal/exampleFuelImageModal";
+import ZeroRecord from "@/components/zeroRecord";
+import TableRecordFuelComponent from "@/components/tableRecordFuel";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -62,7 +69,11 @@ interface RecordFuelTabPageProps {
   requestData?: RequestDetailType;
 }
 
-const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps) => {
+const AdminRecordFuelTab = ({
+  requestId,
+  role,
+  requestData,
+}: RecordFuelTabPageProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-fuel-req");
   const updateReq = searchParams.get("update-fuel-req");
@@ -101,7 +112,6 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
         } else {
           response = await fetchUserAddFuelDetails(requestId || "", params);
         }
-        console.log("data---", response?.data);
 
         setRequestData(response?.data);
       } catch (error) {
@@ -113,24 +123,28 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
 
   useEffect(() => {
     fetchUserTravelDetailsFunc();
-  }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq, deleteReq]);
+  }, [
+    requestId,
+    params,
+    fetchUserTravelDetailsFunc,
+    createReq,
+    updateReq,
+    deleteReq,
+  ]);
 
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
         return {
           ...item,
-          ref_oil_station_brand_name: item.ref_oil_station_brand.ref_oil_station_brand_name_th,
+          ref_oil_station_brand_name:
+            item.ref_oil_station_brand.ref_oil_station_brand_name_th,
           ref_fuel_type_name: item.ref_fuel_type.ref_fuel_type_name_th,
           ref_payment_type_name: item.ref_payment_type.ref_payment_type_name,
           ref_cost_type_name: item.ref_cost_type.ref_cost_type_name,
         };
       }),
     [requestFuelData]
-  );
-
-  const isAddAndEdit = ["เดินทาง", "เสร็จสิ้น", "รอตรวจสอบ", "ตีกลับยานพาหนะ"].includes(
-    requestData?.ref_request_status_name || ""
   );
 
   const requestListColumns: ColumnDef<RecordFuelTabProps>[] = [
@@ -172,7 +186,9 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="สถานีบริการน้ำมัน">
           <div className="flex flex-col">
-            <div className="text-left">{row.original.ref_oil_station_brand_name}</div>
+            <div className="text-left">
+              {row.original.ref_oil_station_brand_name}
+            </div>
           </div>
         </div>
       ),
@@ -254,12 +270,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       header: "",
       enableSorting: false,
     },
-  ].filter((column) => {
-    if (column.accessorKey === "action") {
-      return isAddAndEdit;
-    }
-    return true;
-  });
+  ];
 
   return (
     <>
@@ -303,7 +314,9 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                   id="myInputTextField"
                   className="form-control dt-search-input"
                   placeholder="ค้นหาสถานที่"
-                  onChange={(e) => setParams({ ...params, search: e.target.value })}
+                  onChange={(e) =>
+                    setParams({ ...params, search: e.target.value })
+                  }
                 />
               </div>
 
@@ -320,41 +333,30 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                 </button>
               )}
 
-              {isAddAndEdit && (
-                <button
-                  className="btn btn-secondary ml-auto"
-                  onClick={() => {
-                    setEditData(undefined);
-                    recordFuelAddModalRef.current?.openModal();
-                  }}
-                >
-                  <i className="material-symbols-outlined">add</i>
-                  เพิ่มข้อมูล
-                </button>
-              )}
+              <button
+                className="btn btn-secondary ml-auto"
+                onClick={() => {
+                  setEditData(undefined);
+                  recordFuelAddModalRef.current?.openModal();
+                }}
+              >
+                <i className="material-symbols-outlined">add</i>
+                เพิ่มข้อมูล
+              </button>
             </div>
             <div className="w-full mx-auto mt-3">
-              <TableRecordTravelComponent
+              <TableRecordFuelComponent
                 data={mapDataRequest}
                 columns={requestListColumns}
-                listName="fuel"
-                editRecordTravel={
-                  isAddAndEdit
-                    ? (data: RecordFuelTabProps) => {
-                        setEditData(data);
-                        recordFuelEditModalRef.current?.openModal();
-                      }
-                    : undefined
-                }
-                deleteRecordTravel={
-                  isAddAndEdit
-                    ? (data: RecordFuelTabProps) => {
-                        setEditData(data);
-                        cancelRequestModalRef.current?.openModal();
-                      }
-                    : undefined
-                }
-                previewRecordTravel={(data: RecordFuelTabProps) => {
+                editRecordFuel={(data: RecordFuelTabProps) => {
+                  setEditData(data);
+                  recordFuelEditModalRef.current?.openModal();
+                }}
+                deleteRecordFuel={(data: RecordFuelTabProps) => {
+                  setEditData(data);
+                  cancelRequestModalRef.current?.openModal();
+                }}
+                previewRecordFuel={(data: RecordFuelTabProps) => {
                   setEditData(data);
                   previewModalRef.current?.openModal();
                 }}
@@ -366,14 +368,14 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
           ref={recordFuelAddModalRef}
           requestId={requestId}
           isPayment={true}
-          role={role}
+          role={"admin"}
         />
         <RecordFuelAddModal
           ref={recordFuelEditModalRef}
           requestId={requestId}
           isPayment={!!requestData?.fleet_card_no}
           dataItem={editData}
-          role={role}
+          role={"admin"}
           status
         />
         <CancelRequestModal
@@ -400,4 +402,4 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
   );
 };
 
-export default RecordFuelTab;
+export default AdminRecordFuelTab;

@@ -25,6 +25,8 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const active = searchParams.get("activeTab");
+  const returnedData = searchParams.get("edit-data-returned-tabs");
+  const returnedImage = searchParams.get("edit-image-returned-tabs");
 
   const [requestUid] = useState(requestId);
   const [loading, setLoading] = useState(true);
@@ -86,7 +88,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       fetchRequestDetailfunc();
       // fetchRequests();
     }
-  }, [requestId, requestUid, active]);
+  }, [requestId, requestUid, active, returnedImage, returnedData]);
 
   const createQueryString = useCallback(
     (value: string) => {

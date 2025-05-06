@@ -81,7 +81,7 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
                       } = item;
 
                       const license_plate_full = `${license_plate} ${province}`;
-                      const date = getDateRange(s_date, e_date);
+                      const date = getDateRange(s_date || "", e_date || "");
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (

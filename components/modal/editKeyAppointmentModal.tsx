@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 import TimePicker from "@/components/timePicker";
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
@@ -22,6 +21,7 @@ interface Props {
   start_time?: string;
   end_time?: string;
   req_id?: string;
+  onUpdate?: () => void;
 }
 
 const schema = yup.object().shape({
@@ -34,11 +34,9 @@ const schema = yup.object().shape({
 const EditKeyAppointmentModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ place, date, start_time, end_time, req_id }, ref) => {
+>(({ place, date, start_time, end_time, req_id, onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const datePickerRef = useRef<DatePickerRef>(null);
-  const [selectedStartTime, setSelectedStartTime] = useState<string>(start_time || "");
-  const [selectedEndTime, setSelectedEndTime] = useState<string>(end_time || "");
   
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -57,9 +55,9 @@ const EditKeyAppointmentModal = forwardRef<
     resolver: yupResolver(schema),
     defaultValues: {
       receivedKeyPlace: place,
-      receivedKeyDate: date,
-      pickupStartTime: start_time,
-      pickupEndTime: end_time,
+      receivedKeyDate: date ? convertToBuddhistDateTime(date).date : "",
+      pickupStartTime: start_time ? convertToBuddhistDateTime(start_time).time : "",
+      pickupEndTime: end_time ? convertToBuddhistDateTime(end_time).time : "",
     },
   });
 
@@ -72,12 +70,12 @@ const EditKeyAppointmentModal = forwardRef<
     }
     // Initialize time values
     if (start_time) {
-      setSelectedStartTime(start_time);
-      setValue("pickupStartTime", start_time);
+      const startTime = convertToBuddhistDateTime(start_time).time;
+      setValue("pickupStartTime", startTime);
     }
     if (end_time) {
-      setSelectedEndTime(end_time);
-      setValue("pickupEndTime", end_time);
+      const endTime = convertToBuddhistDateTime(end_time).time;
+      setValue("pickupEndTime", endTime);
     }
   }, [date, start_time, end_time, setValue]);
 
@@ -86,12 +84,10 @@ const EditKeyAppointmentModal = forwardRef<
   };
 
   const handleStartTimeChange = (timeStr: string) => {
-    setSelectedStartTime(timeStr);
     setValue("pickupStartTime", timeStr);
   };
 
   const handleEndTimeChange = (timeStr: string) => {
-    setSelectedEndTime(timeStr);
     setValue("pickupEndTime", timeStr);
   };
 
@@ -113,14 +109,14 @@ const EditKeyAppointmentModal = forwardRef<
       trn_request_uid: req_id,
     };
 
+
     try {
       const response = await updateRecivedKeyHandover(payload);
       if (response) {
         modalRef.current?.close();
-        router.push(
-          `/administrator/request-list?keychange-req=success&request-id=` +
-            response.data.result.request_no + `&activeTab=ให้กุญแจ`
-        );
+        if(onUpdate){
+          onUpdate();
+        }
       }
     } catch (error) {
       console.error("Network error:", error);
@@ -176,9 +172,9 @@ const EditKeyAppointmentModal = forwardRef<
                       </span>
                     </div>
                     <DatePicker
-                      placeholder={convertToBuddhistDateTime(date || "").date}
+                      placeholder={"ระบุวันที่นัดรับกุญแจ"}
+                      defaultValue={date ? convertToBuddhistDateTime(date).date : ""}
                       onChange={handleDateChange}
-                      ref={datePickerRef}
                     />
                   </div>
                 </div>
@@ -194,8 +190,8 @@ const EditKeyAppointmentModal = forwardRef<
                     </div>
                     <TimePicker
                       onChange={handleStartTimeChange}
-                      defaultValue={selectedStartTime}
-                      placeholder={start_time}
+                      defaultValue={start_time ? convertToBuddhistDateTime(start_time).time : ""}
+                      placeholder="HH:MM"
                     />
                   </div>
                 </div>
@@ -212,8 +208,8 @@ const EditKeyAppointmentModal = forwardRef<
                     </div>
                     <TimePicker
                       onChange={handleEndTimeChange}
-                      defaultValue={selectedEndTime}
-                      placeholder={end_time}
+                      defaultValue={end_time ? convertToBuddhistDateTime(end_time).time : ""}
+                      placeholder="HH:MM"
                     />
                   </div>
                 </div>

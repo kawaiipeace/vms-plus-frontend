@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSidebar } from "@/contexts/sidebarContext";
+import { useProfile } from "@/contexts/profileContext";
 
 interface SidebarProps {
   menuName?: string;
@@ -13,6 +14,20 @@ export default function SideBar({ menuName }: SidebarProps) {
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { isPinned, setIsPinned } = useSidebar();
+  const { profile } = useProfile();
+
+  const devRoles = [
+    "vehicle-user",       // Basic user
+    // "level1-approval", // First level approver
+    // "admin-approval",  // Admin approver
+    // "admin-dept-approval", // Department admin
+    // "final-approval",  // Final approver
+    "driver",            // Driver
+    // "admin-super"      // Super admin
+  ];
+
+  const roles = profile?.roles;
+  
 
   useEffect(() => {
     if (menuName) {
@@ -41,13 +56,13 @@ export default function SideBar({ menuName }: SidebarProps) {
         setOpenMenus(["collapseLink4"]);
       }
     }
-  }, [menuName]);
+  }, [menuName, profile]);
 
   useEffect(() => {
     if (isPinned) {
       setIsExpanded(true);
     }
-  }, [isPinned]);
+  }, [isPinned,profile]);
 
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
@@ -56,6 +71,93 @@ export default function SideBar({ menuName }: SidebarProps) {
         : [...prev, menuId]
     );
   };
+
+  // Filter menu items based on roles
+  const filteredMenus = [
+    {
+      id: "collapseLink2",
+      icon: "car_rental",
+      label: "ระบบจองยานพาหนะ",
+      items: [
+        {
+          title: "คำขอใช้ยานพาหนะ",
+          link: "/vehicle-booking/request-list",
+          roles: [
+            "vehicle-user",
+            "level1-approval",
+            "admin-approval",
+            "admin-dept-approval",
+            "final-approval",
+            "admin-super",
+          ],
+        },
+        {
+          title: "อนุมัติขอคำใช้และใบอนุญาต",
+          link: "/administrator/booking-approver",
+          roles: [
+            "level1-approval",
+            "admin-approval",
+            "admin-dept-approval",
+            "admin-super",
+          ],
+        },
+        {
+          title: "งานพนักงานขับรถ",
+          link: "/vehicle-in-use/driver",
+          roles: ["driver", "admin-super"],
+        },
+      ].filter((item) => item.roles.some((role) => roles?.includes(role))),
+    },
+    {
+      id: "collapseLink3",
+      icon: "traffic_jam",
+      label: "จัดการคำขอใช้ยานพาหนะ",
+      items: [
+        {
+          title: "ตรวจสอบและจัดการคำขอ",
+          link: "/administrator/request-list",
+          roles: ["admin-approval", "admin-dept-approval", "admin-super"],
+        },
+        {
+          title: "อนุมัติใช้ยานพาหนะ",
+          link: "/administrator/booking-final",
+          roles: ["final-approval", "admin-super"],
+        },
+      ].filter((item) => item.roles.some((role) => roles?.includes(role))),
+    },
+    {
+      id: "collapseLink4",
+      icon: "database",
+      label: "ข้อมูลพนักงานและยานพาหนะ",
+      items: [
+        {
+          title: "ผู้ดูแลยานพาหนะ",
+          link: "/carpool-management",
+          roles: ["admin-super"],
+        },
+        {
+          title: "ข้อมูลพนักงานขับรถ",
+          link: "request-list",
+          roles: ["admin-super"],
+        },
+        {
+          title: "ข้อมูลยานพาหนะ",
+          link: "request-list",
+          roles: ["admin-super"],
+        },
+        {
+          title: "กลุ่มยานพาหนะ",
+          link: "request-list",
+          roles: ["admin-super"],
+        },
+        {
+          title: "ข้อมูล Fleet card",
+          link: "request-list",
+          roles: ["admin-super"],
+        },
+      ].filter((item) => item.roles.some((role) => roles?.includes(role))),
+    },
+  ].filter((menu) => menu.items.length > 0); // Only show menus that have items
 
   return (
     <div
@@ -129,52 +231,7 @@ export default function SideBar({ menuName }: SidebarProps) {
           </li>
 
           {/* Dropdown Menus */}
-          {[
-            {
-              id: "collapseLink2",
-              icon: "car_rental",
-              label: "ระบบจองยานพาหนะ",
-              items: [
-                {
-                  title: "คำขอใช้ยานพาหนะ",
-                  link: "/vehicle-booking/request-list",
-                },
-                {
-                  title: "อนุมัติขอคำใช้และใบอนุญาต",
-                  link: "/administrator/booking-approver",
-                },
-                { title: "งานพนักงานขับรถ", link: "/vehicle-in-use/driver" },
-              ],
-            },
-            {
-              id: "collapseLink3",
-              icon: "traffic_jam",
-              label: "จัดการคำขอใช้ยานพาหนะ",
-              items: [
-                {
-                  title: "ตรวจสอบและจัดการคำขอ",
-                  link: "/administrator/request-list",
-                },
-                {
-                  title: "อนุมัติใช้ยานพาหนะ",
-                  link: "/administrator/booking-final",
-                },
-                // { title: "ให้กุญแจและรับคืนยานพาหนะ", link: "request-list" },
-              ],
-            },
-            {
-              id: "collapseLink4",
-              icon: "database",
-              label: "ข้อมูลพนักงานและยานพาหนะ",
-              items: [
-                { title: "ผู้ดูแลยานพาหนะ", link: "/carpool-management" },
-                { title: "ข้อมูลพนักงานขับรถ", link: "request-list" },
-                { title: "ข้อมูลยานพาหนะ", link: "request-list" },
-                { title: "กลุ่มยานพาหนะ", link: "request-list" },
-                { title: "ข้อมูล Fleet card", link: "request-list" },
-              ],
-            },
-          ].map((menu) => (
+          {filteredMenus.map((menu) => (
             <li
               className={`nav-item  ${!isExpanded && "h-[40px] w-[40px]"}`}
               key={menu.id}

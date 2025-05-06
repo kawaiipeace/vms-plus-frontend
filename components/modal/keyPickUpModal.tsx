@@ -1,24 +1,18 @@
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from "react";
 import Image from "next/image";
-import PassVerifyModal from "@/components/modal/passVerifyModal";
 import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { VehicleUserType } from "@/app/types/vehicle-user-type";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import TimePicker from "../timePicker";
 import FormHelper from "../formHelper";
 import DatePicker from "../datePicker";
 import { useForm } from "react-hook-form";
 import { convertToISO } from "@/utils/convertToISO";
-import { adminUpdatePickup } from "@/services/bookingAdmin";
 
 interface Props {
   title: string;
@@ -28,7 +22,7 @@ interface Props {
   place?: string;
   start_datetime?: string;
   end_datetime?: string;
-  onPickupConfirmed?: (data: { place: string; datetime: string }) => void;
+  onPickupConfirmed?: (data: { place: string; datetime: string, endtime: string; }) => void;
 }
 
 const schema = yup.object().shape({
@@ -37,6 +31,7 @@ const schema = yup.object().shape({
   masCarpoolDriverUid: yup.string(),
   pickupDate: yup.string().required("กรุณาเลือกวันที่นัดหมาย"),
   pickupTime: yup.string().required("กรุณาเลือกเวลานัดหมาย"),
+  pickupEndTime: yup.string().required("กรุณาเลือกเวลานัดหมาย"),
 });
 
 const KeyPickupModal = forwardRef<
@@ -65,6 +60,7 @@ const KeyPickupModal = forwardRef<
 
     const [selectedDate, setSelectedDate] = useState<string>("");
     const [selectedTime, setSelectedTime] = useState<string>("");
+    const [selectedEndTime, setSelectedEndTime] = useState<string>("");
 
     const {
       register,
@@ -89,12 +85,19 @@ const KeyPickupModal = forwardRef<
       setValue("pickupTime", dateStr);
     };
 
+    const handleEndTimeChange = (dateStr: string) => {
+      setSelectedEndTime(dateStr);
+      setValue("pickupEndTime", dateStr);
+    };
+
     const onSubmitForm = async (data: any) => {
       const pickup = convertToISO(selectedDate, selectedTime);
+      const pickupEnd = convertToISO(selectedDate, selectedEndTime);
 
       const payload = {
         place: data.pickupPlace,
         datetime: pickup,
+        endtime: pickupEnd
       };
 
       modalRef.current?.close();
@@ -173,7 +176,7 @@ const KeyPickupModal = forwardRef<
                               </span>
                             </div>
                             <DatePicker
-                              placeholder="01/01/2567"
+                              placeholder="ระบุวันที่นัดรับกุญแจ"
                               onChange={handleDateChange}
                             />
                           </div>
@@ -219,11 +222,11 @@ const KeyPickupModal = forwardRef<
                               </span>
                             </div>
                             <TimePicker
-                              onChange={handleTimeChange}
+                              onChange={handleEndTimeChange}
                               placeholder="ระบุเวลาสิ้นสุด"
                             />
                           </div>
-                          {errors.pickupTime && (
+                          {errors.pickupEndTime && (
                             <FormHelper text="กรุณาเลือกเวลาสิ้นสุด" />
                           )}
                         </div>

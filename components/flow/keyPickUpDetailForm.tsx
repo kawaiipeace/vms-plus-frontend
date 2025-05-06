@@ -4,12 +4,12 @@ import DriverSmallInfoCard from "@/components/card/driverSmallInfoCard";
 import JourneyDetailCard from "@/components/card/journeyDetailCard";
 import ReferenceCard from "@/components/card/referenceCard";
 import DisburstmentCard from "@/components/card/disburstmentCard";
-import CarDetailCard2 from "@/components/card/carDetailCard2";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { fetchRequestKeyDetail } from "@/services/masterService";
 import DriverPeaInfoCard from "../card/driverPeaInfoCard";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import VehicleUserInfoCard from "../card/vehicleUserInfoCard";
+import VehicleDetailCard from "../card/vehicleDetailCard";
 
 interface KeyPickUpDetailFormProps {
   requestId: string;
@@ -116,9 +116,8 @@ export default function KeyPickUpDetailForm({
               <div className="form-section-header-title">ยานพาหนะ</div>
             </div>
 
-            <CarDetailCard2
-              reqId={requestData?.trn_request_uid}
-              vehicle={requestData?.vehicle}
+            <VehicleDetailCard
+              requestData={requestData}
             />
 
             {requestData?.is_pea_employee_driver === "1" ? (

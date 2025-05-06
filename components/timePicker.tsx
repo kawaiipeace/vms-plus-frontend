@@ -16,18 +16,21 @@ const TimePicker: React.FC<TimePickerProps> = ({
   onChange,
 }) => {
   const timeInputRef = useRef<HTMLInputElement>(null);
-  const fpInstance = useRef<flatpickr.Instance | null>(null);
+  const flatpickrRef = useRef<flatpickr.Instance | null>(null);
 
   useEffect(() => {
-    if (!timeInputRef.current) return;
-
-    fpInstance.current = flatpickr(timeInputRef.current, {
+    console.log('defaultvalue', defaultValue);
+    console.log('value', value);
+    
+    // Initialize flatpickr
+    flatpickrRef.current = flatpickr(timeInputRef.current!, {
       enableTime: true,
       noCalendar: true,
       static: true,
+      defaultDate: defaultValue || undefined,
       dateFormat: "H:i",
+      position: "below center",
       time_24hr: true,
-      defaultDate: defaultValue,
       onChange: (selectedDates, dateStr) => {
         if (onChange) {
           onChange(dateStr);
@@ -35,22 +38,27 @@ const TimePicker: React.FC<TimePickerProps> = ({
       },
     });
 
+    // Cleanup flatpickr instance on unmount
     return () => {
-      fpInstance.current?.destroy();
+      if (flatpickrRef.current) {
+        flatpickrRef.current.destroy();
+        flatpickrRef.current = null;
+      }
     };
-  }, [onChange, defaultValue]);
+  }, []); // Empty dependency array - only initialize once
 
-  // Update Flatpickr when `value` changes from outside
+  // Handle updates to defaultValue
   useEffect(() => {
-    if (fpInstance.current && value) {
-      fpInstance.current.setDate(value, false);
+    if (flatpickrRef.current && defaultValue) {
+      flatpickrRef.current.setDate(defaultValue, false);
     }
-  }, [value]);
+  }, [defaultValue]);
 
   return (
     <input
       className="form-control"
       placeholder={placeholder}
+      defaultValue={defaultValue}
       ref={timeInputRef}
       type="text"
     />

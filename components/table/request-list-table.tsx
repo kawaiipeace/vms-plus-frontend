@@ -10,12 +10,16 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import LicenseCardModal from "../modal/admin/licenseCardModal";
 import ReturnCarAddModal from "../modal/returnCarAddModal";
 import ReviewCarDriveModal from "../modal/reviewCarDriveModal";
+
+dayjs.extend(isBetween);
 
 interface PaginationType {
   limit: number;
@@ -195,8 +199,18 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
           );
         }
 
+        const start = dayjs(row.original.start_datetime);
+        const end = dayjs(row.original.end_datetime);
+        const between = dayjs().isBetween(start, end);
+        const traveling = between && dayjs().isSame(end);
+        const before = dayjs().isBefore(start);
+        const after = dayjs().isAfter(end);
+        const isPeaEm = row.original.is_pea_employee_driver;
+
+        console.log(row.original);
+
         return (
-          <div className="text-left">
+          <div className="text-left flex">
             {statusValue == "รออนุมัติ" ||
               (statusValue == "เสร็จสิ้น" && (
                 <button
@@ -378,56 +392,64 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
                       <i className="material-symbols-outlined">local_gas_station</i>
                       การเติมเชื้อเพลิง
                     </Link>
-                    <Link
-                      className="dropdown-item"
-                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        licenseCardModalRef.current?.openModal();
-                      }}
-                    >
-                      <i className="material-symbols-outlined">id_card</i>
-                      แสดงบัตรเดินทาง
-                    </Link>
-                    <Link
-                      className="dropdown-item"
-                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(
-                          "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
-                        );
-                      }}
-                    >
-                      <i className="material-symbols-outlined">calendar_clock</i>
-                      ดูนัดหมาย
-                    </Link>
-                    <Link
-                      className="dropdown-item"
-                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        reviewCarDriveModalRef.current?.openModal();
-                      }}
-                    >
-                      <i className="material-symbols-outlined">star</i>
-                      ให้คะแนนผู้ขับขี่
-                    </Link>
-                    <Link
-                      className="dropdown-item"
-                      href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        viewCarDriveModalRef.current?.openModal();
-                      }}
-                    >
-                      <i className="material-symbols-outlined">star</i>
-                      ดูคะแนนผู้ขับขี่
-                    </Link>
+                    {isPeaEm && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          licenseCardModalRef.current?.openModal();
+                        }}
+                      >
+                        <i className="material-symbols-outlined">id_card</i>
+                        แสดงบัตรเดินทาง
+                      </Link>
+                    )}
+                    {before && !isPeaEm && !traveling && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การนัดหมายเดินทาง`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(
+                            "/vehicle-in-use/user/" + row.original.trn_request_uid + "?activeTab=การนัดหมายเดินทาง"
+                          );
+                        }}
+                      >
+                        <i className="material-symbols-outlined">calendar_clock</i>
+                        ดูนัดหมาย
+                      </Link>
+                    )}
+                    {!isPeaEm && traveling && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          reviewCarDriveModalRef.current?.openModal();
+                        }}
+                      >
+                        <i className="material-symbols-outlined">star</i>
+                        ให้คะแนนผู้ขับขี่
+                      </Link>
+                    )}
+                    {after && !isPeaEm && !traveling && (
+                      <Link
+                        className="dropdown-item"
+                        href={`/vehicle-in-use/user/${row.original.trn_request_uid}?activeTab=การรับยานพาหนะ`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          viewCarDriveModalRef.current?.openModal();
+                        }}
+                      >
+                        <i className="material-symbols-outlined">star</i>
+                        ดูคะแนนผู้ขับขี่
+                      </Link>
+                    )}
                     <hr />
                     <Link
                       className="dropdown-item"
@@ -460,7 +482,7 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
               </button>
             )}
 
-            {statusValue == "ยกเลิกคำขอ" && (
+            {(statusValue == "ยกเลิกคำขอ" || statusValue == "รอตรวจสอบ" || statusValue == "รออนุมัติ") && (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"

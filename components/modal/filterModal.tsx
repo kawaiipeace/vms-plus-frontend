@@ -164,7 +164,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                                     ? "badge-success"
                                     : statusItem.ref_request_status_name === "เสร็จสิ้น"
                                     ? "badge-success"
-                                      : statusItem.ref_request_status_name === "รออนุมัติ" || statusItem.ref_request_status_name === "รอตรวจสอบ" 
+                                      : statusItem.ref_request_status_name === "รออนุมัติ" || statusItem.ref_request_status_name === "ตีกลับยานพาหนะ"
                                     ? "badge-warning"
                                     : "badge-info"
                                 }`}

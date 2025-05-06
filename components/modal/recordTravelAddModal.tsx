@@ -223,7 +223,7 @@ const RecordTravelAddModal = forwardRef<
     <dialog ref={modalRef} className="modal">
       <div
         className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation()}}
       >
         <form>
           <div className="bottom-sheet" {...swipeDownHandlers}>
@@ -236,7 +236,7 @@ const RecordTravelAddModal = forwardRef<
 
             <button
               className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
-              onClick={() => modalRef.current?.close}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); modalRef.current?.close() } }
             >
               <i className="material-symbols-outlined">close</i>
             </button>
