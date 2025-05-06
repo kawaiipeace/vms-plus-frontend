@@ -10,9 +10,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "pntdev.ddns.net",
-        port: "28089",
-        pathname: "/VMS_PLUS/PIX/**", // Adjust the path if needed
+        hostname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
       },
     ],
   },
