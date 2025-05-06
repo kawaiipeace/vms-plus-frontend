@@ -16,6 +16,7 @@ export default function Header() {
         if(response){
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
+          console.log('logout',response);
           const logoutUrl = response.data.logout_url;
           if (logoutUrl != "") {
             window.open(logoutUrl, "_blank");
