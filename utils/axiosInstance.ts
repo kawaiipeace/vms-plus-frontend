@@ -4,7 +4,7 @@ import axios from 'axios';
 // Function to get the API configuration
 export const getApiConfig = () => {
   const fallback = {
-    baseURL: 'http://pntdev.ddns.net:28080/api',
+    baseURL: 'http://pntdev.ddns.net:28084/api',
     apiKey: '2c5SF8BDhWKzdTY5MIFXEh9PummQMhK8w2TIUobJnYbAxaUmYo1sYTc2Hwo3xNWj',
     callbackURL: 'http://localhost/callback_code_token',
   };
