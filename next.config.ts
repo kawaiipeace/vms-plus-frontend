@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["example.com", "pictureapi.pea.co.th", "pntdev.ddns.net","vms.pea.co.th"],
     remotePatterns: [
       {
         protocol: "http",
