@@ -98,7 +98,7 @@ export default function AdminApproveFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
-    console.log('department',department);
+    console.log("department", department);
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -112,7 +112,7 @@ export default function AdminApproveFlow() {
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
-    console.log('adminsummary',summary)
+    console.log("adminsummary", summary);
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
       ...prevParams,
@@ -128,13 +128,13 @@ export default function AdminApproveFlow() {
   };
 
   const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    if(filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด"){
+    if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
       setParams((prevParams) => ({
         ...prevParams,
         order_by: "start_datetime",
         order_dir: "desc",
       }));
-    }else{
+    } else {
       setParams((prevParams) => ({
         ...prevParams,
         order_by: "request_no",
@@ -289,15 +289,17 @@ export default function AdminApproveFlow() {
                     setParams((prevParams) => ({
                       ...prevParams,
                       ref_request_status_code: item.ref_request_status_code,
-                      page: 1, 
+                      page: 1,
                     }));
-          
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
-          
+
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
                   }}
                 />
@@ -388,10 +390,10 @@ export default function AdminApproveFlow() {
         )}
       </div>
 
-      {dataRequest?.length > 0 ? (
+      {dataRequest?.length > 0 &&
         <>
           <div className="mt-2">
-            <AdminListTable defaultData={dataRequest} pagination={pagination}  />
+            <AdminListTable defaultData={dataRequest} pagination={pagination} />
           </div>
 
           <PaginationControls
@@ -400,20 +402,33 @@ export default function AdminApproveFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-      ) : (
-        filterNum > 0 ||
-        filterDate ||
-        (filterDate?.length <= 0 && (
-          <ZeroRecord
-            imgSrc="/assets/img/empty/search_not_found.png"
-            title="ไม่พบข้อมูล"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-            displayBtn={true}
-            btnType="secondary"
-            useModal={handleClearAllFilters}
-          />
-        ))
+       }
+
+      {dataRequest !== null && filterDate.length <= 0 && (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
+      )}
+
+      {dataRequest === null && (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ยานพาหนะ"
+          desc={
+            <>
+              เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล<br></br>
+              รายการคำขอจะแสดงที่นี่
+            </>
+          }
+          displayBtn={false}
+          button={""}
+        />
       )}
       <FilterModal
         ref={filterModalRef}

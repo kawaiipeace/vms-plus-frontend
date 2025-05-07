@@ -89,7 +89,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
   return (
     <>
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
-        <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.sended_back_request_reason}`} />
+        <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.rejected_request_reason}`} />
       )}
       {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
         <AlertCustom title="คำขอใช้ถูกยกเลิกแล้ว" desc={`เหตุผล: ${requestData?.canceled_request_reason}`} />

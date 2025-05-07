@@ -50,7 +50,7 @@ export const cancelRequest = async (data: CanceledRequestType) => {
 
 export const updateSendback = async (data: SendbackRequestType) => {
   try {
-    const response = await axiosInstance.put("booking-user/update-sended-back", data);
+    const response = await axiosInstance.put("booking-user/update-rejected", data);
     return response;
   } catch (error) {
     throw error;

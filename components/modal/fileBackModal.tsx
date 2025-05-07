@@ -53,7 +53,7 @@ const FileBackRequestModal = forwardRef<
     const sendCancelRequest = async () => {
       try {
         const payload = {
-          sended_back_request_reason: inputValue,
+          rejected_request_reason: inputValue,
           trn_request_uid: id || "",
         };
         const res =

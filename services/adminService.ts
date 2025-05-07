@@ -154,7 +154,7 @@ export const AdminUpdateReturnedVehicle = async (data: any) => {
 
 export const adminSendBackVehicle = async (data: SendbackRequestType) => {
   try {
-    const response = await axiosInstance.put("vehicle-inspection-admin/update-sended-back", data);
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-rejected", data);
     return response;
   } catch (error) {
     throw error;

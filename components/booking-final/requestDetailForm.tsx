@@ -79,7 +79,7 @@ export default function RequestDetailForm({
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
-          desc={`เหตุผล: ${requestData?.sended_back_request_reason}`}
+          desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
         />
       )}
       {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (

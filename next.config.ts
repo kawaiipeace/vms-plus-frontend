@@ -6,13 +6,14 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["example.com", "pictureapi.pea.co.th", "pntdev.ddns.net","vms.pea.co.th"],
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "pntdev.ddns.net",
-        port: "28089",
-        pathname: "/VMS_PLUS/PIX/**", // Adjust the path if needed
+        hostname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
       },
     ],
   },
