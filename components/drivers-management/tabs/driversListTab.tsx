@@ -6,10 +6,12 @@ import ZeroRecord from "@/components/zeroRecord";
 import DriverListTable from "@/components/drivers-management/table/driverListTable";
 import PaginationControls from "@/components/table/pagination-control";
 import CreateDriverManagementModal from "@/components/modal/createDriverManagementModal";
+import UploadCSVModal from "@/components/modal/uploadCSVModal";
+import DriverActiveModal from "@/components/drivers-management/modal/driverActiveModal";
 
 import dayjs from "dayjs";
 
-import { driversMamagement } from "@/services/driversManagement";
+import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 
 interface PaginationType {
@@ -46,6 +48,8 @@ const DriversListTab = () => {
   const [filterDate, setFilterDate] = useState<string>("");
   const [data, setData] = useState<RequestListType[]>([]);
   const [pagination, setPagination] = useState<PaginationType>(paginationDefault);
+  const [driverUid, setDriverUid] = useState<string>("");
+  const [driverUpdated, setDriverUpdated] = useState<boolean>(false); // [updated]
   // const [pagination, setPagination] = useState<PaginationType>(pagenation);
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -53,6 +57,16 @@ const DriversListTab = () => {
   } | null>(null);
 
   const createDriverManagementModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const uploadCSVModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverActiveModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -71,13 +85,15 @@ const DriversListTab = () => {
           total,
           totalPages,
         });
+        setDriverUid("");
+        setDriverUpdated(false);
       } catch (error) {
         console.error("Error fetching drivers list:", error);
       }
     };
 
     fetchDriversListFunc();
-  }, [params]);
+  }, [params, driverUpdated]);
 
   const handleFilterSubmit = ({
     selectedStatuses,
@@ -122,6 +138,28 @@ const DriversListTab = () => {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
+  };
+
+  const handleToggleChange = (driverId: string) => {
+    setDriverUid(driverId);
+  };
+
+  const handleUpdateStatusDriver = (driverUid: string, isActive: string) => {
+    console.log(driverUid);
+    try {
+      if (driverUid) {
+        updateDriverStatus(driverUid, isActive)
+          .then((response) => {
+            console.log("Driver status updated successfully:", response.data);
+            setDriverUpdated(true);
+          })
+          .catch((error) => {
+            console.error("Error updating driver status:", error);
+          });
+      }
+    } catch (error) {
+      console.error("Error updating driver status:", error);
+    }
   };
 
   return (
@@ -175,7 +213,15 @@ const DriversListTab = () => {
             {/* {data.map((item, index) => {
               return <div key={index}>{item.driver_name}</div>;
             })} */}
-            <DriverListTable defaultData={data} pagination={pagination} />
+            <DriverListTable
+              defaultData={data}
+              pagination={pagination}
+              driverActiveModalRef={
+                driverActiveModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>
+              }
+              handleToggleChange={handleToggleChange}
+              onUpdateStatusDriver={handleUpdateStatusDriver}
+            />
           </div>
           <PaginationControls
             pagination={pagination}
@@ -197,7 +243,19 @@ const DriversListTab = () => {
         </>
       )}
 
-      <CreateDriverManagementModal ref={createDriverManagementModalRef} />
+      <DriverActiveModal
+        ref={driverActiveModalRef}
+        title="ยืนยันปิดใช้งานพนักงานขับรถ"
+        desc="คำขอที่สร้างไว้ก่อนหน้านี้ยังสามารถดำเนินการต่อได้จนสิ้นสุดการใช้งาน คุณต้องการปิดให้บริการจองพนักงานขับรถ ชั่วคราวใช่หรือไม่?"
+        confirmText="ปิดใช้งานพนักงานชั่วคราว"
+        onUpdateDriver={handleUpdateStatusDriver}
+        driverUid={driverUid}
+      />
+      <UploadCSVModal ref={uploadCSVModalRef} />
+      <CreateDriverManagementModal
+        ref={createDriverManagementModalRef}
+        csvModalRef={uploadCSVModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>}
+      />
       <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
     </>
   );

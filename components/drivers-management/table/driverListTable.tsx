@@ -14,6 +14,7 @@ import { RequestListType } from "@/app/types/request-list-type";
 import Image from "next/image";
 import dayjs from "dayjs";
 import ToggleSwitch from "@/components/toggleSwitch";
+import { useRouter } from "next/navigation";
 
 interface DriverListTableProps {
   approved_job_driver_end_date?: string;
@@ -47,8 +48,21 @@ interface PaginationType {
 interface Props {
   defaultData: DriverListTableProps[];
   pagination: PaginationType;
+  driverActiveModalRef?: React.RefObject<{
+    openModal: () => void;
+    closeModal: () => void;
+  }>;
+  handleToggleChange?: (driverId: string) => void;
+  onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
 }
-const DriverListTable = ({ defaultData, pagination }: Props) => {
+const DriverListTable = ({
+  defaultData,
+  pagination,
+  driverActiveModalRef,
+  handleToggleChange,
+  onUpdateStatusDriver,
+}: Props) => {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
@@ -160,10 +174,18 @@ const DriverListTable = ({ defaultData, pagination }: Props) => {
       {
         accessorKey: "is_active",
         header: "เปิด/ปิดใช้งาน",
-        cell: () => {
+        cell: ({ row }) => {
           return (
             <div className="flex items-center justify-center">
-              <ToggleSwitch />
+              <ToggleSwitch
+                isActive={(row.original as DriverListTableProps).is_active ?? 0}
+                driverActiveModalRef={
+                  driverActiveModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>
+                }
+                driverId={(row.original as DriverListTableProps).mas_driver_uid ?? ""}
+                handleToggleChange={handleToggleChange}
+                onUpdateStatusDriver={onUpdateStatusDriver}
+              />
             </div>
           );
         },
@@ -175,12 +197,15 @@ const DriverListTable = ({ defaultData, pagination }: Props) => {
             <div className="text-center">&nbsp;</div>
           </div>
         ),
-        cell: () => {
+        cell: ({ row }) => {
           return (
             <>
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
                 data-tip="ดูรายละเอียด"
+                onClick={() => {
+                  router.push(`/drivers-management/view/${(row.original as DriverListTableProps).mas_driver_uid}`);
+                }}
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>

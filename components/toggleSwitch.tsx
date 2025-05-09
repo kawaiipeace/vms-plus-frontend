@@ -1,11 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const ToggleSwitch = () => {
+const ToggleSwitch = ({
+  isActive,
+  driverActiveModalRef,
+  driverId,
+  handleToggleChange,
+  onUpdateStatusDriver,
+}: {
+  isActive: number;
+  driverActiveModalRef: React.RefObject<{ openModal: () => void; closeModal: () => void } | null>;
+  driverId: string;
+  handleToggleChange?: (driverId: string) => void;
+  onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
+}) => {
   const [isOn, setIsOn] = useState(false);
 
   const toggleSwitch = () => {
-    setIsOn(!isOn);
+    // setIsOn(!isOn);
+    console.log("Driver ID:", driverId);
+    handleToggleChange?.(driverId);
+    if (isActive === 1) {
+      driverActiveModalRef.current?.openModal();
+    } else {
+      onUpdateStatusDriver?.(driverId, "1");
+    }
   };
+
+  useEffect(() => {
+    if (isActive === 1) {
+      setIsOn(true);
+    } else {
+      setIsOn(false);
+    }
+  }, [isActive]);
 
   return (
     <div
