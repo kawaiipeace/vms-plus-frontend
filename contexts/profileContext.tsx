@@ -3,14 +3,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { fetchProfile } from "@/services/authService";
 import { useRouter } from "next/navigation";
+import { Profile } from "@/app/types/profile-type";
 
-interface Profile {
-  emp_id: string;
-  first_name: string;
-  last_name: string;
-  dept_sap_full: string;
-  roles: string[];
-}
 
 interface ProfileContextType {
   profile: Profile | null;

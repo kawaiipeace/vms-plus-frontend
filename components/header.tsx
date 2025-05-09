@@ -20,24 +20,8 @@ export default function Header() {
   } | null>(null);
 
   useEffect(() => {
-    // getDriverUserCard();
+      console.log("proifile",profile);
   }, [profile]);
-
-  useEffect(() => {
-    const getDriverUserCard = async () => {
-      try {
-        const response = await driverLicenseUserCard();
-        if (response) {
-          console.log('res',response.data);
-          setDriverUser(response.data);
-        }
-  
-        router.push("/");
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  },[])
 
   const getDriverUserCard = async () => {
     try {
@@ -174,7 +158,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <DriverLicenseModal ref={driverLicenseModalRef} />
+      <DriverLicenseModal ref={driverLicenseModalRef} profile={profile || null} requestData={driverUser} />
     </div>
   );
 }
