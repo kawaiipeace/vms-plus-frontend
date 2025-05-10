@@ -5,7 +5,7 @@ import {
   chooseCarChoice,
   chooseDriverChoice,
 } from "@/services/carpoolManagement";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ProcessOneForm() {
@@ -43,7 +43,7 @@ export default function ProcessOneForm() {
   return (
     <>
       <form
-        onSubmit={() => router.push("/carpool-management/create/process-two")}
+        onSubmit={() => router.push("/carpool-management/create/process-one")}
       >
         <div className="form-steps-group">
           <div className="form-steps" data-step="1">
