@@ -10,6 +10,7 @@ import { PaginationType } from "../types/request-action-type";
 import CarpoolManagementTable from "@/components/table/carpool-management-table";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterCarpoolModal from "@/components/modal/filterCarpool";
+import { useRouter } from "next/navigation";
 
 export default function CarpoolManagement() {
   const [params, setParams] = useState<CarpoolsParams>({});
@@ -21,6 +22,7 @@ export default function CarpoolManagement() {
     totalPages: 0,
   });
 
+  const router = useRouter();
   const { isPinned } = useSidebar();
 
   const filterModalRef = useRef<{
@@ -149,7 +151,9 @@ export default function CarpoolManagement() {
                         </div>
                       </button>
                       <button
-                        // onClick={addNewRequest}
+                        onClick={() =>
+                          router.push("/carpool-management/create/process-one")
+                        }
                         className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
                       >
                         <i className="material-symbols-outlined">add</i>
@@ -199,7 +203,8 @@ export default function CarpoolManagement() {
                   icon="add"
                   displayBtn={true}
                   btnType="primary"
-                  useModal={() => {}}
+                  useModal={() => () =>
+                    router.push("/carpool-management/create/process-one")}
                 />
               )}
               <FilterCarpoolModal ref={filterModalRef} />

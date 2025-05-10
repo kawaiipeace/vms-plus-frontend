@@ -19,3 +19,13 @@ export interface Carpools {
   is_active: string;
   carpool_status: string;
 }
+
+export interface CarChoice {
+  ref_carpool_choose_car_id: number;
+  type_of_choose_car: string;
+}
+
+export interface DriverChoice {
+  ref_carpool_choose_driver_id: number;
+  type_of_choose_driver: string;
+}
