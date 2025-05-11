@@ -70,11 +70,11 @@ const DriverInfoModal = forwardRef<
               >
                 keyboard_arrow_left
               </i>}  ข้อมูลผู้ขับขี่</div>
-          <form method="dialog">
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+
+            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary" onClick={()=> modalRef.current?.close}>
               <i className="material-symbols-outlined">close</i>
             </button>
-          </form>
+
         </div>
         {!vehicleUserData ? (
          <></>

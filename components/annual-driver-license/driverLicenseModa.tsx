@@ -4,6 +4,7 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef } from "react";
+import DriverLicenseDetailModal from "./driverLicenseDetailModal";
 
 interface Props {
   requestData?: DriverLicenseCardType;
@@ -20,6 +21,11 @@ const DriverLicenseModal = forwardRef<
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  const driverLicenseDetailModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -194,7 +200,7 @@ const DriverLicenseModal = forwardRef<
               <span className="text-brand-900 text-sm">
                 ขออนุมัติประจำปี {requestData?.annual_yyyy}
               </span>
-              <button className="btn btn-secondary">ดูรายละเอียด</button>
+              <button className="btn btn-secondary" onClick={() => { modalRef.current?.close; driverLicenseDetailModalRef.current?.openModal()}}>ดูรายละเอียด</button>
             </div>
           )}
 
@@ -208,6 +214,10 @@ const DriverLicenseModal = forwardRef<
           )}
         </div>
       </div>
+      <DriverLicenseDetailModal
+        ref={driverLicenseDetailModalRef}
+        requestData={requestData}
+      />
     </dialog>
   );
 });
