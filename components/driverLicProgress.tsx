@@ -40,9 +40,7 @@ export default function DriverLicProgress({ approverId, progressSteps }: Props) 
 
   return (
     <div className="card card-approvalprogress">
-      <div className="card-header title-progress-header">
-        <div className="card-title title-progress">สถานะคำขอใช้</div>
-      </div>
+
       <div className="card-body">
         {/* Mobile View */}
         {progressSteps && (
@@ -139,82 +137,6 @@ export default function DriverLicProgress({ approverId, progressSteps }: Props) 
           </>
         )}
 
-        {/* Approver Info */}
-        {approverId !== "" && (
-          <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title hidden md:block">
-                ผู้อนุมัติต้นสังกัด
-              </div>
-              <div className="block md:hidden w-full">
-                <button
-                  className="flex w-full p-0 h-auto w-100"
-                  type="button"
-                  onClick={() => setIsApproverOpen((prev) => !prev)}
-                >
-                  ผู้อนุมัติต้นสังกัด
-                  <i className="material-symbols-outlined ml-auto">
-                    {isApproverOpen
-                      ? "keyboard_arrow_up"
-                      : "keyboard_arrow_down"}
-                  </i>
-                </button>
-              </div>
-            </div>
-
-            <div
-              className={`w-full form-card md:block transition-all duration-500 ease-in-out overflow-hidden ${
-                isApproverOpen
-                  ? "max-h-[1000px] opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-              id="collapseApproverDetail"
-            >
-              <div className="form-card-body form-card-inline">
-                <div className="form-group form-plaintext form-users">
-                  <div className="form-plaintext-group align-self-center">
-                    <div className="form-label">{approverData?.full_name}</div>
-                    <div className="supporting-text-group">
-                      <div className="supporting-text">
-                        {approverData?.dept_sap_short}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="form-card-right align-self-center">
-                  <div className="flex gap-3 flex-wrap">
-                    {approverData?.tel_mobile && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              {approverData?.tel_mobile}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {approverData?.tel_internal && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowra">
-                              {approverData?.tel_internal}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
