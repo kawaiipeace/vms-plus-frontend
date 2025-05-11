@@ -35,6 +35,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       try {
         setLoading(true);
         const response = await fetchProfile();
+        console.log('profile',response.data)
         setProfile(response.data);
         setIsAuthenticated(true);
       } catch (err) {

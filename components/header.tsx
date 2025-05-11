@@ -8,11 +8,12 @@ import { useProfile } from "@/contexts/profileContext";
 import { useEffect, useRef, useState } from "react";
 import DriverLicenseModal from "./annual-driver-license/driverLicenseModa";
 import { driverLicenseUserCard } from "@/services/driver";
+import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 
 export default function Header() {
   const { profile } = useProfile();
   const router = useRouter();
-  const [driverUser, setDriverUser] = useState();
+  const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
 
   const driverLicenseModalRef = useRef<{
     openModal: () => void;
@@ -20,15 +21,14 @@ export default function Header() {
   } | null>(null);
 
   useEffect(() => {
-      console.log("proifile",profile);
+    console.log("proifile", profile);
   }, [profile]);
 
   const getDriverUserCard = async () => {
     try {
       const response = await driverLicenseUserCard();
       if (response) {
-        console.log('res', response.data);
-        setDriverUser(response.data);
+        setDriverUser(response.data.driver);
       }
     } catch (error) {
       console.log(error);
@@ -39,8 +39,6 @@ export default function Header() {
     getDriverUserCard();
     driverLicenseModalRef.current?.openModal();
   };
-
-  
 
   const logOutFunc = async () => {
     try {
@@ -124,13 +122,34 @@ export default function Header() {
                 )}
                 <li className="nav-item">
                   <div className="flex justify-between gap-2 items-center">
-                    <a className="nav-link toggle-mode gap-1 flex items-center" onClick={handleOpenDriverLicenseModal}>
+                    <a
+                      className="nav-link toggle-mode gap-1 flex items-center"
+                      onClick={handleOpenDriverLicenseModal}
+                    >
                       <i className="material-symbols-outlined">id_card</i>
                       <span className="nav-link-label">
                         ขอทำหน้าที่ขับรถยนต์
                       </span>
                     </a>
-                    <div className="badge badge-success">อนุมัติแล้ว</div>
+                    {profile?.license_status === "อนุมัติแล้ว" ? (
+                      <div className="badge badge-success">
+                        {profile.license_status}
+                      </div>
+                    ) : profile?.license_status === "หมดอายุ" ? (
+                      <div className="badge badge-error">
+                        {profile.license_status}
+                      </div>
+                    ) : profile?.license_status === "มีผลปีถัดไป" ? (
+                      <div className="badge badge-warning">
+                        {profile.license_status}
+                      </div>
+                    ) : profile?.license_status === "ไม่มี" ? (
+                      <div className="badge bg-brand-900 text-white">
+                        {profile.license_status}
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </li>
                 {/* <li className="nav-item">
@@ -158,7 +177,11 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <DriverLicenseModal ref={driverLicenseModalRef} profile={profile || null} requestData={driverUser} />
+      <DriverLicenseModal
+        ref={driverLicenseModalRef}
+        profile={profile || null}
+        requestData={driverUser}
+      />
     </div>
   );
 }

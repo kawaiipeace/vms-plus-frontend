@@ -11,7 +11,7 @@ interface Props {
   onSubmit?: () => void;
 }
 
-const DriverLicenseModal = forwardRef<
+const DriverLicenseDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
 >(({ requestData, id, profile }, ref) => {

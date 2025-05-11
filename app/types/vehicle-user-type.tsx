@@ -77,3 +77,30 @@ export type VehicleUserTravelCardType = Partial<{
   approved_request_dept_sap_short: string;
   approved_request_dept_sap_full: string;
 }>
+
+export interface DriverLicenseCardType {
+  annual_yyyy: number;
+  driver_dept_sap_short_name_work: string;
+  driver_license: DriverLicense;
+  driver_name: string;
+  is_no_expiry_date: boolean;
+  license_status: string;
+  mas_driver_uid: string;
+}
+
+export interface DriverLicense {
+  mas_driver_uid: string;
+  driver_license_no: string;
+  driver_license_type: DriverLicenseType;
+  driver_license_start_date: string; // ISO 8601 string
+  driver_license_end_date: string;   // ISO 8601 string
+  [key: string]: any; // Optional, for other dynamic fields
+}
+
+
+export interface DriverLicenseType{
+  ref_driver_license_type_code: string;
+  ref_driver_license_type_name: string;
+  ref_driver_license_type_desc: string;
+}
+
