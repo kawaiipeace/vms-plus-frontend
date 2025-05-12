@@ -8,8 +8,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { getCarpoolVehicle } from "@/services/carpoolManagement";
-import { CarpoolVehicle } from "@/app/types/carpool-management-type";
+import { getCarpoolDriver } from "@/services/carpoolManagement";
+import { CarpoolDriver } from "@/app/types/carpool-management-type";
+import dayjs from "dayjs";
 
 interface Props {
   id: string;
@@ -18,7 +19,7 @@ interface Props {
   confirmText: string;
 }
 
-const AddCarpoolVehicleModal = forwardRef<
+const AddCarpoolDriverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
 >(({ id, title, desc, confirmText }, ref) => {
@@ -28,13 +29,13 @@ const AddCarpoolVehicleModal = forwardRef<
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
 
-  const [vehicles, setVehicles] = useState<CarpoolVehicle[]>([]);
+  const [drivers, setDrivers] = useState<CarpoolDriver[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
-    search: "",
+    name: "",
   });
 
   useImperativeHandle(ref, () => ({
@@ -42,11 +43,11 @@ const AddCarpoolVehicleModal = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const fetchCarpoolVehicleFunc = async () => {
+  const fetchCarpoolDriverFunc = async () => {
     try {
-      const response = await getCarpoolVehicle(params);
+      const response = await getCarpoolDriver(params);
       const result = response.data;
-      setVehicles([...vehicles, ...result.vehicles]);
+      setDrivers([...drivers, ...result.drivers]);
       setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
@@ -87,11 +88,10 @@ const AddCarpoolVehicleModal = forwardRef<
         CBRef.current.checked = true;
       }
     }
-    console.log("checked: ", checked);
   }, [checked]);
 
   useEffect(() => {
-    fetchCarpoolVehicleFunc();
+    fetchCarpoolDriverFunc();
   }, [params]);
 
   const handleConfirm = () => {
@@ -124,6 +124,14 @@ const AddCarpoolVehicleModal = forwardRef<
     }
   };
 
+  const getBirthDate = (date: string) => {
+    const months = dayjs(dayjs()).diff(dayjs(date), "month");
+    const year = Math.floor(months / 12);
+    const month = months % 12;
+
+    return year + " ปี" + " " + month + " เดือน";
+  };
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -134,7 +142,7 @@ const AddCarpoolVehicleModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มยานพาหนะ</div>
+            <div className="modal-title">เพิ่มพนักงานขับรถ</div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
@@ -171,9 +179,9 @@ const AddCarpoolVehicleModal = forwardRef<
               <div>
                 <div className="flex justify-between items-center mt-5 px-4 bg-[#EAECF0] rounded">
                   <div>
-                    รายชื่อยานพาหนะ{" "}
+                    รายชื่อพนักงานขับรถ{" "}
                     <span className="badge badge-outline badge-gray !rounded">
-                      {total} คัน
+                      {total} คน
                     </span>
                   </div>
                   <div className="custom-group">
@@ -197,18 +205,22 @@ const AddCarpoolVehicleModal = forwardRef<
                   </div>
                 </div>
                 <div className="h-80 overflow-y-auto" ref={scrollContentRef}>
-                  {vehicles.map((vehicle) => (
+                  {drivers.map((driver) => (
                     <div
-                      key={vehicle.mas_vehicle_uid}
+                      key={driver.mas_driver_uid}
                       className="flex justify-between items-center px-4 py-2 border-b border-[#EAECF0]"
                     >
                       <div className="text-start">
                         <div className="text-brand-900">
-                          {vehicle.vehicle_license_plate}
+                          {driver.driver_name}{" "}
+                          {driver.driver_nickname
+                            ? `(${driver.driver_nickname})`
+                            : ""}
                         </div>
-                        <div className="text-xs">
-                          {vehicle.vehicle_brand_name}{" "}
-                          {vehicle.vehicle_model_name}{" "}
+                        <div className="flex items-center text-xs gap-2">
+                          <span>{driver.driver_dept_sap || "-"}</span>{" "}
+                          <div className="border-l border-primary-grayBorder h-3" />
+                          <span>{getBirthDate(driver.driver_birthdate)}</span>{" "}
                         </div>
                       </div>
                       <div className="custom-group">
@@ -224,9 +236,7 @@ const AddCarpoolVehicleModal = forwardRef<
                             //     statusItem.ref_request_status_code
                             //   )
                             // }
-                            onChange={() =>
-                              handleCheck(vehicle.mas_vehicle_uid)
-                            }
+                            onChange={() => handleCheck(driver.mas_driver_uid)}
                             className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                           />
                         </div>
@@ -263,6 +273,6 @@ const AddCarpoolVehicleModal = forwardRef<
   );
 });
 
-AddCarpoolVehicleModal.displayName = "AddCarpoolAdminModal";
+AddCarpoolDriverModal.displayName = "AddCarpoolAdminModal";
 
-export default AddCarpoolVehicleModal;
+export default AddCarpoolDriverModal;

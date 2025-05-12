@@ -17,7 +17,7 @@ export default function CarpoolProcessFour() {
   const { isPinned } = useSidebar();
   const router = useRouter();
 
-  const [data, setData] = useState([1]);
+  const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationType>({
     limit: 10,
     page: 1,
