@@ -95,6 +95,9 @@ export default function CarpoolProcessTwo() {
                         <span className="page-title-label">
                           ผู้ดูแลยานพาหนะ
                         </span>
+                        <span className="badge badge-outline badge-gray !rounded">
+                          3 คน
+                        </span>
                       </div>
                     </div>
                   </div>

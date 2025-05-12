@@ -40,3 +40,32 @@ export interface CarpoolAdmin {
   tel_internal: string;
   image_url: string;
 }
+
+export interface CarpoolApprover {
+  emp_id: string;
+  full_name: string;
+  dept_sap: string;
+  dept_sap_short: string;
+  dept_sap_full: string;
+  tel_mobile: string;
+  tel_internal: string;
+  image_url: string;
+}
+
+export interface CarpoolVehicleParams {
+  search: string;
+  page: number;
+  limit: number;
+}
+
+export interface CarpoolVehicle {
+  mas_vehicle_uid: string;
+  vehicle_license_plate: string;
+  vehicle_brand_name: string;
+  vehicle_model_name: string;
+  car_type: string;
+  vehicle_owner_dept_sap: string;
+  vehicle_img: string;
+  seat: number;
+  is_admin_choose_driver: boolean;
+}

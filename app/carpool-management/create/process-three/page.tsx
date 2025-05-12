@@ -17,7 +17,7 @@ export default function CarpoolProcessThree() {
   const { isPinned } = useSidebar();
   const router = useRouter();
 
-  const [data, setData] = useState([1]);
+  const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationType>({
     limit: 10,
     page: 1,
@@ -93,6 +93,9 @@ export default function CarpoolProcessThree() {
                     <div className="page-header-left">
                       <div className="page-title">
                         <span className="page-title-label">ผู้อนุมัติ</span>
+                        <span className="badge badge-outline badge-gray !rounded">
+                          3 คน
+                        </span>
                       </div>
                     </div>
                   </div>

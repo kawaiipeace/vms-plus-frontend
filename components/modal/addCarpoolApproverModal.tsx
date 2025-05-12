@@ -18,13 +18,13 @@ interface Props {
   confirmText: string;
 }
 
-const AddCarpoolAdminModal = forwardRef<
+const AddCarpoolApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
 >(({ id, title, desc, confirmText }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [admins, setAdmins] = useState([]);
+  const [approver, setApprover] = useState([]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -32,18 +32,18 @@ const AddCarpoolAdminModal = forwardRef<
   }));
 
   useEffect(() => {
-    const fetchCarpoolAdminFunc = async () => {
+    const fetchCarpoolApproverFunc = async () => {
       try {
         const response = await getCarpoolApprover();
         const result = response.data;
         console.log("response: ", response);
-        setAdmins(result);
+        setApprover(result);
       } catch (error) {
         console.error("Error fetching status data:", error);
       }
     };
 
-    fetchCarpoolAdminFunc();
+    fetchCarpoolApproverFunc();
   }, []);
 
   const router = useRouter();
@@ -192,6 +192,6 @@ const AddCarpoolAdminModal = forwardRef<
   );
 });
 
-AddCarpoolAdminModal.displayName = "AddCarpoolAdminModal";
+AddCarpoolApproverModal.displayName = "AddCarpoolAdminModal";
 
-export default AddCarpoolAdminModal;
+export default AddCarpoolApproverModal;
