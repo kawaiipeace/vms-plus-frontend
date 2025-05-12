@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import CustomSelect from "../customSelect";
-import { getCarpoolAdmin } from "@/services/carpoolManagement";
+import { getCarpoolApprover } from "@/services/carpoolManagement";
 
 interface Props {
   id: string;
@@ -34,7 +34,7 @@ const AddCarpoolAdminModal = forwardRef<
   useEffect(() => {
     const fetchCarpoolAdminFunc = async () => {
       try {
-        const response = await getCarpoolAdmin();
+        const response = await getCarpoolApprover();
         const result = response.data;
         console.log("response: ", response);
         setAdmins(result);
@@ -78,7 +78,7 @@ const AddCarpoolAdminModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มผู้ดูแลยานพาหนะ</div>
+            <div className="modal-title">เพิ่มผู้อนุมัติ</div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
@@ -91,7 +91,7 @@ const AddCarpoolAdminModal = forwardRef<
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <div className="form-group">
-                    <label className="form-label">ผู้ใช้ยานพาหนะ</label>
+                    <label className="form-label">ผู้อนุมัติ</label>
                     <CustomSelect
                       iconName="person"
                       w="w-full"

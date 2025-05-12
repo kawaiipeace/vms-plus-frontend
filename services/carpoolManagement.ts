@@ -44,3 +44,15 @@ export const getCarpoolAdmin = async () => {
     throw error;
   }
 };
+
+export const getCarpoolApprover = async () => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/approver-mas-search"
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
