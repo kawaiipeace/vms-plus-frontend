@@ -29,7 +29,6 @@ export default function ProcessOneForm() {
       try {
         const response = await chooseDriverChoice();
         const result = response.data;
-        console.log("driver: ", response);
         setDriverRadio(result);
       } catch (error) {
         console.error("Error fetching status data:", error);
@@ -43,7 +42,10 @@ export default function ProcessOneForm() {
   return (
     <>
       <form
-        onSubmit={() => router.push("/carpool-management/create/process-one")}
+        onSubmit={(e) => {
+          e.preventDefault();
+          router.push("/carpool-management/create/process-two");
+        }}
       >
         <div className="form-steps-group">
           <div className="form-steps" data-step="1">

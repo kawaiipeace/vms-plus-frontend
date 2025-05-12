@@ -9,8 +9,6 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Carpools } from "@/app/types/carpool-management-type";
-import { useRouter } from "next/navigation";
 
 interface PaginationType {
   limit: number;
@@ -20,16 +18,11 @@ interface PaginationType {
 }
 
 interface Props {
-  defaultData: Carpools[];
+  defaultData: any[];
   pagination: PaginationType;
 }
 
-export default function CarpoolManagementTable({
-  defaultData,
-  pagination,
-}: Props) {
-  const router = useRouter();
-
+export default function CarpoolAdminTable({ defaultData, pagination }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -38,20 +31,20 @@ export default function CarpoolManagementTable({
     pageSize: pagination.limit,
   });
 
-  const columns: ColumnDef<Carpools>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: "carpool_name",
-      header: () => <div className="text-center">ชื่อกลุ่มยานพาหนะ</div>,
+      header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-left font-semibold" data-name="ชื่อกลุ่มยานพาหนะ">
+        <div className="text-left font-semibold" data-name="ชื่อ - นามสกุล">
           {row.original.carpool_name}
         </div>
       ),
     },
     {
       accessorKey: "carpool_dept_sap",
-      header: () => <div className="text-center">หน่วยงานที่ใช้บริการ</div>,
+      header: () => <div className="text-center">ตำแหน่ง / สังกัด</div>,
       enableSorting: false,
       // cell: ({ row }) => (
       //   <div className="text-left" data-name="สถานที่จอดรถ">
@@ -64,7 +57,7 @@ export default function CarpoolManagementTable({
     },
     {
       accessorKey: "carpool_contact_place",
-      header: () => <div className="text-left">ผู้รับผิดชอบหลัก</div>,
+      header: () => <div className="text-left">เบอร์ภายใน</div>,
       enableSorting: false,
       // cell: ({ row }) => (
       //   <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
@@ -81,7 +74,7 @@ export default function CarpoolManagementTable({
       accessorKey: "carpool_contact_number",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
-          <div className="text-center">เบอร์ติดต่อ</div>
+          <div className="text-center">เบอร์โทรศัพท์</div>
         </div>
       ),
       enableSorting: false,
@@ -99,53 +92,12 @@ export default function CarpoolManagementTable({
     },
     {
       accessorKey: "number_of_vehicles",
-      header: () => <div className="text-center">จำนวนยานพาหนะ</div>,
+      header: () => <div className="text-center">ประเภทผู้ดูแลยานพาหนะ</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="จำนวนยานพาหนะ">
             {row.original.number_of_vehicles} คัน
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "number_of_drivers",
-      header: () => (
-        <div className="text-center" data-name="จำนวน พขร.">
-          จำนวน พขร.
-        </div>
-      ),
-      enableSorting: true,
-      cell: ({ row }) => {
-        return (
-          <div className="text-left">{row.original.number_of_drivers} คน</div>
-        );
-      },
-    },
-    {
-      accessorKey: "carpool_status",
-      header: () => <div className="text-center">สถานะ</div>,
-      enableSorting: false,
-      cell: ({ row }) => {
-        return (
-          <div className="w-28" data-name="สถานะ">
-            {row.original.carpool_status === "เปิด" ? (
-              <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
-                <div className="w-[6px] h-[6px] rounded-full bg-success" />
-                <span>เปิด</span>
-              </div>
-            ) : row.original.carpool_status === "ปิด" ? (
-              <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
-                <div className="w-[6px] h-[6px] rounded-full bg-icon-error" />
-                <span>ปิด</span>
-              </div>
-            ) : (
-              <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
-                <div className="w-[6px] h-[6px] rounded-full bg-[#667085]" />
-                <span>ไม่พร้อมใช้งาน</span>
-              </div>
-            )}
           </div>
         );
       },
@@ -160,7 +112,7 @@ export default function CarpoolManagementTable({
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="ดูรายละเอียด"
-              onClick={() => router.push("/carpool-management")}
+              //   onClick={() => router.push("/carpool-management")}
             >
               <i className="material-symbols-outlined">quick_reference_all</i>
             </button>

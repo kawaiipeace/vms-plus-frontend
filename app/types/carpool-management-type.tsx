@@ -29,3 +29,14 @@ export interface DriverChoice {
   ref_carpool_choose_driver_id: number;
   type_of_choose_driver: string;
 }
+
+export interface CarpoolAdmin {
+  emp_id: string;
+  full_name: string;
+  dept_sap: string;
+  dept_sap_short: string;
+  dept_sap_full: string;
+  tel_mobile: string;
+  tel_internal: string;
+  image_url: string;
+}

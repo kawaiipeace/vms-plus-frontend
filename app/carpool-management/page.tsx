@@ -170,6 +170,7 @@ export default function CarpoolManagement() {
                       button="ล้างตัวกรอง"
                       displayBtn={true}
                       btnType="secondary"
+                      classNameImg="w-[200px] h-[200px]"
                       useModal={handleClearAllFilters}
                     />
                   ) : (
@@ -203,6 +204,7 @@ export default function CarpoolManagement() {
                   icon="add"
                   displayBtn={true}
                   btnType="primary"
+                  classNameImg="w-[200px] h-[200px]"
                   useModal={() => () =>
                     router.push("/carpool-management/create/process-one")}
                 />

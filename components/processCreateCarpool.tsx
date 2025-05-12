@@ -78,7 +78,9 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             className={`progress-step cursor-pointer ${
               step == 1 ? "active" : step > 1 ? "done" : ""
             }`}
-            onClick={() => router.push("/vehicle-booking/process-one")}
+            onClick={() =>
+              router.push("/carpool-management/create/process-one")
+            }
           >
             <span className="progress-step-no">
               {step > 1 ? (
@@ -98,7 +100,7 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             }`}
             onClick={() => {
               if (localStorage.getItem("processOne") === "Done") {
-                router.push("/vehicle-booking/process-two");
+                router.push("/carpool-management/create/process-two");
               }
             }}
           >
@@ -120,7 +122,7 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             }`}
             onClick={() => {
               if (localStorage.getItem("processTwo") === "Done") {
-                router.push("/vehicle-booking/process-three");
+                router.push("/carpool-management/create/process-three");
               }
             }}
           >
@@ -142,7 +144,7 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             }`}
             onClick={() => {
               if (localStorage.getItem("processThree") === "Done") {
-                router.push("/vehicle-booking/process-four");
+                router.push("/carpool-management/create/process-four");
               }
             }}
           >

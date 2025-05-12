@@ -32,3 +32,15 @@ export const chooseDriverChoice = async () => {
     throw error;
   }
 };
+
+export const getCarpoolAdmin = async () => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/admin-mas-search"
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
