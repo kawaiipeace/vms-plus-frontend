@@ -85,7 +85,7 @@ const DriverLicenseDetailModal = forwardRef<
               keyboard_arrow_left
             </i>{" "}
             <div className="">
-              <p>เลขที่ิคำขอ RAD000006789 </p>
+              <p>เลขที่่คำขอ {requestData?.request_annual_driver_no}  </p>
               <span className="text-color-secondary text-base font-normal">
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestData?.annual_yyyy}
               </span>

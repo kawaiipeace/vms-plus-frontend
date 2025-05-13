@@ -80,6 +80,7 @@ export type VehicleUserTravelCardType = Partial<{
 
 export interface DriverLicenseCardType {
   annual_yyyy: number;
+  request_annual_driver_no: string;
   driver_dept_sap_short_name_work: string;
   driver_license: DriverLicense;
   driver_certificate: DriverCertificate;

@@ -202,7 +202,7 @@ const DriverLicenseModal = forwardRef<
           </div>
         </div>
         <div className="modal-footer sticky bottom-0 gap-3 mt-0 w-full p-5 pt-0">
-          {/* {profile?.license_status === "อนุมัติแล้ว" && ( */}
+          {profile?.license_status === "อนุมัติแล้ว" && (
             <div className="flex justify-between w-full gap-3 items-center">
               <span className="text-brand-900 text-sm">
                 ขออนุมัติประจำปี {requestData?.annual_yyyy}
@@ -217,7 +217,7 @@ const DriverLicenseModal = forwardRef<
                 ดูรายละเอียด
               </button>
             </div>
-          {/* )} */}
+          )}
 
           {profile?.license_status === "หมดอายุ" && (
             <div className="flex justify-end w-full gap-3 items-center">

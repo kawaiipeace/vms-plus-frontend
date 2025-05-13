@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
 import { useEffect, useRef, useState } from "react";
-import DriverLicenseModal from "./annual-driver-license/driverLicenseModa";
+import DriverLicenseModal from "./annual-driver-license/driverLicenseModal";
 import { driverLicenseUserCard } from "@/services/driver";
 import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
+import RequestDrivingStepOneModal from "./annual-driver-license/requestDrivingStepOneModal";
 
 export default function Header() {
   const { profile } = useProfile();
@@ -16,6 +17,11 @@ export default function Header() {
   const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
 
   const driverLicenseModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const RequestDrivingStepOneModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -122,31 +128,55 @@ export default function Header() {
                 )}
                 <li className="nav-item">
                   <div className="flex justify-between gap-2 items-center">
-                    <a
-                      className="nav-link toggle-mode gap-1 flex items-center"
-                      onClick={handleOpenDriverLicenseModal}
-                    >
-                      <i className="material-symbols-outlined">id_card</i>
-                      <span className="nav-link-label">
-                        ขอทำหน้าที่ขับรถยนต์
-                      </span>
-                    </a>
                     {profile?.license_status === "อนุมัติแล้ว" ? (
-                      <div className="badge badge-success">
-                        {profile.license_status}
-                      </div>
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={handleOpenDriverLicenseModal}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge badge-success">
+                          {profile.license_status}
+                        </div>
+                      </>
                     ) : profile?.license_status === "หมดอายุ" ? (
-                      <div className="badge badge-error">
-                        {profile.license_status}
-                      </div>
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={handleOpenDriverLicenseModal}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge badge-error">
+                          {profile.license_status}
+                        </div>
+                      </>
                     ) : profile?.license_status === "มีผลปีถัดไป" ? (
                       <div className="badge badge-warning">
                         {profile.license_status}
                       </div>
-                    ) : profile?.license_status === "ไม่มี" ? (
-                      <div className="badge bg-brand-900 text-white">
-                        {profile.license_status}
-                      </div>
+                    ) : profile?.license_status === "กำลังดำเนินการ" ? (
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={() => RequestDrivingStepOneModalRef.current?.openModal()}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge bg-brand-900 text-white">
+                          {profile.license_status}
+                        </div>
+                      </>
                     ) : (
                       ""
                     )}
@@ -182,6 +212,8 @@ export default function Header() {
         profile={profile || null}
         requestData={driverUser}
       />
+
+      <RequestDrivingStepOneModal ref={RequestDrivingStepOneModalRef} />
     </div>
   );
 }
