@@ -29,6 +29,10 @@ const DriverLicenseModal = forwardRef<
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
+  const onBack = () => {
+    modalRef.current?.showModal();
+  }
+
   console.log("driverUser", requestData);
 
   return (
@@ -105,88 +109,91 @@ const DriverLicenseModal = forwardRef<
                 <div className="form-section">
                   <div className="form-card bg-[#EAECF0] rounded-md backdrop-blur-md shadow-[0px_0px_7px_0px_#63636340_inset]">
                     <div className="form-card-body">
-                      {profile?.license_status !== "ไม่มี" ? 
-                      <div className="grid grid-cols-12 gap-y-3">
-                        <div className="col-span-12">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">id_card</i>
-                            <div className="form-plaintext-group">
-                              <div className="form-label">เลขที่ใบขับขี่</div>
-                              <div className="form-text text-left">
-                                {requestData?.driver_license
-                                  ?.driver_license_no ?? ""}
+                      {profile?.license_status !== "ไม่มี" ? (
+                        <div className="grid grid-cols-12 gap-y-3">
+                          <div className="col-span-12">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">
+                                id_card
+                              </i>
+                              <div className="form-plaintext-group">
+                                <div className="form-label">เลขที่ใบขับขี่</div>
+                                <div className="form-text text-left">
+                                  {requestData?.driver_license
+                                    ?.driver_license_no ?? ""}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="col-span-12">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">
-                              directions_car
-                            </i>
-                            <div className="form-plaintext-group">
-                              <div className="form-label">
-                                {
-                                  requestData?.driver_license
-                                    ?.driver_license_type
-                                    ?.ref_driver_license_type_name
-                                }
-                              </div>
-                              <div className="form-text text-left">
-                                {
-                                  requestData?.driver_license
-                                    ?.driver_license_type
-                                    ?.ref_driver_license_type_desc
-                                }
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col-span-12">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">
-                              calendar_month
-                            </i>
-                            <div className="form-plaintext-group">
-                              <div className="form-label">วันที่มีผล</div>
-                              <div className="form-text text-left">
-                                {
-                                  convertToBuddhistDateTime(
+                          <div className="col-span-12">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">
+                                directions_car
+                              </i>
+                              <div className="form-plaintext-group">
+                                <div className="form-label">
+                                  {
                                     requestData?.driver_license
-                                      ?.driver_license_start_date || ""
-                                  ).date
-                                }
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col-span-12">
-                          <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">
-                              calendar_clock
-                            </i>
-                            <div className="form-plaintext-group">
-                              <div className="form-label">มีผลถึงวันที่</div>
-                              <div className="form-text text-left">
-                                {
-                                  convertToBuddhistDateTime(
+                                      ?.driver_license_type
+                                      ?.ref_driver_license_type_name
+                                  }
+                                </div>
+                                <div className="form-text text-left">
+                                  {
                                     requestData?.driver_license
-                                      ?.driver_license_end_date || ""
-                                  ).date
-                                }
+                                      ?.driver_license_type
+                                      ?.ref_driver_license_type_desc
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="col-span-12">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">
+                                calendar_month
+                              </i>
+                              <div className="form-plaintext-group">
+                                <div className="form-label">วันที่มีผล</div>
+                                <div className="form-text text-left">
+                                  {
+                                    convertToBuddhistDateTime(
+                                      requestData?.driver_license
+                                        ?.driver_license_start_date || ""
+                                    ).date
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="col-span-12">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">
+                                calendar_clock
+                              </i>
+                              <div className="form-plaintext-group">
+                                <div className="form-label">มีผลถึงวันที่</div>
+                                <div className="form-text text-left">
+                                  {
+                                    convertToBuddhistDateTime(
+                                      requestData?.driver_license
+                                        ?.driver_license_end_date || ""
+                                    ).date
+                                  }
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      :
-                      <div className="px-2 py-[3rem] text-color-secondary">
-                        ผู้บริหารระดับ 12 ขึ้นไป สามารถทำหน้าที่ขับรถยนต์ประจำปีได้โดยไม่ต้องขออนุมัติ
-                      </div>
-                    }
+                      ) : (
+                        <div className="px-2 py-[3rem] text-color-secondary">
+                          ผู้บริหารระดับ 12 ขึ้นไป
+                          สามารถทำหน้าที่ขับรถยนต์ประจำปีได้โดยไม่ต้องขออนุมัติ
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -195,14 +202,22 @@ const DriverLicenseModal = forwardRef<
           </div>
         </div>
         <div className="modal-footer sticky bottom-0 gap-3 mt-0 w-full p-5 pt-0">
-          {profile?.license_status === "อนุมัติแล้ว" && (
+          {/* {profile?.license_status === "อนุมัติแล้ว" && ( */}
             <div className="flex justify-between w-full gap-3 items-center">
               <span className="text-brand-900 text-sm">
                 ขออนุมัติประจำปี {requestData?.annual_yyyy}
               </span>
-              <button className="btn btn-secondary" onClick={() => { modalRef.current?.close; driverLicenseDetailModalRef.current?.openModal()}}>ดูรายละเอียด</button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  modalRef.current?.close(); // Added parentheses to call the function
+                  driverLicenseDetailModalRef.current?.openModal();
+                }}
+              >
+                ดูรายละเอียด
+              </button>
             </div>
-          )}
+          {/* )} */}
 
           {profile?.license_status === "หมดอายุ" && (
             <div className="flex justify-end w-full gap-3 items-center">
@@ -216,6 +231,7 @@ const DriverLicenseModal = forwardRef<
       </div>
       <DriverLicenseDetailModal
         ref={driverLicenseDetailModalRef}
+        onBack={onBack}
         requestData={requestData}
       />
     </dialog>

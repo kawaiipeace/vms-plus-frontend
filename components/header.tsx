@@ -2,7 +2,7 @@ import Image from "next/image";
 import ToggleSidebar from "@/components/toggleSideBar";
 import ThemeToggle from "./themeToggle";
 import { logOut } from "@/services/authService";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
 import { useEffect, useRef, useState } from "react";

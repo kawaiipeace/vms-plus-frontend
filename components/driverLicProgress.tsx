@@ -1,20 +1,16 @@
-import { ApproverUserType } from "@/app/types/approve-user-type";
-import { ProgressRequestType } from "@/app/types/progress-request-status";
-import { fetchUserApproverUsers } from "@/services/masterService";
+import { ProgressDriver } from "@/app/types/vehicle-user-type";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useState } from "react";
 
 interface Props {
-  approverId?: string;
-  progressSteps?: ProgressRequestType[];
+  progressSteps?: ProgressDriver[];
 }
 
-export default function DriverLicProgress({ approverId, progressSteps }: Props) {
-  const [approverData, setApproverData] = useState<ApproverUserType>();
+export default function DriverLicProgress({ progressSteps }: Props) {
   const [currentStep, setCurrentStep] = useState("");
   const [nextPendingStep, setNextPendingStep] = useState("");
   const doneSteps =
     progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
-  const [isApproverOpen, setIsApproverOpen] = useState(false);
   useEffect(() => {
     if (progressSteps) {
       const currentStep = progressSteps?.find(
@@ -26,77 +22,21 @@ export default function DriverLicProgress({ approverId, progressSteps }: Props) 
       setCurrentStep(currentStep?.progress_name || "");
       setNextPendingStep(nextPendingStep?.progress_name || "");
     }
-    const fetchApprover = async () => {
-      try {
-        const response = await fetchUserApproverUsers(approverId);
-        setApproverData(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
 
-    fetchApprover();
-  }, [approverId, progressSteps]);
+  }, [progressSteps]);
 
   return (
-    <div className="card card-approvalprogress">
+    <div className="card card-approvalprogress !border-0">
 
-      <div className="card-body">
+      <div className="card-body border-0">
         {/* Mobile View */}
         {progressSteps && (
           <>
-            <div className="md:hidden block">
-              <div className="circular-progressbar d-flex">
-                <div className="circular-progressbar-container">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="-1.5 -1.5 34 34"
-                    className="circular-progressbar"
-                  >
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="15.9155"
-                      className="circular-progressbar-background"
-                    />
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="15.9155"
-                      className="circular-progressbar-progress js-circular-progressbar"
-                      style={{
-                        strokeDashoffset: `${
-                          100 - (doneSteps / progressSteps?.length) * 100
-                        }px`,
-                      }}
-                    />
-                  </svg>
-                  <div className="circular-progressbar-text">
-                    {doneSteps}
-                    <span className="circular-progressbar-slash">/</span>
-                    {progressSteps?.length}
-                  </div>
-                </div>
-                <div className="progress-steps-btn-content">
-                  <div className="progress-steps-btn-title">{currentStep}</div>
-                  <div className="progress-steps-btn-text">
-                    <>
-                      ถัดไป:{" "}
-                      <span className="progress-steps-btn-label">
-                        {nextPendingStep}
-                      </span>
-                    </>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Desktop View */}
-
-            <div className="md:block hidden">
+            <div className="w-full">
               <div className="progress-steps-column">
                 {progressSteps.map((step, index) => {
-                  const { progress_icon, progress_name } = step;
+                  const { progress_icon, progress_name, progress_datetime } = step;
                   const getStepIcon = () => {
                     if (progress_icon === "3")
                       return <i className="material-symbols-outlined">check</i>;
@@ -127,6 +67,9 @@ export default function DriverLicProgress({ approverId, progressSteps }: Props) 
                       <div className="progress-step-content">
                         <div className="progress-step-title">
                           {progress_name}
+                        </div>
+                        <div className="progress-desc font-normal text-color-secondary">
+                          {convertToBuddhistDateTime(progress_datetime).date + " " + convertToBuddhistDateTime(progress_datetime).time}
                         </div>
                       </div>
                     </div>
