@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import DriversListTab from "@/components/drivers-management/tabs/driversListTab";
+import ToastCustom from "@/components/toastCustom";
+import { useSearchParams } from "next/navigation";
 
 import { DriversManagementParams } from "@/app/types/drivers-management-type";
 
@@ -14,6 +16,73 @@ import dayjs from "dayjs";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
+
+function RequestListContent() {
+  const searchParams = useSearchParams();
+  const createReq = searchParams.get("create");
+  const deleteReq = searchParams.get("delete");
+  const driverCreateName = searchParams.get("driverName");
+  // const cancelReq = searchParams.get("cancel-req");
+  // const requestId = searchParams.get("request-id");
+  // const receivedKey = searchParams.get("received-key");
+  // const licensePlate = searchParams.get("license-plate");
+  // const returned = searchParams.get("returned");
+  // const requestNo = searchParams.get("request-no");
+
+  return (
+    <>
+      {createReq === "success" && (
+        <ToastCustom
+          title="สร้างข้อมูลพนักงานขับรถสำเร็จ"
+          desc={
+            <>
+              สร้างข้อมูลพนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+          // seeDetail={`/vehicle-booking/request-list/${requestId}`}
+          // seeDetailText="ดูสถานะ"
+        />
+      )}
+      {deleteReq === "success" && (
+        <ToastCustom
+          title="ลบพนักงานขับรถสำเร็จ"
+          desc={
+            <>
+              พนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> <br />
+              ถูกลบจากระบบเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+      {/* {receivedKey === "success" && (
+        <ToastCustom
+          title="รับกุญแจสำเร็จ"
+          desc={
+            <>
+              รับกุญแจรถทะเบียน <span className="font-semibold">{licensePlate}</span> เรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )} */}
+      {/* {cancelReq === "success" && (
+        <ToastCustom
+          title="ยกเลิกคำขอสำเร็จ"
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ถูกยกเลิกเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )} */}
+    </>
+  );
+}
 
 const DriverManagementPage = () => {
   const [params, setParams] = useState<DriversManagementParams>({});
@@ -132,7 +201,9 @@ const DriverManagementPage = () => {
                 {tabs.map((tab, index) => (
                   <button
                     key={index}
-                    className={`tab transition-colors duration-300 ease-in-out ${activeTab === index ? "active" : "text-gray-600"}`}
+                    className={`tab transition-colors duration-300 ease-in-out ${
+                      activeTab === index ? "active" : "text-gray-600"
+                    }`}
                     onClick={() => {
                       setActiveTab(index);
                       setParams({
@@ -151,6 +222,9 @@ const DriverManagementPage = () => {
           </div>
         </div>
       </div>
+      <Suspense fallback={<div></div>}>
+        <RequestListContent />
+      </Suspense>
     </>
   );
 };

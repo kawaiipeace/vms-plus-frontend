@@ -54,6 +54,7 @@ interface Props {
   }>;
   handleToggleChange?: (driverId: string) => void;
   onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
+  handleDeleteDriver?: (driverName: string, driverUid: string) => void;
 }
 const DriverListTable = ({
   defaultData,
@@ -61,6 +62,7 @@ const DriverListTable = ({
   driverActiveModalRef,
   handleToggleChange,
   onUpdateStatusDriver,
+  handleDeleteDriver,
 }: Props) => {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -69,6 +71,8 @@ const DriverListTable = ({
     pageSize: pagination.limit,
   });
   const [reqData, setReqData] = useState<RequestListType[]>(defaultData);
+  // console.log("reqData", reqData);
+
   const tables = useReactTable({
     data: reqData,
     columns: [
@@ -204,7 +208,11 @@ const DriverListTable = ({
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
                 data-tip="ดูรายละเอียด"
                 onClick={() => {
-                  router.push(`/drivers-management/view/${(row.original as DriverListTableProps).mas_driver_uid}`);
+                  router.push(
+                    `/drivers-management/view/${(row.original as DriverListTableProps).mas_driver_uid}?active=${
+                      (row.original as DriverListTableProps).is_active
+                    }`
+                  );
                 }}
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
@@ -212,6 +220,13 @@ const DriverListTable = ({
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
                 data-tip="ลบ"
+                onClick={() =>
+                  handleDeleteDriver &&
+                  handleDeleteDriver(
+                    (row.original as DriverListTableProps).driver_name ?? "",
+                    (row.original as DriverListTableProps).mas_driver_uid ?? ""
+                  )
+                }
               >
                 <i className="material-symbols-outlined">delete</i>
               </button>

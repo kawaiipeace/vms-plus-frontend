@@ -11,7 +11,7 @@ import DriverActiveModal from "@/components/drivers-management/modal/driverActiv
 
 import dayjs from "dayjs";
 
-import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
+import { driversMamagement, updateDriverStatus, driverDelete } from "@/services/driversManagement";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 
 interface PaginationType {
@@ -162,6 +162,23 @@ const DriversListTab = () => {
     }
   };
 
+  const handleDeleteDriver = async (driverName: string, driverUid: string) => {
+    const params = {
+      driver_name: driverName,
+      mas_driver_uid: driverUid,
+    };
+    try {
+      const response = await driverDelete({ params });
+      if (response.status === 200) {
+        // Handle successful deletion
+        console.log("Driver deleted successfully");
+        setDriverUpdated(true);
+      }
+    } catch (error) {
+      console.error("Error deleting driver:", error);
+    }
+  };
+
   return (
     <>
       <div className="page-section-header border-0 mt-5">
@@ -203,7 +220,7 @@ const DriversListTab = () => {
             onClick={() => createDriverManagementModalRef.current?.openModal()}
           >
             <i className="material-symbols-outlined">add</i>
-            สร้างคำขอใช้
+            สร้างข้อมูล
           </button>
         </div>
       </div>
@@ -221,6 +238,7 @@ const DriversListTab = () => {
               }
               handleToggleChange={handleToggleChange}
               onUpdateStatusDriver={handleUpdateStatusDriver}
+              handleDeleteDriver={handleDeleteDriver}
             />
           </div>
           <PaginationControls

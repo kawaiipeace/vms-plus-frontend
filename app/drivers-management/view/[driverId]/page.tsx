@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, Suspense } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
@@ -11,18 +11,80 @@ import DriverEmployeeContractCard from "@/components/drivers-management/card/dri
 import DriverDriveInfoCard from "@/components/drivers-management/card/driverDriveInfoCard";
 import DocumentListInfo from "@/components/drivers-management/documentListInfo";
 import AlertCustom from "@/components/drivers-management/alertCustom";
-import { useParams } from "next/navigation";
+import DriverEditBasicInfoModal from "@/components/drivers-management/modal/driverEditBasicInfoModal";
+import DriverEditLicenseModal from "@/components/drivers-management/modal/driverEditLicenseModal";
+import DriverEditDocModal from "@/components/drivers-management/modal/driverEditDocModal";
+import DriverLeaveFormModal from "@/components/drivers-management/modal/driverLeaveFormModal";
+import DriverDeleteModal from "@/components/drivers-management/modal/driverDeleteModal";
+import ToastCustom from "@/components/toastCustom";
+import { useParams, useSearchParams } from "next/navigation";
 
 import { DriverInfo } from "@/services/driversManagement";
 
 import { DriverInfoType } from "@/app/types/drivers-management-type";
+import DriverEditInfoModal from "@/components/drivers-management/modal/driverEditInfoModal";
+
+function ToastCustomComponent({ type, driverName }: { type: string; driverName?: string }) {
+  return (
+    <>
+      {type === "basicInfo" && (
+        <ToastCustom
+          title="แก้ไขข้อมูลสำเร็จ"
+          desc={
+            <span>
+              บันทึกการแก้ไขข้อมูลพนักงานขับรถ <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
+            </span>
+          }
+          status="success"
+        />
+      )}
+      {type === "delete" && (
+        <ToastCustom title="ลบพนักงานขับรถสำเร็จ" desc="ข้อมูลพนักงานขับรถถูกลบเรียบร้อยแล้ว" status="success" />
+      )}
+    </>
+  );
+}
 
 const DriverViewProfilePage = () => {
   const { driverId } = useParams<{ driverId: string }>();
   const { isPinned } = useSidebar();
   const [driverInfo, setDriverInfo] = useState<DriverInfoType | null>({});
+  const [deleteModalType, setDeleteModalType] = useState<string>("");
+  const [isActive, setIsActive] = useState<number>(useSearchParams().get("active") === "1" ? 1 : 0);
+  const [driverUpdated, setDriverUpdated] = useState<boolean>(false);
+  const [updateType, setUpdateType] = useState<string>("");
 
   const driverActiveModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverEditBasicInfoModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverEditInfoModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverEditLicenseModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverEditDocModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverLeaveFormModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverDeleteModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -43,7 +105,8 @@ const DriverViewProfilePage = () => {
     };
 
     fetchDriverInfo();
-  }, [driverId]);
+    setDriverUpdated(false);
+  }, [driverUpdated, driverId]);
 
   return (
     <>
@@ -107,8 +170,14 @@ const DriverViewProfilePage = () => {
                     </div>
                   )}
                 </div>
-                <div className="page-action flex gap-2 items-center">
-                  <button className="btn bg-transparent hover:bg-transparent border-transparent hover:border-transparent shadow-none">
+                <div className="page-action flex flex-wrap gap-2 items-center">
+                  <button
+                    className="btn bg-transparent hover:bg-transparent border-transparent hover:border-transparent shadow-none"
+                    onClick={() => {
+                      driverDeleteModalRef.current?.openModal();
+                      setDeleteModalType("delete");
+                    }}
+                  >
                     ลบพนักงาน
                   </button>
                   {driverInfo?.driver_status?.ref_driver_status_desc === "สิ้นสุดสัญญา" ||
@@ -117,13 +186,32 @@ const DriverViewProfilePage = () => {
                     <></>
                   ) : (
                     <>
-                      <button className="btn btn-secondary">ลาออก</button>
-                      <button className="btn btn-secondary">ให้ออก</button>
-                      <button className="btn btn-secondary">
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          driverDeleteModalRef.current?.openModal();
+                          setDeleteModalType("resign");
+                        }}
+                      >
+                        ลาออก
+                      </button>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          driverDeleteModalRef.current?.openModal();
+                          setDeleteModalType("giveout");
+                        }}
+                      >
+                        ให้ออก
+                      </button>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => driverLeaveFormModalRef.current?.openModal()}
+                      >
                         <i className="material-symbols-outlined">sick</i> ลาป่วย/ลากิจ
                       </button>
                       <div className="flex items-center">
-                        <ToggleSwitch isActive={1} driverActiveModalRef={driverActiveModalRef} driverId="" />
+                        <ToggleSwitch isActive={isActive} driverActiveModalRef={driverActiveModalRef} driverId="" />
                         <span className="pl-2">เปิดใช้งาน</span>
                       </div>
                     </>
@@ -156,21 +244,36 @@ const DriverViewProfilePage = () => {
                 <div className="form-section">
                   <div className="form-section-header">
                     <div className="form-section-header-title">ข้อมูลทั่วไป</div>
-                    <button className="text-[#A80689] font-semibold">แก้ไข</button>
+                    <button
+                      className="text-[#A80689] font-semibold"
+                      onClick={() => driverEditBasicInfoModalRef.current?.openModal()}
+                    >
+                      แก้ไข
+                    </button>
                   </div>
                   {driverInfo && <DriverBasicInfoCard driverInfo={driverInfo} />}
                 </div>
                 <div className="form-section">
                   <div className="form-section-header">
                     <div className="form-section-header-title">ข้อมูลสัญญาจ้างและสังกัด</div>
-                    <button className="text-[#A80689] font-semibold">แก้ไข</button>
+                    <button
+                      className="text-[#A80689] font-semibold"
+                      onClick={() => driverEditInfoModalRef.current?.openModal()}
+                    >
+                      แก้ไข
+                    </button>
                   </div>
                   {driverInfo && <DriverEmployeeContractCard driverInfo={driverInfo} />}
                 </div>
                 <div className="form-section">
                   <div className="form-section-header">
                     <div className="form-section-header-title">ข้อมูลการขับขี่</div>
-                    <button className="text-[#A80689] font-semibold">แก้ไข</button>
+                    <button
+                      className="text-[#A80689] font-semibold"
+                      onClick={() => driverEditLicenseModalRef.current?.openModal()}
+                    >
+                      แก้ไข
+                    </button>
                   </div>
                   {driverInfo && <DriverDriveInfoCard driverInfo={driverInfo} />}
                 </div>
@@ -179,7 +282,12 @@ const DriverViewProfilePage = () => {
                 <div className="form-section">
                   <div className="form-section-header">
                     <div className="form-section-header-title">เอกสารเพิ่มเติม</div>
-                    <button className="text-[#A80689] font-semibold">แก้ไข</button>
+                    <button
+                      className="text-[#A80689] font-semibold"
+                      onClick={() => driverEditDocModalRef.current?.openModal()}
+                    >
+                      แก้ไข
+                    </button>
                   </div>
                 </div>
                 <DocumentListInfo />
@@ -192,8 +300,36 @@ const DriverViewProfilePage = () => {
         ref={driverActiveModalRef}
         title="ยืนยันปิดใช้งานพนักงานขับรถ"
         desc="คำขอที่สร้างไว้ก่อนหน้านี้ยังสามารถดำเนินการต่อได้จนสิ้นสุดการใช้งาน คุณต้องการปิดให้บริการจองพนักงานขับรถ ชั่วคราวใช่หรือไม่?"
-        confirmText="ปิดใช้งานพนักงานชั่วคราว"
+        confirmText={"ปิดใช้งานพนักงาน"}
+        useInView={true}
       />
+      {driverInfo && (
+        <DriverEditBasicInfoModal
+          ref={driverEditBasicInfoModalRef}
+          driverInfo={driverInfo}
+          onUpdateDriver={setDriverUpdated}
+          setUpdateType={setUpdateType}
+        />
+      )}
+      <DriverEditInfoModal
+        ref={driverEditInfoModalRef}
+        driverInfo={driverInfo}
+        onUpdateDriver={setDriverUpdated}
+        setUpdateType={setUpdateType}
+      />
+      <DriverEditLicenseModal
+        ref={driverEditLicenseModalRef}
+        driverInfo={driverInfo}
+        onUpdateDriver={setDriverUpdated}
+        setUpdateType={setUpdateType}
+      />
+      <DriverEditDocModal ref={driverEditDocModalRef} />
+      <DriverLeaveFormModal ref={driverLeaveFormModalRef} driverInfo={driverInfo} />
+      <DriverDeleteModal ref={driverDeleteModalRef} driverInfo={driverInfo ?? {}} deleteDriverType={deleteModalType} />
+
+      <Suspense fallback={<div></div>}>
+        <ToastCustomComponent type={updateType} driverName={driverInfo?.driver_name} />
+      </Suspense>
     </>
   );
 };

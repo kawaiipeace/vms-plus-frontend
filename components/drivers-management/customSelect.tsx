@@ -55,7 +55,7 @@ export default function CustomSelect({ w, options, iconName, value, onChange }: 
           </div>
         )}
 
-        <div className="flex-1 overflow-hidden whitespace-nowrap">{value?.label || "กรุณาเลือก"}</div>
+        <div className="flex-1 overflow-hidden whitespace-nowrap text-left">{value?.label || "กรุณาเลือก"}</div>
 
         <div className="flex-shrink-0 w-8 text-right">
           <i className="material-symbols-outlined">keyboard_arrow_down</i>

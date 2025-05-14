@@ -7,6 +7,7 @@ interface Props {
   confirmText?: string;
   onUpdateDriver?: (driverId: string, isActive: string) => void;
   driverUid?: string;
+  useInView?: boolean;
 }
 
 const DriverActiveModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
