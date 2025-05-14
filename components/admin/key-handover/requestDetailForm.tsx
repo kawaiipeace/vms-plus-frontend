@@ -85,7 +85,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} displayPhone={true} />
           </div>
 
           <div className="form-section">
