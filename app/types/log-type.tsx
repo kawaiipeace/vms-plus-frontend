@@ -11,4 +11,10 @@ export interface LogType {
   action_detail: string;
   remark: string;
   role_of_creater: string;
-};
+  created_at: string;
+  created_by_emp: { dept_sap: string; emp_name: string };
+  status: {
+    ref_request_status_desc: string;
+  };
+  log_remark: string;
+}
