@@ -1,5 +1,6 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, Suspense } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   title: string;
@@ -10,8 +11,39 @@ interface Props {
   useInView?: boolean;
 }
 
+function ActiveButton({
+  driverUid,
+  onUpdateDriver,
+  useInView,
+  confirmText,
+  modalRef,
+}: {
+  driverUid?: string;
+  onUpdateDriver?: (driverId: string, isActive: string) => void;
+  useInView?: boolean;
+  confirmText?: string;
+  modalRef: React.RefObject<HTMLDialogElement | null>;
+}) {
+  const searchParams = useSearchParams();
+  const acive = useInView ? (searchParams.get("active") === "1" ? "0" : "1") : "0";
+  return (
+    <button
+      type="button"
+      className="btn bg-[#D92D20] hover:bg-[#D92D20] text-white border-[#D92D20] hover:border-[#D92D20] col-span-1"
+      onClick={() => {
+        if (driverUid) {
+          onUpdateDriver?.(driverUid, acive);
+          modalRef.current?.close();
+        }
+      }}
+    >
+      {confirmText}
+    </button>
+  );
+}
+
 const DriverActiveModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ title, desc, confirmText, onUpdateDriver, driverUid }, ref) => {
+  ({ title, desc, confirmText, onUpdateDriver, driverUid, useInView }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     useImperativeHandle(ref, () => ({
       openModal: () => modalRef.current?.showModal(),
@@ -35,18 +67,15 @@ const DriverActiveModal = forwardRef<{ openModal: () => void; closeModal: () => 
               <form method="dialog" className="col-span-1">
                 <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
               </form>
-              <button
-                type="button"
-                className="btn bg-[#D92D20] hover:bg-[#D92D20] text-white border-[#D92D20] hover:border-[#D92D20] col-span-1"
-                onClick={() => {
-                  if (driverUid) {
-                    onUpdateDriver?.(driverUid, "0");
-                    modalRef.current?.close();
-                  }
-                }}
-              >
-                {confirmText}
-              </button>
+              <Suspense fallback={<div>Loading...</div>}>
+                <ActiveButton
+                  driverUid={driverUid}
+                  onUpdateDriver={onUpdateDriver}
+                  useInView={useInView}
+                  confirmText={confirmText}
+                  modalRef={modalRef}
+                />
+              </Suspense>
             </div>
           </div>
         </div>

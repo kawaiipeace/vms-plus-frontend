@@ -168,7 +168,7 @@ const DriversListTab = () => {
       mas_driver_uid: driverUid,
     };
     try {
-      const response = await driverDelete({ params });
+      const response = await driverDelete(params);
       if (response.status === 200) {
         // Handle successful deletion
         console.log("Driver deleted successfully");
@@ -214,6 +214,13 @@ const DriversListTab = () => {
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
             </div>
+          </button>
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex gap-2 justify-center items-center"
+            disabled
+          >
+            <i className="material-symbols-outlined">download</i>
+            รายงาน
           </button>
           <button
             className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"

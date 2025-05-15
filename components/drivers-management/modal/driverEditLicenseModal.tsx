@@ -107,8 +107,6 @@ const DriverEditLicenseModal = forwardRef<
         modalRef.current?.close();
         onUpdateDriver(true);
         setUpdateType("basicInfo");
-      } else {
-        console.error("Error submitting form", response);
       }
 
       console.log("Form submitted successfully", params);

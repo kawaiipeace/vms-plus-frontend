@@ -6,12 +6,14 @@ const ToggleSwitch = ({
   driverId,
   handleToggleChange,
   onUpdateStatusDriver,
+  useInView,
 }: {
   isActive: number;
   driverActiveModalRef: React.RefObject<{ openModal: () => void; closeModal: () => void } | null>;
   driverId: string;
   handleToggleChange?: (driverId: string) => void;
   onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
+  useInView?: boolean;
 }) => {
   const [isOn, setIsOn] = useState(false);
 
@@ -19,10 +21,14 @@ const ToggleSwitch = ({
     // setIsOn(!isOn);
     console.log("Driver ID:", driverId);
     handleToggleChange?.(driverId);
-    if (isActive === 1) {
+    if (useInView) {
       driverActiveModalRef.current?.openModal();
     } else {
-      onUpdateStatusDriver?.(driverId, "1");
+      if (isActive === 1) {
+        driverActiveModalRef.current?.openModal();
+      } else {
+        onUpdateStatusDriver?.(driverId, "1");
+      }
     }
   };
 

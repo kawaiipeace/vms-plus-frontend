@@ -226,6 +226,11 @@ const DriverForm = () => {
 
     try {
       await driverFormSchema.validate(formData, { abortEarly: false });
+      const doc = filePDF2.map((file, index) => ({
+        driver_document_file: file.file_url,
+        driver_document_name: file.file_name,
+        driver_document_no: index + 1,
+      }));
       const params: DriverCreateDetails = {
         approved_job_driver_end_date: formData.driverContractEndDate,
         approved_job_driver_start_date: formData.driverContractStartDate,
@@ -234,13 +239,7 @@ const DriverForm = () => {
         driver_contact_number: formData.driverContactNumber,
         driver_dept_sap_hire: formData.driverEmployingAgency,
         driver_dept_sap_work: formData.driverDepartment,
-        driver_documents: [
-          {
-            driver_document_file: "https://example.com/document.pdf",
-            driver_document_name: "ใบขับขี่",
-            driver_document_no: 1,
-          },
-        ],
+        driver_documents: [...doc],
         driver_identification_no: formData.driverIdentificationNo,
         driver_image: formData.driverImage,
         driver_license: {
@@ -255,18 +254,22 @@ const DriverForm = () => {
         is_replacement: "0",
         mas_vendor_code: formData.driverContractorCompany,
         ref_other_use_code: useByOther,
-        work_type: Number(formData.driverOperationType),
+        work_type: Number(formData.driverOverNightStay),
       };
       // console.log("params", params);
-      const response = await DriverCreate(params);
 
-      if (response.status === 201) {
-        console.log("Driver created successfully:", response.data);
-        router.push(`/drivers-management?create=success&driverName=${formData.driverName}`);
-      } else {
-        console.error("Error creating driver:", response.data);
-      }
       console.log("Form data is valid:", params);
+
+      try {
+        const response = await DriverCreate(params);
+
+        if (response.status === 201) {
+          console.log("Driver created successfully:", response.data);
+          router.push(`/drivers-management?create=success&driverName=${formData.driverName}`);
+        }
+      } catch (error) {
+        console.error("Error creating driver:", error);
+      }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         console.log("Validation errors:", error);

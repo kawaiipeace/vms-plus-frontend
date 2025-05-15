@@ -17,14 +17,15 @@ import DriverEditDocModal from "@/components/drivers-management/modal/driverEdit
 import DriverLeaveFormModal from "@/components/drivers-management/modal/driverLeaveFormModal";
 import DriverDeleteModal from "@/components/drivers-management/modal/driverDeleteModal";
 import ToastCustom from "@/components/toastCustom";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 
-import { DriverInfo } from "@/services/driversManagement";
+import { DriverInfo, updateDriverStatus } from "@/services/driversManagement";
 
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import DriverEditInfoModal from "@/components/drivers-management/modal/driverEditInfoModal";
 
 function ToastCustomComponent({ type, driverName }: { type: string; driverName?: string }) {
+  const active = useSearchParams().get("active");
   return (
     <>
       {type === "basicInfo" && (
@@ -36,21 +37,74 @@ function ToastCustomComponent({ type, driverName }: { type: string; driverName?:
             </span>
           }
           status="success"
+          searchParams={`active=${active}`}
         />
       )}
       {type === "delete" && (
-        <ToastCustom title="ลบพนักงานขับรถสำเร็จ" desc="ข้อมูลพนักงานขับรถถูกลบเรียบร้อยแล้ว" status="success" />
+        <ToastCustom
+          title="ลบพนักงานขับรถสำเร็จ"
+          desc="ข้อมูลพนักงานขับรถถูกลบเรียบร้อยแล้ว"
+          status="success"
+          searchParams={`active=${active}`}
+        />
+      )}
+      {type === "leave" && (
+        <ToastCustom
+          title="บันทึกข้อมูลลาป่วย/ลากิจสำเร็จ"
+          desc={
+            <span>
+              เรียบร้อยแล้วบันทึกข้อมูลลาป่วย/ลากิจของพนักงานขับรถ <span className="font-semibold">{driverName}</span>{" "}
+              เรียบร้อยแล้ว
+            </span>
+          }
+          status="success"
+          searchParams={`active=${active}`}
+        />
+      )}
+      {type === "activeUser" && (
+        <ToastCustom
+          title="เปิดใช้งานพนักงานขับรถสำเร็จ"
+          desc={
+            <span>
+              เปิดใช้งานพนักงานขับรถ <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
+            </span>
+          }
+          status="success"
+          searchParams={`active=${active}`}
+        />
+      )}
+      {type === "inactiveUser" && (
+        <ToastCustom
+          title="ปิดใช้งานพนักงานขับรถสำเร็จ"
+          desc={
+            <span>
+              ปิดใช้งานพนักงานขับรถ <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
+            </span>
+          }
+          status="success"
+          searchParams={`active=${active}`}
+        />
       )}
     </>
   );
 }
 
+function IsActiveWrapper({ setIsActive }: { setIsActive: (v: number) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    setIsActive(searchParams.get("active") === "1" ? 1 : 0);
+  }, [searchParams, setIsActive]);
+  return null;
+}
+
 const DriverViewProfilePage = () => {
+  const router = useRouter();
   const { driverId } = useParams<{ driverId: string }>();
   const { isPinned } = useSidebar();
   const [driverInfo, setDriverInfo] = useState<DriverInfoType | null>({});
   const [deleteModalType, setDeleteModalType] = useState<string>("");
-  const [isActive, setIsActive] = useState<number>(useSearchParams().get("active") === "1" ? 1 : 0);
+  // const [isActive, setIsActive] = useState<number>(useSearchParams().get("active") === "1" ? 1 : 0);
+  const [isActive, setIsActive] = useState<number>(1);
   const [driverUpdated, setDriverUpdated] = useState<boolean>(false);
   const [updateType, setUpdateType] = useState<string>("");
 
@@ -106,7 +160,27 @@ const DriverViewProfilePage = () => {
 
     fetchDriverInfo();
     setDriverUpdated(false);
-  }, [driverUpdated, driverId]);
+    router.replace(`/drivers-management/view/${driverId}?active=${isActive}`);
+  }, [driverUpdated, driverId, isActive, router]);
+
+  const handleUpdateStatusDriver = (driverUid: string, isActive: string) => {
+    try {
+      if (driverUid) {
+        updateDriverStatus(driverUid, isActive)
+          .then((response) => {
+            console.log("Driver status updated successfully:", response.data);
+            setDriverUpdated(true);
+            setIsActive(Number(isActive));
+            setUpdateType(isActive === "1" ? "activeUser" : "inactiveUser");
+          })
+          .catch((error) => {
+            console.error("Error updating driver status:", error);
+          });
+      }
+    } catch (error) {
+      console.error("Error updating driver status:", error);
+    }
+  };
 
   return (
     <>
@@ -211,7 +285,12 @@ const DriverViewProfilePage = () => {
                         <i className="material-symbols-outlined">sick</i> ลาป่วย/ลากิจ
                       </button>
                       <div className="flex items-center">
-                        <ToggleSwitch isActive={isActive} driverActiveModalRef={driverActiveModalRef} driverId="" />
+                        <ToggleSwitch
+                          isActive={isActive}
+                          driverActiveModalRef={driverActiveModalRef}
+                          driverId={driverId}
+                          useInView={true}
+                        />
                         <span className="pl-2">เปิดใช้งาน</span>
                       </div>
                     </>
@@ -290,7 +369,7 @@ const DriverViewProfilePage = () => {
                     </button>
                   </div>
                 </div>
-                <DocumentListInfo />
+                <DocumentListInfo driverInfo={driverInfo} />
               </div>
             </div>
           </div>
@@ -300,7 +379,9 @@ const DriverViewProfilePage = () => {
         ref={driverActiveModalRef}
         title="ยืนยันปิดใช้งานพนักงานขับรถ"
         desc="คำขอที่สร้างไว้ก่อนหน้านี้ยังสามารถดำเนินการต่อได้จนสิ้นสุดการใช้งาน คุณต้องการปิดให้บริการจองพนักงานขับรถ ชั่วคราวใช่หรือไม่?"
-        confirmText={"ปิดใช้งานพนักงาน"}
+        confirmText={isActive === 1 ? "ปิดใช้งานพนักงาน" : "เปิดใช้งาน"}
+        driverUid={driverId}
+        onUpdateDriver={handleUpdateStatusDriver}
         useInView={true}
       />
       {driverInfo && (
@@ -324,10 +405,16 @@ const DriverViewProfilePage = () => {
         setUpdateType={setUpdateType}
       />
       <DriverEditDocModal ref={driverEditDocModalRef} />
-      <DriverLeaveFormModal ref={driverLeaveFormModalRef} driverInfo={driverInfo} />
+      <DriverLeaveFormModal
+        ref={driverLeaveFormModalRef}
+        driverInfo={driverInfo}
+        onUpdateDriver={setDriverUpdated}
+        setUpdateType={setUpdateType}
+      />
       <DriverDeleteModal ref={driverDeleteModalRef} driverInfo={driverInfo ?? {}} deleteDriverType={deleteModalType} />
 
       <Suspense fallback={<div></div>}>
+        <IsActiveWrapper setIsActive={setIsActive} />
         <ToastCustomComponent type={updateType} driverName={driverInfo?.driver_name} />
       </Suspense>
     </>

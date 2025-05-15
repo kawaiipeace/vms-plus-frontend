@@ -1,11 +1,12 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect, use } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import * as Yup from "yup";
+import FormHelper from "@/components/formHelper";
 
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
-import { DriverLeaveTimeList, driverReplacementLists } from "@/services/driversManagement";
+import { DriverLeaveTimeList, driverReplacementLists, driverUpdateLeaveStatus } from "@/services/driversManagement";
 
 import {
   DriverLeaveTimeType,
@@ -21,11 +22,13 @@ interface CustomSelectOption {
 }
 
 interface DriverLeaveFormModalProps {
-  driverInfo: DriverInfoType;
+  driverInfo: DriverInfoType | null;
+  onUpdateDriver: React.Dispatch<React.SetStateAction<boolean>>;
+  setUpdateType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () => void }, DriverLeaveFormModalProps>(
-  ({ driverInfo }, ref) => {
+  ({ driverInfo, onUpdateDriver, setUpdateType }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [leaveTimeList, setLeaveTimeList] = useState<DriverLeaveTimeType[]>([]);
     const [btnDisabled, setBtnDisabled] = useState(true);
@@ -104,12 +107,21 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
           leave_reason: formData.leave_reason,
           leave_start_date: formData.leave_start_date,
           leave_time_type_code: formData.leave_time_type_code,
-          mas_driver_uid: driverInfo.mas_driver_uid || "",
+          mas_driver_uid: driverInfo?.mas_driver_uid || "",
           replacement_driver_uid: formData.replacement_driver_uid,
         };
 
         console.log("Leave Data:", leaveData);
-        // Call your API or perform any action with the leave data here
+        try {
+          const response = await driverUpdateLeaveStatus(leaveData);
+          if (response.status === 200) {
+            modalRef.current?.close();
+            onUpdateDriver(true);
+            setUpdateType("leave");
+          }
+        } catch (error) {
+          console.error("Error submitting leave data:", error);
+        }
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors: { [key: string]: string } = {};
@@ -208,6 +220,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                             onChange={(dateStr) => handleChangeLeaveStartDate(dateStr)}
                           />
                         </div>
+                        {formErrors.leave_start_date && <FormHelper text={String(formErrors.leave_start_date)} />}
                       </div>
                     </div>
                     <div className="w-full">
@@ -225,6 +238,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                             onChange={(dateStr) => handleChangeLeaveEndDate(dateStr)}
                           />
                         </div>
+                        {formErrors.leave_end_date && <FormHelper text={String(formErrors.leave_end_date)} />}
                       </div>
                     </div>
                   </div>
@@ -243,6 +257,9 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                             />
                           </div>
                         ))}
+                        {formErrors.leave_time_type_code && (
+                          <FormHelper text={String(formErrors.leave_time_type_code)} />
+                        )}
                       </div>
                     </div>
                     <div className="w-full grid grid-cols-1">
@@ -258,6 +275,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                               onChange={handleInputChange}
                             />
                           </div>
+                          {formErrors.leave_reason && <FormHelper text={String(formErrors.leave_reason)} />}
                         </div>
                       </div>
                     </div>
@@ -277,6 +295,9 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                               setFormData((prev) => ({ ...prev, replacement_driver_uid: selected.value }));
                             }}
                           />
+                          {formErrors.replacement_driver_uid && (
+                            <FormHelper text={String(formErrors.replacement_driver_uid)} />
+                          )}
                         </div>
                       </div>
                     </div>
