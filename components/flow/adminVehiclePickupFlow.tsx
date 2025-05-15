@@ -84,7 +84,6 @@ export default function AdminVehiclePickupFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
- 
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -112,7 +111,6 @@ export default function AdminVehiclePickupFlow() {
         dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
-
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
@@ -169,11 +167,10 @@ export default function AdminVehiclePickupFlow() {
   };
 
   useEffect(() => {
- 
     const fetchRequestsData = async () => {
       try {
         const response = await fetchRequests(params);
-   
+
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -261,15 +258,17 @@ export default function AdminVehiclePickupFlow() {
                     setParams((prevParams) => ({
                       ...prevParams,
                       ref_request_status_code: item.ref_request_status_code,
-                      page: 1, 
+                      page: 1,
                     }));
-          
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
-          
+
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
                   }}
                 />
@@ -319,7 +318,6 @@ export default function AdminVehiclePickupFlow() {
               </span>
             </div>
           </button>
-
         </div>
       </div>
 
@@ -350,41 +348,63 @@ export default function AdminVehiclePickupFlow() {
           </span>
         )}
       </div>
-
-      {dataRequest?.length > 0 ? (
+      {(dataRequest === null && filterDate?.length > 0) ? (
         <>
-          <div className="mt-2">
-              <AdminVehiclePickupTable defaultData={dataRequest} pagination={pagination}  />
-          </div>
-
-          <PaginationControls
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
+          <ZeroRecord
+            imgSrc="/assets/img/graphic/empty.svg"
+            title="ไม่มีคำขอใช้ยานพาหนะ"
+            desc={
+              <>
+                รายการคำขอที่รอรับยานพาหนะ อยู่ระหว่างเดินทาง <br></br>
+                และรอคืนยานพาหนะจะแสดงที่นี่
+              </>
+            }
+            displayBtn={false}
+            button={""}
           />
         </>
       ) : (
-        filterNum > 0 ||
-        filterDate ||
-        (filterDate?.length <= 0 && (
-          <ZeroRecord
-            imgSrc="/assets/img/empty/search_not_found.png"
-            title="ไม่พบข้อมูล"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-            displayBtn={true}
-            btnType="secondary"
-            useModal={handleClearAllFilters}
-          />
-        ))
+        <>
+          {" "}
+          {dataRequest?.length > 0 ? (
+            <>
+              <div className="mt-2">
+                <AdminVehiclePickupTable
+                  defaultData={dataRequest}
+                  pagination={pagination}
+                />
+              </div>
+
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            </>
+          ) : (
+            filterNum > 0 ||
+            filterDate ||
+            (filterDate?.length <= 0 && (
+              <ZeroRecord
+                imgSrc="/assets/img/empty/search_not_found.png"
+                title="ไม่พบข้อมูล"
+                desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                button="ล้างตัวกรอง"
+                displayBtn={true}
+                btnType="secondary"
+                useModal={handleClearAllFilters}
+              />
+            ))
+          )}
+        </>
       )}
+
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
         department={true}
         onSubmitFilter={handleFilterSubmit}
       />
-
     </>
   );
 }

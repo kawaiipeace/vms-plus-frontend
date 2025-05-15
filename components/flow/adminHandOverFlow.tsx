@@ -84,7 +84,7 @@ export default function AdminKeyHandOverFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
-    console.log('department',department);
+    console.log("department", department);
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -98,7 +98,7 @@ export default function AdminKeyHandOverFlow() {
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
-    console.log('adminsummary',summary)
+    console.log("adminsummary", summary);
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
       ...prevParams,
@@ -112,7 +112,6 @@ export default function AdminKeyHandOverFlow() {
         dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
-
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
@@ -169,15 +168,14 @@ export default function AdminKeyHandOverFlow() {
   };
 
   useEffect(() => {
- 
     const fetchRequestsData = async () => {
       try {
         const response = await fetchKeyRequests(params);
-   
+
         if (response.status === 200) {
           const requestList = response.data.requests;
           console.log("res-----", response.data);
-          console.log('list',requestList);
+          console.log("list", requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -199,13 +197,11 @@ export default function AdminKeyHandOverFlow() {
   }, [params]);
 
   const onUpdate = () => {
-    setParams(prevParams => ({
+    setParams((prevParams) => ({
       ...prevParams,
-      page: 1
+      page: 1,
     }));
-  }
-    
-
+  };
 
   useEffect(() => {
     console.log("Data Request Updated:", dataRequest);
@@ -272,15 +268,17 @@ export default function AdminKeyHandOverFlow() {
                     setParams((prevParams) => ({
                       ...prevParams,
                       ref_request_status_code: item.ref_request_status_code,
-                      page: 1, 
+                      page: 1,
                     }));
-          
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
-          
+
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
                   }}
                 />
@@ -330,7 +328,6 @@ export default function AdminKeyHandOverFlow() {
               </span>
             </div>
           </button>
-
         </div>
       </div>
 
@@ -362,32 +359,50 @@ export default function AdminKeyHandOverFlow() {
         )}
       </div>
 
-      {dataRequest?.length > 0 ? (
-        <>
-          <div className="mt-2">
-            <AdminKeyHandOverListTable defaultData={dataRequest} pagination={pagination} onUpdate={onUpdate} />
-          </div>
-
-          <PaginationControls
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-          />
-        </>
+      {dataRequest === null ? (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ยานพาหนะ"
+          desc={
+            <>
+              เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติ<br></br>
+              รายการคำขอที่รอให้กุญแจจะแสดงที่นี่
+            </>
+          }
+          displayBtn={false}
+          button={""}
+        />
       ) : (
-        filterNum > 0 ||
-        filterDate ||
-        (filterDate?.length <= 0 && (
-          <ZeroRecord
-            imgSrc="/assets/img/empty/search_not_found.png"
-            title="ไม่พบข้อมูล"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-            displayBtn={true}
-            btnType="secondary"
-            useModal={handleClearAllFilters}
-          />
-        ))
+        <>
+          {" "}
+          {dataRequest?.length > 0 ? (
+            <>
+              <div className="mt-2">
+                <AdminKeyHandOverListTable
+                  defaultData={dataRequest}
+                  pagination={pagination}
+                  onUpdate={onUpdate}
+                />
+              </div>
+
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            </>
+          ) : (
+            <ZeroRecord
+              imgSrc="/assets/img/empty/search_not_found.png"
+              title="ไม่พบข้อมูล"
+              desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกคsรั้ง</>}
+              button="ล้างตัวกรอง"
+              displayBtn={true}
+              btnType="secondary"
+              useModal={handleClearAllFilters}
+            />
+          )}
+        </>
       )}
       <FilterModal
         ref={filterModalRef}
@@ -395,7 +410,6 @@ export default function AdminKeyHandOverFlow() {
         department={true}
         onSubmitFilter={handleFilterSubmit}
       />
-
     </>
   );
 }

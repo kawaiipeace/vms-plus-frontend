@@ -130,7 +130,7 @@ export const fetchVehicleKeyType = async () => {
 
 export const fetchUserApproverUsers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-approval-users?search=" + search);
+    const response = await axiosInstance.get("mas/user-final-approval-users?search=" + search);
 
     return response;
   } catch (error) {
