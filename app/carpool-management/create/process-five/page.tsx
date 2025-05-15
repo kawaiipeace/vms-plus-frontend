@@ -13,6 +13,7 @@ import PaginationControls from "@/components/table/pagination-control";
 import AddCarpoolDriverModal from "@/components/modal/addCarpoolDriverModal";
 import CarpoolDriverTable from "@/components/table/carpool-driver-table";
 import ConfirmCreateCarpoolModal from "@/components/modal/confirmCreateCarpoolModal";
+import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 
 export default function CarpoolProcessFive() {
   const { isPinned } = useSidebar();
@@ -31,6 +32,10 @@ export default function CarpoolProcessFive() {
     closeModal: () => void;
   } | null>(null);
   const addCarpoolConfirmModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const cancelCreateModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -74,7 +79,7 @@ export default function CarpoolProcessFive() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <Link href="carpool-management">กลุ่มยานพาหนะ</Link>
+                    <Link href="/carpool-management">กลุ่มยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     สร้างกลุ่มยานพาหนะ
@@ -83,8 +88,14 @@ export default function CarpoolProcessFive() {
               </div>
 
               <div className="page-group-header">
-                <div className="page-title">
+                <div className="page-title justify-between">
                   <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
+                  <span
+                    className="text-icon-error cursor-pointer"
+                    onClick={() => cancelCreateModalRef.current?.openModal()}
+                  >
+                    ยกเลิก
+                  </span>
                   {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                 </div>
               </div>
@@ -182,6 +193,13 @@ export default function CarpoolProcessFive() {
                 "คุณหรือผู้ดูแลยานพาหนะประจำกลุ่มสามารถตั้งค่ากลุ่มและจัดการข้อมูลได้ภายหลังคุณต้องการสร้างกลุ่ม กลุ่ม กอพ.1 ใช่หรือไม่"
               }
               confirmText={"สร้างกลุ่ม"}
+            />
+            <ConfirmCancelCreateCarpoolModal
+              id={""}
+              ref={cancelCreateModalRef}
+              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
+              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
+              confirmText={"ยกเลิกการสร้างกลุ่ม"}
             />
             {/* <RequestForm /> */}
 

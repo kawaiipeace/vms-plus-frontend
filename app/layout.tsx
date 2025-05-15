@@ -11,6 +11,7 @@ import { FormProvider } from "@/contexts/requestFormContext";
 import { ProfileProvider } from "@/contexts/profileContext";
 import Script from "next/script";
 import { RequestDetailProvider } from "@/contexts/requestDetailContext";
+import { CarpoolProvider } from "@/contexts/carpoolFormContext";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -25,19 +26,28 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
-        <Script id="env-config" src="/env/env-config.js" strategy="beforeInteractive" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+        ></meta>
+        <Script
+          id="env-config"
+          src="/env/env-config.js"
+          strategy="beforeInteractive"
+        />
       </head>
-      
+
       <Head>
         <ThemeToggle />
       </Head>
-      
+
       <body className="light-mode">
         <ProfileProvider>
           <SidebarProvider>
             <RequestDetailProvider>
-              <FormProvider>{children}</FormProvider>
+              <FormProvider>
+                <CarpoolProvider>{children}</CarpoolProvider>
+              </FormProvider>
             </RequestDetailProvider>
           </SidebarProvider>
         </ProfileProvider>

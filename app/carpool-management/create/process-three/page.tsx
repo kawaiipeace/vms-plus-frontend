@@ -12,6 +12,8 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import AddCarpoolApproverModal from "@/components/modal/addCarpoolApproverModal";
 import CarpoolApproverTable from "@/components/table/carpool-approver-table";
+import ConfirmSkipStepCarpoolModal from "@/components/modal/confirmSkipStepCarpoolModal";
+import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 
 export default function CarpoolProcessThree() {
   const { isPinned } = useSidebar();
@@ -26,6 +28,14 @@ export default function CarpoolProcessThree() {
   });
 
   const addCarpoolApproverModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const skipStepModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const cancelCreateModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -78,8 +88,14 @@ export default function CarpoolProcessThree() {
               </div>
 
               <div className="page-group-header">
-                <div className="page-title">
+                <div className="page-title justify-between">
                   <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
+                  <span
+                    className="text-icon-error cursor-pointer"
+                    onClick={() => cancelCreateModalRef.current?.openModal()}
+                  >
+                    ยกเลิก
+                  </span>
                   {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                 </div>
               </div>
@@ -142,12 +158,12 @@ export default function CarpoolProcessThree() {
                     <div>และพนักงานขับรถในขั้นตอนสุดท้่าย</div>
                   </div>
                   <div className="emptystate-action">
-                    <Link
-                      href="/carpool-management/create/process-four"
+                    <button
+                      onClick={() => skipStepModalRef.current?.openModal()}
                       className="btn btn-secondary"
                     >
                       ข้าม
-                    </Link>
+                    </button>
 
                     <button
                       className="btn btn-primary"
@@ -169,13 +185,33 @@ export default function CarpoolProcessThree() {
               desc={""}
               confirmText={""}
             />
+            <ConfirmSkipStepCarpoolModal
+              ref={skipStepModalRef}
+              id={""}
+              title={"ข้ามขั้นตอนนี้"}
+              desc={
+                <>
+                  <div>คุณหรือผู้ดูแลยานพาหนะประจำกลุ่ม</div>
+                  <div>สามารถเพิ่มข้อมูลนี้ได้ภายหลัง</div>
+                </>
+              }
+              confirmText={"ข้าม"}
+              route="/carpool-management/create/process-four"
+            />
+            <ConfirmCancelCreateCarpoolModal
+              id={""}
+              ref={cancelCreateModalRef}
+              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
+              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
+              confirmText={"ยกเลิกการสร้างกลุ่ม"}
+            />
             {/* <RequestForm /> */}
 
             {data.length > 0 && (
               <div className="form-action">
                 <button
                   onClick={() =>
-                    router.push("/carpool-management/create/process-three")
+                    router.push("/carpool-management/create/process-four")
                   }
                   className="btn btn-primary"
                 >

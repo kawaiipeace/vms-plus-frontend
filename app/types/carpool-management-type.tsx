@@ -1,3 +1,17 @@
+export interface CarpoolForm {
+  carpool_authorized_depts: {
+    dept_sap: string;
+  }[];
+  carpool_contact_number: string;
+  carpool_contact_place: string;
+  carpool_dept_sap: string;
+  carpool_main_business_area: string;
+  carpool_name: string;
+  ref_carpool_choose_car_id: number;
+  ref_carpool_choose_driver_id: number;
+  remark: string;
+}
+
 export type CarpoolsParams = Partial<{
   search: string;
   is_active: string;
@@ -114,4 +128,11 @@ export interface CarpoolDriver {
       ref_driver_license_type_desc: string;
     };
   };
+}
+
+export interface CarpoolDepartment {
+  dept_sap: string;
+  dept_short: string;
+  dept_full: string;
+  cost_center_code: string;
 }

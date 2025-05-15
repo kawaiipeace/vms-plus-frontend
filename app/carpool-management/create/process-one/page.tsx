@@ -2,13 +2,20 @@
 
 import ProcessOneForm from "@/components/carpool-management/form/process-one";
 import Header from "@/components/header";
+import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 import ProcessCreateCarpool from "@/components/processCreateCarpool";
 import SideBar from "@/components/sideBar";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Link from "next/link";
+import { useRef } from "react";
 
 export default function CarpoolProcessOne() {
   const { isPinned } = useSidebar();
+
+  const cancelCreateModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   return (
     <div>
@@ -31,7 +38,7 @@ export default function CarpoolProcessOne() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <Link href="carpool-management">กลุ่มยานพาหนะ</Link>
+                    <Link href="/carpool-management">กลุ่มยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     สร้างกลุ่มยานพาหนะ
@@ -40,8 +47,14 @@ export default function CarpoolProcessOne() {
               </div>
 
               <div className="page-group-header">
-                <div className="page-title">
+                <div className="page-title justify-between">
                   <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
+                  <span
+                    className="text-icon-error cursor-pointer"
+                    onClick={() => cancelCreateModalRef.current?.openModal()}
+                  >
+                    ยกเลิก
+                  </span>
                   {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                 </div>
               </div>
@@ -51,6 +64,13 @@ export default function CarpoolProcessOne() {
 
             {/* <RequestForm /> */}
             <ProcessOneForm />
+            <ConfirmCancelCreateCarpoolModal
+              id={""}
+              ref={cancelCreateModalRef}
+              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
+              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
+              confirmText={"ยกเลิกการสร้างกลุ่ม"}
+            />
           </div>
         </div>
       </div>

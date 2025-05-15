@@ -86,3 +86,15 @@ export const getCarpoolDriver = async (params: CarpoolDriverParams) => {
     throw error;
   }
 };
+
+export const getCarpoolDepartment = async () => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/mas-department"
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

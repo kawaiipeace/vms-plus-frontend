@@ -3,6 +3,7 @@
 import { PaginationType } from "@/app/types/request-action-type";
 import Header from "@/components/header";
 import AddCarpoolAdminModal from "@/components/modal/addCarpoolAdminModal";
+import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 import ProcessCreateCarpool from "@/components/processCreateCarpool";
 import SideBar from "@/components/sideBar";
 import CarpoolAdminTable from "@/components/table/carpool-admin-table";
@@ -26,6 +27,10 @@ export default function CarpoolProcessTwo() {
   });
 
   const addCarpoolAdminModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const cancelCreateModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -69,7 +74,7 @@ export default function CarpoolProcessTwo() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <Link href="carpool-management">กลุ่มยานพาหนะ</Link>
+                    <Link href="/carpool-management">กลุ่มยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     สร้างกลุ่มยานพาหนะ
@@ -78,8 +83,14 @@ export default function CarpoolProcessTwo() {
               </div>
 
               <div className="page-group-header">
-                <div className="page-title">
+                <div className="page-title justify-between">
                   <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
+                  <span
+                    className="text-icon-error cursor-pointer"
+                    onClick={() => cancelCreateModalRef.current?.openModal()}
+                  >
+                    ยกเลิก
+                  </span>
                   {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                 </div>
               </div>
@@ -149,6 +160,13 @@ export default function CarpoolProcessTwo() {
               title={""}
               desc={""}
               confirmText={""}
+            />
+            <ConfirmCancelCreateCarpoolModal
+              id={""}
+              ref={cancelCreateModalRef}
+              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
+              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
+              confirmText={"ยกเลิกการสร้างกลุ่ม"}
             />
             {/* <RequestForm /> */}
 
