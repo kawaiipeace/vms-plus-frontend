@@ -12,7 +12,7 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import VehicleUserInfoCard from "@/components/annual-driver-license/vehicleUserInfoCard";
-import { fetchDriverLicRequests } from "@/services/driver";
+import { fetchRequestDetail } from "@/services/driver";
 
 interface RequestDetailFormProps {
   requestId: string;
@@ -50,7 +50,7 @@ export default function RequestDetailForm({
 
   const fetchRequestDetailfunc = async () => {
     try {
-      const response = await fetchDriverLicRequests(requestId || "");
+      const response = await fetchRequestDetail(requestId);
       console.log("res", response.data);
       setRequestData(response.data);
     } catch (error) {

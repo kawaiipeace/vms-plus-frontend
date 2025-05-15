@@ -13,7 +13,7 @@ interface Props {
 const DriverLicenseDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ requestData, id, onBack }, ref) => {
+>(({ requestData, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),

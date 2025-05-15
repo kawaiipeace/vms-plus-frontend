@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import VehicleStatus from "./status";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
-import { FuelTypeApiResponse, VehicleDepartmentApiResponse, VehicleInputParams, VehicleStatusProps, VehicleTypeApiResponse } from "@/app/types/vehicle-managemenr-type";
+import { FuelTypeApiResponse, VehicleDepartmentApiResponse, VehicleInputParams, VehicleStatusProps, VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 
 type Props = {
     onSubmitFilter?: (params: VehicleInputParams) => void;
