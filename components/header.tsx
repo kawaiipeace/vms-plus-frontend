@@ -5,13 +5,46 @@ import { logOut } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import DriverLicenseModal from "./annual-driver-license/driverLicenseModal";
+import { driverLicenseUserCard } from "@/services/driver";
+import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
+import RequestDrivingStepOneModal from "./annual-driver-license/requestDrivingStepOneModal";
 
 export default function Header() {
   const { profile } = useProfile();
   const router = useRouter();
+  const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
 
-  useEffect(() => {}, [profile]);
+  const driverLicenseModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const RequestDrivingStepOneModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  useEffect(() => {
+    console.log("proifile", profile);
+  }, [profile]);
+
+  const getDriverUserCard = async () => {
+    try {
+      const response = await driverLicenseUserCard();
+      if (response) {
+        setDriverUser(response.data.driver);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleOpenDriverLicenseModal = () => {
+    getDriverUserCard();
+    driverLicenseModalRef.current?.openModal();
+  };
 
   const logOutFunc = async () => {
     try {
@@ -69,7 +102,7 @@ export default function Header() {
               </div>
               <ul
                 tabIndex={0}
-                className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-64 p-2 shadow"
+                className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-[280px] p-2 shadow"
               >
                 {profile && (
                   <li className="nav-item">
@@ -93,12 +126,62 @@ export default function Header() {
                     </div>
                   </li>
                 )}
-                {/* <li className="nav-item">
-                  <a className="nav-link toggle-mode">
-                    <i className="material-symbols-outlined">id_card</i>
-                    <span className="nav-link-label">ใบอนุญาติขับขี่</span>
-                  </a>
-                </li> */}
+                <li className="nav-item">
+                  <div className="flex justify-between gap-2 items-center">
+                    {profile?.license_status === "อนุมัติแล้ว" ? (
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={handleOpenDriverLicenseModal}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge badge-success">
+                          {profile.license_status}
+                        </div>
+                      </>
+                    ) : profile?.license_status === "หมดอายุ" ? (
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={handleOpenDriverLicenseModal}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge badge-error">
+                          {profile.license_status}
+                        </div>
+                      </>
+                    ) : profile?.license_status === "มีผลปีถัดไป" ? (
+                      <div className="badge badge-warning">
+                        {profile.license_status}
+                      </div>
+                    ) : profile?.license_status === "กำลังดำเนินการ" ? (
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={() => RequestDrivingStepOneModalRef.current?.openModal()}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge bg-brand-900 text-white">
+                          {profile.license_status}
+                        </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </li>
                 {/* <li className="nav-item">
                   <a href="" className="nav-link">
                     <i className="material-symbols-outlined">person_check</i>
@@ -124,6 +207,13 @@ export default function Header() {
           </div>
         </div>
       </div>
+      <DriverLicenseModal
+        ref={driverLicenseModalRef}
+        profile={profile || null}
+        requestData={driverUser}
+      />
+
+      <RequestDrivingStepOneModal ref={RequestDrivingStepOneModalRef} />
     </div>
   );
 }

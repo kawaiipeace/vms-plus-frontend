@@ -4,6 +4,7 @@ import ZeroRecord from "@/components/zeroRecord";
 import FirstApproveFlow from "@/components/flow/firstApproveFlow";
 import { fetchMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
+import DriverLicApproveFlow from "../flow/driverLicApproveFlow";
 
 
 export default function ApproveVehicleTabs() {
@@ -16,6 +17,7 @@ export default function ApproveVehicleTabs() {
           const response = await fetchMenus();
           const result = response.data;
           setStatusData(result);
+          console.log('tt----',result);
         } catch (error) {
           console.error("Error fetching status data:", error);
         }
@@ -27,12 +29,8 @@ export default function ApproveVehicleTabs() {
         switch (code) {
           case "20,21,30": 
           return <FirstApproveFlow />;
-          case "50": // รับกุญแจ
-          case "60": // เดินทาง
-          case "70": // คืนยานพาหนะ
-            return "";
-          case "80": // เสร็จสิ้น
-            return <div>เสร็จสิ้น</div>; // Replace with your component
+          case "00":
+          return <DriverLicApproveFlow />;
           case "90": // ยกเลิก
             return <div></div>;
           default:
