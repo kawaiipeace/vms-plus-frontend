@@ -142,7 +142,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         },
         {
           title: "ข้อมูลยานพาหนะ",
-          link: "request-list",
+          link: "/vehicle-management",
           roles: ["admin-super"],
         },
         {
