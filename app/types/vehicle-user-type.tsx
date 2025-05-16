@@ -30,6 +30,7 @@ export interface VehicleUserType {
   tel_internal?: string;
   tel_mobile: string;
   dept_sap_short: string;
+  posi_text?: string;
   image_url: string;
 }
 

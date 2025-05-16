@@ -161,10 +161,10 @@ export default function DriverLicApproverListTable({
         const statusValue = row.original.ref_driver_license_type_name;
         return (
           <div className="text-left dataTable-action">
-            {/* {statusValue == "รออนุมัติ" && ( */}
+            {statusValue == "รออนุมัติ" ? 
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
+                data-tip="รออนุมัติ"
                 onClick={() =>
                   router.push(
                     "/administrator/driver-license-confirmer/" +
@@ -174,7 +174,20 @@ export default function DriverLicApproverListTable({
               >
                 <i className="material-symbols-outlined">stylus</i>
               </button>
-            {/* )} */}
+              :
+              <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              data-tip="ดูรายละเอียดคำขอ"
+              onClick={() =>
+                router.push(
+                  "/administrator/driver-license-confirmer/" +
+                    row.original.trn_request_annual_driver_uid
+                )
+              }
+            >
+              <i className="material-symbols-outlined">quick_reference_all</i>
+            </button>
+            } 
 
           </div>
         );

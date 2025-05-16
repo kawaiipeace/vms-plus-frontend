@@ -280,3 +280,23 @@ export const fetchSatisfactionSurveyQuestions = async () => {
     throw error;
   }
 };
+
+export const fetchUserApprovalLic = async () => {
+  try {
+    const response = await axiosInstance.get("mas/user-approval-license-users");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchUserConfirmerLic = async () => {
+  try {
+    const response = await axiosInstance.get("mas/user-confirmer-license-users");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+

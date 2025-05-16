@@ -1,3 +1,4 @@
+import { SendbackRequestType } from '@/app/types/request-action-type';
 import axiosInstance from '@/utils/axiosInstance';
 
 export const driverLicenseUserCard = async () => {
@@ -52,4 +53,61 @@ export const fetchRequestDetail = async (id: string) => {
     throw error;
   }
 };
+
+export const updateAnnualApprover = async (payload: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-approver', { payload });
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const approveAnnualLic = async (payload: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-confirmed', { payload });
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const approveAnnualFinalLic = async (payload: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-approver/update-license-annual-approved', { payload });
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const updateLicAnnualReject = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-approver/update-license-annual-rejected',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const updateLicAnnualCancel = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-approver/update-license-annual-cenceled',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
 

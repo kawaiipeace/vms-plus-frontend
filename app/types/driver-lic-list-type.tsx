@@ -69,6 +69,28 @@ export interface RequestAnnualDriver {
   created_request_phone_number: string;
   created_request_mobile_number: string;
   created_request_image_url: string;
+
+  approved_request_datetime: string; // ISO datetime string
+  approved_request_dept_sap: string;
+  approved_request_dept_sap_full: string;
+  approved_request_dept_sap_short: string;
+  approved_request_emp_id: string;
+  approved_request_emp_name: string;
+  approved_request_emp_position: string;
+  approved_request_image_url: string;
+  approved_request_mobile_number: string;
+  approved_request_phone_number: string;
+
+  confirmed_request_datetime: string;
+  confirmed_request_dept_sap: string;
+  confirmed_request_dept_sap_full: string;
+  confirmed_request_dept_sap_short: string;
+  confirmed_request_emp_id: string;
+  confirmed_request_emp_name: string;
+  confirmed_request_emp_position: string;
+  confirmed_request_image_url: string;
+  confirmed_request_mobile_number: string;
+  confirmed_request_phone_number: string;
   
   // Driver license info
   driver_license_no: string;

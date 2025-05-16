@@ -10,8 +10,11 @@ import { Suspense } from "react";
 function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
+  const sendbackLicReq = searchParams.get("sendbacklic-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
+  const approveLicReq = searchParams.get("approvelic-req");
+  const approveFinalLicReq = searchParams.get("  approvelicfinal-req");
   const requestId = searchParams.get("request-id");
 
   return (
@@ -22,6 +25,32 @@ function RequestListContent() {
           desc={
             <>
               คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+      {sendbackLicReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
+              <br />
+              ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+      {sendbackLicReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
               <br />
               ถูกตีกลับเรียบร้อยแล้ว
             </>
@@ -42,6 +71,35 @@ function RequestListContent() {
           status="success"
         />
       )}
+
+      {approveLicReq === "success" && (
+        <ToastCustom
+          title="ตรวจสอบคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
+              <br />
+              ผ่านการตรวจสอบแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
+      {approveFinalLicReq === "success" && (
+        <ToastCustom
+          title="อนุมัติคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+              <br />
+              เลขที่ {requestId} ผ่านการอนุมัติเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
       {cancelReq === "success" && (
         <ToastCustom
           title="ยกเลิกคำขอสำเร็จ"
