@@ -29,7 +29,7 @@ const SendbackRequestModal = forwardRef<
     const sendCancelRequest = async () => {
       try {
         const payload = {
-          sended_back_request_reason: "",
+          rejected_request_reason: "",
           trn_request_uid: id,
         };
         const res = await updateSendback(payload);

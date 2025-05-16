@@ -3,22 +3,20 @@ import { fetchVehicleUsers } from "@/services/masterService";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import CallToDriverModal from "../modal/callToDriverModal";
 
 interface Props {
   id: string;
   requestData?: RequestDetailType;
+  displayPhone?: boolean;
 }
 
 export default function VehicleUserInfoCard({
   id,
   requestData,
+  displayPhone
 }: Props) {
   const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
-  const callToDriverModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -68,6 +66,7 @@ export default function VehicleUserInfoCard({
             </div>
           </div>
         </div>
+        {displayPhone &&
         <div className="form-card-right align-self-center">
           <div className="flex flex-wrap gap-4">
             <div className="col-span-12 md:col-span-6">
@@ -96,6 +95,7 @@ export default function VehicleUserInfoCard({
           </div>
 
         </div>
+         }
       </div>
 
     </div>
