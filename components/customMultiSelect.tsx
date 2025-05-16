@@ -57,7 +57,6 @@ export default function CustomMultiSelect({
           isOpen ? "shadow-customPurple border-primary-default" : ""
         }`}
         onClick={() => {
-          console.log(length, value.length);
           if (!(length < value.length) || action !== "remove") {
             setIsOpen(!isOpen);
           } else {
