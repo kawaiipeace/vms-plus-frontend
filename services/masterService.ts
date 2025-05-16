@@ -30,6 +30,15 @@ export const fetchUserDrivers = async (search?: string) => {
   }
 };
 
+export const fetchDriverLicenseType = async () => {
+  try {
+    const response = await axiosInstance.get("ref/driver-license-type");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchCostTypes = async () => {
   try {
     const response = await axiosInstance.get("ref/cost-type");
@@ -130,7 +139,7 @@ export const fetchVehicleKeyType = async () => {
 
 export const fetchUserApproverUsers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-approval-users?search=" + search);
+    const response = await axiosInstance.get("mas/user-final-approval-users?search=" + search);
 
     return response;
   } catch (error) {

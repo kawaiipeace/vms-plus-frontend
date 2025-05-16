@@ -19,6 +19,6 @@ self.addEventListener('push', function (event) {
     console.log('Notification click received.');
     event.notification.close();
     // Dynamically get the client value from env.config.js
-    const clientUrl = window.__ENV__.NEXT_PUBLIC_CLIENT || 'http://pntdev.ddns.net:28080';
+    const clientUrl = window.__ENV__.NEXT_PUBLIC_CLIENT || 'http://pntdev.ddns.net:28084';
     event.waitUntil(clients.openWindow(clientUrl));
   });

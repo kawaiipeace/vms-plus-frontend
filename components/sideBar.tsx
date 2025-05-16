@@ -17,17 +17,16 @@ export default function SideBar({ menuName }: SidebarProps) {
   const { profile } = useProfile();
 
   const devRoles = [
-    "vehicle-user",       // Basic user
+    "vehicle-user", // Basic user
     // "level1-approval", // First level approver
     // "admin-approval",  // Admin approver
     // "admin-dept-approval", // Department admin
     // "final-approval",  // Final approver
-    "driver",            // Driver
+    "driver", // Driver
     // "admin-super"      // Super admin
   ];
 
   const roles = profile?.roles;
-  
 
   useEffect(() => {
     if (menuName) {
@@ -62,7 +61,7 @@ export default function SideBar({ menuName }: SidebarProps) {
     if (isPinned) {
       setIsExpanded(true);
     }
-  }, [isPinned,profile]);
+  }, [isPinned, profile]);
 
   const toggleMenu = (menuId: string) => {
     setOpenMenus((prev) =>
@@ -142,12 +141,12 @@ export default function SideBar({ menuName }: SidebarProps) {
         },
         {
           title: "ข้อมูลยานพาหนะ",
-          link: "request-list",
+          link: "/vehicle-management",
           roles: ["admin-super"],
         },
         {
           title: "กลุ่มยานพาหนะ",
-          link: "request-list",
+          link: "/carpool-management",
           roles: ["admin-super"],
         },
         {

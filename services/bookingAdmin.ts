@@ -56,7 +56,7 @@ export const adminUpdateVehicleUser = async (data: any) => {
 
 export const adminSendbackRequest = async (data: SendbackRequestType) => {
   try {
-    const response = await axiosInstance.put('booking-admin/update-sended-back',  data );
+    const response = await axiosInstance.put('booking-admin/update-rejected',  data );
     return response;
 
   } catch (error) {

@@ -1,7 +1,10 @@
 "use client";
 import { LogType } from "@/app/types/log-type";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { RequestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import {
+  RequestHistoryLog,
+  requestHistoryLogColumns,
+} from "@/data/requestHistory";
 import { fetchLogs, fetchRequestKeyDetail } from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -38,20 +41,25 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     const fetchRequestDetailfunc = async () => {
       try {
         const response = await fetchRequestKeyDetail(requestId);
-        const responseLog = await fetchLogs(requestUid, { page: 1, limit: 100 });
+        const responseLog = await fetchLogs(requestUid, {
+          page: 1,
+          limit: 100,
+        });
         setRequestData(response.data);
 
         const requestList = responseLog.data.logs;
-        const mapDataRequest: RequestHistoryLog[] = requestList.map((item: LogType) => {
-          const dateTime = convertToBuddhistDateTime(item.created_at);
-          return {
-            dateTime: dateTime.date + "" + dateTime.time,
-            operator: item.created_by_emp.emp_name,
-            position: item.created_by_emp.dept_sap,
-            detail: item.status.ref_request_status_desc,
-            remark: item.log_remark,
-          };
-        });
+        const mapDataRequest: RequestHistoryLog[] = requestList.map(
+          (item: LogType) => {
+            const dateTime = convertToBuddhistDateTime(item.created_at);
+            return {
+              dateTime: dateTime.date + "" + dateTime.time,
+              operator: item.created_by_emp.emp_name,
+              position: item.created_by_emp.dept_sap,
+              detail: item.status.ref_request_status_desc,
+              remark: item.log_remark,
+            };
+          }
+        );
 
         setLoading(false);
         setDataRequest(mapDataRequest);
@@ -122,7 +130,12 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
       {
         label: "การรับยานพาหนะ",
-        content: <ReceiveCarVehicleInUseTab requestId={requestId} displayOn="vehicle-in-use" />,
+        content: (
+          <ReceiveCarVehicleInUseTab
+            requestId={requestId}
+            displayOn="vehicle-in-use"
+          />
+        ),
         constent: "",
         badge: "",
       },
@@ -140,7 +153,11 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การเติมเชื้อเพลิง",
         content: (
           <>
-            <RecordFuelTab requestId={requestId} role="user" requestData={requestData} />
+            <RecordFuelTab
+              requestId={requestId}
+              role="user"
+              requestData={requestData}
+            />
           </>
         ),
         constent: "",
@@ -150,7 +167,11 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การคืนยานพาหนะ",
         content: (
           <>
-            <ReturnCarTab displayOn="userTabs" useBy={"userTabs"} requestData={requestData} />
+            <ReturnCarTab
+              displayOn="userTabs"
+              useBy={"userTabs"}
+              requestData={requestData}
+            />
           </>
         ),
         constent: "",
@@ -160,7 +181,10 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ประวัติการดำเนินการ",
         content: (
           <>
-            <TableComponent data={dataRequest} columns={requestHistoryLogColumns} />
+            <TableComponent
+              data={dataRequest}
+              columns={requestHistoryLogColumns}
+            />
           </>
         ),
         badge: "",
@@ -168,7 +192,10 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     ],
     [dataRequest, requestData, requestId]
   ).filter((tab) => {
-    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver === "1") {
+    if (
+      tab.label === "การนัดหมายเดินทาง" &&
+      requestData?.is_pea_employee_driver === "1"
+    ) {
       return false;
     }
     return true;
@@ -197,7 +224,9 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
+              {tab.badge && (
+                <span className="badge badge-brand badge-pill-outline">4</span>
+              )}{" "}
             </div>
           </button>
         ))}

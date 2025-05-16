@@ -76,7 +76,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
   return (
     <>
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
-        <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.sended_back_request_reason}`} />
+        <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.rejected_request_reason}`} />
       )}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
@@ -84,7 +84,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} displayPhone={true}  />
           </div>
 
           <div className="form-section">

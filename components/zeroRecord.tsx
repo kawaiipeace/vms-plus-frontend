@@ -10,22 +10,50 @@ interface ZeroRecordProps {
   link?: string;
   displayBtn?: boolean;
   useModal?: () => void;
+  classNameImg?: string;
 }
-export default function ZeroRecord({ imgSrc, title, desc, button, icon, btnType, link, displayBtn, useModal }: ZeroRecordProps) {
+export default function ZeroRecord({
+  imgSrc,
+  title,
+  desc,
+  button,
+  icon,
+  btnType,
+  link,
+  displayBtn,
+  useModal,
+  classNameImg,
+}: ZeroRecordProps) {
   return (
     <div className="zerorecord">
       <div className="emptystate">
-        <Image src={imgSrc} width={100} height={100} alt=""></Image>
+        <Image
+          src={imgSrc}
+          width={100}
+          height={100}
+          alt=""
+          className={classNameImg}
+        ></Image>
         <div className="emptystate-title">{title}</div>
         <div className="emptystate-text">{desc}</div>
         <div className="emptystate-action">
           {useModal ? (
-            <button className={`btn btn-${btnType == "secondary" ? "secondary" : "primary"} ${displayBtn ? "" : " hidden"}`} onClick={useModal}>
+            <button
+              className={`btn btn-${
+                btnType == "secondary" ? "secondary" : "primary"
+              } ${displayBtn ? "" : " hidden"}`}
+              onClick={useModal}
+            >
               {icon && <i className="material-symbols-outlined">add</i>}
               {button}
             </button>
           ) : (
-            <Link href={link ? link : ""} className={`btn btn-${btnType == "secondary" ? "secondary" : "primary"}${displayBtn ? "" : " hidden"}`}>
+            <Link
+              href={link ? link : ""}
+              className={`btn btn-${
+                btnType == "secondary" ? "secondary" : "primary"
+              }${displayBtn ? "" : " hidden"}`}
+            >
               {icon && <i className="material-symbols-outlined">add</i>}
               {button}
             </Link>
