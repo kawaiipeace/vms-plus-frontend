@@ -1,6 +1,5 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import AlertCustom from "@/components/alertCustom";
-import CarDetailCard2 from "@/components/card/carDetailCard2";
 import { fetchRequestKeyDetail } from "@/services/masterService";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PickupKeyDetailCard from "@/components/card/pickupKeyDetailCard";
@@ -91,10 +90,6 @@ export default function KeyHandoverDetail({
     fetchData();
   };
 
-  const handleKeyEdit = () => {
-    editKeyPickupDetailModalRef.current?.closeModal();
-    setEditKeySuccess(true);
-  };
 
   return (
     <>

@@ -142,6 +142,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">สถานะคำขอ</label>
+                  {statusData != null && <>
                   {statusData
                     .filter((statusItem) => statusItem.ref_request_status_name !== "ยกเลิกคำขอ")
                     .map((statusItem, index) => (
@@ -175,7 +176,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                           </label>
                         </div>
                       </div>
-                    ))}
+                    ))}</>}
                 </div>
               </div>
             </div>

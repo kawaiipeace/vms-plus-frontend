@@ -41,7 +41,7 @@ export default function KeyPickUpDetailForm({
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
-          desc={`เหตุผล: ${requestData?.sended_back_request_reason}`}
+          desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
         />
       )}
 
@@ -54,6 +54,7 @@ export default function KeyPickUpDetailForm({
             <VehicleUserInfoCard
               id={requestData?.vehicle_user_emp_id || ""}
               requestData={requestData}
+              displayPhone={true} 
             />
           </div>
 

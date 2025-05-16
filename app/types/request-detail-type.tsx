@@ -63,7 +63,7 @@ export type RequestDetailType = Partial<{
   };
   progress_request_status: ProgressRequestType[];
   ref_request_status_name: string;
-  sended_back_request_reason: string;
+  rejected_request_reason: string;
   canceled_request_reason: string;
   received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;

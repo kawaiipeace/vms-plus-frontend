@@ -43,6 +43,7 @@ export default function RequestTabs() {
       try {
         const response = await requests(params);
         const requestList = response.data.requests;
+    
         setDataRequest(requestList);
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -55,7 +56,7 @@ export default function RequestTabs() {
 
   const getTabContent = (code: string) => {
     switch (code) {
-      case "20,21,30,31,41,50,51,60,70,71":
+      case "20,21,30,31,40,41,50,51,60,70,71":
         return <ArpproveFlow />;
       case "50": // รับกุญแจ
       case "60": // เดินทาง
@@ -100,14 +101,14 @@ export default function RequestTabs() {
       <div className="py-4">
         {tabs[activeTab]?.content}
 
-        {dataRequest.length === 0 && (
+        {/* {dataRequest?.length === 0 && (
           <ZeroRecord
             imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
             title="ไม่พบคำขอใช้ยานพาหนะ"
             desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
             button="ล้างตัวกรอง"
           />
-        )}
+        )} */}
       </div>
 
       {/* <ProcessIntroModal ref={processIntroModalRef} /> */}

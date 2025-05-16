@@ -10,7 +10,6 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface PaginationType {
@@ -27,7 +26,6 @@ interface Props {
 
 export default function LogListTable({ defaultData, pagination }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [reqData, setReqData] = useState<LogType[]>(defaultData);
 
@@ -51,7 +49,7 @@ export default function LogListTable({ defaultData, pagination }: Props) {
 
   const requestListColumns: ColumnDef<LogType>[] = [
     {
-      accessorKey: "created_at",
+      accessorKey: "log_request_action_datetime",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
           <div className="text-center">วันที่ / เวลา</div>
@@ -59,30 +57,30 @@ export default function LogListTable({ defaultData, pagination }: Props) {
       ),
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(row.original.created_at);
+        const startDateTime = convertToBuddhistDateTime(row.original.log_request_action_datetime);
         return <div className="text-left">{startDateTime.date + " " + startDateTime.time}</div>;
       },
     },
     {
-      accessorKey: "created_by_emp",
+      accessorKey: "action_by_fullname",
       header: () => <div className="text-left">ผู้ดำเนินการ</div>,
       enableSorting: false,
-      cell: ({ row }) => <div className="text-left">{row.original.created_by_emp.emp_name}</div>,
+      cell: ({ row }) => <div className="text-left">{row.original.action_by_fullname}</div>,
     },
     {
       accessorKey: "debt_sap",
       header: () => <div className="text-center">ตำแหน่่ง/สังกัด</div>,
       enableSorting: false,
-      cell: ({ row }) => <div className="text-left">{row.original.created_by_emp.dept_sap}</div>,
+      cell: ({ row }) => <div className="text-left">{row.original.action_by_position +"/"+ row.original.action_by_department}</div>,
     },
     {
       accessorKey: "status",
       header: () => <div className="text-center">รายละเอียด</div>,
       enableSorting: false,
-      cell: ({ row }) => <div className="text-left">{row.original.status.ref_request_status_desc}</div>,
+      cell: ({ row }) => <div className="text-left">{row.original.action_detail}</div>,
     },
     {
-      accessorKey: "log_remark",
+      accessorKey: "remark",
       header: () => <div className="text-center">หมายเหตุ</div>,
       enableSorting: false,
       cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
