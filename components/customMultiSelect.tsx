@@ -77,7 +77,7 @@ export default function CustomMultiSelect({
         )}
 
         <div className="flex-1 flex flex-wrap gap-2 overflow-hidden whitespace-nowrap">
-          {value
+          {value?.length
             ? value.map((item) => (
                 <div
                   key={item.value}

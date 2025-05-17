@@ -61,6 +61,10 @@ const groupOptions = [
 export default function ProcessOneForm() {
   const router = useRouter();
 
+  const [carSelected, setCarSelected] = useState<string>("");
+  const [vehicleSelected, setVehicleSelected] = useState<string>("");
+  const [approveSelected, setApproveSelected] = useState<string>("");
+
   const [carRadio, setCarRadio] = useState<CarChoice[]>([]);
   const [driverRadio, setDriverRadio] = useState<DriverChoice[]>([]);
   const [departments, setDepartments] = useState<CarpoolDepartment[]>([]);
@@ -75,6 +79,7 @@ export default function ProcessOneForm() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
@@ -91,6 +96,11 @@ export default function ProcessOneForm() {
       remark: formData.remark || "",
     },
   });
+
+  console.log("errors: ", errors);
+  console.log("isValid: ", isValid);
+  console.log("formData: ", formData);
+  console.log("getValues: ", getValues());
 
   useEffect(() => {
     const fetchCarFunc = async () => {
@@ -132,12 +142,17 @@ export default function ProcessOneForm() {
     item.dept_sap.includes(group?.value || "")
   );
 
+  const onSubmit = (data: any) => {
+    console.log(data);
+    // router.push("/carpool-management/create/process-two");
+  };
+
   return (
     <>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          router.push("/carpool-management/create/process-two");
+          handleSubmit(onSubmit);
         }}
       >
         <div className="form-steps-group">
@@ -247,9 +262,10 @@ export default function ProcessOneForm() {
                         }))}
                         value={departmentSelected}
                         {...register("carpool_authorized_depts")}
-                        onChange={(e) =>
-                          setDepartmentSelected(e as CustomSelectOption[])
-                        }
+                        onChange={(e) => {
+                          setDepartmentSelected(e as CustomSelectOption[]);
+                          setValue("carpool_authorized_depts", e);
+                        }}
                       />
                     </div>
                   )}
@@ -299,10 +315,11 @@ export default function ProcessOneForm() {
                         name="tripType"
                         label={item.type_of_choose_car}
                         value={item.ref_carpool_choose_car_id.toString()}
-                        setSelectedValue={function (value: string): void {
-                          throw new Error("Function not implemented.");
-                        }} //   selectedValue={selectedTripType}
-                        //   setSelectedValue={setSelectedTripType}
+                        selectedValue={carSelected}
+                        setSelectedValue={(e) => {
+                          setCarSelected(e);
+                          setValue("ref_carpool_choose_car_id", Number(e));
+                        }}
                       />
                     ))}
                   </div>
@@ -330,10 +347,11 @@ export default function ProcessOneForm() {
                         name="tripType"
                         label={item.type_of_choose_driver}
                         value={item.ref_carpool_choose_driver_id.toString()}
-                        setSelectedValue={function (value: string): void {
-                          throw new Error("Function not implemented.");
-                        }} //   selectedValue={selectedTripType}
-                        //   setSelectedValue={setSelectedTripType}
+                        selectedValue={vehicleSelected}
+                        setSelectedValue={(e) => {
+                          setVehicleSelected(e);
+                          setValue("ref_carpool_choose_driver_id", Number(e));
+                        }}
                       />
                     ))}
                   </div>
