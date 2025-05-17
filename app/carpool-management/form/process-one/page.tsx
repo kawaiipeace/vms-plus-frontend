@@ -1,21 +1,45 @@
 "use client";
 
+import { Carpool } from "@/app/types/carpool-management-type";
 import ProcessOneForm from "@/components/carpool-management/form/process-one";
 import Header from "@/components/header";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 import ProcessCreateCarpool from "@/components/processCreateCarpool";
 import SideBar from "@/components/sideBar";
+import CarpoolManagementTabs from "@/components/tabs/carpoolManagemntTabs";
 import { useSidebar } from "@/contexts/sidebarContext";
+import { getCarpoolManagementId } from "@/services/carpoolManagement";
 import Link from "next/link";
-import { useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function CarpoolProcessOne() {
+  const id = useSearchParams().get("id");
   const { isPinned } = useSidebar();
+
+  const [carpool, setCarpool] = useState<Carpool>();
 
   const cancelCreateModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  useEffect(() => {
+    const FetchIdFunc = async () => {
+      if (id) {
+        try {
+          const response = await getCarpoolManagementId(id);
+          const result = response.data;
+          console.log("result: ", result);
+          setCarpool(result);
+        } catch (error) {
+          console.error("Error fetching status data:", error);
+        }
+      }
+    };
+
+    FetchIdFunc();
+  }, [id]);
 
   return (
     <div>
@@ -48,7 +72,9 @@ export default function CarpoolProcessOne() {
 
               <div className="page-group-header">
                 <div className="page-title justify-between">
-                  <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
+                  <span className="page-title-label">
+                    {id ? carpool?.carpool_name : "สร้างกลุ่มยานพาหนะ"}
+                  </span>
                   <span
                     className="text-icon-error cursor-pointer"
                     onClick={() => cancelCreateModalRef.current?.openModal()}
@@ -60,10 +86,13 @@ export default function CarpoolProcessOne() {
               </div>
             </div>
 
-            <ProcessCreateCarpool step={1} />
+            {id ? (
+              <CarpoolManagementTabs active={5} />
+            ) : (
+              <ProcessCreateCarpool step={1} />
+            )}
 
-            {/* <RequestForm /> */}
-            <ProcessOneForm />
+            <ProcessOneForm carpool={carpool} />
             <ConfirmCancelCreateCarpoolModal
               id={""}
               ref={cancelCreateModalRef}

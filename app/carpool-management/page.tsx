@@ -4,7 +4,7 @@ import SideBar from "@/components/sideBar";
 import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useEffect, useRef, useState } from "react";
-import { Carpools, CarpoolsParams } from "../types/carpool-management-type";
+import { Carpool, CarpoolParams } from "../types/carpool-management-type";
 import { carpoolManagementSearch } from "@/services/carpoolManagement";
 import { PaginationType } from "../types/request-action-type";
 import CarpoolManagementTable from "@/components/table/carpool-management-table";
@@ -13,8 +13,8 @@ import FilterCarpoolModal from "@/components/modal/filterCarpool";
 import { useRouter } from "next/navigation";
 
 export default function CarpoolManagement() {
-  const [params, setParams] = useState<CarpoolsParams>({});
-  const [data, setData] = useState<Carpools[]>([]);
+  const [params, setParams] = useState<CarpoolParams>({});
+  const [data, setData] = useState<Carpool[]>([]);
   const [pagination, setPagination] = useState<PaginationType>({
     limit: 10,
     page: 1,
@@ -152,7 +152,7 @@ export default function CarpoolManagement() {
                       </button>
                       <button
                         onClick={() =>
-                          router.push("/carpool-management/create/process-one")
+                          router.push("/carpool-management/form/process-one")
                         }
                         className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
                       >
@@ -206,7 +206,7 @@ export default function CarpoolManagement() {
                   btnType="primary"
                   classNameImg="w-[200px] h-[200px]"
                   useModal={() => () =>
-                    router.push("/carpool-management/create/process-one")}
+                    router.push("/carpool-management/form/process-one")}
                 />
               )}
               <FilterCarpoolModal ref={filterModalRef} />

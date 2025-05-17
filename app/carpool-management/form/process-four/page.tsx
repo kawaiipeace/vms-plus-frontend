@@ -10,12 +10,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import Image from "next/image";
-import AddCarpoolApproverModal from "@/components/modal/addCarpoolApproverModal";
-import CarpoolApproverTable from "@/components/table/carpool-approver-table";
+import AddCarpoolVehicleModal from "@/components/modal/addCarpoolVehicleModal";
+import CarpoolVehicleTable from "@/components/table/carpool-vehicle-table";
 import ConfirmSkipStepCarpoolModal from "@/components/modal/confirmSkipStepCarpoolModal";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 
-export default function CarpoolProcessThree() {
+export default function CarpoolProcessFour() {
   const { isPinned } = useSidebar();
   const router = useRouter();
 
@@ -27,7 +27,7 @@ export default function CarpoolProcessThree() {
     totalPages: 0,
   });
 
-  const addCarpoolApproverModalRef = useRef<{
+  const addCarpoolVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -100,7 +100,8 @@ export default function CarpoolProcessThree() {
                 </div>
               </div>
             </div>
-            <ProcessCreateCarpool step={3} />
+
+            <ProcessCreateCarpool step={4} />
 
             {data.length > 0 && (
               <>
@@ -108,9 +109,9 @@ export default function CarpoolProcessThree() {
                   <div className="page-section-header border-0 !pb-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">ผู้อนุมัติ</span>
+                        <span className="page-title-label">ยานพาหนะ</span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          3 คน
+                          3 คัน
                         </span>
                       </div>
                     </div>
@@ -124,10 +125,7 @@ export default function CarpoolProcessThree() {
                   </div>
                 </div>
 
-                <CarpoolApproverTable
-                  defaultData={[]}
-                  pagination={pagination}
-                />
+                <CarpoolVehicleTable defaultData={[]} pagination={pagination} />
 
                 <PaginationControls
                   pagination={{
@@ -146,7 +144,7 @@ export default function CarpoolProcessThree() {
               <div className="zerorecord">
                 <div className="emptystate">
                   <Image
-                    src="/assets/img/carpool/add-approver.png"
+                    src="/assets/img/carpool/add-vehicle.png"
                     width={100}
                     height={100}
                     alt=""
@@ -168,7 +166,7 @@ export default function CarpoolProcessThree() {
                     <button
                       className="btn btn-primary"
                       onClick={() =>
-                        addCarpoolApproverModalRef.current?.openModal()
+                        addCarpoolVehicleModalRef.current?.openModal()
                       }
                     >
                       <i className="material-symbols-outlined">add</i>
@@ -178,8 +176,8 @@ export default function CarpoolProcessThree() {
                 </div>
               </div>
             )}
-            <AddCarpoolApproverModal
-              ref={addCarpoolApproverModalRef}
+            <AddCarpoolVehicleModal
+              ref={addCarpoolVehicleModalRef}
               id={""}
               title={""}
               desc={""}
@@ -196,7 +194,7 @@ export default function CarpoolProcessThree() {
                 </>
               }
               confirmText={"ข้าม"}
-              route="/carpool-management/create/process-four"
+              route="/carpool-management/form/process-five"
             />
             <ConfirmCancelCreateCarpoolModal
               id={""}
@@ -211,7 +209,7 @@ export default function CarpoolProcessThree() {
               <div className="form-action">
                 <button
                   onClick={() =>
-                    router.push("/carpool-management/create/process-four")
+                    router.push("/carpool-management/form/process-three")
                   }
                   className="btn btn-primary"
                 >
@@ -222,6 +220,7 @@ export default function CarpoolProcessThree() {
                 </button>
               </div>
             )}
+            {/* <RequestForm /> */}
           </div>
         </div>
       </div>

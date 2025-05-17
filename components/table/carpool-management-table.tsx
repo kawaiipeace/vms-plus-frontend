@@ -9,7 +9,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Carpools } from "@/app/types/carpool-management-type";
+import { Carpool } from "@/app/types/carpool-management-type";
 import { useRouter } from "next/navigation";
 
 interface PaginationType {
@@ -20,7 +20,7 @@ interface PaginationType {
 }
 
 interface Props {
-  defaultData: Carpools[];
+  defaultData: Carpool[];
   pagination: PaginationType;
 }
 
@@ -38,7 +38,7 @@ export default function CarpoolManagementTable({
     pageSize: pagination.limit,
   });
 
-  const columns: ColumnDef<Carpools>[] = [
+  const columns: ColumnDef<Carpool>[] = [
     {
       accessorKey: "carpool_name",
       header: () => <div className="text-center">ชื่อกลุ่มยานพาหนะ</div>,
@@ -160,7 +160,12 @@ export default function CarpoolManagementTable({
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="ดูรายละเอียด"
-              onClick={() => router.push("/carpool-management")}
+              onClick={() =>
+                router.push(
+                  "/carpool-management/form/process-one?id=" +
+                    row.original.mas_carpool_uid
+                )
+              }
             >
               <i className="material-symbols-outlined">quick_reference_all</i>
             </button>

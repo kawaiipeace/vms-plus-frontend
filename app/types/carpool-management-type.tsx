@@ -4,15 +4,17 @@ export interface CarpoolForm {
   }[];
   carpool_contact_number: string;
   carpool_contact_place: string;
-  carpool_dept_sap: string;
-  carpool_main_business_area: string;
   carpool_name: string;
   ref_carpool_choose_car_id: number;
   ref_carpool_choose_driver_id: number;
-  remark: string;
+  remark?: string;
+  is_must_pass_status_30: string;
+  is_must_pass_status_40: string;
+  is_must_pass_status_50: string;
+  mas_carpool_uid: string;
 }
 
-export type CarpoolsParams = Partial<{
+export type CarpoolParams = Partial<{
   search: string;
   is_active: string;
   order_by: string;
@@ -21,7 +23,7 @@ export type CarpoolsParams = Partial<{
   limit: number;
 }>;
 
-export interface Carpools {
+export interface Carpool {
   mas_carpool_uid: string;
   carpool_name: string;
   carpool_dept_sap: string;
@@ -32,6 +34,13 @@ export interface Carpools {
   numberOfApprovers: number;
   is_active: string;
   carpool_status: string;
+  ref_carpool_choose_car_id: number;
+  ref_carpool_choose_driver_id: number;
+  remark: string;
+  carpool_main_business_area: string;
+  is_must_pass_status_30: string;
+  is_must_pass_status_40: string;
+  is_must_pass_status_50: string;
 }
 
 export interface CarChoice {
