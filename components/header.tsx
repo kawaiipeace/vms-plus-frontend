@@ -212,7 +212,7 @@ export default function Header() {
                       <div className="badge badge-warning">
                         {profile.license_status}
                       </div>
-                    ) : profile?.license_status === "ไม่มี" ? (
+                    ) : profile?.license_status === "ยกเลิก" ? (
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"

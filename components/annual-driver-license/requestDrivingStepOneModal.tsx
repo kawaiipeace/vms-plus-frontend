@@ -21,31 +21,38 @@ interface ReturnCarAddModalProps {
 }
 
 export interface ValueFormStep1 {
-  selectedDate: string;
-  selectedTime: string;
-  cleanType: string;
-  parkingLocation: string;
-  fuelQuantity: number;
-  miles: string;
-  remark?: string;
+  driverLicenseType: { value: string; label: string; desc?: string } | null;
+  year: string;
+  licenseNumber: string;
+  licenseExpiryDate: string;
+  licenseImages: UploadFileType[];
+  courseName?: string;
+  certificateNumber?: string;
+  vehicleType?: string;
+  trainingDate?: string;
+  certificateImages?: UploadFileType[];
 }
 
 const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddModalProps>(
-  ({ useBy, id, requestData, edit, progress }, ref) => {
+  ({ requestData, edit }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [costTypeOptions, setCostTypeOptions] = useState<{ value: string; label: string; desc: string }[]>([]);
 
-    const [cleanType, setCleanType] = useState<string>("");
-    const [parkingLocation, setParkingLocation] = useState<string>("");
+    const [year, setYear] = useState<string>("");
+    const [licenseNumber, setLicenseNumber] = useState<string>("");
     const [licenseExpiryDate, setLicenseExpiryDate] = useState<string>("");
-    const [trainingDate, setTrainingDate] = useState<string>("");
     const [licenseImages, setLicenseImages] = useState<UploadFileType[]>([]);
+    const [courseName, setCourseName] = useState<string>("");
+    const [certificateNumber, setCertificateNumber] = useState<string>("");
+    const [vehicleType, setVehicleType] = useState<string>("");
+    const [trainingDate, setTrainingDate] = useState<string>("");
     const [certificateImages, setCertificateImages] = useState<UploadFileType[]>([]);
-    const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
     const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{
       value: string;
       label: string;
+      desc?: string;
     } | null>(null);
+    const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
 
     const handleLicenseImageChange = (newImage: UploadFileType) => {
       setLicenseImages([newImage]);
@@ -61,7 +68,7 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
     }));
     
     useEffect(() => {
-      console.log('drivincarddata',requestData);
+      console.log('drivincarddata', requestData);
       const fetchData = async () => {
         try {
           const response = await fetchDriverLicenseType();
@@ -98,6 +105,22 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
     const nextStep = () => {
+      const formData: ValueFormStep1 = {
+        driverLicenseType: selectedCostTypeOption,
+        year: year,
+        licenseNumber: licenseNumber,
+        licenseExpiryDate: licenseExpiryDate,
+        licenseImages: licenseImages,
+        ...(showAdditionalFields && {
+          courseName: courseName,
+          certificateNumber: certificateNumber,
+          vehicleType: vehicleType,
+          trainingDate: trainingDate,
+          certificateImages: certificateImages,
+        }),
+      };
+
+      setValueFormStep1(formData);
       modalRef.current?.close();
       RequestDrivingStepTwoModalRef.current?.openModal();
     };
@@ -151,18 +174,18 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
                       <label className="form-label">ประจำปี</label>
                       <div className="w-full flex gap-5">
                         <RadioButton
-                          name="travelType"
-                          label={`${ dayjs().year()+543}`}
+                          name="year"
+                          label={`${dayjs().year()+543}`}
                           value={`${dayjs().year()+543}`}
-                          selectedValue={cleanType}
-                          setSelectedValue={setCleanType}
+                          selectedValue={year}
+                          setSelectedValue={setYear}
                         />
                         <RadioButton
-                          name="travelType"
+                          name="year"
                           label={`${dayjs().year()+544}`}
                           value={`${dayjs().year()+544}`}
-                          selectedValue={cleanType}
-                          setSelectedValue={setCleanType}
+                          selectedValue={year}
+                          setSelectedValue={setYear}
                         />
                       </div>
                     </div>
@@ -176,9 +199,9 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
                           type="text"
                           className="form-control"
                           placeholder="ระบุเลขที่ใบขับขี่"
-                          value={parkingLocation}
+                          value={licenseNumber}
                           onChange={(e) => {
-                            setParkingLocation(e.target.value);
+                            setLicenseNumber(e.target.value);
                           }}
                         />
                       </div>
@@ -237,9 +260,9 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
                               type="text"
                               className="form-control"
                               placeholder="ระบุชื่อหลักสูตร"
-                              value={parkingLocation}
+                              value={courseName}
                               onChange={(e) => {
-                                setParkingLocation(e.target.value);
+                                setCourseName(e.target.value);
                               }}
                             />
                           </div>
@@ -259,9 +282,9 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
                               type="text"
                               className="form-control"
                               placeholder="ระบุเลขที่ใบรับรอง"
-                              value={parkingLocation}
+                              value={certificateNumber}
                               onChange={(e) => {
-                                setParkingLocation(e.target.value);
+                                setCertificateNumber(e.target.value);
                               }}
                             />
                           </div>
@@ -281,9 +304,9 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
                               type="text"
                               className="form-control"
                               placeholder="ระบุประเภทยานพาหนะ"
-                              value={parkingLocation}
+                              value={vehicleType}
                               onChange={(e) => {
-                                setParkingLocation(e.target.value);
+                                setVehicleType(e.target.value);
                               }}
                             />
                           </div>
@@ -346,9 +369,7 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
                 <button
                   type="button"
                   className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
-                  onClick={() => {
-                    nextStep();
-                  }}
+                  onClick={nextStep}
                 >
                   ต่อไป
                 </button>

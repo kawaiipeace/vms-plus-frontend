@@ -37,8 +37,7 @@ export default function RequestDetailForm({
 
   const handleModalUpdate = () => {
     setToastStatus("success");
-    // You might want to hide the toast after some time
-    setTimeout(() => setToastStatus(""), 5000); // hides after 5 seconds
+    fetchRequestDetailfunc();
   };
   useEffect(() => {
     if (requestId) {

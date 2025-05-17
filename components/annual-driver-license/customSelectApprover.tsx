@@ -5,6 +5,12 @@ export interface CustomSelectOption {
   label: React.ReactNode | string;
   desc?: string; // Optional description field
   posi_text?: string;
+  dept_sap?: string;
+  dept_sap_short?: string;
+  full_name?: string;
+  image_url?: string;
+  tel_mobile?: string;
+  tel_internal?: string;
 }
 
 interface SelectProps {
@@ -12,8 +18,9 @@ interface SelectProps {
   w: string;
   iconName?: string;
   value?: CustomSelectOption | null;
-  onChange: (selected: CustomSelectOption) => void;
-  showDescriptions?: boolean; // Add prop to control description visibility
+  onChange: (selected: CustomSelectOption | null) => void;
+  showDescriptions?: boolean;
+  isLoading?: boolean;
 }
 
 export default function CustomSelectApprover({ 
@@ -22,7 +29,8 @@ export default function CustomSelectApprover({
   iconName, 
   value, 
   onChange, 
-  showDescriptions = false // Default to false
+  showDescriptions = false,
+  isLoading = false
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -47,28 +55,27 @@ export default function CustomSelectApprover({
 
   // Function to render dropdown option label with description
   const renderDropdownOption = (option: CustomSelectOption) => {
-    if (!showDescriptions || !option.desc) {
-      return <div>{option.label}</div>;
-    }
-    
     return (
-      <div className="flex flex-col">
-        <div className="font-medium">{option.label}</div>
-        <div className="text-xs text-gray-500 mt-1">{option.desc}</div>
+      <div className="flex flex-col w-full">
+        <div className="font-medium truncate">{option.full_name || option.label}</div>
+
+        {option.dept_sap_short && (
+          <div className="text-xs text-gray-500 truncate">{option.dept_sap_short}</div>
+        )}
       </div>
     );
   };
 
   return (
-    <div ref={dropdownRef} className={`relative custom-select`}>
-      {/* Button that shows selected option - only shows label without description */}
+    <div ref={dropdownRef} className={`relative custom-select ${w}`}>
+      {/* Button that shows selected option */}
       <div
         ref={buttonRef}
         tabIndex={0}
-        className={`border ${w} max-${w} border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText cursor-pointer focus:border-primary-default focus:shadow-customPurple ${
+        className={`border w-full border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText cursor-pointer focus:border-primary-default focus:shadow-customPurple ${
           isOpen ? "shadow-customPurple border-primary-default" : ""
         } overflow-hidden`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !isLoading && setIsOpen(!isOpen)}
       >
         {iconName && (
           <div className="input-group-prepend mr-1">
@@ -79,16 +86,28 @@ export default function CustomSelectApprover({
         )}
 
         <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {value?.label || "กรุณาเลือก"}
+          {isLoading ? (
+            <span className="loading loading-spinner loading-xs"></span>
+          ) : value ? (
+            <div className="truncate">
+              {value.full_name}
+            </div>
+          ) : (
+            "กรุณาเลือก"
+          )}
         </div>
 
-        <div className="flex-shrink-0 w-8 text-right">
-          <i className="material-symbols-outlined">keyboard_arrow_down</i>
-        </div>
+        {!isLoading && (
+          <div className="flex-shrink-0 w-8 text-right">
+            <i className="material-symbols-outlined">
+              {isOpen ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+            </i>
+          </div>
+        )}
       </div>
 
-      {/* Dropdown List - shows labels with descriptions */}
-      {isOpen && (
+      {/* Dropdown List */}
+      {isOpen && !isLoading && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg bg-white">
           {options.length > 0 ? (
             options.map((option) => (

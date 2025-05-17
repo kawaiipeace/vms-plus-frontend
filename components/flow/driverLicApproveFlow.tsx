@@ -12,6 +12,7 @@ import FilterDriverModal from "../annual-driver-license/filterDriverModal";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import { fetchDriverLicenseType } from "@/services/masterService";
 import { fetchDriverLicRequests } from "@/services/driver";
+import { convertToISO } from "@/utils/convertToISO";
 
 dayjs.extend(buddhistEra);
 
@@ -183,17 +184,17 @@ export default function DriverLicApproveFlow() {
     }
 
     setActiveFilters(newFilters);
-
+    console.log('date',convertToISO(selectedStartDate,"00:00"));
     // Update API params
     setParams(prev => ({
       ...prev,
       ref_request_annual_driver_status_code: selectedStatuses.join(","),
       ref_driver_license_type_code: licenseTypes.join(","),
       start_created_request_datetime: selectedStartDate
-        ? dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD")
+        ? convertToISO(selectedStartDate,"00:00")
         : "",
       end_driver_license_expire_date: selectedEndDate
-        ? dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD")
+        ? convertToISO(selectedEndDate,"00:00")
         : "",
       annual_yyyy: year,
       page: 1
