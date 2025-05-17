@@ -56,7 +56,7 @@ export const fetchRequestDetail = async (id: string) => {
 
 export const fetchRequestLicStatusDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('driver-license-confirmer/license-annual/' + id);
+    const response = await axiosInstance.get('driver-license-user/license-annual/' + id);
 
     return response;
 

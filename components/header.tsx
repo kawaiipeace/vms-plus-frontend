@@ -7,17 +7,23 @@ import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
 import { useEffect, useRef, useState } from "react";
 import DriverLicenseModal from "./annual-driver-license/driverLicenseModal";
-import { driverLicenseUserCard } from "@/services/driver";
+import {
+  driverLicenseUserCard,
+  fetchRequestLicStatusDetail,
+} from "@/services/driver";
 import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import RequestDrivingStepOneModal from "./annual-driver-license/requestDrivingStepOneModal";
 import { useToast } from "@/contexts/toast-context";
 import ToastCustom from "./toastCustom";
 import RequestStatusLicDetailModal from "./annual-driver-license/modal/requestStatusLicDetailModal";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 export default function Header() {
   const { profile } = useProfile();
   const router = useRouter();
   const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
+  const [licRequestDetail, setLicRequestDetail] =
+    useState<RequestAnnualDriver>();
   const { toast } = useToast();
 
   const driverLicenseModalRef = useRef<{
@@ -50,6 +56,17 @@ export default function Header() {
     }
   };
 
+  const getStatusLicDetail = async (id: string) => {
+    try {
+      const response = await fetchRequestLicStatusDetail(id);
+      if (response) {
+        setLicRequestDetail(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleOpenDriverLicenseModal = () => {
     getDriverUserCard();
     driverLicenseModalRef.current?.openModal();
@@ -61,10 +78,16 @@ export default function Header() {
   };
 
   const handleOpenRequestDetailDrivingModal = async () => {
-    await getDriverUserCard(); // Fetch data first
-    RequestDrivingStepOneModalRef.current?.openModal(); // Then open modal
+    try {
+      await getDriverUserCard();
+      if (driverUser?.trn_request_annual_driver_uid) {
+        await getStatusLicDetail(driverUser.trn_request_annual_driver_uid);
+        RequestStatusLicDetailModaRef.current?.openModal();
+      }
+    } catch (error) {
+      console.error("Error opening request detail modal:", error);
+    }
   };
-
   const logOutFunc = async () => {
     try {
       const response = await logOut();
@@ -208,7 +231,7 @@ export default function Header() {
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={handleOpenRequestDetailDrivingModal}
+                          onClick={() => handleOpenRequestDetailDrivingModal()}
                         >
                           <i className="material-symbols-outlined">id_card</i>
                           <span className="nav-link-label">
@@ -257,7 +280,7 @@ export default function Header() {
 
       <RequestStatusLicDetailModal
         ref={RequestStatusLicDetailModaRef}
-        // requestData={driverUser}
+        requestData={licRequestDetail}
       />
 
       <RequestDrivingStepOneModal

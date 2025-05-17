@@ -1,30 +1,17 @@
 "use client";
-import { ProgressRequestType } from "@/app/types/progress-request-status";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
-interface ConfirmedRequestType {
-  confirmed_request_datetime: string;
-  confirmed_request_dept_sap: string;
-  confirmed_request_dept_sap_full: string;
-  confirmed_request_dept_sap_short: string;
-  confirmed_request_emp_id: string;
-  confirmed_request_emp_name: string;
-  confirmed_request_emp_position: string;
-  confirmed_request_image_url: string;
-  confirmed_request_mobile_number: string;
-  confirmed_request_phone_number: string;
-}
-
 interface Props {
-  // progressSteps?: ProgressRequestType[];
-  // title?: string;
-  // confirmedRequest?: ConfirmedRequestType;
-  requestData?: any;
+  requestData?: RequestAnnualDriver;
 }
 
-const RequestStatusLicDetailModal = forwardRef((_, ref) => {
+  const RequestStatusLicDetailModal = forwardRef<
+    { openModal: () => void; closeModal: () => void }, // Ref type
+    Props
+  >(({ requestData }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -34,6 +21,8 @@ const RequestStatusLicDetailModal = forwardRef((_, ref) => {
 
     const [currentStep, setCurrentStep] = useState("");
     const [nextPendingStep, setNextPendingStep] = useState("");
+    const progressSteps = requestData?.progress_request_history;
+    const confirmedRequest = requestData;
     const doneSteps =
       progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
     useEffect(() => {
@@ -57,16 +46,9 @@ const RequestStatusLicDetailModal = forwardRef((_, ref) => {
         <div className="bottom-sheet" {...swipeDownHandlers} >
           <div className="bottom-sheet-icon"></div>
         </div>
-        <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">เงื่อนไข หลักเกณฑ์ และระเบียบการใช้ยานพาหนะ</div>
-          <form method="dialog">
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-              <i className="material-symbols-outlined">close</i>
-            </button>
-          </form>
-        </div>
-        <div className="modal-body overflow-y-auto">
-           <div className="card card-approvalprogress">
+
+        <div className="modal-body overflow-y-auto !p-0">
+           <div className="card card-approvalprogress !border-0">
              <div className="card-header title-progress-header">
                <div className="card-title title-progress">สถานะการขออนุมัติ</div>
              </div>
@@ -179,7 +161,7 @@ const RequestStatusLicDetailModal = forwardRef((_, ref) => {
                {confirmedRequest && (
                  <div className="form-section mt-4">
                    <div className="form-section-header">
-                     <div className="form-section-header-title">{title}</div>
+                     <div className="form-section-header-title">ผู้อนุมัติต้นสังกัด</div>
                    </div>
                    <div className="form-card">
                      <div className="form-card-body form-card-inline">
