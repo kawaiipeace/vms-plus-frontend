@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, Suspense } from "react";
-import FilterModal from "@/components/modal/filterModal";
+import FilterModal from "@/components/drivers-management/filterModal";
 import ZeroRecord from "@/components/zeroRecord";
 import DriverListTable from "@/components/drivers-management/table/driverListTable";
 import PaginationControls from "@/components/table/pagination-control";
@@ -11,10 +11,10 @@ import DriverActiveModal from "@/components/drivers-management/modal/driverActiv
 import DriverExportReportModal from "@/components/drivers-management/modal/driverExportReportModal";
 import ToastCustom from "@/components/toastCustom";
 
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 
 import { driversMamagement, updateDriverStatus, driverDelete } from "@/services/driversManagement";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import { RequestListType } from "@/app/types/request-list-type";
 
 interface PaginationType {
   limit: number;
@@ -58,10 +58,6 @@ const DriversListTab = () => {
     page: 1,
     limit: 10,
   });
-  const [summary, setSummary] = useState<summaryType[]>([]);
-  const [filterNum, setFilterNum] = useState(0);
-  const [filterNames, setFilterNames] = useState<string[]>([]);
-  const [filterDate, setFilterDate] = useState<string>("");
   const [data, setData] = useState<RequestListType[]>([]);
   const [pagination, setPagination] = useState<PaginationType>(paginationDefault);
   const [driverUid, setDriverUid] = useState<string>("");
@@ -69,6 +65,7 @@ const DriversListTab = () => {
   // const [pagination, setPagination] = useState<PaginationType>(pagenation);
   const [selectedRow, setSelectedRow] = useState({});
   const [updateType, setUpdateType] = useState<{ text: string; value: string }>({ text: "", value: "" });
+  // const [resultNonFound, setResultNonFound] = useState(false);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -100,7 +97,7 @@ const DriversListTab = () => {
         const response = await driversMamagement(params);
         const result = response.data;
         const { total, totalPages } = result.pagination;
-        console.log(params.limit);
+        // console.log(params.limit);
         setData(result.drivers ?? []);
         setPagination({
           limit: params.limit,
@@ -118,33 +115,54 @@ const DriversListTab = () => {
     fetchDriversListFunc();
   }, [params, driverUpdated, updateType]);
 
-  const handleFilterSubmit = ({
-    selectedStatuses,
-    selectedStartDate,
-    selectedEndDate,
-  }: {
+  // const handleFilterSubmit = ({
+  //   selectedStatuses,
+  //   selectedStartDate,
+  //   selectedEndDate,
+  // }: {
+  //   selectedStatuses: string[];
+  //   selectedStartDate: string;
+  //   selectedEndDate: string;
+  // }) => {
+  //   const mappedNames = selectedStatuses.map(
+  //     (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
+  //   );
+
+  //   const date = selectedStartDate + " - " + selectedEndDate;
+
+  //   setFilterNames(mappedNames);
+  //   if (selectedStartDate && selectedEndDate) {
+  //     setFilterDate(date);
+  //   }
+
+  //   setFilterNum(selectedStatuses.length);
+  //   setParams((prevParams) => ({
+  //     ...prevParams,
+  //     ref_request_status_code: selectedStatuses.join(","),
+  //     startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+  //     enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+  //   }));
+  // };
+
+  const handleFilter = (filter: {
     selectedStatuses: string[];
+    selectedDriverStatus: string[];
+    selectedWorkType: string[];
     selectedStartDate: string;
     selectedEndDate: string;
+    driverDepartmentOptions: { value: string; label: string | React.ReactNode };
   }) => {
-    const mappedNames = selectedStatuses.map(
-      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
-    );
-
-    const date = selectedStartDate + " - " + selectedEndDate;
-
-    setFilterNames(mappedNames);
-    if (selectedStartDate && selectedEndDate) {
-      setFilterDate(date);
-    }
-
-    setFilterNum(selectedStatuses.length);
+    console.log("Filter applied", filter);
     setParams((prevParams) => ({
       ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      driver_dept_sap_work: filter.driverDepartmentOptions.value,
+      work_type: filter.selectedWorkType.join(","),
+      ref_driver_status_code: filter.selectedStatuses.join(","),
+      is_active: filter.selectedDriverStatus.join(","),
+      driver_license_end_date: filter.selectedStartDate,
+      approved_job_driver_end_date: filter.selectedEndDate,
     }));
+    filterModalRef.current?.closeModal();
   };
 
   const handlePageChange = (newPage: number) => {
@@ -248,7 +266,10 @@ const DriversListTab = () => {
             disabled={Object.keys(selectedRow).length > 0 ? false : true}
           >
             <i className="material-symbols-outlined">download</i>
-            รายงาน {Object.keys(selectedRow).length > 0 && `(${Object.keys(selectedRow).length})`}
+            รายงาน
+            {Object.keys(selectedRow).length > 0 && (
+              <span className="badge badge-brand badge-outline rounded-[50%]">{Object.keys(selectedRow).length}</span>
+            )}
           </button>
           <button
             className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
@@ -314,7 +335,7 @@ const DriversListTab = () => {
         csvModalRef={uploadCSVModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>}
       />
       <DriverExportReportModal ref={driverExportReportModalRef} />
-      <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilter} />
       <Suspense fallback={<div></div>}>
         <ToastCustomComponent type={updateType} />
       </Suspense>

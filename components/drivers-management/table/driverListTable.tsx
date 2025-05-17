@@ -131,16 +131,29 @@ const DriverListTable = ({
         </div>
       ),
       enableSorting: true,
-      cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="ชื่อ - นามสกุล">
+          <div className="text-left">{getValue() as string}</div>
+        </div>
+      ),
     },
     {
       accessorKey: "driver_dept_sap_short_name_work",
       header: "หน่วยงานสังกัด",
-      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="หน่วยงานสังกัด">
+          <div className="text-center">{getValue() as string}</div>
+        </div>
+      ),
     },
     {
       accessorKey: "driver_contact_number",
       header: "เบอร์โทรศัพท์",
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="เบอร์โทรศัพท์">
+          <div className="text-center">{getValue() as string}</div>
+        </div>
+      ),
     },
     {
       accessorKey: "work_type",
@@ -148,12 +161,14 @@ const DriverListTable = ({
       cell: ({ getValue }) => {
         const workType = getValue() as number;
         return (
-          <div className="flex items-center justify-center">
-            {workType === 1 ? (
-              <Image src="/assets/img/graphic/right_icon.svg" alt="right" width={20} height={20} />
-            ) : (
-              <Image src="/assets/img/graphic/close_icon_red.svg" alt="close" width={20} height={20} />
-            )}
+          <div className="text-left" data-name="ค้างคืน">
+            <div className="flex items-center justify-center">
+              {workType === 1 ? (
+                <Image src="/assets/img/graphic/right_icon.svg" alt="right" width={20} height={20} />
+              ) : (
+                <Image src="/assets/img/graphic/close_icon_red.svg" alt="close" width={20} height={20} />
+              )}
+            </div>
           </div>
         );
       },
@@ -168,7 +183,11 @@ const DriverListTable = ({
       cell: ({ row }) => {
         const date = (row.original as DriverListTableProps).driver_license_end_date;
         const formattedDate = date ? dayjs(date).format("DD/MM/YYYY") : "ไม่ระบุ";
-        return <div className="text-center">{formattedDate}</div>;
+        return (
+          <div className="text-left" data-name="วันที่ใบขับขี่หมดอายุ">
+            <div className="text-center">{formattedDate}</div>
+          </div>
+        );
       },
       enableSorting: true,
     },
@@ -182,14 +201,22 @@ const DriverListTable = ({
       cell: ({ row }) => {
         const date = (row.original as DriverListTableProps).approved_job_driver_end_date;
         const formattedDate = date ? dayjs(date).format("DD/MM/YYYY") : "ไม่ระบุ";
-        return <div className="text-center">{formattedDate}</div>;
+        return (
+          <div className="text-left" data-name="วันที่สิ้นสุดปฏิบัติงาน">
+            <div className="text-center">{formattedDate}</div>
+          </div>
+        );
       },
       enableSorting: true,
     },
     {
       accessorKey: "driver_average_satisfaction_score",
       header: "คะแนน",
-      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
+      cell: ({ getValue }) => (
+        <div className="text-left" data-name="คะแนน">
+          <div className="text-center">{getValue() as string}</div>
+        </div>
+      ),
       enableSorting: true,
     },
     {
@@ -202,22 +229,24 @@ const DriverListTable = ({
       cell: ({ row }) => {
         const status = (row.original as DriverListTableProps).driver_status?.ref_driver_status_desc;
         return (
-          <div className="w-[80px] text-center">
-            {status === "ปฏิบัติงานปกติ" ? (
-              <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>
-            ) : status === "ลาป่วย/ลากิจ" ? (
-              <div className="badge badge-pill-outline badge-warning whitespace-nowrap">{status}</div>
-            ) : status === "สิ้นสุดสัญญา" ? (
-              <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
-            ) : status === "ลาออก" ? (
-              <div className="badge badge-pill-outline badge-error whitespace-nowrap">{status}</div>
-            ) : status === "สำรอง" ? (
-              <div className="badge badge-pill-outline badge-info whitespace-nowrap">{status}</div>
-            ) : status === "ให้ออก" ? (
-              <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
-            ) : (
-              <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>
-            )}
+          <div className="text-left" data-name="สถานะ">
+            <div className="text-center">
+              {status === "ปฏิบัติงานปกติ" ? (
+                <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>
+              ) : status === "ลาป่วย/ลากิจ" ? (
+                <div className="badge badge-pill-outline badge-warning whitespace-nowrap">{status}</div>
+              ) : status === "สิ้นสุดสัญญา" ? (
+                <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
+              ) : status === "ลาออก" ? (
+                <div className="badge badge-pill-outline badge-error whitespace-nowrap">{status}</div>
+              ) : status === "สำรอง" ? (
+                <div className="badge badge-pill-outline badge-info whitespace-nowrap">{status}</div>
+              ) : status === "ให้ออก" ? (
+                <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
+              ) : (
+                <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>
+              )}
+            </div>
           </div>
         );
       },
@@ -227,16 +256,18 @@ const DriverListTable = ({
       header: "เปิด/ปิดใช้งาน",
       cell: ({ row }) => {
         return (
-          <div className="flex items-center justify-center">
-            <ToggleSwitch
-              isActive={(row.original as DriverListTableProps).is_active ?? 0}
-              driverActiveModalRef={
-                driverActiveModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>
-              }
-              driverId={(row.original as DriverListTableProps).mas_driver_uid ?? ""}
-              handleToggleChange={handleToggleChange}
-              onUpdateStatusDriver={onUpdateStatusDriver}
-            />
+          <div className="text-left" data-name="เปิด/ปิดใช้งาน">
+            <div className="flex items-center justify-center">
+              <ToggleSwitch
+                isActive={(row.original as DriverListTableProps).is_active ?? 0}
+                driverActiveModalRef={
+                  driverActiveModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>
+                }
+                driverId={(row.original as DriverListTableProps).mas_driver_uid ?? ""}
+                handleToggleChange={handleToggleChange}
+                onUpdateStatusDriver={onUpdateStatusDriver}
+              />
+            </div>
           </div>
         );
       },
@@ -251,32 +282,34 @@ const DriverListTable = ({
       cell: ({ row }) => {
         return (
           <>
-            <button
-              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
-              data-tip="ดูรายละเอียด"
-              onClick={() => {
-                router.push(
-                  `/drivers-management/view/${(row.original as DriverListTableProps).mas_driver_uid}?active=${
-                    (row.original as DriverListTableProps).is_active
-                  }`
-                );
-              }}
-            >
-              <i className="material-symbols-outlined">quick_reference_all</i>
-            </button>
-            <button
-              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
-              data-tip="ลบ"
-              onClick={() =>
-                handleDeleteDriver &&
-                handleDeleteDriver(
-                  (row.original as DriverListTableProps).driver_name ?? "",
-                  (row.original as DriverListTableProps).mas_driver_uid ?? ""
-                )
-              }
-            >
-              <i className="material-symbols-outlined">delete</i>
-            </button>
+            <div className="text-left dataTable-action">
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
+                data-tip="ดูรายละเอียด"
+                onClick={() => {
+                  router.push(
+                    `/drivers-management/view/${(row.original as DriverListTableProps).mas_driver_uid}?active=${
+                      (row.original as DriverListTableProps).is_active
+                    }`
+                  );
+                }}
+              >
+                <i className="material-symbols-outlined">quick_reference_all</i>
+              </button>
+              <button
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
+                data-tip="ลบ"
+                onClick={() =>
+                  handleDeleteDriver &&
+                  handleDeleteDriver(
+                    (row.original as DriverListTableProps).driver_name ?? "",
+                    (row.original as DriverListTableProps).mas_driver_uid ?? ""
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">delete</i>
+              </button>
+            </div>
           </>
         );
       },
