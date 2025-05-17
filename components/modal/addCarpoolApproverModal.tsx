@@ -8,8 +8,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomSelect from "../customSelect";
-import { getCarpoolApprover } from "@/services/carpoolManagement";
+import CustomSelect, { CustomSelectOption } from "../customSelect";
+import {
+  getCarpoolApprover,
+  postCarpoolApproverCreate,
+} from "@/services/carpoolManagement";
+import { CarpoolApprover } from "@/app/types/carpool-management-type";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 
 interface Props {
   id: string;
@@ -24,7 +29,14 @@ const AddCarpoolApproverModal = forwardRef<
 >(({ id, title, desc, confirmText }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [approver, setApprover] = useState([]);
+  const [approver, setApprover] = useState<CarpoolApprover[]>([]);
+  const [selectedApprover, setSelectedApprover] =
+    useState<CustomSelectOption>();
+  const [internal_contact_number, setInternalContactNumber] =
+    useState<string>();
+  const [mobile_contact_number, setMobileContactNumber] = useState<string>();
+
+  const { formData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -36,7 +48,6 @@ const AddCarpoolApproverModal = forwardRef<
       try {
         const response = await getCarpoolApprover();
         const result = response.data;
-        console.log("response: ", response);
         setApprover(result);
       } catch (error) {
         console.error("Error fetching status data:", error);
@@ -48,26 +59,28 @@ const AddCarpoolApproverModal = forwardRef<
 
   const router = useRouter();
 
-  const handleConfirm = () => {
-    const sendCancelRequest = async () => {
+  const handleConfirm = async () => {
+    if (id) {
+      console.log("edit");
+    } else {
       try {
-        const payload = {
-          rejected_request_reason: "",
-          trn_request_uid: id,
-        };
-        const res = await updateSendback(payload);
-
-        if (res) {
-          modalRef.current?.close();
-          router.push("/vehicle-booking/request-list/" + id);
+        const response = await postCarpoolApproverCreate({
+          mas_carpool_uid: formData.mas_carpool_uid,
+          approver_emp_no: selectedApprover?.value as string,
+          internal_contact_number: internal_contact_number as string,
+          mobile_contact_number: mobile_contact_number as string,
+        });
+        if (response.request.status === 201) {
+          router.push(
+            "/carpool-management/form/process-three?approver-created=true"
+          );
         }
       } catch (error) {
-        console.error("error:", error);
+        console.log(error);
       }
-    };
-
-    sendCancelRequest();
+    }
   };
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -95,10 +108,12 @@ const AddCarpoolApproverModal = forwardRef<
                     <CustomSelect
                       iconName="person"
                       w="w-full"
-                      options={[]}
-                      // value={selectedVehicleUserOption}
-                      // {...register("admin_emp_no")}
-                      onChange={() => {}}
+                      options={approver.map((item) => ({
+                        value: item.emp_id,
+                        label: item.full_name,
+                      }))}
+                      value={selectedApprover}
+                      onChange={setSelectedApprover}
                     />
                   </div>
                 </div>
@@ -117,9 +132,13 @@ const AddCarpoolApproverModal = forwardRef<
                       <input
                         type="text"
                         className="form-control pointer-events-none"
-                        // {...register("admin_dept_sap")}
                         placeholder="ระบุตำแหน่ง / สังกัด"
                         readOnly
+                        value={
+                          approver.find(
+                            (item) => item.emp_id === selectedApprover?.value
+                          )?.dept_sap_short
+                        }
                       />
                     </div>
                   </div>
@@ -137,9 +156,11 @@ const AddCarpoolApproverModal = forwardRef<
                       <input
                         type="text"
                         className="form-control"
-                        // {...register("admin_emp_no")}
                         placeholder="ระบุเบอร์ภายใน"
-                        // readOnly
+                        value={internal_contact_number}
+                        onChange={(e) =>
+                          setInternalContactNumber(e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -159,9 +180,9 @@ const AddCarpoolApproverModal = forwardRef<
                       <input
                         type="text"
                         className="form-control"
-                        // {...register("mobile_contact_number")}
                         placeholder="ระบุเบอร์โทรศัพท์"
-                        // readOnly
+                        value={mobile_contact_number}
+                        onChange={(e) => setMobileContactNumber(e.target.value)}
                       />
                     </div>
                   </div>

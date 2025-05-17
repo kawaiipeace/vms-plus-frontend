@@ -37,8 +37,6 @@ const AddCarpoolAdminModal = forwardRef<
 
   const { formData } = useFormContext();
 
-  console.log("formData: ", formData);
-
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),

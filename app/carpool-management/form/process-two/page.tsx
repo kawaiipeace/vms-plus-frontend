@@ -42,8 +42,6 @@ export default function CarpoolProcessTwo() {
     closeModal: () => void;
   } | null>(null);
 
-  console.log("adminCreated", adminCreated);
-
   useEffect(() => {
     if (adminCreated) {
       fetchCarpoolAdminSearchFunc();

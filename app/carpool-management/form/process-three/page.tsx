@@ -7,17 +7,22 @@ import SideBar from "@/components/sideBar";
 import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import AddCarpoolApproverModal from "@/components/modal/addCarpoolApproverModal";
 import CarpoolApproverTable from "@/components/table/carpool-approver-table";
 import ConfirmSkipStepCarpoolModal from "@/components/modal/confirmSkipStepCarpoolModal";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
+import { getCarpoolApproverSearch } from "@/services/carpoolManagement";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 
 export default function CarpoolProcessThree() {
   const { isPinned } = useSidebar();
   const router = useRouter();
+  const approverCreated = useSearchParams().get("approver-created");
+
+  const { formData } = useFormContext();
 
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationType>({
@@ -39,6 +44,22 @@ export default function CarpoolProcessThree() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  useEffect(() => {
+    if (approverCreated) {
+      fetchCarpoolApproverSearchFunc();
+    }
+  }, [approverCreated]);
+
+  const fetchCarpoolApproverSearchFunc = async () => {
+    try {
+      const response = await getCarpoolApproverSearch(formData.mas_carpool_uid);
+      const result = response.data;
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
 
   const handlePageChange = (newPage: number) => {
     // setParams((prevParams) => ({
@@ -178,6 +199,7 @@ export default function CarpoolProcessThree() {
                 </div>
               </div>
             )}
+
             <AddCarpoolApproverModal
               ref={addCarpoolApproverModalRef}
               id={""}
@@ -185,6 +207,7 @@ export default function CarpoolProcessThree() {
               desc={""}
               confirmText={""}
             />
+
             <ConfirmSkipStepCarpoolModal
               ref={skipStepModalRef}
               id={""}
