@@ -227,6 +227,21 @@ export default function Header() {
                           {profile.license_status}
                         </div>
                       </>
+                    ) : profile?.license_status === "ยกเลิก" ? (
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={handleOpenRequestDetailDrivingModal}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge badge-gray">
+                        {profile.license_status}
+                        </div>
+                      </>
                     ) : profile?.license_status === "กำลังดำเนินการ" ? (
                       <>
                         <a
@@ -281,6 +296,7 @@ export default function Header() {
       <RequestStatusLicDetailModal
         ref={RequestStatusLicDetailModaRef}
         requestData={licRequestDetail}
+        driverData={driverUser}
       />
 
       <RequestDrivingStepOneModal

@@ -93,6 +93,17 @@ export interface RequestAnnualDriver {
   confirmed_request_phone_number: string;
 
   ref_request_annual_driver_status_name: string;
+
+  canceled_request_datetime: string; // ISO string
+  canceled_request_dept_sap: string;
+  canceled_request_dept_sap_full: string;
+  canceled_request_dept_sap_short: string;
+  canceled_request_emp_id: string;
+  canceled_request_emp_name: string;
+  canceled_request_emp_position: string;
+  canceled_request_mobile_number: string;
+  canceled_request_phone_number: string;
+  canceled_request_reason: string;
   
   // Driver license info
   driver_license_no: string;

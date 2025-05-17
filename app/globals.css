@@ -1295,7 +1295,11 @@
   background-image: url(/assets/img/graphic/card_header_status.svg);
 }
 
-.card-approvalprogress .card-body {
+.card-approvallicprogress  .card-header{
+  background-image: none;
+}
+
+.card-approvalprogress .card-body, .card-approvallicprogress .card-body  {
   gap: 1.5rem;
 }
 
