@@ -290,9 +290,9 @@ export const fetchUserApprovalLic = async () => {
   }
 };
 
-export const fetchUserConfirmerLic = async () => {
+export const fetchUserFinalApprovalLic = async () => {
   try {
-    const response = await axiosInstance.get("mas/user-confirmer-license-users");
+    const response = await axiosInstance.get("mas/user-approval-license-users");
     return response;
   } catch (error) {
     throw error;

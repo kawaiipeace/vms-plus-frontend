@@ -90,6 +90,7 @@ export interface DriverLicenseCardType {
   license_status: string;
   mas_driver_uid: string;
   progress_request_history: ProgressDriver[];
+  trn_request_annual_driver_uid: string;
 }
 
 export type DriverCertificateType = {

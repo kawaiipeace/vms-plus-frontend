@@ -54,9 +54,20 @@ export const fetchRequestDetail = async (id: string) => {
   }
 };
 
+export const fetchRequestLicStatusDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get('driver-license-confirmer/license-annual/' + id);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const updateAnnualApprover = async (payload: any) => {
   try {
-    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-approver', { payload });
+    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-approver', payload);
 
     return response;
 
@@ -67,7 +78,7 @@ export const updateAnnualApprover = async (payload: any) => {
 
 export const approveAnnualLic = async (payload: any) => {
   try {
-    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-confirmed', { payload });
+    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-confirmed', payload );
 
     return response;
 
@@ -78,7 +89,7 @@ export const approveAnnualLic = async (payload: any) => {
 
 export const approveAnnualFinalLic = async (payload: any) => {
   try {
-    const response = await axiosInstance.put('driver-license-approver/update-license-annual-approved', { payload });
+    const response = await axiosInstance.put('driver-license-approver/update-license-annual-approved', payload );
 
     return response;
 
@@ -88,9 +99,19 @@ export const approveAnnualFinalLic = async (payload: any) => {
 };
 
 
-export const updateLicAnnualReject = async (data: any) => {
+export const updateFinalLicAnnualReject = async (data: any) => {
   try {
     const response = await axiosInstance.put('driver-license-approver/update-license-annual-rejected',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const updateLicAnnualReject = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-confirmer/update-license-annual-rejected',  data );
     return response;
 
   } catch (error) {

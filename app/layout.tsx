@@ -12,6 +12,7 @@ import { ProfileProvider } from "@/contexts/profileContext";
 import Script from "next/script";
 import { RequestDetailProvider } from "@/contexts/requestDetailContext";
 import { CarpoolProvider } from "@/contexts/carpoolFormContext";
+import { ToastProvider } from "@/contexts/toast-context";
 
 export const metadata: Metadata = {
   title: "Car Pool",
@@ -43,6 +44,7 @@ export default function RootLayout({
 
       <body className="light-mode">
         <ProfileProvider>
+        <ToastProvider>
           <SidebarProvider>
             <RequestDetailProvider>
               <FormProvider>
@@ -50,6 +52,7 @@ export default function RootLayout({
               </FormProvider>
             </RequestDetailProvider>
           </SidebarProvider>
+          </ToastProvider>
         </ProfileProvider>
       </body>
     </html>

@@ -96,10 +96,10 @@ export default function DriverLicApproverListTable({
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
           row.original.created_request_datetime || ""
-        );
+        ).date;
         return (
           <div className="text-left" data-name="วันที่สร้างคำขอ">
-            {startDateTime.date}
+          {startDateTime}
           </div>
         );
       },
@@ -131,7 +131,7 @@ export default function DriverLicApproverListTable({
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับ" ? (
+            ) : value === "ตีกลับคำขอ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 ตีกลับคำขอ
               </span>
@@ -139,7 +139,7 @@ export default function DriverLicApproverListTable({
               <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "อนุมัติแล้ว" ? (
+            ) : value === "อนุมัติ" ? (
               <span className="badge badge-pill-outline badge-success whitespace-nowrap">
                 {value as React.ReactNode}
               </span>

@@ -1,5 +1,4 @@
 "use client";
-import { RequestDetailType } from "@/app/types/request-detail-type";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
 import { fetchDriverLicenseType } from "@/services/masterService";
@@ -11,11 +10,12 @@ import ImagePreview from "../imagePreview";
 import CustomSelect from "../customSelect";
 import dayjs from "dayjs";
 import RequestDrivingStepTwoModal from "./requestDrivingStepTwoModal";
+import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 
 interface ReturnCarAddModalProps {
   useBy?: string;
   id?: string;
-  requestData?: RequestDetailType;
+  requestData?: DriverLicenseCardType;
   edit?: boolean;
   progress?: string;
 }
@@ -61,6 +61,7 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
     }));
     
     useEffect(() => {
+      console.log('drivincarddata',requestData);
       const fetchData = async () => {
         try {
           const response = await fetchDriverLicenseType();
@@ -80,7 +81,7 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
         }
       };
       fetchData();
-    }, []);
+    }, [requestData]);
 
     const handleDeleteLicenseImage = (index: number) => {
       setLicenseImages(licenseImages.filter((_, i) => i !== index));
@@ -360,12 +361,9 @@ const RequestDrivingStepOneModal = forwardRef<{ openModal: () => void; closeModa
         </dialog>
         <RequestDrivingStepTwoModal
           openStep1={() => modalRef.current?.showModal()}
-          useBy={useBy}
           ref={RequestDrivingStepTwoModalRef}
           valueFormStep1={valueFormStep1}
-          id={id}
           requestData={requestData}
-          progress={progress}
         />
       </>
     );

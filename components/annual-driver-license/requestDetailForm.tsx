@@ -53,10 +53,10 @@ export default function RequestDetailForm({
 
   return (
     <>
-      {requestData?.rejected_request?.rejected_request_reason && (
+      {requestData?.rejected_request_reason && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
-          desc={`เหตุผล: ${requestData?.rejected_request?.rejected_request_reason}`}
+          desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
         />
       )}
 
@@ -336,7 +336,7 @@ export default function RequestDetailForm({
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-            {requestData?.ref_driver_license_type_code === "10" && (
+            {(requestData?.ref_request_annual_driver_status_code === "10" || requestData?.ref_request_annual_driver_status_code === "11") && (
               <DrivingRequestProgress
                 progressSteps={requestData?.progress_request_history}
                 title="ผู้ตรวจสอบ"
@@ -369,7 +369,7 @@ export default function RequestDetailForm({
               />
             )}
 
-            {requestData?.ref_driver_license_type_code === "20" && (
+            {(requestData?.ref_request_annual_driver_status_code === "20" || requestData?.ref_request_annual_driver_status_code === "30") && (
               <DrivingRequestProgress
                 progressSteps={requestData?.progress_request_history}
                 title="ผู้อนุมัติ"
@@ -403,7 +403,7 @@ export default function RequestDetailForm({
             )}
           </div>
 
-          {requestData?.ref_driver_license_type_code === "10" && (
+          {requestData?.ref_request_annual_driver_status_code === "10" && (
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">

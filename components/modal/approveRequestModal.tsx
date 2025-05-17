@@ -34,7 +34,7 @@ const ApproveRequestModal = forwardRef<
 
         if (role === "licAdmin" || role === "licFinalAdmin") {
           const payload = {
-            trn_request_annual_driver_uid: id || "",
+            trn_request_annual_driver_uid: id,
           };
           if(role === "licAdmin"){
             res = await approveAnnualLic(payload);
@@ -54,8 +54,13 @@ const ApproveRequestModal = forwardRef<
 
         if (res) {
           modalRef.current?.close();
-
-          const requestId = res.data?.result?.request_no;
+          let requestId;
+          if(role==="licAdmin" || role==="licFinalAdmin"){
+            requestId = res.data?.result?.request_annual_driver_no;
+          }else{
+            requestId = res.data?.result?.request_no;
+          }
+    
           if (!requestId) return; // optional: handle missing request ID
 
           let basePath;
@@ -74,6 +79,7 @@ const ApproveRequestModal = forwardRef<
               basePath = "/administrator/booking-final";
           }
           if (role === "licAdmin") {
+            
             router.push(
               `${basePath}?approvelic-req=success&request-id=${requestId}`
             );

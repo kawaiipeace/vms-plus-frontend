@@ -11,10 +11,11 @@ function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
   const sendbackLicReq = searchParams.get("sendbacklic-req");
+  const sendbackFinalLicReq = searchParams.get("sendbackfinallic-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
   const approveLicReq = searchParams.get("approvelic-req");
-  const approveFinalLicReq = searchParams.get("  approvelicfinal-req");
+  const approveFinalLicReq = searchParams.get("approvelicfinal-req");
   const requestId = searchParams.get("request-id");
 
   return (
@@ -50,9 +51,23 @@ function RequestListContent() {
           title="ตีกลับคำขอสำเร็จ"
           desc={
             <>
-              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
               <br />
-              ถูกตีกลับเรียบร้อยแล้ว
+              {requestId} ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
+      {sendbackFinalLicReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
+              <br />
+              {requestId} ถูกตีกลับเรียบร้อยแล้ว
             </>
           }
           status="success"
@@ -77,9 +92,9 @@ function RequestListContent() {
           title="ตรวจสอบคำขอสำเร็จ"
           desc={
             <>
-              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
               <br />
-              ผ่านการตรวจสอบแล้ว
+              {requestId} ผ่านการตรวจสอบแล้ว
             </>
           }
           status="success"

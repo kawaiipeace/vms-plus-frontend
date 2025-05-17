@@ -45,48 +45,68 @@ export default function PageHeaderFirst({ data }: Props) {
             เลขที่คำขอ {data?.request_annual_driver_no || ""}
           </span>
 
-          {/* {data?.ref_request_status_name &&
-            (data?.ref_request_status_name === "อนุมัติ" || data?.ref_request_status_name === "อนุมัติแล้ว" ? (
+          {data?.ref_request_annual_driver_status_name &&
+            (data?.ref_request_annual_driver_status_name === "อนุมัติ" ||
+            data?.ref_request_annual_driver_status_name === "อนุมัติแล้ว" ? (
               <span className="badge badge-pill-outline badge-success">
-                {data?.ref_request_status_name}
+                {data?.ref_request_annual_driver_status_name}
               </span>
-            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
+            ) : data?.ref_request_annual_driver_status_name === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray">
-                {data?.ref_request_status_name}
+                {data?.ref_request_annual_driver_status_name}
               </span>
             ) : (
               <span className="badge badge-pill-outline badge-info">
-                {data?.ref_request_status_name}
+                {data?.ref_request_annual_driver_status_name}
               </span>
-            ))} */}
+            ))}
         </div>
-
-        <button
-          className="btn btn-secondary"
-          onClick={() => fileBackRequestModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">reply</i>
-          ตีกลับให้แก้ไข
-        </button>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => approveRequestModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">check</i>
-          ผ่านการตรวจสอบ
-        </button>
+        {data?.ref_request_annual_driver_status_code !== "11" && (
+          <>
+            {" "}
+            <button
+              className="btn btn-secondary"
+              onClick={() => fileBackRequestModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">reply</i>
+              ตีกลับให้แก้ไข
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => approveRequestModalRef.current?.openModal()}
+              disabled={data?.ref_request_annual_driver_status_code === "30"}
+            >
+              <i className="material-symbols-outlined">check</i>
+              {data?.ref_request_annual_driver_status_code === "10"
+                ? "ผ่านการตรวจสอบ"
+                : "อนุม้ติคำขอ"}
+            </button>
+          </>
+        )}
       </div>
+      {data?.ref_request_annual_driver_status_code === "10" && (
+        <FileBackRequestModal
+          id={data?.trn_request_annual_driver_uid}
+          ref={fileBackRequestModalRef}
+          title="ยืนยันตีกลับคำขอ"
+          role="licAdmin"
+          desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+          placeholder="โปรดระบุเหตุผลที่ตีกลับ"
+          confirmText="ตีกลับคำขอ"
+        />
+      )}
+      {data?.ref_request_annual_driver_status_code === "20" && (
+        <FileBackRequestModal
+          id={data?.trn_request_annual_driver_uid}
+          ref={fileBackRequestModalRef}
+          title="ยืนยันตีกลับคำขอ"
+          role="licFinalAdmin"
+          desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+          placeholder="โปรดระบุเหตุผลที่ตีกลับ"
+          confirmText="ตีกลับคำขอ"
+        />
+      )}
 
-      <FileBackRequestModal
-        id={data?.trn_request_annual_driver_uid}
-        ref={fileBackRequestModalRef}
-        title="ยืนยันตีกลับคำขอ"
-        role="licAdmin"
-        desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
-        placeholder="โปรดระบุเหตุผลที่ตีกลับ"
-        confirmText="ตีกลับคำขอ"
-      />
       {data?.ref_request_annual_driver_status_code === "10" && (
         <ApproveRequestModal
           id={data?.trn_request_annual_driver_uid}

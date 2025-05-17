@@ -112,15 +112,7 @@ export default function DriverLicApproveFlow() {
         const response = await fetchDriverLicRequests(apiParams);
 
         if (response.status === 200) {
-          setDataRequest(response.data.requests.map((request: any) => ({
-            ...request,
-            created_request_datetime: request.created_request_datetime
-              ? dayjs(request.created_request_datetime).format("DD/MM/BBBB HH:mm")
-              : "",
-            driver_license_expire_date: request.driver_license_expire_date
-              ? dayjs(request.driver_license_expire_date).format("DD/MM/BBBB")
-              : "",
-          })));
+          setDataRequest(response.data.requests);
 
           setSummary(response.data.summary);
           setPagination(response.data.pagination);

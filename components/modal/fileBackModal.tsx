@@ -13,7 +13,7 @@ import useSwipeDown from "@/utils/swipeDown";
 import { adminSendbackRequest } from "@/services/bookingAdmin";
 import { finalSendbackRequest } from "@/services/bookingFinal";
 import { adminSendBackVehicle } from "@/services/adminService";
-import { updateLicAnnualReject } from "@/services/driver";
+import { updateFinalLicAnnualReject, updateLicAnnualReject } from "@/services/driver";
 
 interface Props {
   id?: string;
@@ -71,6 +71,8 @@ const FileBackRequestModal = forwardRef<
             ? await adminSendBackVehicle(payload)
             : role === "licAdmin"
             ? await updateLicAnnualReject(payloadLic)
+            : role === "licFinalAdmin"
+            ? await updateFinalLicAnnualReject(payloadLic)
             : role === "final"
             ? await finalSendbackRequest(payload)
             : await firstApproverSendbackRequest(payload);
@@ -95,8 +97,13 @@ const FileBackRequestModal = forwardRef<
             );
           } else if (role === "licAdmin") {
             router.push(
-              "/booking-approver/request-list?sendbackvehicle-req=success&request-id=" +
-                data.result?.request_no
+              "/administrator/booking-approver?sendbacklic-req=success&request-id=" +
+                data.result?.request_annual_driver_no
+            );
+          } else if (role === "licFinalAdmin") {
+            router.push(
+              "/administrator/booking-approver?sendbackfinallic-req=success&request-id=" +
+              data.result?.request_annual_driver_no
             );
           }else if (role === "final") {
             router.push(

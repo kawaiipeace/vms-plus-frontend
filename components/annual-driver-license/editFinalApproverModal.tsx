@@ -13,7 +13,7 @@ import CustomSelectApprover, {
   CustomSelectOption,
 } from "./customSelectApprover";
 import { DriverLicenseCardType, VehicleUserType } from "@/app/types/vehicle-user-type";
-import { fetchUserApprovalLic } from "@/services/masterService";
+import { fetchUserApprovalLic, fetchUserFinalApprovalLic } from "@/services/masterService";
 import { updateAnnualApprover } from "@/services/driver";
 
 interface VehicleUserModalProps {
@@ -29,7 +29,7 @@ const schema = yup.object().shape({
   position: yup.string(),
 });
 
-const EditApproverModal = forwardRef<
+const EditFinalApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   VehicleUserModalProps
 >(({ onUpdate, requestData, title, onBack }, ref) => {
@@ -71,7 +71,7 @@ const EditApproverModal = forwardRef<
     const fetchVehicleUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchUserApprovalLic();
+        const response = await fetchUserFinalApprovalLic();
         if (response.status === 200) {
           const vehicleUserData: VehicleUserType[] = response.data;
           const driverOptionsArray = vehicleUserData.map(
@@ -242,6 +242,6 @@ console.log('payload',payload);
   );
 });
 
-EditApproverModal.displayName = "EditApproverModal";
+EditFinalApproverModal.displayName = "EditFinalApproverModal";
 
-export default EditApproverModal;
+export default EditFinalApproverModal;

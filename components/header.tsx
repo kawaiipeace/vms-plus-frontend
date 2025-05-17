@@ -10,11 +10,15 @@ import DriverLicenseModal from "./annual-driver-license/driverLicenseModal";
 import { driverLicenseUserCard } from "@/services/driver";
 import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import RequestDrivingStepOneModal from "./annual-driver-license/requestDrivingStepOneModal";
+import { useToast } from "@/contexts/toast-context";
+import ToastCustom from "./toastCustom";
+import RequestStatusLicDetailModal from "./annual-driver-license/modal/requestStatusLicDetailModal";
 
 export default function Header() {
   const { profile } = useProfile();
   const router = useRouter();
   const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
+  const { toast } = useToast();
 
   const driverLicenseModalRef = useRef<{
     openModal: () => void;
@@ -22,6 +26,11 @@ export default function Header() {
   } | null>(null);
 
   const RequestDrivingStepOneModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const RequestStatusLicDetailModaRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -44,6 +53,16 @@ export default function Header() {
   const handleOpenDriverLicenseModal = () => {
     getDriverUserCard();
     driverLicenseModalRef.current?.openModal();
+  };
+
+  const handleOpenRequestDrivingModal = async () => {
+    await getDriverUserCard(); // Fetch data first
+    RequestDrivingStepOneModalRef.current?.openModal(); // Then open modal
+  };
+
+  const handleOpenRequestDetailDrivingModal = async () => {
+    await getDriverUserCard(); // Fetch data first
+    RequestDrivingStepOneModalRef.current?.openModal(); // Then open modal
   };
 
   const logOutFunc = async () => {
@@ -80,6 +99,14 @@ export default function Header() {
           </div>
           <ToggleSidebar />
         </div>
+
+        {toast.show && (
+          <ToastCustom
+            title={toast.title}
+            desc={toast.desc}
+            status={toast.status}
+          />
+        )}
 
         <div className="navbar-end gap-[0.5rem]">
           <div className="flex gap-1">
@@ -162,11 +189,26 @@ export default function Header() {
                       <div className="badge badge-warning">
                         {profile.license_status}
                       </div>
+                    ) : profile?.license_status === "ไม่มี" ? (
+                      <>
+                        <a
+                          className="nav-link toggle-mode gap-1 flex items-center"
+                          onClick={handleOpenRequestDrivingModal}
+                        >
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </a>
+                        <div className="badge bg-brand-900 text-white">
+                          {profile.license_status}
+                        </div>
+                      </>
                     ) : profile?.license_status === "กำลังดำเนินการ" ? (
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={() => RequestDrivingStepOneModalRef.current?.openModal()}
+                          onClick={handleOpenRequestDetailDrivingModal}
                         >
                           <i className="material-symbols-outlined">id_card</i>
                           <span className="nav-link-label">
@@ -213,7 +255,15 @@ export default function Header() {
         requestData={driverUser}
       />
 
-      <RequestDrivingStepOneModal ref={RequestDrivingStepOneModalRef} />
+      <RequestStatusLicDetailModal
+        ref={RequestStatusLicDetailModaRef}
+        // requestData={driverUser}
+      />
+
+      <RequestDrivingStepOneModal
+        ref={RequestDrivingStepOneModalRef}
+        requestData={driverUser}
+      />
     </div>
   );
 }

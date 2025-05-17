@@ -91,6 +91,8 @@ export interface RequestAnnualDriver {
   confirmed_request_image_url: string;
   confirmed_request_mobile_number: string;
   confirmed_request_phone_number: string;
+
+  ref_request_annual_driver_status_name: string;
   
   // Driver license info
   driver_license_no: string;
@@ -122,10 +124,7 @@ export interface RequestAnnualDriver {
   approved_request: Omit<EmployeeInfo, 'datetime' | 'reason'> & {
     approved_request_datetime: string;
   };
-  rejected_request: Omit<EmployeeInfo, 'datetime'> & {
-    rejected_request_datetime: string;
-    rejected_request_reason: string;
-  };
+  rejected_request_reason: string;
   canceled_request: Omit<EmployeeInfo, 'datetime'> & {
     canceled_request_datetime: string;
     canceled_request_reason: string;
