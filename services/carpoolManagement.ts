@@ -4,6 +4,7 @@ import {
   CarpoolDriverParams,
   CarpoolForm,
   CarpoolParams,
+  CarpoolVehicleCreate,
   CarpoolVehicleParams,
 } from "@/app/types/carpool-management-type";
 import axiosInstance from "@/utils/axiosInstance";
@@ -180,6 +181,32 @@ export const getCarpoolApproverSearch = async (id: string) => {
   try {
     const response = await axiosInstance.get(
       "carpool-management/approver-search/" + id
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postCarpoolVehicleCreate = async (
+  data: CarpoolVehicleCreate[]
+) => {
+  try {
+    const response = await axiosInstance.post(
+      "carpool-management/vehicle-create",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolVehicleSearch = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/vehicle-search/" + id
     );
 
     return response;

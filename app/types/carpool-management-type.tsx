@@ -159,3 +159,8 @@ export interface CarpoolApproverCreate {
   mas_carpool_uid: string;
   mobile_contact_number: string;
 }
+
+export interface CarpoolVehicleCreate {
+  mas_carpool_uid: string;
+  mas_vehicle_uid: string;
+}

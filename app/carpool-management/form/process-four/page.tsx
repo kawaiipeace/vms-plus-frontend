@@ -7,17 +7,22 @@ import SideBar from "@/components/sideBar";
 import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import AddCarpoolVehicleModal from "@/components/modal/addCarpoolVehicleModal";
 import CarpoolVehicleTable from "@/components/table/carpool-vehicle-table";
 import ConfirmSkipStepCarpoolModal from "@/components/modal/confirmSkipStepCarpoolModal";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
+import { useFormContext } from "@/contexts/carpoolFormContext";
+import { getCarpoolVehicleSearch } from "@/services/carpoolManagement";
 
 export default function CarpoolProcessFour() {
   const { isPinned } = useSidebar();
   const router = useRouter();
+  const vehicleCreated = useSearchParams().get("vehicle-created");
+
+  const { formData } = useFormContext();
 
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationType>({
@@ -39,6 +44,22 @@ export default function CarpoolProcessFour() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  useEffect(() => {
+    if (vehicleCreated) {
+      fetchCarpoolVehicleSearchFunc();
+    }
+  }, [vehicleCreated]);
+
+  const fetchCarpoolVehicleSearchFunc = async () => {
+    try {
+      const response = await getCarpoolVehicleSearch(formData.mas_carpool_uid);
+      const result = response.data;
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
 
   const handlePageChange = (newPage: number) => {
     // setParams((prevParams) => ({
@@ -79,7 +100,7 @@ export default function CarpoolProcessFour() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <Link href="carpool-management">กลุ่มยานพาหนะ</Link>
+                    <Link href="/carpool-management">กลุ่มยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     สร้างกลุ่มยานพาหนะ
@@ -150,10 +171,9 @@ export default function CarpoolProcessFour() {
                     alt=""
                     className="w-[200px] h-[200px]"
                   ></Image>
-                  <div className="emptystate-title">เพิ่มผู้อนุมัติ</div>
+                  <div className="emptystate-title">เพิ่มยานพาหนะ</div>
                   <div className="emptystate-text">
-                    <div>ผู้อนุมัติมีหน้าที่อนุมัติการจองยานพาหนะ</div>
-                    <div>และพนักงานขับรถในขั้นตอนสุดท้่าย</div>
+                    <div>ยานพาหนะที่จะให้บริการในกลุ่มนี้</div>
                   </div>
                   <div className="emptystate-action">
                     <button
@@ -176,6 +196,7 @@ export default function CarpoolProcessFour() {
                 </div>
               </div>
             )}
+
             <AddCarpoolVehicleModal
               ref={addCarpoolVehicleModalRef}
               id={""}
@@ -183,6 +204,7 @@ export default function CarpoolProcessFour() {
               desc={""}
               confirmText={""}
             />
+
             <ConfirmSkipStepCarpoolModal
               ref={skipStepModalRef}
               id={""}
