@@ -1,4 +1,5 @@
 import {
+  CarpoolAdminCreate,
   CarpoolDriverParams,
   CarpoolForm,
   CarpoolParams,
@@ -130,6 +131,30 @@ export const postCarpoolCreate = async (data: CarpoolForm) => {
       "carpool-management/create",
       data
     );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postCarpoolAdminCreate = async (data: CarpoolAdminCreate) => {
+  try {
+    const response = await axiosInstance.post(
+      "carpool-management/admin-create",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolAdminSearch = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/admin-search/" + id
+    );
+
     return response;
   } catch (error) {
     throw error;

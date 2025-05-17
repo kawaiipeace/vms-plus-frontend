@@ -145,3 +145,10 @@ export interface CarpoolDepartment {
   dept_full: string;
   cost_center_code: string;
 }
+
+export interface CarpoolAdminCreate {
+  admin_emp_no: string;
+  internal_contact_number: string;
+  mas_carpool_uid: string;
+  mobile_contact_number: string;
+}

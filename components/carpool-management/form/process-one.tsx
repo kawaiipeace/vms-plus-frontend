@@ -178,10 +178,11 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
           is_must_pass_status_40: data.is_must_pass_status_40 ? "1" : "0",
           is_must_pass_status_50: data.is_must_pass_status_50 ? "1" : "0",
         });
+        console.log(response.data);
         if (response.request.status === 201) {
           updateFormData({
             ...data,
-            mas_carpool_uid: response.data.data.mas_carpool_uid,
+            mas_carpool_uid: await response.data.mas_carpool_uid,
           });
           router.push("/carpool-management/form/process-two");
         }

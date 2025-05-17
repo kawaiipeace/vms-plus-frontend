@@ -9,13 +9,20 @@ import SideBar from "@/components/sideBar";
 import CarpoolAdminTable from "@/components/table/carpool-admin-table";
 import PaginationControls from "@/components/table/pagination-control";
 import ZeroRecord from "@/components/zeroRecord";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
+import { getCarpoolAdminSearch } from "@/services/carpoolManagement";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function CarpoolProcessTwo() {
   const { isPinned } = useSidebar();
+  const adminCreated = useSearchParams().get("admin-created");
+  const id = useSearchParams().get("id");
+
+  const { formData } = useFormContext();
+
   const router = useRouter();
 
   const [data, setData] = useState([]);
@@ -34,6 +41,24 @@ export default function CarpoolProcessTwo() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  console.log("adminCreated", adminCreated);
+
+  useEffect(() => {
+    if (adminCreated) {
+      fetchCarpoolAdminSearchFunc();
+    }
+  }, [adminCreated]);
+
+  const fetchCarpoolAdminSearchFunc = async () => {
+    try {
+      const response = await getCarpoolAdminSearch(formData.mas_carpool_uid);
+      const result = response.data;
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
 
   const handlePageChange = (newPage: number) => {
     // setParams((prevParams) => ({
@@ -121,7 +146,7 @@ export default function CarpoolProcessTwo() {
                   </div>
                 </div>
 
-                <CarpoolAdminTable defaultData={[]} pagination={pagination} />
+                <CarpoolAdminTable defaultData={data} pagination={pagination} />
 
                 <PaginationControls
                   pagination={{
@@ -154,6 +179,7 @@ export default function CarpoolProcessTwo() {
                 useModal={() => addCarpoolAdminModalRef.current?.openModal()}
               />
             )}
+
             <AddCarpoolAdminModal
               ref={addCarpoolAdminModalRef}
               id={""}
@@ -161,6 +187,7 @@ export default function CarpoolProcessTwo() {
               desc={""}
               confirmText={""}
             />
+
             <ConfirmCancelCreateCarpoolModal
               id={""}
               ref={cancelCreateModalRef}
