@@ -210,7 +210,7 @@ const EditApproverModal = forwardRef<
                         readOnly
                         {...field}
                       />
-                    )}s
+                    )}
                   />
                 </div>
               </div>
