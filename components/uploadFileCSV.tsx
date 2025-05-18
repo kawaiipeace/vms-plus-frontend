@@ -1,27 +1,41 @@
-import { UploadFileType } from "@/app/types/upload-type";
-import { uploadFile } from "@/services/masterService";
+// import { UploadFileType } from "@/app/types/upload-type";
+// import { UploadCSVFileType } from "@/app/types/drivers-management-type";
+// import { uploadFile } from "@/services/masterService";
 import React, { useState } from "react";
 
-interface ImageUploadProps {
-  onImageChange: (images: UploadFileType) => void;
+export interface UploadCSVFileType {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  file: File;
 }
 
-const UploadFileCSV: React.FC<ImageUploadProps> = ({ onImageChange }) => {
+interface UploadCSVFileProps {
+  onFileChange: (images: UploadCSVFileType) => void;
+}
+
+const UploadFileCSV: React.FC<UploadCSVFileProps> = ({ onFileChange }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (!file) return;
-    const allowedTypes = ["image/svg+xml", "image/png", "image/jpeg", "image/gif"];
 
-    if (!allowedTypes.includes(file.type)) {
-      alert("Only SVG, PNG, JPG, and GIF files are allowed.");
+    if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
+      alert("อนุญาตเฉพาะไฟล์ CSV เท่านั้น");
       e.target.value = "";
       return;
     }
 
-    const response = await uploadFile(file);
-    onImageChange(response);
+    // const response = await uploadFile(file);
+    onFileChange({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+      file: file,
+    });
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -40,15 +54,19 @@ const UploadFileCSV: React.FC<ImageUploadProps> = ({ onImageChange }) => {
     const file = e.dataTransfer.files?.[0] || null;
     if (!file) return;
 
-    const allowedTypes = ["image/svg+xml", "image/png", "image/jpeg", "image/gif"];
-
-    if (!allowedTypes.includes(file.type)) {
-      alert("Only SVG, PNG, JPG, and GIF files are allowed.");
+    if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
+      alert("อนุญาตเฉพาะไฟล์ CSV เท่านั้น");
       return;
     }
 
-    const response = await uploadFile(file);
-    onImageChange(response);
+    // const response = await uploadFile(file);
+    onFileChange({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+      file: file,
+    });
   };
 
   return (

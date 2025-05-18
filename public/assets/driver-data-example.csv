@@ -1,0 +1,2 @@
+driver_name,driver_nickname,driver_identification_no,driver_birthdate,work_type,contract_no,mas_vendor_code,driver_dept_sap_hire,driver_dept_sap_short_name_hire,driver_dept_sap_work,driver_dept_sap_short_work,start_date,end_date,driver_license_no,ref_driver_license_type_code,driver_license_start_date,driver_license_end_date
+นายเอกชัย ฉิมวัย,NULL,3100203281946,1980-08-06 0:00:00,1,NULL,NULL,8966,กจย.,8051,ฝกส.,NULL,NULL,NULL,1,2006-02-06,2027-08-06

@@ -222,7 +222,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
             </form>
           </div>
           <form className="form" onSubmit={handleSubmit}>
-            <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5]">
+            <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5] max-h-[60vh]">
               <div className="form-section">
                 <div className="form-section-body">
                   <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
@@ -407,6 +407,9 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
             </div>
           </form>
         </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
     );
   }
