@@ -8,7 +8,7 @@ import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Image from "next/image";
 import AddCarpoolApproverModal from "@/components/modal/addCarpoolApproverModal";
 import CarpoolApproverTable from "@/components/table/carpool-approver-table";
@@ -100,7 +100,10 @@ export default function CarpoolProcessThree() {
                 </div>
               </div>
             </div>
-            <ProcessCreateCarpool step={3} />
+            <Suspense fallback={<div></div>}>
+              {" "}
+              <ProcessCreateCarpool step={3} />
+            </Suspense>
 
             {data.length > 0 && (
               <>

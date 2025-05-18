@@ -139,6 +139,26 @@ export const updateUserLicAnnualCancel = async (data: any) => {
   }
 }
 
+export const updateApproverLicAnnualCancel = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-user/update-license-annual-canceled',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const updateFinalApproverLicAnnualCancel = async (data: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-user/update-license-annual-canceled',  data );
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 
 

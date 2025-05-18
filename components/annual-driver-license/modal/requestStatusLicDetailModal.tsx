@@ -18,12 +18,13 @@ import AlertCustom from "@/components/alertCustom";
 interface Props {
   requestData?: RequestAnnualDriver;
   driverData?: DriverLicenseCardType;
+  onStepOne?: () => void;
 }
 
 const RequestStatusLicDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ requestData, driverData }, ref) => {
+>(({ requestData, driverData, onStepOne }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -40,10 +41,11 @@ const RequestStatusLicDetailModal = forwardRef<
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  
 
   const [currentStep, setCurrentStep] = useState("");
   const [nextPendingStep, setNextPendingStep] = useState("");
-  const progressSteps = requestData?.progress_request_history;
+  const progressSteps = requestData?.progress_request_status;
   const doneSteps =
     progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
   useEffect(() => {
@@ -79,7 +81,7 @@ const RequestStatusLicDetailModal = forwardRef<
         <div className="modal-body overflow-y-auto !p-0">
           <div className="card card-approvallicprogress !border-0">
             <Image
-              src="/assets/img/ev-car.png"
+              src="/assets/img/vms_car2.svg"
               width={100}
               height={100}
               alt="car-env"
@@ -204,13 +206,11 @@ const RequestStatusLicDetailModal = forwardRef<
                 </>
               )}
 
-              {(requestData?.ref_request_annual_driver_status_code === "10" ||
-                requestData?.ref_request_annual_driver_status_code ===
-                  "11") && (
+              {requestData?.progress_request_status_emp && (
                 <div className="form-section mt-4">
                   <div className="form-section-header">
                     <div className="form-section-header-title">
-                      ผู้อนุมัติต้นสังกัด
+                      {requestData?.progress_request_status_emp?.action_role}
                     </div>
                   </div>
                   <div className="form-card">
@@ -218,18 +218,22 @@ const RequestStatusLicDetailModal = forwardRef<
                       <div className="form-group form-plaintext form-users">
                         <div className="form-plaintext-group align-self-center">
                           <div className="form-label">
-                            {requestData?.confirmed_request_emp_name}
+                            {requestData?.progress_request_status_emp?.emp_name}
                           </div>
                           <div className="supporting-text-group">
                             <div className="supporting-text">
-                              {requestData?.confirmed_request_dept_sap_short}
+                              {
+                                requestData?.progress_request_status_emp
+                                  ?.dept_sap_short
+                              }
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="form-card-right align-self-center">
                         <div className="flex gap-3 flex-wrap">
-                          {requestData?.confirmed_request_mobile_number && (
+                          {requestData?.progress_request_status_emp
+                            ?.mobile_number && (
                             <div className="col-span-12 md:col-span-6">
                               <div className="form-group form-plaintext">
                                 <i className="material-symbols-outlined">
@@ -238,14 +242,16 @@ const RequestStatusLicDetailModal = forwardRef<
                                 <div className="form-plaintext-group">
                                   <div className="form-text text-nowrap">
                                     {
-                                      requestData?.confirmed_request_mobile_number
+                                      requestData?.progress_request_status_emp
+                                        ?.mobile_number
                                     }
                                   </div>
                                 </div>
                               </div>
                             </div>
                           )}
-                          {requestData?.confirmed_request_phone_number && (
+                          {requestData?.progress_request_status_emp
+                            ?.phone_number && (
                             <div className="col-span-12 md:col-span-6">
                               <div className="form-group form-plaintext">
                                 <i className="material-symbols-outlined">
@@ -254,7 +260,8 @@ const RequestStatusLicDetailModal = forwardRef<
                                 <div className="form-plaintext-group">
                                   <div className="form-text text-nowrap">
                                     {
-                                      requestData?.confirmed_request_phone_number
+                                      requestData?.progress_request_status_emp
+                                        ?.phone_number
                                     }
                                   </div>
                                 </div>
@@ -267,72 +274,13 @@ const RequestStatusLicDetailModal = forwardRef<
                   </div>
                 </div>
               )}
-
-              {(requestData?.ref_request_annual_driver_status_code === "20" ||
-                requestData?.ref_request_annual_driver_status_code === "30" ||
-                requestData?.ref_request_annual_driver_status_code ===
-                  "21") && (
-                <div className="form-section mt-4">
-                  <div className="form-section-header">
-                    <div className="form-section-header-title">ผู้อนุมัติ</div>
-                  </div>
-                  <div className="form-card">
-                    <div className="form-card-body form-card-inline">
-                      <div className="form-group form-plaintext form-users">
-                        <div className="form-plaintext-group align-self-center">
-                          <div className="form-label">
-                            {requestData?.approved_request_emp_name}
-                          </div>
-                          <div className="supporting-text-group">
-                            <div className="supporting-text">
-                              {requestData?.approved_request_dept_sap_short}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="form-card-right align-self-center">
-                        <div className="flex gap-3 flex-wrap">
-                          {requestData?.approved_request_mobile_number && (
-                            <div className="col-span-12 md:col-span-6">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">
-                                  smartphone
-                                </i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-text text-nowrap">
-                                    {
-                                      requestData?.approved_request_mobile_number
-                                    }
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          {requestData?.approved_request_phone_number && (
-                            <div className="col-span-12 md:col-span-6">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">
-                                  call
-                                </i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-text text-nowrap">
-                                    {requestData?.approved_request_phone_number}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {requestData?.ref_request_annual_driver_status_code === "90" && (
+                <AlertCustom
+                  title="คำขออนุมัติถูกยกเลิก"
+                  desc={requestData?.canceled_request_reason}
+                  icon="cancel"
+                />
               )}
-              <AlertCustom
-                title="คำขออนุมัติถูกยกเลิก"
-                desc={requestData?.canceled_request_reason}
-                icon="cancel"
-              />
             </div>
           </div>
         </div>
@@ -369,7 +317,9 @@ const RequestStatusLicDetailModal = forwardRef<
                 type="button"
                 onClick={() => {
                   modalRef.current?.close(); // Added parentheses to call the function
-                  driverLicenseDetailModalRef.current?.openModal();
+                  if(onStepOne){
+                    onStepOne();
+                  }       
                 }}
               >
                 ขออนุมัติอีกครั้ง

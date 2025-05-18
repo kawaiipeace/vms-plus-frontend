@@ -144,6 +144,20 @@ export interface RequestAnnualDriver {
   // Progress tracking
   progress_request_status: ProgressStatus[];
   progress_request_history: (ProgressStatus & { progress_datetime: string })[];
+  progress_request_status_emp: ProgressRequestStatusEmp;
+
 }
+
+export type ProgressRequestStatusEmp = {
+  action_role: string;
+  emp_id: string;
+  emp_name: string;
+  emp_position?: string;  // optional
+  dept_sap: string;
+  dept_sap_short: string;
+  dept_sap_full: string;
+  phone_number?: string;  // optional
+  mobile_number?: string; // optional
+};
 
 

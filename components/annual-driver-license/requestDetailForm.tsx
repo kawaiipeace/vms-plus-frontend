@@ -299,6 +299,24 @@ export default function RequestDetailForm({
                       </div>
                     </div>
 
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">วันที่สิ้นอายุ</div>
+                          <div className="form-desc">
+                            {
+                              convertToBuddhistDateTime(
+                                requestData?.driver_certificate_expire_date
+                              ).date
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="col-span-12 mt-3">
                       <div className="form-plaintext-group">
                         <div className="form-label font-semibold">

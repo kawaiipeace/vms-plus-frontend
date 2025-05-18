@@ -5,6 +5,11 @@ type ToastType = {
   show: boolean;
   title: string;
   desc: React.ReactNode;
+  seeDetailText?: string;
+  seeDetail?: {
+    onClick: () => void;
+    text: string;
+  };
   status: 'success' | 'error' | 'warning' | 'info';
 };
 
@@ -22,6 +27,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     title: '',
     desc: '',
     status: 'info',
+    seeDetail: undefined,
+    seeDetailText: '',
   });
 
   const showToast = (newToast: Omit<ToastType, 'show'>) => {

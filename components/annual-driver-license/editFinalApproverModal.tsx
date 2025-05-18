@@ -13,7 +13,7 @@ import CustomSelectApprover, {
   CustomSelectOption,
 } from "./customSelectApprover";
 import { DriverLicenseCardType, VehicleUserType } from "@/app/types/vehicle-user-type";
-import { fetchUserApprovalLic, fetchUserFinalApprovalLic } from "@/services/masterService";
+import { fetchUserFinalApprovalLic } from "@/services/masterService";
 import { updateAnnualApprover } from "@/services/driver";
 
 interface VehicleUserModalProps {
@@ -64,7 +64,7 @@ const EditFinalApproverModal = forwardRef<
     
     setSelectedVehicleUserOption(fullOption || null);
     setValue("position", fullOption?.posi_text || "");
-    setValue("name", fullOption?.label || "");
+    // setValue("name", fullOption?.label || "");
   };
 
   useEffect(() => {

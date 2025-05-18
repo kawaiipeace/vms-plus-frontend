@@ -1,7 +1,7 @@
 import Image from "next/image";
 import ToggleSidebar from "@/components/toggleSideBar";
 import ThemeToggle from "./themeToggle";
-import { logOut } from "@/services/authService";
+import { fetchProfile, logOut } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
@@ -17,11 +17,29 @@ import { useToast } from "@/contexts/toast-context";
 import ToastCustom from "./toastCustom";
 import RequestStatusLicDetailModal from "./annual-driver-license/modal/requestStatusLicDetailModal";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import RequestDrivingStepTwoModal from "./annual-driver-license/requestDrivingStepTwoModal";
+import { UploadFileType } from "@/app/types/upload-type";
+interface ValueFormStep1 {
+  driverLicenseType: { value: string; label: string; desc?: string } | null;
+  year: string;
+  licenseNumber: string;
+  licenseExpiryDate: string;
+  licenseImages: UploadFileType[];
+  courseName?: string;
+  certificateNumber?: string;
+  vehicleType?: { value: string; label: string; desc?: string } | null;
+  trainingDate?: string;
+  trainingEndDate?: string;
+  certificateImages?: UploadFileType[];
+}
+
 
 export default function Header() {
-  const { profile } = useProfile();
+  const { profile, setProfile } = useProfile();
   const router = useRouter();
   const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
+  const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
+  const [isEditable, setIsEditable] = useState(false);
   const [licRequestDetail, setLicRequestDetail] =
     useState<RequestAnnualDriver>();
   const { toast } = useToast();
@@ -37,6 +55,11 @@ export default function Header() {
   } | null>(null);
 
   const RequestStatusLicDetailModaRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const RequestDrivingStepTwoModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -67,6 +90,11 @@ export default function Header() {
     }
   };
 
+  const handleOneSubmit = (data: ValueFormStep1) => {
+    setValueFormStep1(data);
+    RequestDrivingStepTwoModalRef.current?.openModal();
+  };
+
   const handleOpenDriverLicenseModal = () => {
     getDriverUserCard();
     driverLicenseModalRef.current?.openModal();
@@ -76,6 +104,21 @@ export default function Header() {
     await getDriverUserCard(); // Fetch data first
     RequestDrivingStepOneModalRef.current?.openModal(); // Then open modal
   };
+
+  useEffect(() => {
+    if (toast.show) {
+      const refreshProfile = async () => {
+        try {
+          const response = await fetchProfile();
+          setProfile(response.data);
+        } catch (error) {
+          console.error("Failed to refresh profile:", error);
+        }
+      };
+      refreshProfile();
+    }
+  }, [toast.show, setProfile]);
+
 
   const handleOpenRequestDetailDrivingModal = async () => {
     try {
@@ -212,6 +255,21 @@ export default function Header() {
                       <div className="badge badge-warning">
                         {profile.license_status}
                       </div>
+                    ) : profile?.license_status === "ตีกลับ" ? (
+                      <>
+                      <a
+                        className="nav-link toggle-mode gap-1 flex items-center"
+                        onClick={handleOpenRequestDetailDrivingModal}
+                      >
+                        <i className="material-symbols-outlined">id_card</i>
+                        <span className="nav-link-label">
+                          ขอทำหน้าที่ขับรถยนต์
+                        </span>
+                      </a>
+                      <div className="badge badge-gray">
+                        {profile.license_status}
+                      </div>
+                    </>
                     ) : profile?.license_status === "ยกเลิก" ? (
                       <>
                         <a
@@ -223,26 +281,11 @@ export default function Header() {
                             ขอทำหน้าที่ขับรถยนต์
                           </span>
                         </a>
-                        <div className="badge bg-brand-900 text-white">
-                          {profile.license_status}
-                        </div>
-                      </>
-                    ) : profile?.license_status === "ยกเลิก" ? (
-                      <>
-                        <a
-                          className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={handleOpenRequestDetailDrivingModal}
-                        >
-                          <i className="material-symbols-outlined">id_card</i>
-                          <span className="nav-link-label">
-                            ขอทำหน้าที่ขับรถยนต์
-                          </span>
-                        </a>
                         <div className="badge badge-gray">
-                        {profile.license_status}
+                          ไม่มี
                         </div>
                       </>
-                    ) : profile?.license_status === "กำลังดำเนินการ" ? (
+                    ) : profile?.license_status === "รออนุมัติ" ? (
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
@@ -297,11 +340,29 @@ export default function Header() {
         ref={RequestStatusLicDetailModaRef}
         requestData={licRequestDetail}
         driverData={driverUser}
+        onStepOne={() => {
+          setIsEditable(true); 
+          RequestDrivingStepOneModalRef.current?.openModal();
+        }}
       />
 
       <RequestDrivingStepOneModal
         ref={RequestDrivingStepOneModalRef}
+        licRequestDetail={licRequestDetail}
         requestData={driverUser}
+        stepOneSubmit={handleOneSubmit}
+      />
+
+      <RequestDrivingStepTwoModal
+        openStep1={() => RequestDrivingStepTwoModalRef.current?.openModal()}
+        ref={RequestDrivingStepTwoModalRef}
+        valueFormStep1={valueFormStep1}
+        editable={isEditable} 
+        onTrackStatus={handleOpenRequestDetailDrivingModal}
+        onBack={() => {
+          RequestDrivingStepTwoModalRef.current?.closeModal();
+          RequestDrivingStepOneModalRef.current?.openModal();
+        }}
       />
     </div>
   );

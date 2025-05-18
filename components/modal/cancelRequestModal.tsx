@@ -4,7 +4,7 @@ import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
-import { updateUserLicAnnualCancel } from "@/services/driver";
+import { updateApproverLicAnnualCancel, updateFinalApproverLicAnnualCancel, updateUserLicAnnualCancel } from "@/services/driver";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
 import {
@@ -117,6 +117,10 @@ const CancelRequestModal = forwardRef<
               ? await adminDeleteTravelDetail(tripId || "")
               : role === "userLic"
               ? await updateUserLicAnnualCancel(payloadLic || "")
+              : role === "licAdmin"
+              ? await updateApproverLicAnnualCancel(payloadLic || "")
+              : role === "licFinalAdmin"
+              ? await updateFinalApproverLicAnnualCancel(payloadLic || "")
               : role === "recordFuel"
               ? await UserDeleteAddFuelDetail(fuelId || "")
               : role === "driver"
@@ -153,7 +157,12 @@ const CancelRequestModal = forwardRef<
                 "/administrator/request-list?cancel-req=success&request-id=" +
                   data.result?.request_no
               );
-            } else if (role === "recordTravel") {
+            }   else if (role === "licAdmin" || role === "licFinalAdmin") {
+              router.push(
+                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            }else if (role === "recordTravel") {
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
               );

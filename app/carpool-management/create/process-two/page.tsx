@@ -12,7 +12,7 @@ import ZeroRecord from "@/components/zeroRecord";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 
 export default function CarpoolProcessTwo() {
   const { isPinned } = useSidebar();
@@ -95,7 +95,10 @@ export default function CarpoolProcessTwo() {
                 </div>
               </div>
             </div>
+            <Suspense fallback={<div></div>}>
             <ProcessCreateCarpool step={2} />
+            </Suspense>
+   
 
             {data.length > 0 && (
               <>

@@ -59,7 +59,7 @@ const EditApproverModal = forwardRef<
     setSelectedVehicleUserOption(selectedOption);
     if (selectedOption) {
       setValue("position", selectedOption.posi_text || "");
-      setValue("name", selectedOption.full_name || selectedOption.label || "");
+      // setValue("name", selectedOption.full_name || selectedOption.label || "");
     } else {
       setValue("position", "");
       setValue("name", "");
@@ -121,7 +121,7 @@ const EditApproverModal = forwardRef<
 
     try {
       const response = await updateAnnualApprover(payload);
-      
+      console.log('res',response);
       if (response && onUpdate) {
         onUpdate({
           emp_id: selectedVehicleUserOption.value,

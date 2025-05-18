@@ -5,6 +5,7 @@ import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
 import Link from "next/link";
 import RequestForm from "@/components/flow/requestForm";
+import { Suspense } from "react";
 
 export default function ProcessOne() {
   const { isPinned } = useSidebar();
@@ -44,7 +45,9 @@ export default function ProcessOne() {
 
             <ProcessRequestCar step={1} />
 
-           <RequestForm />
+            <Suspense fallback={<div></div>}>
+              <RequestForm />
+            </Suspense>
           
           </div>
         </div>
