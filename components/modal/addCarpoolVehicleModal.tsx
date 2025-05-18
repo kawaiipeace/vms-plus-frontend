@@ -1,6 +1,4 @@
-import { updateSendback } from "@/services/bookingUser";
 import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
 import React, {
   forwardRef,
   useEffect,
@@ -8,26 +6,29 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { getCarpoolVehicle } from "@/services/carpoolManagement";
+import {
+  getCarpoolVehicle,
+  postCarpoolVehicleCreate,
+} from "@/services/carpoolManagement";
 import { CarpoolVehicle } from "@/app/types/carpool-management-type";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 
 interface Props {
   id: string;
-  title: string;
-  desc: string;
-  confirmText: string;
+  setRefetch: (value: boolean) => void;
 }
 
 const AddCarpoolVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText }, ref) => {
+>(({ id, setRefetch }, ref) => {
   // Destructure `process` from props
-  const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
+  const { formData } = useFormContext();
 
+  const [search, setSearch] = useState<string>("");
   const [vehicles, setVehicles] = useState<CarpoolVehicle[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -77,6 +78,18 @@ const AddCarpoolVehicleModal = forwardRef<
   }, []);
 
   useEffect(() => {
+    if (params.search) {
+      if (params.search && !search) {
+        setVehicles([]);
+      } else if (params.search !== search) {
+        setParams({ ...params, page: 1 });
+      } else if (!params.search && search) {
+        setSearch("");
+      }
+    }
+  }, [params.search]);
+
+  useEffect(() => {
     if (CBRef.current) {
       if (checked.length === 0) {
         CBRef.current.indeterminate = false;
@@ -94,25 +107,20 @@ const AddCarpoolVehicleModal = forwardRef<
     fetchCarpoolVehicleFunc();
   }, [params]);
 
-  const handleConfirm = () => {
-    const sendCancelRequest = async () => {
-      try {
-        const payload = {
-          rejected_request_reason: "",
-          trn_request_uid: id,
-        };
-        const res = await updateSendback(payload);
-
-        if (res) {
-          modalRef.current?.close();
-          router.push("/vehicle-booking/request-list/" + id);
-        }
-      } catch (error) {
-        console.error("error:", error);
+  const handleConfirm = async () => {
+    try {
+      const data = checked.map((item) => ({
+        mas_carpool_uid: formData.mas_carpool_uid,
+        mas_vehicle_uid: item,
+      }));
+      const response = await postCarpoolVehicleCreate(data);
+      if (response.request.status === 201) {
+        setRefetch(true);
+        modalRef.current?.close();
       }
-    };
-
-    sendCancelRequest();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCheck = (id: string) => {
@@ -155,16 +163,15 @@ const AddCarpoolVehicleModal = forwardRef<
                   type="text"
                   id="myInputTextField"
                   className="form-control dt-search-input !w-60"
-                  placeholder="ชื่อกลุ่มยานพาหนะ, ผู้รับผิดชอบหลัก"
-
-                  // value={params.search}
-                  // onChange={(e) =>
-                  //   setParams((prevParams) => ({
-                  //     ...prevParams,
-                  //     search: e.target.value,
-                  //     page: 1, // Reset to page 1 on search
-                  //   }))
-                  // }
+                  placeholder="เลขทะเบียน, สังกัดยานพาหนะ"
+                  value={params.search}
+                  onChange={(e) =>
+                    setParams((prevParams) => ({
+                      ...prevParams,
+                      search: e.target.value,
+                      page: 1, // Reset to page 1 on search
+                    }))
+                  }
                 />
               </div>
 

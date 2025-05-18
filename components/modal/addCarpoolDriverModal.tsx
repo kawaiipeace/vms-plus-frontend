@@ -1,6 +1,4 @@
-import { updateSendback } from "@/services/bookingUser";
 import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
 import React, {
   forwardRef,
   useEffect,
@@ -8,27 +6,30 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { getCarpoolDriver } from "@/services/carpoolManagement";
+import {
+  getCarpoolDriver,
+  postCarpoolDriverCreate,
+} from "@/services/carpoolManagement";
 import { CarpoolDriver } from "@/app/types/carpool-management-type";
 import dayjs from "dayjs";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 
 interface Props {
   id: string;
-  title: string;
-  desc: string;
-  confirmText: string;
+  setRefetch: (value: boolean) => void;
 }
 
 const AddCarpoolDriverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText }, ref) => {
+>(({ id, setRefetch }, ref) => {
   // Destructure `process` from props
-  const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
+  const { formData } = useFormContext();
 
+  const [search, setSearch] = useState<string>("");
   const [drivers, setDrivers] = useState<CarpoolDriver[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -78,6 +79,18 @@ const AddCarpoolDriverModal = forwardRef<
   }, []);
 
   useEffect(() => {
+    if (params.name) {
+      if (params.name && !search) {
+        setDrivers([]);
+      } else if (params.name !== search) {
+        setParams({ ...params, page: 1 });
+      } else if (!params.name && search) {
+        setSearch("");
+      }
+    }
+  }, [params.name]);
+
+  useEffect(() => {
     if (CBRef.current) {
       if (checked.length === 0) {
         CBRef.current.indeterminate = false;
@@ -94,25 +107,20 @@ const AddCarpoolDriverModal = forwardRef<
     fetchCarpoolDriverFunc();
   }, [params]);
 
-  const handleConfirm = () => {
-    const sendCancelRequest = async () => {
-      try {
-        const payload = {
-          rejected_request_reason: "",
-          trn_request_uid: id,
-        };
-        const res = await updateSendback(payload);
-
-        if (res) {
-          modalRef.current?.close();
-          router.push("/vehicle-booking/request-list/" + id);
-        }
-      } catch (error) {
-        console.error("error:", error);
+  const handleConfirm = async () => {
+    try {
+      const data = checked.map((item) => ({
+        mas_carpool_uid: formData.mas_carpool_uid,
+        mas_driver_uid: item,
+      }));
+      const response = await postCarpoolDriverCreate(data);
+      if (response.request.status === 201) {
+        setRefetch(true);
+        modalRef.current?.close();
       }
-    };
-
-    sendCancelRequest();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCheck = (id: string) => {
