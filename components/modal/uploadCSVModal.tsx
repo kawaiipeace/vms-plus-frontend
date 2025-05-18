@@ -28,9 +28,9 @@ const UploadCSVModal = forwardRef<{ openModal: () => void; closeModal: () => voi
       closeModal: () => modalRef.current?.close(),
     }));
 
-    useEffect(() => {
-      console.log("formData", formData);
-    }, [formData]);
+    // useEffect(() => {
+    //   console.log("formData", formData);
+    // }, [formData]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
