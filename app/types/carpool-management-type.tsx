@@ -118,6 +118,7 @@ export interface CarpoolDriver {
   driver_status_name: string;
   driver_birthdate: string;
   driver_dept_sap: string;
+  is_active: string;
 }
 
 export interface CarpoolDepartment {

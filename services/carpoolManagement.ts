@@ -381,3 +381,50 @@ export const putCarpoolSetActive = async (id: string, is_active: string) => {
     throw error;
   }
 };
+
+export const putCarpoolSetVehicleActive = async (
+  id: string,
+  is_active: string
+) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/vehicle-set-active",
+      {
+        mas_carpool_vehicle_uid: id,
+        is_active,
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putCarpoolSetDriverActive = async (
+  id: string,
+  is_active: string
+) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/driver-set-active",
+      {
+        mas_carpool_driver_uid: id,
+        is_active,
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCarpoolDriver = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      "carpool-management/driver-delete/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
