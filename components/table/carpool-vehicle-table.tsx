@@ -15,6 +15,7 @@ import {
   putCarpoolSetVehicleActive,
 } from "@/services/carpoolManagement";
 import { useSearchParams } from "next/navigation";
+import VehicleDetailCarpoolModel from "../modal/vehicleDetailCarpoolModal";
 
 interface PaginationType {
   limit: number;
@@ -38,8 +39,13 @@ export default function CarpoolVehicleTable({
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [deleteId, setDeleteId] = useState<string | undefined>();
+  const [vehicleId, setVehicleId] = useState<string | undefined>();
 
   const cancelCreateModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const detailsModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -363,11 +369,14 @@ export default function CarpoolVehicleTable({
       enableSorting: false,
       cell: ({ row }) => {
         return (
-          <div className="text-left dataTable-action">
+          <div className="text-left dataTable-action flex">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="ดูรายละเอียด"
-              //   onClick={() => router.push("/carpool-management")}
+              onClick={() => {
+                detailsModalRef.current?.openModal();
+                setVehicleId(row.original.mas_carpool_vehicle_uid);
+              }}
             >
               <i className="material-symbols-outlined">quick_reference_all</i>
             </button>
@@ -431,6 +440,28 @@ export default function CarpoolVehicleTable({
         }
         confirmText={"นำยานพาหนะออก"}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmCancelCreateCarpoolModal
+        id={""}
+        ref={cancelCreateModalRef}
+        title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
+        desc={
+          "คุณต้องการนำยานพาหนะเลขทะเบียน " +
+          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+            ?.vehicle_license_plate +
+          " สังกัด " +
+          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+            ?.vehicle_owner_dept_short +
+          " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
+        }
+        confirmText={"นำยานพาหนะออก"}
+        onConfirm={handleDelete}
+      />
+
+      <VehicleDetailCarpoolModel
+        ref={detailsModalRef}
+        vehicleId={vehicleId || ""}
       />
     </div>
   );

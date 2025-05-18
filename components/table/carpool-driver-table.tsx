@@ -19,6 +19,8 @@ import {
   putCarpoolSetVehicleActive,
 } from "@/services/carpoolManagement";
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
+import VehicleDetailCarpoolModel from "../modal/vehicleDetailCarpoolModal";
+import DriverInfoCarpoolModal from "../modal/driverInfoCarpoolModal";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -45,8 +47,13 @@ export default function CarpoolDriverTable({
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [deleteId, setDeleteId] = useState<string | undefined>();
+  const [driverId, setDriverId] = useState<string | undefined>();
 
   const cancelCreateModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const detailsModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -186,10 +193,13 @@ export default function CarpoolDriverTable({
           <div className="text-left dataTable-action">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-              data-tip="ดูรายละเอียด"
-              //   onClick={() => router.push("/carpool-management")}
+              data-tip="ลบ"
+              onClick={() => {
+                cancelCreateModalRef.current?.openModal();
+                setDeleteId(row.original.mas_carpool_driver_uid);
+              }}
             >
-              <i className="material-symbols-outlined">quick_reference_all</i>
+              <i className="material-symbols-outlined">delete</i>
             </button>
           </div>
         );
@@ -321,11 +331,14 @@ export default function CarpoolDriverTable({
       enableSorting: false,
       cell: ({ row }) => {
         return (
-          <div className="text-left dataTable-action">
+          <div className="text-left dataTable-action flex">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
               data-tip="ดูรายละเอียด"
-              //   onClick={() => router.push("/carpool-management")}
+              onClick={() => {
+                detailsModalRef.current?.openModal();
+                setDriverId(row.original.mas_carpool_driver_uid);
+              }}
             >
               <i className="material-symbols-outlined">quick_reference_all</i>
             </button>
@@ -389,6 +402,12 @@ export default function CarpoolDriverTable({
         }
         confirmText={"นำยานพาหนะออก"}
         onConfirm={handleDelete}
+      />
+
+      <DriverInfoCarpoolModal
+        ref={detailsModalRef}
+        id={driverId || ""}
+        pickable={false}
       />
     </div>
   );

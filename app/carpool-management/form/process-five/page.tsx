@@ -166,9 +166,23 @@ export default function CarpoolProcessFive() {
 
               <div className="page-group-header">
                 <div className="page-title justify-between">
-                  <span className="page-title-label">
-                    {id ? name : "สร้างกลุ่มยานพาหนะ"}
-                  </span>
+                  <div className="flex gap-6 items-center">
+                    <span className="page-title-label">
+                      {id ? name : "สร้างกลุ่มยานพาหนะ"}
+                    </span>
+                    {id &&
+                      (active === "1" ? (
+                        <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
+                          <div className="w-[6px] h-[6px] rounded-full bg-success" />
+                          <span>เปิด</span>
+                        </div>
+                      ) : (
+                        <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
+                          <div className="w-[6px] h-[6px] rounded-full bg-icon-error" />
+                          <span>ปิด</span>
+                        </div>
+                      ))}
+                  </div>
                   <div className="flex items-center gap-6">
                     <span
                       className={
@@ -185,21 +199,23 @@ export default function CarpoolProcessFive() {
                       {id ? "ลบกลุ่ม" : "ยกเลิก"}
                     </span>
                     {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
-                    <div className="custom-group">
-                      <div className="custom-control custom-checkbox custom-control-inline !gap-2">
-                        <input
-                          type="checkbox"
-                          checked={active === "1"}
-                          onClick={handleActive}
-                          className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
-                        />
-                        <label className="custom-control-label !w-fit">
-                          <div className="custom-control-label-group">
-                            {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
-                          </div>
-                        </label>
+                    {id && (
+                      <div className="custom-group">
+                        <div className="custom-control custom-checkbox custom-control-inline !gap-2">
+                          <input
+                            type="checkbox"
+                            checked={active === "1"}
+                            onClick={handleActive}
+                            className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
+                          />
+                          <label className="custom-control-label !w-fit">
+                            <div className="custom-control-label-group">
+                              {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                            </div>
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>

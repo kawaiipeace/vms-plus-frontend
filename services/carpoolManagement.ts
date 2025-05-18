@@ -428,3 +428,15 @@ export const deleteCarpoolDriver = async (id: string) => {
     throw error;
   }
 };
+
+export const getCarpoolDriverDetails = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/driver-detail/" + id
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
