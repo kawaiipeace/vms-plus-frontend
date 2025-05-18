@@ -8,10 +8,14 @@ import ProcessCreateCarpool from "@/components/processCreateCarpool";
 import SideBar from "@/components/sideBar";
 import CarpoolAdminTable from "@/components/table/carpool-admin-table";
 import PaginationControls from "@/components/table/pagination-control";
+import CarpoolManagementTabs from "@/components/tabs/carpoolManagemntTabs";
 import ZeroRecord from "@/components/zeroRecord";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
-import { getCarpoolAdminSearch } from "@/services/carpoolManagement";
+import {
+  getCarpoolAdminSearch,
+  putCarpoolSetActive,
+} from "@/services/carpoolManagement";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -19,6 +23,8 @@ import { useEffect, useRef, useState } from "react";
 export default function CarpoolProcessTwo() {
   const { isPinned } = useSidebar();
   const id = useSearchParams().get("id");
+  const name = useSearchParams().get("name");
+  const active = useSearchParams().get("active");
   const [refetch, setRefetch] = useState(false);
 
   const { formData } = useFormContext();
@@ -44,7 +50,7 @@ export default function CarpoolProcessTwo() {
 
   useEffect(() => {
     if (refetch) {
-      if (formData.mas_carpool_uid) fetchCarpoolAdminSearchFunc();
+      fetchCarpoolAdminSearchFunc();
     }
   }, [refetch]);
 
@@ -54,14 +60,23 @@ export default function CarpoolProcessTwo() {
     }
   }, [formData]);
 
+  useEffect(() => {
+    if (id) {
+      fetchCarpoolAdminSearchFunc();
+    }
+  }, []);
+
   const fetchCarpoolAdminSearchFunc = async (
     newPagination?: PaginationType
   ) => {
     try {
-      const response = await getCarpoolAdminSearch(formData.mas_carpool_uid, {
-        ...newPagination,
-        ...pagination,
-      });
+      const response = await getCarpoolAdminSearch(
+        id || formData.mas_carpool_uid,
+        {
+          ...newPagination,
+          ...pagination,
+        }
+      );
       const result = response.data;
       setData(result.admins);
       setPagination(result.pagination);
@@ -97,6 +112,27 @@ export default function CarpoolProcessTwo() {
     }));
   };
 
+  const handleActive = async () => {
+    try {
+      const response = await putCarpoolSetActive(
+        id as string,
+        active === "1" ? "0" : "1"
+      );
+      if (response.request.status === 200) {
+        router.push(
+          "/carpool-management/form/process-five?id=" +
+            id +
+            "&name=" +
+            name +
+            "&active=" +
+            (active === "1" ? "0" : "1")
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <div className="main-container">
@@ -128,18 +164,50 @@ export default function CarpoolProcessTwo() {
 
               <div className="page-group-header">
                 <div className="page-title justify-between">
-                  <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
-                  <span
-                    className="text-icon-error cursor-pointer"
-                    onClick={() => cancelCreateModalRef.current?.openModal()}
-                  >
-                    ยกเลิก
+                  <span className="page-title-label">
+                    {id ? name : "สร้างกลุ่มยานพาหนะ"}
                   </span>
-                  {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+                  <div className="flex items-center gap-6">
+                    <span
+                      className={
+                        active === "1"
+                          ? "text-[#98A2B3]"
+                          : "text-icon-error cursor-pointer"
+                      }
+                      onClick={() =>
+                        active === "1"
+                          ? {}
+                          : cancelCreateModalRef.current?.openModal()
+                      }
+                    >
+                      {id ? "ลบกลุ่ม" : "ยกเลิก"}
+                    </span>
+                    {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+                    <div className="custom-group">
+                      <div className="custom-control custom-checkbox custom-control-inline !gap-2">
+                        <input
+                          type="checkbox"
+                          checked={active === "1"}
+                          onClick={handleActive}
+                          className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
+                        />
+                        <label className="custom-control-label !w-fit">
+                          <div className="custom-control-label-group">
+                            {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <ProcessCreateCarpool step={2} />
+
+            {id ? (
+              <CarpoolManagementTabs active={1} />
+            ) : (
+              <ProcessCreateCarpool step={2} />
+            )}
 
             {data.length > 0 && (
               <>
@@ -217,12 +285,23 @@ export default function CarpoolProcessTwo() {
             <ConfirmCancelCreateCarpoolModal
               id={""}
               ref={cancelCreateModalRef}
-              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
-              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
-              confirmText={"ยกเลิกการสร้างกลุ่ม"}
+              title={
+                id
+                  ? "ยืนยันลบกลุ่มยานพาหนะ"
+                  : "คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"
+              }
+              desc={
+                id
+                  ? "ระบบจะนำยานพาหนะและพนักงานขับรถออกจากการให้บริการของกลุ่มโดยอัตโนมัติคุณต้องการลบ " +
+                    name +
+                    " ใช่หรือไม่?"
+                  : "หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"
+              }
+              confirmText={id ? "ลบกลุ่ม" : "ยกเลิกการสร้างกลุ่ม"}
+              remove={!!id}
             />
 
-            {data.length > 0 && (
+            {data.length > 0 && !id && (
               <div className="form-action">
                 <button
                   onClick={() =>

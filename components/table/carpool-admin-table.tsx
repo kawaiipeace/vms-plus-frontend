@@ -141,7 +141,7 @@ export default function CarpoolAdminTable({
               <i className="material-symbols-outlined">stylus</i>
             </button>
             <button
-              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left disabled:bg-transparent"
               data-tip="กำหนดเป็นผู้รับผิดชอบหลัก"
               disabled={row.original.is_main_admin === "1"}
               onClick={() =>
@@ -151,7 +151,7 @@ export default function CarpoolAdminTable({
               <i className="material-symbols-outlined">social_leaderboard</i>
             </button>
             <button
-              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left disabled:bg-transparent"
               data-tip="ลบ"
               disabled={row.original.is_main_admin === "1"}
               onClick={() => {

@@ -369,3 +369,15 @@ export const deleteCarpool = async (data: any) => {
     throw error;
   }
 };
+
+export const putCarpoolSetActive = async (id: string, is_active: string) => {
+  try {
+    const response = await axiosInstance.put("carpool-management/set-active", {
+      mas_carpool_uid: id,
+      is_active,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

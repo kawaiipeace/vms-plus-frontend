@@ -11,6 +11,11 @@ import {
 } from "@tanstack/react-table";
 import { CarpoolDriver } from "@/app/types/carpool-management-type";
 import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import "dayjs/locale/th";
+
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
 
 interface PaginationType {
   limit: number;
@@ -33,8 +38,6 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
     pageSize: pagination.limit,
   });
 
-  console.log("defaultData: ", defaultData);
-
   const columns: ColumnDef<CarpoolDriver>[] = [
     {
       accessorKey: "driver_name",
@@ -53,29 +56,11 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
       accessorKey: "driver_dept_sap_short_name_hire",
       header: () => <div className="text-center">หน่วยงานสังกัด</div>,
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="สถานที่จอดรถ">
-      //     <div className="flex flex-col">
-      //       {" "}
-      //       <div className="text-left">{row.original.parking_place}</div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
       accessorKey: "driver_contact_number",
       header: () => <div className="text-left">เบอร์โทรศัพท์</div>,
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
-      //     <div className="flex flex-col">
-      //       <div>{row.original.vehicle_user_emp_name}</div>
-      //       <div className="text-color-secondary text-xs">
-      //         {row.original.vehicle_user_dept_sap_short}
-      //       </div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
       accessorKey: "carpool_contact_number",
@@ -85,17 +70,6 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
         </div>
       ),
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="เลขที่คำขอ">
-      //     <div className="flex flex-col">
-      //       <div>{row.original.request_no}</div>
-      //       <div className="text-left">
-      //         {row.original.is_have_sub_request === "1" &&
-      //           "ปฏิบัติงานต่อเนื่อง"}
-      //       </div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
       accessorKey: "approved_job_driver_end_date",

@@ -163,7 +163,11 @@ export default function CarpoolManagementTable({
               onClick={() =>
                 router.push(
                   "/carpool-management/form/process-one?id=" +
-                    row.original.mas_carpool_uid
+                    row.original.mas_carpool_uid +
+                    "&name=" +
+                    row.original.carpool_name +
+                    "&active=" +
+                    row.original.is_active
                 )
               }
             >

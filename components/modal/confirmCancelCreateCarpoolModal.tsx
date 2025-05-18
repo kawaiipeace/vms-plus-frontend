@@ -2,8 +2,13 @@ import { useFormContext } from "@/contexts/carpoolFormContext";
 import { deleteCarpool } from "@/services/carpoolManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 interface Props {
   id: string;
@@ -17,9 +22,11 @@ interface Props {
 const ConfirmCancelCreateCarpoolModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText, onConfirm, remove = false }, ref) => {
+>(({ title, desc, confirmText, onConfirm, remove = false }, ref) => {
   // Destructure `process` from props
+  const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
+  const [inputValue, setInputValue] = useState("");
 
   const { formData, updateFormData } = useFormContext();
 
@@ -37,15 +44,13 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
       try {
         if (remove) {
           const response = await deleteCarpool({
-            carpool_name: formData.carpool_name,
-            mas_carpool_uid: formData.mas_carpool_uid,
+            carpool_name: inputValue,
+            mas_carpool_uid: id || formData.mas_carpool_uid,
           });
           if (response.request.status === 200) {
           }
         } else {
-          console.log("formData 1: ", formData);
           updateFormData({});
-          console.log("formData 2: ", formData);
           modalRef.current?.close();
           router.push("/carpool-management");
         }
@@ -75,6 +80,20 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
             />
             <div className="confirm-title text-xl font-medium">{title}</div>
             <div className="confirm-text">{desc}</div>
+            {remove && (
+              <div className="mt-6 flex flex-col items-center gap-2">
+                <label className="form-label w-full !text-start">
+                  พิมพ์ชื่อกลุ่มเพื่อยืนยันการลบ
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="ชื่อกลุ่ม"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                />
+              </div>
+            )}
             <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
               <form method="dialog" className="col-span-1">
                 <button className="btn btn-secondary w-full">
@@ -83,7 +102,7 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
               </form>
               <button
                 type="button"
-                className="btn btn-primary bg-icon-error col-span-1"
+                className="btn btn-primary !bg-icon-error col-span-1"
                 onClick={handleConfirm}
               >
                 {confirmText}

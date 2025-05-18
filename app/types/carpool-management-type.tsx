@@ -41,6 +41,9 @@ export interface Carpool {
   is_must_pass_status_30: string;
   is_must_pass_status_40: string;
   is_must_pass_status_50: string;
+  carpool_authorized_depts: {
+    dept_sap: string;
+  }[];
 }
 
 export interface CarChoice {

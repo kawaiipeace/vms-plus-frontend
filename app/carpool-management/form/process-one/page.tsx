@@ -9,13 +9,19 @@ import SideBar from "@/components/sideBar";
 import CarpoolManagementTabs from "@/components/tabs/carpoolManagemntTabs";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
-import { getCarpoolManagementId } from "@/services/carpoolManagement";
+import {
+  getCarpoolManagementId,
+  putCarpoolSetActive,
+} from "@/services/carpoolManagement";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function CarpoolProcessOne() {
   const id = useSearchParams().get("id");
+  const name = useSearchParams().get("name");
+  const active = useSearchParams().get("active");
+  const router = useRouter();
   const { isPinned } = useSidebar();
 
   const [carpool, setCarpool] = useState<Carpool>();
@@ -27,9 +33,6 @@ export default function CarpoolProcessOne() {
 
   const { formData } = useFormContext();
 
-  console.log("formData: ", formData);
-  console.log("id: ", id);
-
   useEffect(() => {
     const FetchIdFunc = async () => {
       if (id || formData.mas_carpool_uid) {
@@ -38,7 +41,6 @@ export default function CarpoolProcessOne() {
             id || formData.mas_carpool_uid
           );
           const result = response.data;
-          console.log("result: ", result);
           setCarpool(result);
         } catch (error) {
           console.error("Error fetching status data:", error);
@@ -48,6 +50,27 @@ export default function CarpoolProcessOne() {
 
     FetchIdFunc();
   }, [id]);
+
+  const handleActive = async () => {
+    try {
+      const response = await putCarpoolSetActive(
+        id as string,
+        active === "1" ? "0" : "1"
+      );
+      if (response.request.status === 200) {
+        router.push(
+          "/carpool-management/form/process-five?id=" +
+            id +
+            "&name=" +
+            name +
+            "&active=" +
+            (active === "1" ? "0" : "1")
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>
@@ -81,15 +104,40 @@ export default function CarpoolProcessOne() {
               <div className="page-group-header">
                 <div className="page-title justify-between">
                   <span className="page-title-label">
-                    {id ? carpool?.carpool_name : "สร้างกลุ่มยานพาหนะ"}
+                    {id ? name : "สร้างกลุ่มยานพาหนะ"}
                   </span>
-                  <span
-                    className="text-icon-error cursor-pointer"
-                    onClick={() => cancelCreateModalRef.current?.openModal()}
-                  >
-                    ยกเลิก
-                  </span>
-                  {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+                  <div className="flex items-center gap-6">
+                    <span
+                      className={
+                        active === "1"
+                          ? "text-[#98A2B3]"
+                          : "text-icon-error cursor-pointer"
+                      }
+                      onClick={() =>
+                        active === "1"
+                          ? {}
+                          : cancelCreateModalRef.current?.openModal()
+                      }
+                    >
+                      {id ? "ลบกลุ่ม" : "ยกเลิก"}
+                    </span>
+                    {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+                    <div className="custom-group">
+                      <div className="custom-control custom-checkbox custom-control-inline !gap-2">
+                        <input
+                          type="checkbox"
+                          checked={active === "1"}
+                          onClick={handleActive}
+                          className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
+                        />
+                        <label className="custom-control-label !w-fit">
+                          <div className="custom-control-label-group">
+                            {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -104,9 +152,20 @@ export default function CarpoolProcessOne() {
             <ConfirmCancelCreateCarpoolModal
               id={""}
               ref={cancelCreateModalRef}
-              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
-              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
-              confirmText={"ยกเลิกการสร้างกลุ่ม"}
+              title={
+                id
+                  ? "ยืนยันลบกลุ่มยานพาหนะ"
+                  : "คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"
+              }
+              desc={
+                id
+                  ? "ระบบจะนำยานพาหนะและพนักงานขับรถออกจากการให้บริการของกลุ่มโดยอัตโนมัติคุณต้องการลบ " +
+                    name +
+                    " ใช่หรือไม่?"
+                  : "หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"
+              }
+              confirmText={id ? "ลบกลุ่ม" : "ยกเลิกการสร้างกลุ่ม"}
+              remove={!!id}
             />
           </div>
         </div>

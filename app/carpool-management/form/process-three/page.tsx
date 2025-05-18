@@ -14,13 +14,19 @@ import AddCarpoolApproverModal from "@/components/modal/addCarpoolApproverModal"
 import CarpoolApproverTable from "@/components/table/carpool-approver-table";
 import ConfirmSkipStepCarpoolModal from "@/components/modal/confirmSkipStepCarpoolModal";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
-import { getCarpoolApproverSearch } from "@/services/carpoolManagement";
+import {
+  getCarpoolApproverSearch,
+  putCarpoolSetActive,
+} from "@/services/carpoolManagement";
 import { useFormContext } from "@/contexts/carpoolFormContext";
+import CarpoolManagementTabs from "@/components/tabs/carpoolManagemntTabs";
 
 export default function CarpoolProcessThree() {
   const { isPinned } = useSidebar();
   const router = useRouter();
   const id = useSearchParams().get("id");
+  const name = useSearchParams().get("name");
+  const active = useSearchParams().get("active");
   const [refetch, setRefetch] = useState(false);
 
   const { formData } = useFormContext();
@@ -58,10 +64,16 @@ export default function CarpoolProcessThree() {
     }
   }, [formData]);
 
+  useEffect(() => {
+    if (id) {
+      fetchCarpoolApproverSearchFunc();
+    }
+  }, []);
+
   const fetchCarpoolApproverSearchFunc = async (newPagination?: any) => {
     try {
       const response = await getCarpoolApproverSearch(
-        formData.mas_carpool_uid,
+        id || formData.mas_carpool_uid,
         { ...newPagination, ...pagination }
       );
       const result = response.data;
@@ -99,6 +111,27 @@ export default function CarpoolProcessThree() {
     }));
   };
 
+  const handleActive = async () => {
+    try {
+      const response = await putCarpoolSetActive(
+        id as string,
+        active === "1" ? "0" : "1"
+      );
+      if (response.request.status === 200) {
+        router.push(
+          "/carpool-management/form/process-five?id=" +
+            id +
+            "&name=" +
+            name +
+            "&active=" +
+            (active === "1" ? "0" : "1")
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <div className="main-container">
@@ -130,18 +163,50 @@ export default function CarpoolProcessThree() {
 
               <div className="page-group-header">
                 <div className="page-title justify-between">
-                  <span className="page-title-label">สร้างกลุ่มยานพาหนะ</span>
-                  <span
-                    className="text-icon-error cursor-pointer"
-                    onClick={() => cancelCreateModalRef.current?.openModal()}
-                  >
-                    ยกเลิก
+                  <span className="page-title-label">
+                    {id ? name : "สร้างกลุ่มยานพาหนะ"}
                   </span>
-                  {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+                  <div className="flex items-center gap-6">
+                    <span
+                      className={
+                        active === "1"
+                          ? "text-[#98A2B3]"
+                          : "text-icon-error cursor-pointer"
+                      }
+                      onClick={() =>
+                        active === "1"
+                          ? {}
+                          : cancelCreateModalRef.current?.openModal()
+                      }
+                    >
+                      {id ? "ลบกลุ่ม" : "ยกเลิก"}
+                    </span>
+                    {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
+                    <div className="custom-group">
+                      <div className="custom-control custom-checkbox custom-control-inline !gap-2">
+                        <input
+                          type="checkbox"
+                          checked={active === "1"}
+                          onClick={handleActive}
+                          className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
+                        />
+                        <label className="custom-control-label !w-fit">
+                          <div className="custom-control-label-group">
+                            {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <ProcessCreateCarpool step={3} />
+
+            {id ? (
+              <CarpoolManagementTabs active={2} />
+            ) : (
+              <ProcessCreateCarpool step={3} />
+            )}
 
             {data.length > 0 && (
               <>
@@ -249,12 +314,23 @@ export default function CarpoolProcessThree() {
             <ConfirmCancelCreateCarpoolModal
               id={""}
               ref={cancelCreateModalRef}
-              title={"คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"}
-              desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
-              confirmText={"ยกเลิกการสร้างกลุ่ม"}
+              title={
+                id
+                  ? "ยืนยันลบกลุ่มยานพาหนะ"
+                  : "คุณแน่ใจที่จะยกเลิกการสร้างกลุ่ม?"
+              }
+              desc={
+                id
+                  ? "ระบบจะนำยานพาหนะและพนักงานขับรถออกจากการให้บริการของกลุ่มโดยอัตโนมัติคุณต้องการลบ " +
+                    name +
+                    " ใช่หรือไม่?"
+                  : "หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"
+              }
+              confirmText={id ? "ลบกลุ่ม" : "ยกเลิกการสร้างกลุ่ม"}
+              remove={!!id}
             />
 
-            {data.length > 0 && (
+            {data.length > 0 && !id && (
               <div className="form-action">
                 <button
                   onClick={() =>

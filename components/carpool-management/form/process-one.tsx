@@ -129,6 +129,8 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     }
   }, [group]);
 
+  console.log("carpool: ", carpool);
+
   useEffect(() => {
     if (carpool) {
       const { carpool_name, carpool_contact_place, carpool_contact_number } =
