@@ -11,6 +11,7 @@ import CarpoolManagementTable from "@/components/table/carpool-management-table"
 import ZeroRecord from "@/components/zeroRecord";
 import FilterCarpoolModal from "@/components/modal/filterCarpool";
 import { useRouter } from "next/navigation";
+import Header from "@/components/header";
 
 export default function CarpoolManagement() {
   const [params, setParams] = useState<CarpoolParams>({});
@@ -76,6 +77,7 @@ export default function CarpoolManagement() {
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
           }`}
         >
+          <Header />
           <div className="main-content-body">
             <div className="page-header">
               <div className="breadcrumbs text-sm">
