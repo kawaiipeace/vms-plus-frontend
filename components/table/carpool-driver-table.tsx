@@ -9,6 +9,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { CarpoolDriver } from "@/app/types/carpool-management-type";
+import dayjs from "dayjs";
 
 interface PaginationType {
   limit: number;
@@ -31,19 +33,24 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
     pageSize: pagination.limit,
   });
 
-  const columns: ColumnDef<any>[] = [
+  console.log("defaultData: ", defaultData);
+
+  const columns: ColumnDef<CarpoolDriver>[] = [
     {
-      accessorKey: "carpool_name",
+      accessorKey: "driver_name",
       header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-left font-semibold" data-name="ชื่อ - นามสกุล">
-          {row.original.carpool_name}
+          {row.original.driver_name}{" "}
+          {row.original.driver_nickname
+            ? `(${row.original.driver_nickname})`
+            : ""}
         </div>
       ),
     },
     {
-      accessorKey: "carpool_dept_sap",
+      accessorKey: "driver_dept_sap_short_name_hire",
       header: () => <div className="text-center">หน่วยงานสังกัด</div>,
       enableSorting: false,
       // cell: ({ row }) => (
@@ -56,7 +63,7 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
       // ),
     },
     {
-      accessorKey: "carpool_contact_place",
+      accessorKey: "driver_contact_number",
       header: () => <div className="text-left">เบอร์โทรศัพท์</div>,
       enableSorting: false,
       // cell: ({ row }) => (
@@ -91,13 +98,15 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
       // ),
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "approved_job_driver_end_date",
       header: () => <div className="text-center">วันที่หมดอายุใบขับขี่</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="วันที่หมดอายุใบขับขี่">
-            {row.original.number_of_vehicles} คัน
+            {dayjs(row.original.approved_job_driver_end_date).format(
+              "DD/MM/BBBB"
+            )}
           </div>
         );
       },
@@ -109,43 +118,33 @@ export default function CarpoolDriverTable({ defaultData, pagination }: Props) {
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="วันที่สิ้นสุดปฏิบัติงาน">
-            {row.original.number_of_vehicles} คัน
+            {dayjs(row.original.approved_job_driver_end_date).format(
+              "DD/MM/BBBB"
+            )}
           </div>
         );
       },
     },
     {
-      accessorKey: "number_of_vehicles",
-      header: () => <div className="text-center">เลขไมล์ล่าสุด</div>,
-      enableSorting: true,
-      cell: ({ row }) => {
-        return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "driver_average_satisfaction_score",
       header: () => <div className="text-center">คะแนน</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.number_of_vehicles} คัน
+            {row.original.driver_average_satisfaction_score}
           </div>
         );
       },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "driver_status_name",
       header: () => <div className="text-center">สถานะ</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
+          <div className="text-left" data-name="สถานะ">
+            {row.original.driver_status_name}
           </div>
         );
       },

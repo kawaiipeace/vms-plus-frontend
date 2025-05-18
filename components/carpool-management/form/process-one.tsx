@@ -165,6 +165,8 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     );
     if (id) {
       console.log("edit");
+    } else if (formData.mas_carpool_uid && !id) {
+      router.push("/carpool-management/form/process-two");
     } else {
       try {
         const response = await postCarpoolCreate({

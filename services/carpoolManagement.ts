@@ -1,6 +1,7 @@
 import {
   CarpoolAdminCreate,
   CarpoolApproverCreate,
+  CarpoolDriverCreate,
   CarpoolDriverParams,
   CarpoolForm,
   CarpoolParams,
@@ -151,10 +152,11 @@ export const postCarpoolAdminCreate = async (data: CarpoolAdminCreate) => {
   }
 };
 
-export const getCarpoolAdminSearch = async (id: string) => {
+export const getCarpoolAdminSearch = async (id: string, params: any) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/admin-search/" + id
+      "carpool-management/admin-search/" + id,
+      { params }
     );
 
     return response;
@@ -177,10 +179,11 @@ export const postCarpoolApproverCreate = async (
   }
 };
 
-export const getCarpoolApproverSearch = async (id: string) => {
+export const getCarpoolApproverSearch = async (id: string, params: any) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/approver-search/" + id
+      "carpool-management/approver-search/" + id,
+      { params }
     );
 
     return response;
@@ -203,12 +206,164 @@ export const postCarpoolVehicleCreate = async (
   }
 };
 
-export const getCarpoolVehicleSearch = async (id: string) => {
+export const getCarpoolVehicleSearch = async (id: string, params: any) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/vehicle-search/" + id
+      "carpool-management/vehicle-search/" + id,
+      { params }
     );
 
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postCarpoolDriverCreate = async (data: CarpoolDriverCreate[]) => {
+  try {
+    const response = await axiosInstance.post(
+      "carpool-management/driver-create",
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolDriverSearch = async (id: string, params: any) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/driver-search/" + id,
+      { params }
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putCarpoolAdminUpdate = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/admin-update/" + id,
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putCarpoolMainAdminUpdate = async (id: string) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/admin-update-main-admin/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCarpoolAdmin = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      "carpool-management/admin-delete/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolAdminDetails = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/admin-detail/" + id
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putCarpoolApproverUpdate = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/approver-update/" + id,
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putCarpoolMainApproverUpdate = async (id: string) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/approver-update-main-approver/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCarpoolApprover = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      "carpool-management/approver-delete/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolApproverDetails = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/approver-detail/" + id
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCarpoolVehicle = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      "carpool-management/vehicle-delete/" + id
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolVehicleDetails = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/vehicle-detail/" + id
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCarpool = async (data: any) => {
+  try {
+    const response = await axiosInstance.delete("carpool-management/delete", {
+      data,
+    });
     return response;
   } catch (error) {
     throw error;

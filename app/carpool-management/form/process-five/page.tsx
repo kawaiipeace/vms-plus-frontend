@@ -6,18 +6,23 @@ import ProcessCreateCarpool from "@/components/processCreateCarpool";
 import SideBar from "@/components/sideBar";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import PaginationControls from "@/components/table/pagination-control";
 import AddCarpoolDriverModal from "@/components/modal/addCarpoolDriverModal";
 import CarpoolDriverTable from "@/components/table/carpool-driver-table";
 import ConfirmCreateCarpoolModal from "@/components/modal/confirmCreateCarpoolModal";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
+import { useFormContext } from "@/contexts/carpoolFormContext";
+import { getCarpoolDriverSearch } from "@/services/carpoolManagement";
 
 export default function CarpoolProcessFive() {
   const { isPinned } = useSidebar();
-  const router = useRouter();
+  const id = useSearchParams().get("id");
+  const [refetch, setRefetch] = useState(false);
+
+  const { formData } = useFormContext();
 
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState<PaginationType>({
@@ -40,22 +45,57 @@ export default function CarpoolProcessFive() {
     closeModal: () => void;
   } | null>(null);
 
+  useEffect(() => {
+    if (refetch) {
+      fetchCarpoolDriverSearchFunc();
+    }
+  }, [refetch]);
+
+  useEffect(() => {
+    if (!id) {
+      if (formData.mas_carpool_uid) fetchCarpoolDriverSearchFunc();
+    }
+  }, [formData]);
+
+  const fetchCarpoolDriverSearchFunc = async (newPagination?: any) => {
+    try {
+      const response = await getCarpoolDriverSearch(formData.mas_carpool_uid, {
+        ...newPagination,
+        ...pagination,
+      });
+      const result = response.data;
+      setData(result.drivers);
+      setRefetch(false);
+      setPagination(result.pagination);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
+
   const handlePageChange = (newPage: number) => {
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   page: newPage,
-    // }));
+    fetchCarpoolDriverSearchFunc({
+      ...pagination,
+      page: newPage,
+    });
+    setPagination((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    // const limit =
-    //   typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   limit,
-    //   page: 1, // Reset to the first page when page size changes
-    // }));
-    // console.log(newLimit);
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    fetchCarpoolDriverSearchFunc({
+      ...pagination,
+      limit,
+      page: 1,
+    });
+    setPagination((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1, // Reset to the first page when page size changes
+    }));
   };
 
   return (
@@ -111,28 +151,36 @@ export default function CarpoolProcessFive() {
                       <div className="page-title">
                         <span className="page-title-label">ยานพาหนะ</span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          3 คัน
+                          {pagination.total} คัน
                         </span>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <button className="btn btn-secondary w-full">
+                    <button
+                      className="btn btn-secondary w-full"
+                      onClick={() =>
+                        addCarpoolDriverModalRef.current?.openModal()
+                      }
+                    >
                       <i className="material-symbols-outlined">add</i>
                       เพิ่ม
                     </button>
                   </div>
                 </div>
 
-                <CarpoolDriverTable defaultData={[]} pagination={pagination} />
+                <CarpoolDriverTable
+                  defaultData={data}
+                  pagination={pagination}
+                />
 
                 <PaginationControls
                   pagination={{
                     limit: pagination.limit,
                     page: pagination.page,
-                    totalPages: 1,
-                    total: 0,
+                    totalPages: pagination.totalPages,
+                    total: pagination.total,
                   }}
                   onPageChange={handlePageChange}
                   onPageSizeChange={handlePageSizeChange}
@@ -178,13 +226,13 @@ export default function CarpoolProcessFive() {
                 </div>
               </div>
             )}
+
             <AddCarpoolDriverModal
               ref={addCarpoolDriverModalRef}
               id={""}
-              title={""}
-              desc={""}
-              confirmText={""}
+              setRefetch={setRefetch}
             />
+
             <ConfirmCreateCarpoolModal
               ref={addCarpoolConfirmModalRef}
               id={"ยืนยันสร้างกลุ่มยานพาหนะ"}
@@ -194,6 +242,7 @@ export default function CarpoolProcessFive() {
               }
               confirmText={"สร้างกลุ่ม"}
             />
+
             <ConfirmCancelCreateCarpoolModal
               id={""}
               ref={cancelCreateModalRef}
@@ -201,7 +250,6 @@ export default function CarpoolProcessFive() {
               desc={"หากยกเลิก การกรอกข้อมูลทั้งหมดจะไม่ถูกบันทึกไว้"}
               confirmText={"ยกเลิกการสร้างกลุ่ม"}
             />
-            {/* <RequestForm /> */}
 
             {data.length > 0 && (
               <div className="form-action">
@@ -216,7 +264,6 @@ export default function CarpoolProcessFive() {
                 </button>
               </div>
             )}
-            {/* <RequestForm /> */}
           </div>
         </div>
       </div>

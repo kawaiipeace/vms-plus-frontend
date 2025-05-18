@@ -1,6 +1,4 @@
-import { updateSendback } from "@/services/bookingUser";
 import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
 import React, {
   forwardRef,
   useEffect,
@@ -17,17 +15,14 @@ import { useFormContext } from "@/contexts/carpoolFormContext";
 
 interface Props {
   id: string;
-  title: string;
-  desc: string;
-  confirmText: string;
+  setRefetch: (value: boolean) => void;
 }
 
 const AddCarpoolVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText }, ref) => {
+>(({ id, setRefetch }, ref) => {
   // Destructure `process` from props
-  const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
@@ -113,23 +108,18 @@ const AddCarpoolVehicleModal = forwardRef<
   }, [params]);
 
   const handleConfirm = async () => {
-    if (id) {
-      console.log("edit");
-    } else {
-      try {
-        const data = checked.map((item) => ({
-          mas_carpool_uid: formData.mas_carpool_uid,
-          mas_vehicle_uid: item,
-        }));
-        const response = await postCarpoolVehicleCreate(data);
-        if (response.request.status === 201) {
-          router.push(
-            "/carpool-management/form/process-four?vehicle-created=true"
-          );
-        }
-      } catch (error) {
-        console.log(error);
+    try {
+      const data = checked.map((item) => ({
+        mas_carpool_uid: formData.mas_carpool_uid,
+        mas_vehicle_uid: item,
+      }));
+      const response = await postCarpoolVehicleCreate(data);
+      if (response.request.status === 201) {
+        setRefetch(true);
+        modalRef.current?.close();
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 

@@ -1,3 +1,5 @@
+import { useFormContext } from "@/contexts/carpoolFormContext";
+import { deleteCarpool } from "@/services/carpoolManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,14 +10,18 @@ interface Props {
   title: string;
   desc: React.ReactElement | string;
   confirmText: string;
+  onConfirm?: () => void;
+  remove?: boolean;
 }
 
 const ConfirmCancelCreateCarpoolModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText }, ref) => {
+>(({ id, title, desc, confirmText, onConfirm, remove = false }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
+
+  const { formData, updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -24,8 +30,29 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
 
   const router = useRouter();
 
-  const handleConfirm = () => {
-    modalRef.current?.close();
+  const handleConfirm = async () => {
+    if (onConfirm) {
+      onConfirm();
+    } else {
+      try {
+        if (remove) {
+          const response = await deleteCarpool({
+            carpool_name: formData.carpool_name,
+            mas_carpool_uid: formData.mas_carpool_uid,
+          });
+          if (response.request.status === 200) {
+          }
+        } else {
+          console.log("formData 1: ", formData);
+          updateFormData({});
+          console.log("formData 2: ", formData);
+          modalRef.current?.close();
+          router.push("/carpool-management");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());

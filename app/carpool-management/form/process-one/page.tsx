@@ -7,6 +7,7 @@ import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCre
 import ProcessCreateCarpool from "@/components/processCreateCarpool";
 import SideBar from "@/components/sideBar";
 import CarpoolManagementTabs from "@/components/tabs/carpoolManagemntTabs";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { getCarpoolManagementId } from "@/services/carpoolManagement";
 import Link from "next/link";
@@ -24,11 +25,18 @@ export default function CarpoolProcessOne() {
     closeModal: () => void;
   } | null>(null);
 
+  const { formData } = useFormContext();
+
+  console.log("formData: ", formData);
+  console.log("id: ", id);
+
   useEffect(() => {
     const FetchIdFunc = async () => {
-      if (id) {
+      if (id || formData.mas_carpool_uid) {
         try {
-          const response = await getCarpoolManagementId(id);
+          const response = await getCarpoolManagementId(
+            id || formData.mas_carpool_uid
+          );
           const result = response.data;
           console.log("result: ", result);
           setCarpool(result);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataTable } from "./dataTable";
 import {
   ColumnDef,
@@ -9,6 +9,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
+import { deleteCarpoolVehicle } from "@/services/carpoolManagement";
 
 interface PaginationType {
   limit: number;
@@ -20,23 +22,46 @@ interface PaginationType {
 interface Props {
   defaultData: any[];
   pagination: PaginationType;
+  setRefetch: (value: boolean) => void;
 }
 
 export default function CarpoolVehicleTable({
   defaultData,
   pagination,
+  setRefetch,
 }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [deleteId, setDeleteId] = useState<string | undefined>();
+
+  const cancelCreateModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
 
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1,
     pageSize: pagination.limit,
   });
 
+  const handleDelete = async () => {
+    if (deleteId) {
+      try {
+        const response = await deleteCarpoolVehicle(deleteId);
+        if (response.request.status === 200) {
+          setDeleteId(undefined);
+          setRefetch(true);
+          cancelCreateModalRef.current?.closeModal();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "carpool_name",
+      accessorKey: "vehicle_license_plate",
       header: () => (
         <div className="text-center">เลขทะเบียน / ยี่ห้อ / รุ่น</div>
       ),
@@ -46,116 +71,101 @@ export default function CarpoolVehicleTable({
           className="text-left font-semibold"
           data-name="เลขทะเบียน / ยี่ห้อ / รุ่น"
         >
-          {row.original.carpool_name}
+          <div>{row.original.vehicle_license_plate}</div>
+          <div className="text-xs text-[#475467]">
+            {row.original.vehicle_brand} {row.original.vehicle_model}
+          </div>
         </div>
       ),
     },
     {
-      accessorKey: "carpool_dept_sap",
+      accessorKey: "CarType",
       header: () => <div className="text-center">ประเภทยานพาหนะ</div>,
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="สถานที่จอดรถ">
-      //     <div className="flex flex-col">
-      //       {" "}
-      //       <div className="text-left">{row.original.parking_place}</div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
-      accessorKey: "carpool_contact_place",
+      accessorKey: "ref_fuel_type_id",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
-      //     <div className="flex flex-col">
-      //       <div>{row.original.vehicle_user_emp_name}</div>
-      //       <div className="text-color-secondary text-xs">
-      //         {row.original.vehicle_user_dept_sap_short}
-      //       </div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
-      accessorKey: "carpool_contact_number",
+      accessorKey: "owner_dept_name",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
           <div className="text-center">สังกัดยานพาหนะ</div>
         </div>
       ),
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="เลขที่คำขอ">
-      //     <div className="flex flex-col">
-      //       <div>{row.original.request_no}</div>
-      //       <div className="text-left">
-      //         {row.original.is_have_sub_request === "1" &&
-      //           "ปฏิบัติงานต่อเนื่อง"}
-      //       </div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "fleet_card_no",
       header: () => (
         <div className="text-center">หมายเลขบัตรเติมน้ำมัน / RFID</div>
       ),
       enableSorting: true,
-      cell: ({ row }) => {
-        return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
-          </div>
-        );
-      },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "is_tax_credit",
       header: () => <div className="text-center">เครดิตภาษี</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
+          <div className="text-left" data-name="เครดิตภาษี">
+            {row.original.is_tax_credit === "1" ? (
+              <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
+                <i className="material-symbols-outlined text-[#ABEFC6">check</i>
+              </div>
+            ) : (
+              <div className="w-6 h-6 rounded-full border border-[#FECDCA] bg-[#FEF3F2] flex items-center justify-center">
+                <i className="material-symbols-outlined text-[#FECDCA">close</i>
+              </div>
+            )}
           </div>
         );
       },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "vehicle_mileage",
       header: () => <div className="text-center">เลขไมล์ล่าสุด</div>,
       enableSorting: true,
-      cell: ({ row }) => {
-        return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
-          </div>
-        );
-      },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "vehicle_registration_date",
       header: () => <div className="text-center">อายุการใช้งาน</div>,
       enableSorting: true,
-      cell: ({ row }) => {
-        return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
-          </div>
-        );
-      },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "ref_vehicle_status_code",
       header: () => <div className="text-center">สถานะ</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
+          <div className="text-left" data-name="สถานะ">
+            {row.original.ref_vehicle_status_code === "ปกติ" ? (
+              <div className="text-[#067647] bg-[#ECFDF3] border border-[#ABEFC6] rounded-full flex items-center justify-center">
+                ปกติ
+              </div>
+            ) : row.original.ref_vehicle_status_code === "บำรุงรักษา" ? (
+              <div className="text-[#FEDF89] bg-[#FFFAEB] border border-[#B54708] rounded-full flex items-center justify-center">
+                บำรุงรักษา
+              </div>
+            ) : row.original.ref_vehicle_status_code === "สิ้นสุดสัญญา" ? (
+              <div className="text-[#344054] bg-[#F9FAFB] border border-[#EAECF0] rounded-full flex items-center justify-center">
+                บำรุงรักษา
+              </div>
+            ) : row.original.ref_vehicle_status_code === "ส่งซ่อม" ? (
+              <div className="text-[#B42318] bg-[#FEF3F2] border border-[#FECDCA] rounded-full flex items-center justify-center">
+                ส่งซ่อม
+              </div>
+            ) : row.original.ref_vehicle_status_code === "ใช้ชั่วคราว" ? (
+              <div className="text-[#3538CD] bg-[#EEF4FF] border border-[#C7D7FE] rounded-full flex items-center justify-center">
+                ใช้ชั่วคราว
+              </div>
+            ) : (
+              <div className="text-[#344054] bg-[#F9FAFB] border border-[#EAECF0] rounded-full flex items-center justify-center">
+                {row.original.ref_vehicle_status_code}
+              </div>
+            )}
           </div>
         );
       },
@@ -169,10 +179,13 @@ export default function CarpoolVehicleTable({
           <div className="text-left dataTable-action">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-              data-tip="ดูรายละเอียด"
-              //   onClick={() => router.push("/carpool-management")}
+              data-tip="ลบ"
+              onClick={() => {
+                cancelCreateModalRef.current?.openModal();
+                setDeleteId(row.original.mas_carpool_vehicle_uid);
+              }}
             >
-              <i className="material-symbols-outlined">quick_reference_all</i>
+              <i className="material-symbols-outlined">delete</i>
             </button>
           </div>
         );
@@ -208,6 +221,23 @@ export default function CarpoolVehicleTable({
           <DataTable table={table} />
         </>
       )}
+
+      <ConfirmCancelCreateCarpoolModal
+        id={""}
+        ref={cancelCreateModalRef}
+        title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
+        desc={
+          "คุณต้องการนำยานพาหนะเลขทะเบียน " +
+          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+            ?.vehicle_license_plate +
+          " สังกัด " +
+          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+            ?.owner_dept_name +
+          " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
+        }
+        confirmText={"นำยานพาหนะออก"}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }
