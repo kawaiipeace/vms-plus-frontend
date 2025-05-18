@@ -104,7 +104,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                 </button>
               )}
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} displayPhone={true} />
           </div>
 
           <div className="form-section">

@@ -1,72 +1,48 @@
-import { VehicleUserType } from "@/app/types/vehicle-user-type";
-import { fetchVehicleUsers } from "@/services/masterService";
-import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface Props {
-  id: string;
-  requestData?: RequestDetailType;
-  displayPhone?: boolean;
+  created_request_datetime: string; // ISO format
+  created_request_emp_id: string;
+  created_request_emp_name: string;
+  created_request_emp_position: string;
+  created_request_dept_sap: string;
+  created_request_dept_sap_name_short: string;
+  created_request_dept_sap_name_full: string;
+  created_request_phone_number: string;
+  created_request_mobile_number: string;
+  created_request_image_url: string;
 }
 
 export default function VehicleUserInfoCard({
-  id,
-  requestData,
-  displayPhone
+  created_request_emp_id,
+  created_request_emp_name,
+  created_request_dept_sap_name_short,
+  created_request_phone_number,
+  created_request_mobile_number,
+  created_request_image_url,
 }: Props) {
-  const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log('idvehicle',id);
-        const res = await fetchVehicleUsers(id);
-        console.log("vehicledata", res);
-        let user = res.data[0];
-
-        // Override only contact numbers from requestData if available
-        if (requestData) {
-          user = {
-            ...user,
-            tel_mobile: requestData.car_user_mobile_contact_number,
-            tel_internal: requestData.car_user_internal_contact_number,
-          };
-        }
-
-        setVehicleUser(user);
-      } catch (error) {
-        console.error("Error fetching driver data:", error);
-      }
-    };
-
-    if (id) {
-      fetchData();
-    }
-  }, [id, requestData]);
-
   return (
     <div className="form-card">
       <div className="form-card-body form-card-inline">
         <div className="form-group form-plaintext form-users">
           <Image
-            src={vehicleUser?.image_url || "/assets/img/avatar.svg"}
+            src={created_request_image_url || "/assets/img/avatar.svg"}
             className="avatar avatar-md"
             width={100}
             height={100}
             alt=""
           />
           <div className="form-plaintext-group align-self-center">
-            <div className="form-label">{vehicleUser?.full_name}</div>
+            <div className="form-label">{created_request_emp_name}</div>
             <div className="supporting-text-group">
-              <div className="supporting-text">{vehicleUser?.emp_id}</div>
+              <div className="supporting-text">{created_request_emp_id}</div>
               <div className="supporting-text">
-                {vehicleUser?.dept_sap_short}
+                {created_request_dept_sap_name_short}
               </div>
             </div>
           </div>
         </div>
-        {displayPhone &&
+    
         <div className="form-card-right align-self-center">
           <div className="flex flex-wrap gap-4">
             <div className="col-span-12 md:col-span-6">
@@ -74,30 +50,27 @@ export default function VehicleUserInfoCard({
                 <i className="material-symbols-outlined">smartphone</i>
                 <div className="form-plaintext-group">
                   <div className="form-text text-nowrap">
-                    {vehicleUser?.tel_mobile}
+                    {created_request_mobile_number}
                   </div>
                 </div>
               </div>
             </div>
 
-            {vehicleUser?.tel_internal && (
+            {created_request_phone_number && (
               <div className="col-span-12 md:col-span-6">
                 <div className="form-group form-plaintext">
                   <i className="material-symbols-outlined">call</i>
                   <div className="form-plaintext-group">
                     <div className="form-text text-nowrap">
-                      {vehicleUser?.tel_internal}
+                      {created_request_phone_number}
                     </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
-
         </div>
-         }
       </div>
-
     </div>
   );
 }

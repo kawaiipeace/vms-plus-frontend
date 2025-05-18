@@ -54,6 +54,7 @@ export default function KeyPickUpDetailForm({
             <VehicleUserInfoCard
               id={requestData?.vehicle_user_emp_id || ""}
               requestData={requestData}
+              displayPhone={true} 
             />
           </div>
 

@@ -30,6 +30,15 @@ export const fetchUserDrivers = async (search?: string) => {
   }
 };
 
+export const fetchDriverLicenseType = async () => {
+  try {
+    const response = await axiosInstance.get("ref/driver-license-type");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchCostTypes = async () => {
   try {
     const response = await axiosInstance.get("ref/cost-type");

@@ -102,6 +102,7 @@ export default function RequestDetailForm({
             <VehicleUserInfoCard
               id={requestData?.vehicle_user_emp_id || ""}
               requestData={requestData}
+              displayPhone={true} 
             />
           </div>
 
