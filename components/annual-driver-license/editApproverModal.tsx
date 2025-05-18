@@ -16,10 +16,11 @@ import CustomSelectApprover, {
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchUserApprovalLic } from "@/services/masterService";
 import { updateAnnualApprover } from "@/services/driver";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface EditApproverModalProps {
   title: string;
-  requestData?: any;
+  requestData?: RequestAnnualDriver;
   onUpdate?: (data: VehicleUserType) => void;
   onBack?: () => void;
 }
@@ -209,7 +210,7 @@ const EditApproverModal = forwardRef<
                         readOnly
                         {...field}
                       />
-                    )}
+                    )}s
                   />
                 </div>
               </div>

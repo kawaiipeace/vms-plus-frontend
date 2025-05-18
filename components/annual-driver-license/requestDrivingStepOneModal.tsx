@@ -58,6 +58,8 @@ const RequestDrivingStepOneModal = forwardRef<
     { value: string; label: string; desc: string }[]
   >([]);
 
+
+  console.log('ttt---',licRequestDetail);
   // Initialize state with values from licRequestDetail if it exists
   const [year, setYear] = useState<string>(
     licRequestDetail?.annual_yyyy?.toString() || ""

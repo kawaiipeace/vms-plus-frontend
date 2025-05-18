@@ -12,12 +12,13 @@ import useSwipeDown from "@/utils/swipeDown";
 import CustomSelectApprover, {
   CustomSelectOption,
 } from "./customSelectApprover";
-import { DriverLicenseCardType, VehicleUserType } from "@/app/types/vehicle-user-type";
+import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchUserFinalApprovalLic } from "@/services/masterService";
 import { updateAnnualApprover } from "@/services/driver";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface VehicleUserModalProps {
-  requestData?: DriverLicenseCardType;
+  requestData?: RequestAnnualDriver;
   title?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUpdate?: (data: any) => void;

@@ -285,7 +285,7 @@ const RequestStatusLicDetailModal = forwardRef<
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0 justify-between">
-          {requestData?.ref_request_annual_driver_status_code !== "90" ? (
+          {(requestData?.ref_request_annual_driver_status_code !== "11" && requestData?.ref_request_annual_driver_status_code !== "21") ? (
             <button
               className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
               onClick={() => cancelRequestModalRef.current?.openModal()}
@@ -300,7 +300,7 @@ const RequestStatusLicDetailModal = forwardRef<
             <form method="dialog">
               <button className="btn btn-secondary">ปิด</button>
             </form>
-            {requestData?.ref_request_annual_driver_status_code !== "90" ? (
+            {(requestData?.ref_request_annual_driver_status_code !== "11" && requestData?.ref_request_annual_driver_status_code !== "21") ? (
               <button
                 className="btn btn-secondary"
                 type="button"

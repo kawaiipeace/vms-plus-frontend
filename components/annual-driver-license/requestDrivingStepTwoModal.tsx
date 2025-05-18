@@ -10,11 +10,10 @@ import {
 import Link from "next/link";
 import EditApproverModal from "./editApproverModal";
 import {
-  DriverLicenseCardType,
   VehicleUserType,
 } from "@/app/types/vehicle-user-type";
 import EditFinalApproverModal from "./editFinalApproverModal";
-import { createAnnualLic } from "@/services/driver";
+import { createAnnualLic, resendLicenseAnnual } from "@/services/driver";
 import { useToast } from "@/contexts/toast-context";
 import ApproverInfoCard from "./ApproverInfoCard";
 import {
@@ -23,6 +22,7 @@ import {
 } from "@/services/masterService";
 import { convertToISO } from "@/utils/convertToISO";
 import { UploadFileType } from "@/app/types/upload-type";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -43,7 +43,8 @@ interface ReturnCarAddStep2ModalProps {
   status?: string;
   editable?: boolean;
   valueFormStep1?: ValueFormStep1;
-  requestData?: DriverLicenseCardType;
+  requestData?: RequestAnnualDriver;
+
   clearForm?: () => void;
   onSubmit?: () => void;
   onBack?: () => void;
@@ -134,7 +135,8 @@ const RequestDrivingStepTwoModal = forwardRef<
           ),
           driver_license_img: valueFormStep1?.licenseImages[0].file_url,
           driver_license_no: valueFormStep1?.licenseNumber,
-          ref_driver_license_type_code: valueFormStep1?.driverLicenseType?.value,
+          ref_driver_license_type_code:
+            valueFormStep1?.driverLicenseType?.value,
         };
 
         // Add certificate fields only if they exist
@@ -145,8 +147,12 @@ const RequestDrivingStepTwoModal = forwardRef<
           );
         }
 
-        if (valueFormStep1?.certificateImages && valueFormStep1.certificateImages.length > 0) {
-          basePayload.driver_certificate_img = valueFormStep1.certificateImages[0].file_url;
+        if (
+          valueFormStep1?.certificateImages &&
+          valueFormStep1.certificateImages.length > 0
+        ) {
+          basePayload.driver_certificate_img =
+            valueFormStep1.certificateImages[0].file_url;
         }
 
         if (valueFormStep1?.trainingDate) {
@@ -165,11 +171,21 @@ const RequestDrivingStepTwoModal = forwardRef<
         }
 
         if (valueFormStep1?.vehicleType?.value) {
-          basePayload.driver_certificate_type_code = Number(valueFormStep1.vehicleType.value);
+          basePayload.driver_certificate_type_code = Number(
+            valueFormStep1.vehicleType.value
+          );
         }
-
-
-        const response = await createAnnualLic(basePayload);
+        console.log(basePayload);
+        let response;
+        if (editable) {
+          response = await resendLicenseAnnual(
+            requestData?.trn_request_annual_driver_uid || "",
+            basePayload
+          );
+          console.log('res',response);
+        } else {
+          response = await createAnnualLic(basePayload);
+        }
 
         if (response) {
           showToast({

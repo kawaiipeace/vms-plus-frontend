@@ -255,7 +255,7 @@ export default function Header() {
                       <div className="badge badge-warning">
                         {profile.license_status}
                       </div>
-                    ) : profile?.license_status === "ตีกลับ" ? (
+                    ) : profile?.license_status === "รออนุมัติ" ? (
                       <>
                       <a
                         className="nav-link toggle-mode gap-1 flex items-center"
@@ -281,11 +281,11 @@ export default function Header() {
                             ขอทำหน้าที่ขับรถยนต์
                           </span>
                         </a>
-                        <div className="badge badge-gray">
+                        <div className="badge bg-brand-900 text-white">
                           ไม่มี
                         </div>
                       </>
-                    ) : profile?.license_status === "รออนุมัติ" ? (
+                    ) : profile?.license_status === "" ? (
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
@@ -357,6 +357,7 @@ export default function Header() {
         openStep1={() => RequestDrivingStepTwoModalRef.current?.openModal()}
         ref={RequestDrivingStepTwoModalRef}
         valueFormStep1={valueFormStep1}
+        requestData={licRequestDetail}
         editable={isEditable} 
         onTrackStatus={handleOpenRequestDetailDrivingModal}
         onBack={() => {

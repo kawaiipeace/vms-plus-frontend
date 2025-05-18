@@ -159,6 +159,17 @@ export const updateFinalApproverLicAnnualCancel = async (data: any) => {
   }
 }
 
+export const resendLicenseAnnual = async (id: string, payload: any) => {
+  try {
+    const response = await axiosInstance.put('driver-license-user/resend-license-annual/'+id, payload);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 
