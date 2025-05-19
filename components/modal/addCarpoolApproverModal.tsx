@@ -16,10 +16,17 @@ import {
 import { CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id?: string;
   setRefetch: (value: boolean) => void;
+}
+
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
 }
 
 const AddCarpoolApproverModal = forwardRef<
@@ -36,6 +43,7 @@ const AddCarpoolApproverModal = forwardRef<
   const [internal_contact_number, setInternalContactNumber] =
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const { formData } = useFormContext();
 
@@ -90,9 +98,23 @@ const AddCarpoolApproverModal = forwardRef<
           setInternalContactNumber("");
           setMobileContactNumber("");
           modalRef.current?.close();
+          setToast({
+            title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+            desc:
+              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+              approver.find((item) => item.emp_id === selectedApprover?.value)
+                ?.full_name +
+              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            status: "success",
+          });
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     } else {
       try {
@@ -112,6 +134,11 @@ const AddCarpoolApproverModal = forwardRef<
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -251,6 +278,15 @@ const AddCarpoolApproverModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });
