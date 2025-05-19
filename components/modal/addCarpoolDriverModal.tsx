@@ -13,6 +13,7 @@ import {
 import { CarpoolDriver } from "@/app/types/carpool-management-type";
 import dayjs from "dayjs";
 import { useFormContext } from "@/contexts/carpoolFormContext";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   id: string;
@@ -22,8 +23,9 @@ interface Props {
 const AddCarpoolDriverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, setRefetch }, ref) => {
+>(({ setRefetch }, ref) => {
   // Destructure `process` from props
+  const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
@@ -110,7 +112,7 @@ const AddCarpoolDriverModal = forwardRef<
   const handleConfirm = async () => {
     try {
       const data = checked.map((item) => ({
-        mas_carpool_uid: formData.mas_carpool_uid,
+        mas_carpool_uid: id || formData.mas_carpool_uid,
         mas_driver_uid: item,
       }));
       const response = await postCarpoolDriverCreate(data);

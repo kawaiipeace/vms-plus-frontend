@@ -289,14 +289,16 @@ export default function CarpoolProcessFive() {
                     <div>และพนักงานขับรถในขั้นตอนสุดท้่าย</div>
                   </div>
                   <div className="emptystate-action">
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() =>
-                        addCarpoolConfirmModalRef.current?.openModal()
-                      }
-                    >
-                      สร้างกลุ่มเลย
-                    </button>
+                    {!id && (
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() =>
+                          addCarpoolConfirmModalRef.current?.openModal()
+                        }
+                      >
+                        สร้างกลุ่มเลย
+                      </button>
+                    )}
 
                     <button
                       className="btn btn-primary"

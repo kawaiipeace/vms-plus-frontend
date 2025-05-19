@@ -23,6 +23,8 @@ import {
 import { convertToISO } from "@/utils/convertToISO";
 import { UploadFileType } from "@/app/types/upload-type";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -81,6 +83,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     console.log("valueFormStep1", valueFormStep1);
     const [approvers, setApprovers] = useState<VehicleUserType>();
     const [finalApprovers, setFinalApprovers] = useState<VehicleUserType>();
+    const router = useRouter();
 
     const { showToast } = useToast();
 
@@ -188,6 +191,7 @@ const RequestDrivingStepTwoModal = forwardRef<
         }
 
         if (response) {
+        
           showToast({
             title: "สร้างคำขอสำเร็จ",
             desc: (
@@ -240,7 +244,9 @@ const RequestDrivingStepTwoModal = forwardRef<
                   >
                     keyboard_arrow_left
                   </i>{" "}
-                  ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+                  ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
+              {requestData?.license_status === "มีผลปีถัดไป" && dayjs().year() + 543}{" "}
+              {requestData?.next_license_status !== "" && dayjs().year() + 544}
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
@@ -259,6 +265,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                   Step 2: ผู้อนุมัติ
                 </p>
 
+                { (approvers?.emp_id !== finalApprovers?.emp_id) && 
                 <div className="form-section">
                   <div className="form-section-header">
                     <div className="form-section-header-title">
@@ -270,6 +277,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
+                            modalRef.current?.close();
                           editApproverModalRef.current?.openModal();
                         }}
                       >
@@ -288,6 +296,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                     }}
                   />
                 </div>
+}
 
                 <div className="form-section">
                   <div className="form-section-header">
@@ -300,6 +309,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
+                          modalRef.current?.close();
                           editFinalApproverModalRef.current?.openModal();
                         }}
                       >
@@ -361,6 +371,10 @@ const RequestDrivingStepTwoModal = forwardRef<
           requestData={requestData}
           title={"แก้ไขผู้อนุมัติต้นสังกัด"}
           onUpdate={handleApproverUpdate}
+            onBack={() => {
+            editApproverModalRef.current?.closeModal();
+            modalRef.current?.showModal();
+          }}
         />
 
         <EditFinalApproverModal
@@ -368,6 +382,10 @@ const RequestDrivingStepTwoModal = forwardRef<
           requestData={requestData}
           title={"แก้ไขผู้อนุมัติให้ทำหน้าที่ขับรถยนต์"}
           onUpdate={handleFinalApproverUpdate}
+          onBack={() => {
+            editFinalApproverModalRef.current?.closeModal();
+            modalRef.current?.showModal();
+          }}
         />
       </>
     );

@@ -88,6 +88,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
 
   return (
     <>
+      
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.rejected_request_reason}`} />
       )}

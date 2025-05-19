@@ -15,6 +15,7 @@ import {
 } from "@/services/carpoolManagement";
 import AddCarpoolApproverModal from "../modal/addCarpoolApproverModal";
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
+import ToastCustom from "../toastCustom";
 
 interface PaginationType {
   limit: number;
@@ -29,11 +30,18 @@ interface Props {
   setRefetch: (value: boolean) => void;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 export default function CarpoolApproverTable({
   defaultData,
   pagination,
   setRefetch,
 }: Props) {
+  const [toast, setToast] = useState<ToastProps | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [editId, setEditId] = useState<string | undefined>();
@@ -58,9 +66,23 @@ export default function CarpoolApproverTable({
       const response = await putCarpoolMainApproverUpdate(id);
       if (response.request.status === 200) {
         setRefetch(true);
+        setToast({
+          title: "กำหนดผู้อนุมัติหลักสำเร็จ",
+          desc:
+            "กำหนดให้ " +
+            defaultData.find((item) => item.mas_carpool_approver_uid === id)
+              ?.approver_emp_name +
+            " เป็นผู้อนุมัติหลักของกลุ่มเรียบร้อยแล้ว",
+          status: "success",
+        });
       }
     } catch (error) {
       console.log(error);
+      setToast({
+        title: "Error",
+        desc: <>{error}</>,
+        status: "error",
+      });
     }
   };
 
@@ -72,9 +94,24 @@ export default function CarpoolApproverTable({
           setDeleteId(undefined);
           setRefetch(true);
           cancelCreateModalRef.current?.closeModal();
+          setToast({
+            title: "ลบผู้อนุมัติสำเร็จ",
+            desc:
+              "ผู้อนุมัติ " +
+              defaultData.find(
+                (item) => item.mas_carpool_admin_uid === deleteId
+              )?.approver_emp_name +
+              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+            status: "success",
+          });
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -213,6 +250,15 @@ export default function CarpoolApproverTable({
         confirmText={"ยกเลิกผู้อนุมัติ"}
         onConfirm={handleDelete}
       />
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </div>
   );
 }
