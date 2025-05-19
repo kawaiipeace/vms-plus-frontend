@@ -26,8 +26,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({defaultValue, onChange
     }
 
     return (
-        <div>
-            <i className="material-symbols-outlined absolute text-gray-400 left-3 top-2">calendar_today</i>
+        <div className="input-group">
+            <i className="material-symbols-outlined text-lg text-gray-500">calendar_month</i> 
             <Flatpickr
                 options={{
                     mode: 'range',
@@ -40,7 +40,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({defaultValue, onChange
                 placeholder='เลือกวันที่'
                 value={dateRange}
                 onClose={handleDatePicker}
-                className="form-control min-w-[250px] max-w-[250px]"
+                className="form-control min-w-[210px] max-w-[210px]"
             />
         </div>
     );

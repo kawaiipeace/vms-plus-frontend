@@ -28,7 +28,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
                     {headerGroup.headers.map((header) => (
                         <th
                             key={header.id}
-                            className={header.column.columnDef.meta?.className}
+                            className={(header.column.columnDef.meta as {className?: string})?.className}
                             onClick={header.column.getToggleSortingHandler()}
                         >
                             <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
                         onClick={() => onRowClick?.(row.original)}
                     >
                         {row.getVisibleCells().map((cell) => (
-                            <td key={cell.id} className={cell.column.columnDef.meta?.className as string}>
+                            <td key={cell.id} className={(cell.column.columnDef.meta as {className?: string})?.className} >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
                         ))}

@@ -14,7 +14,7 @@ import { scheduler } from "timers/promises";
 import { RequestListType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 
-export default function RequestListTable({ dataRequest, params }: { dataRequest: any[], params: any }) {
+export default function RequestListTable({ dataRequest, params, selectedOption }: { dataRequest: any[], params: any, selectedOption: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [dates, setDates] = useState<any[]>([]);
   const responseApi: any[] = [
@@ -296,80 +296,84 @@ export default function RequestListTable({ dataRequest, params }: { dataRequest:
     }
   ];
 
-  useEffect(()=>{
+  useEffect(() => {
     const generateDates = async () => {
       const date = await generateDateObjects(params.start_date, params.end_date);
-      console.log("date >>>> ", date);
       setDates(date);
     }
 
     generateDates();
   }, [params]);
-  
-  const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest]);
+
+  console.log('1 >>>', dates);
+  const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest, dates]);
+  console.log('dataTransform >>', dataTransform)
+
   const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
 
   const columns = useMemo(() => [
     columnHelper.accessor(row => ({
       license: row.vehicleLicensePlate,
       brandModel: row.vehicleBrandModel,
+      brandName: row.vehicleBrandName,
     }), {
       id: 'licensePlate',
       header: 'เลขทะเบียน / ยี่ห้อ / รุ่น',
       cell: info => (
-        <div className="flex flex-col">
+        <div className="flex flex-col items-start">
           <span className="text-base font-semibold">{info.getValue().license}</span>
-          <span className="text-base">{info.getValue().brandModel}</span>
+          <span className="text-base text-gray-600">{info.getValue().brandModel} {info.getValue().brandName}</span>
         </div>
       ),
-      enableSorting: true,
+      enableSorting: false,
       meta: {
-        className: '!align-top sticky left-0 z-10 min-w-[180px] max-w-[180px]',
-      },
+        className: 'sticky left-0 z-0 bg-white min-w-[180px] max-w-[180px]',
+      }
     }),
-    columnHelper.accessor('vehicleType', {
-      header: 'ประเภทยานพาหนะ',
-      cell: info => (
-        <div className="flex flex-col">
-          <span className="text-base">{info.getValue()}</span>
-        </div>
-      ),
-      enableSorting: true,
-      meta: {
-        className: '!align-top sticky left-[180px] z-10 bg-white min-w-[155px] max-w-[155px]',
-      },
-    }),
-    columnHelper.accessor('vehicleDepartment', {
-      header: 'สังกัดยานพาหนะ',
-      cell: info => (
-        <div className="flex flex-col">
-          <span className="text-base">{info.getValue()}</span>
-        </div>
-      ),
-      enableSorting: true,
-      meta: {
-        className: '!align-top sticky left-[335px] z-10 bg-white min-w-[170px] max-w-[170px]',
-      },
-    }),
-    columnHelper.accessor('distance', {
-      header: 'ระยะทาง',
-      cell: info => (
-        <div className="flex flex-col">
-          <span className="text-base">{info.getValue()}</span>
-        </div>
-      ),
-      enableSorting: true,
-      meta: {
-        className: '!align-top sticky left-[505px] z-10 bg-white min-w-[130px] max-w-[130px] fixed-column-line',
-      },
-    }),
-    ...dates.map(({ key, date, day, month }) =>
-      columnHelper.accessor(
-        row => row.timeLine?.[`day_${day}`] ?? [],
+    ...(selectedOption === 'all'
+      ? [columnHelper.accessor('vehicleType', {
+        header: 'ประเภทยานพาหนะ',
+        cell: info => (
+          <div className="flex flex-col">
+            <span className="text-base">{info.getValue()}</span>
+          </div>
+        ),
+        enableSorting: false,
+        meta: {
+          className: 'sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]',
+        },
+      }),
+      columnHelper.accessor('vehicleDepartment', {
+        header: 'สังกัดยานพาหนะ',
+        cell: info => (
+          <div className="flex flex-col">
+            <span className="text-base">{info.getValue()}</span>
+          </div>
+        ),
+        enableSorting: false,
+        meta: {
+          className: 'sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px]',
+        },
+      }),
+      columnHelper.accessor('distance', {
+        header: 'ระยะทาง',
+        cell: info => (
+          <div className="flex flex-col">
+            <span className="text-base">{info.getValue()}</span>
+          </div>
+        ),
+        enableSorting: true,
+        meta: {
+          className: 'sticky left-[505px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line',
+        },
+      })] : []
+    ),
+    ...dates.map(({ key, date, day, month, holiday }) =>
+      columnHelper.accessor('timeLine',
         {
           id: key,
           header: () => {
-              const className = dayjs().format('YYYY-MM-DD') === date.toString() ? 'text-white bg-brand-900 rounded-full p-1' : '';
+            const className = dayjs().format('YYYY-MM-DD') === date.toString() ? 'text-white bg-brand-900 rounded-full p-1' : '';
             return (
               <div className={`w-20 flex flex-col items-center text-xs`}>
                 <span className={`font-semibold ${className}`}>{day}</span>
@@ -377,44 +381,41 @@ export default function RequestListTable({ dataRequest, params }: { dataRequest:
               </div>
             );
           },
-          cell: ({ row }) => (
-            <div
-              className="text-left min-h-[140px] gap-1 flex flex-col px-1"
-              data-name="ผู้ใช้ยานพาหนะ"
-            >
-              <div className="badge badge-info badge-outline !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*3)+(8px*2)+(1px*2))]">
-                <div className="rounded-[4px] bg-[var(--color-surface-primary)] h-full flex flex-col justify-center py-[2px]">
-                  <i className="material-symbols-outlined !text-base !leading-4">directions_car</i>
-                  <i className="material-symbols-outlined !text-base !leading-4">person</i>
-                </div> 
-                <div className="overflow-hidden">
-                  <div className="text-xs font-semibold leading-[18px] truncate">
-                    การไฟฟ้าเขต น.1 และ กฟฟ. ในสังกัด
-                  </div>
-                  <div className="text-xs font-normal leading-[18px] text-default">07:00</div>
-                </div>
-              </div>
+          cell: info => {
+            const values = info.getValue();
+            const mock = values[`day_${day}`];
+            const className = holiday != null ? 'text-white bg-gray-100' : '';
 
-              <div className="badge badge-warning badge-outline !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*1)+(8px*0)+(1px*1))]">
-                <div className="rounded-[4px] bg-[var(--color-surface-primary)] h-full flex flex-col justify-center py-[2px]">
-                  <i className="material-symbols-outlined !text-base">directions_car</i>
-                </div>
-                <div className="overflow-hidden">
-                  <div className="text-xs font-semibold leading-[18px] truncate">โรงแรมมิราเคิล แกรนด์</div>
-                  <div className="text-xs font-normal leading-[18px] text-default">18:00</div>
-                </div>
+            return (
+              <div className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${className}`}>
+                {mock?.length > 0 &&
+                  mock.map((item: any, index:number) => (
+                    <div
+                      key={index}
+                      className={`badge badge-info badge-outline !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${item.schedule_range})+(8px*2)+(1px*2))]`}
+                    >
+                      <div className="rounded-[4px] bg-[var(--color-surface-primary)] h-full flex flex-col justify-center py-[2px]">
+                        <i className="material-symbols-outlined !text-base !leading-4">directions_car</i>
+                        <i className="material-symbols-outlined !text-base !leading-4">person</i>
+                      </div>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-semibold leading-[18px] truncate">
+                          {item.schedule_title}
+                        </div>
+                        <div className="text-xs font-normal leading-[18px] text-default">
+                          {item.schedule_time}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
               </div>
-
-              <div className="badge badge-gray badge-outline !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*1)+(8px*0))]">
-                <div className="leading-[18px]">+1 เพิ่มเติม</div>
-              </div>
-            </div>
-          ),
+            );
+          },
           meta: {
             className: 'day min-w-[148px] max-w-[148px] !border-t-0 today',
           }
         }))
-  ], [columnHelper, dates]);
+  ], [columnHelper, dates, selectedOption]);
 
   const table = useReactTable({
     data: dataTransform,

@@ -1,45 +1,53 @@
 import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
 
-export function transformApiToTableData(rawData: any, r: any[]): any[] {
-    const vehicles: any[] = rawData;
-
-    const row: Record<string, any> = {};
-    for (let i = 1; i <= r.length; i++) {
-        row[`day_${i}`] = [];
+export function transformApiToTableData(rawData: any, dates: any[]): any[] {
+    const createEmptyTimeline = () => {
+        const timeline: Record<string, any[]> = {};
+        for (let i = 1; i <= dates.length; i++) {
+            timeline[`day_${i}`] = [];
+        }
+        return timeline;
     };
 
-    let rows: any[] = [];
-    vehicles?.forEach(item => {
-        const vehicleRequests = item.vehicle_t_requests;
+    const vehicles: any[] = rawData ?? [];
+    return vehicles.map(vehicle => {
+        const timeline = createEmptyTimeline();
 
-        rows.push({
-            vehicleLicensePlate: item.vehicle_license_plate,
-            vehicleBrandModel: 'BYD Seal',
-            vehicleType: item.vehicle_car_type_detail,
-            vehicleDepartment: item.vehicle_dept_name,
-            distance: item.vehicle_mileage,
-            timeLine: { ...row }
-        });
+        vehicle.vehicle_t_requests?.forEach((req: any) => {
+            if (req.trip_details.length === 0) return;
 
-        vehicleRequests?.forEach((item2: any) => {
-            item2.trip_details?.forEach((item3: any) => {
-                const start = dayjs(item3.trip_start_datetime);
-                const end = dayjs(item3.trip_end_datetime);
+            req.trip_details?.forEach((trip: any) => {
+                const start = dayjs(trip.trip_start_datetime);
+                const end = dayjs(trip.trip_end_datetime);
                 const dayStart = start.date();
                 const dayEnd = end.date();
                 const duration = Math.max(dayEnd - dayStart + 1, 1);
+                const destinationPlace = trip.trip_destination_place
 
-                row[`day_${dayStart}`]?.push({
-                    schedule_title: item3.trip_destination_place,
+                timeline[`day_${dayStart}`]?.push({
+                    schedule_title: destinationPlace,
                     schedule_time: start.format("HH:mm"),
                     schedule_range: duration.toString(),
+                    schedule_status_code: req.ref_request_status_code,
+                    schedule_status_name: req.ref_request_status_name,
                 });
             });
         });
-    });
 
-    return rows;
+        
+        const result = {
+            vehicleLicensePlate: vehicle.vehicle_license_plate,
+            vehicleBrandModel: vehicle.vehicle_model_name,
+            vehicleBrandName: vehicle.vehicle_brand_name,
+            vehicleType: vehicle.vehicle_car_type_detail,
+            vehicleDepartment: vehicle.vehicle_dept_name,
+            distance: vehicle.vehicle_mileage,
+            timeLine: timeline
+        };
+        
+        return result;
+    });
 }
 
 export async function generateDateObjects(startDate: string, endDate: string) {
@@ -54,7 +62,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
             detail: item.mas_holidays_detail,
         }));
 
-        const holidayMap = new Map(holidays.map((h:any) => [h.date, h.detail]));
+        const holidayMap = new Map(holidays.map((h: any) => [h.date, h.detail]));
 
         const start = dayjs(startDate);
         const end = dayjs(endDate);
