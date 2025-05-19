@@ -23,6 +23,8 @@ import {
 import { convertToISO } from "@/utils/convertToISO";
 import { UploadFileType } from "@/app/types/upload-type";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -81,6 +83,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     console.log("valueFormStep1", valueFormStep1);
     const [approvers, setApprovers] = useState<VehicleUserType>();
     const [finalApprovers, setFinalApprovers] = useState<VehicleUserType>();
+    const router = useRouter();
 
     const { showToast } = useToast();
 
@@ -188,6 +191,7 @@ const RequestDrivingStepTwoModal = forwardRef<
         }
 
         if (response) {
+        
           showToast({
             title: "สร้างคำขอสำเร็จ",
             desc: (
@@ -240,7 +244,9 @@ const RequestDrivingStepTwoModal = forwardRef<
                   >
                     keyboard_arrow_left
                   </i>{" "}
-                  ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+                  ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
+              {requestData?.license_status === "มีผลปีถัดไป" && dayjs().year() + 543}{" "}
+              {requestData?.next_license_status !== "" && dayjs().year() + 544}
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"

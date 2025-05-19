@@ -355,7 +355,7 @@ export default function DriverLicApproveFlow() {
       )}
 
       {/* Main content */}
-      {dataRequest.length > 0 ? (
+      {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
             <DriverLicApproverListTable

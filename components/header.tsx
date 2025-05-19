@@ -40,6 +40,7 @@ export default function Header() {
   const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
   const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
   const [isEditable, setIsEditable] = useState(false);
+  const [pendingOpenModal, setPendingOpenModal] = useState<null | "driver" | "request" | "detail">(null);
   const [licRequestDetail, setLicRequestDetail] =
     useState<RequestAnnualDriver>();
   const { toast } = useToast();
@@ -79,6 +80,24 @@ export default function Header() {
     }
   };
 
+  useEffect(() => {
+    if (pendingOpenModal === "driver" && driverUser) {
+      driverLicenseModalRef.current?.openModal();
+      setPendingOpenModal(null);
+    }
+    if (pendingOpenModal === "request" && driverUser) {
+      console.log(licRequestDetail);
+      RequestDrivingStepOneModalRef.current?.openModal();
+      setPendingOpenModal(null);
+    }
+    if (pendingOpenModal === "detail" && driverUser?.trn_request_annual_driver_uid) {
+      getStatusLicDetail(driverUser.trn_request_annual_driver_uid).then(() => {
+        RequestStatusLicDetailModaRef.current?.openModal();
+        setPendingOpenModal(null);
+      });
+    }
+  }, [pendingOpenModal, driverUser]);
+
   const getStatusLicDetail = async (id: string) => {
     try {
       const response = await fetchRequestLicStatusDetail(id);
@@ -91,19 +110,32 @@ export default function Header() {
   };
 
   const handleOneSubmit = (data: ValueFormStep1) => {
+    console.log('data===')
     setValueFormStep1(data);
     RequestDrivingStepTwoModalRef.current?.openModal();
   };
 
-  const handleOpenDriverLicenseModal = () => {
-    getDriverUserCard();
-    driverLicenseModalRef.current?.openModal();
+  const handleOpenDriverLicenseModal = async () => {
+    await getDriverUserCard();
+    setPendingOpenModal("driver");
+  };
+  
+  const handleOpenRequestDrivingModal = async () => {
+    await getDriverUserCard();
+    setPendingOpenModal("request");
   };
 
-  const handleOpenRequestDrivingModal = async () => {
-    await getDriverUserCard(); // Fetch data first
-    RequestDrivingStepOneModalRef.current?.openModal(); // Then open modal
+  const handleOpenRequestCreateReturnDrivingModal = async () => {
+    await getDriverUserCard();
+    console.log('driv',driverUser);
+    if(driverUser){
+      await getStatusLicDetail(driverUser?.trn_request_annual_driver_uid);
+    }
+    setPendingOpenModal("request");
   };
+
+
+  
 
   useEffect(() => {
     if (toast.show) {
@@ -125,6 +157,7 @@ export default function Header() {
       await getDriverUserCard();
       if (driverUser?.trn_request_annual_driver_uid) {
         await getStatusLicDetail(driverUser.trn_request_annual_driver_uid);
+        // Now that both requests are complete, open the modal
         RequestStatusLicDetailModaRef.current?.openModal();
       }
     } catch (error) {
@@ -300,7 +333,7 @@ export default function Header() {
                           ไม่มี
                         </div>
                       </>
-                    ) : profile?.license_status === "" ? (
+                    ) : profile?.license_status === "" && (
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
@@ -313,8 +346,6 @@ export default function Header() {
                         </a>
 
                       </>
-                    ) : (
-                      ""
                     )}
                   </div>
                 </li>
@@ -348,8 +379,12 @@ export default function Header() {
         profile={profile || null}
         requestData={driverUser}
         showRequestStatus={handleOpenRequestDetailDrivingModal}
-         onStepOne={() => {
+         onStepOneEdit={() => {
           setIsEditable(true); 
+          handleOpenRequestCreateReturnDrivingModal();
+        }}
+        onStepOne={() => {
+          setIsEditable(false); 
           handleOpenRequestDrivingModal();
         }}
       />
@@ -377,7 +412,7 @@ export default function Header() {
         valueFormStep1={valueFormStep1}
         requestData={licRequestDetail}
         editable={isEditable} 
-        onTrackStatus={handleOpenRequestDetailDrivingModal}
+        onTrackStatus={() => handleOpenRequestDetailDrivingModal}
         onBack={() => {
           RequestDrivingStepTwoModalRef.current?.closeModal();
           RequestDrivingStepOneModalRef.current?.openModal();

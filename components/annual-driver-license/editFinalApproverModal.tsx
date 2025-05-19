@@ -112,18 +112,12 @@ const EditApproverModal = forwardRef<
     fetchVehicleUserData();
   }, [requestData]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;
 
-    const payload = {
-      trn_request_annual_driver_uid: requestData?.trn_request_annual_driver_uid,
-      approved_request_emp_id: selectedVehicleUserOption.value
-    };
 
     try {
-      const response = await updateAnnualApprover(payload);
-      console.log('res',response);
-      if (response && onUpdate) {
+      if (onUpdate) {
         onUpdate({
           emp_id: selectedVehicleUserOption.value,
           full_name: selectedVehicleUserOption.full_name || "",
@@ -133,8 +127,9 @@ const EditApproverModal = forwardRef<
           tel_mobile: selectedVehicleUserOption.tel_mobile || "",
           tel_internal: selectedVehicleUserOption.tel_internal || "",
         });
+        if(onBack) onBack();
       }
-      modalRef.current?.close();
+  
     } catch (error) {
       console.error("Network error:", error);
       alert("Failed to update approver due to network error.");

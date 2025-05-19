@@ -12,12 +12,13 @@ interface Props {
   onSubmit?: () => void;
   showRequestStatus?: () => void;
   onStepOne?: () => void;
+  onStepOneEdit?: () => void;
 }
 
 const DriverLicenseModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ requestData, profile, showRequestStatus, onStepOne }, ref) => {
+>(({ requestData, profile, showRequestStatus, onStepOne, onStepOneEdit }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -204,7 +205,7 @@ const DriverLicenseModal = forwardRef<
           </div>
         </div>
         <div className="modal-footer sticky bottom-0 gap-3 mt-0 w-full p-5 pt-0">
-          {profile?.license_status === "อนุมัติแล้ว" && (
+          {profile?.license_status_code === "30" && (
             <div className="flex justify-between w-full gap-3 items-center">
               <div className="cursor-pointer">
                 {requestData?.next_license_status === "อนุมัติแล้ว" ? (
@@ -272,6 +273,25 @@ const DriverLicenseModal = forwardRef<
                       {requestData.next_license_status}
                     </div>
                   </a>
+                ) : requestData?.next_license_status === "ตีกลับ" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      if(onStepOneEdit) onStepOneEdit();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-warning"
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
                 ) : requestData?.next_license_status === "รออนุมัติ" ? (
                   <a
                     href="#"
@@ -310,7 +330,7 @@ const DriverLicenseModal = forwardRef<
                       {requestData.next_license_status}
                     </div>
                   </a>
-               ) : requestData?.next_license_status === "" && (
+               ) : requestData?.next_license_status === "ไม่มี" && (
                   <a
                     href="#"
                    onClick={() => {
@@ -322,11 +342,6 @@ const DriverLicenseModal = forwardRef<
                     <span className="text-brand-900 text-sm">
                       ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
                     </span>
-                    <div
-                      className="badge badge-success"
-                    >
-                      {requestData?.next_license_status}
-                    </div>
                   </a>
                 )}
               </div>

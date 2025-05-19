@@ -52,7 +52,7 @@ export default function RequestDetailForm({
 
   return (
     <>
-      {requestData?.rejected_request_reason && (
+      {(requestData?.ref_request_annual_driver_status_code === "11" || requestData?.ref_request_annual_driver_status_code === "21" ) && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
           desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
