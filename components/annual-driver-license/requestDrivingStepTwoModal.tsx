@@ -259,6 +259,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                   Step 2: ผู้อนุมัติ
                 </p>
 
+                { (approvers?.emp_id !== finalApprovers?.emp_id) && 
                 <div className="form-section">
                   <div className="form-section-header">
                     <div className="form-section-header-title">
@@ -270,6 +271,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
+                            modalRef.current?.close();
                           editApproverModalRef.current?.openModal();
                         }}
                       >
@@ -288,6 +290,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                     }}
                   />
                 </div>
+}
 
                 <div className="form-section">
                   <div className="form-section-header">
@@ -300,6 +303,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
+                          modalRef.current?.close();
                           editFinalApproverModalRef.current?.openModal();
                         }}
                       >
@@ -361,6 +365,10 @@ const RequestDrivingStepTwoModal = forwardRef<
           requestData={requestData}
           title={"แก้ไขผู้อนุมัติต้นสังกัด"}
           onUpdate={handleApproverUpdate}
+            onBack={() => {
+            editApproverModalRef.current?.closeModal();
+            modalRef.current?.showModal();
+          }}
         />
 
         <EditFinalApproverModal
@@ -368,6 +376,10 @@ const RequestDrivingStepTwoModal = forwardRef<
           requestData={requestData}
           title={"แก้ไขผู้อนุมัติให้ทำหน้าที่ขับรถยนต์"}
           onUpdate={handleFinalApproverUpdate}
+          onBack={() => {
+            editFinalApproverModalRef.current?.closeModal();
+            modalRef.current?.showModal();
+          }}
         />
       </>
     );

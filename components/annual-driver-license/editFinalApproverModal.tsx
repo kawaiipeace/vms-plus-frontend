@@ -1,3 +1,4 @@
+// EditApproverModal.tsx
 import React, {
   forwardRef,
   useEffect,
@@ -17,11 +18,10 @@ import { fetchUserFinalApprovalLic } from "@/services/masterService";
 import { updateAnnualApprover } from "@/services/driver";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
-interface VehicleUserModalProps {
+interface EditApproverModalProps {
+  title: string;
   requestData?: RequestAnnualDriver;
-  title?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: VehicleUserType) => void;
   onBack?: () => void;
 }
 
@@ -30,12 +30,11 @@ const schema = yup.object().shape({
   position: yup.string(),
 });
 
-const EditFinalApproverModal = forwardRef<
+const EditApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
-  VehicleUserModalProps
->(({ onUpdate, requestData, title, onBack }, ref) => {
+  EditApproverModalProps
+>(({ title, requestData, onUpdate, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const hasReset = useRef(false);
   const [driverOptions, setDriverOptions] = useState<CustomSelectOption[]>([]);
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
     useState<CustomSelectOption | null>(null);
@@ -43,7 +42,6 @@ const EditFinalApproverModal = forwardRef<
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
-      hasReset.current = false;
       modalRef.current?.showModal();
     },
     closeModal: () => modalRef.current?.close(),
@@ -59,13 +57,14 @@ const EditFinalApproverModal = forwardRef<
   });
 
   const handleVehicleUserChange = (selectedOption: CustomSelectOption | null) => {
-    const fullOption = selectedOption 
-      ? driverOptions.find(opt => opt.value === selectedOption.value) 
-      : null;
-    
-    setSelectedVehicleUserOption(fullOption || null);
-    setValue("position", fullOption?.posi_text || "");
-    // setValue("name", fullOption?.label || "");
+    setSelectedVehicleUserOption(selectedOption);
+    if (selectedOption) {
+      setValue("position", selectedOption.posi_text || "");
+      // setValue("name", selectedOption.full_name || selectedOption.label || "");
+    } else {
+      setValue("position", "");
+      setValue("name", "");
+    }
   };
 
   useEffect(() => {
@@ -78,63 +77,64 @@ const EditFinalApproverModal = forwardRef<
           const driverOptionsArray = vehicleUserData.map(
             (user: VehicleUserType) => ({
               value: user.emp_id,
-              label: `${user.full_name} (${user.dept_sap})`,
+              label: `${user.full_name} (${user.dept_sap_short})`,
               posi_text: user.posi_text,
+              dept_sap: user.dept_sap,
+              dept_sap_short: user.dept_sap_short,
+              full_name: user.full_name,
+              image_url: user.image_url,
+              tel_mobile: user.tel_mobile,
+              tel_internal: user.tel_internal,
             })
           );
 
           setDriverOptions(driverOptionsArray);
           
-          // Set default selected approver if requestData exists
-          // if (requestData?.approved_request_emp_id) {
-          //   const defaultApprover = driverOptionsArray.find(
-          //     opt => opt.value === requestData.approved_request_emp_id
-          //   );
+          // Set default approver if requestData has approved_request_emp_id
+          if (requestData?.approved_request_emp_id) {
+            const defaultApprover = driverOptionsArray.find(
+              opt => opt.value === requestData.approved_request_emp_id
+            );
             
-          //   if (defaultApprover) {
-          //     setSelectedVehicleUserOption(defaultApprover);
-          //     setValue("name", defaultApprover.label);
-          //     setValue("position", defaultApprover.posi_text);
-          //   }
-          // }
+            if (defaultApprover) {
+              setSelectedVehicleUserOption(defaultApprover);
+              setValue("name", defaultApprover.full_name || defaultApprover.label || "");
+              setValue("position", defaultApprover.posi_text || "");
+            }
+          }
         }
       } catch (error) {
-        console.error("Error fetching requests:", error);
+        console.error("Error fetching approvers:", error);
       } finally {
         setIsLoading(false);
       }
     };
     fetchVehicleUserData();
-  }, [requestData, reset, setValue]);
-
-  // useEffect(() => {
-  //   if (modalRef.current?.open && requestData?.approved_request_emp_id && driverOptions.length > 0) {
-  //     const defaultApprover = driverOptions.find(
-  //       opt => opt.value === requestData.approved_request_emp_id
-  //     );
-      
-  //     if (defaultApprover) {
-  //       setSelectedVehicleUserOption(defaultApprover);
-  //       // setValue("name", defaultApprover.label);
-  //       // setValue("position", defaultApprover.posi_text);
-  //     }
-  //   }
-  // }, [modalRef.current?.open, requestData, driverOptions, setValue]);
+  }, [requestData]);
 
   const onSubmit = async (data: any) => {
+    if (!selectedVehicleUserOption) return;
 
     const payload = {
       trn_request_annual_driver_uid: requestData?.trn_request_annual_driver_uid,
-      approved_request_emp_id: selectedVehicleUserOption?.value
+      approved_request_emp_id: selectedVehicleUserOption.value
     };
-console.log('payload',payload);
+
     try {
       const response = await updateAnnualApprover(payload);
-      
-      if (response) {
-        if (onUpdate) onUpdate(response.data);
-        modalRef.current?.close();
+      console.log('res',response);
+      if (response && onUpdate) {
+        onUpdate({
+          emp_id: selectedVehicleUserOption.value,
+          full_name: selectedVehicleUserOption.full_name || "",
+          posi_text: selectedVehicleUserOption.posi_text || "",
+          dept_sap_short: selectedVehicleUserOption.dept_sap_short || "",
+          image_url: selectedVehicleUserOption.image_url || "",
+          tel_mobile: selectedVehicleUserOption.tel_mobile || "",
+          tel_internal: selectedVehicleUserOption.tel_internal || "",
+        });
       }
+      modalRef.current?.close();
     } catch (error) {
       console.error("Network error:", error);
       alert("Failed to update approver due to network error.");
@@ -182,51 +182,46 @@ console.log('payload',payload);
           </form>
         </div>
         <div className="modal-body overflow-y-auto">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <span className="loading loading-spinner loading-lg"></span>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-12">
+              <div className="form-group">
+                <label className="form-label">ผู้อนุมัติ</label>
+                <CustomSelectApprover
+                  iconName="person"
+                  w="w-full"
+                  options={driverOptions}
+                  value={selectedVehicleUserOption}
+                  onChange={handleVehicleUserChange}
+                  isLoading={isLoading}
+                />
+              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-12">
-                <div className="form-group">
-                  <label className="form-label">ผู้ใช้ยานพาหนะ</label>
-                  <CustomSelectApprover
-                    iconName="person"
-                    w="w-full"
-                    options={driverOptions}
-                    value={selectedVehicleUserOption}
-                    onChange={handleVehicleUserChange}
+            <div className="col-span-12">
+              <div className="form-group">
+                <label className="form-label">ตำแหน่ง / สังกัด</label>
+                <div className="input-group is-readonly">
+                  <Controller
+                    name="position"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        className="form-control pointer-events-none"
+                        readOnly
+                        {...field}
+                      />
+                    )}
                   />
                 </div>
               </div>
-              <div className="col-span-12">
-                <div className="form-group">
-                  <label className="form-label">ตำแหน่ง / สังกัด</label>
-                  <div className="input-group is-readonly">
-                    <Controller
-                      name="position"
-                      control={control}
-                      render={({ field }) => (
-                        <input
-                          type="text"
-                          className="form-control pointer-events-none"
-                          readOnly
-                          {...field}
-                        />
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
-          )}
+          </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
           <button 
             className="btn btn-primary" 
             onClick={handleSubmit(onSubmit)}
-            disabled={isLoading}
+            disabled={isLoading || !selectedVehicleUserOption}
           >
             {isLoading ? (
               <span className="loading loading-spinner"></span>
@@ -243,6 +238,6 @@ console.log('payload',payload);
   );
 });
 
-EditFinalApproverModal.displayName = "EditFinalApproverModal";
+EditApproverModal.displayName = "EditApproverModal";
 
-export default EditFinalApproverModal;
+export default EditApproverModal;

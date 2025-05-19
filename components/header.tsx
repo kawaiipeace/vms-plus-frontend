@@ -270,6 +270,21 @@ export default function Header() {
                         {profile.license_status}
                       </div>
                     </>
+                    ) : profile?.license_status === "ตีกลับ" ? (
+                      <>
+                      <a
+                        className="nav-link toggle-mode gap-1 flex items-center"
+                        onClick={handleOpenRequestDetailDrivingModal}
+                      >
+                        <i className="material-symbols-outlined">id_card</i>
+                        <span className="nav-link-label">
+                          ขอทำหน้าที่ขับรถยนต์
+                        </span>
+                      </a>
+                      <div className="badge badge-warning">
+                        {profile.license_status}
+                      </div>
+                    </>
                     ) : profile?.license_status === "ยกเลิก" ? (
                       <>
                         <a
@@ -289,16 +304,14 @@ export default function Header() {
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={() => handleOpenRequestDetailDrivingModal()}
+                          onClick={() => handleOpenRequestDrivingModal()}
                         >
                           <i className="material-symbols-outlined">id_card</i>
                           <span className="nav-link-label">
                             ขอทำหน้าที่ขับรถยนต์
                           </span>
                         </a>
-                        <div className="badge bg-brand-900 text-white">
-                          {profile.license_status}
-                        </div>
+
                       </>
                     ) : (
                       ""
@@ -334,6 +347,11 @@ export default function Header() {
         ref={driverLicenseModalRef}
         profile={profile || null}
         requestData={driverUser}
+        showRequestStatus={handleOpenRequestDetailDrivingModal}
+         onStepOne={() => {
+          setIsEditable(true); 
+          handleOpenRequestDrivingModal();
+        }}
       />
 
       <RequestStatusLicDetailModal
