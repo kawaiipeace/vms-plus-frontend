@@ -15,17 +15,26 @@ import {
 } from "@/services/carpoolManagement";
 import { CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
+import { useSearchParams } from "next/navigation";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id?: string;
   setRefetch: (value: boolean) => void;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 const AddCarpoolApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, setRefetch }, ref) => {
+>(({ id: editId, setRefetch }, ref) => {
   // Destructure `process` from props
+  const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
   const [approver, setApprover] = useState<CarpoolApprover[]>([]);
   const [selectedApprover, setSelectedApprover] =
@@ -34,6 +43,7 @@ const AddCarpoolApproverModal = forwardRef<
   const [internal_contact_number, setInternalContactNumber] =
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const { formData } = useFormContext();
 
@@ -58,9 +68,9 @@ const AddCarpoolApproverModal = forwardRef<
 
   useEffect(() => {
     const fetchCarpoolAdminDetailsFunc = async () => {
-      if (id) {
+      if (editId) {
         try {
-          const response = await getCarpoolApproverDetails(id);
+          const response = await getCarpoolApproverDetails(editId);
           const result = response.data;
           console.log("result: ", result);
         } catch (error) {
@@ -70,13 +80,13 @@ const AddCarpoolApproverModal = forwardRef<
     };
 
     fetchCarpoolAdminDetailsFunc();
-  }, [id]);
+  }, [editId]);
 
   const handleConfirm = async () => {
-    if (id) {
+    if (editId) {
       try {
-        const response = await putCarpoolApproverUpdate(id, {
-          mas_carpool_uid: formData.mas_carpool_uid,
+        const response = await putCarpoolApproverUpdate(editId, {
+          mas_carpool_uid: id || formData.mas_carpool_uid,
           approver_emp_no: selectedApprover?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -88,14 +98,28 @@ const AddCarpoolApproverModal = forwardRef<
           setInternalContactNumber("");
           setMobileContactNumber("");
           modalRef.current?.close();
+          setToast({
+            title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+            desc:
+              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+              approver.find((item) => item.emp_id === selectedApprover?.value)
+                ?.full_name +
+              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            status: "success",
+          });
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     } else {
       try {
         const response = await postCarpoolApproverCreate({
-          mas_carpool_uid: formData.mas_carpool_uid,
+          mas_carpool_uid: id || formData.mas_carpool_uid,
           approver_emp_no: selectedApprover?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -110,6 +134,11 @@ const AddCarpoolApproverModal = forwardRef<
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -240,7 +269,7 @@ const AddCarpoolApproverModal = forwardRef<
               className="btn btn-primary col-span-1"
               onClick={handleConfirm}
             >
-              {id ? "บันทึก" : "เพิ่ม"}
+              {editId ? "บันทึก" : "เพิ่ม"}
             </button>
           </div>
         </div>
@@ -249,6 +278,15 @@ const AddCarpoolApproverModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });

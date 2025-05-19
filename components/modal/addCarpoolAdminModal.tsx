@@ -16,10 +16,17 @@ import {
 import { CarpoolAdmin } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id?: string;
   setRefetch: (value: boolean) => void;
+}
+
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
 }
 
 const AddCarpoolAdminModal = forwardRef<
@@ -35,6 +42,7 @@ const AddCarpoolAdminModal = forwardRef<
   const [internal_contact_number, setInternalContactNumber] =
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const { formData } = useFormContext();
 
@@ -89,9 +97,23 @@ const AddCarpoolAdminModal = forwardRef<
           setInternalContactNumber("");
           setMobileContactNumber("");
           modalRef.current?.close();
+          setToast({
+            title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+            desc:
+              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+              admins.find((item) => item.emp_id === adminSelected?.value)
+                ?.full_name +
+              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            status: "success",
+          });
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     } else {
       try {
@@ -111,6 +133,11 @@ const AddCarpoolAdminModal = forwardRef<
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -136,7 +163,9 @@ const AddCarpoolAdminModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มผู้ดูแลยานพาหนะ</div>
+            <div className="modal-title">
+              {editId ? "แก้ไข" : "เพิ่ม"}ผู้ดูแลยานพาหนะ
+            </div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
@@ -159,6 +188,7 @@ const AddCarpoolAdminModal = forwardRef<
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}
+                      disabled={!!editId}
                     />
                   </div>
                 </div>
@@ -250,6 +280,15 @@ const AddCarpoolAdminModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });

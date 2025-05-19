@@ -286,12 +286,14 @@ export default function CarpoolProcessThree() {
                     <div>และพนักงานขับรถในขั้นตอนสุดท้่าย</div>
                   </div>
                   <div className="emptystate-action">
-                    <button
-                      onClick={() => skipStepModalRef.current?.openModal()}
-                      className="btn btn-secondary"
-                    >
-                      ข้าม
-                    </button>
+                    {!id && (
+                      <button
+                        onClick={() => skipStepModalRef.current?.openModal()}
+                        className="btn btn-secondary"
+                      >
+                        ข้าม
+                      </button>
+                    )}
 
                     <button
                       className="btn btn-primary"
