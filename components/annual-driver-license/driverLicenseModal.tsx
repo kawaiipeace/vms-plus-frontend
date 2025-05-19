@@ -10,12 +10,15 @@ interface Props {
   requestData?: DriverLicenseCardType;
   profile?: Profile | null;
   onSubmit?: () => void;
+  showRequestStatus?: () => void;
+  onStepOne?: () => void;
+  onStepOneEdit?: () => void;
 }
 
 const DriverLicenseModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ requestData, profile }, ref) => {
+>(({ requestData, profile, showRequestStatus, onStepOne, onStepOneEdit }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -202,36 +205,144 @@ const DriverLicenseModal = forwardRef<
           </div>
         </div>
         <div className="modal-footer sticky bottom-0 gap-3 mt-0 w-full p-5 pt-0">
-          {profile?.license_status === "อนุมัติแล้ว" && (
+          {profile?.license_status_code === "30" && (
             <div className="flex justify-between w-full gap-3 items-center">
-              <div className="flex gap-2">
-                <span className="text-brand-900 text-sm">
-                  ขออนุมัติประจำปี {requestData?.annual_yyyy}
-                </span>
-                {profile?.license_status === "อนุมัติแล้ว" ? (
-                  <div
-                    className="badge badge-success"
+              <div className="cursor-pointer">
+                {requestData?.next_license_status === "อนุมัติแล้ว" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
                     onClick={() => {
                       modalRef.current?.close();
                       driverLicenseDetailModalRef.current?.openModal();
                     }}
                   >
-                    {profile.license_status}
-                  </div>
-                ) : profile?.license_status === "หมดอายุ" ? (
-                  <div className="badge badge-error">
-                    {profile.license_status}
-                  </div>
-                ) : profile?.license_status === "มีผลปีถัดไป" ? (
-                  <div className="badge badge-warning">
-                    {profile.license_status}
-                  </div>
-                ) : profile?.license_status === "ไม่มี" ? (
-                  <div className="badge bg-brand-900 text-white">
-                    {profile.license_status}
-                  </div>
-                ) : (
-                  ""
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-success"
+                      onClick={() => {
+                        modalRef.current?.close();
+                        driverLicenseDetailModalRef.current?.openModal();
+                      }}
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
+                ) : requestData?.next_license_status === "หมดอายุ" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      driverLicenseDetailModalRef.current?.openModal();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-success"
+                      onClick={() => {
+                        modalRef.current?.close();
+                        driverLicenseDetailModalRef.current?.openModal();
+                      }}
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
+                ) : requestData?.next_license_status === "มีผลปีถัดไป" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      if(onStepOne) onStepOne();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-success"
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
+                ) : requestData?.next_license_status === "ตีกลับ" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      if(onStepOneEdit) onStepOneEdit();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-warning"
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
+                ) : requestData?.next_license_status === "รออนุมัติ" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      if (showRequestStatus) showRequestStatus();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-info"
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
+                ) : requestData?.next_license_status === "ยกเลิก" ? (
+                  <a
+                    href="#"
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      modalRef.current?.close();
+                      if (showRequestStatus) showRequestStatus();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                    <div
+                      className="badge badge-info"
+                    >
+                      {requestData.next_license_status}
+                    </div>
+                  </a>
+               ) : requestData?.next_license_status === "ไม่มี" && (
+                  <a
+                    href="#"
+                   onClick={() => {
+                      modalRef.current?.close();
+                      if(onStepOne) onStepOne();
+                    }}
+                  >
+                    {" "}
+                    <span className="text-brand-900 text-sm">
+                      ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                    </span>
+                  </a>
                 )}
               </div>
 

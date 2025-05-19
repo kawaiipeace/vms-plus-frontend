@@ -140,6 +140,11 @@ export interface RequestAnnualDriver {
     canceled_request_datetime: string;
     canceled_request_reason: string;
   };
+
+  license_status_code: string;
+  license_status: string;
+  next_license_status: string;
+  next_license_status_code: string;
   
   // Progress tracking
   progress_request_status: ProgressStatus[];

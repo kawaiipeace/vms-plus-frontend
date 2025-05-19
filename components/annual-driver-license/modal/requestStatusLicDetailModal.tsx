@@ -281,6 +281,14 @@ const RequestStatusLicDetailModal = forwardRef<
                   icon="cancel"
                 />
               )}
+
+                {(requestData?.ref_request_annual_driver_status_code === "21" || requestData?.ref_request_annual_driver_status_code === "11") && (
+                <AlertCustom
+                  title="คำขออนุมัติถูกตีกลับ"
+                  desc={requestData?.rejected_request_reason}
+                  icon="cancel"
+                />
+              )}
             </div>
           </div>
         </div>

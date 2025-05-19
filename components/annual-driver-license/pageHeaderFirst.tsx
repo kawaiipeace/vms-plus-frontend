@@ -59,21 +59,28 @@ export default function PageHeaderFirst({ data }: Props) {
               <span className="badge badge-pill-outline badge-gray">
                 {data?.ref_request_annual_driver_status_name}
               </span>
+            ) : data?.ref_request_annual_driver_status_name === "ตีกลับคำขอ" ? (
+              <span className="badge badge-pill-outline badge-warning">
+                {data?.ref_request_annual_driver_status_name}
+              </span>
             ) : (
               <span className="badge badge-pill-outline badge-info">
                 {data?.ref_request_annual_driver_status_name}
               </span>
             ))}
         </div>
+        {data?.ref_request_annual_driver_status_code !== "30" && 
         <button
           className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
           onClick={() => cancelRequestModalRef.current?.openModal()}
         >
           ยกเลิกคำขอ
         </button>
+}
         {data?.ref_request_annual_driver_status_code !== "11" && (
           <>
             {" "}
+            {data?.ref_request_annual_driver_status_code !== "30" && 
             <button
               className="btn btn-secondary"
               onClick={() => fileBackRequestModalRef.current?.openModal()}
@@ -81,6 +88,7 @@ export default function PageHeaderFirst({ data }: Props) {
               <i className="material-symbols-outlined">reply</i>
               ตีกลับให้แก้ไข
             </button>
+}
             <button
               className="btn btn-primary"
               onClick={() => approveRequestModalRef.current?.openModal()}
