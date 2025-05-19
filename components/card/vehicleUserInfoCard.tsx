@@ -1,6 +1,6 @@
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchVehicleUsers } from "@/services/masterService";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 
@@ -20,9 +20,7 @@ export default function VehicleUserInfoCard({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('idvehicle',id);
         const res = await fetchVehicleUsers(id);
-        console.log("vehicledata", res);
         let user = res.data[0];
 
         // Override only contact numbers from requestData if available

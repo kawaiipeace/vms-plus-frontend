@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import FilterModal from "@/components/modal/filterModal";
+import React, { useState, useRef, useEffect, Suspense } from "react";
+import FilterModal from "@/components/drivers-management/filterModal";
 import ZeroRecord from "@/components/zeroRecord";
 import DriverListTable from "@/components/drivers-management/table/driverListTable";
 import PaginationControls from "@/components/table/pagination-control";
 import CreateDriverManagementModal from "@/components/modal/createDriverManagementModal";
 import UploadCSVModal from "@/components/modal/uploadCSVModal";
 import DriverActiveModal from "@/components/drivers-management/modal/driverActiveModal";
+import DriverExportReportModal from "@/components/drivers-management/modal/driverExportReportModal";
+import ToastCustom from "@/components/toastCustom";
 
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 
 import { driversMamagement, updateDriverStatus, driverDelete } from "@/services/driversManagement";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
+import { RequestListType } from "@/app/types/request-list-type";
 
 interface PaginationType {
   limit: number;
@@ -28,6 +30,20 @@ const paginationDefault: PaginationType = {
   totalPages: 0,
 };
 
+function ToastCustomComponent({ type }: { type: { text: string; value?: string }; driverName?: string }) {
+  return (
+    <>
+      {type.text === "import" && (
+        <ToastCustom
+          title="สร้างข้อมูลพนักงานขับรถสำเร็จ"
+          desc={<span>นำเข้าข้อมูลพนักงานขับรถ {type.value} คน เรียบร้อยแล้ว</span>}
+          status="success"
+        />
+      )}
+    </>
+  );
+}
+
 const DriversListTab = () => {
   const [params, setParams] = useState({
     search: "",
@@ -42,15 +58,14 @@ const DriversListTab = () => {
     page: 1,
     limit: 10,
   });
-  const [summary, setSummary] = useState<summaryType[]>([]);
-  const [filterNum, setFilterNum] = useState(0);
-  const [filterNames, setFilterNames] = useState<string[]>([]);
-  const [filterDate, setFilterDate] = useState<string>("");
   const [data, setData] = useState<RequestListType[]>([]);
   const [pagination, setPagination] = useState<PaginationType>(paginationDefault);
   const [driverUid, setDriverUid] = useState<string>("");
   const [driverUpdated, setDriverUpdated] = useState<boolean>(false); // [updated]
   // const [pagination, setPagination] = useState<PaginationType>(pagenation);
+  const [selectedRow, setSelectedRow] = useState({});
+  const [updateType, setUpdateType] = useState<{ text: string; value: string }>({ text: "", value: "" });
+  // const [resultNonFound, setResultNonFound] = useState(false);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -71,13 +86,18 @@ const DriversListTab = () => {
     closeModal: () => void;
   } | null>(null);
 
+  const driverExportReportModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   useEffect(() => {
     const fetchDriversListFunc = async () => {
       try {
         const response = await driversMamagement(params);
         const result = response.data;
         const { total, totalPages } = result.pagination;
-        console.log(params.limit);
+        // console.log(params.limit);
         setData(result.drivers ?? []);
         setPagination({
           limit: params.limit,
@@ -93,35 +113,56 @@ const DriversListTab = () => {
     };
 
     fetchDriversListFunc();
-  }, [params, driverUpdated]);
+  }, [params, driverUpdated, updateType]);
 
-  const handleFilterSubmit = ({
-    selectedStatuses,
-    selectedStartDate,
-    selectedEndDate,
-  }: {
+  // const handleFilterSubmit = ({
+  //   selectedStatuses,
+  //   selectedStartDate,
+  //   selectedEndDate,
+  // }: {
+  //   selectedStatuses: string[];
+  //   selectedStartDate: string;
+  //   selectedEndDate: string;
+  // }) => {
+  //   const mappedNames = selectedStatuses.map(
+  //     (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
+  //   );
+
+  //   const date = selectedStartDate + " - " + selectedEndDate;
+
+  //   setFilterNames(mappedNames);
+  //   if (selectedStartDate && selectedEndDate) {
+  //     setFilterDate(date);
+  //   }
+
+  //   setFilterNum(selectedStatuses.length);
+  //   setParams((prevParams) => ({
+  //     ...prevParams,
+  //     ref_request_status_code: selectedStatuses.join(","),
+  //     startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+  //     enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+  //   }));
+  // };
+
+  const handleFilter = (filter: {
     selectedStatuses: string[];
+    selectedDriverStatus: string[];
+    selectedWorkType: string[];
     selectedStartDate: string;
     selectedEndDate: string;
+    driverDepartmentOptions: { value: string; label: string | React.ReactNode };
   }) => {
-    const mappedNames = selectedStatuses.map(
-      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
-    );
-
-    const date = selectedStartDate + " - " + selectedEndDate;
-
-    setFilterNames(mappedNames);
-    if (selectedStartDate && selectedEndDate) {
-      setFilterDate(date);
-    }
-
-    setFilterNum(selectedStatuses.length);
+    console.log("Filter applied", filter);
     setParams((prevParams) => ({
       ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      driver_dept_sap_work: filter.driverDepartmentOptions.value,
+      work_type: filter.selectedWorkType.join(","),
+      ref_driver_status_code: filter.selectedStatuses.join(","),
+      is_active: filter.selectedDriverStatus.join(","),
+      driver_license_end_date: filter.selectedStartDate,
+      approved_job_driver_end_date: filter.selectedEndDate,
     }));
+    filterModalRef.current?.closeModal();
   };
 
   const handlePageChange = (newPage: number) => {
@@ -145,7 +186,7 @@ const DriversListTab = () => {
   };
 
   const handleUpdateStatusDriver = (driverUid: string, isActive: string) => {
-    console.log(driverUid);
+    // console.log(driverUid);
     try {
       if (driverUid) {
         updateDriverStatus(driverUid, isActive)
@@ -177,6 +218,10 @@ const DriversListTab = () => {
     } catch (error) {
       console.error("Error deleting driver:", error);
     }
+  };
+
+  const handleUpdateSelectedRow = (row: Record<string, string | undefined>) => {
+    setSelectedRow(row);
   };
 
   return (
@@ -217,10 +262,14 @@ const DriversListTab = () => {
           </button>
           <button
             className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex gap-2 justify-center items-center"
-            disabled
+            onClick={() => driverExportReportModalRef.current?.openModal()}
+            disabled={Object.keys(selectedRow).length > 0 ? false : true}
           >
             <i className="material-symbols-outlined">download</i>
             รายงาน
+            {Object.keys(selectedRow).length > 0 && (
+              <span className="badge badge-brand badge-outline rounded-[50%]">{Object.keys(selectedRow).length}</span>
+            )}
           </button>
           <button
             className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
@@ -233,7 +282,7 @@ const DriversListTab = () => {
       </div>
       {data.length !== 0 ? (
         <>
-          <div className="hidden md:block">
+          <div>
             {/* {data.map((item, index) => {
               return <div key={index}>{item.driver_name}</div>;
             })} */}
@@ -246,6 +295,7 @@ const DriversListTab = () => {
               handleToggleChange={handleToggleChange}
               onUpdateStatusDriver={handleUpdateStatusDriver}
               handleDeleteDriver={handleDeleteDriver}
+              handleUpdateSelectedRow={handleUpdateSelectedRow}
             />
           </div>
           <PaginationControls
@@ -276,12 +326,19 @@ const DriversListTab = () => {
         onUpdateDriver={handleUpdateStatusDriver}
         driverUid={driverUid}
       />
-      <UploadCSVModal ref={uploadCSVModalRef} />
+      <UploadCSVModal
+        ref={uploadCSVModalRef}
+        onUpdateType={(text: string, value?: string) => setUpdateType({ text, value: value ?? "" })}
+      />
       <CreateDriverManagementModal
         ref={createDriverManagementModalRef}
         csvModalRef={uploadCSVModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>}
       />
-      <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
+      <DriverExportReportModal ref={driverExportReportModalRef} />
+      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilter} />
+      <Suspense fallback={<div></div>}>
+        <ToastCustomComponent type={updateType} />
+      </Suspense>
     </>
   );
 };

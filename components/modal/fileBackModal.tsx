@@ -13,11 +13,12 @@ import useSwipeDown from "@/utils/swipeDown";
 import { adminSendbackRequest } from "@/services/bookingAdmin";
 import { finalSendbackRequest } from "@/services/bookingFinal";
 import { adminSendBackVehicle } from "@/services/adminService";
+import { updateFinalLicAnnualReject, updateLicAnnualReject } from "@/services/driver";
 
 interface Props {
   id?: string;
   title: string;
-  desc: string;
+  desc: React.ReactNode;
   link?: string;
   confirmText: string;
   placeholder?: string;
@@ -56,6 +57,11 @@ const FileBackRequestModal = forwardRef<
           rejected_request_reason: inputValue,
           trn_request_uid: id || "",
         };
+
+        const payloadLic = {
+          rejected_request_reason: inputValue,
+          trn_request_annual_driver_uid: id || "",
+        };
         const res =
           role === "firstApprover"
             ? await firstApproverSendbackRequest(payload)
@@ -63,6 +69,10 @@ const FileBackRequestModal = forwardRef<
             ? await adminSendbackRequest(payload)
             : role === "vehicleAdmin"
             ? await adminSendBackVehicle(payload)
+            : role === "licAdmin"
+            ? await updateLicAnnualReject(payloadLic)
+            : role === "licFinalAdmin"
+            ? await updateFinalLicAnnualReject(payloadLic)
             : role === "final"
             ? await finalSendbackRequest(payload)
             : await firstApproverSendbackRequest(payload);
@@ -84,6 +94,16 @@ const FileBackRequestModal = forwardRef<
             router.push(
               "/administrator/request-list?sendbackvehicle-req=success&request-id=" +
                 data.result?.request_no
+            );
+          } else if (role === "licAdmin") {
+            router.push(
+              "/administrator/booking-approver?sendbacklic-req=success&request-id=" +
+                data.result?.request_annual_driver_no
+            );
+          } else if (role === "licFinalAdmin") {
+            router.push(
+              "/administrator/booking-approver?sendbackfinallic-req=success&request-id=" +
+              data.result?.request_annual_driver_no
             );
           }else if (role === "final") {
             router.push(

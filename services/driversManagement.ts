@@ -7,6 +7,7 @@ import {
   DriverUpdateContractDetails,
   DriverUpdateLicenseDetails,
   DriverLeaveStatus,
+  DriverUpdateDocumentPayload,
 } from "@/app/types/drivers-management-type";
 
 interface DeleteDriverParams {
@@ -182,6 +183,30 @@ export const driverResign = async (params: { mas_driver_uid: string; replaced_ma
 export const driverUpdateLeaveStatus = (params: DriverLeaveStatus) => {
   try {
     const response = axiosInstance.put(`driver-management/update-driver-leave-status`, params);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverUpdateDocument = async (params: DriverUpdateDocumentPayload) => {
+  try {
+    const response = await axiosInstance.put(`driver-management/update-driver-documents`, params);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const importDriverCSV = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const response = await axiosInstance.post("driver-management/import-driver", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response;
   } catch (error) {
     throw error;

@@ -4,15 +4,17 @@ export interface CarpoolForm {
   }[];
   carpool_contact_number: string;
   carpool_contact_place: string;
-  carpool_dept_sap: string;
-  carpool_main_business_area: string;
   carpool_name: string;
   ref_carpool_choose_car_id: number;
   ref_carpool_choose_driver_id: number;
-  remark: string;
+  remark?: string;
+  is_must_pass_status_30: string;
+  is_must_pass_status_40: string;
+  is_must_pass_status_50: string;
+  mas_carpool_uid: string;
 }
 
-export type CarpoolsParams = Partial<{
+export type CarpoolParams = Partial<{
   search: string;
   is_active: string;
   order_by: string;
@@ -21,7 +23,7 @@ export type CarpoolsParams = Partial<{
   limit: number;
 }>;
 
-export interface Carpools {
+export interface Carpool {
   mas_carpool_uid: string;
   carpool_name: string;
   carpool_dept_sap: string;
@@ -32,6 +34,16 @@ export interface Carpools {
   numberOfApprovers: number;
   is_active: string;
   carpool_status: string;
+  ref_carpool_choose_car_id: number;
+  ref_carpool_choose_driver_id: number;
+  remark: string;
+  carpool_main_business_area: string;
+  is_must_pass_status_30: string;
+  is_must_pass_status_40: string;
+  is_must_pass_status_50: string;
+  carpool_authorized_depts: {
+    dept_sap: string;
+  }[];
 }
 
 export interface CarChoice {
@@ -91,43 +103,22 @@ export interface CarpoolDriverParams {
 }
 
 export interface CarpoolDriver {
+  mas_carpool_driver_uid: string;
+  mas_carpool_uid: string;
   mas_driver_uid: string;
-  driver_id: string;
-  driver_name: string;
   driver_image: string;
+  driver_name: string;
   driver_nickname: string;
-  driver_dept_sap: string;
-  driver_identification_no: string;
+  driver_dept_sap_short_name_hire: string;
   driver_contact_number: string;
+  driver_license_end_date: string;
+  approved_job_driver_end_date: string;
   driver_average_satisfaction_score: number;
-  driver_total_satisfaction_review: number;
+  ref_driver_status_code: string;
+  driver_status_name: string;
   driver_birthdate: string;
-  work_type: number;
-  work_type_name: string;
-  contract_no: string;
-  contract_end_date: string;
-  age: string;
-  status: string;
-  driver_status: {
-    ref_driver_status_code: number;
-    ref_driver_status_desc: string;
-  };
-  work_days: number;
-  work_count: number;
-  trip_Details: string;
-  driver_license: {
-    mas_driver_license_uid: string;
-    mas_driver_uid: string;
-    ref_driver_license_type_code: string;
-    driver_license_no: string;
-    driver_license_start_date: string;
-    driver_license_end_date: string;
-    driver_license_type: {
-      ref_driver_license_type_code: string;
-      ref_driver_license_type_name: string;
-      ref_driver_license_type_desc: string;
-    };
-  };
+  driver_dept_sap: string;
+  is_active: string;
 }
 
 export interface CarpoolDepartment {
@@ -135,4 +126,28 @@ export interface CarpoolDepartment {
   dept_short: string;
   dept_full: string;
   cost_center_code: string;
+}
+
+export interface CarpoolAdminCreate {
+  admin_emp_no: string;
+  internal_contact_number: string;
+  mas_carpool_uid: string;
+  mobile_contact_number: string;
+}
+
+export interface CarpoolApproverCreate {
+  approver_emp_no: string;
+  internal_contact_number: string;
+  mas_carpool_uid: string;
+  mobile_contact_number: string;
+}
+
+export interface CarpoolVehicleCreate {
+  mas_carpool_uid: string;
+  mas_vehicle_uid: string;
+}
+
+export interface CarpoolDriverCreate {
+  mas_carpool_uid: string;
+  mas_driver_uid: string;
 }

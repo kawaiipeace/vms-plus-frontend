@@ -19,7 +19,7 @@ const UploadFilePreview = ({ file, onDeleteFile }: { file: UploadFilePreviewProp
         <button>
           <i className="material-symbols-outlined text-[#344054]">download</i>
         </button>
-        <button onClick={onDeleteFile}>
+        <button type="button" onClick={onDeleteFile}>
           <i className="material-symbols-outlined text-[#344054]">delete</i>
         </button>
       </div>

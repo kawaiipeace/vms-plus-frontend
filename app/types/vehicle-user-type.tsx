@@ -26,10 +26,11 @@ export interface TripDetail {
 export interface VehicleUserType {
   emp_id: string;
   full_name: string;
-  dept_sap: string;
+  dept_sap?: string;
   tel_internal?: string;
   tel_mobile: string;
   dept_sap_short: string;
+  posi_text?: string;
   image_url: string;
 }
 
@@ -89,6 +90,7 @@ export interface DriverLicenseCardType {
   license_status: string;
   mas_driver_uid: string;
   progress_request_history: ProgressDriver[];
+  trn_request_annual_driver_uid: string;
 }
 
 export type DriverCertificateType = {

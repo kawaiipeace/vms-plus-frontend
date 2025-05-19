@@ -404,7 +404,12 @@ const DriverViewProfilePage = () => {
         onUpdateDriver={setDriverUpdated}
         setUpdateType={setUpdateType}
       />
-      <DriverEditDocModal ref={driverEditDocModalRef} />
+      <DriverEditDocModal
+        ref={driverEditDocModalRef}
+        driverInfo={driverInfo}
+        onUpdateDriver={setDriverUpdated}
+        setUpdateType={setUpdateType}
+      />
       <DriverLeaveFormModal
         ref={driverLeaveFormModalRef}
         driverInfo={driverInfo}

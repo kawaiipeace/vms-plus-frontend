@@ -1,3 +1,4 @@
+import { useFormContext } from "@/contexts/carpoolFormContext";
 import { updateSendback } from "@/services/bookingUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
@@ -18,6 +19,8 @@ const ConfirmCreateCarpoolModal = forwardRef<
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
+  const { updateFormData } = useFormContext();
+
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
@@ -26,24 +29,9 @@ const ConfirmCreateCarpoolModal = forwardRef<
   const router = useRouter();
 
   const handleConfirm = () => {
-    const sendCancelRequest = async () => {
-      try {
-        const payload = {
-          rejected_request_reason: "",
-          trn_request_uid: id,
-        };
-        const res = await updateSendback(payload);
-
-        if (res) {
-          modalRef.current?.close();
-          router.push("/vehicle-booking/request-list/" + id);
-        }
-      } catch (error) {
-        console.error("error:", error);
-      }
-    };
-
-    sendCancelRequest();
+    router.push("/carpool-management");
+    updateFormData({});
+    modalRef.current?.close();
   };
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
