@@ -12,6 +12,7 @@ import {
 } from "@/services/carpoolManagement";
 import { CarpoolVehicle } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   id: string;
@@ -21,8 +22,9 @@ interface Props {
 const AddCarpoolVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, setRefetch }, ref) => {
+>(({ setRefetch }, ref) => {
   // Destructure `process` from props
+  const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
@@ -110,7 +112,7 @@ const AddCarpoolVehicleModal = forwardRef<
   const handleConfirm = async () => {
     try {
       const data = checked.map((item) => ({
-        mas_carpool_uid: formData.mas_carpool_uid,
+        mas_carpool_uid: id || formData.mas_carpool_uid,
         mas_vehicle_uid: item,
       }));
       const response = await postCarpoolVehicleCreate(data);

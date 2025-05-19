@@ -15,6 +15,7 @@ import {
 } from "@/services/carpoolManagement";
 import { CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   id?: string;
@@ -24,8 +25,9 @@ interface Props {
 const AddCarpoolApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, setRefetch }, ref) => {
+>(({ id: editId, setRefetch }, ref) => {
   // Destructure `process` from props
+  const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
   const [approver, setApprover] = useState<CarpoolApprover[]>([]);
   const [selectedApprover, setSelectedApprover] =
@@ -58,9 +60,9 @@ const AddCarpoolApproverModal = forwardRef<
 
   useEffect(() => {
     const fetchCarpoolAdminDetailsFunc = async () => {
-      if (id) {
+      if (editId) {
         try {
-          const response = await getCarpoolApproverDetails(id);
+          const response = await getCarpoolApproverDetails(editId);
           const result = response.data;
           console.log("result: ", result);
         } catch (error) {
@@ -70,13 +72,13 @@ const AddCarpoolApproverModal = forwardRef<
     };
 
     fetchCarpoolAdminDetailsFunc();
-  }, [id]);
+  }, [editId]);
 
   const handleConfirm = async () => {
-    if (id) {
+    if (editId) {
       try {
-        const response = await putCarpoolApproverUpdate(id, {
-          mas_carpool_uid: formData.mas_carpool_uid,
+        const response = await putCarpoolApproverUpdate(editId, {
+          mas_carpool_uid: id || formData.mas_carpool_uid,
           approver_emp_no: selectedApprover?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -95,7 +97,7 @@ const AddCarpoolApproverModal = forwardRef<
     } else {
       try {
         const response = await postCarpoolApproverCreate({
-          mas_carpool_uid: formData.mas_carpool_uid,
+          mas_carpool_uid: id || formData.mas_carpool_uid,
           approver_emp_no: selectedApprover?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -240,7 +242,7 @@ const AddCarpoolApproverModal = forwardRef<
               className="btn btn-primary col-span-1"
               onClick={handleConfirm}
             >
-              {id ? "บันทึก" : "เพิ่ม"}
+              {editId ? "บันทึก" : "เพิ่ม"}
             </button>
           </div>
         </div>
