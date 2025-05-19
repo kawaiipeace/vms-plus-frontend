@@ -1,5 +1,6 @@
 import { useState, ReactNode } from "react";
 import VehicleFlow from "../flow/vehicleFlow";
+import VehicleTimeLine from "../flow/vehicleTimeLineFlow";
 // import VehicleTimeLine from "../flow/vehicleTimeLineFlow";
 
 interface Tab {
@@ -11,7 +12,7 @@ export default function VehicleManagementTabs() {
     const [activeTab, setActiveTab] = useState(0);
 
     const tabs: Tab[] = [
-        { label: "ปฏิทินการจอง", content: 'ปฏิทินการจอง' },
+        { label: "ปฏิทินการจอง", content: <VehicleTimeLine /> },
         { label: "ยานพาหนะ", content: <VehicleFlow /> },
     ];
 

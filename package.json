@@ -23,6 +23,7 @@
     "next-pwa": "^5.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-flatpickr": "^4.0.10",
     "react-hook-form": "^7.54.2",
     "workbox-window": "^7.3.0",
     "yup": "^1.6.1"
