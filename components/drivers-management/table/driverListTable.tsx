@@ -233,15 +233,15 @@ const DriverListTable = ({
             <div className="text-center">
               {status === "ปฏิบัติงานปกติ" ? (
                 <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>
-              ) : status === "ลาป่วย/ลากิจ" ? (
+              ) : status === "ลา (ป่วย/กิจ)" ? (
                 <div className="badge badge-pill-outline badge-warning whitespace-nowrap">{status}</div>
-              ) : status === "สิ้นสุดสัญญา" ? (
+              ) : status === "หมดสัญญาจ้าง" ? (
                 <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
               ) : status === "ลาออก" ? (
                 <div className="badge badge-pill-outline badge-error whitespace-nowrap">{status}</div>
               ) : status === "สำรอง" ? (
                 <div className="badge badge-pill-outline badge-info whitespace-nowrap">{status}</div>
-              ) : status === "ให้ออก" ? (
+              ) : status === "ให้ออก(BackList)" ? (
                 <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
               ) : (
                 <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>

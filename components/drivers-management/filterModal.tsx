@@ -1,7 +1,7 @@
 "use client";
 
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
-import { listDriverDepartment } from "@/services/driversManagement";
+import { listDriverDepartment, driverStatusRef } from "@/services/driversManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import CustomSelect from "@/components/drivers-management/customSelect";
@@ -23,6 +23,11 @@ interface CustomSelectOption {
   labelDetail?: React.ReactNode | string;
 }
 
+interface DriverStatus {
+  ref_driver_status_code: string;
+  ref_driver_status_desc: string;
+}
+
 const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(({ onSubmitFilter }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [driverDepartmentList, setDriverDepartmentList] = useState<CustomSelectOption[]>([]);
@@ -31,22 +36,23 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
   const [selectedWorkType, setSelectedWorkType] = useState<string[]>([]);
   const [selectedStartDate, setSelectedStartDate] = useState<string>("");
   const [selectedEndDate, setSelectedEndDate] = useState<string>("");
+  const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
   const [driverDepartmentOptions, setDriverDepartmentOptions] = useState<CustomSelectOption>({
     value: "",
     label: "ทั้งหมด",
   });
-  const statusData: {
-    ref_request_status_name: string;
-    ref_request_status_code: string;
-  }[] = [
-    { ref_request_status_name: "ปฏิบัติงานปกติ", ref_request_status_code: "1" },
-    { ref_request_status_name: "ลาป่วย/ลากิจ", ref_request_status_code: "2" },
-    { ref_request_status_name: "สำรอง", ref_request_status_code: "3" },
-    { ref_request_status_name: "ทดแทน", ref_request_status_code: "4" },
-    { ref_request_status_name: "ลาออก", ref_request_status_code: "5" },
-    { ref_request_status_name: "ให้ออก", ref_request_status_code: "6" },
-    { ref_request_status_name: "สิ้นสุดสัญญา", ref_request_status_code: "7" },
-  ];
+  // const statusData: {
+  //   ref_request_status_name: string;
+  //   ref_request_status_code: string;
+  // }[] = [
+  //   { ref_request_status_name: "ปฏิบัติงานปกติ", ref_request_status_code: "1" },
+  //   { ref_request_status_name: "ลาป่วย/ลากิจ", ref_request_status_code: "2" },
+  //   { ref_request_status_name: "สำรอง", ref_request_status_code: "3" },
+  //   { ref_request_status_name: "ทดแทน", ref_request_status_code: "4" },
+  //   { ref_request_status_name: "ลาออก", ref_request_status_code: "5" },
+  //   { ref_request_status_name: "ให้ออก", ref_request_status_code: "6" },
+  //   { ref_request_status_name: "สิ้นสุดสัญญา", ref_request_status_code: "7" },
+  // ];
   const statusDriver: {
     ref_request_status_name: string;
     ref_request_status_code: string;
@@ -91,9 +97,29 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
         console.error("Error fetching driver department data:", error);
       }
     };
+    const fetchDriverStatus = async () => {
+      try {
+        const response = await driverStatusRef();
+        if (response.status === 200) {
+          const driverStatusArr: DriverStatus[] = response.data;
+          setDriverStatus(driverStatusArr);
+        } else {
+          console.error("Failed to fetch driver status");
+        }
+      } catch (error) {
+        console.error("Error fetching driver status:", error);
+      }
+    };
 
+    fetchDriverStatus();
     fetchDriverDepartment();
   }, []);
+
+  function convertDDMMYYYYToISO(dateStr: string): string {
+    const [day, month, year] = dateStr.split("/");
+    if (!day || !month || !year) return "";
+    return `${Number(year) - 543}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
 
   const handleResetFilters = () => {
     setSelectedStatuses([]);
@@ -116,16 +142,17 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
   };
 
   const handleStartDateChange = (dateStr: string) => {
-    setSelectedStartDate(dateStr);
+    const convertedDate = convertDDMMYYYYToISO(dateStr);
+    setSelectedStartDate(convertedDate);
   };
 
   const handleEndDateChange = (dateStr: string) => {
-    setSelectedEndDate(dateStr);
+    const convertedDate = convertDDMMYYYYToISO(dateStr);
+    setSelectedEndDate(convertedDate);
   };
 
   const handleDriverDepartmentChange = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
     setDriverDepartmentOptions(selectedOption as { value: string; label: string });
-    // setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
   };
 
   return (
@@ -154,7 +181,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
             </button>
           </form>
         </div>
-        <div className="modal-body overflow-y-auto flex flex-col gap-4 h-[70vh] max-h-[70vh]">
+        <div className="modal-body overflow-y-auto flex flex-col gap-4 md:h-[76vh] h-[70vh] md:max-h-full max-h-[70vh]">
           <div className="grid grid-cols-1">
             <div className="col-span-1">
               <div className="form-group">
@@ -175,36 +202,34 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
           <div className="col-span-1">
             <div className="form-group">
               <label className="form-label">สถานะการปฏิบัติงาน</label>
-              {statusData != null && (
+              {driverStatus != null && (
                 <>
-                  {statusData.map((statusItem, index) => (
+                  {driverStatus.map((statusItem, index) => (
                     <div className="custom-group" key={index}>
                       <div className="custom-control custom-checkbox custom-control-inline">
                         <input
                           type="checkbox"
-                          value={statusItem.ref_request_status_code}
-                          checked={selectedStatuses.includes(statusItem.ref_request_status_code)}
-                          onChange={() => handleCheckboxChange(statusItem.ref_request_status_code)}
+                          value={statusItem.ref_driver_status_code}
+                          checked={selectedStatuses.includes(statusItem.ref_driver_status_code)}
+                          onChange={() => handleCheckboxChange(statusItem.ref_driver_status_code)}
                           className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                         />
                         <label className="custom-control-label">
                           <div className="custom-control-label-group">
                             <span
                               className={`badge badge-pill-outline ${
-                                statusItem.ref_request_status_name === "ลาออก"
+                                statusItem.ref_driver_status_desc === "ลาออก"
                                   ? "badge-error"
-                                  : statusItem.ref_request_status_name === "ปฏิบัติงานปกติ"
+                                  : statusItem.ref_driver_status_desc === "ปฏิบัติงานปกติ"
                                   ? "badge-success"
-                                  : statusItem.ref_request_status_name === "เสร็จสิ้น"
-                                  ? "badge-success"
-                                  : statusItem.ref_request_status_name === "ลาป่วย/ลากิจ"
+                                  : statusItem.ref_driver_status_desc === "ลา (ป่วย/กิจ)"
                                   ? "badge-warning"
-                                  : statusItem.ref_request_status_name === "สิ้นสุดสัญญา"
+                                  : statusItem.ref_driver_status_desc === "หมดสัญญาจ้าง"
                                   ? "badge-gray"
                                   : "badge-info"
                               }`}
                             >
-                              {statusItem.ref_request_status_name}
+                              {statusItem.ref_driver_status_desc}
                             </span>
                           </div>
                         </label>
