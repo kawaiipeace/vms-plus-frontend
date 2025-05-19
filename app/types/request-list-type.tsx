@@ -38,3 +38,9 @@ export interface summaryType {
   ref_request_status_name: string;
   count: number;
 }
+
+export interface summaryDriverType {
+  ref_request_annual_driver_status_code: string;
+  ref_request_annual_driver_status_name: string;
+  count: number;
+}

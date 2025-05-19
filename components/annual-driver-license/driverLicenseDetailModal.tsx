@@ -25,14 +25,13 @@ const DriverLicenseDetailModal = forwardRef<
   console.log("driverUser", requestData);
 
   const download = (filename: string, url: string) => {
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   };
-
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,15 +44,16 @@ const DriverLicenseDetailModal = forwardRef<
       // For demonstration, we'll use the image URL from the requestData
       // In a real app, you might need to fetch from your API endpoint
       const imageUrl = requestData.driver_license.driver_license_image;
-      
+
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      
+
       // Generate a filename based on the license number
-      const licenseNo = requestData.driver_license.driver_license_no || 'driver_license';
+      const licenseNo =
+        requestData.driver_license.driver_license_no || "driver_license";
       download(`${licenseNo}.jpg`, url);
-      
+
       // Clean up
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -85,7 +85,7 @@ const DriverLicenseDetailModal = forwardRef<
               keyboard_arrow_left
             </i>{" "}
             <div className="">
-              <p>เลขที่่คำขอ {requestData?.request_annual_driver_no}  </p>
+              <p>เลขที่่คำขอ {requestData?.request_annual_driver_no} </p>
               <span className="text-color-secondary text-base font-normal">
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestData?.annual_yyyy}
               </span>
@@ -189,7 +189,10 @@ const DriverLicenseDetailModal = forwardRef<
                           height={100}
                           alt=""
                         />
-                     <button onClick={handleDownload} className="btn btn-circle btn-secondary absolute top-5 right-5 btn-md">
+                        <button
+                          onClick={handleDownload}
+                          className="btn btn-circle btn-secondary absolute top-5 right-5 btn-md"
+                        >
                           {" "}
                           <i className="material-symbols-outlined">
                             download
@@ -202,7 +205,8 @@ const DriverLicenseDetailModal = forwardRef<
               </div>
             </div>
           </div>
-          {(requestData?.driver_license?.ref_driver_license_type_code === "2+" ||
+          {(requestData?.driver_license?.ref_driver_license_type_code ===
+            "2+" ||
             requestData?.driver_license?.ref_driver_license_type_code ===
               "3+") && (
             <div className="form-section">
@@ -273,6 +277,26 @@ const DriverLicenseDetailModal = forwardRef<
                         </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่อบรม</div>
+                          <div className="form-desc">
+                            {" "}
+                            {
+                              convertToBuddhistDateTime(
+                                requestData?.driver_certificate
+                                  .driver_certificate_issue_date
+                              ).date
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
+                        <div className="form-plaintext-group">
+                          <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-desc">
                             {" "}
                             {

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import ZeroRecord from "@/components/zeroRecord";
 import FirstApproveFlow from "@/components/flow/firstApproveFlow";
 import { fetchMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
@@ -17,7 +15,7 @@ export default function ApproveVehicleTabs() {
           const response = await fetchMenus();
           const result = response.data;
           setStatusData(result);
-          console.log('tt----',result);
+          console.log('tt----menu',result);
         } catch (error) {
           console.error("Error fetching status data:", error);
         }

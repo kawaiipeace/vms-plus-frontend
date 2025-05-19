@@ -68,7 +68,7 @@ export default function DriverPeaInfoCard({
           <div className="img img-square !w-[30%] max-h-[108px] md:aspect-auto !aspect-square rounded-md overflow-hidden self-start">
             <Image
               src={driver?.image_url || "/assets/img/avatar.svg"}
-              className="object-cover w-[108px]"
+              className="object-cover w-full h-full"
               width={100}
               height={100}
               alt="Driver Avatar"

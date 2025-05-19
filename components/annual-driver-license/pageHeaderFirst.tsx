@@ -3,6 +3,7 @@ import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import ApproveRequestModal from "@/components/modal/approveRequestModal";
 import { useRef, useState } from "react";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import FileBackRequestModal from "../modal/fileBackModal";
 
 interface Props {
   data: RequestAnnualDriver;
@@ -13,11 +14,14 @@ export default function PageHeaderFirst({ data }: Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const fileBackRequestModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
   const cancelRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
 
   return (
     <div className="page-header">
@@ -45,55 +49,128 @@ export default function PageHeaderFirst({ data }: Props) {
             เลขที่คำขอ {data?.request_annual_driver_no || ""}
           </span>
 
-          {/* {data?.ref_request_status_name &&
-            (data?.ref_request_status_name === "อนุมัติ" || data?.ref_request_status_name === "อนุมัติแล้ว" ? (
+          {data?.ref_request_annual_driver_status_name &&
+            (data?.ref_request_annual_driver_status_name === "อนุมัติ" ||
+            data?.ref_request_annual_driver_status_name === "อนุมัติแล้ว" ? (
               <span className="badge badge-pill-outline badge-success">
-                {data?.ref_request_status_name}
+                {data?.ref_request_annual_driver_status_name}
               </span>
-            ) : data?.ref_request_status_name === "ยกเลิกคำขอ" ? (
+            ) : data?.ref_request_annual_driver_status_name === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray">
-                {data?.ref_request_status_name}
+                {data?.ref_request_annual_driver_status_name}
               </span>
             ) : (
               <span className="badge badge-pill-outline badge-info">
-                {data?.ref_request_status_name}
+                {data?.ref_request_annual_driver_status_name}
               </span>
-            ))} */}
+            ))}
         </div>
-
-
-          <button
-            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-            onClick={() => cancelRequestModalRef.current?.openModal()}
-          >
-            ยกเลิกคำขอ
-          </button>
-
-
         <button
-          className="btn btn-primary"
-          onClick={() => approveRequestModalRef.current?.openModal()}
+          className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+          onClick={() => cancelRequestModalRef.current?.openModal()}
         >
-          <i className="material-symbols-outlined">check</i>
-          ผ่านการตรวจสอบ
+          ยกเลิกคำขอ
         </button>
+        {data?.ref_request_annual_driver_status_code !== "11" && (
+          <>
+            {" "}
+            <button
+              className="btn btn-secondary"
+              onClick={() => fileBackRequestModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">reply</i>
+              ตีกลับให้แก้ไข
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => approveRequestModalRef.current?.openModal()}
+              disabled={data?.ref_request_annual_driver_status_code === "30"}
+            >
+              <i className="material-symbols-outlined">check</i>
+              {data?.ref_request_annual_driver_status_code === "10"
+                ? "ผ่านการตรวจสอบ"
+                : "อนุม้ติคำขอ"}
+            </button>
+          </>
+        )}
       </div>
-      <CancelRequestModal
-        id={data?.trn_request_annual_driver_uid}
-        ref={cancelRequestModalRef}
-        title="ยืนยันยกเลิกคำขอ?"
-        desc="ยานพาหนะและพนักงานขับรถที่จองไว้จะถูกยกเลิก"
-        role="firstApprover"
-        confirmText="ยกเลิกคำขอ"
-      />
-      <ApproveRequestModal
+      {data?.ref_request_annual_driver_status_code === "10" && (
+        <FileBackRequestModal
+          id={data?.trn_request_annual_driver_uid}
+          ref={fileBackRequestModalRef}
+          title="ยืนยันตีกลับคำขอ"
+          role="licAdmin"
+          desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+          placeholder="โปรดระบุเหตุผลที่ตีกลับ"
+          confirmText="ตีกลับคำขอ"
+        />
+      )}
+      {data?.ref_request_annual_driver_status_code === "20" && (
+        <FileBackRequestModal
+          id={data?.trn_request_annual_driver_uid}
+          ref={fileBackRequestModalRef}
+          title="ยืนยันตีกลับคำขอ"
+          role="licFinalAdmin"
+          desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+          placeholder="โปรดระบุเหตุผลที่ตีกลับ"
+          confirmText="ตีกลับคำขอ"
+        />
+      )}
+
+      {data?.ref_request_annual_driver_status_code === "10" && (
+        <>        <ApproveRequestModal
         id={data?.trn_request_annual_driver_uid}
         ref={approveRequestModalRef}
-        title={"ยืนยันอนุมัติคำขอ"}
-        role="firstApprover"
-        desc={"คุณต้องการอนุมัติคำขอใช้ยานพาหนะหรือไม่ ?"}
+        title={"ยืนยันผ่านการตรวจสอบ"}
+        role="licAdmin"
+        desc={
+          <>
+            คุณต้องการยืนยันผ่านการตรวจสอบ
+            <br />
+            และส่งคำขอไปยังผู้อนุมัติใช่หรือไม่
+          </>
+        }
         confirmText="อนุมัติคำขอ"
       />
+
+      <CancelRequestModal
+      id={data?.trn_request_annual_driver_uid || ""}
+      ref={cancelRequestModalRef}
+      title="ยืนยันยกเลิกคำขอ?"
+      desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+      role="licAdmin"
+      confirmText="ยกเลิกคำขอ"
+    /></>
+
+      )}
+
+      {data?.ref_request_annual_driver_status_code === "20" && (
+        <>
+          {" "}
+          <ApproveRequestModal
+            id={data?.trn_request_annual_driver_uid}
+            ref={approveRequestModalRef}
+            title={"ยืนยันอนุมัติคำขอ"}
+            role="licFinalAdmin"
+            desc={
+              <>
+                คุณต้องการอนุมัติให้ {data?.created_request_emp_name}
+                <br />
+                ทำหน้าที่ขับรถยนต์ประจำปี {data?.annual_yyyy} ใช่หรือไม่ ?
+              </>
+            }
+            confirmText="อนุมัติคำขอ"
+          />
+          <CancelRequestModal
+            id={data?.trn_request_annual_driver_uid || ""}
+            ref={cancelRequestModalRef}
+            title="ยืนยันยกเลิกคำขอ?"
+            desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+            role="licFinalAdmin"
+            confirmText="ยกเลิกคำขอ"
+          />
+        </>
+      )}
     </div>
   );
 }

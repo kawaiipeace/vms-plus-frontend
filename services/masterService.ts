@@ -39,6 +39,15 @@ export const fetchDriverLicenseType = async () => {
   }
 };
 
+export const fetchDriverCertificateType = async () => {
+  try {
+    const response = await axiosInstance.get("ref/driver-certificate-type");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchCostTypes = async () => {
   try {
     const response = await axiosInstance.get("ref/cost-type");
@@ -280,3 +289,23 @@ export const fetchSatisfactionSurveyQuestions = async () => {
     throw error;
   }
 };
+
+export const fetchUserApprovalLic = async () => {
+  try {
+    const response = await axiosInstance.get("mas/user-confirmer-license-users");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchUserFinalApprovalLic = async () => {
+  try {
+    const response = await axiosInstance.get("mas/user-approval-license-users");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
