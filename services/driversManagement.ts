@@ -244,3 +244,21 @@ export const driverStatusRef = async () => {
     throw error;
   }
 };
+
+export const getDriverTimeline = async (params: {
+  search: string;
+  start_date: string;
+  end_date: string;
+  work_type: string;
+  ref_driver_status_code: string;
+  is_active: string;
+  page: number;
+  limit: number;
+}) => {
+  try {
+    const response = await axiosInstance.get("driver-management/timeline", { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
