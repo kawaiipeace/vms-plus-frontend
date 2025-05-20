@@ -78,9 +78,7 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             className={`progress-step cursor-pointer ${
               step == 1 ? "active" : step > 1 ? "done" : ""
             }`}
-            // onClick={() =>
-            //   router.push("/carpool-management/create/process-one")
-            // }
+            onClick={() => router.push("/carpool-management/form/process-one")}
           >
             <span className="progress-step-no">
               {step > 1 ? (
@@ -98,11 +96,11 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             className={`progress-step cursor-pointer ${
               step == 2 ? "active" : step > 2 ? "done" : ""
             }`}
-            // onClick={() => {
-            //   if (localStorage.getItem("processOne") === "Done") {
-            //     router.push("/carpool-management/create/process-two");
-            //   }
-            // }}
+            onClick={() => {
+              if (localStorage.getItem("processOne") === "Done") {
+                router.push("/carpool-management/form/process-two");
+              }
+            }}
           >
             <span className="progress-step-no">
               {step > 2 ? (
@@ -120,11 +118,11 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             className={`progress-step cursor-pointer ${
               step == 3 ? "active" : step > 3 ? "done" : ""
             }`}
-            // onClick={() => {
-            //   if (localStorage.getItem("processTwo") === "Done") {
-            //     router.push("/carpool-management/create/process-three");
-            //   }
-            // }}
+            onClick={() => {
+              if (localStorage.getItem("processTwo") === "Done") {
+                router.push("/carpool-management/form/process-three");
+              }
+            }}
           >
             <span className="progress-step-no">
               {step > 3 ? (
@@ -142,11 +140,11 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
             className={`progress-step cursor-pointer ${
               step == 4 ? "active" : step > 4 ? "done" : ""
             }`}
-            // onClick={() => {
-            //   if (localStorage.getItem("processThree") === "Done") {
-            //     router.push("/carpool-management/create/process-four");
-            //   }
-            // }}
+            onClick={() => {
+              if (localStorage.getItem("processThree") === "Done") {
+                router.push("/carpool-management/form/process-four");
+              }
+            }}
           >
             <span className="progress-step-no">
               {step > 4 ? (

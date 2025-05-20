@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataTable } from "./dataTable";
 import {
   ColumnDef,
@@ -9,6 +9,13 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
+import {
+  deleteCarpoolAdmin,
+  putCarpoolMainAdminUpdate,
+} from "@/services/carpoolManagement";
+import AddCarpoolAdminModal from "../modal/addCarpoolAdminModal";
+import ToastCustom from "../toastCustom";
 
 interface PaginationType {
   limit: number;
@@ -20,84 +27,135 @@ interface PaginationType {
 interface Props {
   defaultData: any[];
   pagination: PaginationType;
+  setRefetch: (value: boolean) => void;
 }
 
-export default function CarpoolAdminTable({ defaultData, pagination }: Props) {
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
+export default function CarpoolAdminTable({
+  defaultData,
+  pagination,
+  setRefetch,
+}: Props) {
+  const [toast, setToast] = useState<ToastProps | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [editId, setEditId] = useState<string | undefined>();
+  const [deleteId, setDeleteId] = useState<string | undefined>();
 
   const [paginationState, setPagination] = useState<PaginationState>({
     pageIndex: pagination.page - 1,
     pageSize: pagination.limit,
   });
 
+  const addCarpoolAdminModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+  const cancelCreateModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const handleMainAdmin = async (id: string) => {
+    try {
+      const response = await putCarpoolMainAdminUpdate(id);
+      if (response.request.status === 200) {
+        setRefetch(true);
+        setToast({
+          title: "กำหนดผู้รับผิดชอบหลักสำเร็จ",
+          desc:
+            "กำหนดให้ " +
+            defaultData.find((item) => item.mas_carpool_admin_uid === id)
+              ?.admin_emp_name +
+            " เป็นผู้รับผิดชอบหลักของกลุ่มเรียบร้อยแล้ว",
+          status: "success",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      setToast({
+        title: "Error",
+        desc: <>{error}</>,
+        status: "error",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deleteId) {
+      try {
+        const response = await deleteCarpoolAdmin(deleteId);
+        if (response.request.status === 200) {
+          setDeleteId(undefined);
+          setRefetch(true);
+          setToast({
+            title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
+            desc:
+              "ผู้ดูแลยานพาหนะ " +
+              defaultData.find(
+                (item) => item.mas_carpool_admin_uid === deleteId
+              )?.admin_emp_name +
+              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+            status: "success",
+          });
+          cancelCreateModalRef.current?.closeModal();
+        }
+      } catch (error) {
+        console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
+      }
+    }
+  };
+
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "carpool_name",
+      accessorKey: "admin_emp_name",
       header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
-      cell: ({ row }) => (
-        <div className="text-left font-semibold" data-name="ชื่อ - นามสกุล">
-          {row.original.carpool_name}
-        </div>
-      ),
     },
     {
-      accessorKey: "carpool_dept_sap",
+      accessorKey: "admin_dept_sap_short",
       header: () => <div className="text-center">ตำแหน่ง / สังกัด</div>,
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="สถานที่จอดรถ">
-      //     <div className="flex flex-col">
-      //       {" "}
-      //       <div className="text-left">{row.original.parking_place}</div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
-      accessorKey: "carpool_contact_place",
+      accessorKey: "internal_contact_number",
       header: () => <div className="text-left">เบอร์ภายใน</div>,
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
-      //     <div className="flex flex-col">
-      //       <div>{row.original.vehicle_user_emp_name}</div>
-      //       <div className="text-color-secondary text-xs">
-      //         {row.original.vehicle_user_dept_sap_short}
-      //       </div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
-      accessorKey: "carpool_contact_number",
+      accessorKey: "mobile_contact_number",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
           <div className="text-center">เบอร์โทรศัพท์</div>
         </div>
       ),
       enableSorting: false,
-      // cell: ({ row }) => (
-      //   <div className="text-left" data-name="เลขที่คำขอ">
-      //     <div className="flex flex-col">
-      //       <div>{row.original.request_no}</div>
-      //       <div className="text-left">
-      //         {row.original.is_have_sub_request === "1" &&
-      //           "ปฏิบัติงานต่อเนื่อง"}
-      //       </div>
-      //     </div>
-      //   </div>
-      // ),
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "is_main_admin",
       header: () => <div className="text-center">ประเภทผู้ดูแลยานพาหนะ</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="จำนวนยานพาหนะ">
-            {row.original.number_of_vehicles} คัน
+            {row.original.is_main_admin === "1"
+              ? "ผู้รับผิดชอบหลัก"
+              : "ผู้ดูแลทั่วไป"}
+            {row.original.is_main_admin === "1" && (
+              <i className="material-symbols-outlined text-primary-default ml-2">
+                social_leaderboard
+              </i>
+            )}
           </div>
         );
       },
@@ -111,10 +169,34 @@ export default function CarpoolAdminTable({ defaultData, pagination }: Props) {
           <div className="text-left dataTable-action">
             <button
               className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-              data-tip="ดูรายละเอียด"
-              //   onClick={() => router.push("/carpool-management")}
+              data-tip="แก้ไข"
+              onClick={() => {
+                addCarpoolAdminModalRef.current?.openModal();
+                setEditId(row.original.mas_carpool_admin_uid);
+              }}
             >
-              <i className="material-symbols-outlined">quick_reference_all</i>
+              <i className="material-symbols-outlined">stylus</i>
+            </button>
+            <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left disabled:bg-transparent"
+              data-tip="กำหนดเป็นผู้รับผิดชอบหลัก"
+              disabled={row.original.is_main_admin === "1"}
+              onClick={() =>
+                handleMainAdmin(row.original.mas_carpool_admin_uid)
+              }
+            >
+              <i className="material-symbols-outlined">social_leaderboard</i>
+            </button>
+            <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left disabled:bg-transparent"
+              data-tip="ลบ"
+              disabled={row.original.is_main_admin === "1"}
+              onClick={() => {
+                cancelCreateModalRef.current?.openModal();
+                setDeleteId(row.original.mas_carpool_admin_uid);
+              }}
+            >
+              <i className="material-symbols-outlined">delete</i>
             </button>
           </div>
         );
@@ -149,6 +231,35 @@ export default function CarpoolAdminTable({ defaultData, pagination }: Props) {
         <>
           <DataTable table={table} />
         </>
+      )}
+
+      <AddCarpoolAdminModal
+        ref={addCarpoolAdminModalRef}
+        id={editId}
+        setRefetch={setRefetch}
+      />
+
+      <ConfirmCancelCreateCarpoolModal
+        id={""}
+        ref={cancelCreateModalRef}
+        title={"ยืนยันยกเลิกผู้ดูแลยานพาหนะ"}
+        desc={
+          "คุณต้องการยกเลิกผู้ดูแลยานพาหนะ " +
+          defaultData.find((item) => item.mas_carpool_admin_uid === deleteId)
+            ?.admin_emp_name +
+          " ใช่หรือไม่?"
+        }
+        confirmText={"ยกเลิกผู้ดูแลยานพาหนะ"}
+        onConfirm={handleDelete}
+      />
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
       )}
     </div>
   );

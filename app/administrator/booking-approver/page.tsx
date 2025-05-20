@@ -10,8 +10,12 @@ import { Suspense } from "react";
 function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
+  const sendbackLicReq = searchParams.get("sendbacklic-req");
+  const sendbackFinalLicReq = searchParams.get("sendbackfinallic-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
+  const approveLicReq = searchParams.get("approvelic-req");
+  const approveFinalLicReq = searchParams.get("approvelicfinal-req");
   const requestId = searchParams.get("request-id");
 
   return (
@@ -29,6 +33,46 @@ function RequestListContent() {
           status="success"
         />
       )}
+      {/* {sendbackLicReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
+              <br />
+              ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )} */}
+      {sendbackLicReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+              <br />
+              {requestId} ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
+      {/* {sendbackFinalLicReq === "success" && (
+        <ToastCustom
+          title="ตีกลับคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
+              <br />
+              {requestId} ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )} */}
       {approveReq === "success" && (
         <ToastCustom
           title="อนุมัติคำขอสำเร็จ"
@@ -42,6 +86,35 @@ function RequestListContent() {
           status="success"
         />
       )}
+
+      {approveLicReq === "success" && (
+        <ToastCustom
+          title="ตรวจสอบคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
+              <br />
+              {requestId} ผ่านการตรวจสอบแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
+      {approveFinalLicReq === "success" && (
+        <ToastCustom
+          title="อนุมัติคำขอสำเร็จ"
+          desc={
+            <>
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+              <br />
+              เลขที่ {requestId} ผ่านการอนุมัติเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
       {cancelReq === "success" && (
         <ToastCustom
           title="ยกเลิกคำขอสำเร็จ"

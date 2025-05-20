@@ -12,31 +12,29 @@ export interface DriversManagementParams {
   limit?: number;
 }
 
+export interface DriverDocument {
+  driver_document_no: number;
+  driver_document_name: string;
+  driver_document_file: string;
+}
+
 export interface DriverLicenseType {
-  mas_driver_license_uid?: string;
-  ref_driver_license_type_code?: string;
-  driver_license_no?: string;
-  driver_license_end_date?: string;
-  driver_license_image?: string;
-  driver_license_start_date?: string;
-  driver_license_type?: {
-    ref_driver_license_type_code?: string;
-    ref_driver_license_type_name?: string;
-    ref_driver_license_type_desc?: string;
+  mas_driver_license_uid: string;
+  ref_driver_license_type_code: string;
+  driver_license_no: string;
+  driver_license_end_date: string;
+  driver_license_image: string;
+  driver_license_start_date: string;
+  driver_license_type: {
+    ref_driver_license_type_code: string;
+    ref_driver_license_type_name: string;
+    ref_driver_license_type_desc: string;
   };
 }
 
-export interface DriverCertificateType {
-  mas_driver_certificate_uid?: string;
-  driver_certificate_image?: string;
-  ref_driver_certificate_type_code?: string;
-  driver_certificate_issue_date?: string;
-  driver_certificate_expire_date?: string;
-}
-
 export interface DriverStatusType {
-  ref_driver_status_code?: number;
-  ref_driver_status_desc?: string;
+  ref_driver_status_code: number;
+  ref_driver_status_desc: string;
 }
 
 export interface DriverInfoType {
@@ -55,7 +53,7 @@ export interface DriverInfoType {
   approved_job_driver_start_date?: string;
   approved_job_driver_end_date?: string;
   driver_license?: DriverLicenseType;
-  driver_certificate?: DriverCertificateType;
+  driver_documents?: DriverDocument[];
   is_replacement?: string;
   ref_other_use_code?: string;
   driver_status?: DriverStatusType;
@@ -177,4 +175,29 @@ export interface DriverLeaveStatus {
   leave_time_type_code: number;
   mas_driver_uid: string;
   replacement_driver_uid: string;
+}
+
+export interface DriverDocument {
+  driver_document_file: string;
+  driver_document_name: string;
+  driver_document_no: number;
+}
+
+export interface DriverLicense {
+  driver_document_file: string;
+  driver_document_name: string;
+  driver_document_no: number;
+}
+
+export interface DriverUpdateDocumentPayload {
+  driver_documents?: DriverDocument[];
+  driver_license?: DriverLicense;
+  mas_driver_uid?: string;
+}
+
+export interface UploadCSVFileType {
+  fileName: string;
+  fileUrl: string;
+  size: number;
+  type: string;
 }

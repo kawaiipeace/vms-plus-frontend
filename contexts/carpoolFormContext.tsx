@@ -22,13 +22,22 @@ export const CarpoolProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const updateFormData = (newData: Partial<CarpoolForm>) => {
-    setFormData((prev) => {
-      const updatedData = { ...prev, ...newData };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("formCarpoolData", JSON.stringify(updatedData));
-      }
-      return updatedData;
-    });
+    if (Object.keys(newData).length === 0) {
+      setFormData(() => {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("formCarpoolData", JSON.stringify(newData));
+        }
+        return newData as CarpoolForm;
+      });
+    } else {
+      setFormData((prev) => {
+        const updatedData = { ...prev, ...newData };
+        if (typeof window !== "undefined") {
+          localStorage.setItem("formCarpoolData", JSON.stringify(updatedData));
+        }
+        return updatedData;
+      });
+    }
   };
 
   return (

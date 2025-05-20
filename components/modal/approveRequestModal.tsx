@@ -1,19 +1,16 @@
 import { firstApproverApproveRequest } from "@/services/bookingApprover";
 import { finalApproveRequest } from "@/services/bookingFinal";
+import { approveAnnualFinalLic, approveAnnualLic } from "@/services/driver";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
 
 interface Props {
   id?: string;
   title: string;
   role?: string;
-  desc: string;
+  desc: React.ReactNode;
   confirmText: string;
 }
 
@@ -21,7 +18,6 @@ const ApproveRequestModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
 >(({ id, title, role, desc, confirmText }, ref) => {
-  // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -32,36 +28,77 @@ const ApproveRequestModal = forwardRef<
   const router = useRouter();
 
   const handleConfirm = () => {
-    const sendCancelRequest = async () => {
+    const sendApproveRequest = async () => {
       try {
-        const payload = {
-          trn_request_uid: id || "",
-        };
-        const res =
-          role === "firstApprover"
-            ? await firstApproverApproveRequest(payload)
-            : await finalApproveRequest(payload);
+        let res;
 
-            if (res) {
-              modalRef.current?.close();
+        if (role === "licAdmin" || role === "licFinalAdmin") {
+          const payload = {
+            trn_request_annual_driver_uid: id,
+          };
+          if(role === "licAdmin"){
+            res = await approveAnnualLic(payload);
+          }else{
+            res = await approveAnnualFinalLic(payload);
+          }
+       
+        } else {
+          const payload = {
+            trn_request_uid: id || "",
+          };
+          res =
+            role === "firstApprover"
+              ? await firstApproverApproveRequest(payload)
+              : await finalApproveRequest(payload);
+        }
+
+        if (res) {
+          modalRef.current?.close();
+          let requestId;
+          if(role==="licAdmin" || role==="licFinalAdmin"){
+            requestId = res.data?.result?.request_annual_driver_no;
+          }else{
+            requestId = res.data?.result?.request_no;
+          }
+    
+          if (!requestId) return; // optional: handle missing request ID
+
+          let basePath;
+          switch (role) {
+            case "firstApprover":
+              basePath = "/administrator/booking-approver";
+              break;
+            case "licAdmin":
+              basePath = "/administrator/booking-approver"; // Adjust this path as needed
+              break;
+            case "licFinalAdmin":
+              basePath = "/administrator/booking-approver"; // Adjust this path as needed
+              break;
+
+            default:
+              basePath = "/administrator/booking-final";
+          }
+          if (role === "licAdmin") {
             
-              const requestId = res.data?.result?.request_no;
-              if (!requestId) return; // optional: handle missing request ID
-            
-              const basePath =
-                role === "firstApprover"
-                  ? "/administrator/booking-approver"
-                  : "/administrator/booking-final";
-            
-              router.push(`${basePath}?approve-req=success&request-id=${requestId}`);
-            }
-            
+            router.push(
+              `${basePath}?approvelic-req=success&request-id=${requestId}`
+            );
+          }else  if (role === "licFinalAdmin") {
+            router.push(
+              `${basePath}?approvelicfinal-req=success&request-id=${requestId}`
+            );
+          }else {
+            router.push(
+              `${basePath}?approve-req=success&request-id=${requestId}`
+            );
+          }
+        }
       } catch (error) {
         console.error("error:", error);
       }
     };
 
-    sendCancelRequest();
+    sendApproveRequest();
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());

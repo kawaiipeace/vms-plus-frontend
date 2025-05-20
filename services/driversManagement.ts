@@ -7,6 +7,7 @@ import {
   DriverUpdateContractDetails,
   DriverUpdateLicenseDetails,
   DriverLeaveStatus,
+  DriverUpdateDocumentPayload,
 } from "@/app/types/drivers-management-type";
 
 interface DeleteDriverParams {
@@ -182,6 +183,62 @@ export const driverResign = async (params: { mas_driver_uid: string; replaced_ma
 export const driverUpdateLeaveStatus = (params: DriverLeaveStatus) => {
   try {
     const response = axiosInstance.put(`driver-management/update-driver-leave-status`, params);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverUpdateDocument = async (params: DriverUpdateDocumentPayload) => {
+  try {
+    const response = await axiosInstance.put(`driver-management/update-driver-documents`, params);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const importDriverCSV = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const response = await axiosInstance.post("driver-management/import-driver", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const downloadReport = async (params: {
+  starDate: string;
+  endDate: string;
+  showAll?: string;
+  mas_driver_uid: string[];
+}) => {
+  try {
+    const response = await axiosInstance.post(
+      "driver-management/work-report?start_date=" +
+        params.starDate +
+        "&end_date=" +
+        params.endDate +
+        "&show_all=" +
+        params.showAll,
+      params.mas_driver_uid,
+      { responseType: "arraybuffer" }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverStatusRef = async () => {
+  try {
+    const response = await axiosInstance.get("ref/driver-status");
     return response;
   } catch (error) {
     throw error;

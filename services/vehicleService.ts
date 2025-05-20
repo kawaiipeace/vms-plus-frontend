@@ -111,3 +111,25 @@ export const loadReportAddFuel = async ({params, body}: VehicleManagementReportA
         throw new Error("Failed to fetch report trip detail");
     }
 }
+
+export const getVehicleTimeline = async (params: any) => {
+    try {
+        const { data } = await axiosInstance.get("vehicle-management/timeline", { params });
+
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching report trip detail:", error.message || error);
+        throw new Error("Failed to fetch report trip detail");
+    }
+}
+
+export const getHoliday = async (params: any) => {
+    try {
+        const {data} = await axiosInstance.get("mas/holidays", { params });
+        
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching report trip detail:", error.message || error);
+        throw new Error("Failed to fetch report trip detail");
+    }
+}
