@@ -67,7 +67,7 @@ export default function RequestForm() {
       try {
         const response = await fetchVehicleUsers("");
         if (response.status === 200) {
-          const vehicleUserData: VehicleUserType[] = response.data;
+          const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
           const driverOptionsArray = [
             ...vehicleUserData.map((user: { emp_id: string; full_name: string; dept_sap: string }) => ({
@@ -82,6 +82,8 @@ export default function RequestForm() {
         console.error("Error fetching requests:", error);
       }
     };
+
+    
 
     const fetchCostTypeRequest = async () => {
       try {
@@ -107,6 +109,13 @@ export default function RequestForm() {
     fetchCostTypeRequest();
   }, []);
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
+
+  useEffect(() => {
+    if (driverOptions.length > 0 && !selectedVehicleUserOption) {
+      setSelectedVehicleUserOption(driverOptions[0]);
+    }
+  }, [driverOptions]);
+  
 
   useEffect(() => {
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {

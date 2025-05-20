@@ -50,6 +50,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.1.0(react@19.1.0)
+      react-flatpickr:
+        specifier: ^4.0.10
+        version: 4.0.10(react@19.1.0)
       react-hook-form:
         specifier: ^7.54.2
         version: 7.56.1(react@19.1.0)
@@ -2687,6 +2690,11 @@ packages:
     resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
       react: ^19.1.0
+
+  react-flatpickr@4.0.10:
+    resolution: {integrity: sha512-/pFC+Y0KZ3C4cPwMwvH+CR+AHovPjdQV+Tfn8II9ue2N6AN7+D8KIvo2x5oY29dFFL60hwfqjJ/9s3NBKJzmDA==}
+    peerDependencies:
+      react: '>= 16 <= 19'
 
   react-hook-form@7.56.1:
     resolution: {integrity: sha512-qWAVokhSpshhcEuQDSANHx3jiAEFzu2HAaaQIzi/r9FNPm1ioAvuJSD4EuZzWd7Al7nTRKcKPnBKO7sRn+zavQ==}
@@ -6161,6 +6169,11 @@ snapshots:
     dependencies:
       react: 19.1.0
       scheduler: 0.26.0
+
+  react-flatpickr@4.0.10(react@19.1.0):
+    dependencies:
+      flatpickr: 4.6.13
+      react: 19.1.0
 
   react-hook-form@7.56.1(react@19.1.0):
     dependencies:

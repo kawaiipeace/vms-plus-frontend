@@ -4,17 +4,18 @@ import SideBar from "@/components/sideBar";
 import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useEffect, useRef, useState } from "react";
-import { Carpools, CarpoolsParams } from "../types/carpool-management-type";
+import { Carpool, CarpoolParams } from "../types/carpool-management-type";
 import { carpoolManagementSearch } from "@/services/carpoolManagement";
 import { PaginationType } from "../types/request-action-type";
 import CarpoolManagementTable from "@/components/table/carpool-management-table";
 import ZeroRecord from "@/components/zeroRecord";
 import FilterCarpoolModal from "@/components/modal/filterCarpool";
 import { useRouter } from "next/navigation";
+import Header from "@/components/header";
 
 export default function CarpoolManagement() {
-  const [params, setParams] = useState<CarpoolsParams>({});
-  const [data, setData] = useState<Carpools[]>([]);
+  const [params, setParams] = useState<CarpoolParams>({});
+  const [data, setData] = useState<Carpool[]>([]);
   const [pagination, setPagination] = useState<PaginationType>({
     limit: 10,
     page: 1,
@@ -46,21 +47,20 @@ export default function CarpoolManagement() {
   }, [params]);
 
   const handlePageChange = (newPage: number) => {
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   page: newPage,
-    // }));
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    // const limit =
-    //   typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   limit,
-    //   page: 1, // Reset to the first page when page size changes
-    // }));
-    // console.log(newLimit);
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1, // Reset to the first page when page size changes
+    }));
   };
 
   const handleClearAllFilters = () => {};
@@ -76,6 +76,7 @@ export default function CarpoolManagement() {
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
           }`}
         >
+          <Header />
           <div className="main-content-body">
             <div className="page-header">
               <div className="breadcrumbs text-sm">
@@ -95,7 +96,7 @@ export default function CarpoolManagement() {
                 <div className="page-title">
                   <span className="page-title-label">กลุ่มยานพาหนะ</span>
                   <span className="badge badge-outline badge-gray !rounded">
-                    95 กลุ่ม
+                    {pagination.total} กลุ่ม
                   </span>
                 </div>
               </div>
@@ -152,7 +153,7 @@ export default function CarpoolManagement() {
                       </button>
                       <button
                         onClick={() =>
-                          router.push("/carpool-management/create/process-one")
+                          router.push("/carpool-management/form/process-one")
                         }
                         className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
                       >
@@ -206,7 +207,7 @@ export default function CarpoolManagement() {
                   btnType="primary"
                   classNameImg="w-[200px] h-[200px]"
                   useModal={() => () =>
-                    router.push("/carpool-management/create/process-one")}
+                    router.push("/carpool-management/form/process-one")}
                 />
               )}
               <FilterCarpoolModal ref={filterModalRef} />

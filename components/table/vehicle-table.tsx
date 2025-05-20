@@ -176,6 +176,16 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
             header: 'เปิด/ปิดใช้งาน',
             cell: info => <ToggleSwitch id={info.getValue().id} isActive={info.getValue().isActive} />,
         }),
+        columnHelper.display({
+            id: 'action',
+            cell: () => (
+                <>
+                    <button data-tip="ดูรายละเอียด" className="tooltip">
+                        <i className="material-symbols-outlined text-lg cursor-pointer text-gray-600">quick_reference_all</i>
+                    </button>
+                </>
+            )
+        })
     ], [reqData]);
 
     // Initialize the table with data and columns

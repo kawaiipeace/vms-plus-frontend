@@ -1,18 +1,20 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import ZeroRecord from "@/components/zeroRecord";
-import FilterModal from "@/components/modal/filterModal";
-import { useRouter } from "next/navigation";
-import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import Paginationselect from "@/components/table/paginationSelect";
+import { summaryDriverType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
-import { firstApproverRequests } from "@/services/bookingApprover";
-import FirstApproverListTable from "@/components/table/first-approver-list-table";
 import PaginationControls from "../table/pagination-control";
-import FilterSortModal from "../modal/filterSortModal";
 import DriverLicApproverListTable from "../table/driver-lic-approver-list-table";
 import { DriverLicListType } from "@/app/types/driver-lic-list-type";
+import FilterDriverModal from "../annual-driver-license/filterDriverModal";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import { fetchDriverLicenseType } from "@/services/masterService";
 import { fetchDriverLicRequests } from "@/services/driver";
+import { convertToISO } from "@/utils/convertToISO";
+
+dayjs.extend(buddhistEra);
 
 interface PaginationType {
   limit: number;
@@ -21,17 +23,27 @@ interface PaginationType {
   totalPages: number;
 }
 
+interface LicenseTypeOption {
+  value: string;
+  label: string;
+}
+
+interface ActiveFilter {
+  type: 'status' | 'licenseType' | 'date' | 'year';
+  value: string;
+  displayName: string;
+}
+
 export default function DriverLicApproveFlow() {
   const [params, setParams] = useState({
     search: "",
-    vehicle_owner_dept: "",
-    ref_request_status_code: "",
-    startdate: "",
-    enddate: "",
-    car_type: "",
-    category_code: "",
-    order_by: "request_no",
-    order_dir: "desc",
+    ref_request_annual_driver_status_code: "",
+    ref_driver_license_type_code: "",
+    start_created_request_datetime: "",
+    end_driver_license_expire_date: "",
+    annual_yyyy: "",
+    order_by: "",
+    order_dir: "",
     page: 1,
     limit: 10,
   });
@@ -44,157 +56,67 @@ export default function DriverLicApproveFlow() {
   });
 
   const [dataRequest, setDataRequest] = useState<DriverLicListType[]>([]);
-  const [summary, setSummary] = useState<summaryType[]>([]);
-  const [filterNum, setFilterNum] = useState(0);
-  const [filterNames, setFilterNames] = useState<string[]>([]);
-  const [filterDate, setFilterDate] = useState<string>("");
-  const router = useRouter();
+  const [summary, setSummary] = useState<summaryDriverType[]>([]);
+  const [licenseTypeOptions, setLicenseTypeOptions] = useState<LicenseTypeOption[]>([]);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
 
-  const filterSortModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "10": { iconName: "schedule", status: "info" },
+    "11": { iconName: "reply", status: "warning" },
+    "20": { iconName: "schedule", status: "info" },
+    "30": { iconName: "check", status: "success" },
+    "90": { iconName: "delete", status: "default" },
+  };
 
   const handlePageChange = (newPage: number) => {
-    setParams((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
+    setParams(prev => ({ ...prev, page: newPage }));
   };
-
-  const statusConfig: { [key: string]: { iconName: string; status: string } } =
-    {
-      "20": { iconName: "schedule", status: "info" },
-      "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "check", status: "success" },
-      "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
-      "90": { iconName: "delete", status: "default" },
-    };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    setParams((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
-    console.log(newLimit);
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams(prev => ({ ...prev, limit, page: 1 }));
   };
 
-  const handleFilterSubmit = ({
-    selectedStatuses,
-    selectedStartDate,
-    selectedEndDate,
-  }: {
-    selectedStatuses: string[];
-    selectedStartDate: string;
-    selectedEndDate: string;
-  }) => {
-    const mappedNames = selectedStatuses.map(
-      (code) =>
-        summary.find((item) => item.ref_request_status_code === code)
-          ?.ref_request_status_name || code
-    );
+  useEffect(() => {
+    const fetchLicenseTypes = async () => {
+      try {
+        const response = await fetchDriverLicenseType();
+        if (response.status === 200) {
+          setLicenseTypeOptions(response.data.map((type: any) => ({
+            value: type.ref_driver_license_type_code,
+            label: type.ref_driver_license_type_name
+          })));
+        }
+      } catch (error) {
+        console.error("Error fetching license types:", error);
+      }
+    };
 
-    const date = selectedStartDate + " - " + selectedEndDate;
-
-    setFilterNames(mappedNames);
-    console.log(selectedStartDate);
-    if (selectedStartDate && selectedEndDate) {
-      setFilterDate(date);
-    }
-
-    setFilterNum(selectedStatuses.length);
-    setParams((prevParams) => ({
-      ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
-    }));
-  };
-
-  const removeFilter = (filterType: string, filterValue: string) => {
-    if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
-
-      setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
-
-        setFilterNum(updatedStatuses.length);
-
-        return {
-          ...prevParams,
-          ref_request_status_code: updatedStatuses.join(","),
-        };
-      });
-    } else if (filterType === "date") {
-      setFilterDate(""); // Clear the `filterDate`
-      setParams((prevParams) => ({
-        ...prevParams,
-        startdate: "",
-        enddate: "",
-      }));
-    }
-  };
-
-  const handleClearAllFilters = () => {
-    setParams({
-      search: "",
-      vehicle_owner_dept: "",
-      ref_request_status_code: "",
-      startdate: "",
-      enddate: "",
-      car_type: "",
-      category_code: "",
-      order_by: "",
-      order_dir: "",
-      page: 1,
-      limit: 10,
-    });
-
-    setFilterNum(0);
-    setFilterNames([]);
-    setFilterDate("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    fetchLicenseTypes();
+  }, []);
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetchDriverLicRequests(params);
-        console.log("param", params);
-        if (response.status === 200) {
-          const requestList = response.data.requests;
-          const { total, totalPages } = response.data.pagination;
-          const summary = response.data.summary;
+        const apiParams = {
+          ...params,
+          annual_yyyy: params.annual_yyyy 
+            ? (parseInt(params.annual_yyyy) - 543).toString()
+            : ""
+        };
 
-          setDataRequest(requestList);
-          setSummary(summary);
-          setPagination({
-            limit: params.limit,
-            page: params.page,
-            total,
-            totalPages,
-          });
+        const response = await fetchDriverLicRequests(apiParams);
+
+        if (response.status === 200) {
+          setDataRequest(response.data.requests);
+
+          setSummary(response.data.summary);
+          setPagination(response.data.pagination);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -204,35 +126,148 @@ export default function DriverLicApproveFlow() {
     fetchRequests();
   }, [params]);
 
-  useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
-  }, [dataRequest]); // This will log whenever dataRequest changes
+  const handleFilterSubmit = ({
+    selectedStatuses,
+    selectedStartDate,
+    selectedEndDate,
+    licenseTypes = [],
+    year = "",
+  }: {
+    selectedStatuses: string[];
+    selectedStartDate: string;
+    selectedEndDate: string;
+    licenseTypes?: string[];
+    year?: string;
+  }) => {
+    const newFilters: ActiveFilter[] = [];
+
+    // Status filters
+    selectedStatuses.forEach(code => {
+      const status = summary.find(s => s.ref_request_annual_driver_status_code === code);
+      if (status) {
+        newFilters.push({
+          type: 'status',
+          value: code,
+          displayName: status.ref_request_annual_driver_status_name
+        });
+      }
+    });
+
+    // License type filters
+    licenseTypes.forEach(code => {
+      const licenseType = licenseTypeOptions.find(t => t.value === code);
+      if (licenseType) {
+        newFilters.push({
+          type: 'licenseType',
+          value: code,
+          displayName: licenseType.label
+        });
+      }
+    });
+
+    // Date range filter
+    if (selectedStartDate && selectedEndDate) {
+      newFilters.push({
+        type: 'date',
+        value: `${selectedStartDate}|${selectedEndDate}`,
+        displayName: `${dayjs(selectedStartDate).format("DD/MM/BBBB")} - ${dayjs(selectedEndDate).format("DD/MM/BBBB")}`
+      });
+    }
+
+    // Year filter
+    if (year) {
+      newFilters.push({
+        type: 'year',
+        value: year,
+        displayName: `ปี ${year}`
+      });
+    }
+
+    setActiveFilters(newFilters);
+    console.log('date',convertToISO(selectedStartDate,"00:00"));
+    // Update API params
+    setParams(prev => ({
+      ...prev,
+      ref_request_annual_driver_status_code: selectedStatuses.join(","),
+      ref_driver_license_type_code: licenseTypes.join(","),
+      start_created_request_datetime: selectedStartDate
+        ? convertToISO(selectedStartDate,"00:00")
+        : "",
+      end_driver_license_expire_date: selectedEndDate
+        ? convertToISO(selectedEndDate,"00:00")
+        : "",
+      annual_yyyy: year,
+      page: 1
+    }));
+  };
+
+  const removeFilter = (index: number) => {
+    const filterToRemove = activeFilters[index];
+    const newFilters = activeFilters.filter((_, i) => i !== index);
+    setActiveFilters(newFilters);
+
+    setParams(prev => {
+      const newParams = { ...prev };
+
+      switch (filterToRemove.type) {
+        case 'status':
+          newParams.ref_request_annual_driver_status_code = newFilters
+            .filter(f => f.type === 'status')
+            .map(f => f.value)
+            .join(',');
+          break;
+        
+        case 'licenseType':
+          newParams.ref_driver_license_type_code = newFilters
+            .filter(f => f.type === 'licenseType')
+            .map(f => f.value)
+            .join(',');
+          break;
+
+        case 'date':
+          newParams.start_created_request_datetime = '';
+          newParams.end_driver_license_expire_date = '';
+          break;
+
+        case 'year':
+          newParams.annual_yyyy = '';
+          break;
+      }
+
+      return newParams;
+    });
+  };
+
+  const handleClearAllFilters = () => {
+    setActiveFilters([]);
+    setParams({
+      search: "",
+      ref_request_annual_driver_status_code: "",
+      ref_driver_license_type_code: "",
+      start_created_request_datetime: "",
+      end_driver_license_expire_date: "",
+      annual_yyyy: "",
+      order_by: "",
+      order_dir: "",
+      page: 1,
+      limit: 10,
+    });
+  };
 
   return (
     <>
+      {/* Mobile status boxes */}
       <div className="md:hidden block">
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
-            const config = statusConfig[item.ref_request_status_code];
-
+            const config = statusConfig[item.ref_request_annual_driver_status_code];
             if (!config || item.count === 0) return null;
-
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
-                  title={item.ref_request_status_name}
+                  status={config.status as any}
+                  title={item.ref_request_annual_driver_status_name}
                   number={item.count}
                 />
               </div>
@@ -241,29 +276,18 @@ export default function DriverLicApproveFlow() {
         </div>
       </div>
 
+      {/* Desktop status boxes */}
       <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
-            const config = statusConfig[item.ref_request_status_code];
-
+            const config = statusConfig[item.ref_request_annual_driver_status_code];
             if (!config || item.count === 0) return null;
-
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
-                  title={item.ref_request_status_name}
+                  status={config.status as any}
+                  title={item.ref_request_annual_driver_status_name}
                   number={item.count}
                 />
               </div>
@@ -272,88 +296,65 @@ export default function DriverLicApproveFlow() {
         </div>
       </div>
 
+      {/* Search and filter controls */}
       <div className="flex justify-between items-center mt-5 md:flex-row flex-col w-full gap-3">
-  {/* Left side: Search */}
-  <div className="w-full md:w-auto">
-    <div className="input-group input-group-search hidden">
-      <div className="input-group-prepend">
-        <span className="input-group-text search-ico-info">
-          <i className="material-symbols-outlined">search</i>
-        </span>
-      </div>
-      <input
-        type="text"
-        id="myInputTextField"
-        className="form-control dt-search-input"
-        placeholder="เลขที่คำขอ, ผู้ขออนุมัติ"
-        value={params.search}
-        onChange={(e) =>
-          setParams((prevParams) => ({
-            ...prevParams,
-            search: e.target.value,
-            page: 1,
-          }))
-        }
-      />
-    </div>
-  </div>
+        <div className="w-full md:w-auto">
+          <div className="input-group input-group-search">
+            <div className="input-group-prepend">
+              <span className="input-group-text search-ico-info">
+                <i className="material-symbols-outlined">search</i>
+              </span>
+            </div>
+            <input
+              type="text"
+              className="form-control dt-search-input"
+              placeholder="เลขที่คำขอ, ผู้ขออนุมัติ"
+              value={params.search}
+              onChange={(e) => setParams(prev => ({ ...prev, search: e.target.value, page: 1 }))}
+            />
+          </div>
+        </div>
 
-  {/* Right side on desktop, stacked below on mobile */}
-  <div className="flex gap-4 w-full md:w-auto md:ml-auto">
-    <button
-      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-      onClick={() => filterModalRef.current?.openModal()}
-    >
-      <div className="flex items-center gap-1">
-        <i className="material-symbols-outlined">filter_list</i>
-        ตัวกรอง
-        <span className="badge badge-brand badge-outline rounded-[50%]">
-          {filterNum}
-        </span>
-      </div>
-    </button>
-
-    {/* <button
-      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-      onClick={() => filterSortModalRef.current?.openModal()}
-    >
-      <div className="flex items-center gap-1">
-        <i className="material-symbols-outlined">filter_list</i>
-        เรียงลำดับ
-      </div>
-    </button> */}
-  </div>
-</div>
-
-
-      <div className="mt-3">
-        {filterNames.map((name, index) => (
-          <span
-            key={index}
-            className="badge badge-brand badge-outline rounded-sm mr-2"
+        <div className="flex gap-4 w-full md:w-auto md:ml-auto">
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+            onClick={() => filterModalRef.current?.openModal()}
           >
-            {name}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("status", name)}
-            >
-              close_small
-            </i>
-          </span>
-        ))}
-        {filterDate && (
-          <span className="badge badge-brand badge-outline rounded-sm mr-2">
-            {filterDate}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("date", filterDate)}
-            >
-              close_small
-            </i>
-          </span>
-        )}
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              ตัวกรอง
+              {activeFilters.length > 0 && (
+                <span className="badge badge-brand badge-outline rounded-[50%]">
+                  {activeFilters.length}
+                </span>
+              )}
+            </div>
+          </button>
+        </div>
       </div>
 
+      {/* Active filters */}
+      {activeFilters.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {activeFilters.map((filter, index) => (
+            <span 
+              key={index} 
+              className="badge badge-brand badge-outline rounded-sm flex items-center"
+            >
+              {filter.displayName}
+              <button 
+                onClick={() => removeFilter(index)}
+                className="ml-1 focus:outline-none m-0 p-0 flex"
+              >
+                <i className="material-symbols-outlined text-sm">close</i>
+              </button>
+            </span>
+          ))}
+
+        </div>
+      )}
+
+      {/* Main content */}
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
@@ -362,7 +363,6 @@ export default function DriverLicApproveFlow() {
               pagination={pagination}
             />
           </div>
-
           <PaginationControls
             pagination={pagination}
             onPageChange={handlePageChange}
@@ -370,27 +370,22 @@ export default function DriverLicApproveFlow() {
           />
         </>
       ) : (
-        filterNum > 0 ||
-        filterDate ||
-        (dataRequest?.length <= 0 && (
-          <ZeroRecord
-            imgSrc="/assets/img/empty/search_not_found.png"
-            title="ไม่พบข้อมูล"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-            displayBtn={true}
-            btnType="secondary"
-            useModal={handleClearAllFilters}
-          />
-        ))
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={activeFilters.length > 0}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
       )}
-      <FilterModal
+      
+      <FilterDriverModal
         ref={filterModalRef}
         statusData={summary}
         onSubmitFilter={handleFilterSubmit}
       />
-
-     
     </>
   );
 }

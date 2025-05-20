@@ -26,10 +26,11 @@ export interface TripDetail {
 export interface VehicleUserType {
   emp_id: string;
   full_name: string;
-  dept_sap: string;
+  dept_sap?: string;
   tel_internal?: string;
   tel_mobile: string;
   dept_sap_short: string;
+  posi_text?: string;
   image_url: string;
 }
 
@@ -76,7 +77,7 @@ export type VehicleUserTravelCardType = Partial<{
   approved_request_dept_sap: string;
   approved_request_dept_sap_short: string;
   approved_request_dept_sap_full: string;
-}>
+}>;
 
 export interface DriverLicenseCardType {
   annual_yyyy: number;
@@ -89,6 +90,10 @@ export interface DriverLicenseCardType {
   license_status: string;
   mas_driver_uid: string;
   progress_request_history: ProgressDriver[];
+  trn_request_annual_driver_uid: string;
+  next_annual_yyyy: number;
+  next_license_status_code: string;
+  next_license_status: string;
 }
 
 export type DriverCertificateType = {
@@ -108,7 +113,7 @@ export type DriverCertificate = {
   driver_certificate_type: DriverCertificateType;
 };
 
-export interface ProgressDriver{
+export interface ProgressDriver {
   progress_datetime: string;
   progress_icon: string;
   progress_name: string;
@@ -121,14 +126,12 @@ export interface DriverLicense {
   driver_license_image: string;
   ref_driver_license_type_code: string;
   driver_license_start_date: string; // ISO 8601 string
-  driver_license_end_date: string;   // ISO 8601 string
+  driver_license_end_date: string; // ISO 8601 string
   [key: string]: any; // Optional, for other dynamic fields
 }
 
-
-export interface DriverLicenseType{
+export interface DriverLicenseType {
   ref_driver_license_type_code: string;
   ref_driver_license_type_name: string;
   ref_driver_license_type_desc: string;
 }
-

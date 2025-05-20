@@ -96,10 +96,10 @@ export default function DriverLicApproverListTable({
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
           row.original.created_request_datetime || ""
-        );
+        ).date;
         return (
           <div className="text-left" data-name="วันที่สร้างคำขอ">
-            {startDateTime.date}
+          {startDateTime}
           </div>
         );
       },
@@ -131,7 +131,7 @@ export default function DriverLicApproverListTable({
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับ" ? (
+            ) : value === "ตีกลับคำขอ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 ตีกลับคำขอ
               </span>
@@ -139,7 +139,7 @@ export default function DriverLicApproverListTable({
               <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "อนุมัติแล้ว" ? (
+            ) : value === "อนุมัติ" ? (
               <span className="badge badge-pill-outline badge-success whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
@@ -161,10 +161,10 @@ export default function DriverLicApproverListTable({
         const statusValue = row.original.ref_driver_license_type_name;
         return (
           <div className="text-left dataTable-action">
-            {/* {statusValue == "รออนุมัติ" && ( */}
+            {statusValue == "รออนุมัติ" ? 
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
+                data-tip="รออนุมัติ"
                 onClick={() =>
                   router.push(
                     "/administrator/driver-license-confirmer/" +
@@ -174,7 +174,20 @@ export default function DriverLicApproverListTable({
               >
                 <i className="material-symbols-outlined">stylus</i>
               </button>
-            {/* )} */}
+              :
+              <button
+              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+              data-tip="ดูรายละเอียดคำขอ"
+              onClick={() =>
+                router.push(
+                  "/administrator/driver-license-confirmer/" +
+                    row.original.trn_request_annual_driver_uid
+                )
+              }
+            >
+              <i className="material-symbols-outlined">quick_reference_all</i>
+            </button>
+            } 
 
           </div>
         );

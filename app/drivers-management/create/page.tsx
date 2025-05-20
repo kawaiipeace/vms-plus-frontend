@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
@@ -12,7 +12,11 @@ const CreateDriverPage = () => {
     <>
       <div className="main-container">
         <SideBar menuName="ข้อมูลพนักงานขับรถ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -34,13 +38,18 @@ const CreateDriverPage = () => {
 
               <div className="page-group-header">
                 <div className="page-title">
-                  <span className="page-title-label">สร้างข้อมูลพนักงานขับรถ</span>
+                  <span className="page-title-label">
+                    สร้างข้อมูลพนักงานขับรถ
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="w-full">
-              <DriverForm />
+              <Suspense fallback={<div></div>}>
+                {" "}
+                <DriverForm />
+              </Suspense>
             </div>
           </div>
         </div>

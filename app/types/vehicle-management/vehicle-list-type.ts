@@ -89,6 +89,8 @@ export interface VehicleStatusProps {
     vehicleDepartments: VehicleDepartmentApiResponse[];
     fuelTypes: FuelTypeApiResponse[];
     vehicleTypes: VehicleTypeApiResponse[];
+    flag: string;
+    params: VehicleInputParams;
     setParams: (params: VehicleInputParams) => void;
 }
 

@@ -1,6 +1,4 @@
-import { updateSendback } from "@/services/bookingUser";
 import useSwipeDown from "@/utils/swipeDown";
-import { useRouter } from "next/navigation";
 import React, {
   forwardRef,
   useEffect,
@@ -8,23 +6,45 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomSelect from "../customSelect";
-import { getCarpoolAdmin } from "@/services/carpoolManagement";
+import CustomSelect, { CustomSelectOption } from "../customSelect";
+import {
+  getCarpoolAdmin,
+  getCarpoolAdminDetails,
+  postCarpoolAdminCreate,
+  putCarpoolAdminUpdate,
+} from "@/services/carpoolManagement";
+import { CarpoolAdmin } from "@/app/types/carpool-management-type";
+import { useFormContext } from "@/contexts/carpoolFormContext";
+import { useSearchParams } from "next/navigation";
+import ToastCustom from "../toastCustom";
 
 interface Props {
-  id: string;
+  id?: string;
+  setRefetch: (value: boolean) => void;
+}
+
+interface ToastProps {
   title: string;
-  desc: string;
-  confirmText: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
 }
 
 const AddCarpoolAdminModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText }, ref) => {
+>(({ id: editId, setRefetch }, ref) => {
   // Destructure `process` from props
+  const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [admins, setAdmins] = useState([]);
+  const [admins, setAdmins] = useState<CarpoolAdmin[]>([]);
+  const [adminSelected, setAdminSelected] = useState<CustomSelectOption>();
+  const [dept_sap_short, setDeptSapShort] = useState<string>();
+  const [internal_contact_number, setInternalContactNumber] =
+    useState<string>();
+  const [mobile_contact_number, setMobileContactNumber] = useState<string>();
+  const [toast, setToast] = useState<ToastProps | undefined>();
+
+  const { formData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -36,7 +56,6 @@ const AddCarpoolAdminModal = forwardRef<
       try {
         const response = await getCarpoolAdmin();
         const result = response.data;
-        console.log("response: ", response);
         setAdmins(result);
       } catch (error) {
         console.error("Error fetching status data:", error);
@@ -46,28 +65,94 @@ const AddCarpoolAdminModal = forwardRef<
     fetchCarpoolAdminFunc();
   }, []);
 
-  const router = useRouter();
-
-  const handleConfirm = () => {
-    const sendCancelRequest = async () => {
-      try {
-        const payload = {
-          rejected_request_reason: "",
-          trn_request_uid: id,
-        };
-        const res = await updateSendback(payload);
-
-        if (res) {
-          modalRef.current?.close();
-          router.push("/vehicle-booking/request-list/" + id);
+  useEffect(() => {
+    const fetchCarpoolAdminDetailsFunc = async () => {
+      if (editId) {
+        try {
+          const response = await getCarpoolAdminDetails(editId);
+          const result = response.data;
+          console.log("result: ", result);
+        } catch (error) {
+          console.error("Error fetching status data:", error);
         }
-      } catch (error) {
-        console.error("error:", error);
       }
     };
 
-    sendCancelRequest();
+    fetchCarpoolAdminDetailsFunc();
+  }, [editId]);
+
+  const handleConfirm = async () => {
+    if (editId) {
+      try {
+        const response = await putCarpoolAdminUpdate(editId, {
+          mas_carpool_uid: formData.mas_carpool_uid,
+          admin_emp_no: adminSelected?.value as string,
+          internal_contact_number: internal_contact_number as string,
+          mobile_contact_number: mobile_contact_number as string,
+        });
+        if (response.request.status === 200) {
+          setRefetch(true);
+          setAdminSelected(undefined);
+          setDeptSapShort("");
+          setInternalContactNumber("");
+          setMobileContactNumber("");
+          modalRef.current?.close();
+          setToast({
+            title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+            desc:
+              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+              admins.find((item) => item.emp_id === adminSelected?.value)
+                ?.full_name +
+              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            status: "success",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
+      }
+    } else {
+      try {
+        const response = await postCarpoolAdminCreate({
+          mas_carpool_uid: id || formData.mas_carpool_uid,
+          admin_emp_no: adminSelected?.value as string,
+          internal_contact_number: internal_contact_number as string,
+          mobile_contact_number: mobile_contact_number as string,
+        });
+        if (response.request.status === 201) {
+          setRefetch(true);
+          setAdminSelected(undefined);
+          setDeptSapShort("");
+          setInternalContactNumber("");
+          setMobileContactNumber("");
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
+      }
+    }
   };
+
+  const selectAdmin = (option: CustomSelectOption) => {
+    setAdminSelected(option);
+    const admin = admins.find((item) => item.emp_id === option.value);
+
+    const internal = admin?.tel_internal;
+    const mobile = admin?.tel_mobile;
+    setInternalContactNumber(internal);
+    setMobileContactNumber(mobile);
+    setDeptSapShort(admin?.dept_sap_short);
+  };
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -78,7 +163,9 @@ const AddCarpoolAdminModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มผู้ดูแลยานพาหนะ</div>
+            <div className="modal-title">
+              {editId ? "แก้ไข" : "เพิ่ม"}ผู้ดูแลยานพาหนะ
+            </div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
@@ -95,10 +182,13 @@ const AddCarpoolAdminModal = forwardRef<
                     <CustomSelect
                       iconName="person"
                       w="w-full"
-                      options={[]}
-                      // value={selectedVehicleUserOption}
-                      // {...register("admin_emp_no")}
-                      onChange={() => {}}
+                      options={admins.map((item) => ({
+                        value: item.emp_id,
+                        label: item.full_name,
+                      }))}
+                      value={adminSelected}
+                      onChange={selectAdmin}
+                      disabled={!!editId}
                     />
                   </div>
                 </div>
@@ -117,8 +207,8 @@ const AddCarpoolAdminModal = forwardRef<
                       <input
                         type="text"
                         className="form-control pointer-events-none"
-                        // {...register("admin_dept_sap")}
                         placeholder="ระบุตำแหน่ง / สังกัด"
+                        value={dept_sap_short}
                         readOnly
                       />
                     </div>
@@ -137,9 +227,11 @@ const AddCarpoolAdminModal = forwardRef<
                       <input
                         type="text"
                         className="form-control"
-                        // {...register("admin_emp_no")}
                         placeholder="ระบุเบอร์ภายใน"
-                        // readOnly
+                        value={internal_contact_number}
+                        onChange={(e) =>
+                          setInternalContactNumber(e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -159,9 +251,9 @@ const AddCarpoolAdminModal = forwardRef<
                       <input
                         type="text"
                         className="form-control"
-                        // {...register("mobile_contact_number")}
                         placeholder="ระบุเบอร์โทรศัพท์"
-                        // readOnly
+                        value={mobile_contact_number}
+                        onChange={(e) => setMobileContactNumber(e.target.value)}
                       />
                     </div>
                   </div>
@@ -179,7 +271,7 @@ const AddCarpoolAdminModal = forwardRef<
               className="btn btn-primary col-span-1"
               onClick={handleConfirm}
             >
-              เพิ่ม
+              {editId ? "บันทึก" : "เพิ่ม"}
             </button>
           </div>
         </div>
@@ -188,6 +280,15 @@ const AddCarpoolAdminModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });

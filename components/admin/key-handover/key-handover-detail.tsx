@@ -65,7 +65,7 @@ export default function KeyHandoverDetail({
         console.error("Error fetching vehicle details:", error);
       }
     }
-  }, [requestId, requestData]);
+  }, [requestId]);
 
   useEffect(() => {
     let isMounted = true;

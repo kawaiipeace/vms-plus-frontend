@@ -15,7 +15,6 @@ export default function VehicleFlow() {
         total: 0,
         totalPages: 0,
     });
-
     const [params, setParams] = useState({
         search: "",
         vehicle_owner_dept_sap: "",
@@ -27,7 +26,6 @@ export default function VehicleFlow() {
         page: pagination.page,
         limit: pagination.limit,
     });
-
     const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [notFound, setNotFound] = useState(false);
@@ -156,7 +154,7 @@ export default function VehicleFlow() {
         </div>
     );
 
-    const renderTableOrNoData = () => {
+    const renderTableOrNoData = () => { 
         if (dataRequest?.length > 0 && !notFound) {
             return (
                 <>
@@ -202,7 +200,7 @@ export default function VehicleFlow() {
             {renderActions()}
             {renderTableOrNoData()}
 
-            <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+            <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TABLE_LIST" />
             <ReportModal ref={reportModalRef} selected={selectedRows}/>
         </div>
     );

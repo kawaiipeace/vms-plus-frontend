@@ -6,6 +6,7 @@ export interface Profile {
   mobile_number: string;
   dept_sap_full: string;
   license_status: string;
+  license_status_code: string;
   image_url: string;
   roles: string[];
 }

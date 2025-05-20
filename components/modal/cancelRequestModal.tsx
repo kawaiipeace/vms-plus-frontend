@@ -1,8 +1,10 @@
+import { useToast } from "@/contexts/toast-context";
 import { adminDeleteTravelDetail } from "@/services/adminService";
 import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
+import { updateApproverLicAnnualCancel, updateFinalApproverLicAnnualCancel, updateUserLicAnnualCancel } from "@/services/driver";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
 import {
@@ -38,6 +40,7 @@ interface Props {
   role?: string;
   datetime?: string;
   tax_invoice_no?: string;
+  onBack?: () => void;
 }
 
 const CancelRequestModal = forwardRef<
@@ -57,6 +60,7 @@ const CancelRequestModal = forwardRef<
       fuelId,
       datetime,
       tax_invoice_no,
+      onBack
     },
     ref
   ) => {
@@ -65,6 +69,7 @@ const CancelRequestModal = forwardRef<
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
+      const { showToast } = useToast();
 
     const schema = yup.object().shape({
       input: yup.string().required("This field is required"),
@@ -90,6 +95,11 @@ const CancelRequestModal = forwardRef<
             canceled_request_reason: inputValue,
             trn_request_uid: id || "",
           };
+
+          const payloadLic = {
+            canceled_request_reason: inputValue,
+            trn_request_annual_driver_uid: id || "",
+          };
           const res =
             role === "firstApprover"
               ? await firstApprovercancelRequest(payload)
@@ -105,6 +115,12 @@ const CancelRequestModal = forwardRef<
               ? await UserDeleteTravelDetail(tripId || "")
               : role === "adminRecordTravel"
               ? await adminDeleteTravelDetail(tripId || "")
+              : role === "userLic"
+              ? await updateUserLicAnnualCancel(payloadLic || "")
+              : role === "licAdmin"
+              ? await updateApproverLicAnnualCancel(payloadLic || "")
+              : role === "licFinalAdmin"
+              ? await updateFinalApproverLicAnnualCancel(payloadLic || "")
               : role === "recordFuel"
               ? await UserDeleteAddFuelDetail(fuelId || "")
               : role === "driver"
@@ -141,7 +157,12 @@ const CancelRequestModal = forwardRef<
                 "/administrator/request-list?cancel-req=success&request-id=" +
                   data.result?.request_no
               );
-            } else if (role === "recordTravel") {
+            }   else if (role === "licAdmin" || role === "licFinalAdmin") {
+              router.push(
+                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
+            }else if (role === "recordTravel") {
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
               );
@@ -149,6 +170,22 @@ const CancelRequestModal = forwardRef<
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
               );
+            }else if (role === "userLic") {
+              showToast({
+                title: "ยกเลิกคำขอสำเร็จ",
+                desc: (
+                  <>
+                    คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
+                    <br />
+                    เลขที่ {data?.result?.request_annual_driver_no} ถูกยกเลิกเรียบร้อยแล้ว
+                  </>
+                ),
+                status: "success"
+              });
+              modalRef.current?.close(); // Close the cancel modal first
+              if (onBack) {
+                onBack();
+              }
             } else if (role === "adminRecordTravel") {
               router.push(
                 `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
