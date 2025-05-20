@@ -212,3 +212,35 @@ export const importDriverCSV = async (file: File) => {
     throw error;
   }
 };
+
+export const downloadReport = async (params: {
+  starDate: string;
+  endDate: string;
+  showAll?: string;
+  mas_driver_uid: string[];
+}) => {
+  try {
+    const response = await axiosInstance.post(
+      "driver-management/work-report?start_date=" +
+        params.starDate +
+        "&end_date=" +
+        params.endDate +
+        "&show_all=" +
+        params.showAll,
+      params.mas_driver_uid,
+      { responseType: "arraybuffer" }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const driverStatusRef = async () => {
+  try {
+    const response = await axiosInstance.get("ref/driver-status");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -16,6 +16,7 @@ import {
 } from "@/services/carpoolManagement";
 import { useSearchParams } from "next/navigation";
 import VehicleDetailCarpoolModel from "../modal/vehicleDetailCarpoolModal";
+import ToastCustom from "../toastCustom";
 
 interface PaginationType {
   limit: number;
@@ -30,6 +31,12 @@ interface Props {
   setRefetch: (value: boolean) => void;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 export default function CarpoolVehicleTable({
   defaultData,
   pagination,
@@ -40,6 +47,7 @@ export default function CarpoolVehicleTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [deleteId, setDeleteId] = useState<string | undefined>();
   const [vehicleId, setVehicleId] = useState<string | undefined>();
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const cancelCreateModalRef = useRef<{
     openModal: () => void;
@@ -63,9 +71,24 @@ export default function CarpoolVehicleTable({
           setDeleteId(undefined);
           setRefetch(true);
           cancelCreateModalRef.current?.closeModal();
+          setToast({
+            title: "ลบยานพาหนะสำเร็จ",
+            desc:
+              "พาหนะเลขทะเบียน " +
+              defaultData.find(
+                (item) => item.mas_carpool_vehicle_uid === deleteId
+              )?.vehicle_license_plate +
+              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+            status: "success",
+          });
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -463,6 +486,15 @@ export default function CarpoolVehicleTable({
         ref={detailsModalRef}
         vehicleId={vehicleId || ""}
       />
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </div>
   );
 }

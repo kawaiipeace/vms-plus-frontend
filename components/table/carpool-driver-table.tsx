@@ -19,8 +19,8 @@ import {
   putCarpoolSetVehicleActive,
 } from "@/services/carpoolManagement";
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
-import VehicleDetailCarpoolModel from "../modal/vehicleDetailCarpoolModal";
 import DriverInfoCarpoolModal from "../modal/driverInfoCarpoolModal";
+import ToastCustom from "../toastCustom";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -38,6 +38,12 @@ interface Props {
   setRefetch: (value: boolean) => void;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 export default function CarpoolDriverTable({
   defaultData,
   pagination,
@@ -48,6 +54,7 @@ export default function CarpoolDriverTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [deleteId, setDeleteId] = useState<string | undefined>();
   const [driverId, setDriverId] = useState<string | undefined>();
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const cancelCreateModalRef = useRef<{
     openModal: () => void;
@@ -71,9 +78,24 @@ export default function CarpoolDriverTable({
           setDeleteId(undefined);
           setRefetch(true);
           cancelCreateModalRef.current?.closeModal();
+          setToast({
+            title: "ลบพนักงานขับรถสำเร็จ",
+            desc:
+              "พนักงานขับรถ " +
+              defaultData.find(
+                (item) => item.mas_carpool_driver_uid === deleteId
+              )?.driver_name +
+              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+            status: "success",
+          });
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -409,6 +431,15 @@ export default function CarpoolDriverTable({
         id={driverId || ""}
         pickable={false}
       />
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </div>
   );
 }

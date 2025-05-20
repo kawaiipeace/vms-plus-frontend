@@ -288,12 +288,14 @@ export default function CarpoolProcessFour() {
                     <div>ยานพาหนะที่จะให้บริการในกลุ่มนี้</div>
                   </div>
                   <div className="emptystate-action">
-                    <button
-                      onClick={() => skipStepModalRef.current?.openModal()}
-                      className="btn btn-secondary"
-                    >
-                      ข้าม
-                    </button>
+                    {!id && (
+                      <button
+                        onClick={() => skipStepModalRef.current?.openModal()}
+                        className="btn btn-secondary"
+                      >
+                        ข้าม
+                      </button>
+                    )}
 
                     <button
                       className="btn btn-primary"

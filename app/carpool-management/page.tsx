@@ -47,21 +47,20 @@ export default function CarpoolManagement() {
   }, [params]);
 
   const handlePageChange = (newPage: number) => {
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   page: newPage,
-    // }));
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    // const limit =
-    //   typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    // setParams((prevParams) => ({
-    //   ...prevParams,
-    //   limit,
-    //   page: 1, // Reset to the first page when page size changes
-    // }));
-    // console.log(newLimit);
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1, // Reset to the first page when page size changes
+    }));
   };
 
   const handleClearAllFilters = () => {};
@@ -97,7 +96,7 @@ export default function CarpoolManagement() {
                 <div className="page-title">
                   <span className="page-title-label">กลุ่มยานพาหนะ</span>
                   <span className="badge badge-outline badge-gray !rounded">
-                    95 กลุ่ม
+                    {pagination.total} กลุ่ม
                   </span>
                 </div>
               </div>

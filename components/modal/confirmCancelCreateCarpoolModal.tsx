@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id: string;
@@ -19,6 +20,12 @@ interface Props {
   remove?: boolean;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 const ConfirmCancelCreateCarpoolModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
@@ -27,6 +34,7 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
   const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
   const [inputValue, setInputValue] = useState("");
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const { formData, updateFormData } = useFormContext();
 
@@ -56,6 +64,11 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "ลบหน่วยงานไม่สำเร็จ",
+          desc: "การลบหน่วยงานที่สามารถใช้บริการกลุ่มยานพาหนะนี้ จำเป็นต้องลบยานพาหนะ, พนักงานขับรถ, ผู้ดูแลยานพาหนะ และผู้อนุมัติที่สังกัดหน่วยงานนั้น ออกจากกลุ่มก่อน",
+          status: "success",
+        });
       }
     }
   };
@@ -115,6 +128,15 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });

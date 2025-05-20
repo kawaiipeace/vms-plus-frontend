@@ -165,6 +165,13 @@ const DriversListTab = () => {
     filterModalRef.current?.closeModal();
   };
 
+  const handleSearch = (search: string) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      search,
+    }));
+  };
+
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
       ...prevParams,
@@ -221,6 +228,7 @@ const DriversListTab = () => {
   };
 
   const handleUpdateSelectedRow = (row: Record<string, string | undefined>) => {
+    // console.log("Selected row:", row);
     setSelectedRow(row);
   };
 
@@ -246,6 +254,7 @@ const DriversListTab = () => {
               id="myInputTextField"
               className="form-control dt-search-input"
               placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+              onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
         </div>
@@ -334,7 +343,7 @@ const DriversListTab = () => {
         ref={createDriverManagementModalRef}
         csvModalRef={uploadCSVModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>}
       />
-      <DriverExportReportModal ref={driverExportReportModalRef} />
+      <DriverExportReportModal ref={driverExportReportModalRef} selectedRow={selectedRow} />
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilter} />
       <Suspense fallback={<div></div>}>
         <ToastCustomComponent type={updateType} />

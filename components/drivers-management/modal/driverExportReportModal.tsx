@@ -1,15 +1,34 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import DatePicker from "@/components/datePicker";
 import Image from "next/image";
+import * as Yup from "yup";
+import FormHelper from "@/components/formHelper";
+import { downloadReport } from "@/services/driversManagement";
 
-import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
+import { convertToThaiDate } from "@/utils/driver-management";
 
-const DriverExportReportModal = forwardRef<{ openModal: () => void; closeModal: () => void }>((_, ref) => {
+interface DriverExportReportModalProps {
+  selectedRow: { [key: string]: string };
+}
+
+const DriverExportReportModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  DriverExportReportModalProps
+>(({ selectedRow }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [checked, setChecked] = useState(true);
   const [formData, setFormData] = useState({
     driverReportStartDate: "",
     driverReportEndDate: "",
+  });
+  const [formErrors, setFormErrors] = useState({
+    driverReportStartDate: "",
+    driverReportEndDate: "",
+  });
+
+  const validationSchema = Yup.object().shape({
+    driverReportStartDate: Yup.string().required("กรุณาเลือกวันที่เริ่มต้น"),
+    driverReportEndDate: Yup.string().required("กรุณาเลือกวันที่สิ้นสุด"),
   });
 
   useImperativeHandle(ref, () => ({
@@ -17,23 +36,93 @@ const DriverExportReportModal = forwardRef<{ openModal: () => void; closeModal: 
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // useEffect(() => {
+  //   if (selectedRow) {
+  //     console.log("Selected rows:", selectedRow);
+  //   }
+  // }, [selectedRow]);
+
+  function convertDDMMYYYYToISO(dateStr: string): string {
+    const [day, month, year] = dateStr.split("/");
+    if (!day || !month || !year) return "";
+    return `${Number(year) - 543}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    try {
+      validationSchema.validateSync(formData, { abortEarly: false });
+      const selectedRowValues: string[] = [];
+      Object.keys(selectedRow).forEach((key) => {
+        if (selectedRow[key]) {
+          selectedRowValues.push(selectedRow[key]);
+        }
+      });
+      console.log("Selected row values:", selectedRowValues);
+      const params = {
+        starDate: formData.driverReportStartDate,
+        endDate: formData.driverReportEndDate,
+        // showAll: checked ? true : false,
+        mas_driver_uid: selectedRowValues, // Add the driver IDs you want to include in the report
+      };
+
+      try {
+        const response = await downloadReport(params);
+        // console.log("Download report response:", response);
+        if (response.status === 200) {
+          const blob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "Driver_Report.xlsx"; // Set the desired file name
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+          modalRef.current?.close();
+        }
+      } catch (error) {
+        console.error("Error downloading report:", error);
+      }
+
+      // Perform the form submission logic here
+      console.log("Form submitted successfully:", formData);
+      // modalRef.current?.close();
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const errors: { [key: string]: string } = {};
+        error.inner.forEach((err) => {
+          if (err.path) {
+            errors[err.path] = err.message;
+          }
+        });
+        setFormErrors({ driverReportStartDate: "", driverReportEndDate: "" });
+        setFormErrors((prevErrors) => ({
+          ...prevErrors,
+          ...errors,
+        }));
+      }
+    }
   };
 
   const handleChangeReportStartDate = (dateStr: string) => {
-    const dateStrISO = convertToISO8601(dateStr);
+    const dateStrISO = convertDDMMYYYYToISO(dateStr);
+    // console.log("StartDate", dateStrISO);
     setFormData((prevData) => ({
       ...prevData,
-      driverContractStartDate: dateStrISO,
+      driverReportStartDate: dateStrISO,
     }));
   };
 
   const handleChangeReportEndDate = (dateStr: string) => {
-    const dateStrISO = convertToISO8601(dateStr);
+    const dateStrISO = convertDDMMYYYYToISO(dateStr);
+    // console.log("EndDate", dateStrISO);
     setFormData((prevData) => ({
       ...prevData,
-      driverContractEndDate: dateStrISO,
+      driverReportEndDate: dateStrISO,
     }));
   };
 
@@ -68,9 +157,9 @@ const DriverExportReportModal = forwardRef<{ openModal: () => void; closeModal: 
                           onChange={(dateStr) => handleChangeReportStartDate(dateStr)}
                         />
                       </div>
-                      {/* {formErrors.driverContractStartDate && (
-                          <FormHelper text={String(formErrors.driverContractStartDate)} />
-                        )} */}
+                      {formErrors.driverReportStartDate && (
+                        <FormHelper text={String(formErrors.driverReportStartDate)} />
+                      )}
                     </div>
                   </div>
                   <div className="w-full">
@@ -88,9 +177,7 @@ const DriverExportReportModal = forwardRef<{ openModal: () => void; closeModal: 
                           onChange={(dateStr) => handleChangeReportEndDate(dateStr)}
                         />
                       </div>
-                      {/* {formErrors.driverContractStartDate && (
-                          <FormHelper text={String(formErrors.driverContractStartDate)} />
-                        )} */}
+                      {formErrors.driverReportEndDate && <FormHelper text={String(formErrors.driverReportEndDate)} />}
                     </div>
                   </div>
                 </div>
@@ -100,10 +187,10 @@ const DriverExportReportModal = forwardRef<{ openModal: () => void; closeModal: 
                     <div className="text-left">
                       <h5 className="text-[#344054] font-semibold pl-4">ประวัติการทำงานของพนักงานขับรถ</h5>
                       <p className="text-[#667085] font-semibold text-sm pl-4">ดาวน์โหลดไฟล์ .XLSX</p>
-                      <p className="text-[#667085] text-sm pl-4">เลือก 5 คน</p>
+                      <p className="text-[#667085] text-sm pl-4">เลือก {Object.keys(selectedRow).length} คน</p>
                     </div>
                     <div className="ml-auto">
-                      <button>
+                      <button type="submit">
                         <i className="material-symbols-outlined text-[#A80689]">download</i>
                       </button>
                     </div>

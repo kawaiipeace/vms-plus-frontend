@@ -231,6 +231,18 @@ export const postCarpoolDriverCreate = async (data: CarpoolDriverCreate[]) => {
   }
 };
 
+export const postCarpoolDriverUpdate = async (data: CarpoolDriverCreate[]) => {
+  try {
+    const response = await axiosInstance.post(
+      "carpool-management/driver-update/" + data[0].mas_carpool_uid,
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getCarpoolDriverSearch = async (id: string, params: any) => {
   try {
     const response = await axiosInstance.get(
@@ -348,9 +360,15 @@ export const deleteCarpoolVehicle = async (id: string) => {
 };
 
 export const getCarpoolVehicleDetails = async (id: string) => {
+  const data = [
+    {
+      mas_vehicle_uid: id,
+    },
+  ];
   try {
-    const response = await axiosInstance.get(
-      "carpool-management/vehicle-detail/" + id
+    const response = await axiosInstance.post(
+      "carpool-management/vehicle-mas-details",
+      data
     );
 
     return response;

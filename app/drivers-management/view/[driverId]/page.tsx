@@ -19,10 +19,15 @@ import DriverDeleteModal from "@/components/drivers-management/modal/driverDelet
 import ToastCustom from "@/components/toastCustom";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 
-import { DriverInfo, updateDriverStatus } from "@/services/driversManagement";
+import { DriverInfo, updateDriverStatus, driverStatusRef } from "@/services/driversManagement";
 
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import DriverEditInfoModal from "@/components/drivers-management/modal/driverEditInfoModal";
+
+interface DriverStatus {
+  ref_driver_status_code: string;
+  ref_driver_status_desc: string;
+}
 
 function ToastCustomComponent({ type, driverName }: { type: string; driverName?: string }) {
   const active = useSearchParams().get("active");
@@ -107,6 +112,8 @@ const DriverViewProfilePage = () => {
   const [isActive, setIsActive] = useState<number>(1);
   const [driverUpdated, setDriverUpdated] = useState<boolean>(false);
   const [updateType, setUpdateType] = useState<string>("");
+  const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
+  const [driverStatusDesc, setDriverStatusDesc] = useState<string>("");
 
   const driverActiveModalRef = useRef<{
     openModal: () => void;
@@ -158,10 +165,37 @@ const DriverViewProfilePage = () => {
       }
     };
 
+    const fetchDriverStatus = async () => {
+      try {
+        const response = await driverStatusRef();
+        if (response.status === 200) {
+          const driverStatusArr: DriverStatus[] = response.data;
+          setDriverStatus(driverStatusArr);
+        } else {
+          console.error("Failed to fetch driver status");
+        }
+      } catch (error) {
+        console.error("Error fetching driver status:", error);
+      }
+    };
+
     fetchDriverInfo();
+    fetchDriverStatus();
     setDriverUpdated(false);
     router.replace(`/drivers-management/view/${driverId}?active=${isActive}`);
   }, [driverUpdated, driverId, isActive, router]);
+
+  useEffect(() => {
+    if (driverInfo) {
+      const status: DriverStatus | undefined = (driverStatus as DriverStatus[]).find(
+        (status: DriverStatus) =>
+          String(status.ref_driver_status_code) === String(driverInfo?.driver_status?.ref_driver_status_code)
+      );
+      if (status) {
+        setDriverStatusDesc(status.ref_driver_status_code);
+      }
+    }
+  }, [driverStatus, driverInfo]);
 
   const handleUpdateStatusDriver = (driverUid: string, isActive: string) => {
     try {
@@ -218,11 +252,11 @@ const DriverViewProfilePage = () => {
                     <div className="badge badge-pill-outline badge-success whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ลาป่วย/ลากิจ" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ลา (ป่วย/กิจ)" ? (
                     <div className="badge badge-pill-outline badge-warning whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "สิ้นสุดสัญญา" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" ? (
                     <div className="badge badge-pill-outline badge-gray whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
@@ -234,7 +268,7 @@ const DriverViewProfilePage = () => {
                     <div className="badge badge-pill-outline badge-info whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
                     <div className="badge badge-pill-outline badge-gray whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
@@ -254,9 +288,9 @@ const DriverViewProfilePage = () => {
                   >
                     ลบพนักงาน
                   </button>
-                  {driverInfo?.driver_status?.ref_driver_status_desc === "สิ้นสุดสัญญา" ||
+                  {driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" ||
                   driverInfo?.driver_status?.ref_driver_status_desc === "ลาออก" ||
-                  driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก" ? (
+                  driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
                     <></>
                   ) : (
                     <>
@@ -295,14 +329,14 @@ const DriverViewProfilePage = () => {
                       </div>
                     </>
                   )}
-                  {driverInfo?.driver_status?.ref_driver_status_desc === "สิ้นสุดสัญญา" && (
+                  {driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" && (
                     <button className="btn btn-secondary">ต่อสัญญา</button>
                   )}
                 </div>
               </div>
             </div>
 
-            {driverInfo?.driver_status?.ref_driver_status_desc === "ลาป่วย/ลากิจ" && (
+            {driverInfo?.driver_status?.ref_driver_status_desc === "ลา (ป่วย/กิจ)" && (
               <div className="mb-5">
                 <AlertCustom
                   title="ลา 28/02/2568 - 01/03/2568 เต็มวัน"
@@ -312,7 +346,7 @@ const DriverViewProfilePage = () => {
                 />
               </div>
             )}
-            {driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก" && (
+            {driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" && (
               <div className="mb-5">
                 <AlertCustom title="พนักงานคนนี้ถูกให้ออก" desc="เลขมท : มท123(กอพ.1)" icon="cancel" />
               </div>

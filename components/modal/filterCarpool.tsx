@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import CustomSelect from "../customSelect";
+import { getCarpoolDepartmentByType } from "@/services/carpoolManagement";
 
 const FilterCarpoolModal = forwardRef((_, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -24,7 +25,23 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
 
   useEffect(() => {
     // Set options only once when component mounts
-    setOptions([{ label: "ทั้งหมด", value: "ทั้งหมด" }]);
+    const fetchDepartmentFunc = async () => {
+      try {
+        const response = await getCarpoolDepartmentByType("0");
+        const result = response.data;
+        setOptions(
+          result.map((item: any) => ({
+            value: item.dept_sap,
+            label: item.dept_short,
+            subLabel: item.dept_full,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
+    fetchDepartmentFunc();
   }, []);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());

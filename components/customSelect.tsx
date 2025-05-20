@@ -13,15 +13,17 @@ interface SelectProps {
   value?: CustomSelectOption | null;
   onChange: (selected: CustomSelectOption) => void;
   showDescriptions?: boolean; // Add prop to control description visibility
+  disabled?: boolean;
 }
 
-export default function CustomSelect({ 
-  w, 
-  options, 
-  iconName, 
-  value, 
-  onChange, 
-  showDescriptions = false // Default to false
+export default function CustomSelect({
+  w,
+  options,
+  iconName,
+  value,
+  onChange,
+  showDescriptions = false, // Default to false
+  disabled = false,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -30,7 +32,10 @@ export default function CustomSelect({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -49,7 +54,7 @@ export default function CustomSelect({
     if (!showDescriptions || !option.desc) {
       return <div>{option.label}</div>;
     }
-    
+
     return (
       <div className="flex flex-col">
         <div className="font-medium">{option.label}</div>
@@ -67,7 +72,7 @@ export default function CustomSelect({
         className={`border ${w} max-${w} border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText cursor-pointer focus:border-primary-default focus:shadow-customPurple ${
           isOpen ? "shadow-customPurple border-primary-default" : ""
         } overflow-hidden`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => (disabled ? null : setIsOpen(!isOpen))}
       >
         {iconName && (
           <div className="input-group-prepend mr-1">
@@ -94,7 +99,9 @@ export default function CustomSelect({
               <li
                 key={option.value}
                 className={`px-4 py-2 cursor-pointer flex gap-2 items-start rounded-lg ${
-                  value?.value === option.value ? "text-brand-900 bg-gray-100" : "text-gray-700"
+                  value?.value === option.value
+                    ? "text-brand-900 bg-gray-100"
+                    : "text-gray-700"
                 } hover:bg-gray-100`}
                 onClick={() => {
                   onChange(option);
@@ -104,7 +111,9 @@ export default function CustomSelect({
               >
                 {renderDropdownOption(option)}
                 {value?.value === option.value && (
-                  <span className="material-symbols-outlined ml-auto">check</span>
+                  <span className="material-symbols-outlined ml-auto">
+                    check
+                  </span>
                 )}
               </li>
             ))

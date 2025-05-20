@@ -15,6 +15,7 @@ import {
   putCarpoolMainAdminUpdate,
 } from "@/services/carpoolManagement";
 import AddCarpoolAdminModal from "../modal/addCarpoolAdminModal";
+import ToastCustom from "../toastCustom";
 
 interface PaginationType {
   limit: number;
@@ -29,11 +30,18 @@ interface Props {
   setRefetch: (value: boolean) => void;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 export default function CarpoolAdminTable({
   defaultData,
   pagination,
   setRefetch,
 }: Props) {
+  const [toast, setToast] = useState<ToastProps | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [editId, setEditId] = useState<string | undefined>();
@@ -58,9 +66,23 @@ export default function CarpoolAdminTable({
       const response = await putCarpoolMainAdminUpdate(id);
       if (response.request.status === 200) {
         setRefetch(true);
+        setToast({
+          title: "กำหนดผู้รับผิดชอบหลักสำเร็จ",
+          desc:
+            "กำหนดให้ " +
+            defaultData.find((item) => item.mas_carpool_admin_uid === id)
+              ?.admin_emp_name +
+            " เป็นผู้รับผิดชอบหลักของกลุ่มเรียบร้อยแล้ว",
+          status: "success",
+        });
       }
     } catch (error) {
       console.log(error);
+      setToast({
+        title: "Error",
+        desc: <>{error}</>,
+        status: "error",
+      });
     }
   };
 
@@ -71,10 +93,25 @@ export default function CarpoolAdminTable({
         if (response.request.status === 200) {
           setDeleteId(undefined);
           setRefetch(true);
+          setToast({
+            title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
+            desc:
+              "ผู้ดูแลยานพาหนะ " +
+              defaultData.find(
+                (item) => item.mas_carpool_admin_uid === deleteId
+              )?.admin_emp_name +
+              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+            status: "success",
+          });
           cancelCreateModalRef.current?.closeModal();
         }
       } catch (error) {
         console.log(error);
+        setToast({
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
+        });
       }
     }
   };
@@ -215,6 +252,15 @@ export default function CarpoolAdminTable({
         confirmText={"ยกเลิกผู้ดูแลยานพาหนะ"}
         onConfirm={handleDelete}
       />
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </div>
   );
 }
