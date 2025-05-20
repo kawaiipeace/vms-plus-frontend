@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import EditApproverModal from "./editApproverModal";
 import {
+  DriverLicenseCardType,
   VehicleUserType,
 } from "@/app/types/vehicle-user-type";
 import EditFinalApproverModal from "./editFinalApproverModal";
@@ -22,7 +23,7 @@ import {
 } from "@/services/masterService";
 import { convertToISO } from "@/utils/convertToISO";
 import { UploadFileType } from "@/app/types/upload-type";
-import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import { DriverLicListType, RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
@@ -46,7 +47,7 @@ interface ReturnCarAddStep2ModalProps {
   editable?: boolean;
   valueFormStep1?: ValueFormStep1;
   requestData?: RequestAnnualDriver;
-
+  driverData?: DriverLicenseCardType;
   clearForm?: () => void;
   onSubmit?: () => void;
   onBack?: () => void;
@@ -62,6 +63,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     {
       valueFormStep1,
       requestData,
+      driverData,
       editable,
       onTrackStatus,
       clearForm,
@@ -182,7 +184,7 @@ const RequestDrivingStepTwoModal = forwardRef<
         let response;
         if (editable) {
           response = await resendLicenseAnnual(
-            requestData?.trn_request_annual_driver_uid || "",
+            driverData?.next_trn_request_annual_driver_uid || "",
             basePayload
           );
           console.log('res',response);

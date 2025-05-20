@@ -94,6 +94,7 @@ export interface DriverLicenseCardType {
   next_annual_yyyy: number;
   next_license_status_code: string;
   next_license_status: string;
+  next_trn_request_annual_driver_uid: string;
 }
 
 export type DriverCertificateType = {

@@ -15,7 +15,6 @@ import CustomSelectApprover, {
 } from "./customSelectApprover";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchUserApprovalLic } from "@/services/masterService";
-import { updateAnnualApprover } from "@/services/driver";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface EditApproverModalProps {
