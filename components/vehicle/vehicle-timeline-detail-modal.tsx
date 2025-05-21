@@ -7,10 +7,13 @@ export type VehicleTimelineRef = {
 };
 
 interface VehicleTimeLineDetailModalProps {
-    detailRequest: any
+    detailRequest: any;
+    currentDate: any;
 }
 
-const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLineDetailModalProps>(({detailRequest}, ref) => {
+const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLineDetailModalProps>(({detailRequest, currentDate}, ref) => {
+    console.log('detailRequest', detailRequest);
+
     const detailRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -18,7 +21,7 @@ const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLin
         close: () => detailRef.current?.close(),
     }));
 
-    const CardBox = () => {
+    const CardBox = ({data}: {data: any}) => {
         return (
             <div className="border border-gray-300 rounded-xl p-4 bg-white shadow-sm w-full max-w-xl">
                 <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -37,21 +40,21 @@ const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLin
                     <div className="grid grid-cols-1">
                         <div className="flex flex-col gap-2 text-base">
                             <div className="flex justify-between">
-                                <span className="text-xl font-bold">เสร็จสิ้น</span>
+                                <span className="text-xl font-bold">{data.status}</span>
                                 <i className="material-symbols-outlined text-xl text-gray-600 cursor-pointer" onClick={() => {}}>chevron_right</i>
                             </div>
-                            <span className="font-medium text-gray-700">โรงแรมมิราเคิล แกรนด์ คอนเวนชั่น</span>
-                            <span className="text-gray-500">02/01/2568 08:30 - 13:30 | ไป - กลับ</span>
+                            <span className="font-medium text-gray-700">{data.schedule_title}</span>
+                            <span className="text-gray-500">02/01/2568 08:30 - 13:30 | {data.status}</span>
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-2 text-base text-gray-500">
                             <div className="flex items-center gap-1">
                                 <i className="material-symbols-outlined text-base text-gray-600">directions_car</i>
-                                <span>1กก 2345 กทม.</span>
+                                <span>{data.driverDetail.licensePlate}</span>
                             </div>
                             <div className="flex items-center gap-1">
                                 <i className="material-symbols-outlined text-base text-gray-600">person</i>
-                                <span>สมชาย หงส์ทอง (ชาย)</span>
+                                <span className="text-sm">{`${data.driverDetail.driverName} (ชาย)`}</span>
                             </div>
                         </div>
                     </div>
@@ -64,19 +67,19 @@ const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLin
 
                 <div className="grid grid-cols-[200px_auto] gap-2 mt-2 justify-between rounded-xl bg-gray-100 p-4">
                     <div className="flex flex-col">
-                        <span className="font-bold">พิมพ์ลักษ์ บุญชูกุศล</span>
+                        <span className="font-bold">{data.carUserDetail.userName}</span>
                         <span className="text-gray-500">นรค.6 กอพ.1 ฝพจ.</span>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                         <div className="flex items-center gap-1">
                             <i className="material-symbols-outlined text-base text-brand-900">smartphone</i>
-                            <span className="text-sm text-gray-500">081-234-5678</span>
+                            <span className="text-sm text-gray-500">{data.carUserDetail.userContactNumber !== '' ? data.carUserDetail.userContactNumber : '-'}</span>
                         </div>
 
                         <div className="flex items-center gap-1">
                             <i className="material-symbols-outlined text-base text-brand-900">phone</i>
-                            <span className="text-sm text-gray-500">6032</span>
+                            <span className="text-sm text-gray-500">{data.carUserDetail.userContactInternalNumber !== '' ? data.carUserDetail.userContactInternalNumber : '-'}</span>
                         </div>
                     </div>
                 </div>
@@ -89,18 +92,13 @@ const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLin
         <dialog ref={detailRef} className="modal">
             <div className="modal-box bg-white rounded-lg min-w-[650px] max-w-[650px] h-[534px]">
                 <div>
-                    <span className="text-base font-bold">{'2 มกราคม 2567'}</span>
+                    <span className="text-base font-bold">{currentDate}</span>
                 </div>
 
                 <div className="flex flex-col gap-4 mt-5 overflow-y-auto max-h-[400px]">
-                    <CardBox />
-                    <CardBox />
-                    <CardBox />
-                    <CardBox />
-                    <CardBox />
-                    <CardBox />
-                    <CardBox />
-                    <CardBox />
+                    {detailRequest.map((item: any, index: number) => (
+                        <CardBox key={index} data={item} />
+                    ))}
                 </div>
 
                 <div className="flex justify-end">
