@@ -179,7 +179,7 @@ const ReturnEditCarModal = forwardRef<
                             image.file_url ? (
                               <ImagePreview
                                 key={index}
-                                image={image.file_url}
+                                image={image.file_url || ""}
                                 onDelete={() => handleDeleteImage(index)}
                               />
                             ) : null
@@ -213,7 +213,7 @@ const ReturnEditCarModal = forwardRef<
                             image.file_url ? (
                               <ImagePreview
                                 key={index}
-                                image={image.file_url}
+                                image={image.file_url || ""}
                                 onDelete={() => handleDeleteImage2(index)}
                               />
                             ) : null

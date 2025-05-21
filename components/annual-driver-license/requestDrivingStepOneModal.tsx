@@ -555,7 +555,7 @@ const RequestDrivingStepOneModal = forwardRef<
                       (image: { file_url: string | File }, index: number) => (
                         <ImagePreview
                           key={index}
-                          image={image.file_url}
+                          image={image.file_url || ""}
                           onDelete={() => handleDeleteLicenseImage(index)}
                         />
                       )
@@ -733,7 +733,7 @@ const RequestDrivingStepOneModal = forwardRef<
                           ) => (
                             <ImagePreview
                               key={index}
-                              image={image.file_url}
+                              image={image.file_url || ""}
                               onDelete={() =>
                                 handleDeleteCertificateImage(index)
                               }

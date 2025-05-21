@@ -267,7 +267,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                           {images.map((image, index) => (
                             <ImagePreview
                               key={index}
-                              image={image.file_url}
+                              image={image.file_url || ""}
                               onDelete={() => handleDeleteImage(index)}
                             />
                           ))}
@@ -304,7 +304,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                           {images2.map((image, index) => (
                             <ImagePreview
                               key={index}
-                              image={image.file_url}
+                              image={image.file_url || ""}
                               onDelete={() => handleDeleteImage2(index)}
                             />
                           ))}
@@ -340,7 +340,7 @@ const ReturnCarAddStep2Modal = forwardRef<
                           {images2.map((image, index) => (
                             <ImagePreview
                               key={index}
-                              image={image.file_url}
+                              image={image.file_url || ""}
                               onDelete={() => handleDeleteImage2(index)}
                             />
                           ))}
