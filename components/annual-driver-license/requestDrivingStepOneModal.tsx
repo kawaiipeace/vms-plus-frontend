@@ -23,6 +23,7 @@ import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -292,13 +293,18 @@ const RequestDrivingStepOneModal = forwardRef<
       }
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  const isISODate = (str: string) => {
+  const date = new Date(str);
+  return !isNaN(date.getTime()) && str.includes("T");
+};
+
 
   // Handler for ImageUpload components
   const handleLicenseImageChange = (newImage: UploadFileType) => {
@@ -338,6 +344,11 @@ const RequestDrivingStepOneModal = forwardRef<
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   const onSubmit = (formData: ValueFormStep1) => {
+    const expiry = isISODate(formData.licenseExpiryDate) &&
+      (formData.licenseExpiryDate = convertToBuddhistDateTime(
+        formData.licenseExpiryDate
+      ).date);
+    console.log("formdata",formData);
     if (stepOneSubmit) {
       stepOneSubmit(formData);
     }
