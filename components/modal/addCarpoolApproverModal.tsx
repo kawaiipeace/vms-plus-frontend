@@ -67,19 +67,26 @@ const AddCarpoolApproverModal = forwardRef<
   }, []);
 
   useEffect(() => {
-    const fetchCarpoolAdminDetailsFunc = async () => {
+    const fetchCarpoolApproverDetailsFunc = async () => {
       if (editId) {
         try {
           const response = await getCarpoolApproverDetails(editId);
           const result = response.data;
           console.log("result: ", result);
+          setSelectedApprover({
+            value: result.approver_emp_no,
+            label: result.approver_emp_name,
+          });
+          setDeptSapShort(result.approver_dept_sap_short);
+          setInternalContactNumber(result.internal_contact_number);
+          setMobileContactNumber(result.mobile_contact_number);
         } catch (error) {
           console.error("Error fetching status data:", error);
         }
       }
     };
 
-    fetchCarpoolAdminDetailsFunc();
+    fetchCarpoolApproverDetailsFunc();
   }, [editId]);
 
   const handleConfirm = async () => {
@@ -108,11 +115,16 @@ const AddCarpoolApproverModal = forwardRef<
             status: "success",
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }
@@ -132,11 +144,16 @@ const AddCarpoolApproverModal = forwardRef<
           setMobileContactNumber("");
           setRefetch(true);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }
@@ -187,6 +204,7 @@ const AddCarpoolApproverModal = forwardRef<
                       }))}
                       value={selectedApprover}
                       onChange={selectApprover}
+                      disabled={editId ? true : false}
                     />
                   </div>
                 </div>
@@ -291,6 +309,6 @@ const AddCarpoolApproverModal = forwardRef<
   );
 });
 
-AddCarpoolApproverModal.displayName = "AddCarpoolAdminModal";
+AddCarpoolApproverModal.displayName = "AddCarpoolApproverModal";
 
 export default AddCarpoolApproverModal;

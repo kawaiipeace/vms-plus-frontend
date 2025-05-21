@@ -43,7 +43,7 @@ export default function ToastCustom({
 
   return (
     <div className="toast md:toast-end md:toast-top top-center top-bottom w-full md:w-auto z-[999]">
-      <div
+      {/* <div
         className={`alert alert-${status} ${styleText} !border-primary-grayBorder !bg-white gap-0`}
       >
         <div className="flex items-start gap-2">
@@ -72,7 +72,7 @@ export default function ToastCustom({
             </i>
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

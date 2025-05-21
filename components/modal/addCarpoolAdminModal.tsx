@@ -71,7 +71,13 @@ const AddCarpoolAdminModal = forwardRef<
         try {
           const response = await getCarpoolAdminDetails(editId);
           const result = response.data;
-          console.log("result: ", result);
+          setAdminSelected({
+            value: result.admin_emp_no,
+            label: result.admin_emp_name,
+          });
+          setDeptSapShort(result.admin_dept_sap_short);
+          setInternalContactNumber(result.internal_contact_number);
+          setMobileContactNumber(result.mobile_contact_number);
         } catch (error) {
           console.error("Error fetching status data:", error);
         }
@@ -85,7 +91,7 @@ const AddCarpoolAdminModal = forwardRef<
     if (editId) {
       try {
         const response = await putCarpoolAdminUpdate(editId, {
-          mas_carpool_uid: formData.mas_carpool_uid,
+          mas_carpool_uid: id || formData.mas_carpool_uid,
           admin_emp_no: adminSelected?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -107,11 +113,16 @@ const AddCarpoolAdminModal = forwardRef<
             status: "success",
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }
@@ -131,11 +142,16 @@ const AddCarpoolAdminModal = forwardRef<
           setMobileContactNumber("");
           modalRef.current?.close();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }

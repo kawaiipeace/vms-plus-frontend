@@ -85,8 +85,8 @@ const ModalBody = ({
                     >
                         <option value="">ทั้งหมด</option>
                         {vehicleTypes.map((vt: VehicleTypeApiResponse) => (
-                            <option key={vt.ref_vehicle_type_code} value={vt.ref_vehicle_type_code}>
-                                {vt.ref_vehicle_type_name}
+                            <option key={vt.car_type_detail} value={vt.car_type_detail}>
+                                {vt.car_type_detail}
                             </option>
                         ))}
                     </select>

@@ -61,7 +61,7 @@ export const getVehicleDepartment = async () => {
 
 export const getVehicleType = async () => {
     try {
-        const { data } = await axiosInstance.get("vehicle/types");
+        const { data } = await axiosInstance.get("vehicle/car-types-by-detail");
         return data;
     } catch (error: any) {
         console.error("Error fetching vehicle type:", error.message || error);

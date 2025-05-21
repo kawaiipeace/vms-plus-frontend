@@ -458,3 +458,31 @@ export const getCarpoolDriverDetails = async (id: string) => {
     throw error;
   }
 };
+
+export const getCarpoolVehicleTimeline = async (id: string, params: any) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/vehicle-timeline/" +
+        "2e67e277-330b-46ed-86c9-5140fa2b0dc8" || id,
+      { params }
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolDriverTimeline = async (id: string, params: any) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/driver-timeline/" +
+        "2b6d1de8-960c-4746-b595-b747deede2b4" || id,
+      { params }
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
