@@ -46,10 +46,7 @@ export interface VehicleDepartmentApiResponse {
 }
 
 export interface VehicleTypeApiResponse {
-    ref_vehicle_type_code: number;
-    ref_vehicle_type_name: string;
-    available_units: number;
-    vehicle_type_image: string;
+    car_type_detail: string;
 }
 
 export interface VehicleManagementReportApiParams {

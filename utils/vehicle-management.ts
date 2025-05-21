@@ -1,7 +1,11 @@
 import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
+import 'dayjs/locale/th';
+
+dayjs.locale('th');
 
 export function transformApiToTableData(rawData: any, dates: any[]): any[] {
+
     const createEmptyTimeline = () => {
         const timeline: Record<string, any[]> = {};
         for (let i = 1; i <= dates.length; i++) {
@@ -13,10 +17,12 @@ export function transformApiToTableData(rawData: any, dates: any[]): any[] {
     const vehicles: any[] = rawData ?? [];
     return vehicles.map(vehicle => {
         const timeline = createEmptyTimeline();
+        let status = '';
 
-        vehicle.vehicle_t_requests?.forEach((req: any) => {
+        vehicle.vehicle_trn_requests?.forEach((req: any) => {
             if (req.trip_details.length === 0) return;
 
+            status = req.time_line_status;
             req.trip_details?.forEach((trip: any) => {
                 const start = dayjs(trip.trip_start_datetime);
                 const end = dayjs(trip.trip_end_datetime);
@@ -29,8 +35,6 @@ export function transformApiToTableData(rawData: any, dates: any[]): any[] {
                     schedule_title: destinationPlace,
                     schedule_time: start.format("HH:mm"),
                     schedule_range: duration.toString(),
-                    schedule_status_code: req.ref_request_status_code,
-                    schedule_status_name: req.ref_request_status_name,
                 });
             });
         });
@@ -43,7 +47,8 @@ export function transformApiToTableData(rawData: any, dates: any[]): any[] {
             vehicleType: vehicle.vehicle_car_type_detail,
             vehicleDepartment: vehicle.vehicle_dept_name,
             distance: vehicle.vehicle_mileage,
-            timeLine: timeline
+            vehicleStatus: status,
+            timeline: timeline
         };
         
         return result;

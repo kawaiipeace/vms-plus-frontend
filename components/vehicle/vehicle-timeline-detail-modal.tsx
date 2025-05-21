@@ -6,7 +6,11 @@ export type VehicleTimelineRef = {
     close: () => void;
 };
 
-const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef>((_, ref) => {
+interface VehicleTimeLineDetailModalProps {
+    detailRequest: any
+}
+
+const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLineDetailModalProps>(({detailRequest}, ref) => {
     const detailRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
