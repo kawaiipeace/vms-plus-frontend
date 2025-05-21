@@ -14,9 +14,8 @@ import CustomSelectApprover, {
   CustomSelectOption,
 } from "./customSelectApprover";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
-import { fetchUserFinalApprovalLic } from "@/services/masterService";
-import { updateAnnualApprover } from "@/services/driver";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import { fetchUserApprovalLic } from "@/services/masterService";
 
 interface EditApproverModalProps {
   title: string;
@@ -71,7 +70,7 @@ const EditApproverModal = forwardRef<
     const fetchVehicleUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchUserFinalApprovalLic();
+        const response = await fetchUserApprovalLic();
         if (response.status === 200) {
           const vehicleUserData: VehicleUserType[] = response.data;
           const driverOptionsArray = vehicleUserData.map(

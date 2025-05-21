@@ -290,7 +290,7 @@ export const fetchSatisfactionSurveyQuestions = async () => {
   }
 };
 
-export const fetchUserApprovalLic = async () => {
+export const fetchUserConfirmerLic = async () => {
   try {
     const response = await axiosInstance.get("mas/user-confirmer-license-users");
     return response;
@@ -299,7 +299,7 @@ export const fetchUserApprovalLic = async () => {
   }
 };
 
-export const fetchUserFinalApprovalLic = async () => {
+export const fetchUserApprovalLic = async () => {
   try {
     const response = await axiosInstance.get("mas/user-approval-license-users");
     return response;
