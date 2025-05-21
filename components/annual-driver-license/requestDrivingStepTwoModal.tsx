@@ -180,7 +180,7 @@ const RequestDrivingStepTwoModal = forwardRef<
             valueFormStep1.vehicleType.value
           );
         }
-        console.log(basePayload);
+        console.log("payload",basePayload);
         let response;
         if (editable) {
           response = await resendLicenseAnnual(
