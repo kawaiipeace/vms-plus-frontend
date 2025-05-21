@@ -5,16 +5,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { DataTable } from "./time-table";
-import {
-  generateDateObjects,
-  transformApiToTableData,
-} from "@/utils/vehicle-management";
+import { generateDateObjects } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import VehicleTimeLineDetailModal, {
   VehicleTimelineRef,
 } from "../vehicle/vehicle-timeline-detail-modal";
+// import { transformApiToTableData } from "@/utils/driver-management";
 
 const useGenerateDates = (params: any) => {
   const [dates, setDates] = useState<any[]>([]);
@@ -54,7 +52,7 @@ const useColumns = (
         }),
         {
           id: "licensePlate",
-          header: "เลขทะเบียน / ยี่ห้อ / รุ่น",
+          header: "ชื่อ - นามสกุล / สังกัด",
           cell: (info) => (
             <div className="flex flex-col items-start">
               <span className="text-base font-semibold">
@@ -77,7 +75,7 @@ const useColumns = (
       selectedOption === "all"
         ? [
             columnHelper.accessor("vehicleType", {
-              header: "ประเภทยานพาหนะ",
+              header: "งาน ธ.ค. 67",
               cell: (info) => (
                 <div className="text-base">{info.getValue()}</div>
               ),
@@ -88,25 +86,14 @@ const useColumns = (
               },
             }),
             columnHelper.accessor("vehicleDepartment", {
-              header: "สังกัดยานพาหนะ",
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
-              enableSorting: false,
-              meta: {
-                className:
-                  "sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px]",
-              },
-            }),
-            columnHelper.accessor("distance", {
-              header: `ระยะทาง ${lastMonth}`,
+              header: "งานเดือนนี้",
               cell: (info) => (
                 <div className="text-base">{info.getValue()}</div>
               ),
               enableSorting: true,
               meta: {
                 className:
-                  "sticky left-[505px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line",
+                  "sticky left-[335px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line",
               },
             }),
           ]
@@ -135,7 +122,7 @@ const useColumns = (
           },
           cell: (info) => {
             const { timeline, status } = info.getValue();
-            const dayTimeline = timeline[`day_${day}`];
+            const dayTimeline = timeline?.[`day_${day}`];
             const holidayClass = holiday ? "text-white bg-gray-100" : "";
 
             const statusColorMap = {
@@ -224,7 +211,7 @@ interface RequestListTableProps {
   lastMonth: string;
 }
 
-export default function RequestListTable({
+export default function CarpoolDriverListTable({
   dataRequest,
   params,
   selectedOption,
@@ -233,6 +220,8 @@ export default function RequestListTable({
   const [isLoading, setIsLoading] = useState(true);
   const [detailRequest, setDetailRequest] = useState({});
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
+
+  console.log("dataRequest: ", dataRequest);
 
   const dates = useGenerateDates(params);
   const dataTransform = useMemo(
@@ -274,4 +263,68 @@ export default function RequestListTable({
       />
     </div>
   );
+}
+
+export function transformApiToTableData(rawData: any, dates: any[]): any[] {
+  const createEmptyTimeline = () => {
+    const timeline: Record<string, any[]> = {};
+    for (let i = 1; i <= dates.length; i++) {
+      timeline[`day_${i}`] = [];
+    }
+    return timeline;
+  };
+
+  const drivers: any[] = rawData ?? [];
+  return drivers.map((driver) => {
+    const timeline = createEmptyTimeline();
+
+    driver.driver_trn_requests?.forEach((req: any) => {
+      if (req.trip_details.length === 0) return;
+
+      req.trip_details?.forEach((trip: any) => {
+        const start = dayjs(trip.trip_start_datetime);
+        const end = dayjs(trip.trip_end_datetime);
+        const dayStart = start.date();
+        const dayEnd = end.date();
+        const duration = Math.max(dayEnd - dayStart + 1, 1);
+        const destinationPlace = trip.trip_destination_place;
+
+        timeline[`day_${dayStart}`]?.push({
+          schedule_title: destinationPlace,
+          schedule_time: start.format("HH:mm"),
+          schedule_range: duration.toString(),
+          schedule_status_code: req.ref_request_status_code,
+          schedule_status_name: req.ref_request_status_name,
+          modal: {
+            statusModal: req.ref_request_status_name,
+            carPlate:
+              trip.vehicle_license_plate +
+              " " +
+              trip.vehicle_license_plate_province_short +
+              ".",
+            driverName: driver.driver_name + "(" + driver.driver_nickname + ")",
+            destinationPlace: trip.trip_destination_place,
+            startDate: start.format("DD/MM/YYYY"),
+            vehicleName: req.vehicle_user_emp_name,
+            vehicleDept: req.vehicle_user_dept_sap,
+            carContactNumber: req.car_user_internal_contact_number,
+            carContactNumberMobile: req.car_user_mobile_contact_number,
+          },
+        });
+      });
+    });
+
+    const result = {
+      vehicleLicensePlate:
+        driver.driver_name + " (" + driver.driver_nickname + ")",
+      vehicleBrandModel: driver.driver_dept_sap_short_name_work,
+      vehicleBrandName: "-",
+      vehicleType: driver.work_last_month,
+      vehicleDepartment: driver.work_this_month,
+      distance: driver.driver_name,
+      timeLine: timeline,
+    };
+
+    return result;
+  });
 }
