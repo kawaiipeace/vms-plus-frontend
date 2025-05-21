@@ -11,7 +11,6 @@ import {
 } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
 import VehicleTimeLineDetailModal, {
   VehicleTimelineRef,
 } from "../vehicle/vehicle-timeline-detail-modal";
@@ -87,26 +86,15 @@ const useColumns = (
                   "sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]",
               },
             }),
-            columnHelper.accessor("vehicleDepartment", {
-              header: "สังกัดยานพาหนะ",
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
-              enableSorting: false,
-              meta: {
-                className:
-                  "sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px]",
-              },
-            }),
             columnHelper.accessor("distance", {
               header: `ระยะทาง ${lastMonth}`,
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
+              cell: (info) => {
+                return <div className="text-base">{info.getValue()}</div>;
+              },
               enableSorting: true,
               meta: {
                 className:
-                  "sticky left-[505px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line",
+                  "sticky left-[335px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line",
               },
             }),
           ]
@@ -224,7 +212,7 @@ interface RequestListTableProps {
   lastMonth: string;
 }
 
-export default function RequestListTable({
+export default function CarpoolVehicleListTable({
   dataRequest,
   params,
   selectedOption,
@@ -233,6 +221,8 @@ export default function RequestListTable({
   const [isLoading, setIsLoading] = useState(true);
   const [detailRequest, setDetailRequest] = useState({});
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
+
+  console.log("dataRequest: ", dataRequest);
 
   const dates = useGenerateDates(params);
   const dataTransform = useMemo(

@@ -17,6 +17,8 @@ import {
   getCarpoolVehicleTimeline,
 } from "@/services/carpoolManagement";
 import { useSearchParams } from "next/navigation";
+import CarpoolVehicleListTable from "../table/timeline-carpool-vehicle-list-table";
+import CarpoolDriverListTable from "../table/timeline-carpool-driver-list-table";
 
 export default function CarpoolTimeLine() {
   const id = useSearchParams().get("id");
@@ -330,7 +332,7 @@ export default function CarpoolTimeLine() {
 
         {dataVehicle?.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolVehicleListTable
               dataRequest={dataVehicle}
               params={vehicleParams}
               selectedOption={selectedOption}
@@ -409,7 +411,7 @@ export default function CarpoolTimeLine() {
 
         {dataDriver?.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolDriverListTable
               dataRequest={dataDriver}
               params={driverParams}
               selectedOption={selectedOption}
