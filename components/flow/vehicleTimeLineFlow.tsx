@@ -14,6 +14,7 @@ import VehicleNoData from "../vehicle/noData";
 
 export default function VehicleTimeLine() {
     const [dataRequest, setDataRequest] = useState<any[]>([]);
+    const [lastMonth, setLastMonth] = useState<string>('');
     const [pagination, setPagination] = useState<PaginationType>({
         limit: 10,
         page: 1,
@@ -31,13 +32,13 @@ export default function VehicleTimeLine() {
     const [selectedOption, setSelectedOption] = useState<'all' | 'first'>('all');
 
     const filterModalRef = useRef<FilterModalRef>(null);
-    const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await getVehicleTimeline(params);
                 setDataRequest(response.vehicles);
+                setLastMonth(response.last_month);
 
                 const { total, totalPages } = response.pagination;
                 setPagination({
@@ -55,7 +56,6 @@ export default function VehicleTimeLine() {
     }, [params]);
 
     const handleOpenFilterModal = () => filterModalRef.current?.open();
-    const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
     const toggleDropdown = () => setShowDropdown((prev) => !prev);
     const handleSelect = (option: 'all' | 'first') => {
         setSelectedOption(option);
@@ -188,7 +188,11 @@ export default function VehicleTimeLine() {
 
                 {dataRequest.length !== 0 ? (
                     <>
-                        <RequestListTable dataRequest={dataRequest} params={params} selectedOption={selectedOption}/>
+                        <RequestListTable 
+                            dataRequest={dataRequest} 
+                            params={params} 
+                            selectedOption={selectedOption}
+                            lastMonth={lastMonth}/>
                         <PaginationControls
                             pagination={pagination}
                             onPageChange={handlePageChange}
@@ -214,7 +218,6 @@ export default function VehicleTimeLine() {
             <Actions />
             <RenderTableOrNoData />
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
-            <VehicleTimeLineDetailModal ref={vehicleTimelineDetailRef} />
         </div>
     );
 }

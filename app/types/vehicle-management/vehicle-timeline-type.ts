@@ -5,7 +5,8 @@ export interface VehicleTimelineListTableData {
     vehicleType: string;
     vehicleDepartment: string;
     distance: string;
-    timeLine: VehicleTimeline;
+    timeline: VehicleTimeline;
+    vehicleStatus: string;
 };
 
 export interface VehicleTimeline {
