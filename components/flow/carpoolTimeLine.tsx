@@ -193,7 +193,7 @@ export default function CarpoolTimeLine() {
     <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
       <span className="text-xl font-bold">พนักงานขับรถ</span>
       <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-        {driverPagination.total} คัน
+        {driverPagination.total} คน
       </span>
     </div>
   );
