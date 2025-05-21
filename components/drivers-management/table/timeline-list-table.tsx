@@ -2,12 +2,27 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/time-table";
 import { generateDateObjects, transformApiToTableData } from "@/utils/driver-management";
-import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
+// import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 import { scheduler } from "timers/promises";
 import { RequestListType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
+
+interface VehicleTimelineListTableData {
+  vehicleBrandModel: string;
+  vehicleBrandName: string;
+  vehicleLicensePlate: string;
+  vehicleType: string;
+  vehicleDepartment: string;
+  distance: string;
+  timeLine: VehicleTimeline;
+  vehicleStatus: string;
+}
+
+interface VehicleTimeline {
+  [key: string]: any;
+}
 
 export default function RequestListTable({
   dataRequest,
@@ -665,59 +680,65 @@ export default function RequestListTable({
           ]
         : []),
       ...dates.map(({ key, date, day, month, holiday }) =>
-        columnHelper.accessor("timeLine", {
-          id: key,
-          header: () => {
-            const className =
-              dayjs().format("YYYY-MM-DD") === date.toString() ? "text-white bg-brand-900 rounded-full p-1" : "";
-            return (
-              <div className={`w-20 flex flex-col items-center text-xs`}>
-                <span className={`font-semibold ${className}`}>{day}</span>
-                <span className="font-normal">{month}</span>
-              </div>
-            );
-          },
-          cell: (info) => {
-            const values = info.getValue();
-            const mock = values[`day_${day}`];
-            const className = holiday != null ? "text-white bg-gray-100" : "";
+        columnHelper.accessor(
+          (row) => ({
+            timeline: row.timeLine,
+          }),
+          {
+            id: key,
+            header: () => {
+              const className =
+                dayjs().format("YYYY-MM-DD") === date.toString() ? "text-white bg-brand-900 rounded-full p-1" : "";
+              return (
+                <div className={`w-20 flex flex-col items-center text-xs`}>
+                  <span className={`font-semibold ${className}`}>{day}</span>
+                  <span className="font-normal">{month}</span>
+                </div>
+              );
+            },
+            cell: (info) => {
+              const values = info.getValue().timeline;
+              console.log("values >>", values);
+              const mock = values[`day_${day}`];
+              const className = holiday != null ? "text-white bg-gray-100" : "";
 
-            return (
-              <div className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${className}`}>
-                {mock?.length > 0 &&
-                  mock.map((item: any, index: number) => (
-                    <div
-                      key={index}
-                      className={`badge ${
-                        item.schedule_status_name === "ค้างแรม"
-                          ? "badge-info"
-                          : item.schedule_status_name === "รออนุมัติ"
-                          ? "badge-warning"
-                          : item.schedule_status_name === "ไป - กลับ"
-                          ? "badge-error"
-                          : "badge-success"
-                      } badge-outline !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${
-                        item.schedule_range
-                      })+(8px*2)+(1px*2))]`}
-                      onClick={() => onClickDetail(item.modal)}
-                    >
-                      <div className="rounded-[4px] bg-[var(--color-surface-primary)] h-full flex flex-col justify-center py-[2px]">
-                        <i className="material-symbols-outlined !text-base !leading-4">directions_car</i>
-                        <i className="material-symbols-outlined !text-base !leading-4">person</i>
+              return (
+                <div className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${className}`}>
+                  {mock?.length > 0 &&
+                    mock.map((item: any, index: number) => (
+                      <div
+                        key={index}
+                        className={`badge ${
+                          item.schedule_status_name === "ค้างแรม"
+                            ? "badge-info"
+                            : item.schedule_status_name === "รออนุมัติ"
+                            ? "badge-warning"
+                            : item.schedule_status_name === "ไป - กลับ"
+                            ? "badge-error"
+                            : "badge-success"
+                        } badge-outline !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${
+                          item.schedule_range
+                        })+(8px*2)+(1px*2))]`}
+                        onClick={() => onClickDetail(item.modal)}
+                      >
+                        <div className="rounded-[4px] bg-[var(--color-surface-primary)] h-full flex flex-col justify-center py-[2px]">
+                          <i className="material-symbols-outlined !text-base !leading-4">directions_car</i>
+                          <i className="material-symbols-outlined !text-base !leading-4">person</i>
+                        </div>
+                        <div className="overflow-hidden">
+                          <div className="text-xs font-semibold leading-[18px] truncate">{item.schedule_title}</div>
+                          <div className="text-xs font-normal leading-[18px] text-default">{item.schedule_time}</div>
+                        </div>
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-semibold leading-[18px] truncate">{item.schedule_title}</div>
-                        <div className="text-xs font-normal leading-[18px] text-default">{item.schedule_time}</div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            );
-          },
-          meta: {
-            className: "day min-w-[148px] max-w-[148px] !border-t-0 today",
-          },
-        })
+                    ))}
+                </div>
+              );
+            },
+            meta: {
+              className: "day min-w-[148px] max-w-[148px] !border-t-0 today",
+            },
+          }
+        )
       ),
     ],
     [columnHelper, dates, selectedOption]
