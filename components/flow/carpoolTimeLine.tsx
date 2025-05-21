@@ -334,6 +334,7 @@ export default function CarpoolTimeLine() {
               dataRequest={dataVehicle}
               params={vehicleParams}
               selectedOption={selectedOption}
+              lastMonth={""}
             />
             <PaginationControls
               pagination={vehiclePagination}
@@ -412,6 +413,7 @@ export default function CarpoolTimeLine() {
               dataRequest={dataDriver}
               params={driverParams}
               selectedOption={selectedOption}
+              lastMonth={""}
             />
             <PaginationControls
               pagination={driverPagination}
@@ -450,7 +452,10 @@ export default function CarpoolTimeLine() {
         onSubmitFilter={handleDriverFilterSubmit}
         flag="TIMELINE"
       />
-      <VehicleTimeLineDetailModal ref={vehicleTimelineDetailRef} />
+      <VehicleTimeLineDetailModal
+        ref={vehicleTimelineDetailRef}
+        detailRequest={undefined}
+      />
     </div>
   );
 }
