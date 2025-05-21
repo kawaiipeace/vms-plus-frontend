@@ -22,8 +22,6 @@ const DriverLicenseDetailModal = forwardRef<
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-  console.log("driverUser", requestData);
-
   const download = (filename: string, url: string) => {
     const a = document.createElement("a");
     a.href = url;

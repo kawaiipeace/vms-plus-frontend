@@ -8,6 +8,7 @@ import {
 import useSwipeDown from "@/utils/swipeDown";
 import {
   forwardRef,
+  Key,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -25,20 +26,19 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
-interface ValueFormStep1 {
-  driverLicenseType: { value: string; label: string; desc?: string } | null;
+export interface ValueFormStep1 {
+  driverLicenseType: any;
   year: string;
   licenseNumber: string;
   licenseExpiryDate: string;
-  licenseImages: UploadFileType[];
-  courseName?: string;
-  certificateNumber?: string;
-  vehicleType?: { value: string; label: string; desc?: string } | null;
-  trainingDate?: string;
-  trainingEndDate?: string;
-  certificateImages?: UploadFileType[];
+  licenseImages: any;
+  courseName: string;
+  certificateNumber: string;
+  vehicleType: any;
+  trainingDate: string;
+  trainingEndDate: string;
+  certificateImages: any;
 }
-
 interface ReturnCarAddModalProps {
   useBy?: string;
   id?: string;
@@ -50,10 +50,17 @@ interface ReturnCarAddModalProps {
 }
 
 const formStep1Schema = yup.object().shape({
-  driverLicenseType: yup.object().nullable().required("กรุณาเลือกประเภทการขับขี่").default(null),
+  driverLicenseType: yup
+    .object()
+    .nullable()
+    .required("กรุณาเลือกประเภทการขับขี่")
+    .default(null),
   year: yup.string().required("กรุณาเลือกปี").default(""),
   licenseNumber: yup.string().required("กรุณาระบุเลขที่ใบขับขี่").default(""),
-  licenseExpiryDate: yup.string().required("กรุณาระบุวันที่สิ้นอายุ").default(""),
+  licenseExpiryDate: yup
+    .string()
+    .required("กรุณาระบุวันที่สิ้นอายุ")
+    .default(""),
   licenseImages: yup
     .array()
     .of(
@@ -63,31 +70,47 @@ const formStep1Schema = yup.object().shape({
     )
     .min(1, "กรุณาอัปโหลดรูปใบขับขี่")
     .default([]),
-  courseName: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุชื่อหลักสูตร"),
-    otherwise: (schema) => schema.notRequired(),
-  }).default(""),
-  certificateNumber: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุเลขที่ใบรับรอง"),
-    otherwise: (schema) => schema.notRequired(),
-  }).default(""),
-  vehicleType: yup.object().nullable().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาเลือกประเภทยานพาหนะ"),
-    otherwise: (schema) => schema.notRequired(),
-  }).default(null),
-  trainingDate: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุวันที่อบรม"),
-    otherwise: (schema) => schema.notRequired(),
-  }).default(""),
-  trainingEndDate: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุวันที่สิ้นอายุ"),
-    otherwise: (schema) => schema.notRequired(),
-  }).default(""),
+  courseName: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุชื่อหลักสูตร"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
+  certificateNumber: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุเลขที่ใบรับรอง"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
+  vehicleType: yup
+    .object()
+    .nullable()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาเลือกประเภทยานพาหนะ"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(null),
+  trainingDate: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุวันที่อบรม"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
+  trainingEndDate: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุวันที่สิ้นอายุ"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
   certificateImages: yup
     .array()
     .of(
@@ -123,8 +146,7 @@ const RequestDrivingStepOneModal = forwardRef<
     if (licRequestDetail?.ref_driver_license_type_code) {
       return (
         costTypeArr.find(
-          (type) =>
-            type.value === licRequestDetail.ref_driver_license_type_code
+          (type) => type.value === licRequestDetail.ref_driver_license_type_code
         ) || null
       );
     }
@@ -132,7 +154,8 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         costTypeArr.find(
           (type) =>
-            type.value === requestData.driver_license.driver_license_type_code.toString()
+            type.value ===
+            requestData.driver_license.driver_license_type_code.toString()
         ) || null
       );
     }
@@ -147,7 +170,8 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         vehicleTypeArr.find(
           (type) =>
-            type.value === licRequestDetail.driver_certificate_type_code.toString()
+            type.value ===
+            licRequestDetail.driver_certificate_type_code.toString()
         ) || null
       );
     }
@@ -155,7 +179,8 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         vehicleTypeArr.find(
           (type) =>
-            type.value === requestData?.driver_certificate.driver_certificate_type_code.toString()
+            type.value ===
+            requestData?.driver_certificate.driver_certificate_type_code.toString()
         ) || null
       );
     }
@@ -187,12 +212,11 @@ const RequestDrivingStepOneModal = forwardRef<
       licRequestDetail?.driver_license_expire_date ||
       requestData?.driver_license?.driver_license_expire_date ||
       "",
-    licenseImages:
-      licRequestDetail?.driver_license_img
-        ? [{ file_url: licRequestDetail.driver_license_img }]
-        : requestData?.driver_license?.driver_license_img
-        ? [{ file_url: requestData.driver_license?.driver_license_img }]
-        : [],
+    licenseImages: licRequestDetail?.driver_license_img
+      ? [{ file_url: licRequestDetail.driver_license_img }]
+      : requestData?.driver_license?.driver_license_img
+      ? [{ file_url: requestData.driver_license?.driver_license_img }]
+      : [],
     courseName:
       licRequestDetail?.driver_certificate_name ||
       requestData?.driver_license?.driver_certificate_name ||
@@ -210,15 +234,15 @@ const RequestDrivingStepOneModal = forwardRef<
       licRequestDetail?.driver_certificate_expire_date ||
       requestData?.driver_license?.driver_certificate_expire_date ||
       "",
-    certificateImages:
-      licRequestDetail?.driver_certificate_img
-        ? [{ file_url: licRequestDetail.driver_certificate_img }]
-        : requestData?.driver_license?.driver_certificate_img
-        ? [{ file_url: requestData.driver_license?.driver_certificate_img }]
-        : [],
+    certificateImages: licRequestDetail?.driver_certificate_img
+      ? [{ file_url: licRequestDetail.driver_certificate_img }]
+      : requestData?.driver_license?.driver_certificate_img
+      ? [{ file_url: requestData.driver_license?.driver_certificate_img }]
+      : [],
   });
-
-  const [defaultValues, setDefaultValues] = useState<ValueFormStep1>(buildDefaultValues());
+  const [defaultValues, setDefaultValues] = useState<ValueFormStep1>(
+    buildDefaultValues()
+  );
 
   // react-hook-form
   const {
@@ -246,7 +270,12 @@ const RequestDrivingStepOneModal = forwardRef<
     setDefaultValues(buildDefaultValues());
     reset(buildDefaultValues());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(costTypeOptions), JSON.stringify(vehicleTypeOptions), requestData, licRequestDetail]);
+  }, [
+    JSON.stringify(costTypeOptions),
+    JSON.stringify(vehicleTypeOptions),
+    requestData,
+    licRequestDetail,
+  ]);
 
   // Fetch options
   useEffect(() => {
@@ -301,10 +330,9 @@ const RequestDrivingStepOneModal = forwardRef<
   }));
 
   const isISODate = (str: string) => {
-  const date = new Date(str);
-  return !isNaN(date.getTime()) && str.includes("T");
-};
-
+    const date = new Date(str);
+    return !isNaN(date.getTime()) && str.includes("T");
+  };
 
   // Handler for ImageUpload components
   const handleLicenseImageChange = (newImage: UploadFileType) => {
@@ -317,14 +345,14 @@ const RequestDrivingStepOneModal = forwardRef<
     const imgs = watch("licenseImages");
     setValue(
       "licenseImages",
-      imgs.filter((_, i) => i !== index)
+      imgs.filter((_: any, i: number) => i !== index)
     );
   };
   const handleDeleteCertificateImage = (index: number) => {
     const imgs = watch("certificateImages");
     setValue(
       "certificateImages",
-      imgs.filter((_, i) => i !== index)
+      imgs.filter((_: any, i: number) => i !== index)
     );
   };
 
@@ -344,11 +372,12 @@ const RequestDrivingStepOneModal = forwardRef<
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   const onSubmit = (formData: ValueFormStep1) => {
-    const expiry = isISODate(formData.licenseExpiryDate) &&
+    const expiry =
+      isISODate(formData.licenseExpiryDate) &&
       (formData.licenseExpiryDate = convertToBuddhistDateTime(
         formData.licenseExpiryDate
       ).date);
-    console.log("formdata",formData);
+    console.log("formdata", formData);
     if (stepOneSubmit) {
       stepOneSubmit(formData);
     }
@@ -365,7 +394,8 @@ const RequestDrivingStepOneModal = forwardRef<
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
             <div className="modal-title">
               ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-              {requestData?.license_status === "มีผลปีถัดไป" && dayjs().year() + 543}{" "}
+              {requestData?.license_status === "มีผลปีถัดไป" &&
+                dayjs().year() + 543}{" "}
               {requestData?.next_license_status !== "" && dayjs().year() + 544}
             </div>
             <form method="dialog">
@@ -400,50 +430,52 @@ const RequestDrivingStepOneModal = forwardRef<
                           w="w-full"
                           options={costTypeOptions}
                           value={field.value}
-                          onChange={option => handleCostTypeChange(option, field.onChange)}
+                          onChange={(option) =>
+                            handleCostTypeChange(option, field.onChange)
+                          }
                           showDescriptions={true}
                         />
                       )}
                     />
-                    {errors.driverLicenseType && (
-                      <div className="text-error text-xs mt-1">{errors.driverLicenseType.message}</div>
-                    )}
                   </div>
                 </div>
-                {(requestData?.license_status !== "มีผลปีถัดไป" && requestData?.next_license_status_code === "") &&
-                  <div className="col-span-12">
-                    <div className="form-group text-left">
-                      <label className="form-label">ประจำปี</label>
-                      <div className="w-full flex gap-5">
-                        <Controller
-                          name="year"
-                          control={control}
-                          render={({ field }) => (
-                            <>
-                              <RadioButton
-                                name="year"
-                                label={`${dayjs().year() + 543}`}
-                                value={`${dayjs().year() + 543}`}
-                                selectedValue={field.value}
-                                setSelectedValue={field.onChange}
-                              />
-                              <RadioButton
-                                name="year"
-                                label={`${dayjs().year() + 544}`}
-                                value={`${dayjs().year() + 544}`}
-                                selectedValue={field.value}
-                                setSelectedValue={field.onChange}
-                              />
-                            </>
-                          )}
-                        />
+                {requestData?.license_status !== "มีผลปีถัดไป" &&
+                  requestData?.next_license_status_code === "" && (
+                    <div className="col-span-12">
+                      <div className="form-group text-left">
+                        <label className="form-label">ประจำปี</label>
+                        <div className="w-full flex gap-5">
+                          <Controller
+                            name="year"
+                            control={control}
+                            render={({ field }) => (
+                              <>
+                                <RadioButton
+                                  name="year"
+                                  label={`${dayjs().year() + 543}`}
+                                  value={`${dayjs().year() + 543}`}
+                                  selectedValue={field.value}
+                                  setSelectedValue={field.onChange}
+                                />
+                                <RadioButton
+                                  name="year"
+                                  label={`${dayjs().year() + 544}`}
+                                  value={`${dayjs().year() + 544}`}
+                                  selectedValue={field.value}
+                                  setSelectedValue={field.onChange}
+                                />
+                              </>
+                            )}
+                          />
+                        </div>
+                        {errors.year && (
+                          <div className="text-error text-xs mt-1">
+                            {errors.year.message}
+                          </div>
+                        )}
                       </div>
-                      {errors.year && (
-                        <div className="text-error text-xs mt-1">{errors.year.message}</div>
-                      )}
                     </div>
-                  </div>
-                }
+                  )}
 
                 <div className="col-span-6">
                   <div className="form-group text-left">
@@ -463,7 +495,9 @@ const RequestDrivingStepOneModal = forwardRef<
                       />
                     </div>
                     {errors.licenseNumber && (
-                      <div className="text-error text-xs mt-1">{errors.licenseNumber.message}</div>
+                      <div className="text-error text-xs mt-1">
+                        {errors.licenseNumber.message}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -492,7 +526,9 @@ const RequestDrivingStepOneModal = forwardRef<
                       />
                     </div>
                     {errors.licenseExpiryDate && (
-                      <div className="text-error text-xs mt-1">{errors.licenseExpiryDate.message}</div>
+                      <div className="text-error text-xs mt-1">
+                        {errors.licenseExpiryDate.message}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -503,25 +539,28 @@ const RequestDrivingStepOneModal = forwardRef<
                     <Controller
                       name="licenseImages"
                       control={control}
-                      render={({ field }) => (
-                        field.value?.length < 1 && (
-                          <ImageUpload onImageChange={handleLicenseImageChange} />
-                        )
-                      )}
+                      render={({ field }) => {
+                        return field.value?.length < 1 ? (
+                          <ImageUpload
+                            onImageChange={handleLicenseImageChange}
+                          />
+                        ) : (
+                          <></>
+                        );
+                      }}
                     />
                   </div>
                   <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
-                    {watch("licenseImages")?.map((image, index) => (
-                      <ImagePreview
-                        key={index}
-                        image={image.file_url}
-                        onDelete={() => handleDeleteLicenseImage(index)}
-                      />
-                    ))}
+                    {watch("licenseImages")?.map(
+                      (image: { file_url: string | File }, index: number) => (
+                        <ImagePreview
+                          key={index}
+                          image={image.file_url}
+                          onDelete={() => handleDeleteLicenseImage(index)}
+                        />
+                      )
+                    )}
                   </div>
-                  {errors.licenseImages && (
-                    <div className="text-error text-xs mt-1">{errors.licenseImages.message}</div>
-                  )}
                 </div>
 
                 {showAdditionalFields && (
@@ -551,7 +590,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           />
                         </div>
                         {errors.courseName && (
-                          <div className="text-error text-xs mt-1">{errors.courseName.message}</div>
+                          <div className="text-error text-xs mt-1">
+                            {errors.courseName.message}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -579,7 +620,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           />
                         </div>
                         {errors.certificateNumber && (
-                          <div className="text-error text-xs mt-1">{errors.certificateNumber.message}</div>
+                          <div className="text-error text-xs mt-1">
+                            {errors.certificateNumber.message}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -600,9 +643,6 @@ const RequestDrivingStepOneModal = forwardRef<
                             />
                           )}
                         />
-                        {errors.vehicleType && (
-                          <div className="text-error text-xs mt-1">{errors.vehicleType.message}</div>
-                        )}
                       </div>
                     </div>
 
@@ -630,7 +670,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           />
                         </div>
                         {errors.trainingDate && (
-                          <div className="text-error text-xs mt-1">{errors.trainingDate.message}</div>
+                          <div className="text-error text-xs mt-1">
+                            {errors.trainingDate.message}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -659,7 +701,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           />
                         </div>
                         {errors.trainingEndDate && (
-                          <div className="text-error text-xs mt-1">{errors.trainingEndDate.message}</div>
+                          <div className="text-error text-xs mt-1">
+                            {errors.trainingEndDate.message}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -670,27 +714,33 @@ const RequestDrivingStepOneModal = forwardRef<
                         <Controller
                           name="certificateImages"
                           control={control}
-                          render={({ field }) => (
-                            field.value?.length < 1 && (
+                          render={({ field }) => {
+                            return field.value?.length < 1 ? (
                               <ImageUpload
                                 onImageChange={handleCertificateImageChange}
                               />
-                            )
-                          )}
+                            ) : (
+                              <></>
+                            );
+                          }}
                         />
                       </div>
                       <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
-                        {watch("certificateImages")?.map((image, index) => (
-                          <ImagePreview
-                            key={index}
-                            image={image.file_url}
-                            onDelete={() => handleDeleteCertificateImage(index)}
-                          />
-                        ))}
+                        {watch("certificateImages")?.map(
+                          (
+                            image: { file_url: string | File },
+                            index: number
+                          ) => (
+                            <ImagePreview
+                              key={index}
+                              image={image.file_url}
+                              onDelete={() =>
+                                handleDeleteCertificateImage(index)
+                              }
+                            />
+                          )
+                        )}
                       </div>
-                      {errors.certificateImages && (
-                        <div className="text-error text-xs mt-1">{errors.certificateImages.message}</div>
-                      )}
                     </div>
                   </>
                 )}

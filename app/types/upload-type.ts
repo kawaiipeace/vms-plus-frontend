@@ -1,5 +1,5 @@
 export interface UploadFileType {
-  file_url: string;
+  file_url?: string;
   fileName?: string;
   message?: string;
 }

@@ -138,9 +138,15 @@ const ReturnInsCarModal = forwardRef<
                       </label>
                       {<ImageUpload onImageChange={handleImageChange2} />}
                       <div className="grid grid-cols-2 gap-3 w-full mt-3">
-                        {images2.map((image, index) => (
-                          <ImagePreview key={index} image={image.file_url} onDelete={() => handleDeleteImage2(index)} />
-                        ))}
+                      {images2.map((image, index) =>
+                            image.file_url ? (
+                              <ImagePreview
+                                key={index}
+                                image={image.file_url}
+                                onDelete={() => handleDeleteImage2(index)}
+                              />
+                            ) : null
+                          )}
                       </div>
                     </div>
                   </div>
