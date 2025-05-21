@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import RequestListTable from "@/components/drivers-management/table/timeline-list-table";
-import FilterModal, { FilterModalRef } from "@/components/vehicle/filterModal";
+import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
 // import { getVehicleTimeline } from "@/services/vehicleService";
 import "flatpickr/dist/themes/material_blue.css";
 import DateRangePicker from "@/components/vehicle/input/dateRangeInput";
@@ -45,9 +45,9 @@ export default function VehicleTimeLine() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // console.log(params);
+        console.log(params);
         const response = await getDriverTimeline(params);
-        // console.log(response);
+        console.log(response.data.drivers);
         setDataRequest(response.data.drivers);
         setLastMonth(response.data.last_month);
 
@@ -84,10 +84,14 @@ export default function VehicleTimeLine() {
   };
 
   const handleFilterSubmit = (filterParams: any) => {
+    const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
+    const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
+    const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
     setParams((prev) => ({
       ...prev,
-      vehicel_car_type_detail: filterParams.vehicleType,
-      vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+      work_type: workType,
+      ref_driver_status_code: driverStatus,
+      is_active: isActive,
     }));
   };
 
