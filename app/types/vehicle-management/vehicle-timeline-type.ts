@@ -5,10 +5,38 @@ export interface VehicleTimelineListTableData {
     vehicleType: string;
     vehicleDepartment: string;
     distance: string;
-    timeline: VehicleTimeline;
+    timeline: VehicleTimelineDetails;
     vehicleStatus: string;
 };
 
-export interface VehicleTimeline {
-    [key: string]: any;
+export interface CarUserDetail {
+    userName:string;
+    userContactNumber: string;
+    userContactInternalNumber: string;
 }
+
+export interface DriverDetail {
+    driverName: string;
+}
+
+export interface VehicleTimelineDetails {
+    [key: string]: {
+        destinationPlace: string;
+        startTime: string;
+        duration: string;
+        status: string;
+        carUserDetail: CarUserDetail;
+        driverDetail: DriverDetail;
+    }[]
+};
+
+export interface VehicleTimelineTransformData {
+    vehicleLicensePlate: string;
+    vehicleBrandModel: string;
+    vehicleBrandName: string;
+    vehicleType: string;
+    vehicleDepartment: string;
+    distance: string;
+    vehicleStatus: string;
+    timeline: VehicleTimelineDetails;
+};
