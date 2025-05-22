@@ -36,7 +36,6 @@ const useGenerateDates = (params: any) => {
   useEffect(() => {
     const fetchDates = async () => {
       const date = await generateDateObjects(params.start_date, params.end_date);
-      console.log("dates", date);
       setDates(date);
     };
 
@@ -89,39 +88,39 @@ const useColumns = (
     const additionalColumns =
       selectedOption === "all"
         ? [
-            columnHelper.accessor("vehicleType", {
-              header: "ประเภทยานพาหนะ",
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
-              enableSorting: false,
-              meta: {
-                className:
-                  "sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]",
-              },
-            }),
-            columnHelper.accessor("vehicleDepartment", {
-              header: "สังกัดยานพาหนะ",
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
-              enableSorting: false,
-              meta: {
-                className:
-                  "sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px]",
-              },
-            }),
-            columnHelper.accessor("distance", {
-              header: `ระยะทาง ${lastMonth}`,
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
-              enableSorting: true,
-              meta: {
-                className: "sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line",
-              },
-            }),
-          ]
+          columnHelper.accessor("vehicleType", {
+            header: "ประเภทยานพาหนะ",
+            cell: (info) => (
+              <div className="text-base">{info.getValue()}</div>
+            ),
+            enableSorting: false,
+            meta: {
+              className:
+                "sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]",
+            },
+          }),
+          columnHelper.accessor("vehicleDepartment", {
+            header: "สังกัดยานพาหนะ",
+            cell: (info) => (
+              <div className="text-base">{info.getValue()}</div>
+            ),
+            enableSorting: false,
+            meta: {
+              className:
+                "sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px]",
+            },
+          }),
+          columnHelper.accessor("distance", {
+            header: `ระยะทาง ${lastMonth}`,
+            cell: (info) => (
+              <div className="text-base">{info.getValue()}</div>
+            ),
+            enableSorting: true,
+            meta: {
+              className: "sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line",
+            },
+          }),
+        ]
         : [];
 
     const dateColumns = dates.map(({ key, date, day, month, holiday, fullMonth, fullYear }) =>
@@ -197,16 +196,16 @@ const useColumns = (
   }, [columnHelper, dates, selectedOption, handleOpenDetailModal]);
 };
 
-export default function RequestListTable({ 
-  dataRequest, 
-  params, 
-  selectedOption, 
-  lastMonth 
+export default function RequestListTable({
+  dataRequest,
+  params,
+  selectedOption,
+  lastMonth
 }: RequestListTableProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [tripDetails, setTripDetails] = useState<any[]>([]);
   const [dateSelected, setDateSelected] = useState<string | null>(null);
-  
+
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
   const dates = useGenerateDates(params);
   const dataTransform = useMemo(
@@ -218,11 +217,11 @@ export default function RequestListTable({
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
 
   const columns = useColumns(
-    columnHelper, 
-    dates, 
-    selectedOption, 
-    lastMonth, 
-    handleOpenDetailModal, 
+    columnHelper,
+    dates,
+    selectedOption,
+    lastMonth,
+    handleOpenDetailModal,
     setTripDetails,
     setDateSelected
   );
