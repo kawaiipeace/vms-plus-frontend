@@ -17,6 +17,8 @@ import {
   getCarpoolVehicleTimeline,
 } from "@/services/carpoolManagement";
 import { useSearchParams } from "next/navigation";
+import CarpoolVehicleListTable from "../table/timeline-carpool-vehicle-list-table";
+import CarpoolDriverListTable from "../table/timeline-carpool-driver-list-table";
 
 export default function CarpoolTimeLine() {
   const id = useSearchParams().get("id");
@@ -191,7 +193,7 @@ export default function CarpoolTimeLine() {
     <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
       <span className="text-xl font-bold">พนักงานขับรถ</span>
       <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-        {driverPagination.total} คัน
+        {driverPagination.total} คน
       </span>
     </div>
   );
@@ -330,7 +332,7 @@ export default function CarpoolTimeLine() {
 
         {dataVehicle?.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolVehicleListTable
               dataRequest={dataVehicle}
               params={vehicleParams}
               selectedOption={selectedOption}
@@ -409,7 +411,7 @@ export default function CarpoolTimeLine() {
 
         {dataDriver?.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolDriverListTable
               dataRequest={dataDriver}
               params={driverParams}
               selectedOption={selectedOption}

@@ -11,32 +11,19 @@ import {
 } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "../vehicle/vehicle-timeline-detail-modal";
-
-interface RequestListTableProps {
-  readonly dataRequest: any[];
-  readonly params: {
-    start_date: string;
-    end_date: string;
-  };
-  readonly selectedOption: string;
-  readonly lastMonth: string;
-}
-
-const statusColorMap = {
-  "รออนุมัติ": { bg: "bg-[#FEDF89] border border-[#B54708]", text: "text-[#B54708]" },
-  "ไป - กลับ": { bg: "bg-[#FED8F6] border border-[#A80689]", text: "text-[#A80689]" },
-  "ค้างแรม": { bg: "bg-[#C7D7FE] border border-[#3538CD]", text: "text-[#3538CD]" },
-  "เสร็จสิ้น": { bg: "bg-[#ABEFC6] border border-[#067647]", text: "text-[#067647]" },
-} as const;
+import VehicleTimeLineDetailModal, {
+  VehicleTimelineRef,
+} from "../vehicle/vehicle-timeline-detail-modal";
 
 const useGenerateDates = (params: any) => {
   const [dates, setDates] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDates = async () => {
-      const date = await generateDateObjects(params.start_date, params.end_date);
-      console.log("dates", date);
+      const date = await generateDateObjects(
+        params.start_date,
+        params.end_date
+      );
       setDates(date);
     };
 
@@ -53,9 +40,8 @@ const useColumns = (
   dates: any[],
   selectedOption: string,
   lastMonth: string,
-  handleOpenDetailModal: () => void,
-  setTripDetails: (dayTimeline: any[]) => void,
-  setDateSelected: (date: any) => void
+  setDetailRequest: React.Dispatch<React.SetStateAction<any>>,
+  handleOpenDetailModal: () => void
 ) => {
   return useMemo(() => {
     const baseColumns = [
@@ -100,31 +86,21 @@ const useColumns = (
                   "sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]",
               },
             }),
-            columnHelper.accessor("vehicleDepartment", {
-              header: "สังกัดยานพาหนะ",
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
-              enableSorting: false,
-              meta: {
-                className:
-                  "sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px]",
-              },
-            }),
             columnHelper.accessor("distance", {
               header: `ระยะทาง ${lastMonth}`,
-              cell: (info) => (
-                <div className="text-base">{info.getValue()}</div>
-              ),
+              cell: (info) => {
+                return <div className="text-base">{info.getValue()}</div>;
+              },
               enableSorting: true,
               meta: {
-                className: "sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line",
+                className:
+                  "sticky left-[335px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line",
               },
             }),
           ]
         : [];
 
-    const dateColumns = dates.map(({ key, date, day, month, holiday, fullMonth, fullYear }) =>
+    const dateColumns = dates.map(({ key, date, day, month, holiday }) =>
       columnHelper.accessor(
         (row) => ({
           timeline: row.timeline,
@@ -149,7 +125,27 @@ const useColumns = (
             const { timeline, status } = info.getValue();
             const dayTimeline = timeline[`day_${day}`];
             const holidayClass = holiday ? "text-white bg-gray-100" : "";
-            const statusColors = statusColorMap[status as keyof typeof statusColorMap] || {};
+
+            const statusColorMap = {
+              รออนุมัติ: {
+                bg: "bg-[#FEDF89] border border-[#B54708]",
+                text: "text-[#B54708]",
+              },
+              "ไป - กลับ": {
+                bg: "bg-[#FED8F6] border border-[#A80689]",
+                text: "text-[#A80689]",
+              },
+              ค้างแรม: {
+                bg: "bg-[#C7D7FE] border border-[#3538CD]",
+                text: "text-[#3538CD]",
+              },
+              เสร็จสิ้น: {
+                bg: "bg-[#ABEFC6] border border-[#067647]",
+                text: "text-[#067647]",
+              },
+            };
+            const statusColors =
+              statusColorMap[status as keyof typeof statusColorMap] || {};
 
             return (
               <div
@@ -160,8 +156,7 @@ const useColumns = (
                     key={index}
                     className={`${statusColors.bg} !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${item.schedule_range})+(8px*2)+(1px*2))]`}
                     onClick={() => {
-                      setTripDetails(dayTimeline);
-                      setDateSelected(`${day} ${fullMonth} ${fullYear}`);
+                      setDetailRequest(item);
                       handleOpenDetailModal();
                     }}
                   >
@@ -177,8 +172,12 @@ const useColumns = (
                         </i>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-semibold">{item.destinationPlace}</span>
-                        <span className="text-black font-normal text-sm">{item.startTime}</span>
+                        <span className="text-sm font-semibold">
+                          {item.schedule_title}
+                        </span>
+                        <span className="text-black font-normal text-sm">
+                          {item.schedule_time}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -194,20 +193,37 @@ const useColumns = (
     );
 
     return [...baseColumns, ...additionalColumns, ...dateColumns];
-  }, [columnHelper, dates, selectedOption, handleOpenDetailModal]);
+  }, [
+    columnHelper,
+    dates,
+    selectedOption,
+    setDetailRequest,
+    handleOpenDetailModal,
+  ]);
 };
 
-export default function RequestListTable({ 
-  dataRequest, 
-  params, 
-  selectedOption, 
-  lastMonth 
+interface RequestListTableProps {
+  dataRequest: any[];
+  params: {
+    start_date: string;
+    end_date: string;
+  };
+  selectedOption: string;
+  lastMonth: string;
+}
+
+export default function CarpoolVehicleListTable({
+  dataRequest,
+  params,
+  selectedOption,
+  lastMonth,
 }: RequestListTableProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [tripDetails, setTripDetails] = useState<any[]>([]);
-  const [dateSelected, setDateSelected] = useState<string | null>(null);
-  
+  const [detailRequest, setDetailRequest] = useState({});
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
+
+  console.log("dataRequest: ", dataRequest);
+
   const dates = useGenerateDates(params);
   const dataTransform = useMemo(
     () => transformApiToTableData(dataRequest, dates),
@@ -218,13 +234,12 @@ export default function RequestListTable({
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
 
   const columns = useColumns(
-    columnHelper, 
-    dates, 
-    selectedOption, 
-    lastMonth, 
-    handleOpenDetailModal, 
-    setTripDetails,
-    setDateSelected
+    columnHelper,
+    dates,
+    selectedOption,
+    lastMonth,
+    setDetailRequest,
+    handleOpenDetailModal
   );
 
   const table = useReactTable({
@@ -243,7 +258,10 @@ export default function RequestListTable({
   return (
     <div className="w-full py-4 pt-0 dataTable-bookingtimeline">
       {!isLoading && <DataTable table={table} />}
-      <VehicleTimeLineDetailModal ref={vehicleTimelineDetailRef} detailRequest={tripDetails} currentDate={dateSelected} />
+      <VehicleTimeLineDetailModal
+        ref={vehicleTimelineDetailRef}
+        detailRequest={detailRequest}
+      />
     </div>
   );
 }

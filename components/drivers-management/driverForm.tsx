@@ -337,7 +337,7 @@ const DriverForm = () => {
     }));
   };
 
-  const handleImageChange = (newImages: UploadFileType) => {
+  const handleImageChange = (newImages: any) => {
     setProfileImage(newImages);
     setFormData((prevData) => ({
       ...prevData,
@@ -413,7 +413,7 @@ const DriverForm = () => {
                   <div className="image-preview flex flex-wrap gap-3">
                     {profileImage && (
                       <ImagePreview
-                        image={profileImage.file_url}
+                        image={profileImage.file_url || ""}
                         onDelete={() => {
                           setProfileImage(undefined);
                         }}

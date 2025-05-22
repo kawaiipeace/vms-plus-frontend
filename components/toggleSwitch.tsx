@@ -19,7 +19,7 @@ const ToggleSwitch = ({
 
   const toggleSwitch = () => {
     // setIsOn(!isOn);
-    console.log("Driver ID:", driverId);
+
     handleToggleChange?.(driverId);
     if (useInView) {
       driverActiveModalRef.current?.openModal();

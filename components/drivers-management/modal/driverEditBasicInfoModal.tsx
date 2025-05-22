@@ -126,7 +126,7 @@ const DriverEditBasicInfoModal = forwardRef<
     }
   };
 
-  const handleImageChange = (newImages: UploadFileType) => {
+  const handleImageChange = (newImages: any) => {
     setFormData((prevData) => ({
       ...prevData,
       image: newImages.file_url,

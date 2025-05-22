@@ -579,7 +579,7 @@ const RecordTravelAddModal = forwardRef<
                   {images.map((image, index) => (
                     <ImagePreview
                       key={index}
-                      image={image.file_url}
+                      image={image.file_url || ""}
                       onDelete={() => handleDeleteImage(index)}
                     />
 ))}
