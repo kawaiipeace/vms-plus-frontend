@@ -57,10 +57,11 @@ export default function RequestForm() {
 
   const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
 
-  const [passengerCount, setPassengerCount] = useState(0);
+  const [passengerCount, setPassengerCount] = useState(1);
   const [costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
   const [fileError, setFileError] = useState("");
   const [approverData, setApproverData] = useState<ApproverUserType>();
+
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -77,6 +78,7 @@ export default function RequestForm() {
           ];
 
           setDriverOptions(driverOptionsArray);
+          console.log('driverOptionsArray', vehicleUserData);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
