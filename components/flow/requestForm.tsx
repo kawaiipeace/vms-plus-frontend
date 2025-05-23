@@ -63,6 +63,7 @@ export default function RequestForm() {
   const [approverData, setApproverData] = useState<ApproverUserType>();
 
 
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -174,6 +175,7 @@ export default function RequestForm() {
 
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
     setSelectedCostTypeOption(selectedOption as { value: string; label: string });
+    setValue("costOrigin", "");
   
     if (selectedOption.value === "1") {
       const data = costTypeDatas.find(
@@ -210,6 +212,7 @@ export default function RequestForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
@@ -233,6 +236,10 @@ export default function RequestForm() {
       costOrigin: formData.costNo || ""
     },
   });
+
+  const startDate = watch('startDate');
+  const endDate = watch('endDate');
+  const isOvernightDisabled = startDate === endDate;
 
   useEffect(() => {
     if (formData.numberOfPassenger) {
@@ -312,6 +319,7 @@ export default function RequestForm() {
                       w="w-full"
                       options={driverOptions}
                       value={selectedVehicleUserOption}
+                      searchable={true}
                       onChange={handleVehicleUserChange}
                     />
                   </div>
@@ -482,6 +490,7 @@ export default function RequestForm() {
                         label="ค้างแรม"
                         value="2"
                         selectedValue={selectedTripType}
+                        disabled={isOvernightDisabled}
                         setSelectedValue={setSelectedTripType}
                       />
                     </div>
