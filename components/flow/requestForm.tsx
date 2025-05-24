@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import SearchableSelect from "../searchableSelect";
 
 const schema = yup.object().shape({
   telInternal: yup.string().min(4, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
@@ -77,32 +78,7 @@ export default function RequestForm() {
   const [approverData, setApproverData] = useState<ApproverUserType>();
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetchVehicleUsers("");
-        if (response.status === 200) {
-          const vehicleUserData = response.data;
-          setVehicleUserDatas(vehicleUserData);
-          const driverOptionsArray = [
-            ...vehicleUserData.map(
-              (user: {
-                emp_id: string;
-                full_name: string;
-                dept_sap: string;
-              }) => ({
-                value: user.emp_id,
-                label: `${user.full_name} (${user.dept_sap})`,
-              })
-            ),
-          ];
-
-          setDriverOptions(driverOptionsArray);
-          console.log("driverOptionsArray", vehicleUserData);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
+   
 
     const fetchCostTypeRequest = async () => {
       try {
@@ -129,7 +105,7 @@ export default function RequestForm() {
       }
     };
 
-    fetchRequests();
+
     fetchCostTypeRequest();
   }, []);
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
@@ -352,12 +328,11 @@ export default function RequestForm() {
                       </Tooltip>
                     </label>
 
-                    <CustomSelect
+                    <SearchableSelect
                       iconName="person"
                       w="w-full"
                       options={driverOptions}
                       value={selectedVehicleUserOption}
-                      searchable={true}
                       onChange={handleVehicleUserChange}
                     />
                   </div>
@@ -716,30 +691,33 @@ export default function RequestForm() {
                     />
                   </div>
                 </div>
-
-                <div className="md:col-span-3 col-span-12">
-                  <div className="form-group">
-                    <label className="form-label">ศูนย์ต้นทุน</label>
-                    <div
-                      className={`input-group ${
-                        selectedCostTypeOption?.value === "1"
-                          ? "is-readonly"
-                          : ""
-                      }`}
-                    >
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">crop_free</i>
-                        </span>
+                {selectedCostTypeOption?.value === "1" && (
+                  <div className="md:col-span-3 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">ศูนย์ต้นทุน</label>
+                      <div
+                        className={`input-group ${
+                          selectedCostTypeOption?.value === "1"
+                            ? "is-readonly"
+                            : ""
+                        }`}
+                      >
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">
+                              crop_free
+                            </i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          {...register("costOrigin")}
+                        />
                       </div>
-                      <input
-                        type="text"
-                        className="form-control"
-                        {...register("costOrigin")}
-                      />
                     </div>
                   </div>
-                </div>
+                )}
                 {selectedCostTypeOption?.value === "3" && (
                   <div className="md:col-span-3 col-span-12">
                     <div className="form-group">
@@ -802,15 +780,24 @@ export default function RequestForm() {
                     </div>
                   </div>
                 )}
+                {selectedCostTypeOption?.value === "2" && (
+                  <div className="md:col-span-3 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">
+                        ศูนย์ต้นทุน
+                        <i className="material-symbols-outlined">info</i>
+                      </label>
 
-                <CustomSelect
-                  iconName="person"
-                  w="w-full"
-                  options={driverOptions}
-                  value={selectedVehicleUserOption}
-                  searchable={true}
-                  onChange={handleVehicleUserChange}
-                />
+                      <CustomSelect
+                        iconName="person"
+                        w="w-full"
+                        options={driverOptions}
+                        value={selectedVehicleUserOption}
+                        onChange={handleVehicleUserChange}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
