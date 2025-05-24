@@ -50,14 +50,24 @@ export default function CarpoolManagementTable({
       ),
     },
     {
-      accessorKey: "carpool_dept_sap",
+      accessorKey: "carpool_authorized_depts",
       header: () => <div className="text-center">หน่วยงานที่ใช้บริการ</div>,
       enableSorting: false,
     },
     {
-      accessorKey: "carpool_contact_place",
+      accessorKey: "carpool_admin_emp_name",
       header: () => <div className="text-left">ผู้รับผิดชอบหลัก</div>,
       enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="ผู้รับผิดชอบหลัก">
+            <div>{row.original.carpool_admin_emp_name}</div>
+            <div className="text-xs text-[#475467]">
+              {row.original.carpool_admin_dept_sap}
+            </div>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "carpool_contact_number",
