@@ -12,6 +12,7 @@ export interface CarpoolForm {
   is_must_pass_status_40: string;
   is_must_pass_status_50: string;
   mas_carpool_uid: string;
+  carpool_type: string;
 }
 
 export type CarpoolParams = Partial<{
@@ -45,6 +46,9 @@ export interface Carpool {
   carpool_authorized_depts: {
     dept_sap: string;
   }[];
+  carpool_admin_emp_name: string;
+  carpool_admin_dept_sap: string;
+  carpool_type: string;
 }
 
 export interface CarChoice {
