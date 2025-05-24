@@ -56,21 +56,20 @@ export default function ArpproveFlow() {
     router.push("/vehicle-booking/process-one");
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } =
-    {
-      "20": { iconName: "schedule", status: "info" },
-      "21": { iconName: "reply", status: "warning" },
-      "31": { iconName: "schedule", status: "info" },
-      "40": { iconName: "schedule", status: "info" },
-      "41": { iconName: "schedule", status: "info" },
-      "50": { iconName: "key", status: "info" },
-      "51": { iconName: "directions_car", status: "info" },
-      "60": { iconName: "directions_car", status: "info" },
-      "70": { iconName: "key", status: "info" },
-      "71": { iconName: "key", status: "info" },
-      "80": { iconName: "check", status: "success" },
-      "90": { iconName: "delete", status: "default" },
-    };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "20": { iconName: "schedule", status: "info" },
+    "21": { iconName: "reply", status: "warning" },
+    "31": { iconName: "schedule", status: "info" },
+    "40": { iconName: "schedule", status: "info" },
+    "41": { iconName: "schedule", status: "info" },
+    "50": { iconName: "key", status: "info" },
+    "51": { iconName: "directions_car", status: "info" },
+    "60": { iconName: "directions_car", status: "info" },
+    "70": { iconName: "key", status: "info" },
+    "71": { iconName: "key", status: "info" },
+    "80": { iconName: "check", status: "success" },
+    "90": { iconName: "delete", status: "default" },
+  };
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -80,8 +79,7 @@ export default function ArpproveFlow() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -99,9 +97,7 @@ export default function ArpproveFlow() {
     selectedEndDate: string;
   }) => {
     const mappedNames = selectedStatuses.map(
-      (code) =>
-        summary.find((item) => item.ref_request_status_code === code)
-          ?.ref_request_status_name || code
+      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
@@ -115,30 +111,20 @@ export default function ArpproveFlow() {
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
+      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
+        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
+          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
+          return name !== filterValue;
+        });
 
         setFilterNum(updatedStatuses.length);
 
@@ -211,7 +197,7 @@ export default function ArpproveFlow() {
   return (
     <>
       <div className="hidden md:block">
-        <div className="grid grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           {summary !== null && (
             <>
               {summary.map((item) => {
@@ -224,14 +210,7 @@ export default function ArpproveFlow() {
                   <RequestStatusBox
                     key={item.ref_request_status_code}
                     iconName={config.iconName}
-                    status={
-                      config.status as
-                        | "info"
-                        | "warning"
-                        | "success"
-                        | "default"
-                        | "error"
-                    }
+                    status={config.status as "info" | "warning" | "success" | "default" | "error"}
                     title={item.ref_request_status_name}
                     number={item.count}
                   />
@@ -275,15 +254,10 @@ export default function ArpproveFlow() {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">
-                {filterNum}
-              </span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
-          <button
-            onClick={addNewRequest}
-            className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
-          >
+          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block">
             <i className="material-symbols-outlined">add</i>
             สร้างคำขอใช้
           </button>
@@ -292,15 +266,9 @@ export default function ArpproveFlow() {
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span
-            key={index}
-            className="badge badge-brand badge-outline rounded-sm mr-2"
-          >
+          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
             {name}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("status", name)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
               close_small
             </i>
           </span>
@@ -308,27 +276,21 @@ export default function ArpproveFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("date", filterDate)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
               close_small
             </i>
           </span>
         )}
       </div>
 
-      {dataRequest?.length > 0 && dataRequest !== null &&
+      {dataRequest?.length > 0 && dataRequest !== null && (
         <>
           <div className="flex flex-col gap-3 md:gap-0 md:hidden">
             <ListFlow requestData={dataRequest} />
           </div>
           <div className="hidden md:block">
             <div className="mt-2">
-              <RequestListTable
-                defaultData={dataRequest}
-                pagination={pagination}
-              />
+              <RequestListTable defaultData={dataRequest} pagination={pagination} />
             </div>
           </div>
           <PaginationControls
@@ -337,17 +299,17 @@ export default function ArpproveFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-       }
-{(dataRequest !== null && dataRequest?.length <= 0) && (
-         <ZeroRecord
-         imgSrc="/assets/img/empty/search_not_found.png"
-         title="ไม่พบข้อมูล"
-         desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-         button="ล้างตัวกรอง"
-         displayBtn={true}
-         btnType="secondary"
-         useModal={handleClearAllFilters}
-       />
+      )}
+      {dataRequest !== null && dataRequest?.length <= 0 && (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
       )}
 
       {dataRequest === null && (
@@ -362,11 +324,7 @@ export default function ArpproveFlow() {
         />
       )}
 
-      <FilterModal
-        ref={filterModalRef}
-        statusData={summary}
-        onSubmitFilter={handleFilterSubmit}
-      />
+      <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
     </>
   );
 }
