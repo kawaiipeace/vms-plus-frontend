@@ -3,6 +3,7 @@ import BackButton from "@/components/backButton";
 import LoginHeader from "@/components/loginHeader";
 import { useProfile } from "@/contexts/profileContext";
 import { fetchProfile, requestOTP, verifyOTP } from "@/services/authService";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -36,7 +37,9 @@ export default function LoginAuthen() {
       setTimerText("ขอรหัสใหม่อีกครั้ง");
     }
 
-    const storedPhone = sessionStorage.getItem("phone");
+    const storedPhone = Cookies.get("phone");
+
+    // const storedPhone = sessionStorage.getItem("phone");
     const storedOtpID = sessionStorage.getItem("otpID");
     const refCode = sessionStorage.getItem("refCode");
 
@@ -50,7 +53,7 @@ export default function LoginAuthen() {
   }, [timeLeft]);
 
   const requestOTPAgain = async () => {
-    if (!phone || timeLeft > 0) return;
+    if (!phone || phone === null || timeLeft > 0) return;
 
     setIsResending(true);
     try {

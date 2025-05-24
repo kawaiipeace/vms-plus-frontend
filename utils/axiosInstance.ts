@@ -67,7 +67,6 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     const response = error.response;
 
-    console.log("Error Response:", error.response);
     const InvalidOTP = response?.data?.error === "Invalid OTP" && originalRequest.url === "login/verify-otp";
     const InvalidThaiID = originalRequest.url === "login/authen-thaiid";
 

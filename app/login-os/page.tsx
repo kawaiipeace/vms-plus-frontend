@@ -6,6 +6,7 @@ import LoginHeader from "@/components/loginHeader";
 import ErrorLoginModal from "@/components/modal/errorLoginModal";
 import { requestOTP, requestThaiID } from "@/services/authService";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -25,12 +26,8 @@ export default function LoginOS() {
 
   useEffect(() => {
     const errorThaiId = sessionStorage.getItem("errorThaiId");
-    console.log("errorThaiId", errorThaiId);
     if (errorThaiId) {
-      // setErrorLogin(errorThaiId);
       errorLoginModalRef.current?.openModal();
-      // sessionStorage.removeItem("errorThaiId");
-      // router.push("/login-os");
     }
   }, []);
 
@@ -47,7 +44,8 @@ export default function LoginOS() {
       const response = await requestOTP(data.phone);
       if (response.status === 200) {
         const otpID = response.data.otpId;
-        sessionStorage.setItem("phone", data.phone);
+        Cookies.set("phone", data.phone, { path: "/" });
+        // sessionStorage.setItem("phone", data.phone);
         sessionStorage.setItem("otpID", otpID);
         sessionStorage.setItem("refCode", response.data.refCode);
         router.push(`/login-authen`);
