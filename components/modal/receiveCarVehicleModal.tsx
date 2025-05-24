@@ -8,26 +8,17 @@ import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
 import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
 import Tooltip from "@/components/tooltips";
 import { adminReceivedVehicle } from "@/services/adminService";
-import {
-  fetchUserTravelCard,
-  userReceivedVehicle,
-} from "@/services/receivedVehicleUser";
-import { convertToISO } from "@/utils/convertToISO";
-import useSwipeDown from "@/utils/swipeDown";
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import TimePicker from "../timePicker";
+import { fetchUserTravelCard, userReceivedVehicle } from "@/services/receivedVehicleUser";
 import {
   driverReceivedVehicle,
   driverUpdateReceivedVehicle,
   fetchDriverTravelCard,
 } from "@/services/vehicleInUseDriver";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { convertToISO } from "@/utils/convertToISO";
+import useSwipeDown from "@/utils/swipeDown";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import TimePicker from "../timePicker";
 
 interface ReceiveCarVehicleModalProps {
   status?: string;
@@ -53,38 +44,46 @@ const ReceiveCarVehicleModal = forwardRef<
   const [fuelQuantity, setFuelQuantity] = useState(0);
   const [imageEx, setImageEx] = useState<UploadFileType[]>();
 
-  const [travelCardData, setTravelCardData] =
-    useState<VehicleUserTravelCardType>();
+  const [travelCardData, setTravelCardData] = useState<VehicleUserTravelCardType>();
 
-    useEffect(() => {
-      if (requestData) {
-        setFuelQuantity(requestData?.fuel_start || 0);
-        setMiles(requestData?.mile_start || 0);
-        setRemark(requestData?.received_vehicle_remark || "");
-  
-        // Set default date and time
-        if (requestData?.pickup_datetime && requestData.pickup_datetime !== "0001-01-01T00:00:00Z") {
-          const { date, time } = convertToBuddhistDateTime(requestData.pickup_datetime);
-          setSelectedDate(date);
-          setSelectedTime(time);
-        } else {
-          // Set current date/time as default
-          const now = new Date();
-          const { date, time } = convertToBuddhistDateTime(now.toISOString());
-          setSelectedDate(date);
-          setSelectedTime(time);
-        }
+  useEffect(() => {
+    if (requestData) {
+      setFuelQuantity(requestData?.fuel_start || 0);
+      setMiles(requestData?.mile_start || 0);
+      setRemark(requestData?.received_vehicle_remark || "");
+
+      // Set default date and time
+      if (requestData?.pickup_datetime && requestData.pickup_datetime !== "0001-01-01T00:00:00Z") {
+        const { date, time } = convertToBuddhistDateTime(requestData.pickup_datetime);
+        setSelectedDate(date);
+        setSelectedTime(time);
+      } else {
+        // Set current date/time as default
+        const now = new Date();
+        const { date, time } = convertToBuddhistDateTime(now.toISOString());
+        setSelectedDate(date);
+        setSelectedTime(time);
       }
-    }, [requestData]);
-    
+    }
+  }, [requestData]);
+
+  const [openModal, setOpenModal] = useState(false);
+
   useImperativeHandle(ref, () => ({
     openModal: () => {
-      // clearForm(); ลบออกเพราะข้อมูลไม่ขึ้น
-
       modalRef.current?.showModal();
+      setOpenModal(true);
     },
-    closeModal: () => modalRef.current?.close(),
+    closeModal: () => {
+      modalRef.current?.close();
+      setOpenModal(false);
+    },
   }));
+
+  const handleCloseModal = () => {
+    modalRef.current?.close();
+    setOpenModal(false); // Update state to reflect modal is closed
+  };
 
   const receiveCarSuccessModalRef = useRef<{
     openModal: () => void;
@@ -150,19 +149,15 @@ const ReceiveCarVehicleModal = forwardRef<
         if (response.status === 200) {
           let response;
           if (role === "driver") {
-            response = await fetchDriverTravelCard(
-              requestData?.trn_request_uid || ""
-            );
+            response = await fetchDriverTravelCard(requestData?.trn_request_uid || "");
           } else {
-            response = await fetchUserTravelCard(
-              requestData?.trn_request_uid || ""
-            );
+            response = await fetchUserTravelCard(requestData?.trn_request_uid || "");
           }
           setTravelCardData(response?.data);
           clearForm();
 
           receiveCarSuccessModalRef.current?.openModal();
-          modalRef.current?.close();
+          handleCloseModal();
         }
       }
     } catch (error) {
@@ -184,270 +179,247 @@ const ReceiveCarVehicleModal = forwardRef<
     setFuelQuantity(0);
     setImageEx(undefined);
   };
-  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+  const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
   return (
     <>
-      <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div
-          className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="bottom-sheet" {...swipeDownHandlers}>
-            <div className="bottom-sheet-icon"></div>
-          </div>
-          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">
-              {" "}
-              {status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}
+      {openModal && (
+        <div className={`modal modal-middle modal-open`}>
+          <div
+            className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bottom-sheet" {...swipeDownHandlers}>
+              <div className="bottom-sheet-icon"></div>
             </div>
-            <form method="dialog">
-              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </form>
-          </div>
-
-          <div className="modal-body overflow-y-auto text-center !bg-white">
-            <form>
-              <div className="form-section">
-                <div className="grid w-full flex-wrap gap-5 grid-cols-12 pb-2">
-                  {/* Date picker */}
-                  <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">วันที่</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">
-                              calendar_month
-                            </i>
-                          </span>
-                        </div>
-                        <DatePicker
-                          placeholder={"ระบุวันที่"}
-                          defaultValue={selectedDate}
-                          onChange={(date) => setSelectedDate(date)}
-                          ref={datePickerRef}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Time picker */}
-                  <div className="col-span-6">
-                    <div className="form-group">
-                      <label className="form-label">เวลา</label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">
-                              schedule
-                            </i>
-                          </span>
-                        </div>
-                        <TimePicker
-                          placeholder="ระบุเวลา"
-                          onChange={(time) => setSelectedTime(time)}
-                          defaultValue={selectedTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">เลขไมล์ก่อนเดินทาง</label>
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          className="form-control"
-                          placeholder="ระบุเลขไมล์ก่อนเดินทาง"
-                          value={miles}
-                          onChange={(e) => {
-                            setMiles(Number(e.target.value));
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label flex justify-between items-center">
-                        <span>ปริมาณเชื้อเพลิง</span>
-                        <span>{fuelQuantity}%</span>
-                      </label>
-                      <input
-                        ref={fuelQuantityRef}
-                        // defaultValue={fuelQuantity}
-                        type="range"
-                        min={0}
-                        max={100}
-                        value={fuelQuantity}
-                        className="range"
-                        step={1}
-                        onChange={(e) =>
-                          setFuelQuantity(Number(e.target.value))
-                        }
-                      />
-                      <div className="flex w-full justify-between px-2 text-xs">
-                        {Array.from({ length: 9 }, (_, index) => {
-                          const isMod = (index + 1) % 2 === 0;
-                          return (
-                            <span
-                              key={index}
-                              className={
-                                isMod
-                                  ? "border-[] border-[#EAECF0] bg-[#EAECF0] rounded-full text-[#EAECF0]"
-                                  : "border-[] border-[#D0D5DD] bg-[#D0D5DD] rounded-full text-[#D0D5DD]"
-                              }
-                            >
-                              |
-                            </span>
-                          );
-                        })}
-                      </div>
-                      <div className="flex w-full justify-between px-2 text-[#475467] font-semibold ">
-                        {Array.from({ length: 9 }, (_, index) => {
-                          return (
-                            <span key={index}>
-                              {index === 0 ? "E" : index === 8 ? "F" : ""}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-                  {status !== "edit" && (
-                    <>
-                      <div className="col-span-12">
+            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+              <div className="modal-title"> {status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}</div>
+              <form method="dialog">
+                <button
+                  className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                  onClick={handleCloseModal}
+                >
+                  <i className="material-symbols-outlined">close</i>
+                </button>
+              </form>
+            </div>
+            <div className="modal-scroll-wrapper overflow-y-auto">
+              <div className="modal-body text-center !bg-white">
+                <form>
+                  <div className="form-section">
+                    <div className="grid w-full flex-wrap gap-5 grid-cols-12 pb-2">
+                      {/* Date picker */}
+                      <div className="col-span-6">
                         <div className="form-group">
-                          <label className="form-label">
-                            รูปหน้าปัดเรือนไมล์
-                            <Tooltip
-                              title="รูปหน้าปัดเรือนไมล์"
-                              content="Upload ได้ 1 รูป"
-                              position="right"
-                            >
-                              <i
-                                className="material-symbols-outlined"
-                                onClick={() => {
-                                  exampleCarImageModalRef.current?.openModal();
-                                  modalRef.current?.close();
-                                  setImageEx(images);
-                                }}
-                              >
-                                info
-                              </i>
-                            </Tooltip>
-                          </label>
-                          {images.length < 1 && (
-                            <ImageUpload onImageChange={handleImageChange} />
-                          )}
-                          <div className="image-preview flex flex-wrap gap-3">
-                            {images.map((image, index) => (
-                              <ImagePreview
-                                key={index}
-                                image={image.file_url || ""}
-                                onDelete={() => handleDeleteImage(index)}
-                              />
-                            ))}
+                          <label className="form-label">วันที่</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">
+                                <i className="material-symbols-outlined">calendar_month</i>
+                              </span>
+                            </div>
+                            <DatePicker
+                              placeholder={"ระบุวันที่"}
+                              defaultValue={selectedDate}
+                              onChange={(date) => setSelectedDate(date)}
+                              ref={datePickerRef}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Time picker */}
+                      <div className="col-span-6">
+                        <div className="form-group">
+                          <label className="form-label">เวลา</label>
+                          <div className="input-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">
+                                <i className="material-symbols-outlined">schedule</i>
+                              </span>
+                            </div>
+                            <TimePicker
+                              placeholder="ระบุเวลา"
+                              onChange={(time) => setSelectedTime(time)}
+                              defaultValue={selectedTime}
+                            />
                           </div>
                         </div>
                       </div>
                       <div className="col-span-12">
                         <div className="form-group">
-                          <label className="form-label">
-                            รูปยานพาหนะภายในและภายนอก
-                            <span className="font-light">(ถ้ามี)</span>
-                            <Tooltip
-                              title="รูปหน้าปัดเรือนไมล์"
-                              content="Upload ได้ 4 รูป"
-                              position="right"
-                            >
-                              <i
-                                className="material-symbols-outlined"
-                                onClick={() => {
-                                  exampleCarImageModalRef.current?.openModal();
-                                  modalRef.current?.close();
-                                  setImageEx(images2);
-                                }}
-                              >
-                                info
-                              </i>
-                            </Tooltip>
-                          </label>
-                          {images2.length < 4 && (
-                            <ImageUpload onImageChange={handleImageChange2} />
-                          )}
-                          <div className="image-preview flex flex-wrap gap-3">
-                            {images2.map((image, index) => (
-                              <ImagePreview
-                                key={index}
-                                image={image.file_url || ""}
-                                onDelete={() => handleDeleteImage2(index)}
-                              />
-                            ))}
+                          <label className="form-label">เลขไมล์ก่อนเดินทาง</label>
+                          <div className="input-group">
+                            <input
+                              type="number"
+                              className="form-control"
+                              placeholder="ระบุเลขไมล์ก่อนเดินทาง"
+                              value={miles}
+                              onChange={(e) => {
+                                setMiles(Number(e.target.value));
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
-                    </>
-                  )}
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">
-                        หมายเหตุ<span className="font-light">(ถ้ามี)</span>
-                      </label>
-                      <div className="input-group">
-                        <input
-                          defaultValue={remark}
-                          type="text"
-                          className="form-control"
-                          placeholder="ระบุหมายเหตุ"
-                          onChange={(e) => {
-                            setRemark(e.target.value);
-                          }}
-                        />
+                      <div className="col-span-12">
+                        <div className="form-group">
+                          <label className="form-label flex justify-between items-center">
+                            <span>ปริมาณเชื้อเพลิง</span>
+                            <span>{fuelQuantity}%</span>
+                          </label>
+                          <input
+                            ref={fuelQuantityRef}
+                            // defaultValue={fuelQuantity}
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={fuelQuantity}
+                            className="range"
+                            step={1}
+                            onChange={(e) => setFuelQuantity(Number(e.target.value))}
+                          />
+                          <div className="flex w-full justify-between px-2 text-xs">
+                            {Array.from({ length: 9 }, (_, index) => {
+                              const isMod = (index + 1) % 2 === 0;
+                              return (
+                                <span
+                                  key={index}
+                                  className={
+                                    isMod
+                                      ? "border-[] border-[#EAECF0] bg-[#EAECF0] rounded-full text-[#EAECF0]"
+                                      : "border-[] border-[#D0D5DD] bg-[#D0D5DD] rounded-full text-[#D0D5DD]"
+                                  }
+                                >
+                                  |
+                                </span>
+                              );
+                            })}
+                          </div>
+                          <div className="flex w-full justify-between px-2 text-[#475467] font-semibold ">
+                            {Array.from({ length: 9 }, (_, index) => {
+                              return <span key={index}>{index === 0 ? "E" : index === 8 ? "F" : ""}</span>;
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {status !== "edit" && (
+                        <>
+                          <div className="col-span-12">
+                            <div className="form-group">
+                              <label className="form-label">
+                                รูปหน้าปัดเรือนไมล์
+                                <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                                  <i
+                                    className="material-symbols-outlined"
+                                    onClick={() => {
+                                      exampleCarImageModalRef.current?.openModal();
+                                      modalRef.current?.close();
+                                      setImageEx(images);
+                                    }}
+                                  >
+                                    info
+                                  </i>
+                                </Tooltip>
+                              </label>
+                              {images.length < 1 && <ImageUpload onImageChange={handleImageChange} />}
+                              <div className="image-preview flex flex-wrap gap-3">
+                                {images.map((image, index) => (
+                                  <ImagePreview
+                                    key={index}
+                                    image={image.file_url || ""}
+                                    onDelete={() => handleDeleteImage(index)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-span-12">
+                            <div className="form-group">
+                              <label className="form-label">
+                                รูปยานพาหนะภายในและภายนอก
+                                <span className="font-light">(ถ้ามี)</span>
+                                <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 4 รูป" position="right">
+                                  <i
+                                    className="material-symbols-outlined"
+                                    onClick={() => {
+                                      exampleCarImageModalRef.current?.openModal();
+                                      modalRef.current?.close();
+                                      setImageEx(images2);
+                                    }}
+                                  >
+                                    info
+                                  </i>
+                                </Tooltip>
+                              </label>
+                              {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
+                              <div className="image-preview flex flex-wrap gap-3">
+                                {images2.map((image, index) => (
+                                  <ImagePreview
+                                    key={index}
+                                    image={image.file_url || ""}
+                                    onDelete={() => handleDeleteImage2(index)}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      <div className="col-span-12">
+                        <div className="form-group">
+                          <label className="form-label">
+                            หมายเหตุ<span className="font-light">(ถ้ามี)</span>
+                          </label>
+                          <div className="input-group">
+                            <input
+                              defaultValue={remark}
+                              type="text"
+                              className="form-control"
+                              placeholder="ระบุหมายเหตุ"
+                              onChange={(e) => {
+                                setRemark(e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
-            </form>
-          </div>
-          <div className="flex w-full gap-5 py-3 modal-action mt-0">
-            <div className="flex-1">
-              <button
-                type="button"
-                className="btn btn-secondary !w-full"
-                onClick={() => {
-                  clearForm();
-                  modalRef.current?.close();
-                }}
-              >
-                ปิด
-              </button>
             </div>
-            <div className="flex-1">
-              <button
-                type="submit"
-                className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
-                onClick={onSubmitForm}
-              >
-                บันทึก
-              </button>
+            <div className="flex w-full gap-5 py-3 modal-action mt-0">
+              <div className="flex-1">
+                <button
+                  type="button"
+                  className="btn btn-secondary !w-full"
+                  onClick={() => {
+                    clearForm();
+                    handleCloseModal();
+                  }}
+                >
+                  ปิด
+                </button>
+              </div>
+              <div className="flex-1">
+                <button
+                  type="submit"
+                  className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white !w-full"
+                  onClick={onSubmitForm}
+                >
+                  บันทึก
+                </button>
+              </div>
             </div>
           </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
-      <ReceiveCarSuccessModal
-        ref={receiveCarSuccessModalRef}
-        requestData={travelCardData}
-        role="admin"
-      />
+      )}
+      <ReceiveCarSuccessModal ref={receiveCarSuccessModalRef} requestData={travelCardData} role="admin" />
       <ExampleCarImageModal
         backModal={() => modalRef.current?.showModal()}
         ref={exampleCarImageModalRef}

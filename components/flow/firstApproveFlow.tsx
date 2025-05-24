@@ -5,7 +5,6 @@ import FirstApproverListTable from "@/components/table/first-approver-list-table
 import ZeroRecord from "@/components/zeroRecord";
 import { firstApproverRequests } from "@/services/bookingApprover";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
 
@@ -43,7 +42,6 @@ export default function FirstApproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
-  const router = useRouter();
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;

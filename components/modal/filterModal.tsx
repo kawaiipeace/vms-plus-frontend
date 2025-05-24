@@ -34,20 +34,10 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
       },
     }));
 
-    // useEffect(() => {
-    //   const dialog = modalRef.current;
-    //   if (!dialog) return;
-
-    //   const handleClose = () => {
-    //     console.log("Modal has closed");
-    //     setOpenModal(false);
-    //     // TODO: รีเซ็ต state อื่น ๆ หรือตั้งค่าใหม่ตรงนี้
-    //   };
-    //   dialog.addEventListener("close", handleClose);
-    //   return () => {
-    //     dialog.removeEventListener("close", handleClose);
-    //   };
-    // }, []);
+    const handleCloseModal = () => {
+      modalRef.current?.close();
+      setOpenModal(false); // Update state to reflect modal is closed
+    };
 
     const [selectedStartDate, setSelectedStartDate] = useState<string>("");
     const [selectedEndDate, setSelectedEndDate] = useState<string>("");
@@ -120,11 +110,6 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
 
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
-    const handleCloseModal = () => {
-      modalRef.current?.close();
-      setOpenModal(false); // Update state to reflect modal is closed
-    };
-
     return (
       <div>
         {openModal && (
@@ -156,110 +141,112 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                 </button>
                 {/* </form> */}
               </div>
-              <div className="modal-body overflow-y-auto flex flex-col gap-4 h-[70vh] max-h-[70vh]">
-                <div className="grid grid-cols-12 gap-4">
-                  {department && (
+              <div className="modal-scroll-wrapper overflow-y-auto">
+                <div className="modal-body  flex flex-col gap-4 h-[70vh] max-h-[70vh]">
+                  <div className="grid grid-cols-12 gap-4">
+                    {department && (
+                      <div className="col-span-12">
+                        <div className="form-group">
+                          <label className="form-label">สังกัดยานพาหนะ</label>
+                          <CustomSelect
+                            w="md:w-full"
+                            options={vehicleCatOptions}
+                            value={selectedVehicleOption}
+                            onChange={handleVehicleTypeChange}
+                          />
+                        </div>
+                      </div>
+                    )}
                     <div className="col-span-12">
                       <div className="form-group">
-                        <label className="form-label">สังกัดยานพาหนะ</label>
-                        <CustomSelect
-                          w="md:w-full"
-                          options={vehicleCatOptions}
-                          value={selectedVehicleOption}
-                          onChange={handleVehicleTypeChange}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">สถานะคำขอ</label>
-                      {statusData != null && (
-                        <>
-                          {statusData
-                            .filter((statusItem) => statusItem.ref_request_status_name !== "ยกเลิกคำขอ")
-                            .map((statusItem, index) => (
-                              <div className="custom-group" key={index}>
-                                <div className="custom-control custom-checkbox custom-control-inline">
-                                  <input
-                                    type="checkbox"
-                                    value={statusItem.ref_request_status_code}
-                                    checked={selectedStatuses.includes(statusItem.ref_request_status_code)}
-                                    onChange={() => handleCheckboxChange(statusItem.ref_request_status_code)}
-                                    className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                                  />
-                                  <label className="custom-control-label">
-                                    <div className="custom-control-label-group">
-                                      <span
-                                        className={`badge badge-pill-outline ${
-                                          statusItem.ref_request_status_name === "ถูกตีกลับ" ||
-                                          statusItem.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ"
-                                            ? "badge-error"
-                                            : statusItem.ref_request_status_name === "อนุมัติแล้ว"
-                                            ? "badge-success"
-                                            : statusItem.ref_request_status_name === "เสร็จสิ้น"
-                                            ? "badge-success"
-                                            : statusItem.ref_request_status_name === "รออนุมัติ" ||
-                                              statusItem.ref_request_status_name === "ตีกลับยานพาหนะ"
-                                            ? "badge-warning"
-                                            : "badge-info"
-                                        }`}
-                                      >
-                                        {statusItem.ref_request_status_name}
-                                      </span>
-                                    </div>
-                                  </label>
+                        <label className="form-label">สถานะคำขอ</label>
+                        {statusData != null && (
+                          <>
+                            {statusData
+                              .filter((statusItem) => statusItem.ref_request_status_name !== "ยกเลิกคำขอ")
+                              .map((statusItem, index) => (
+                                <div className="custom-group" key={index}>
+                                  <div className="custom-control custom-checkbox custom-control-inline">
+                                    <input
+                                      type="checkbox"
+                                      value={statusItem.ref_request_status_code}
+                                      checked={selectedStatuses.includes(statusItem.ref_request_status_code)}
+                                      onChange={() => handleCheckboxChange(statusItem.ref_request_status_code)}
+                                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                                    />
+                                    <label className="custom-control-label">
+                                      <div className="custom-control-label-group">
+                                        <span
+                                          className={`badge badge-pill-outline ${
+                                            statusItem.ref_request_status_name === "ถูกตีกลับ" ||
+                                            statusItem.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ"
+                                              ? "badge-error"
+                                              : statusItem.ref_request_status_name === "อนุมัติแล้ว"
+                                              ? "badge-success"
+                                              : statusItem.ref_request_status_name === "เสร็จสิ้น"
+                                              ? "badge-success"
+                                              : statusItem.ref_request_status_name === "รออนุมัติ" ||
+                                                statusItem.ref_request_status_name === "ตีกลับยานพาหนะ"
+                                              ? "badge-warning"
+                                              : "badge-info"
+                                          }`}
+                                        >
+                                          {statusItem.ref_request_status_name}
+                                        </span>
+                                      </div>
+                                    </label>
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">วันที่เริ่มเดินทาง</label>
-                      <div className="input-group flatpickr">
-                        <div className="input-group-prepend" data-toggle="">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
-                        </div>
-                        <DatePicker
-                          ref={startDatePickerRef}
-                          placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
-                          onChange={handleStartDateChange}
-                        />
-                        <div className="input-group-append hidden" data-clear>
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
-                        </div>
+                              ))}
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
-                      <div className="input-group flatpickr">
-                        <div className="input-group-prepend" data-toggle="">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">วันที่เริ่มเดินทาง</label>
+                        <div className="input-group flatpickr">
+                          <div className="input-group-prepend" data-toggle="">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">calendar_month</i>
+                            </span>
+                          </div>
+                          <DatePicker
+                            ref={startDatePickerRef}
+                            placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
+                            onChange={handleStartDateChange}
+                          />
+                          <div className="input-group-append hidden" data-clear>
+                            <span className="input-group-text search-ico-trailing">
+                              <i className="material-symbols-outlined">close</i>
+                            </span>
+                          </div>
                         </div>
-                        <DatePicker
-                          ref={endDatePickerRef} // Attach ref to end date picker
-                          placeholder={"ระบุช่วงวันที่สิ้นสุดเดินทาง"}
-                          onChange={handleEndDateChange}
-                        />
-                        <div className="input-group-append hidden" data-clear>
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
+                      </div>
+                    </div>
+
+                    <div className="col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
+                        <div className="input-group flatpickr">
+                          <div className="input-group-prepend" data-toggle="">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">calendar_month</i>
+                            </span>
+                          </div>
+                          <DatePicker
+                            ref={endDatePickerRef} // Attach ref to end date picker
+                            placeholder={"ระบุช่วงวันที่สิ้นสุดเดินทาง"}
+                            onChange={handleEndDateChange}
+                          />
+                          <div className="input-group-append hidden" data-clear>
+                            <span className="input-group-text search-ico-trailing">
+                              <i className="material-symbols-outlined">close</i>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

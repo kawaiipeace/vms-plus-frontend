@@ -12,6 +12,11 @@ interface DatePickerProps {
   onChange?: (dateStr: string) => void;
 }
 
+// interface ExtendedFlatpickrInstance extends FlatpickrInstance {
+//   _scrollHandler?: () => void;
+//   _modalElement?: HTMLElement;
+// }
+
 export interface DatePickerRef {
   reset: () => void;
   setValue: (value: string) => void;
@@ -44,6 +49,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
         dateFormat: "d/m/Y",
         locale: Thai,
         allowInput: true,
+        // position: "auto",
         defaultDate: defaultValue ? convertToGregorianYear(defaultValue) : undefined, // Convert defaultValue to Gregorian
         monthSelectorType: "static",
         prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
@@ -97,6 +103,25 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
         },
         onYearChange: function (selectedDates, dateStr, instance) {
           updateCalendarYear(instance);
+        },
+        onOpen: () => {
+          const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
+          console.log("Modal scroll wrapper:", wrapper);
+
+          if (wrapper) {
+            wrapper.style.overflow = "hidden";
+            // wrapper.style.height = "auto";
+            // wrapper.style.maxHeight = "unset";
+          }
+        },
+
+        onClose: () => {
+          const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
+          if (wrapper) {
+            wrapper.style.overflow = "";
+            // wrapper.style.height = "";
+            // wrapper.style.maxHeight = "";
+          }
         },
       });
       // }, 0);

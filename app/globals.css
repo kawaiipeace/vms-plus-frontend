@@ -3433,7 +3433,7 @@
   box-shadow: none !important;
   border: 1px solid;
   z-index: 99999 !important;
-  position: fixed !important;
+  /* position: fixed !important; */
 }
 
 .light-mode .flatpickr-calendar {
@@ -3849,6 +3849,12 @@
 
 .modal .modal-body {
   padding: 1.5rem;
+}
+
+.modal .modal-body[style*="overflow"] {
+  overflow: hidden !important;
+  max-height: unset !important;
+  height: auto !important;
 }
 
 @media (max-width: 767px) {
