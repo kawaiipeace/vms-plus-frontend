@@ -91,7 +91,7 @@ export default function RequestForm() {
                 dept_sap: string;
               }) => ({
                 value: user.emp_id,
-                label: `${user.full_name} (${user.dept_sap})`,
+                label: `${user.full_name} (${user.emp_id})`,
               })
             ),
           ];
@@ -716,30 +716,33 @@ export default function RequestForm() {
                     />
                   </div>
                 </div>
-
-                <div className="md:col-span-3 col-span-12">
-                  <div className="form-group">
-                    <label className="form-label">ศูนย์ต้นทุน</label>
-                    <div
-                      className={`input-group ${
-                        selectedCostTypeOption?.value === "1"
-                          ? "is-readonly"
-                          : ""
-                      }`}
-                    >
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">crop_free</i>
-                        </span>
+                {selectedCostTypeOption?.value === "1" && (
+                  <div className="md:col-span-3 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">ศูนย์ต้นทุน</label>
+                      <div
+                        className={`input-group ${
+                          selectedCostTypeOption?.value === "1"
+                            ? "is-readonly"
+                            : ""
+                        }`}
+                      >
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">
+                              crop_free
+                            </i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          {...register("costOrigin")}
+                        />
                       </div>
-                      <input
-                        type="text"
-                        className="form-control"
-                        {...register("costOrigin")}
-                      />
                     </div>
                   </div>
-                </div>
+                )}
                 {selectedCostTypeOption?.value === "3" && (
                   <div className="md:col-span-3 col-span-12">
                     <div className="form-group">
@@ -756,7 +759,7 @@ export default function RequestForm() {
                   </div>
                 )}
 
-{selectedCostTypeOption?.value === "3" && (
+                {selectedCostTypeOption?.value === "3" && (
                   <div className="md:col-span-3 col-span-12">
                     <div className="form-group">
                       <label className="form-label">เลขที่โครงข่าย</label>
@@ -772,7 +775,7 @@ export default function RequestForm() {
                   </div>
                 )}
 
-{selectedCostTypeOption?.value === "3" && (
+                {selectedCostTypeOption?.value === "3" && (
                   <div className="md:col-span-3 col-span-12">
                     <div className="form-group">
                       <label className="form-label">เลขที่กิจกรรม</label>
@@ -802,15 +805,25 @@ export default function RequestForm() {
                     </div>
                   </div>
                 )}
+                {selectedCostTypeOption?.value === "2" && (
+                  <div className="md:col-span-3 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">
+                        ศูนย์ต้นทุน
+                        <i className="material-symbols-outlined">info</i>
+                      </label>
 
-<CustomSelect
-                      iconName="person"
-                      w="w-full"
-                      options={driverOptions}
-                      value={selectedVehicleUserOption}
-                      searchable={true}
-                      onChange={handleVehicleUserChange}
-                    />
+                      <CustomSelect
+                        iconName="person"
+                        w="w-full"
+                        options={driverOptions}
+                        value={selectedVehicleUserOption}
+                        searchable={true}
+                        onChange={handleVehicleUserChange}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
