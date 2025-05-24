@@ -15,29 +15,32 @@ const ToggleSwitch = ({
   onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
   useInView?: boolean;
 }) => {
-  const [isOn, setIsOn] = useState(false);
+  const [isOn, setIsOn] = useState(isActive === 1);
 
   const toggleSwitch = () => {
-    // setIsOn(!isOn);
-
-    handleToggleChange?.(driverId);
     if (useInView) {
-      driverActiveModalRef.current?.openModal();
-    } else {
-      if (isActive === 1) {
+      if (!isOn) {
+        // Only open modal when turning off
         driverActiveModalRef.current?.openModal();
       } else {
+        // Immediately turn on without modal
+        setIsOn(true);
+        onUpdateStatusDriver?.(driverId, "1");
+      }
+    } else {
+      if (isOn) {
+        driverActiveModalRef.current?.openModal();
+      } else {
+        setIsOn(true);
         onUpdateStatusDriver?.(driverId, "1");
       }
     }
+    handleToggleChange?.(driverId);
   };
 
+  // Sync with external isActive changes
   useEffect(() => {
-    if (isActive === 1) {
-      setIsOn(true);
-    } else {
-      setIsOn(false);
-    }
+    setIsOn(isActive === 1);
   }, [isActive]);
 
   return (

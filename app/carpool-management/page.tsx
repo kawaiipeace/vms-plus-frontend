@@ -5,7 +5,10 @@ import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useEffect, useRef, useState } from "react";
 import { Carpool, CarpoolParams } from "../types/carpool-management-type";
-import { carpoolManagementSearch } from "@/services/carpoolManagement";
+import {
+  carpoolManagementSearch,
+  getCarpoolExport,
+} from "@/services/carpoolManagement";
 import { PaginationType } from "../types/request-action-type";
 import CarpoolManagementTable from "@/components/table/carpool-management-table";
 import ZeroRecord from "@/components/zeroRecord";
@@ -13,15 +16,18 @@ import FilterCarpoolModal from "@/components/modal/filterCarpool";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
 
+const defaultPagination = {
+  limit: 10,
+  page: 1,
+  total: 0,
+  totalPages: 0,
+};
+
 export default function CarpoolManagement() {
   const [params, setParams] = useState<CarpoolParams>({});
   const [data, setData] = useState<Carpool[]>([]);
-  const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
-    page: 1,
-    total: 0,
-    totalPages: 0,
-  });
+  const [pagination, setPagination] =
+    useState<PaginationType>(defaultPagination);
 
   const router = useRouter();
   const { isPinned } = useSidebar();
@@ -38,8 +44,12 @@ export default function CarpoolManagement() {
         const result = response.data;
         setData(result.carpools ?? []);
         setPagination({ ...result?.pagination });
-      } catch (error) {
+      } catch (error: Error | any) {
         console.error("Error fetching status data:", error);
+        if (error.status === 404) {
+          setData([]);
+          setPagination(defaultPagination);
+        }
       }
     };
 
@@ -63,9 +73,45 @@ export default function CarpoolManagement() {
     }));
   };
 
-  const handleClearAllFilters = () => {};
+  const handleExport = () => {
+    const fetchCarpoolManagementSearchFunc = async () => {
+      try {
+        const response = await getCarpoolExport({
+          search: params.search,
+          is_active: params.is_active,
+          dept_sap: params.dept_sap,
+        });
+        const result = response.data;
 
-  const isSearch = !!params.search;
+        const blob = new Blob([result], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "carpool-management.xlsx"; // Set the desired file name
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      } catch (error: Error | any) {
+        console.error("Error fetching status data:", error);
+        if (error.status === 404) {
+          setData([]);
+          setPagination(defaultPagination);
+        }
+      }
+    };
+
+    fetchCarpoolManagementSearchFunc();
+  };
+
+  const handleClearAllFilters = () => {
+    setParams({});
+    setPagination(defaultPagination);
+  };
+
+  const isSearch = !!params.search || !!params.dept_sap || !!params.is_active;
 
   return (
     <>
@@ -144,7 +190,7 @@ export default function CarpoolManagement() {
                       </button>
                       <button
                         className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] block"
-                        // onClick={() => filterModalRef.current?.openModal()}
+                        onClick={handleExport}
                       >
                         <div className="flex items-center gap-1">
                           <i className="material-symbols-outlined">download</i>
@@ -171,7 +217,7 @@ export default function CarpoolManagement() {
                       button="ล้างตัวกรอง"
                       displayBtn={true}
                       btnType="secondary"
-                      classNameImg="w-[200px] h-[200px]"
+                      classNameImg="w-[200px] h-auto"
                       useModal={handleClearAllFilters}
                     />
                   ) : (
@@ -210,7 +256,11 @@ export default function CarpoolManagement() {
                     router.push("/carpool-management/form/process-one")}
                 />
               )}
-              <FilterCarpoolModal ref={filterModalRef} />
+              <FilterCarpoolModal
+                ref={filterModalRef}
+                params={params}
+                setParams={setParams}
+              />
             </div>
           </div>
         </div>

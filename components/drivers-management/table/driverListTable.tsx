@@ -106,6 +106,7 @@ const DriverListTable = ({
               checked: table.getIsAllRowsSelected(),
               indeterminate: table.getIsSomeRowsSelected(),
               onChange: table.getToggleAllRowsSelectedHandler(),
+              className: "checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
             }}
           />
         </div>
@@ -118,6 +119,7 @@ const DriverListTable = ({
               disabled: !row.getCanSelect(),
               indeterminate: row.getIsSomeSelected(),
               onChange: row.getToggleSelectedHandler(),
+              className:  "checkbox [--chkbg:#A80689] checkbox-sm rounded-md",
             }}
           />
         </div>
@@ -203,7 +205,7 @@ const DriverListTable = ({
         const formattedDate = date ? dayjs(date).format("DD/MM/YYYY") : "ไม่ระบุ";
         return (
           <div className="text-left" data-name="วันที่สิ้นสุดปฏิบัติงาน">
-            <div className="text-center">{formattedDate}</div>
+            <div className="text-center">{formattedDate === "01/01/0001" ? "" : formattedDate}</div>
           </div>
         );
       },
@@ -377,7 +379,7 @@ const DriverListTable = ({
 
   return (
     <>
-      <DataTable table={tables} style={`md:w-[1600px] w-full`} />
+      <DataTable table={tables} style={`md:w-full w-full`} />
     </>
   );
 };
