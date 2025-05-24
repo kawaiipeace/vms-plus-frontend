@@ -44,6 +44,7 @@ export function transformApiToTableData(rawData: any, dates: any[]): VehicleTime
                 const destinationPlace = trip.trip_destination_place
 
                 timeline[`day_${dayStart}`]?.push({
+                    tripDetailId: trip.trn_trip_detail_uid,
                     destinationPlace: destinationPlace,
                     startTime: start.format("HH:mm"),
                     duration: duration.toString(),

@@ -122,7 +122,7 @@ export default function VehicleTimeLine() {
       <SearchInput
         defaultValue={params.search}
         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-        onChange={(value: string) => setParams((prev) => ({ ...prev, search: value }))}
+        onSearch={(value: string) => setParams((prev) => ({ ...prev, search: value }))}
       />
       <div className="flex gap-4">
         <div className="flex flex-wrap items-center gap-2">

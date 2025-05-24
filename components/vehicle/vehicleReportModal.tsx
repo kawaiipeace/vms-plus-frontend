@@ -2,6 +2,9 @@ import { RepoCardProps, VehicleManagementReportApiParams } from "@/app/types/veh
 import { loadReportAddFuel, loadReportTripDetail } from "@/services/vehicleService";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import DateInput from "./input/dateInput";
+import { DayPicker } from "react-day-picker";
+import dayjs from "dayjs";
 
 export type ReportModalRef = {
     open: () => void;
@@ -99,34 +102,27 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
             <div className="modal-box bg-white rounded-lg">
                 <ModalHeader onClose={() => reportRef.current?.close()} />
                 <div className="flex flex-col gap-4 p-2">
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 items-center">
                         {/* Date Start */}
-                        <div>
+                        <div className="flex flex-col">
                             <span className="text-base">วันที่เริ่มต้น</span>
-                            <div className="input-group">
-                                <i className="material-symbols-outlined">calendar_month</i>
-
-                                <input
-                                    type="date"
-                                    className="form-control border-0"
-                                    value={new Date(params.start_date).toISOString().split("T")[0]}
-                                    onChange={(e) => setParams({ ...params, start_date: e.target.value })}
-                                />
-                            </div>
+                            <DateInput value={dayjs().startOf("month").toDate()} onChange={(date: Date) => {
+                                setParams(prev => ({
+                                    ...prev,
+                                    start_date: dayjs(date).format("YYYY-MM-DD")
+                                }));    
+                            }}/>
                         </div>
 
                         {/* Date End */}
                         <div>
                             <span className="text-base">วันที่สิ้นสุด</span>
-                            <div className="input-group">
-                                <i className="material-symbols-outlined">calendar_month</i>
-                                <input
-                                    type="date"
-                                    className="form-control border-0"
-                                    value={new Date(params.end_date).toISOString().split("T")[0]}
-                                    onChange={(e) => setParams({ ...params, end_date: e.target.value })}
-                                />
-                            </div>
+                            <DateInput value={dayjs().startOf("month").toDate()} onChange={(date: Date) => {
+                                setParams(prev => ({
+                                    ...prev,
+                                    end_date: dayjs(date).format("YYYY-MM-DD")
+                                }));    
+                            }}/>
                         </div>
                     </div>
 

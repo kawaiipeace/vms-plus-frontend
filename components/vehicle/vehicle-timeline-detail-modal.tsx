@@ -12,8 +12,6 @@ interface VehicleTimeLineDetailModalProps {
 }
 
 const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLineDetailModalProps>(({detailRequest, currentDate}, ref) => {
-    console.log('detailRequest', detailRequest);
-
     const detailRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -22,13 +20,20 @@ const VehicleTimeLineDetailModal = forwardRef<VehicleTimelineRef, VehicleTimeLin
     }));
 
     const CardBox = ({data}: {data: any}) => {
+        const imgPath = new Map([
+            ['รออนุมัติ', 'assets/img/vehicle/pending_approval.svg'],
+            ['เสร็จสิ้น', 'assets/img/vehicle/completed.svg'],
+            ['ไป - กลับ', 'assets/img/vehicle/round_trip.svg'],
+            ['ค้างแรม', 'assets/img/vehicle/with_overnight_stay.svg']
+        ]);
+
         return (
             <div className="border border-gray-300 rounded-xl p-4 bg-white shadow-sm w-full max-w-xl">
                 <div className="grid grid-cols-[auto_1fr] gap-4">
                     {/* Image Section */}
                     <div className="flex items-start justify-center">
                         <Image
-                            src="/assets/img/return_complete.png"
+                            src={`${imgPath.get(data.status)}`}
                             width={150}
                             height={150}
                             alt="check_car_complete"

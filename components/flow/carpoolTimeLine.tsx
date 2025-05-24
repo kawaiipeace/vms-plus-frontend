@@ -203,7 +203,7 @@ export default function CarpoolTimeLine() {
       <SearchInput
         defaultValue={vehicleParams.search}
         placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-        onChange={(value: string) =>
+        onSearch={(value: string) =>
           setVehicleParams((prev) => ({
             ...prev,
             vehicel_car_type_detail: value,
@@ -262,7 +262,7 @@ export default function CarpoolTimeLine() {
       <SearchInput
         defaultValue={driverParams.search}
         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-        onChange={(value: string) =>
+        onSearch={(value: string) =>
           setDriverParams((prev) => ({ ...prev, search: value }))
         }
       />

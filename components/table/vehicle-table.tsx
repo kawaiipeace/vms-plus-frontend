@@ -1,5 +1,5 @@
 import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataTable } from "./dataTable";
 import VehicleTaxCredit from "../vehicle/taxCredit.tsx";
@@ -48,50 +48,71 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
     const ToggleSwitch = ({ id, isActive }: { id: string; isActive: string }) => (
         <div
             onClick={() => handleToggle(id, isActive)}
-            className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                isActive === "1" ? "bg-[#A80689]" : "bg-gray-300"
-            }`}
+            className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${isActive === "1" ? "bg-[#A80689]" : "bg-gray-300"
+                }`}
         >
             <div
-                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                    isActive === "1" ? "translate-x-6" : "translate-x-0"
-                }`}
+                className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${isActive === "1" ? "translate-x-6" : "translate-x-0"
+                    }`}
             />
         </div>
     );
+
+    const HeaderCheckbox = ({ data, selectedRows, setValue, useModal }: any) => {
+        const headerCheckboxRef = useRef<HTMLInputElement>(null);
+        const allSelected =
+            data.length > 0 &&
+            data.every((vehicle: any) => selectedRows?.[vehicle.mas_vehicle_uid]);
+
+        const partiallySelected =
+            data.some((v: any) => selectedRows?.[v.mas_vehicle_uid]) && !allSelected;
+
+        useEffect(() => {
+            if (headerCheckboxRef.current) {
+                headerCheckboxRef.current.indeterminate = partiallySelected;
+            }
+        }, [partiallySelected, selectedRows]);
+
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const checked = e.target.checked;
+            const newSelected: Record<string, boolean> = {};
+
+            data.forEach((vehicle: any) => {
+                newSelected[vehicle.mas_vehicle_uid] = checked;
+            });
+
+            setValue('selectedRows', newSelected);
+
+            const currentSelected = Object.entries(newSelected)
+                .filter(([_, v]) => v)
+                .map(([id]) => id);
+
+            useModal(currentSelected);
+        };
+
+        return (
+            <input
+                ref={headerCheckboxRef}
+                type="checkbox"
+                className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                checked={allSelected}
+                onChange={handleChange}
+            />
+        );
+    };
 
     // Memoized columns to avoid unnecessary re-rendering
     const columns = useMemo(() => [
         columnHelper.display({
             id: 'select',
-            header: () => {
-                const allSelected = Object.keys(watch('selectedRows')).length > 0 &&
-                    data.every(vehicle => watch(`selectedRows.${vehicle.mas_vehicle_uid}`));
-
-                return (
-                    <input
-                        type="checkbox"
-                        className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                        checked={allSelected}
-                        onChange={(e) => {
-                            const checked = e.target.checked;
-                            const newSelected: Record<string, boolean> = {};
-
-                            data.forEach(vehicle => {
-                                newSelected[vehicle.mas_vehicle_uid] = checked;
-                            });
-
-                            setValue('selectedRows', newSelected);
-
-                            const currentSelected = Object.entries(newSelected)
-                                .filter(([_, v]) => v)
-                                .map(([id]) => id);
-
-                            useModal(currentSelected);
-                        }}
-                    />
-                );
-            },
+            header: () => (
+                <HeaderCheckbox
+                    data={data}
+                    selectedRows={watch('selectedRows')}
+                    setValue={setValue}
+                    useModal={useModal}
+                />
+            ),
             cell: ({ row }) => (
                 <Controller
                     name={`selectedRows.${row.original.mas_vehicle_uid}`}
@@ -120,11 +141,9 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
         }), {
             header: 'เลขทะเบียน / ยี่ห้อ / รุ่น',
             cell: info => (
-                <div className="text-left">
-                    <div className="flex flex-col">
+                <div className="flex flex-col">
                         <div className="text-base">{info.getValue().license}</div>
                         <div className="text-sm text-gray-500">{`${info.getValue().brand} / ${info.getValue().model}`}</div>
-                    </div>
                 </div>
             ),
             enableSorting: true,
@@ -144,7 +163,7 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
             cell: info => info.getValue(),
             enableSorting: false,
         }),
-        columnHelper.accessor('mas_vehicle_uid', {
+        columnHelper.accessor('fleet_card_no', {
             header: 'หมายเลขบัตรเติมน้ำมัน / RFID',
             cell: info => info.getValue(),
             enableSorting: false,
@@ -159,7 +178,7 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
             cell: info => info.getValue(),
             enableSorting: true,
         }),
-        columnHelper.accessor('vehicle_get_date', {
+        columnHelper.accessor('age', {
             header: 'อายุการใช้งาน',
             cell: info => info.getValue(),
             enableSorting: true,
