@@ -332,7 +332,7 @@ export default function CarpoolTimeLine() {
 
         {dataVehicle?.length !== 0 ? (
           <>
-            <CarpoolVehicleListTable
+            <RequestListTable
               dataRequest={dataVehicle}
               params={vehicleParams}
               selectedOption={selectedOption}

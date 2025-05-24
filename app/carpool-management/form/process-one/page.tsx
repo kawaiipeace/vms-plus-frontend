@@ -49,7 +49,7 @@ export default function CarpoolProcessOne() {
     };
 
     FetchIdFunc();
-  }, [id]);
+  }, [formData.mas_carpool_uid, id]);
 
   const handleActive = async () => {
     try {
@@ -135,7 +135,6 @@ export default function CarpoolProcessOne() {
                     >
                       {id ? "ลบกลุ่ม" : "ยกเลิก"}
                     </span>
-                    {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                     {id && (
                       <div className="custom-group">
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
