@@ -261,6 +261,7 @@ export default function CarpoolVehicleListTable({
       <VehicleTimeLineDetailModal
         ref={vehicleTimelineDetailRef}
         detailRequest={detailRequest}
+        currentDate={undefined}
       />
     </div>
   );

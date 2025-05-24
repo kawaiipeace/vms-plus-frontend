@@ -14,6 +14,8 @@ interface SelectProps {
   onChange: (selected: CustomSelectOption) => void;
   showDescriptions?: boolean; // Add prop to control description visibility
   disabled?: boolean;
+  searchable?: boolean; // Optional searchable prop
+  searchPlaceholder?: string;
 }
 
 export default function CustomSelect({
@@ -24,10 +26,26 @@ export default function CustomSelect({
   onChange,
   showDescriptions = false, // Default to false
   disabled = false,
+  searchable = false,
+  searchPlaceholder = "ค้นหา...", // Default search placeholder
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
+
+  // Filter options based on search text if searchable
+  const filteredOptions = searchable
+    ? options.filter((option) => {
+        const label =
+          typeof option.label === "string"
+            ? option.label
+            : // If ReactNode, fallback to value
+              option.value;
+        const text = (label + (option.desc ? ` ${option.desc}` : "")).toLowerCase();
+        return text.includes(searchText.toLowerCase());
+      })
+    : options;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -37,6 +55,7 @@ export default function CustomSelect({
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        setSearchText(""); // Reset search on close
       }
     };
 
@@ -94,8 +113,22 @@ export default function CustomSelect({
       {/* Dropdown List - shows labels with descriptions */}
       {isOpen && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg bg-white">
-          {options.length > 0 ? (
-            options.map((option) => (
+          {searchable && (
+            <li className="mb-2 px-2">
+              <input
+                autoFocus
+                type="text"
+                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border-primary-default text-sm"
+                placeholder={searchPlaceholder}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </li>
+          )}
+
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option) => (
               <li
                 key={option.value}
                 className={`px-4 py-2 cursor-pointer flex gap-2 items-start rounded-lg ${
@@ -106,6 +139,7 @@ export default function CustomSelect({
                 onClick={() => {
                   onChange(option);
                   setIsOpen(false);
+                  setSearchText("");
                   buttonRef.current?.focus();
                 }}
               >
@@ -118,7 +152,9 @@ export default function CustomSelect({
               </li>
             ))
           ) : (
-            <li className="px-4 py-2 text-gray-500">ไม่พบข้อมูล</li>
+            <li className="px-4 py-2 text-gray-500">
+              {searchText ? "ไม่พบข้อมูลที่ค้นหา" : "ไม่พบข้อมูล"}
+            </li>
           )}
         </ul>
       )}

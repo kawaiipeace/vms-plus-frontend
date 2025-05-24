@@ -457,6 +457,7 @@ export default function CarpoolTimeLine() {
       <VehicleTimeLineDetailModal
         ref={vehicleTimelineDetailRef}
         detailRequest={undefined}
+        currentDate={undefined}
       />
     </div>
   );
