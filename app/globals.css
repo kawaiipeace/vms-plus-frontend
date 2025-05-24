@@ -15,6 +15,13 @@
   color: #667085;
 }
 
+/* In your global CSS file */
+.toggle {
+  transition: none !important;
+}
+.toggle::before {
+  transition: none !important;
+}
 .dark-mode .avatar {
   background-color: #333741;
   color: #cecfd2;

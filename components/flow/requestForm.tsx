@@ -39,11 +39,36 @@ const schema = yup.object().shape({
   timeEnd: yup.string(),
   attachmentFile: yup.string(),
   deptSapShort: yup.string(),
-  wbsNumber: yup.string().optional(),
+  wbsNumber: yup
+    .string()
+    .when("refCostTypeCode", {
+      is: (val: string) => val === "3",
+      then: (schema) => schema.required("กรุณาระบุเลขที่ WBS"),
+      otherwise: (schema) => schema.optional(),
+    }),
   deptSap: yup.string(),
   userImageUrl: yup.string(),
-  costOrigin: yup.string().required("กรุณาระบุการเบิกค่าใช้จ่าย"),
-});
+  costOrigin: yup
+    .string()
+    .when("refCostTypeCode", {
+      is: (val: string) => val === "1" || val === "2",
+      then: (schema) => schema.required("กรุณาระบุการเบิกค่าใช้จ่าย"),
+      otherwise: (schema) => schema.optional(),
+    }),
+  costCenter: yup.string().optional(),
+  pmOrderNo: yup.string(),
+  activityNo: yup.string(),
+  networkNo: yup.string(),
+}).test(
+  "at-least-one-for-4",
+  "กรุณาระบุ เลขที่ใบสั่ง หรือ เลขที่กิจกรรม หรือ เลขที่โครงข่าย สำหรับประเภทงบประมาณนี้",
+  function (value) {
+    if (value.refCostTypeCode === "4") {
+      return !!(value.pmOrderNo || value.activityNo || value.networkNo);
+    }
+    return true;
+  }
+);
 
 interface costType {
   ref_cost_type_code: string;
@@ -57,20 +82,15 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTripType, setSelectedTripType] = useState("1");
   const { formData, updateFormData } = useFormContext();
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
-    []
-  );
-  const [costTypeOptions, setCostTypeOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(
-    costTypeOptions[0]
-  );
-
-  const [driverOptions, setDriverOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
-
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
+  const [costTypeOptions, setCostTypeOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{ value: string; label: string }>({
+    value: "",
+    label: "",
+  });
+  const [costCenterOptions, setCostCenterOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedCostCenterOption, setSelectedCostCenterOption] = useState<{ value: string; label: string }>();
+  const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
   const [passengerCount, setPassengerCount] = useState(1);
   const [costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
   const [fileError, setFileError] = useState("");
@@ -97,7 +117,6 @@ export default function RequestForm() {
           ];
 
           setDriverOptions(driverOptionsArray);
-          console.log("driverOptionsArray", vehicleUserData);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -132,9 +151,38 @@ export default function RequestForm() {
     fetchRequests();
     fetchCostTypeRequest();
   }, []);
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-    driverOptions[0]
-  );
+
+  useEffect(() => {
+    if (vehicleUserDatas.length > 0) {
+      // filter out undefined dept_sap
+      const uniqueDepartments = Array.from(
+        new Set(
+          vehicleUserDatas
+            .map((user) => user.dept_sap)
+            .filter((deptSap): deptSap is string => !!deptSap)
+        )
+      ).map((deptSap) => {
+        const user = vehicleUserDatas.find((u) => u.dept_sap === deptSap);
+        return {
+          value: deptSap,
+          label: `${user?.dept_sap_short ?? ""} (${deptSap})`,
+        };
+      });
+
+      setCostCenterOptions(uniqueDepartments);
+
+      if (formData.costCenter) {
+        const defaultCostCenter = uniqueDepartments.find(
+          (option) => option.value === formData.costCenter
+        );
+        if (defaultCostCenter) {
+          setSelectedCostCenterOption(defaultCostCenter);
+        }
+      }
+    }
+  }, [vehicleUserDatas, formData.costCenter]);
+
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
 
   useEffect(() => {
     if (driverOptions.length > 0 && !selectedVehicleUserOption) {
@@ -180,7 +228,6 @@ export default function RequestForm() {
     };
 
     fetchApprover();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, vehicleUserDatas]);
 
   const handleVehicleUserChange = async (
@@ -202,24 +249,30 @@ export default function RequestForm() {
       setValue("userImageUrl", empData.image_url);
     }
   };
-
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedCostTypeOption(
-      selectedOption as { value: string; label: string }
-    );
+    setSelectedCostTypeOption(selectedOption as { value: string; label: string });
+    setValue("refCostTypeCode", selectedOption.value); // <-- add this line
     setValue("costOrigin", "");
-
+  
     if (selectedOption.value === "1") {
       const data = costTypeDatas.find(
         (cost: { ref_cost_type_code: string }) =>
           cost.ref_cost_type_code === selectedOption.value
       );
-
+  
       if (data) {
         setValue("costOrigin", data.ref_cost_no);
       }
     }
   };
+
+  const handleCostCenterChange = (selectedOption: CustomSelectOption) => {
+    setSelectedCostCenterOption(
+      selectedOption as { value: string; label: string }
+    );
+    setValue("costOrigin", selectedOption.value);
+  };
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -269,12 +322,19 @@ export default function RequestForm() {
       deptSap: formData.vehicleUserDeptSap || "",
       userImageUrl: formData.userImageUrl || "",
       costOrigin: formData.costNo || "",
+      pmOrderNo: formData.pmOrderNo || "",
+      networkNo: formData.networkNo || "",
+      activityNo: formData.activityNo || "",
     },
   });
 
   const startDate = watch("startDate");
   const endDate = watch("endDate");
   const isOvernightDisabled = startDate === endDate;
+
+  // ADD: Require cost center for type 2
+  const isCostCenterRequired =
+    selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
 
   useEffect(() => {
     if (formData.numberOfPassenger) {
@@ -302,21 +362,25 @@ export default function RequestForm() {
     }
   }, [formData, costTypeDatas]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     const result = selectedVehicleUserOption.label.split("(")[0].trim();
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;
     data.numberOfPassenger = passengerCount;
-    data.refCostTypeCode = selectedCostTypeOption.value;
+    data.refCostTypeCode = selectedCostTypeOption?.value;
     data.tripType = selectedTripType;
     data.approvedRequestDeptSap = approverData?.dept_sap;
     data.approvedRequestDeptSapFull = approverData?.dept_sap_full;
     data.approvedRequestDeptSapShort = approverData?.dept_sap_short;
     data.approvedRequestEmpId = approverData?.emp_id;
     data.approvedRequestEmpName = approverData?.full_name;
-    data.costNo = data.costOrigin;
+
+    if (selectedCostTypeOption?.value === "2" && selectedCostCenterOption) {
+      data.costNo = selectedCostCenterOption.value;
+    } else {
+      data.costNo = data.costOrigin;
+    }
     localStorage.setItem("processOne", "Done");
     updateFormData(data);
     router.push("process-two");
@@ -647,7 +711,6 @@ export default function RequestForm() {
                         fileError && "is-invalid"
                       }`}
                     >
-                      {/* <input type="file" className="file-input hidden" /> */}
                       <label className="flex items-center gap-2 cursor-pointer">
                         <div className="input-group-prepend">
                           <span className="input-group-text">
@@ -743,52 +806,62 @@ export default function RequestForm() {
                     </div>
                   </div>
                 )}
-                {selectedCostTypeOption?.value === "3" && (
+                {selectedCostTypeOption?.value === "2" && (
                   <div className="md:col-span-3 col-span-12">
                     <div className="form-group">
-                      <label className="form-label">เลขที่ WBS</label>
-                      <div className={`input-group`}>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="ระบุเลขที่ WBS"
-                          {...register("wbsNumber")}
-                        />
-                      </div>
+                      <label className="form-label">ศูนย์ต้นทุน</label>
+                      <CustomSelect
+                        iconName="business_center"
+                        w="w-full"
+                        options={costCenterOptions}
+                        value={selectedCostCenterOption}
+                        onChange={handleCostCenterChange}
+                      />
                     </div>
                   </div>
                 )}
-
                 {selectedCostTypeOption?.value === "3" && (
-                  <div className="md:col-span-3 col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">เลขที่โครงข่าย</label>
-                      <div className={`input-group`}>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="ระบุเลขที่โครงข่าย"
-                          {...register("wbsNumber")}
-                        />
+                  <>
+                    <div className="md:col-span-3 col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">เลขที่ WBS</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ระบุเลขที่ WBS"
+                            {...register("wbsNumber")}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-
-                {selectedCostTypeOption?.value === "3" && (
-                  <div className="md:col-span-3 col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">เลขที่กิจกรรม</label>
-                      <div className={`input-group`}>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="ระบุเลขที่กิจกรรม"
-                          {...register("wbsNumber")}
-                        />
+                    <div className="md:col-span-3 col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">เลขที่โครงข่าย</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ระบุเลขที่โครงข่าย"
+                            {...register("networkNo")}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                    <div className="md:col-span-3 col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">เลขที่กิจกรรม</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ระบุเลขที่กิจกรรม"
+                            {...register("activityNo")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
                 {selectedCostTypeOption?.value === "4" && (
                   <div className="md:col-span-3 col-span-12">
@@ -799,28 +872,9 @@ export default function RequestForm() {
                           type="text"
                           className="form-control"
                           placeholder="ระบุเลขที่ใบสั่ง"
-                          {...register("wbsNumber")}
+                          {...register("pmOrderNo")}
                         />
                       </div>
-                    </div>
-                  </div>
-                )}
-                {selectedCostTypeOption?.value === "2" && (
-                  <div className="md:col-span-3 col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">
-                        ศูนย์ต้นทุน
-                        <i className="material-symbols-outlined">info</i>
-                      </label>
-
-                      <CustomSelect
-                        iconName="person"
-                        w="w-full"
-                        options={driverOptions}
-                        value={selectedVehicleUserOption}
-                        searchable={true}
-                        onChange={handleVehicleUserChange}
-                      />
                     </div>
                   </div>
                 )}
@@ -828,8 +882,13 @@ export default function RequestForm() {
             </div>
           </div>
         </div>
+
         <div className="form-action">
-          <button type="submit" className="btn btn-primary" disabled={!isValid}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={!isValid || isCostCenterRequired}
+          >
             ต่อไป
             <i className="material-symbols-outlined icon-settings-300-24">
               arrow_right_alt

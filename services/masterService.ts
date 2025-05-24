@@ -57,6 +57,15 @@ export const fetchCostTypes = async () => {
   }
 };
 
+export const fetchCostCenter = async () => {
+  try {
+    const response = await axiosInstance.get("ref/cost-center");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchDriverWorkType = async () => {
   try {
     const response = await axiosInstance.get("driver/work-type");

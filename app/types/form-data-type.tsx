@@ -10,6 +10,11 @@ export interface FormDataType {
   purpose?: string;
   attachmentFile?: string;
   costNo?: string;
+  costCenter?: string;
+  wbsNo?: string;
+  networkNo?: string;
+  activityNo?: string;
+  pmOrderNo?: string;
   endDatetime?: string;
   isAdminChooseDriver?: boolean;
   isSystemChooseVehicle?: string;
