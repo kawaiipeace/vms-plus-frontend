@@ -13,7 +13,11 @@ import ToastCustom from "@/components/toastCustom";
 
 // import dayjs from "dayjs";
 
-import { driversMamagement, updateDriverStatus, driverDelete } from "@/services/driversManagement";
+import {
+  driversMamagement,
+  updateDriverStatus,
+  driverDelete,
+} from "@/services/driversManagement";
 import { RequestListType } from "@/app/types/request-list-type";
 
 interface PaginationType {
@@ -30,13 +34,20 @@ const paginationDefault: PaginationType = {
   totalPages: 0,
 };
 
-function ToastCustomComponent({ type }: { type: { text: string; value?: string }; driverName?: string }) {
+function ToastCustomComponent({
+  type,
+}: {
+  type: { text: string; value?: string };
+  driverName?: string;
+}) {
   return (
     <>
       {type.text === "import" && (
         <ToastCustom
           title="สร้างข้อมูลพนักงานขับรถสำเร็จ"
-          desc={<span>นำเข้าข้อมูลพนักงานขับรถ {type.value} คน เรียบร้อยแล้ว</span>}
+          desc={
+            <span>นำเข้าข้อมูลพนักงานขับรถ {type.value} คน เรียบร้อยแล้ว</span>
+          }
           status="success"
         />
       )}
@@ -59,12 +70,15 @@ const DriversListTab = () => {
     limit: 10,
   });
   const [data, setData] = useState<RequestListType[]>([]);
-  const [pagination, setPagination] = useState<PaginationType>(paginationDefault);
+  const [pagination, setPagination] =
+    useState<PaginationType>(paginationDefault);
   const [driverUid, setDriverUid] = useState<string>("");
   const [driverUpdated, setDriverUpdated] = useState<boolean>(false); // [updated]
   // const [pagination, setPagination] = useState<PaginationType>(pagenation);
   const [selectedRow, setSelectedRow] = useState({});
-  const [updateType, setUpdateType] = useState<{ text: string; value: string }>({ text: "", value: "" });
+  const [updateType, setUpdateType] = useState<{ text: string; value: string }>(
+    { text: "", value: "" }
+  );
   // const [resultNonFound, setResultNonFound] = useState(false);
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -99,6 +113,7 @@ const DriversListTab = () => {
         const { total, totalPages } = result.pagination;
         // console.log(params.limit);
         setData(result.drivers ?? []);
+        console.log("driver",result.drivers);
         setPagination({
           limit: params.limit,
           page: params.page,
@@ -180,7 +195,8 @@ const DriversListTab = () => {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -193,23 +209,28 @@ const DriversListTab = () => {
   };
 
   const handleUpdateStatusDriver = (driverUid: string, isActive: string) => {
-    // console.log(driverUid);
     try {
       if (driverUid) {
         updateDriverStatus(driverUid, isActive)
           .then((response) => {
-            console.log("Driver status updated successfully:", response.data);
-            setDriverUpdated(true);
+            // Optimistically update the UI
+            setData(prevData => 
+              prevData.map(driver => 
+                driver?.mas_driver_uid === driverUid 
+                  ? { ...driver, is_active: parseInt(isActive) } 
+                  : driver
+              )
+            );
           })
           .catch((error) => {
             console.error("Error updating driver status:", error);
+            // Optionally revert the UI change here
           });
       }
     } catch (error) {
       console.error("Error updating driver status:", error);
     }
   };
-
   const handleDeleteDriver = async (driverName: string, driverUid: string) => {
     const params = {
       driver_name: driverName,
@@ -238,6 +259,9 @@ const DriversListTab = () => {
         <div className="page-header-left">
           <div className="page-title">
             <span className="page-title-label">พนักงานขับรถ</span>
+            <span className="badge badge-outline badge-gray !rounded">
+              {pagination.total} คน
+            </span>
           </div>
         </div>
       </div>
@@ -277,7 +301,9 @@ const DriversListTab = () => {
             <i className="material-symbols-outlined">download</i>
             รายงาน
             {Object.keys(selectedRow).length > 0 && (
-              <span className="badge badge-brand badge-outline rounded-[50%]">{Object.keys(selectedRow).length}</span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {Object.keys(selectedRow).length}
+              </span>
             )}
           </button>
           <button
@@ -299,7 +325,10 @@ const DriversListTab = () => {
               defaultData={data}
               pagination={pagination}
               driverActiveModalRef={
-                driverActiveModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>
+                driverActiveModalRef as React.RefObject<{
+                  openModal: () => void;
+                  closeModal: () => void;
+                }>
               }
               handleToggleChange={handleToggleChange}
               onUpdateStatusDriver={handleUpdateStatusDriver}
@@ -337,13 +366,23 @@ const DriversListTab = () => {
       />
       <UploadCSVModal
         ref={uploadCSVModalRef}
-        onUpdateType={(text: string, value?: string) => setUpdateType({ text, value: value ?? "" })}
+        onUpdateType={(text: string, value?: string) =>
+          setUpdateType({ text, value: value ?? "" })
+        }
       />
       <CreateDriverManagementModal
         ref={createDriverManagementModalRef}
-        csvModalRef={uploadCSVModalRef as React.RefObject<{ openModal: () => void; closeModal: () => void }>}
+        csvModalRef={
+          uploadCSVModalRef as React.RefObject<{
+            openModal: () => void;
+            closeModal: () => void;
+          }>
+        }
       />
-      <DriverExportReportModal ref={driverExportReportModalRef} selectedRow={selectedRow} />
+      <DriverExportReportModal
+        ref={driverExportReportModalRef}
+        selectedRow={selectedRow}
+      />
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilter} />
       <Suspense fallback={<div></div>}>
         <ToastCustomComponent type={updateType} />
