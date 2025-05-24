@@ -5,7 +5,10 @@ import PaginationControls from "@/components/table/pagination-control";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useEffect, useRef, useState } from "react";
 import { Carpool, CarpoolParams } from "../types/carpool-management-type";
-import { carpoolManagementSearch } from "@/services/carpoolManagement";
+import {
+  carpoolManagementSearch,
+  getCarpoolExport,
+} from "@/services/carpoolManagement";
 import { PaginationType } from "../types/request-action-type";
 import CarpoolManagementTable from "@/components/table/carpool-management-table";
 import ZeroRecord from "@/components/zeroRecord";
@@ -70,7 +73,43 @@ export default function CarpoolManagement() {
     }));
   };
 
-  const handleClearAllFilters = () => {};
+  const handleExport = () => {
+    const fetchCarpoolManagementSearchFunc = async () => {
+      try {
+        const response = await getCarpoolExport({
+          search: params.search,
+          is_active: params.is_active,
+          dept_sap: params.dept_sap,
+        });
+        const result = response.data;
+
+        const blob = new Blob([result], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "carpool-management.xlsx"; // Set the desired file name
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      } catch (error: Error | any) {
+        console.error("Error fetching status data:", error);
+        if (error.status === 404) {
+          setData([]);
+          setPagination(defaultPagination);
+        }
+      }
+    };
+
+    fetchCarpoolManagementSearchFunc();
+  };
+
+  const handleClearAllFilters = () => {
+    setParams({});
+    setPagination(defaultPagination);
+  };
 
   const isSearch = !!params.search || !!params.dept_sap || !!params.is_active;
 
@@ -151,7 +190,7 @@ export default function CarpoolManagement() {
                       </button>
                       <button
                         className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] block"
-                        // onClick={() => filterModalRef.current?.openModal()}
+                        onClick={handleExport}
                       >
                         <div className="flex items-center gap-1">
                           <i className="material-symbols-outlined">download</i>
