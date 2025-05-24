@@ -65,8 +65,17 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const response = error.response;
 
-    if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url === "login/authen-thaiid") {
+    console.log("Error Response:", error.response);
+    const InvalidOTP = response?.data?.error === "Invalid OTP" && originalRequest.url === "login/verify-otp";
+    const InvalidThaiID = originalRequest.url === "login/authen-thaiid";
+
+    if (error.response?.status === 401 && !originalRequest._retry && InvalidOTP) {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry && InvalidThaiID) {
       return Promise.reject(error);
     }
 
