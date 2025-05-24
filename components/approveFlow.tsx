@@ -22,7 +22,7 @@ export default function ArpproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
-    ref_request_status_code: "",
+    ref_request_status_code: "20,21,30,31,40,41,50,51,60,70,71",
     order_by: "request_no",
     order_dir: "desc",
     startdate: "",
@@ -69,7 +69,6 @@ export default function ArpproveFlow() {
       "70": { iconName: "key", status: "info" },
       "71": { iconName: "key", status: "info" },
       "80": { iconName: "check", status: "success" },
-      "90": { iconName: "delete", status: "default" },
     };
 
   const handlePageChange = (newPage: number) => {

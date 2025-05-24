@@ -169,10 +169,9 @@ export default function ProcessThree() {
               (user: {
                 emp_id: string;
                 full_name: string;
-                dept_sap: string;
               }) => ({
                 value: user.emp_id,
-                label: `${user.full_name} (${user.dept_sap})`,
+                label: `${user.full_name} (${user.emp_id})`,
               })
             ),
           ];

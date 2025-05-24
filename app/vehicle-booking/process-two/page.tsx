@@ -81,8 +81,10 @@ export default function ProcessTwo() {
     limit: 10, // Set initial limit to 8
   });
 
-  const [vehicleCatOptions, setVehicleCatOptions] = useState<{ value: string; label: string }[]>([]);
-  
+  const [vehicleCatOptions, setVehicleCatOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
   const orgOptions = [
     { label: "ทุกสังกัด", value: "" },
     { label: "หน่วยงานต้นสังกัด", value: "หน่วยงานต้นสังกัด" },
@@ -107,7 +109,7 @@ export default function ProcessTwo() {
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
-    
+
     if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
       updatedData.isAdminChooseVehicle = "1";
       updatedData.isSystemChooseVehicle = "0";
@@ -118,11 +120,12 @@ export default function ProcessTwo() {
       updatedData.vehicleSelect = value;
       // Find the selected vehicle (if it's a vehicle, not a carpool)
       const selectedVehicleObj = vehicleCards.find(
-        (card) => 'mas_vehicle_uid' in card && card.mas_vehicle_uid === value
+        (card) => "mas_vehicle_uid" in card && card.mas_vehicle_uid === value
       ) as Vehicle | undefined;
 
       if (selectedVehicleObj?.is_admin_choose_driver !== undefined) {
-        updatedData.isAdminChooseDriver = selectedVehicleObj.is_admin_choose_driver;
+        updatedData.isAdminChooseDriver =
+          selectedVehicleObj.is_admin_choose_driver;
       }
     }
 
@@ -146,8 +149,12 @@ export default function ProcessTwo() {
     }));
   };
 
-  const handleVehicleTypeChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedVehicleOption(selectedOption as { value: string; label: string });
+  const handleVehicleTypeChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
+    setSelectedVehicleOption(
+      selectedOption as { value: string; label: string }
+    );
     setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
   };
 
@@ -160,13 +167,16 @@ export default function ProcessTwo() {
       try {
         // Set limit to 8 for first page, 10 for others
         const currentLimit = params.page === 1 ? 10 : 10;
-        const response = await fetchVehicles({ ...params, limit: currentLimit });
-        
+        const response = await fetchVehicles({
+          ...params,
+          limit: currentLimit,
+        });
+
         if (response.status === 200) {
           // Combine carpools and vehicles for display
           const allCards = [
             ...(response.data.carpools || []),
-            ...(response.data.vehicles || [])
+            ...(response.data.vehicles || []),
           ];
           setVehicleCards(allCards);
           setPaginationData(response.data.pagination);
@@ -184,14 +194,21 @@ export default function ProcessTwo() {
           const vehicleCatData = response.data;
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
-            ...vehicleCatData.map((cat: { ref_vehicle_type_code: string; ref_vehicle_type_name: string }) => ({
-              value: cat.ref_vehicle_type_code,
-              label: cat.ref_vehicle_type_name,
-            })),
+            ...vehicleCatData.map(
+              (cat: {
+                ref_vehicle_type_code: string;
+                ref_vehicle_type_name: string;
+              }) => ({
+                value: cat.ref_vehicle_type_code,
+                label: cat.ref_vehicle_type_name,
+              })
+            ),
           ];
 
           setVehicleCatOptions(vehicleCatArr);
-          setSelectedVehicleOption((prev) => (prev.value ? prev : vehicleCatArr[0]));
+          setSelectedVehicleOption((prev) =>
+            prev.value ? prev : vehicleCatArr[0]
+          );
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -208,7 +225,11 @@ export default function ProcessTwo() {
     <div className="main-container">
       <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-      <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+      <div
+        className={`main-content ${
+          isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+        }`}
+      >
         <Header />
         <div className="main-content-body">
           <div className="page-header">
@@ -243,9 +264,12 @@ export default function ProcessTwo() {
                 <div className="page-section-header border-0">
                   <div className="page-header-left">
                     <div className="page-title">
-                      <span className="page-title-label">ข้อมูลผู้ใช้ยานพาหนะ</span>
+                      <span className="page-title-label">
+                        ข้อมูลผู้ใช้ยานพาหนะ
+                      </span>
                       <span className="badge badge-outline badge-gray page-title-status">
-                        ว่าง {paginationData.total} คัน และ {paginationData.totalGroups} กลุ่ม
+                        ว่าง {paginationData.total} คัน และ{" "}
+                        {paginationData.totalGroups} กลุ่ม
                       </span>
                     </div>
                     <div className="page-desc">
@@ -290,70 +314,158 @@ export default function ProcessTwo() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
-                  {vehicleCards.length > 0 ? (
-                    vehicleCards.map((card) => {
-                      // Type guard for Carpool
-                      if ('ref_carpool_choose_car' in card) {
-                        const carpool = card;
-                        return (
-                          <AutoCarCard
-                            key={carpool.mas_carpool_uid}
-                            imgSrc={
-                              carpool.ref_carpool_choose_car_id === 3 
-                                ? "/assets/img/system-selected.png" 
-                                : "/assets/img/admin-selected.png"
-                            }
-                            title={carpool.ref_carpool_choose_car.type_of_choose_car}
-                            desc={carpool.carpool_name}
-                            onSelect={() => handleVehicleSelect(
-                              carpool.ref_carpool_choose_car_id === 3 
-                                ? "ระบบเลือกยานพาหนะให้อัตโนมัติ" 
-                                : "ผู้ดูแลยานพาหนะเลือกให้"
-                            )}
-                          />
-                        );
-                      } else {
-                        // It's a Vehicle
-                        const vehicle = card;
-                        return (
-                          <SelectCarCard
-                            key={vehicle.mas_vehicle_uid}
-                            vehicleId={vehicle.mas_vehicle_uid}
-                            imgSrc={vehicle.vehicle_img || "/assets/img/sample-car.jpeg"}
-                            title={`${vehicle.vehicle_brand_name} ${vehicle.vehicle_model_name}`}
-                            subTitle={vehicle.vehicle_license_plate}
-                            carType={vehicle.car_type}
-                            deptSap={vehicle.vehicle_owner_dept_sap}
-                            seat={vehicle.seat}
-                            onSelect={() => handleVehicleSelect(vehicle.mas_vehicle_uid)}
-                          />
-                        );
-                      }
-                    })
-                  ) : (
-                    <ZeroRecord
-                      imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
-                      title="ไม่พบยานพาหนะ"
-                      desc={
-                        <>
-                          ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
-                          <br />
-                          ลองค้นหาใหม่อีกครั้ง
-                        </>
-                      }
-                      button="ล้างคำค้นหา"
-                    />
-                  )}
-                </div>
+                {vehicleCards.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
+                      {vehicleCards.map((card) => {
+                        if ("ref_carpool_choose_car" in card) {
+                          const carpool = card;
+                          return (
+                            <AutoCarCard
+                              key={carpool.mas_carpool_uid}
+                              imgSrc={
+                                carpool.ref_carpool_choose_car_id === 3
+                                  ? "/assets/img/system-selected.png"
+                                  : "/assets/img/admin-selected.png"
+                              }
+                              title={
+                                carpool.ref_carpool_choose_car
+                                  .type_of_choose_car
+                              }
+                              desc={carpool.carpool_name}
+                              onSelect={() =>
+                                handleVehicleSelect(
+                                  carpool.ref_carpool_choose_car_id === 3
+                                    ? "ระบบเลือกยานพาหนะให้อัตโนมัติ"
+                                    : "ผู้ดูแลยานพาหนะเลือกให้"
+                                )
+                              }
+                            />
+                          );
+                        } else {
+                          // It's a Vehicle
+                          const vehicle = card;
+                          return (
+                            <SelectCarCard
+                              key={vehicle.mas_vehicle_uid}
+                              vehicleId={vehicle.mas_vehicle_uid}
+                              imgSrc={
+                                vehicle.vehicle_img ||
+                                "/assets/img/sample-car.jpeg"
+                              }
+                              title={`${vehicle.vehicle_brand_name} ${vehicle.vehicle_model_name}`}
+                              subTitle={vehicle.vehicle_license_plate}
+                              carType={vehicle.car_type}
+                              deptSap={vehicle.vehicle_owner_dept_sap}
+                              seat={vehicle.seat}
+                              onSelect={() =>
+                                handleVehicleSelect(vehicle.mas_vehicle_uid)
+                              }
+                              isSelected={
+                                selectedVehicle === vehicle.mas_vehicle_uid ||
+                                formData.vehicleSelect ===
+                                  vehicle.mas_vehicle_uid
+                              }
+                            />
+                          );
+                        }
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <ZeroRecord
+                    imgSrc="/assets/img/empty/create_request_empty state_vehicle.svg"
+                    title="ไม่พบยานพาหนะ"
+                    desc={
+                      <>
+                        ระบบไม่พบยานพาหนะที่คุณสามารถเลือกได้
+                        <br />
+                        ลองค้นหาใหม่อีกครั้ง
+                      </>
+                    }
+                    button="ล้างคำค้นหา"
+                  />
+                )}
 
                 {vehicleCards.length > 0 && (
-                  <div className="pagination mt-[1.5rem] flex justify-end">
-                    <Pagination
-                      currentPage={paginationData.page}
-                      totalPages={paginationData.totalPages}
-                      onPageChange={handlePageChange}
-                    />
+                  <div className="flex justify-between items-center mt-5 dt-bottom">
+                    <div className="flex items-center gap-2">
+                      <div className="dt-info" aria-live="polite" role="status">
+                        แสดง{" "}
+                        {(paginationData.page - 1) * paginationData.limit + 1}{" "}
+                        ถึง{" "}
+                        {Math.min(
+                          paginationData.page * paginationData.limit,
+                          paginationData.total
+                        )}{" "}
+                        จาก {paginationData.total} รายการ
+                      </div>
+                      <CustomSelect
+                        w="w-[5em]"
+                        options={[
+                          { value: "10", label: "10" },
+                          { value: "30", label: "30" },
+                          { value: "50", label: "50" },
+                          { value: "100", label: "100" },
+                        ]}
+                        value={{
+                          value: paginationData.limit.toString(),
+                          label: paginationData.limit.toString(),
+                        }}
+                        onChange={(selectedOption) =>
+                          setParams((prev) => ({
+                            ...prev,
+                            limit: Number(selectedOption.value),
+                            page: 1,
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="pagination flex justify-end">
+                      <div className="join">
+                        <button
+                          className="join-item btn btn-sm btn-outline"
+                          onClick={() =>
+                            handlePageChange(paginationData.page - 1)
+                          }
+                          disabled={paginationData.page === 1}
+                        >
+                          <i className="material-symbols-outlined">
+                            chevron_left
+                          </i>
+                        </button>
+
+                        {Array.from(
+                          { length: paginationData.totalPages },
+                          (_, index) => index + 1
+                        ).map((page) => (
+                          <button
+                            key={page}
+                            className={`join-item btn btn-sm btn-outline ${
+                              paginationData.page === page ? "btn-active" : ""
+                            }`}
+                            onClick={() => handlePageChange(page)}
+                          >
+                            {page}
+                          </button>
+                        ))}
+
+                        <button
+                          className="join-item btn btn-sm btn-outline"
+                          onClick={() =>
+                            handlePageChange(paginationData.page + 1)
+                          }
+                          disabled={
+                            paginationData.page === paginationData.totalPages
+                          }
+                        >
+                          <i className="material-symbols-outlined">
+                            chevron_right
+                          </i>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -367,7 +479,9 @@ export default function ProcessTwo() {
               disabled={selectedVehicle === "" && formData.vehicleSelect === ""}
             >
               ต่อไป
-              <i className="material-symbols-outlined icon-settings-300-24">arrow_right_alt</i>
+              <i className="material-symbols-outlined icon-settings-300-24">
+                arrow_right_alt
+              </i>
             </button>
           </div>
         </div>
