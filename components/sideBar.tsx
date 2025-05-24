@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useProfile } from "@/contexts/profileContext";
+import { useSidebar } from "@/contexts/sidebarContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useSidebar } from "@/contexts/sidebarContext";
-import { useProfile } from "@/contexts/profileContext";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   menuName?: string;
@@ -108,11 +108,11 @@ export default function SideBar({ menuName }: SidebarProps) {
       icon: "database",
       label: "ข้อมูลพนักงานและยานพาหนะ",
       items: [
-        {
-          title: "ผู้ดูแลยานพาหนะ",
-          link: "/carpool-management",
-          roles: ["admin-super"],
-        },
+        // {
+        //   title: "ผู้ดูแลยานพาหนะ",
+        //   link: "/carpool-management",
+        //   roles: ["admin-super"],
+        // },
         {
           title: "ข้อมูลพนักงานขับรถ",
           link: "/drivers-management",
@@ -128,11 +128,11 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/carpool-management",
           roles: ["admin-super"],
         },
-        {
-          title: "ข้อมูล Fleet card",
-          link: "request-list",
-          roles: ["admin-super"],
-        },
+        // {
+        //   title: "ข้อมูล Fleet card",
+        //   link: "request-list",
+        //   roles: ["admin-super"],
+        // },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
   ].filter((menu) => menu.items.length > 0); // Only show menus that have items
