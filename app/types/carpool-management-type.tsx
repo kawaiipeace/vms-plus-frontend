@@ -16,6 +16,7 @@ export interface CarpoolForm {
 
 export type CarpoolParams = Partial<{
   search: string;
+  dept_sap: string;
   is_active: string;
   order_by: string;
   order_dir: string;

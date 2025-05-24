@@ -13,15 +13,18 @@ import FilterCarpoolModal from "@/components/modal/filterCarpool";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
 
+const defaultPagination = {
+  limit: 10,
+  page: 1,
+  total: 0,
+  totalPages: 0,
+};
+
 export default function CarpoolManagement() {
   const [params, setParams] = useState<CarpoolParams>({});
   const [data, setData] = useState<Carpool[]>([]);
-  const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
-    page: 1,
-    total: 0,
-    totalPages: 0,
-  });
+  const [pagination, setPagination] =
+    useState<PaginationType>(defaultPagination);
 
   const router = useRouter();
   const { isPinned } = useSidebar();
@@ -38,8 +41,12 @@ export default function CarpoolManagement() {
         const result = response.data;
         setData(result.carpools ?? []);
         setPagination({ ...result?.pagination });
-      } catch (error) {
+      } catch (error: Error | any) {
         console.error("Error fetching status data:", error);
+        if (error.status === 404) {
+          setData([]);
+          setPagination(defaultPagination);
+        }
       }
     };
 
@@ -65,7 +72,7 @@ export default function CarpoolManagement() {
 
   const handleClearAllFilters = () => {};
 
-  const isSearch = !!params.search;
+  const isSearch = !!params.search || !!params.dept_sap || !!params.is_active;
 
   return (
     <>
@@ -171,7 +178,7 @@ export default function CarpoolManagement() {
                       button="ล้างตัวกรอง"
                       displayBtn={true}
                       btnType="secondary"
-                      classNameImg="w-[200px] h-[200px]"
+                      classNameImg="w-[200px] h-auto"
                       useModal={handleClearAllFilters}
                     />
                   ) : (
@@ -210,7 +217,11 @@ export default function CarpoolManagement() {
                     router.push("/carpool-management/form/process-one")}
                 />
               )}
-              <FilterCarpoolModal ref={filterModalRef} />
+              <FilterCarpoolModal
+                ref={filterModalRef}
+                params={params}
+                setParams={setParams}
+              />
             </div>
           </div>
         </div>
