@@ -59,8 +59,11 @@ export default function ProcessThree() {
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
   const { formData, updateFormData } = useFormContext();
-  const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
-  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string>("");
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedVehiclePoolId, setSelectedVehiclePoolId] =
+    useState<string>("");
 
   const driverAppointmentRef = useRef<{
     openModal: () => void;
@@ -79,7 +82,9 @@ export default function ProcessThree() {
     page: 1,
     limit: 10,
   });
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
 
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
@@ -89,7 +94,9 @@ export default function ProcessThree() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    const filtered = drivers.filter((driver: any) => driver.driver_name.includes(value));
+    const filtered = drivers.filter((driver: any) =>
+      driver.driver_name.includes(value)
+    );
     setFilteredDrivers(filtered);
   };
 
@@ -154,13 +161,20 @@ export default function ProcessThree() {
       try {
         const response = await fetchUserDrivers("");
         if (response.status === 200) {
-          const vehicleUserData: VehicleUser[] = response.data;
+          const vehicleUserData = response.data;
+          console.log("vehicleuser======>", vehicleUserData);
           setVehicleUserDatas(vehicleUserData);
           const driverOptionsArray = [
-            ...vehicleUserData.map((user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.dept_sap})`,
-            })),
+            ...vehicleUserData.map(
+              (user: {
+                emp_id: string;
+                full_name: string;
+                dept_sap: string;
+              }) => ({
+                value: user.emp_id,
+                label: `${user.full_name} (${user.dept_sap})`,
+              })
+            ),
           ];
 
           setDriverOptions(driverOptionsArray);
@@ -185,10 +199,16 @@ export default function ProcessThree() {
     fetchVehicleUserData();
   }, []);
 
-  const handleVehicleUserChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedVehicleUserOption(selectedOption as { value: string; label: string });
+  const handleVehicleUserChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
+    setSelectedVehicleUserOption(
+      selectedOption as { value: string; label: string }
+    );
 
-    const empData = vehicleUserDatas.find((user: { emp_id: string }) => user.emp_id === selectedOption.value);
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+    );
 
     if (empData) {
       setValue("driverInternalContact", empData.tel_internal);
@@ -220,7 +240,9 @@ export default function ProcessThree() {
     };
     // setSelectedVehicleUserOption(selectedDriverOption);
 
-    const empData = vehicleUserDatas.find((user: { emp_id: string }) => user.emp_id === selectedDriverOption.value);
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedDriverOption.value
+    );
 
     if (empData) {
       setValue("isPeaEmployeeDriver", "1");
@@ -258,7 +280,11 @@ export default function ProcessThree() {
       <div className={`main-container`}>
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -294,10 +320,13 @@ export default function ProcessThree() {
                   <div className="page-section-header border-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">เลือกประเภทผู้ขับขี่</span>
+                        <span className="page-title-label">
+                          เลือกประเภทผู้ขับขี่
+                        </span>
                       </div>
                       <div className="page-desc">
-                        โปรดเลือกพนักงานขับรถที่ท่านต้องการ โดยยานพาหนะบางคันอนุญาตให้พนักงาน กฟภ. สามารถขับเองได้
+                        โปรดเลือกพนักงานขับรถที่ท่านต้องการ
+                        โดยยานพาหนะบางคันอนุญาตให้พนักงาน กฟภ. สามารถขับเองได้
                       </div>
                     </div>
                   </div>
@@ -316,18 +345,26 @@ export default function ProcessThree() {
                         label="พนักงานขับรถ"
                         value="พนักงานขับรถ"
                         selectedValue={selectedDriverType}
-                        setSelectedValue={() => handleSelectTypes("พนักงานขับรถ")}
+                        setSelectedValue={() =>
+                          handleSelectTypes("พนักงานขับรถ")
+                        }
                       />
                     </div>
                     {/* <!-- <span className="form-helper">Helper</span> --> */}
                   </div>
                 </div>
 
-                <div className={`form-section ${selectedDriverType == "พนักงาน กฟภ." ? "block" : "hidden"} `}>
+                <div
+                  className={`form-section ${
+                    selectedDriverType == "พนักงาน กฟภ." ? "block" : "hidden"
+                  } `}
+                >
                   <div className="page-section-header border-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">ข้อมูลผู้ใช้ยานพาหนะ</span>
+                        <span className="page-title-label">
+                          รายละเอียดผู้ขับขี่
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -336,10 +373,10 @@ export default function ProcessThree() {
                     <div className="flex-1">
                       <div className="form-group">
                         <label className="form-label">
-                          ผู้ใช้ยานพาหนะ
+                          ผู้ขับขี่ยานพาหนะ
                           <Tooltip
-                            title="ผู้ใช้ยานพาหนะคือ?"
-                            content="คือคนที่รับผิดชอบยานพาหนะในการเดินทางครั้งนี้ มีหน้าที่ในการกรอกเลขไมล์และ เบิกค่าน้ำมัน"
+                            title="ผู้ขับขี่ยานพาหนะคือ?"
+                            content="คือคนที่รับผิดชอบขับยานพาหนะในการเดินทางครั้งนี้"
                             position="right"
                           >
                             <i className="material-symbols-outlined">info</i>
@@ -353,7 +390,6 @@ export default function ProcessThree() {
                           value={selectedVehicleUserOption}
                           onChange={handleVehicleUserChange}
                         />
-
                       </div>
                     </div>
 
@@ -363,13 +399,18 @@ export default function ProcessThree() {
                         <div className="input-group is-readonly">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">business_center</i>
+                              <i className="material-symbols-outlined">
+                                business_center
+                              </i>
                             </span>
                           </div>
-                          <input type="text" className="form-control" {...register("driverDeptSap")} placeholder="" />
-
+                          <input
+                            type="text"
+                            className="form-control"
+                            {...register("driverDeptSap")}
+                            placeholder=""
+                          />
                         </div>
-
                       </div>
                     </div>
 
@@ -409,10 +450,23 @@ export default function ProcessThree() {
                       <div className="form-card-body space-y-2">
                         {driverLicenseNo &&
                           (new Date(licenseExpDate) > today ? (
-                            <LicensePlateStat status={true} title="มีใบขับขี่" />
+                            <LicensePlateStat
+                              status={true}
+                              title="มีใบขับขี่"
+                            />
                           ) : (
-                            <LicensePlateStat status={false} title="ใบขับขี่หมดอายุ" />
+                            <LicensePlateStat
+                              status={false}
+                              title="ใบขับขี่หมดอายุ"
+                            />
                           ))}
+
+                        {driverLicenseNo === "" &&
+                           <LicensePlateStat
+                           status={false}
+                           title="ไม่มีใบขับขี่"
+                         />
+                          }
 
                         {driverLicenseNo &&
                           requestAnnual &&
@@ -433,14 +487,20 @@ export default function ProcessThree() {
                   )}
                 </div>
 
-                <div className={`form-section ${selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"} `}>
+                <div
+                  className={`form-section ${
+                    selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
+                  } `}
+                >
                   {!formData.isAdminChooseDriver && (
                     <>
                       <>
                         <div className="page-section-header border-0">
                           <div className="page-header-left">
                             <div className="page-title">
-                              <span className="page-title-label">เลือกพนักงานขับรถ</span>
+                              <span className="page-title-label">
+                                เลือกพนักงานขับรถ
+                              </span>
                               <span className="badge badge-outline badge-gray page-title-status">
                                 ว่าง {filteredDrivers.length} คน
                               </span>
@@ -451,7 +511,9 @@ export default function ProcessThree() {
                         <div className="input-group input-group-search hidden mb-5 w-[20em]">
                           <div className="input-group-prepend">
                             <span className="input-group-text search-ico-info">
-                              <i className="material-symbols-outlined">search</i>
+                              <i className="material-symbols-outlined">
+                                search
+                              </i>
                             </span>
                           </div>
                           <input
@@ -466,24 +528,34 @@ export default function ProcessThree() {
 
                         {filteredDrivers.length > 0 ? (
                           <div className="grid grid-cols-4 gap-5 w-full">
-                            {filteredDrivers.map((driver: any, index: number) => (
-                              <DriverCard
-                                key={index}
-                                id={driver.mas_driver_uid}
-                                imgSrc={driver.driver_image || "/assets/img/sample-driver.png"}
-                                name={driver.driver_name || ""}
-                                company={driver.driver_dept_sap || ""}
-                                rating={driver.driver_average_satisfaction_score || 0}
-                                age={driver.age || "-"}
-                                onVehicleSelect={handleVehicleSelection}
-                              />
-                            ))}
+                            {filteredDrivers.map(
+                              (driver: any, index: number) => (
+                                <DriverCard
+                                  key={index}
+                                  id={driver.mas_driver_uid}
+                                  imgSrc={
+                                    driver.driver_image ||
+                                    "/assets/img/sample-driver.png"
+                                  }
+                                  name={driver.driver_name || ""}
+                                  company={driver.driver_dept_sap || ""}
+                                  rating={
+                                    driver.driver_average_satisfaction_score ||
+                                    0
+                                  }
+                                  age={driver.age || "-"}
+                                  onVehicleSelect={handleVehicleSelection}
+                                />
+                              )
+                            )}
                           </div>
                         ) : (
                           <EmptyDriver
                             imgSrc="/assets/img/empty/empty_driver.svg"
                             title="ไม่พบพนักงานขับรถ"
-                            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                            desc={
+                              <>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>
+                            }
                           />
                         )}
                       </>
@@ -493,7 +565,8 @@ export default function ProcessThree() {
                           title="ไม่พบพนักงานขับรถ"
                           desc={
                             <>
-                              ระบบไม่พบพนักงานขับรถในสังกัด <br /> กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
+                              ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
+                              กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
                               ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
                             </>
                           }
@@ -521,13 +594,18 @@ export default function ProcessThree() {
                 }
               >
                 ต่อไป
-                <i className="material-symbols-outlined icon-settings-300-24">arrow_right_alt</i>
+                <i className="material-symbols-outlined icon-settings-300-24">
+                  arrow_right_alt
+                </i>
               </button>
             </div>
           </div>
         </div>
       </div>
-      <DriverAppointmentModal ref={driverAppointmentRef} onSubmit={handleAppointmentSubmit} />
+      <DriverAppointmentModal
+        ref={driverAppointmentRef}
+        onSubmit={handleAppointmentSubmit}
+      />
     </div>
   );
 }
