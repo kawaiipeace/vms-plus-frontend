@@ -71,9 +71,9 @@ const DateRangePicker = ({ date, onChange }: Props) => {
                         classNames={{
                             today: 'text-brand-900 font-bold',
                             outside: 'text-gray-400',
-                            day: 'text-black hover:bg-gray-100 focus:bg-gray-200',
+                            day: 'text-black hover:bg-brand-900 hover:text-white',
                             selected: 'bg-brand-900 text-white',
-                            range_middle: 'bg-brand-200 text-gray-900',
+                            range_middle: 'bg-brand-300 text-gray-900',
                             range_end: 'bg-brand-900 rounded-r-lg',
                             range_start: 'bg-brand-900 rounded-l-lg',
                             chevron: 'bg-white text-gray-300',
