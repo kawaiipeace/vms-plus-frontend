@@ -16,6 +16,7 @@ import {
 import AddCarpoolApproverModal from "../modal/addCarpoolApproverModal";
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
 import ToastCustom from "../toastCustom";
+import Image from "next/image";
 
 interface PaginationType {
   limit: number;
@@ -126,6 +127,21 @@ export default function CarpoolApproverTable({
       accessorKey: "approver_emp_name",
       header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <div className="avatar avatar-sm">
+              <Image
+                src={row.original.image_url || "/assets/img/avatar.svg"}
+                width={36}
+                height={36}
+                alt="Profile Avatar"
+              ></Image>
+            </div>
+            {row.original.admin_emp_name}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "approver_dept_sap_short",

@@ -5,7 +5,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { DataTable } from "../time-table";
-import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import VehicleTimeLineDetailModal, {
   VehicleTimelineRef,
 } from "../../vehicle/vehicle-timeline-detail-modal";
@@ -14,6 +13,7 @@ import {
   generateDateObjects,
   transformDriverApiToTableData,
 } from "./generate-date";
+import { DriverTimelineListTableData } from "@/app/types/carpool-management-type";
 
 const statusColorMap = {
   รออนุมัติ: {
@@ -52,9 +52,42 @@ const useGenerateDates = (params: any) => {
   return dates;
 };
 
+const TripTimelineItem = ({
+  item,
+  statusColors,
+  onClick,
+}: {
+  item: any;
+  statusColors: { bg?: string; text?: string };
+  onClick: () => void;
+}) => (
+  <button
+    key={item.tripDetailId}
+    onClick={onClick}
+    className={`${statusColors.bg} !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${item.schedule_range})+(8px*2)+(1px*2))]`}
+  >
+    <div
+      className={`flex items-center gap-1 text-sm font-semibold ${statusColors.text} py-[2px] px-[4px]`}
+    >
+      <div className={`${statusColors.text} flex flex-col`}>
+        <i className="material-symbols-outlined !text-base !leading-4">
+          directions_car
+        </i>
+        <i className="material-symbols-outlined !text-base !leading-4">
+          person
+        </i>
+      </div>
+      <div className="flex flex-col justify-start items-start">
+        <span className="text-sm font-semibold">{item.destinationPlace}</span>
+        <span className="text-black font-normal text-sm">{item.startTime}</span>
+      </div>
+    </div>
+  </button>
+);
+
 const useColumns = (
   columnHelper: ReturnType<
-    typeof createColumnHelper<VehicleTimelineListTableData>
+    typeof createColumnHelper<DriverTimelineListTableData>
   >,
   dates: any[],
   selectedOption: string,
@@ -67,20 +100,23 @@ const useColumns = (
     const baseColumns = [
       columnHelper.accessor(
         (row) => ({
-          license: row.vehicleLicensePlate,
-          brandModel: row.vehicleBrandModel,
-          brandName: row.vehicleBrandName,
+          name: row.driverName,
+          nickname: row.driverNickname,
+          dept: row.driverDeptSapShortNameWork,
         }),
         {
-          id: "licensePlate",
+          id: "driverName",
           header: "ชื่อ - นามสกุล / สังกัด",
           cell: (info) => (
             <div className="flex flex-col items-start">
               <span className="text-base font-semibold">
-                {info.getValue().license}
+                {info.getValue().name}{" "}
+                {info.getValue().nickname
+                  ? `(${info.getValue().nickname})`
+                  : ""}
               </span>
               <span className="text-base text-gray-600">
-                {info.getValue().brandModel} {info.getValue().brandName}
+                {info.getValue().dept}
               </span>
             </div>
           ),
@@ -95,7 +131,7 @@ const useColumns = (
     const additionalColumns =
       selectedOption === "all"
         ? [
-            columnHelper.accessor("vehicleType", {
+            columnHelper.accessor("workLastMonth", {
               header: `งาน ${lastMonth}`,
               cell: (info) => (
                 <div className="text-base">{info.getValue()}</div>
@@ -106,7 +142,7 @@ const useColumns = (
                   "sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]",
               },
             }),
-            columnHelper.accessor("vehicleDepartment", {
+            columnHelper.accessor("workThisMonth", {
               header: "งานเดือนนี้",
               cell: (info) => (
                 <div className="text-base">{info.getValue()}</div>
@@ -125,7 +161,7 @@ const useColumns = (
         columnHelper.accessor(
           (row) => ({
             timeline: row.timeline,
-            status: row.vehicleStatus,
+            status: row.status,
           }),
           {
             id: key,
@@ -144,49 +180,28 @@ const useColumns = (
             },
             cell: (info) => {
               const { timeline, status } = info.getValue();
-              // console.log("timeline: ", timeline);
-              // console.log(`day_${date}`);
               const dayTimeline = timeline?.[`day_${date}`];
               const holidayClass = holiday ? "text-white bg-gray-100" : "";
-
               const statusColors =
                 statusColorMap[status as keyof typeof statusColorMap] || {};
+
+              const handleClickOpenDetailModal = () => {
+                setDetailRequest(dayTimeline);
+                setDateSelected(`${day} ${fullMonth} ${fullYear}`);
+                handleOpenDetailModal();
+              };
 
               return (
                 <div
                   className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${holidayClass}`}
                 >
-                  {dayTimeline?.map((item: any, index: number) => (
-                    <div
-                      key={index}
-                      className={`${statusColors.bg} !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${item.schedule_range})+(8px*2)+(1px*2))]`}
-                      onClick={() => {
-                        setDetailRequest(item);
-                        setDateSelected(`${day} ${fullMonth} ${fullYear}`);
-                        handleOpenDetailModal();
-                      }}
-                    >
-                      <div
-                        className={`flex items-center gap-1 text-sm font-semibold ${statusColors.text} py-[2px] px-[4px]`}
-                      >
-                        <div className={`${statusColors.text} flex flex-col`}>
-                          <i className="material-symbols-outlined !text-base !leading-4">
-                            directions_car
-                          </i>
-                          <i className="material-symbols-outlined !text-base !leading-4">
-                            person
-                          </i>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-semibold">
-                            {item.schedule_title}
-                          </span>
-                          <span className="text-black font-normal text-sm">
-                            {item.schedule_time}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                  {dayTimeline?.map((item: any) => (
+                    <TripTimelineItem
+                      key={item.tripDetailId}
+                      item={item}
+                      statusColors={statusColors}
+                      onClick={handleClickOpenDetailModal}
+                    />
                   ))}
                 </div>
               );
@@ -229,7 +244,7 @@ export default function CarpoolDriverListTable({
     () => transformDriverApiToTableData(dataRequest, dates),
     [dataRequest, dates]
   );
-  const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
+  const columnHelper = createColumnHelper<DriverTimelineListTableData>();
 
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
 

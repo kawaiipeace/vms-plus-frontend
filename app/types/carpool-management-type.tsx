@@ -85,8 +85,6 @@ export interface CarpoolApprover {
 
 export interface CarpoolVehicleParams {
   search: string;
-  page: number;
-  limit: number;
 }
 
 export interface CarpoolVehicle {
@@ -103,8 +101,6 @@ export interface CarpoolVehicle {
 
 export interface CarpoolDriverParams {
   name: string;
-  page: number;
-  limit: number;
 }
 
 export interface CarpoolDriver {
@@ -155,4 +151,49 @@ export interface CarpoolVehicleCreate {
 export interface CarpoolDriverCreate {
   mas_carpool_uid: string;
   mas_driver_uid: string;
+}
+
+export interface DriverTimelineListTableData {
+  driverContactNumber: string;
+  driverDeptSapShortNameWork: string;
+  driverName: string;
+  driverNickname: string;
+  masDriverUid: string;
+  workLastMonth: string;
+  workThisMonth: string;
+  timeline: DriverTimelineDetails;
+  status: string;
+}
+
+export interface DriverTimelineDetails {
+  [key: string]: {
+    destinationPlace: string;
+    startTime: string;
+    duration: string;
+    status: string;
+    carUserDetail: CarUserDetail;
+    driverDetail: DriverDetail;
+  }[];
+}
+
+export interface CarUserDetail {
+  userName: string;
+  userContactNumber: string;
+  userContactInternalNumber: string;
+}
+
+export interface DriverDetail {
+  driverName: string;
+}
+
+export interface DriverTimelineTransformData {
+  driverContactNumber: string;
+  driverDeptSapShortNameWork: string;
+  driverName: string;
+  driverNickname: string;
+  masDriverUid: string;
+  workLastMonth: string;
+  workThisMonth: string;
+  timeline: DriverTimelineDetails;
+  status: string;
 }

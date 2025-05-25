@@ -78,8 +78,8 @@ export default function CarpoolProcessFour() {
       const response = await getCarpoolVehicleSearch(
         id || formData.mas_carpool_uid,
         {
-          ...newPagination,
           ...pagination,
+          ...newPagination,
         }
       );
       const result = response.data;
@@ -96,10 +96,6 @@ export default function CarpoolProcessFour() {
       ...pagination,
       page: newPage,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
@@ -110,11 +106,6 @@ export default function CarpoolProcessFour() {
       limit,
       page: 1,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
   };
 
   const handleActive = async () => {

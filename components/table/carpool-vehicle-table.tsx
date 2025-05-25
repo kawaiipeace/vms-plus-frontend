@@ -137,7 +137,7 @@ export default function CarpoolVehicleTable({
       enableSorting: false,
     },
     {
-      accessorKey: "ref_fuel_type_id",
+      accessorKey: "fuel_type_name",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
     },
@@ -275,7 +275,7 @@ export default function CarpoolVehicleTable({
       enableSorting: false,
     },
     {
-      accessorKey: "ref_fuel_type_id",
+      accessorKey: "fuel_type_name",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
     },
@@ -460,27 +460,10 @@ export default function CarpoolVehicleTable({
         title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
         desc={
           "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
             ?.vehicle_license_plate +
           " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_owner_dept_short +
-          " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
-        }
-        confirmText={"นำยานพาหนะออก"}
-        onConfirm={handleDelete}
-      />
-
-      <ConfirmCancelCreateCarpoolModal
-        id={""}
-        ref={cancelCreateModalRef}
-        title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
-        desc={
-          "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_license_plate +
-          " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
             ?.vehicle_owner_dept_short +
           " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
         }

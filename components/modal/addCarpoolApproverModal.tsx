@@ -72,10 +72,10 @@ const AddCarpoolApproverModal = forwardRef<
         try {
           const response = await getCarpoolApproverDetails(editId);
           const result = response.data;
-          console.log("result: ", result);
           setSelectedApprover({
             value: result.approver_emp_no,
-            label: result.approver_emp_name,
+            label:
+              result.approver_emp_name + " (" + result.approver_emp_no + ")",
           });
           setDeptSapShort(result.approver_dept_sap_short);
           setInternalContactNumber(result.internal_contact_number);
@@ -106,9 +106,9 @@ const AddCarpoolApproverModal = forwardRef<
           setMobileContactNumber("");
           modalRef.current?.close();
           setToast({
-            title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+            title: "แก้ไขข้อมูลผู้อนุมัติสำเร็จ",
             desc:
-              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+              "ข้อมูลการติดต่อของผู้อนุมัติ " +
               approver.find((item) => item.emp_id === selectedApprover?.value)
                 ?.full_name +
               " ได้รับการแก้ไขเรียบร้อยแล้ว",
@@ -181,7 +181,9 @@ const AddCarpoolApproverModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">เพิ่มผู้อนุมัติ</div>
+            <div className="modal-title">
+              {editId ? "แก้ไขผู้อนุมัติ" : "เพิ่มผู้อนุมัติ"}
+            </div>
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
@@ -200,11 +202,10 @@ const AddCarpoolApproverModal = forwardRef<
                       w="w-full"
                       options={approver.map((item) => ({
                         value: item.emp_id,
-                        label: item.full_name,
+                        label: item.full_name + " (" + item.emp_id + ")",
                       }))}
                       value={selectedApprover}
                       onChange={selectApprover}
-                      disabled={editId ? true : false}
                     />
                   </div>
                 </div>
