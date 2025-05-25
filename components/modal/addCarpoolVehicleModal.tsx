@@ -77,6 +77,7 @@ const AddCarpoolVehicleModal = forwardRef<
         currentRef.removeEventListener("scroll", handleScroll);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
