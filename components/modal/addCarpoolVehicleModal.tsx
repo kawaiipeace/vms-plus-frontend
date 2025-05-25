@@ -47,7 +47,7 @@ const AddCarpoolVehicleModal = forwardRef<
     try {
       const response = await getCarpoolVehicle(params);
       const result = response.data;
-      setVehicles([...vehicles, ...result.vehicles]);
+      setVehicles(result.vehicles);
       // setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
