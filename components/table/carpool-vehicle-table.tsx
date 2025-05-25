@@ -17,6 +17,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import VehicleDetailCarpoolModel from "../modal/vehicleDetailCarpoolModal";
 import ToastCustom from "../toastCustom";
+import { getFuelType } from "@/services/vehicleService";
 
 interface PaginationType {
   limit: number;
@@ -37,6 +38,11 @@ interface ToastProps {
   status: "success" | "error" | "warning" | "info";
 }
 
+interface FuelType {
+  ref_fuel_type_id: string;
+  ref_fuel_type_name_th: string;
+}
+
 export default function CarpoolVehicleTable({
   defaultData,
   pagination,
@@ -48,6 +54,7 @@ export default function CarpoolVehicleTable({
   const [deleteId, setDeleteId] = useState<string | undefined>();
   const [vehicleId, setVehicleId] = useState<string | undefined>();
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [fuelType, setFuelType] = useState<FuelType[]>([]);
 
   const cancelCreateModalRef = useRef<{
     openModal: () => void;
@@ -140,6 +147,18 @@ export default function CarpoolVehicleTable({
       accessorKey: "ref_fuel_type_id",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="ประเภทเชื้อเพลิง">
+            {
+              fuelType.find(
+                (item) =>
+                  item.ref_fuel_type_id === row.original.ref_fuel_type_id
+              )?.ref_fuel_type_name_th
+            }
+          </div>
+        );
+      },
     },
     {
       accessorKey: "vehicle_owner_dept_short",
@@ -278,6 +297,18 @@ export default function CarpoolVehicleTable({
       accessorKey: "ref_fuel_type_id",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="ประเภทเชื้อเพลิง">
+            {
+              fuelType.find(
+                (item) =>
+                  item.ref_fuel_type_id === row.original.ref_fuel_type_id
+              )?.ref_fuel_type_name_th
+            }
+          </div>
+        );
+      },
     },
     {
       accessorKey: "vehicle_owner_dept_short",
@@ -446,6 +477,19 @@ export default function CarpoolVehicleTable({
     setIsLoading(false);
   }, []);
 
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const response = await getFuelType();
+        setFuelType(response || []);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+      }
+    };
+
+    fetch();
+  }, []);
+
   return (
     <div className="w-full py-4 pt-0">
       {!isLoading && (
@@ -460,27 +504,10 @@ export default function CarpoolVehicleTable({
         title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
         desc={
           "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
             ?.vehicle_license_plate +
           " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_owner_dept_short +
-          " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
-        }
-        confirmText={"นำยานพาหนะออก"}
-        onConfirm={handleDelete}
-      />
-
-      <ConfirmCancelCreateCarpoolModal
-        id={""}
-        ref={cancelCreateModalRef}
-        title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
-        desc={
-          "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_license_plate +
-          " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
             ?.vehicle_owner_dept_short +
           " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
         }
