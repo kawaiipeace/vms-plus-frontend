@@ -351,7 +351,7 @@ const DriversListTab = () => {
             button="สร้างข้อมูล"
             displayBtn={true}
             icon="add"
-            link=""
+            useModal={() => createDriverManagementModalRef.current?.openModal()}
           />
         </>
       )}
