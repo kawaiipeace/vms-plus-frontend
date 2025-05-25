@@ -200,7 +200,7 @@ const AddCarpoolAdminModal = forwardRef<
                       w="w-full"
                       options={admins.map((item) => ({
                         value: item.emp_id,
-                        label: item.full_name,
+                        label: item.full_name + " (" + item.emp_id + ")",
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}

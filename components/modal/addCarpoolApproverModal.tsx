@@ -201,7 +201,7 @@ const AddCarpoolApproverModal = forwardRef<
                       w="w-full"
                       options={approver.map((item) => ({
                         value: item.emp_id,
-                        label: item.full_name,
+                        label: item.full_name + " (" + item.emp_id + ")",
                       }))}
                       value={selectedApprover}
                       onChange={selectApprover}
