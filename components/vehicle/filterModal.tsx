@@ -218,6 +218,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
+
     });
     const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
     const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
@@ -230,7 +231,6 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     };
 
     const handleClearFilter = () => {
-        console.log("clear filter");
         setParams({
             fuelType: "",
             vehicleType: "",
