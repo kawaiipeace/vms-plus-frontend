@@ -204,7 +204,6 @@ const AddCarpoolAdminModal = forwardRef<
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}
-                      disabled={!!editId}
                     />
                   </div>
                 </div>

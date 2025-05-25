@@ -519,3 +519,23 @@ export const getCarpoolExport = async (params: any) => {
     throw error;
   }
 };
+
+export const getVehicleStatus = async () => {
+  try {
+    const { data } = await axiosInstance.get("ref/vehicle-status");
+    return data;
+  } catch (error: any) {
+    console.error("Error fetching vehicle type:", error.message || error);
+    throw new Error("Failed to fetch vehicle type");
+  }
+};
+
+export const getDriverStatus = async () => {
+  try {
+    const { data } = await axiosInstance.get("ref/driver-status");
+    return data;
+  } catch (error: any) {
+    console.error("Error fetching vehicle type:", error.message || error);
+    throw new Error("Failed to fetch vehicle type");
+  }
+};
