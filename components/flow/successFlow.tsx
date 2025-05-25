@@ -1,9 +1,10 @@
 import { RequestListType } from "@/app/types/request-list-type";
-import FilterCancelModal from "@/components/modal/filterCancelModal";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { requests } from "@/services/bookingUser";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useRef, useState } from "react";
+import FilterModal from "../modal/filterModal";
 import PaginationControls from "../table/pagination-control";
 import ListFlow from "./listFlow";
 
@@ -15,6 +16,7 @@ interface PaginationType {
 }
 
 export default function SuccessFlow() {
+  const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
   const [params, setParams] = useState({
     search: "",
@@ -56,7 +58,8 @@ export default function SuccessFlow() {
     selectedStartDate: string;
     selectedEndDate: string;
   }) => {
-    const date = selectedStartDate + " - " + selectedEndDate;
+    const date =
+      convertToBuddhistDateTime(selectedStartDate).date + " - " + convertToBuddhistDateTime(selectedEndDate).date;
 
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
@@ -167,7 +170,18 @@ export default function SuccessFlow() {
         </div>
       </div>
 
-      {dataRequest?.length > 0 ? (
+      <div className="mt-3">
+        {filterDate && (
+          <span className="badge badge-brand badge-outline rounded-sm mr-2">
+            {filterDate}
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date")}>
+              close_small
+            </i>
+          </span>
+        )}
+      </div>
+
+      {dataRequest?.length > 0 && (
         <>
           <div className="hidden md:block">
             <div className="mt-2">
@@ -185,7 +199,9 @@ export default function SuccessFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-      ) : (
+      )}
+
+      {dataRequest !== null && pagination.total > 0 && (
         <ZeroRecord
           imgSrc="/assets/img/empty/search_not_found.png"
           title="ไม่พบข้อมูล"
@@ -196,7 +212,17 @@ export default function SuccessFlow() {
           useModal={handleClearAllFilters}
         />
       )}
-      <FilterCancelModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+
+      {pagination.total <= 0 && (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ที่สำเร็จ"
+          desc={<>รายการคำขอใช้ยานพาหนะที่สำเร็จจะแสดงที่นี่</>}
+          button="สร้างคำขอใช้"
+          displayBtn={false}
+        />
+      )}
+      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
     </div>
   );
 }
