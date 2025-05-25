@@ -1,14 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import RequestListTable from "../table/timeline-list-table";
-import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
 import "flatpickr/dist/themes/material_blue.css";
 import DateRangePicker from "../vehicle/input/dateRangeInput";
 import dayjs from "dayjs";
 import VehicleStatus from "../vehicle/status";
 import SearchInput from "../vehicle/input/search";
-import VehicleTimeLineDetailModal, {
-  VehicleTimelineRef,
-} from "../vehicle/vehicle-timeline-detail-modal";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import PaginationControls from "../table/pagination-control";
 import VehicleNoData from "../vehicle/noData";
@@ -19,11 +15,23 @@ import {
 import { useSearchParams } from "next/navigation";
 import CarpoolVehicleListTable from "../table/timeline-carpool-vehicle-list-table";
 import CarpoolDriverListTable from "../table/timeline-carpool-driver-list-table";
+import { debounce } from "lodash";
+import VehicleFilterModal, {
+  VehicleFilterModalRef,
+} from "../carpool-management/modal/vehicleFilterModal";
+import DriverFilterModal, {
+  DriverFilterModalRef,
+} from "../carpool-management/modal/driverFilterModal";
 
 export default function CarpoolTimeLine() {
   const id = useSearchParams().get("id");
+
   const [dataVehicle, setDataVehicle] = useState<any[]>([]);
   const [dataDriver, setDataDriver] = useState<any[]>([]);
+
+  const [vehicleLastMonth, setVehicleLastMonth] = useState<string>("");
+  const [driverLastMonth, setDriverLastMonth] = useState<string>("");
+
   const [vehiclePagination, setVehiclePagination] = useState<PaginationType>({
     limit: 10,
     page: 1,
@@ -36,6 +44,7 @@ export default function CarpoolTimeLine() {
     total: 0,
     totalPages: 0,
   });
+
   const [vehicleParams, setVehicleParams] = useState({
     search: "",
     start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
@@ -50,12 +59,12 @@ export default function CarpoolTimeLine() {
     page: driverPagination.page,
     limit: driverPagination.limit,
   });
+
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedOption, setSelectedOption] = useState<"all" | "first">("all");
 
-  const filterVehicleModalRef = useRef<FilterModalRef>(null);
-  const filterDriverModalRef = useRef<FilterModalRef>(null);
-  const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
+  const filterVehicleModalRef = useRef<VehicleFilterModalRef>(null);
+  const filterDriverModalRef = useRef<DriverFilterModalRef>(null);
 
   useEffect(() => {
     if (id) {
@@ -67,6 +76,7 @@ export default function CarpoolTimeLine() {
           );
           console.log("vehicle: ", response);
           setDataVehicle(response.data.vehicles);
+          setVehicleLastMonth(response.data.last_month);
 
           const { total, totalPages } = response.data.pagination;
           setVehiclePagination({
@@ -95,6 +105,7 @@ export default function CarpoolTimeLine() {
           );
           console.log("driver: ", response);
           setDataDriver(response.data.drivers);
+          setDriverLastMonth(response.data.last_month);
 
           const { total, totalPages } = response.data.pagination;
           setDriverPagination({
@@ -117,7 +128,7 @@ export default function CarpoolTimeLine() {
     filterVehicleModalRef.current?.open();
   const handleOpenDriverFilterModal = () =>
     filterDriverModalRef.current?.open();
-  const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
+
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
   const handleSelect = (option: "all" | "first") => {
     setSelectedOption(option);
@@ -198,17 +209,23 @@ export default function CarpoolTimeLine() {
     </div>
   );
 
+  const debouncedSetVehicleParams = useMemo(
+    () =>
+      debounce((value: string) => {
+        setVehicleParams((prev) => ({
+          ...prev,
+          search: value,
+        }));
+      }, 500),
+    []
+  );
+
   const VehicleActions = () => (
     <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-5">
       <SearchInput
         defaultValue={vehicleParams.search}
         placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-        onChange={(value: string) =>
-          setVehicleParams((prev) => ({
-            ...prev,
-            vehicel_car_type_detail: value,
-          }))
-        }
+        onChange={debouncedSetVehicleParams}
       />
       <div className="flex gap-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -257,14 +274,23 @@ export default function CarpoolTimeLine() {
     </div>
   );
 
+  const debouncedSetDriverParams = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDriverParams((prev) => ({
+          ...prev,
+          search: value,
+        }));
+      }, 500),
+    []
+  );
+
   const DriverActions = () => (
     <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-5">
       <SearchInput
         defaultValue={driverParams.search}
         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-        onChange={(value: string) =>
-          setDriverParams((prev) => ({ ...prev, search: value }))
-        }
+        onChange={debouncedSetDriverParams}
       />
       <div className="flex gap-4">
         <button
@@ -330,13 +356,13 @@ export default function CarpoolTimeLine() {
           </div>
         )}
 
-        {dataVehicle?.length !== 0 ? (
+        {dataVehicle.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolVehicleListTable
               dataRequest={dataVehicle}
               params={vehicleParams}
               selectedOption={selectedOption}
-              lastMonth={""}
+              lastMonth={vehicleLastMonth}
             />
             <PaginationControls
               pagination={vehiclePagination}
@@ -409,13 +435,13 @@ export default function CarpoolTimeLine() {
           </div>
         )}
 
-        {dataDriver?.length !== 0 ? (
+        {dataDriver.length !== 0 ? (
           <>
             <CarpoolDriverListTable
               dataRequest={dataDriver}
               params={driverParams}
               selectedOption={selectedOption}
-              lastMonth={""}
+              lastMonth={driverLastMonth}
             />
             <PaginationControls
               pagination={driverPagination}
@@ -444,20 +470,15 @@ export default function CarpoolTimeLine() {
       <DriverHeader />
       <DriverActions />
       <RenderDriverTableOrNoData />
-      <FilterModal
+      <VehicleFilterModal
         ref={filterVehicleModalRef}
         onSubmitFilter={handleVehicleFilterSubmit}
         flag="TIMELINE"
       />
-      <FilterModal
+      <DriverFilterModal
         ref={filterDriverModalRef}
         onSubmitFilter={handleDriverFilterSubmit}
         flag="TIMELINE"
-      />
-      <VehicleTimeLineDetailModal
-        ref={vehicleTimelineDetailRef}
-        detailRequest={undefined}
-        currentDate={undefined}
       />
     </div>
   );

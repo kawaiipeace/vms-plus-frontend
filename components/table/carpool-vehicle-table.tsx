@@ -164,7 +164,7 @@ export default function CarpoolVehicleTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="เครดิตภาษี">
-            {row.original.is_tax_credit === "1" ? (
+            {row.original.is_tax_credit ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
@@ -302,7 +302,7 @@ export default function CarpoolVehicleTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="เครดิตภาษี">
-            {row.original.is_tax_credit === "1" ? (
+            {row.original.is_tax_credit ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
@@ -376,6 +376,7 @@ export default function CarpoolVehicleTable({
               <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                 <input
                   type="checkbox"
+                  defaultChecked={row.original.is_active === "1" ? true : false}
                   checked={row.original.is_active === "1" ? true : false}
                   onClick={() =>
                     handleActive(
