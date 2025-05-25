@@ -12,8 +12,8 @@ import {
   getCarpoolVehicleTimeline,
 } from "@/services/carpoolManagement";
 import { useSearchParams } from "next/navigation";
-import CarpoolVehicleListTable from "../table/timeline-carpool-vehicle-list-table";
-import CarpoolDriverListTable from "../table/timeline-carpool-driver-list-table";
+import CarpoolVehicleListTable from "../table/carpool-timeline/timeline-carpool-vehicle-list-table";
+import CarpoolDriverListTable from "../table/carpool-timeline/timeline-carpool-driver-list-table";
 import { debounce } from "lodash";
 import VehicleFilterModal, {
   VehicleFilterModalRef,
@@ -158,16 +158,14 @@ export default function CarpoolTimeLine() {
   const handleVehicleFilterSubmit = (filterParams: any) => {
     setVehicleParams((prev) => ({
       ...prev,
-      vehicel_car_type_detail: filterParams.vehicleType,
-      vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+      ...filterParams,
     }));
   };
 
   const handleDriverFilterSubmit = (filterParams: any) => {
     setDriverParams((prev) => ({
       ...prev,
-      vehicel_car_type_detail: filterParams.vehicleType,
-      vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+      ...filterParams,
     }));
   };
 
