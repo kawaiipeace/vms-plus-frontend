@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 export interface CustomSelectOption {
   value: string;
   label: React.ReactNode | string;
-  desc?: string; // Optional description field
+  desc?: string;
 }
 
 interface SelectProps {
@@ -12,10 +12,13 @@ interface SelectProps {
   iconName?: string;
   value?: CustomSelectOption | null;
   onChange: (selected: CustomSelectOption) => void;
-  showDescriptions?: boolean; // Add prop to control description visibility
+  showDescriptions?: boolean;
   disabled?: boolean;
-  searchable?: boolean; // Optional searchable prop
-  searchPlaceholder?: string;
+  placeholder?: string;
+  allowFreeInput?: boolean;
+  onSearchInputChange?: (value: string) => void;
+  loading?: boolean;
+  enableSearchOnApi?: boolean;
 }
 
 export default function CustomSelect({
@@ -24,30 +27,81 @@ export default function CustomSelect({
   iconName,
   value,
   onChange,
-  showDescriptions = false, // Default to false
+  showDescriptions = false,
   disabled = false,
-  searchable = false,
-  searchPlaceholder = "ค้นหา...", // Default search placeholder
+  placeholder = "กรุณาเลือก",
+  allowFreeInput = false,
+  enableSearchOnApi,
+  onSearchInputChange,
+  loading = false,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [inputText, setInputText] = useState(value?.label?.toString() || "");
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [lastSearchTerm, setLastSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const userTypingRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Filter options based on search text if searchable
-  const filteredOptions = searchable
-    ? options.filter((option) => {
-        const label =
-          typeof option.label === "string"
-            ? option.label
-            : // If ReactNode, fallback to value
-              option.value;
-        const text = (label + (option.desc ? ` ${option.desc}` : "")).toLowerCase();
-        return text.includes(searchText.toLowerCase());
-      })
-    : options;
+  // Debounce input for async search
+  useEffect(() => {
+    if (onSearchInputChange && userTypingRef.current) {
+      const trimmedInput = inputText.trim();
 
-  // Close dropdown when clicking outside
+      // Only proceed if input has changed and meets minimum length
+      if (trimmedInput !== lastSearchTerm && trimmedInput.length >= 3) {
+        // Cancel any pending request
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        const handler = setTimeout(() => {
+          onSearchInputChange(trimmedInput);
+          setLastSearchTerm(trimmedInput);
+        }, 500); // Increased debounce time
+
+        return () => {
+          clearTimeout(handler);
+          controller.abort();
+        };
+      }
+    }
+  }, [inputText, onSearchInputChange, lastSearchTerm]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Filter options based on input text
+  const filteredOptions = enableSearchOnApi
+    ? options // For API search, options are assumed already filtered by parent.
+    : inputText.trim().length >= 3
+      ? options.filter(option => {
+          const text =
+            (typeof option.label === "string" ? option.label : option.value) +
+            (option.desc ? ` ${option.desc}` : "");
+          return text.toLowerCase().includes(inputText.toLowerCase());
+        })
+      : options; // Show all options when search text is less than 3 chars if not API search
+
+  // Determine if dropdown should be shown
+  const shouldShowDropdown =
+    isOpen &&
+    (
+      (!enableSearchOnApi && options.length > 0) ||
+      (enableSearchOnApi && inputText.trim().length >= 3)
+    );
+
+  // Handle outside click to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -55,25 +109,50 @@ export default function CustomSelect({
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setSearchText(""); // Reset search on close
+        setHighlightedIndex(-1);
       }
     };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  // Function to render dropdown option label with description
-  const renderDropdownOption = (option: CustomSelectOption) => {
-    if (!showDescriptions || !option.desc) {
-      return <div>{option.label}</div>;
+  // Sync inputText when value prop changes
+  useEffect(() => {
+    if (!isOpen) {
+      setInputText(value?.label?.toString() || "");
+      userTypingRef.current = false;
     }
+  }, [value, isOpen]);
 
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
+      setIsOpen(true);
+      setHighlightedIndex(0);
+    } else if (isOpen) {
+      if (e.key === "ArrowDown") {
+        setHighlightedIndex((prev) =>
+          prev < filteredOptions.length - 1 ? prev + 1 : 0
+        );
+      } else if (e.key === "ArrowUp") {
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredOptions.length - 1
+        );
+      } else if (e.key === "Enter" && highlightedIndex >= 0) {
+        const selected = filteredOptions[highlightedIndex];
+        onChange(selected);
+        setInputText(selected.label ? selected.label.toString() : "");
+        setIsOpen(false);
+        userTypingRef.current = false;
+      } else if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+  };
+
+  // Render dropdown option
+  const renderDropdownOption = (option: CustomSelectOption) => {
+    if (!showDescriptions || !option.desc) return <div>{option.label}</div>;
     return (
       <div className="flex flex-col">
         <div className="font-medium">{option.label}</div>
@@ -83,78 +162,71 @@ export default function CustomSelect({
   };
 
   return (
-    <div ref={dropdownRef} className={`relative custom-select`}>
-      {/* Button that shows selected option - only shows label without description */}
+    <div ref={dropdownRef} className="relative custom-select">
       <div
-        ref={buttonRef}
-        tabIndex={0}
-        className={`border ${w} max-${w} border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText cursor-pointer focus:border-primary-default focus:shadow-customPurple ${
+        className={`border ${w} max-${w} border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText overflow-hidden focus-within:border-primary-default focus-within:shadow-customPurple ${
           isOpen ? "shadow-customPurple border-primary-default" : ""
-        } overflow-hidden`}
-        onClick={() => (disabled ? null : setIsOpen(!isOpen))}
+        }`}
+        onClick={() => !disabled && setIsOpen(true)}
       >
         {iconName && (
           <div className="input-group-prepend mr-1">
             <span className="input-group-text">
-              <i className="material-symbols-outlined"> {iconName} </i>
+              <i className="material-symbols-outlined">{iconName}</i>
             </span>
           </div>
         )}
-
-        <div className="flex-1 overflow-hidden whitespace-nowrap">
-          {value?.label || "กรุณาเลือก"}
-        </div>
-
-        <div className="flex-shrink-0 w-8 text-right">
+        <input
+          ref={inputRef}
+          className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md"
+          value={inputText}
+          placeholder={placeholder}
+          disabled={disabled}
+          onFocus={() => !disabled && setIsOpen(true)}
+          onChange={e => {
+            setInputText(e.target.value);
+            setIsOpen(true);
+            setHighlightedIndex(0);
+            userTypingRef.current = true;
+          }}
+          onKeyDown={handleKeyDown}
+        />
+        <div className="flex-shrink-0 w-8 text-right cursor-pointer" onClick={() => setIsOpen((open) => !open)}>
           <i className="material-symbols-outlined">keyboard_arrow_down</i>
         </div>
       </div>
 
-      {/* Dropdown List - shows labels with descriptions */}
-      {isOpen && (
+      {shouldShowDropdown && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg bg-white">
-          {searchable && (
-            <li className="mb-2 px-2">
-              <input
-                autoFocus
-                type="text"
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:border-primary-default text-sm"
-                placeholder={searchPlaceholder}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </li>
-          )}
-
           {filteredOptions.length > 0 ? (
-            filteredOptions.map((option) => (
+            filteredOptions.map((option, idx) => (
               <li
                 key={option.value}
                 className={`px-4 py-2 cursor-pointer flex gap-2 items-start rounded-lg ${
-                  value?.value === option.value
-                    ? "text-brand-900 bg-gray-100"
+                  idx === highlightedIndex
+                    ? "text-brand-900"
+                    : value?.value === option.value
+                    ? "text-brand-900"
                     : "text-gray-700"
-                } hover:bg-gray-100`}
+                }`}
+                onMouseEnter={() => setHighlightedIndex(idx)}
                 onClick={() => {
                   onChange(option);
+                  setInputText(option.label ? option.label.toString() : "");
                   setIsOpen(false);
-                  setSearchText("");
-                  buttonRef.current?.focus();
+                  userTypingRef.current = false;
                 }}
               >
                 {renderDropdownOption(option)}
                 {value?.value === option.value && (
-                  <span className="material-symbols-outlined ml-auto">
-                    check
-                  </span>
+                  <span className="material-symbols-outlined ml-auto">check</span>
                 )}
               </li>
             ))
           ) : (
-            <li className="px-4 py-2 text-gray-500">
-              {searchText ? "ไม่พบข้อมูลที่ค้นหา" : "ไม่พบข้อมูล"}
-            </li>
+            <div className="px-4 py-2 text-gray-500">
+              ไม่พบข้อมูล
+            </div>
           )}
         </ul>
       )}
