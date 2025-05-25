@@ -85,8 +85,6 @@ export interface CarpoolApprover {
 
 export interface CarpoolVehicleParams {
   search: string;
-  page: number;
-  limit: number;
 }
 
 export interface CarpoolVehicle {
@@ -103,8 +101,6 @@ export interface CarpoolVehicle {
 
 export interface CarpoolDriverParams {
   name: string;
-  page: number;
-  limit: number;
 }
 
 export interface CarpoolDriver {
