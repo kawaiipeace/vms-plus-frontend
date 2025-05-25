@@ -34,10 +34,8 @@ const AddCarpoolDriverModal = forwardRef<
   const [search, setSearch] = useState<string>("");
   const [drivers, setDrivers] = useState<CarpoolDriver[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
-  const [total, setTotal] = useState<number>(0);
+  // const [total, setTotal] = useState<number>(0);
   const [params, setParams] = useState({
-    page: 1,
-    limit: 10,
     name: "",
   });
 
@@ -51,62 +49,66 @@ const AddCarpoolDriverModal = forwardRef<
       const response = await getCarpoolDriver(params);
       const result = response.data;
       setDrivers([...drivers, ...result.drivers]);
-      setTotal(result.pagination.total);
+      // setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
   };
 
-  const handleScroll = () => {
-    const el = scrollContentRef.current;
-    if (el) {
-      const { scrollTop, offsetHeight, scrollHeight } = el;
-      if (scrollTop + offsetHeight >= scrollHeight - 20) {
-        setParams({ ...params, page: params.page + 1 });
-      }
-    }
-  };
+  // const handleScroll = () => {
+  //   const el = scrollContentRef.current;
+  //   if (el) {
+  //     const { scrollTop, offsetHeight, scrollHeight } = el;
+  //     if (scrollTop + offsetHeight >= scrollHeight - 20) {
+  //       setParams({ ...params, page: params.page + 1 });
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    const currentRef = scrollContentRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", handleScroll);
-    }
+  // useEffect(() => {
+  //   const currentRef = scrollContentRef.current;
+  //   if (currentRef) {
+  //     currentRef.addEventListener("scroll", handleScroll);
+  //   }
 
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (currentRef) {
+  //       currentRef.removeEventListener("scroll", handleScroll);
+  //     }
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     if (params.name) {
       if (params.name && !search) {
         setDrivers([]);
-      } else if (params.name !== search) {
-        setParams({ ...params, page: 1 });
+        // } else if (params.name !== search) {
+        //   setParams({ ...params, page: 1 });
       } else if (!params.name && search) {
         setSearch("");
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.name]);
 
   useEffect(() => {
     if (CBRef.current) {
       if (checked.length === 0) {
         CBRef.current.indeterminate = false;
-      } else if (checked.length > 0 && checked.length !== total) {
+      } else if (checked.length > 0 && checked.length !== drivers.length) {
         CBRef.current.indeterminate = true;
-      } else if (checked.length === total) {
+      } else if (checked.length === drivers.length) {
         CBRef.current.indeterminate = false;
         CBRef.current.checked = true;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked]);
 
   useEffect(() => {
     fetchCarpoolDriverFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   const handleConfirm = async () => {
@@ -174,15 +176,13 @@ const AddCarpoolDriverModal = forwardRef<
                   id="myInputTextField"
                   className="form-control dt-search-input !w-60"
                   placeholder="ชื่อกลุ่มยานพาหนะ, ผู้รับผิดชอบหลัก"
-
-                  // value={params.search}
-                  // onChange={(e) =>
-                  //   setParams((prevParams) => ({
-                  //     ...prevParams,
-                  //     search: e.target.value,
-                  //     page: 1, // Reset to page 1 on search
-                  //   }))
-                  // }
+                  value={params.name}
+                  onChange={(e) =>
+                    setParams((prevParams) => ({
+                      ...prevParams,
+                      name: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
@@ -191,7 +191,7 @@ const AddCarpoolDriverModal = forwardRef<
                   <div>
                     รายชื่อพนักงานขับรถ{" "}
                     <span className="badge badge-outline badge-gray !rounded">
-                      {total} คน
+                      {drivers.length} คน
                     </span>
                   </div>
                   <div className="custom-group">
@@ -200,15 +200,15 @@ const AddCarpoolDriverModal = forwardRef<
                         type="checkbox"
                         id="my-checkbox"
                         ref={CBRef}
-                        // value={statusItem.ref_request_status_code}
-                        // checked={selectedStatuses.includes(
-                        //   statusItem.ref_request_status_code
-                        // )}
-                        // onChange={() =>
-                        //   handleCheckboxChange(
-                        //     statusItem.ref_request_status_code
-                        //   )
-                        // }
+                        defaultChecked={checked.length === drivers.length}
+                        checked={checked.length === drivers.length}
+                        onChange={() =>
+                          setChecked(
+                            checked.length === drivers.length
+                              ? []
+                              : drivers.map((item) => item.mas_driver_uid)
+                          )
+                        }
                         className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                       />
                     </div>
@@ -237,15 +237,10 @@ const AddCarpoolDriverModal = forwardRef<
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
-                            // value={statusItem.ref_request_status_code}
-                            // checked={selectedStatuses.includes(
-                            //   statusItem.ref_request_status_code
-                            // )}
-                            // onChange={() =>
-                            //   handleCheckboxChange(
-                            //     statusItem.ref_request_status_code
-                            //   )
-                            // }
+                            checked={checked.includes(driver.mas_driver_uid)}
+                            defaultChecked={checked.includes(
+                              driver.mas_driver_uid
+                            )}
                             onChange={() => handleCheck(driver.mas_driver_uid)}
                             className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                           />
@@ -260,7 +255,7 @@ const AddCarpoolDriverModal = forwardRef<
 
           <div className="modal-footer p-5 grid grid-cols-4 gap-3 border-t border-[#eaecf0]">
             <div className="h-full flex items-center text-primary-grayText">
-              เลือก 2 คัน
+              เลือก {checked.length} คน
             </div>
             <form method="dialog" className="col-span-1 col-start-3">
               <button className="btn btn-secondary w-full">ปิด</button>

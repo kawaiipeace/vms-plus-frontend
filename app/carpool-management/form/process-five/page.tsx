@@ -228,7 +228,7 @@ export default function CarpoolProcessFive() {
                   <div className="page-section-header border-0 !pb-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">ยานพาหนะ</span>
+                        <span className="page-title-label">พนักงานขับรถ</span>
                         <span className="badge badge-outline badge-gray !rounded">
                           {pagination.total} คัน
                         </span>
@@ -278,10 +278,9 @@ export default function CarpoolProcessFive() {
                     alt=""
                     className="w-[200px] h-[200px]"
                   ></Image>
-                  <div className="emptystate-title">เพิ่มผู้อนุมัติ</div>
+                  <div className="emptystate-title">เพิ่มพนักงานขับรถ</div>
                   <div className="emptystate-text">
-                    <div>ผู้อนุมัติมีหน้าที่อนุมัติการจองยานพาหนะ</div>
-                    <div>และพนักงานขับรถในขั้นตอนสุดท้่าย</div>
+                    <div>พนักงานขับรถที่จะให้บริการในกลุ่มนี้</div>
                   </div>
                   <div className="emptystate-action">
                     {!id && (
