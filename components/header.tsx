@@ -182,6 +182,7 @@ export default function Header() {
   };
 
   return (
+    <>
     <div className="header items-center">
       <div className="navbar p-0 items-center min-h-0">
         <div className="navbar-start">
@@ -375,6 +376,9 @@ export default function Header() {
           </div>
         </div>
       </div>
+    
+    </div>
+   
       <DriverLicenseModal
         ref={driverLicenseModalRef}
         profile={profile || null}
@@ -419,7 +423,6 @@ export default function Header() {
           RequestDrivingStepTwoModalRef.current?.closeModal();
           RequestDrivingStepOneModalRef.current?.openModal();
         }}
-      />
-    </div>
+      /></>
   );
 }

@@ -185,7 +185,6 @@ export default function ArpproveFlow() {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
-          console.log("sum", summary);
           setDataRequest(requestList);
           setSummary(summary);
           setPagination({
@@ -339,11 +338,9 @@ export default function ArpproveFlow() {
           />
         </>
       )}
-      {pagination.total <= 0 &&
-        (params.search ||
-        params.ref_request_status_code ||
-        params.startdate ||
-        params.enddate ? (
+
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"
@@ -353,17 +350,18 @@ export default function ArpproveFlow() {
             btnType="secondary"
             useModal={handleClearAllFilters}
           />
-        ) : (
-          <ZeroRecord
-            imgSrc="/assets/img/empty/add_carpool.svg"
-            title="สร้างคำขอใช้ยานพาหนะ"
-            desc={<>ระบุข้อมูลการเดินทาง ค้นหายานพาหนะ และผู้ขับขี่</>}
-            button="สร้างคำขอใช้"
-            displayBtn={true}
-            icon="add"
-            link="process-one"
-          />
-        ))}
+        )
+      ) : (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/add_carpool.svg"
+          title="สร้างคำขอใช้ยานพาหนะ"
+          desc={<>ระบุข้อมูลการเดินทาง ค้นหายานพาหนะ และผู้ขับขี่</>}
+          button="สร้างคำขอใช้"
+          displayBtn={true}
+          icon="add"
+          link="process-one"
+        />
+      )}
 
       <FilterModal
         ref={filterModalRef}

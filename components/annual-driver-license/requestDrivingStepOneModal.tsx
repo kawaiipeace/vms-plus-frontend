@@ -4,12 +4,21 @@ import { UploadFileType } from "@/app/types/upload-type";
 import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
-import { fetchDriverCertificateType, fetchDriverLicenseType } from "@/services/masterService";
+import {
+  fetchDriverCertificateType,
+  fetchDriverLicenseType,
+} from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from "dayjs";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "../customSelect";
@@ -40,7 +49,11 @@ interface ReturnCarAddModalProps {
 }
 
 const formStep1Schema = yup.object().shape({
-  driverLicenseType: yup.object().nullable().required("กรุณาเลือกประเภทการขับขี่").default(null),
+  driverLicenseType: yup
+    .object()
+    .nullable()
+    .required("กรุณาเลือกประเภทการขับขี่")
+    .default(null),
   year: yup.string().required("กรุณาเลือกปี").default(""),
   licenseNumber: yup
     .string()
@@ -49,7 +62,10 @@ const formStep1Schema = yup.object().shape({
     .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
     .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
     .default(""),
-  licenseExpiryDate: yup.string().required("กรุณาระบุวันที่สิ้นอายุ").default(""),
+  licenseExpiryDate: yup
+    .string()
+    .required("กรุณาระบุวันที่สิ้นอายุ")
+    .default(""),
   licenseImages: yup
     .array()
     .of(
@@ -120,35 +136,56 @@ const RequestDrivingStepOneModal = forwardRef<
   ReturnCarAddModalProps
 >(({ requestData, licRequestDetail, edit, stepOneSubmit }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [costTypeOptions, setCostTypeOptions] = useState<{ value: string; label: string; desc: string }[]>([]);
-  const [vehicleTypeOptions, setVehicleTypeOptions] = useState<{ value: string; label: string; desc: string }[]>([]);
+  const [costTypeOptions, setCostTypeOptions] = useState<
+    { value: string; label: string; desc: string }[]
+  >([]);
+  const [vehicleTypeOptions, setVehicleTypeOptions] = useState<
+    { value: string; label: string; desc: string }[]
+  >([]);
 
   // --- DEFAULT STATE LOGIC ---
   // Cost Type
-  const getDefaultCostType = (costTypeArr: { value: string; label: string; desc: string }[]) => {
+  const getDefaultCostType = (
+    costTypeArr: { value: string; label: string; desc: string }[]
+  ) => {
     if (licRequestDetail?.ref_driver_license_type_code) {
-      return costTypeArr.find((type) => type.value === licRequestDetail.ref_driver_license_type_code) || null;
+      return (
+        costTypeArr.find(
+          (type) => type.value === licRequestDetail.ref_driver_license_type_code
+        ) || null
+      );
     }
     if (requestData?.driver_license.driver_license_type_code) {
       return (
-        costTypeArr.find((type) => type.value === requestData.driver_license.driver_license_type_code.toString()) ||
-        null
+        costTypeArr.find(
+          (type) =>
+            type.value ===
+            requestData.driver_license.driver_license_type_code.toString()
+        ) || null
       );
     }
     return null;
   };
 
   // Vehicle Type
-  const getDefaultVehicleType = (vehicleTypeArr: { value: string; label: string; desc: string }[]) => {
+  const getDefaultVehicleType = (
+    vehicleTypeArr: { value: string; label: string; desc: string }[]
+  ) => {
     if (licRequestDetail?.driver_certificate_type_code) {
       return (
-        vehicleTypeArr.find((type) => type.value === licRequestDetail.driver_certificate_type_code.toString()) || null
+        vehicleTypeArr.find(
+          (type) =>
+            type.value ===
+            licRequestDetail.driver_certificate_type_code.toString()
+        ) || null
       );
     }
     if (requestData?.driver_certificate?.driver_certificate_type_code) {
       return (
         vehicleTypeArr.find(
-          (type) => type.value === requestData?.driver_certificate.driver_certificate_type_code.toString()
+          (type) =>
+            type.value ===
+            requestData?.driver_certificate.driver_certificate_type_code.toString()
         ) || null
       );
     }
@@ -172,17 +209,27 @@ const RequestDrivingStepOneModal = forwardRef<
   const buildDefaultValues = () => ({
     driverLicenseType: getDefaultCostType(costTypeOptions),
     year: getDefaultYear(),
-    licenseNumber: licRequestDetail?.driver_license_no || requestData?.driver_license?.driver_license_no || "",
+    licenseNumber:
+      licRequestDetail?.driver_license_no ||
+      requestData?.driver_license?.driver_license_no ||
+      "",
     licenseExpiryDate:
-      licRequestDetail?.driver_license_expire_date || requestData?.driver_license?.driver_license_expire_date || "",
+      licRequestDetail?.driver_license_expire_date ||
+      requestData?.driver_license?.driver_license_expire_date ||
+      "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
       ? [{ file_url: requestData.driver_license?.driver_license_img }]
       : [],
-    courseName: licRequestDetail?.driver_certificate_name || requestData?.driver_license?.driver_certificate_name || "",
+    courseName:
+      licRequestDetail?.driver_certificate_name ||
+      requestData?.driver_license?.driver_certificate_name ||
+      "",
     certificateNumber:
-      licRequestDetail?.driver_certificate_no || requestData?.driver_license?.driver_certificate_no || "",
+      licRequestDetail?.driver_certificate_no ||
+      requestData?.driver_license?.driver_certificate_no ||
+      "",
     vehicleType: getDefaultVehicleType(vehicleTypeOptions),
     trainingDate:
       licRequestDetail?.driver_certificate_issue_date ||
@@ -198,7 +245,9 @@ const RequestDrivingStepOneModal = forwardRef<
       ? [{ file_url: requestData.driver_license?.driver_certificate_img }]
       : [],
   });
-  const [defaultValues, setDefaultValues] = useState<ValueFormStep1>(buildDefaultValues());
+  const [defaultValues, setDefaultValues] = useState<ValueFormStep1>(
+    buildDefaultValues()
+  );
 
   // react-hook-form
   const {
@@ -217,17 +266,25 @@ const RequestDrivingStepOneModal = forwardRef<
   // Watch for select field for conditional rendering
   const selectedCostTypeOption = watch("driverLicenseType");
   const showAdditionalFields =
-    selectedCostTypeOption && (selectedCostTypeOption.value === "2+" || selectedCostTypeOption.value === "3+");
+    selectedCostTypeOption &&
+    (selectedCostTypeOption.value === "2+" ||
+      selectedCostTypeOption.value === "3+");
 
   // Update default values when options or props change
   useEffect(() => {
     setDefaultValues(buildDefaultValues());
     reset(buildDefaultValues());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(costTypeOptions), JSON.stringify(vehicleTypeOptions), requestData, licRequestDetail]);
+  }, [
+    JSON.stringify(costTypeOptions),
+    JSON.stringify(vehicleTypeOptions),
+    requestData,
+    licRequestDetail,
+  ]);
 
   // Fetch options
   useEffect(() => {
+    console.log('reqstepone',RequestDrivingStepOneModal);
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -271,7 +328,7 @@ const RequestDrivingStepOneModal = forwardRef<
       }
     };
     fetchData();
-  }, []);
+  }, [requestData]);
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -336,7 +393,9 @@ const RequestDrivingStepOneModal = forwardRef<
   const onSubmit = (formData: ValueFormStep1) => {
     const expiry =
       isISODate(formData.licenseExpiryDate) &&
-      (formData.licenseExpiryDate = convertToBuddhistDateTime(formData.licenseExpiryDate).date);
+      (formData.licenseExpiryDate = convertToBuddhistDateTime(
+        formData.licenseExpiryDate
+      ).date);
     console.log("formdata", formData);
     if (stepOneSubmit) {
       stepOneSubmit(formData);
@@ -355,8 +414,14 @@ const RequestDrivingStepOneModal = forwardRef<
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title">
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                {requestData?.license_status === "มีผลปีถัดไป" && dayjs().year() + 543}{" "}
-                {requestData?.next_license_status !== "" && dayjs().year() + 544}
+                {requestData?.license_status !== "" && (
+                  <>
+                    {requestData?.license_status === "มีผลปีถัดไป" &&
+                      `${dayjs().year() + 543}`}{" "}
+                    {requestData?.next_license_status !== "" &&
+                      `${dayjs().year() + 544}`}
+                  </>
+                )}
               </div>
               <form method="dialog">
                 <button
@@ -368,8 +433,15 @@ const RequestDrivingStepOneModal = forwardRef<
               </form>
             </div>
             <div className="modal-scroll-wrapper overflow-y-auto">
-              <form className="modal-body  text-center !bg-white" onSubmit={handleSubmit(onSubmit)}>
-                {!edit && <p className="text-left text-base mb-2 font-semibold">Step 1: ข้อมูลทั่วไป</p>}
+              <form
+                className="modal-body  text-center !bg-white"
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                {!edit && (
+                  <p className="text-left text-base mb-2 font-semibold">
+                    Step 1: ข้อมูลทั่วไป
+                  </p>
+                )}
 
                 <div className="form-section">
                   <div className="grid w-full flex-wrap gap-5 grid-cols-12">
@@ -384,14 +456,17 @@ const RequestDrivingStepOneModal = forwardRef<
                               w="w-full"
                               options={costTypeOptions}
                               value={field.value}
-                              onChange={(option) => handleCostTypeChange(option, field.onChange)}
+                              onChange={(option) =>
+                                handleCostTypeChange(option, field.onChange)
+                              }
                               showDescriptions={true}
                             />
                           )}
                         />
                       </div>
                     </div>
-                    {(requestData?.license_status !== "มีผลปีถัดไป" || requestData?.next_license_status_code === "") && (
+                    {(requestData?.license_status !== "มีผลปีถัดไป" ||
+                      requestData?.next_license_status_code === "") && (
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">ประจำปี</label>
@@ -419,7 +494,11 @@ const RequestDrivingStepOneModal = forwardRef<
                               )}
                             />
                           </div>
-                          {errors.year && <div className="text-error text-xs mt-1">{errors.year.message}</div>}
+                          {errors.year && (
+                            <div className="text-error text-xs mt-1">
+                              {errors.year.message}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -443,7 +522,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           />
                         </div>
                         {errors.licenseNumber && (
-                          <div className="text-error text-xs mt-1">{errors.licenseNumber.message}</div>
+                          <div className="text-error text-xs mt-1">
+                            {errors.licenseNumber.message}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -454,7 +535,9 @@ const RequestDrivingStepOneModal = forwardRef<
                         <div className="input-group">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
+                              <i className="material-symbols-outlined">
+                                calendar_month
+                              </i>
                             </span>
                           </div>
                           <Controller
@@ -470,7 +553,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           />
                         </div>
                         {errors.licenseExpiryDate && (
-                          <div className="text-error text-xs mt-1">{errors.licenseExpiryDate.message}</div>
+                          <div className="text-error text-xs mt-1">
+                            {errors.licenseExpiryDate.message}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -483,7 +568,9 @@ const RequestDrivingStepOneModal = forwardRef<
                           control={control}
                           render={({ field }) => {
                             return field.value?.length < 1 ? (
-                              <ImageUpload onImageChange={handleLicenseImageChange} />
+                              <ImageUpload
+                                onImageChange={handleLicenseImageChange}
+                              />
                             ) : (
                               <></>
                             );
@@ -491,13 +578,18 @@ const RequestDrivingStepOneModal = forwardRef<
                         />
                       </div>
                       <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
-                        {watch("licenseImages")?.map((image: { file_url: string | File }, index: number) => (
-                          <ImagePreview
-                            key={index}
-                            image={image.file_url || ""}
-                            onDelete={() => handleDeleteLicenseImage(index)}
-                          />
-                        ))}
+                        {watch("licenseImages")?.map(
+                          (
+                            image: { file_url: string | File },
+                            index: number
+                          ) => (
+                            <ImagePreview
+                              key={index}
+                              image={image.file_url || ""}
+                              onDelete={() => handleDeleteLicenseImage(index)}
+                            />
+                          )
+                        )}
                       </div>
                     </div>
 
@@ -509,7 +601,9 @@ const RequestDrivingStepOneModal = forwardRef<
                             <div className="input-group">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
-                                  <i className="material-symbols-outlined">developer_guide</i>
+                                  <i className="material-symbols-outlined">
+                                    developer_guide
+                                  </i>
                                 </span>
                               </div>
                               <Controller
@@ -526,7 +620,9 @@ const RequestDrivingStepOneModal = forwardRef<
                               />
                             </div>
                             {errors.courseName && (
-                              <div className="text-error text-xs mt-1">{errors.courseName.message}</div>
+                              <div className="text-error text-xs mt-1">
+                                {errors.courseName.message}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -537,7 +633,9 @@ const RequestDrivingStepOneModal = forwardRef<
                             <div className="input-group">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
-                                  <i className="material-symbols-outlined">news</i>
+                                  <i className="material-symbols-outlined">
+                                    news
+                                  </i>
                                 </span>
                               </div>
                               <Controller
@@ -554,7 +652,9 @@ const RequestDrivingStepOneModal = forwardRef<
                               />
                             </div>
                             {errors.certificateNumber && (
-                              <div className="text-error text-xs mt-1">{errors.certificateNumber.message}</div>
+                              <div className="text-error text-xs mt-1">
+                                {errors.certificateNumber.message}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -584,7 +684,9 @@ const RequestDrivingStepOneModal = forwardRef<
                             <div className="input-group">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
-                                  <i className="material-symbols-outlined">calendar_month</i>
+                                  <i className="material-symbols-outlined">
+                                    calendar_month
+                                  </i>
                                 </span>
                               </div>
                               <Controller
@@ -600,7 +702,9 @@ const RequestDrivingStepOneModal = forwardRef<
                               />
                             </div>
                             {errors.trainingDate && (
-                              <div className="text-error text-xs mt-1">{errors.trainingDate.message}</div>
+                              <div className="text-error text-xs mt-1">
+                                {errors.trainingDate.message}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -611,7 +715,9 @@ const RequestDrivingStepOneModal = forwardRef<
                             <div className="input-group">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
-                                  <i className="material-symbols-outlined">calendar_month</i>
+                                  <i className="material-symbols-outlined">
+                                    calendar_month
+                                  </i>
                                 </span>
                               </div>
                               <Controller
@@ -627,7 +733,9 @@ const RequestDrivingStepOneModal = forwardRef<
                               />
                             </div>
                             {errors.trainingEndDate && (
-                              <div className="text-error text-xs mt-1">{errors.trainingEndDate.message}</div>
+                              <div className="text-error text-xs mt-1">
+                                {errors.trainingEndDate.message}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -640,7 +748,9 @@ const RequestDrivingStepOneModal = forwardRef<
                               control={control}
                               render={({ field }) => {
                                 return field.value?.length < 1 ? (
-                                  <ImageUpload onImageChange={handleCertificateImageChange} />
+                                  <ImageUpload
+                                    onImageChange={handleCertificateImageChange}
+                                  />
                                 ) : (
                                   <></>
                                 );
@@ -648,13 +758,20 @@ const RequestDrivingStepOneModal = forwardRef<
                             />
                           </div>
                           <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
-                            {watch("certificateImages")?.map((image: { file_url: string | File }, index: number) => (
-                              <ImagePreview
-                                key={index}
-                                image={image.file_url || ""}
-                                onDelete={() => handleDeleteCertificateImage(index)}
-                              />
-                            ))}
+                            {watch("certificateImages")?.map(
+                              (
+                                image: { file_url: string | File },
+                                index: number
+                              ) => (
+                                <ImagePreview
+                                  key={index}
+                                  image={image.file_url || ""}
+                                  onDelete={() =>
+                                    handleDeleteCertificateImage(index)
+                                  }
+                                />
+                              )
+                            )}
                           </div>
                         </div>
                       </>
@@ -663,7 +780,11 @@ const RequestDrivingStepOneModal = forwardRef<
                 </div>
                 <div className="modal-action flex w-full gap-5 mt-3 mr-auto">
                   <div className="">
-                    <button type="button" className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary w-full"
+                      onClick={handleCloseModal}
+                    >
                       ไม่ใช่ตอนนี้
                     </button>
                   </div>

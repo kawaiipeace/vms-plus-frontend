@@ -209,11 +209,8 @@ export default function CancelFlow() {
         </>
       )}
 
-      {pagination.total <= 0 &&
-        (params.search ||
-        params.ref_request_status_code ||
-        params.startdate ||
-        params.enddate ? (
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"
@@ -223,15 +220,16 @@ export default function CancelFlow() {
             btnType="secondary"
             useModal={handleClearAllFilters}
           />
-        ) : (
-          <ZeroRecord
-            imgSrc="/assets/img/graphic/empty.svg"
-            title="ไม่มีคำขอใช้ที่ถูกยกเลิก"
-            desc={<>รายการคำขอใช้ยานพาหนะที่ถูกยกเลิกจะแสดงที่นี่</>}
-            button="สร้างคำขอใช้"
-            displayBtn={false}
-          />
-        ))}
+        )
+      ) : (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ที่ถูกยกเลิก"
+          desc={<>รายการคำขอใช้ยานพาหนะที่ถูกยกเลิกจะแสดงที่นี่</>}
+          button="สร้างคำขอใช้"
+          displayBtn={false}
+        />
+      )}
 
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
     </div>

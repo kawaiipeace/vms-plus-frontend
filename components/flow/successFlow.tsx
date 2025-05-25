@@ -118,6 +118,7 @@ export default function SuccessFlow() {
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
+       
           setDataRequest(requestList);
           setPagination({
             limit: params.limit,
@@ -210,11 +211,8 @@ export default function SuccessFlow() {
         </>
       )}
 
-      {pagination.total <= 0 &&
-        (params.search ||
-        params.ref_request_status_code ||
-        params.startdate ||
-        params.enddate ? (
+      {pagination.total > 0 ?
+
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"
@@ -224,7 +222,7 @@ export default function SuccessFlow() {
             btnType="secondary"
             useModal={handleClearAllFilters}
           />
-        ) : (
+         : 
           <ZeroRecord
             imgSrc="/assets/img/graphic/empty.svg"
             title="ไม่มีคำขอใช้ที่สำเร็จ"
@@ -232,7 +230,7 @@ export default function SuccessFlow() {
             button="สร้างคำขอใช้"
             displayBtn={false}
           />
-        ))}
+        }
 
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
     </div>
