@@ -256,7 +256,7 @@ export default function ArpproveFlow() {
               <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
-          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block">
+          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block flex items-center">
             <i className="material-symbols-outlined">add</i>
             สร้างคำขอใช้
           </button>
