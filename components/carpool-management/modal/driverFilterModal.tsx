@@ -1,5 +1,12 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import BadgeStatus from "./status";
+import { getDriverStatus } from "@/services/carpoolManagement";
 
 type Props = {
   flag: string;
@@ -12,6 +19,7 @@ export type DriverFilterModalRef = {
 };
 
 interface ModalBodyProps {
+  driverStatus: DriverStatus[];
   setParams: (params: DriverParams) => void;
   params: DriverParams;
 }
@@ -22,15 +30,20 @@ interface DriverParams {
   work_type: string[];
 }
 
-const DRIVER_STATUS = [
-  { id: "0", name: "ปฏิบัติงานปกติ" },
-  { id: "1", name: "ลาป่วย/ลากิจ" },
-  { id: "2", name: "ทดแทน" },
-  { id: "3", name: "สำรอง" },
-  { id: "4", name: "สิ้นสุดสัญญา" },
-  { id: "5", name: "ลาออก" },
-  { id: "6", name: "ให้ออก" },
-];
+interface DriverStatus {
+  ref_driver_status_code: number;
+  ref_driver_status_desc: string;
+}
+
+// const DRIVER_STATUS = [
+//   { id: "0", name: "ปฏิบัติงานปกติ" },
+//   { id: "1", name: "ลาป่วย/ลากิจ" },
+//   { id: "2", name: "ทดแทน" },
+//   { id: "3", name: "สำรอง" },
+//   { id: "4", name: "สิ้นสุดสัญญา" },
+//   { id: "5", name: "ลาออก" },
+//   { id: "6", name: "ให้ออก" },
+// ];
 
 const DRIVER_TYPE = [
   { id: "1", name: "ได้" },
@@ -59,7 +72,7 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-const ModalBody = ({ setParams, params }: ModalBodyProps) => {
+const ModalBody = ({ driverStatus, setParams, params }: ModalBodyProps) => {
   const onStatusChecked = (checked: boolean, id: string) => {
     const newParams = { ...params };
     if (checked) {
@@ -97,7 +110,7 @@ const ModalBody = ({ setParams, params }: ModalBodyProps) => {
         <div className="mb-4">
           <label className="form-label">สถานะ</label>
           <div className="flex flex-col gap-2 mt-2">
-            {DRIVER_STATUS.map((status, index) => (
+            {driverStatus.map((status, index) => (
               <div className="form-group" key={index}>
                 <div className="custom-group">
                   <div className="custom-control custom-checkbox custom-control-inline">
@@ -105,16 +118,19 @@ const ModalBody = ({ setParams, params }: ModalBodyProps) => {
                       type="checkbox"
                       defaultChecked
                       checked={params.ref_driver_status_code.includes(
-                        status.id
+                        status.ref_driver_status_code.toString()
                       )}
                       onChange={(e) =>
-                        onStatusChecked(e.target.checked, status.id)
+                        onStatusChecked(
+                          e.target.checked,
+                          status.ref_driver_status_code.toString()
+                        )
                       }
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                     />
                     <label className="custom-control-label">
                       <div className="custom-control-label-group">
-                        <BadgeStatus status={status.name} />
+                        <BadgeStatus status={status.ref_driver_status_desc} />
                       </div>
                     </label>
                   </div>
@@ -208,14 +224,15 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
       close: () => dialogRef.current?.close(),
     }));
 
+    const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
+
     const [params, setParams] = useState<DriverParams>({
-      ref_driver_status_code: DRIVER_STATUS.map((e) => e.id),
+      ref_driver_status_code: [],
       is_active: DRIVER_ACTIVE.map((e) => e.id),
       work_type: DRIVER_TYPE.map((e) => e.id),
     });
 
     const handleSubmitFilter = () => {
-      console.log("submit filter", params);
       onSubmitFilter?.({
         ...params,
         work_type: params.work_type.join(","),
@@ -226,13 +243,31 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
     };
 
     const handleClearFilter = () => {
-      console.log("clear filter");
       setParams({
-        ref_driver_status_code: DRIVER_STATUS.map((e) => e.id),
+        ref_driver_status_code: driverStatus.map((e) =>
+          e.ref_driver_status_code.toString()
+        ),
         is_active: DRIVER_ACTIVE.map((e) => e.id),
         work_type: DRIVER_TYPE.map((e) => e.id),
       });
     };
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const [fetchDriverStatus] = await Promise.all([getDriverStatus()]);
+
+        setDriverStatus(fetchDriverStatus);
+        setParams({
+          ...params,
+          ref_driver_status_code: fetchDriverStatus.map((e: any) =>
+            e.ref_driver_status_code.toString()
+          ),
+        });
+      };
+
+      fetchData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
       <dialog ref={dialogRef} className="modal">
@@ -241,7 +276,11 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
 
           {/* Content scroll ได้ */}
           <div className="flex-1 overflow-y-auto">
-            <ModalBody setParams={setParams} params={params} />
+            <ModalBody
+              setParams={setParams}
+              params={params}
+              driverStatus={driverStatus}
+            />
           </div>
 
           {/* Footer ลอยอยู่ล่างเสมอ */}

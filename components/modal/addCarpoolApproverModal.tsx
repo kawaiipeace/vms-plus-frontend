@@ -105,9 +105,9 @@ const AddCarpoolApproverModal = forwardRef<
           setMobileContactNumber("");
           modalRef.current?.close();
           setToast({
-            title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+            title: "แก้ไขข้อมูลผู้อนุมัติสำเร็จ",
             desc:
-              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+              "ข้อมูลการติดต่อของผู้อนุมัติ " +
               approver.find((item) => item.emp_id === selectedApprover?.value)
                 ?.full_name +
               " ได้รับการแก้ไขเรียบร้อยแล้ว",

@@ -9,6 +9,7 @@ import BadgeStatus from "./status";
 import { getVehicleType } from "@/services/vehicleService";
 import { VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
+import { getVehicleStatus } from "@/services/carpoolManagement";
 
 type Props = {
   flag: string;
@@ -21,6 +22,7 @@ export type VehicleFilterModalRef = {
 };
 
 interface ModalBodyProps {
+  vehicleStatus: VehicleStatus[];
   vehicleTypes: VehicleTypeApiResponse[];
   setParams: (params: VehicleParams) => void;
   params: VehicleParams;
@@ -32,13 +34,10 @@ interface VehicleParams {
   is_active: string[];
 }
 
-const VEHICLE_STATUS = [
-  { id: "1", name: "ปกติ" },
-  { id: "2", name: "บำรุงรักษา" },
-  { id: "3", name: "ใช้ชั่วคราว" },
-  { id: "4", name: "ส่งซ่อม" },
-  { id: "5", name: "สิ้นสุดสัญญา" },
-];
+interface VehicleStatus {
+  ref_vehicle_status_code: number;
+  ref_vehicle_status_name: string;
+}
 
 const VEHICLE_ACTIVE = [
   { id: "0", name: "ปิด" },
@@ -62,7 +61,12 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-const ModalBody = ({ vehicleTypes, setParams, params }: ModalBodyProps) => {
+const ModalBody = ({
+  vehicleTypes,
+  vehicleStatus,
+  setParams,
+  params,
+}: ModalBodyProps) => {
   const [selected, setSelected] = useState<CustomSelectOption>();
 
   const options = vehicleTypes.map((vt) => ({
@@ -115,22 +119,27 @@ const ModalBody = ({ vehicleTypes, setParams, params }: ModalBodyProps) => {
         <div className="mb-4">
           <label className="form-label">สถานะ</label>
           <div className="flex flex-col gap-2 mt-2">
-            {VEHICLE_STATUS.map((_status, index) => (
+            {vehicleStatus.map((_status, index) => (
               <div className="form-group" key={index}>
                 <div className="custom-group">
                   <div className="custom-control custom-checkbox custom-control-inline">
                     <input
                       type="checkbox"
                       defaultChecked
-                      checked={params.is_active.includes(_status.id)}
+                      checked={params.ref_vehicle_status_code.includes(
+                        _status.ref_vehicle_status_code.toString()
+                      )}
                       onChange={(e) =>
-                        onStatusChecked(e.target.checked, _status.id)
+                        onStatusChecked(
+                          e.target.checked,
+                          _status.ref_vehicle_status_code.toString()
+                        )
                       }
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                     />
                     <label className="custom-control-label">
                       <div className="custom-control-label-group">
-                        <BadgeStatus status={_status.name} />
+                        <BadgeStatus status={_status.ref_vehicle_status_name} />
                       </div>
                     </label>
                   </div>
@@ -151,7 +160,7 @@ const ModalBody = ({ vehicleTypes, setParams, params }: ModalBodyProps) => {
                 <input
                   type="checkbox"
                   defaultChecked
-                  checked={params.ref_vehicle_status_code.includes(e.id)}
+                  checked={params.is_active.includes(e.id)}
                   onChange={(e) =>
                     onActiveChecked(e.target.checked, e.target.value)
                   }
@@ -205,14 +214,16 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
       close: () => dialogRef.current?.close(),
     }));
 
-    const [params, setParams] = useState<VehicleParams>({
-      vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
-      ref_vehicle_status_code: VEHICLE_STATUS.map((e) => e.id),
-      is_active: VEHICLE_ACTIVE.map((e) => e.id),
-    });
+    const [vehicleStatus, setVehicleStatus] = useState<VehicleStatus[]>([]);
     const [vehicleType, setVehicleType] = useState<VehicleTypeApiResponse[]>(
       []
     );
+
+    const [params, setParams] = useState<VehicleParams>({
+      vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
+      ref_vehicle_status_code: [],
+      is_active: VEHICLE_ACTIVE.map((e) => e.id),
+    });
 
     const handleSubmitFilter = () => {
       onSubmitFilter?.({
@@ -227,19 +238,32 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
     const handleClearFilter = () => {
       setParams({
         vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
-        ref_vehicle_status_code: VEHICLE_STATUS.map((e) => e.id),
+        ref_vehicle_status_code: vehicleStatus.map((e) =>
+          e.ref_vehicle_status_code.toString()
+        ),
         is_active: VEHICLE_ACTIVE.map((e) => e.id),
       });
     };
 
     useEffect(() => {
       const fetchData = async () => {
-        const [fetchVehicleType] = await Promise.all([getVehicleType()]);
+        const [fetchVehicleType, fetchVehicleStatus] = await Promise.all([
+          getVehicleType(),
+          getVehicleStatus(),
+        ]);
 
         setVehicleType(fetchVehicleType);
+        setVehicleStatus(fetchVehicleStatus);
+        setParams({
+          ...params,
+          ref_vehicle_status_code: fetchVehicleStatus.map((e: any) =>
+            e.ref_vehicle_status_code.toString()
+          ),
+        });
       };
 
       fetchData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -250,6 +274,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
           {/* Content scroll ได้ */}
           <div className="flex-1 overflow-y-auto">
             <ModalBody
+              vehicleStatus={vehicleStatus}
               vehicleTypes={vehicleType}
               setParams={setParams}
               params={params}
