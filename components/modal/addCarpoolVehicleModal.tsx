@@ -30,13 +30,11 @@ const AddCarpoolVehicleModal = forwardRef<
   const scrollContentRef = useRef<HTMLDivElement>(null);
   const { formData } = useFormContext();
 
-  const [search, setSearch] = useState<string>("");
+  // const [search, setSearch] = useState<string>("");
   const [vehicles, setVehicles] = useState<CarpoolVehicle[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
-  const [total, setTotal] = useState<number>(0);
+  // const [total, setTotal] = useState<number>(0);
   const [params, setParams] = useState({
-    page: 1,
-    limit: 10,
     search: "",
   });
 
@@ -50,61 +48,60 @@ const AddCarpoolVehicleModal = forwardRef<
       const response = await getCarpoolVehicle(params);
       const result = response.data;
       setVehicles([...vehicles, ...result.vehicles]);
-      setTotal(result.pagination.total);
+      // setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
   };
 
-  const handleScroll = () => {
-    const el = scrollContentRef.current;
-    if (el) {
-      const { scrollTop, offsetHeight, scrollHeight } = el;
-      if (scrollTop + offsetHeight >= scrollHeight - 20) {
-        setParams({ ...params, page: params.page + 1 });
-      }
-    }
-  };
+  // const handleScroll = () => {
+  //   const el = scrollContentRef.current;
+  //   if (el) {
+  //     const { scrollTop, offsetHeight, scrollHeight } = el;
+  //     if (scrollTop + offsetHeight >= scrollHeight - 20) {
+  //       setParams({ ...params, page: params.page + 1 });
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    const currentRef = scrollContentRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", handleScroll);
-    }
+  // useEffect(() => {
+  //   const currentRef = scrollContentRef.current;
+  //   if (currentRef) {
+  //     currentRef.addEventListener("scroll", handleScroll);
+  //   }
 
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener("scroll", handleScroll);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   return () => {
+  //     if (currentRef) {
+  //       currentRef.removeEventListener("scroll", handleScroll);
+  //     }
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
-  useEffect(() => {
-    if (params.search) {
-      if (params.search && !search) {
-        setVehicles([]);
-      } else if (params.search !== search) {
-        setParams({ ...params, page: 1 });
-      } else if (!params.search && search) {
-        setSearch("");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.search]);
+  // useEffect(() => {
+  //   if (params.search) {
+  //     if (params.search && !search) {
+  //       setVehicles([]);
+  //       } else if (params.search !== search) {
+  //         setParams({ ...params, page: 1 });
+  //     } else if (!params.search && search) {
+  //       setSearch("");
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [params.search]);
 
   useEffect(() => {
     if (CBRef.current) {
       if (checked.length === 0) {
         CBRef.current.indeterminate = false;
-      } else if (checked.length > 0 && checked.length !== total) {
+      } else if (checked.length > 0 && checked.length !== vehicles.length) {
         CBRef.current.indeterminate = true;
-      } else if (checked.length === total) {
+      } else if (checked.length === vehicles.length) {
         CBRef.current.indeterminate = false;
         CBRef.current.checked = true;
       }
     }
-    console.log("checked: ", checked);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked]);
 
@@ -175,7 +172,6 @@ const AddCarpoolVehicleModal = forwardRef<
                     setParams((prevParams) => ({
                       ...prevParams,
                       search: e.target.value,
-                      page: 1, // Reset to page 1 on search
                     }))
                   }
                 />
@@ -186,7 +182,7 @@ const AddCarpoolVehicleModal = forwardRef<
                   <div>
                     รายชื่อยานพาหนะ{" "}
                     <span className="badge badge-outline badge-gray !rounded">
-                      {total} คัน
+                      {vehicles.length} คัน
                     </span>
                   </div>
                   <div className="custom-group">
@@ -195,15 +191,15 @@ const AddCarpoolVehicleModal = forwardRef<
                         type="checkbox"
                         id="my-checkbox"
                         ref={CBRef}
-                        // value={statusItem.ref_request_status_code}
-                        // checked={selectedStatuses.includes(
-                        //   statusItem.ref_request_status_code
-                        // )}
-                        // onChange={() =>
-                        //   handleCheckboxChange(
-                        //     statusItem.ref_request_status_code
-                        //   )
-                        // }
+                        defaultChecked={checked.length === vehicles.length}
+                        checked={checked.length === vehicles.length}
+                        onChange={() =>
+                          setChecked(
+                            checked.length === vehicles.length
+                              ? []
+                              : vehicles.map((item) => item.mas_vehicle_uid)
+                          )
+                        }
                         className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                       />
                     </div>
@@ -228,15 +224,10 @@ const AddCarpoolVehicleModal = forwardRef<
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
-                            // value={statusItem.ref_request_status_code}
-                            // checked={selectedStatuses.includes(
-                            //   statusItem.ref_request_status_code
-                            // )}
-                            // onChange={() =>
-                            //   handleCheckboxChange(
-                            //     statusItem.ref_request_status_code
-                            //   )
-                            // }
+                            checked={checked.includes(vehicle.mas_vehicle_uid)}
+                            defaultChecked={checked.includes(
+                              vehicle.mas_vehicle_uid
+                            )}
                             onChange={() =>
                               handleCheck(vehicle.mas_vehicle_uid)
                             }
