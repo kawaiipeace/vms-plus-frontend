@@ -190,7 +190,7 @@ export default function RequestForm() {
       if (formData.vehicleUserEmpId) {
         setSelectedVehicleUserOption({
           value: formData.vehicleUserEmpId,
-          label: `${formData.vehicleUserEmpName} (${formData.vehicleUserDeptSap})`,
+          label: `${formData.vehicleUserEmpName} (${formData.vehicleUserEmpId})`,
         });
       } else {
         const defaultVehicleUser = vehicleUserDatas.find(
@@ -199,7 +199,7 @@ export default function RequestForm() {
         if (defaultVehicleUser) {
           setSelectedVehicleUserOption({
             value: defaultVehicleUser.emp_id,
-            label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.dept_sap})`,
+            label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.emp_id})`,
           });
           setValue("telInternal", defaultVehicleUser.tel_internal);
           setValue("telMobile", defaultVehicleUser.tel_mobile);

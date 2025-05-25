@@ -127,7 +127,6 @@ export default function Header() {
 
   const handleOpenRequestCreateReturnDrivingModal = async () => {
     await getDriverUserCard();
-    console.log('driv',driverUser);
     if(driverUser){
       await getStatusLicDetail(driverUser?.trn_request_annual_driver_uid);
     }
@@ -220,7 +219,7 @@ export default function Header() {
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="">
                 <Image
-                  src="/assets/img/avatar.svg"
+                  src={profile?.image_url || "/assets/img/avatar.svg"}
                   width={36}
                   height={36}
                   alt="User Avatar"
@@ -235,7 +234,7 @@ export default function Header() {
                     <div className="nav-link sidebar-users">
                       <div className="avatar avatar-sm">
                         <Image
-                          src="/assets/img/avatar.svg"
+                          src={profile?.image_url || "/assets/img/avatar.svg"}
                           width={36}
                           height={36}
                           alt="Profile Avatar"
@@ -246,7 +245,9 @@ export default function Header() {
                           {profile.first_name} {profile.last_name}
                         </div>
                         <div className="sidebar-users-position">
-                          {profile.dept_sap_full}
+                          รหัสพนักงาน : {profile.emp_id} <br />
+                          ตำแหน่ง : {profile.position}  <br />
+                          สังกัด : {profile.dept_sap_full}
                         </div>
                       </div>
                     </div>

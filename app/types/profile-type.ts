@@ -7,6 +7,7 @@ export interface Profile {
   dept_sap_full: string;
   license_status: string;
   license_status_code: string;
+  position: string;
   image_url: string;
   roles: string[];
 }

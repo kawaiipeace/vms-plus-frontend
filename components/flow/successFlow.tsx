@@ -59,7 +59,9 @@ export default function SuccessFlow() {
     selectedEndDate: string;
   }) => {
     const date =
-      convertToBuddhistDateTime(selectedStartDate).date + " - " + convertToBuddhistDateTime(selectedEndDate).date;
+      convertToBuddhistDateTime(selectedStartDate).date +
+      " - " +
+      convertToBuddhistDateTime(selectedEndDate).date;
 
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
@@ -100,7 +102,8 @@ export default function SuccessFlow() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -174,7 +177,10 @@ export default function SuccessFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date")}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("date")}
+            >
               close_small
             </i>
           </span>
@@ -185,7 +191,10 @@ export default function SuccessFlow() {
         <>
           <div className="hidden md:block">
             <div className="mt-2">
-              <RequestListTable defaultData={dataRequest} pagination={pagination} />
+              <RequestListTable
+                defaultData={dataRequest}
+                pagination={pagination}
+              />
             </div>
           </div>
 
@@ -201,27 +210,30 @@ export default function SuccessFlow() {
         </>
       )}
 
-      {dataRequest !== null && pagination.total > 0 && (
-        <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-          button="ล้างตัวกรอง"
-          displayBtn={true}
-          btnType="secondary"
-          useModal={handleClearAllFilters}
-        />
-      )}
+      {pagination.total <= 0 &&
+        (params.search ||
+        params.ref_request_status_code ||
+        params.startdate ||
+        params.enddate ? (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
+        ) : (
+          <ZeroRecord
+            imgSrc="/assets/img/graphic/empty.svg"
+            title="ไม่มีคำขอใช้ที่สำเร็จ"
+            desc={<>รายการคำขอใช้ยานพาหนะที่สำเร็จจะแสดงที่นี่</>}
+            button="สร้างคำขอใช้"
+            displayBtn={false}
+          />
+        ))}
 
-      {pagination.total <= 0 && (
-        <ZeroRecord
-          imgSrc="/assets/img/graphic/empty.svg"
-          title="ไม่มีคำขอใช้ที่สำเร็จ"
-          desc={<>รายการคำขอใช้ยานพาหนะที่สำเร็จจะแสดงที่นี่</>}
-          button="สร้างคำขอใช้"
-          displayBtn={false}
-        />
-      )}
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
     </div>
   );
