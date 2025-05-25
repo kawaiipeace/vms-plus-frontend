@@ -2,8 +2,9 @@ import { fetchCodeTypeFromCode } from "@/services/masterService";
 import { useEffect, useState } from "react";
 interface Props {
   refCostTypeCode?: string;
+  costCenter?: string;
 }
-export default function DisburstmentCard({ refCostTypeCode }: Props) {
+export default function DisburstmentCard({ refCostTypeCode, costCenter }: Props) {
   const [costTypeData, setCostTypeData] = useState<any>();
   useEffect(() => {
     if(refCostTypeCode){
@@ -39,7 +40,7 @@ export default function DisburstmentCard({ refCostTypeCode }: Props) {
               <i className="material-symbols-outlined">account_balance</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ศูนย์ต้นทุน</div>
-                <div className="form-text">{costTypeData?.ref_cost_no}</div>
+                <div className="form-text">{costCenter}</div>
               </div>
             </div>
           </div>

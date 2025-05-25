@@ -279,6 +279,7 @@ Props) {
             {updatedFormData.refCostTypeCode && 
             <DisburstmentCard
               refCostTypeCode={updatedFormData.refCostTypeCode}
+              costCenter={updatedFormData.costCenter}
             />
 }
           </div>

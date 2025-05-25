@@ -58,6 +58,7 @@ export default function ProcessThree() {
   const [requestAnnual, setRequestAnnual] = useState("");
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
+  const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
   const { formData, updateFormData } = useFormContext();
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
@@ -544,6 +545,7 @@ export default function ProcessThree() {
                                   }
                                   age={driver.age || "-"}
                                   onVehicleSelect={handleVehicleSelection}
+                                  isSelected={selectedVehiclePoolId === driver.mas_driver_uid}
                                 />
                               )
                             )}

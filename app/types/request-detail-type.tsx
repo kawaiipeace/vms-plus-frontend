@@ -38,7 +38,8 @@ export type RequestDetailType = Partial<{
   is_admin_choose_vehicle: string;
   is_system_choose_vehicle: string;
   ref_cost_type_code: string;
-  cost_no: string;
+  cost_no?: string;
+  cost_center: string;
   mas_carpool_driver_uid: string;
   driver: DriverType;
   driver_emp_id: string;
@@ -121,6 +122,10 @@ export type RequestDetailType = Partial<{
   add_fuels_count: number;
   trip_details_count: number;
   satisfaction_survey_answers: satisfactionSurveyAnswers[];
+  wbs_number?: string;
+  activity_no?: string;
+  network_no?: string;
+  pm_order_no?: string;
 }>;
 
 export interface satisfactionSurveyAnswers {
