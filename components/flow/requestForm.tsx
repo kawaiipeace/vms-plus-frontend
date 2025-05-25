@@ -73,7 +73,7 @@ const schema = yup
 interface costType {
   ref_cost_type_code: string;
   ref_cost_type_name: string;
-  ref_cost_no: string;
+  cost_center: string;
 }
 
 interface costCenter {
@@ -87,6 +87,7 @@ export default function RequestForm() {
   const [selectedTripType, setSelectedTripType] = useState("1");
   const { formData, updateFormData } = useFormContext();
   const [loadingDrivers, setLoadingDrivers] = useState(false);
+  const [loadingCostCenter, setLoadingCostCenter] = useState(false);
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
     []
   );
@@ -200,32 +201,32 @@ export default function RequestForm() {
   useEffect(() => {
     if (vehicleUserDatas.length > 0) {
       // filter out undefined dept_sap
-      const uniqueDepartments = Array.from(
-        new Set(
-          vehicleUserDatas
-            .map((user) => user.dept_sap)
-            .filter((deptSap): deptSap is string => !!deptSap)
-        )
-      ).map((deptSap) => {
-        const user = vehicleUserDatas.find((u) => u.dept_sap === deptSap);
-        return {
-          value: deptSap,
-          label: `${user?.dept_sap_short ?? ""} (${deptSap})`,
-        };
-      });
+      // const uniqueDepartments = Array.from(
+      //   new Set(
+      //     vehicleUserDatas
+      //       .map((user) => user.dept_sap)
+      //       .filter((deptSap): deptSap is string => !!deptSap)
+      //   )
+      // ).map((deptSap) => {
+      //   const user = vehicleUserDatas.find((u) => u.dept_sap === deptSap);
+      //   return {
+      //     value: deptSap,
+      //     label: `${user?.dept_sap_short ?? ""} (${deptSap})`,
+      //   };
+      // });
 
-      setCostCenterOptions(uniqueDepartments);
+      // setCostCenterOptions(uniqueDepartments);
 
-      if (formData.costCenter) {
-        const defaultCostCenter = uniqueDepartments.find(
-          (option) => option.value === formData.costCenter
-        );
-        if (defaultCostCenter) {
-          setSelectedCostCenterOption(defaultCostCenter);
-        }
-      }
+      // if (formData.costCenter) {
+      //   const defaultCostCenter = uniqueDepartments.find(
+      //     (option) => option.value === formData.costCenter
+      //   );
+      //   if (defaultCostCenter) {
+      //     setSelectedCostCenterOption(defaultCostCenter);
+      //   }
+      // }
     }
-  }, [vehicleUserDatas, formData.costCenter]);
+  }, [vehicleUserDatas]);
 
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
     driverOptions[0]
@@ -310,7 +311,7 @@ export default function RequestForm() {
       );
 
       if (data) {
-        setValue("costOrigin", data.ref_cost_no);
+        setValue("costOrigin", data.cost_center);
       }
     }
   };
@@ -407,7 +408,7 @@ export default function RequestForm() {
         value: data.ref_cost_type_code,
         label: data.ref_cost_type_name,
       });
-      setValue("costOrigin", data.ref_cost_no);
+      setValue("costOrigin", data.cost_center);
     }
   }, [formData, costTypeDatas]);
 
@@ -439,6 +440,64 @@ export default function RequestForm() {
     }
   
     setLoadingDrivers(true);
+    try {
+      const response = await fetchVehicleUsers(search);
+      if (response.status === 200) {
+        const vehicleUserData = response.data;
+        const driverOptionsArray = vehicleUserData.map(
+          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.emp_id})`,
+          })
+        );
+        setDriverOptions(driverOptionsArray);
+      } else {
+        setDriverOptions([]);
+      }
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        setDriverOptions([]);
+        console.error("Search failed:", error);
+      }
+    } finally {
+      setLoadingDrivers(false);
+    }
+  };
+
+  const handleCostCenterSearch = async (search: string) => {
+    // Debounce handled by parent component or elsewhere
+    if (search.trim().length < 3) {
+      setLoadingDrivers(true);
+      try {
+        const response = await fetchCostCenter(); //addsearh
+        if (response.status === 200) {
+          const costCenterData = response.data;
+          setCostCenterDatas(costCenterData);
+          const costCenterArr = [
+            ...costCenterData.map(
+              (cost: {
+                cost_center: string;
+              }) => ({
+                value: cost.cost_center,
+                label: cost.cost_center,
+              })
+            ),
+          ];
+
+          setCostCenterOptions(costCenterArr);
+        } else {
+          setDriverOptions([]);
+        }
+      } catch (error) {
+        setDriverOptions([]);
+        console.error("Error resetting options:", error);
+      } finally {
+        setLoadingCostCenter(false);
+      }
+      return;
+    }
+  
+    setLoadingCostCenter(true);
     try {
       const response = await fetchVehicleUsers(search);
       if (response.status === 200) {
@@ -920,6 +979,9 @@ export default function RequestForm() {
                         options={costCenterOptions}
                         value={selectedCostCenterOption}
                         onChange={handleCostCenterChange}
+                        onSearchInputChange={handleCostCenterSearch}
+                        loading={loadingCostCenter}
+                        enableSearchOnApi={true}
                       />
                     </div>
                   </div>
