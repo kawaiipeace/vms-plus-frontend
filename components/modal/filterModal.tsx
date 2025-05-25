@@ -207,7 +207,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                   <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12">
                       <div className="form-group">
-                        <label className="form-label">วันที่เริ่มเดินทาง</label>
+                        <label className="form-label">วันที่เดินทาง</label>
                         <div className="input-group flatpickr">
                           <div className="input-group-prepend" data-toggle="">
                             <span className="input-group-text">
@@ -228,28 +228,6 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                       </div>
                     </div>
 
-                    <div className="col-span-12">
-                      <div className="form-group">
-                        <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
-                        <div className="input-group flatpickr">
-                          <div className="input-group-prepend" data-toggle="">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
-                            </span>
-                          </div>
-                          <DatePicker
-                            ref={endDatePickerRef} // Attach ref to end date picker
-                            placeholder={"ระบุช่วงวันที่สิ้นสุดเดินทาง"}
-                            onChange={handleEndDateChange}
-                          />
-                          <div className="input-group-append hidden" data-clear>
-                            <span className="input-group-text search-ico-trailing">
-                              <i className="material-symbols-outlined">close</i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
