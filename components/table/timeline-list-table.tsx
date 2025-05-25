@@ -205,10 +205,14 @@ export default function RequestListTable({
   const [dateSelected, setDateSelected] = useState<string | null>(null);
 
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
+  
+  // Generate dates based on the provided params
   const dates = useGenerateDates(params);
-  const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest, dates]);
-  const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
 
+  // Transform the API data to table data format
+  const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest, dates]);
+
+  const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
 
   const columns = useColumns(

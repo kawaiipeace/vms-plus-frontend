@@ -8,10 +8,10 @@ import VehicleStatus from "../vehicle/status";
 import SearchInput from "../vehicle/input/search";
 import PaginationControls from "../table/pagination-control";
 import VehicleNoData from "../vehicle/noData";
-import DateRangePopover from "../vehicle/input/inputDateRange";
 import { DateRange } from "react-day-picker";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import { debounce } from "lodash";
+import DateRangePicker from "../vehicle/input/dateRangeInput";
 
 export default function VehicleTimeLine() {
     const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -131,18 +131,22 @@ export default function VehicleTimeLine() {
             </div>
 
             <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-                <DateRangePopover
-                    value={selectedRange}
-                    onChange={(selectedRange) => {
+                <DateRangePicker
+                    date={selectedRange}
+                    onChange={(range) => {
                         setParams((prev) => ({
                             ...prev,
-                            start_date: selectedRange?.from ? dayjs(selectedRange.from).format("YYYY-MM-DD") : "",
-                            end_date: selectedRange?.to ? dayjs(selectedRange.to).format("YYYY-MM-DD") : "",
+                            start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+                            end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
                         }));
-                        setSelectedRange(selectedRange);
-                    }}
-                />
 
+                        if (range?.from && range?.to) {
+                            setSelectedRange({ from: range.from, to: range.to });
+                        } else {
+                            setSelectedRange(undefined);
+                        }
+                    }}
+                /> 
                 <button
                     onClick={handleOpenFilterModal}
                     className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"

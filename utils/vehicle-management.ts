@@ -1,4 +1,4 @@
-import { CarUserDetail, DriverDetail, VehicleTimelineTransformData } from "@/app/types/vehicle-management/vehicle-timeline-type";
+import { VehicleTimelineTransformData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
 import 'dayjs/locale/th';
@@ -111,3 +111,12 @@ export async function generateDateObjects(startDate: string, endDate: string) {
     return [];
   }
 }
+
+export const DateLongTH = (date: Date) => {
+  const thDate = dayjs(date).locale('th');
+  const day = thDate.format("DD");
+  const month = thDate.format("MM");
+  const year = thDate.year() + 543;
+  
+  return `${day}/${month}/${year}`;
+};

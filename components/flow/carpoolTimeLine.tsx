@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import RequestListTable from "../table/timeline-list-table";
 import "flatpickr/dist/themes/material_blue.css";
-import DateRangePicker from "../vehicle/input/dateRangeInput";
 import dayjs from "dayjs";
 import VehicleStatus from "../vehicle/status";
 import SearchInput from "../vehicle/input/search";
@@ -22,6 +21,7 @@ import VehicleFilterModal, {
 import DriverFilterModal, {
   DriverFilterModalRef,
 } from "../carpool-management/modal/driverFilterModal";
+import DateRangePicker from "../vehicle/input/dateRangeInput";
 
 export default function CarpoolTimeLine() {
   const id = useSearchParams().get("id");
@@ -235,25 +235,25 @@ export default function CarpoolTimeLine() {
           <VehicleStatus status="เสร็จสิ้น" />
         </div>
         <DateRangePicker
-          defaultValue={{
-            startDate: dayjs(vehicleParams.start_date).toDate(),
-            endDate: dayjs(vehicleParams.end_date).toDate(),
+          date={{
+            from: dayjs(vehicleParams.start_date).toDate(),
+            to: dayjs(vehicleParams.end_date).toDate(),
           }}
-          onChange={(startDate, endDate) => {
+          onChange={(range) => {
             setVehicleParams((prev) => ({
               ...prev,
-              start_date: startDate
-                ? dayjs(startDate).format("YYYY-MM-DD")
+              start_date: range?.from
+                ? dayjs(range?.from).format("YYYY-MM-DD")
                 : "",
-              end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : "",
+              end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
             }));
 
             setDriverParams((prev) => ({
               ...prev,
-              start_date: startDate
-                ? dayjs(startDate).format("YYYY-MM-DD")
+              start_date: range?.from
+                ? dayjs(range?.from).format("YYYY-MM-DD")
                 : "",
-              end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : "",
+              end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
             }));
           }}
         />
