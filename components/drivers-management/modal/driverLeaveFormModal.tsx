@@ -1,18 +1,18 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react";
 import DatePicker from "@/components/datePicker";
-import RadioButton from "@/components/radioButton";
 import CustomSelect from "@/components/drivers-management/customSelect";
-import * as Yup from "yup";
 import FormHelper from "@/components/formHelper";
+import RadioButton from "@/components/radioButton";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import * as Yup from "yup";
 
-import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 import { DriverLeaveTimeList, driverReplacementLists, driverUpdateLeaveStatus } from "@/services/driversManagement";
+import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
 import {
-  DriverLeaveTimeType,
-  DriverLeaveStatus,
-  DriverReplacementDetails,
   DriverInfoType,
+  DriverLeaveStatus,
+  DriverLeaveTimeType,
+  DriverReplacementDetails,
 } from "@/app/types/drivers-management-type";
 
 interface CustomSelectOption {
@@ -56,11 +56,23 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
       replacement_driver_uid: Yup.string().required("Required"),
     });
 
+    const [openModal, setOpenModal] = useState(false);
+
     useImperativeHandle(ref, () => ({
-      openModal: () => modalRef.current?.showModal(),
-      closeModal: () => modalRef.current?.close(),
+      openModal: () => {
+        modalRef.current?.showModal();
+        setOpenModal(true);
+      },
+      closeModal: () => {
+        modalRef.current?.close();
+        setOpenModal(false);
+      },
     }));
 
+    const handleCloseModal = () => {
+      modalRef.current?.close();
+      setOpenModal(false); // Update state to reflect modal is closed
+    };
     useEffect(() => {
       const fetchLeaveTimeList = async () => {
         try {
@@ -115,7 +127,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
         try {
           const response = await driverUpdateLeaveStatus(leaveData);
           if (response.status === 200) {
-            modalRef.current?.close();
+            handleCloseModal();
             onUpdateDriver(true);
             setUpdateType("leave");
           }
@@ -190,137 +202,143 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
     };
 
     return (
-      <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col bg-white">
-          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">ลาป่วย/ลากิจ</div>
-            <form method="dialog">
-              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </form>
-          </div>
-          <form className="form" onSubmit={handleSubmit}>
-            <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5]">
-              <div className="form-section">
-                <div className="form-section-body">
-                  <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="form-label">วันที่เริ่มต้นลา</label>
-                        <div className={`input-group`}>
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
-                            </span>
+      <>
+        {openModal && (
+          <div className={`modal modal-middle modal-open`}>
+            <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col bg-white">
+              <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+                <div className="modal-title">ลาป่วย/ลากิจ</div>
+                <form method="dialog">
+                  <button
+                    className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                    onClick={handleCloseModal}
+                  >
+                    <i className="material-symbols-outlined">close</i>
+                  </button>
+                </form>
+              </div>
+              <form className="form" onSubmit={handleSubmit}>
+                <div className="modal-scroll-wrapper overflow-y-auto">
+                  <div className="modal-body  text-center ">
+                    <div className="form-section">
+                      <div className="form-section-body">
+                        <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="form-label">วันที่เริ่มต้นลา</label>
+                              <div className={`input-group`}>
+                                <div className="input-group-prepend">
+                                  <span className="input-group-text">
+                                    <i className="material-symbols-outlined">calendar_month</i>
+                                  </span>
+                                </div>
+                                <DatePicker
+                                  placeholder="วันที่เริ่มต้นลา"
+                                  defaultValue={convertToThaiDate(formData.leave_start_date)}
+                                  onChange={(dateStr) => handleChangeLeaveStartDate(dateStr)}
+                                />
+                              </div>
+                              {formErrors.leave_start_date && <FormHelper text={String(formErrors.leave_start_date)} />}
+                            </div>
                           </div>
-                          <DatePicker
-                            placeholder="วันที่เริ่มต้นลา"
-                            defaultValue={convertToThaiDate(formData.leave_start_date)}
-                            onChange={(dateStr) => handleChangeLeaveStartDate(dateStr)}
-                          />
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="form-label">วันที่สิ้นสุดลา</label>
+                              <div className={`input-group`}>
+                                <div className="input-group-prepend">
+                                  <span className="input-group-text">
+                                    <i className="material-symbols-outlined">calendar_month</i>
+                                  </span>
+                                </div>
+                                <DatePicker
+                                  placeholder="วันที่สิ้นสุดลา"
+                                  defaultValue={convertToThaiDate(formData.leave_end_date)}
+                                  onChange={(dateStr) => handleChangeLeaveEndDate(dateStr)}
+                                />
+                              </div>
+                              {formErrors.leave_end_date && <FormHelper text={String(formErrors.leave_end_date)} />}
+                            </div>
+                          </div>
                         </div>
-                        {formErrors.leave_start_date && <FormHelper text={String(formErrors.leave_start_date)} />}
-                      </div>
-                    </div>
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="form-label">วันที่สิ้นสุดลา</label>
-                        <div className={`input-group`}>
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
-                            </span>
+                        <div className="w-full grid grid-cols-1 mt-3">
+                          <div className="form-group">
+                            <label className="form-label">ช่วงเวลา</label>
+                            <div className="flex flex-wrap gap-4">
+                              {leaveTimeList.map((item, index) => (
+                                <div key={index} className="form-group">
+                                  <RadioButton
+                                    name="leaveTimeType"
+                                    value={`${item.leave_time_type_code}`}
+                                    label={item.leave_time_type_name ?? ""}
+                                    selectedValue={`${formData.leave_time_type_code}`}
+                                    setSelectedValue={handleChangeLeaveTime}
+                                  />
+                                </div>
+                              ))}
+                              {formErrors.leave_time_type_code && (
+                                <FormHelper text={String(formErrors.leave_time_type_code)} />
+                              )}
+                            </div>
                           </div>
-                          <DatePicker
-                            placeholder="วันที่สิ้นสุดลา"
-                            defaultValue={convertToThaiDate(formData.leave_end_date)}
-                            onChange={(dateStr) => handleChangeLeaveEndDate(dateStr)}
-                          />
-                        </div>
-                        {formErrors.leave_end_date && <FormHelper text={String(formErrors.leave_end_date)} />}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full grid grid-cols-1 mt-3">
-                    <div className="form-group">
-                      <label className="form-label">ช่วงเวลา</label>
-                      <div className="flex flex-wrap gap-4">
-                        {leaveTimeList.map((item, index) => (
-                          <div key={index} className="form-group">
-                            <RadioButton
-                              name="leaveTimeType"
-                              value={`${item.leave_time_type_code}`}
-                              label={item.leave_time_type_name ?? ""}
-                              selectedValue={`${formData.leave_time_type_code}`}
-                              setSelectedValue={handleChangeLeaveTime}
-                            />
+                          <div className="w-full grid grid-cols-1">
+                            <div className="w-full">
+                              <div className="form-group">
+                                <label className="form-label">เหตุผลการลา</label>
+                                <div className={`input-group`}>
+                                  <input
+                                    type="text"
+                                    name="leave_reason"
+                                    className="form-control"
+                                    placeholder="เหตุผลการลา"
+                                    onChange={handleInputChange}
+                                  />
+                                </div>
+                                {formErrors.leave_reason && <FormHelper text={String(formErrors.leave_reason)} />}
+                              </div>
+                            </div>
                           </div>
-                        ))}
-                        {formErrors.leave_time_type_code && (
-                          <FormHelper text={String(formErrors.leave_time_type_code)} />
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-full grid grid-cols-1">
-                      <div className="w-full">
-                        <div className="form-group">
-                          <label className="form-label">เหตุผลการลา</label>
-                          <div className={`input-group`}>
-                            <input
-                              type="text"
-                              name="leave_reason"
-                              className="form-control"
-                              placeholder="เหตุผลการลา"
-                              onChange={handleInputChange}
-                            />
+                          <div className="w-full grid grid-cols-1 mt-3">
+                            <div className="w-full">
+                              <div className="form-group">
+                                <label className="form-label">พนักงานที่จะมาปฏิบัติงานแทน</label>
+                                <CustomSelect
+                                  w="w-full"
+                                  options={driverReplacementList}
+                                  value={
+                                    driverReplacementList.find(
+                                      (option) => option.value === formData.replacement_driver_uid
+                                    ) || null
+                                  }
+                                  onChange={(selected) => {
+                                    setFormData((prev) => ({ ...prev, replacement_driver_uid: selected.value }));
+                                  }}
+                                />
+                                {formErrors.replacement_driver_uid && (
+                                  <FormHelper text={String(formErrors.replacement_driver_uid)} />
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          {formErrors.leave_reason && <FormHelper text={String(formErrors.leave_reason)} />}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-full grid grid-cols-1 mt-3">
-                      <div className="w-full">
-                        <div className="form-group">
-                          <label className="form-label">พนักงานที่จะมาปฏิบัติงานแทน</label>
-                          <CustomSelect
-                            w="w-full"
-                            options={driverReplacementList}
-                            value={
-                              driverReplacementList.find(
-                                (option) => option.value === formData.replacement_driver_uid
-                              ) || null
-                            }
-                            onChange={(selected) => {
-                              setFormData((prev) => ({ ...prev, replacement_driver_uid: selected.value }));
-                            }}
-                          />
-                          {formErrors.replacement_driver_uid && (
-                            <FormHelper text={String(formErrors.replacement_driver_uid)} />
-                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+                <div className="modal-action mt-5 flex gap-3 justify-end px-4 pb-4">
+                  <div>
+                    <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                      ยกเลิก
+                    </button>
+                  </div>
+                  <button type="submit" className="btn btn-primary" disabled={btnDisabled}>
+                    บันทึก
+                  </button>
+                </div>
+              </form>
             </div>
-            <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
-              <div>
-                <button className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
-                  ยกเลิก
-                </button>
-              </div>
-              <button type="submit" className="btn btn-primary" disabled={btnDisabled}>
-                บันทึก
-              </button>
-            </div>
-          </form>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+          </div>
+        )}
+      </>
     );
   }
 );

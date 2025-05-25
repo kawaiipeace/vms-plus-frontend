@@ -8,18 +8,26 @@ import CustomMultiSelect from "@/components/customMultiSelect";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
+import ToastCustom from "@/components/toastCustom";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import {
   chooseCarChoice,
   chooseDriverChoice,
   getCarpoolDepartmentByType,
   postCarpoolCreate,
+  putCarpoolUpdate,
 } from "@/services/carpoolManagement";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
 
 const schema = yup.object().shape({
   carpool_type: yup.string().required("กรุณาระบุประเภทกลุ่ม"),
@@ -59,6 +67,7 @@ const groupOptions = [
 
 export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const id = useSearchParams().get("id");
+  const name = useSearchParams().get("name");
   const router = useRouter();
 
   const [carSelected, setCarSelected] = useState<string>("");
@@ -71,6 +80,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const [departmentSelected, setDepartmentSelected] = useState<
     CustomSelectOption[]
   >([]);
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const { formData, updateFormData } = useFormContext();
 
@@ -141,23 +151,35 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
 
   useEffect(() => {
     if (carpool) {
+      const { carpool_authorized_depts } = carpool;
+      const strArr = carpool_authorized_depts.map((item) => item.dept_sap);
+      const options = departments
+        .filter((item) => strArr.includes(item.dept_sap))
+        .map((item) => ({
+          value: item.dept_sap,
+          label: item.dept_short,
+          subLabel: item.dept_full,
+        }));
+
+      setValue("carpool_authorized_depts", carpool_authorized_depts);
+      setDepartmentSelected(options);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [departments]);
+
+  useEffect(() => {
+    if (carpool) {
       const {
         carpool_name,
         carpool_contact_place,
         carpool_contact_number,
         carpool_type,
-        carpool_authorized_depts,
       } = carpool;
-      const authorized_depts = carpool_authorized_depts.map((item) => ({
-        value: item.dept_sap,
-      })) as CustomSelectOption[];
       setValue("carpool_name", carpool_name);
       setValue("carpool_contact_place", carpool_contact_place);
       setValue("carpool_contact_number", carpool_contact_number);
       setValue("carpool_type", carpool_type);
       setGroup(groupOptions.find((item) => item.value === carpool_type));
-      setValue("carpool_authorized_depts", carpool_authorized_depts);
-      setDepartmentSelected(authorized_depts);
       setValue("ref_carpool_choose_car_id", carpool.ref_carpool_choose_car_id);
       setCarSelected(carpool.ref_carpool_choose_car_id.toString());
       setValue(
@@ -186,24 +208,46 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     const carpool_authorized_depts = data.carpool_authorized_depts?.map(
       (e: { value: string }) => ({ dept_sap: e.value })
     );
+
+    const dataToApi = {
+      ...data,
+      carpool_authorized_depts:
+        data.carpool_type === "01" ? [] : carpool_authorized_depts,
+      ref_carpool_choose_car_id: Number(data.ref_carpool_choose_car_id),
+      ref_carpool_choose_driver_id: Number(data.ref_carpool_choose_driver_id),
+      is_must_pass_status_30: data.is_must_pass_status_30 ? "1" : "0",
+      is_must_pass_status_40: data.is_must_pass_status_40 ? "1" : "0",
+      is_must_pass_status_50: data.is_must_pass_status_50 ? "1" : "0",
+    };
+
     if (id) {
-      console.log("edit");
+      try {
+        const response = await putCarpoolUpdate(id, dataToApi);
+        if (response.request.status === 200) {
+          setToast({
+            title: "บันทึกการตั้งค่าสำเร็จ",
+            desc: "บันทึกการตั้งค่ากลุ่มยานพาหนะ " + name + " เรียบร้อยแล้ว",
+            status: "success",
+          });
+        }
+      } catch (error: any) {
+        console.log(error);
+        setToast({
+          title: "Error",
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
+          status: "error",
+        });
+      }
     } else if (formData.mas_carpool_uid && !id) {
       router.push("/carpool-management/form/process-two");
     } else {
       try {
-        const response = await postCarpoolCreate({
-          ...data,
-          carpool_authorized_depts:
-            data.carpool_type === "01" ? [] : carpool_authorized_depts,
-          ref_carpool_choose_car_id: Number(data.ref_carpool_choose_car_id),
-          ref_carpool_choose_driver_id: Number(
-            data.ref_carpool_choose_driver_id
-          ),
-          is_must_pass_status_30: data.is_must_pass_status_30 ? "1" : "0",
-          is_must_pass_status_40: data.is_must_pass_status_40 ? "1" : "0",
-          is_must_pass_status_50: data.is_must_pass_status_50 ? "1" : "0",
-        });
+        const response = await postCarpoolCreate(dataToApi);
         if (response.request.status === 201) {
           updateFormData({
             ...data,
@@ -535,6 +579,15 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
           )}
         </div>
       </form>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 }

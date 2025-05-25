@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import ZeroRecord from "@/components/zeroRecord";
-import FilterModal from "@/components/modal/filterModal";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import dayjs from "dayjs";
+import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "@/components/requestStatusBox";
-import PaginationControls from "@/components/table/pagination-control";
-import { fetchRequests } from "@/services/adminService";
 import AdminVehiclePickupTable from "@/components/table/admin-vehicle-pickup-table";
+import PaginationControls from "@/components/table/pagination-control";
+import ZeroRecord from "@/components/zeroRecord";
+import { fetchRequests } from "@/services/adminService";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
 
 interface PaginationType {
   limit: number;
@@ -55,16 +55,14 @@ export default function AdminVehiclePickupFlow() {
     }));
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } =
-    {
-      "51": { iconName: "directions_car", status: "warning" },
-      "60": { iconName: "travel_luggage_and_bags", status: "info" },
-      "60e": { iconName: "car_crash", status: "error" },
-    };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "51": { iconName: "directions_car", status: "warning" },
+    "60": { iconName: "travel_luggage_and_bags", status: "info" },
+    "60e": { iconName: "car_crash", status: "error" },
+  };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -85,9 +83,7 @@ export default function AdminVehiclePickupFlow() {
     department?: string;
   }) => {
     const mappedNames = selectedStatuses.map(
-      (code) =>
-        summary.find((item) => item.ref_request_status_code === code)
-          ?.ref_request_status_name || code
+      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
@@ -103,30 +99,20 @@ export default function AdminVehiclePickupFlow() {
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
       vehicle_owner_dept_sap: department || "",
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
+      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
+        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
+          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
+          return name !== filterValue;
+        });
 
         setFilterNum(updatedStatuses.length);
 
@@ -207,20 +193,10 @@ export default function AdminVehiclePickupFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
+                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -238,20 +214,10 @@ export default function AdminVehiclePickupFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
+                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
                   title={item.ref_request_status_name}
                   number={item.count}
                   onClick={() => {
@@ -263,10 +229,7 @@ export default function AdminVehiclePickupFlow() {
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [
-                        ...prevFilterNames,
-                        statusName,
-                      ]);
+                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
                     }
 
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
@@ -313,9 +276,7 @@ export default function AdminVehiclePickupFlow() {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">
-                {filterNum}
-              </span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
         </div>
@@ -323,15 +284,9 @@ export default function AdminVehiclePickupFlow() {
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span
-            key={index}
-            className="badge badge-brand badge-outline rounded-sm mr-2"
-          >
+          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
             {name}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("status", name)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
               close_small
             </i>
           </span>
@@ -339,16 +294,13 @@ export default function AdminVehiclePickupFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("date", filterDate)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
               close_small
             </i>
           </span>
         )}
       </div>
-      {(dataRequest === null && filterDate?.length > 0) ? (
+      {dataRequest === null && filterDate?.length > 0 ? (
         <>
           <ZeroRecord
             imgSrc="/assets/img/graphic/empty.svg"
@@ -369,10 +321,7 @@ export default function AdminVehiclePickupFlow() {
           {dataRequest?.length > 0 ? (
             <>
               <div className="mt-2">
-                <AdminVehiclePickupTable
-                  defaultData={dataRequest}
-                  pagination={pagination}
-                />
+                <AdminVehiclePickupTable defaultData={dataRequest} pagination={pagination} />
               </div>
 
               <PaginationControls
@@ -399,12 +348,7 @@ export default function AdminVehiclePickupFlow() {
         </>
       )}
 
-      <FilterModal
-        ref={filterModalRef}
-        statusData={summary}
-        department={true}
-        onSubmitFilter={handleFilterSubmit}
-      />
+      <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
     </>
   );
 }

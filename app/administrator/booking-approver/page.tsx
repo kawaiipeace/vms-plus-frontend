@@ -1,9 +1,9 @@
 "use client";
-import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
-import ToastCustom from "@/components/toastCustom";
 import ApproveVehicleTabs from "@/components/tabs/approveVehicleTabs";
+import ToastCustom from "@/components/toastCustom";
+import { useSidebar } from "@/contexts/sidebarContext";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -11,7 +11,6 @@ function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
   const sendbackLicReq = searchParams.get("sendbacklic-req");
-  const sendbackFinalLicReq = searchParams.get("sendbackfinallic-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
   const approveLicReq = searchParams.get("approvelic-req");
@@ -92,7 +91,7 @@ function RequestListContent() {
           title="ตรวจสอบคำขอสำเร็จ"
           desc={
             <>
-              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
               <br />
               {requestId} ผ่านการตรวจสอบแล้ว
             </>
@@ -140,11 +139,7 @@ export default function ApproveRequest() {
       <div className="main-container">
         <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
 
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">

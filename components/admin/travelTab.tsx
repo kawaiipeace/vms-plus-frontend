@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
-import TableTravel from "@/components/tableTravel";
-import { TravelData } from "@/data/travelData";
 import ZeroRecord from "@/components/zeroRecord";
+import { TravelData } from "@/data/travelData";
+import { useRef, useState } from "react";
 import RequestStatusBox from "../requestStatusBox";
 
 export default function TravelTab() {
@@ -30,12 +29,20 @@ export default function TravelTab() {
                     <i className="material-symbols-outlined">search</i>
                   </span>
                 </div>
-                <input type="text" id="myInputTextField" className="form-control dt-search-input" placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่" />
+                <input
+                  type="text"
+                  id="myInputTextField"
+                  className="form-control dt-search-input"
+                  placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
+                />
               </div>
             </div>
 
             <div className="flex gap-4">
-              <button className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block" onClick={() => filterModalRef.current?.openModal()}>
+              <button
+                className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] hidden md:block"
+                onClick={() => filterModalRef.current?.openModal()}
+              >
                 <div className="flex items-center gap-1">
                   <i className="material-symbols-outlined">filter_list</i>
                   ตัวกรอง
@@ -48,7 +55,15 @@ export default function TravelTab() {
           {/* <FilterModal ref={filterModalRef} /> */}
         </>
       ) : (
-        <ZeroRecord imgSrc="/assets/img/graphic/empty.svg" title="ไม่มีคำขอใช้ยานพาหนะ" desc={<>เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติรายการคำขอที่รอให้กุญแจจะแสดงที่นี่</>} button="สร้างคำขอใช้" icon="add" link="process-one" displayBtn={false} />
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ยานพาหนะ"
+          desc={<>เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติรายการคำขอที่รอให้กุญแจจะแสดงที่นี่</>}
+          button="สร้างคำขอใช้"
+          icon="add"
+          link="process-one"
+          displayBtn={false}
+        />
       )}
     </>
   );

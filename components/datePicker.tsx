@@ -12,6 +12,11 @@ interface DatePickerProps {
   onChange?: (dateStr: string) => void;
 }
 
+// interface ExtendedFlatpickrInstance extends FlatpickrInstance {
+//   _scrollHandler?: () => void;
+//   _modalElement?: HTMLElement;
+// }
+
 export interface DatePickerRef {
   reset: () => void;
   setValue: (value: string) => void;
@@ -38,15 +43,18 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
 
   useEffect(() => {
     if (inputRef.current) {
+      // setTimeout(() => {
       flatpickrInstance.current = flatpickr(inputRef.current, {
+        appendTo: document.body,
         dateFormat: "d/m/Y",
         locale: Thai,
-        static: true,
+        allowInput: true,
+        // position: "auto",
         defaultDate: defaultValue ? convertToGregorianYear(defaultValue) : undefined, // Convert defaultValue to Gregorian
         monthSelectorType: "static",
         prevArrow: '<i class="material-symbols-outlined">chevron_left</i>',
         nextArrow: '<i class="material-symbols-outlined">chevron_right</i>',
-        onReady: function (selectedDates, dateStr, instance) {
+        onReady: function (_, dateStr, instance) {
           if (!instance.calendarContainer) return;
 
           const prevMonthButton = instance.calendarContainer.querySelector(".flatpickr-prev-month");
@@ -58,7 +66,9 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
           const origFormatDate = instance.formatDate;
           instance.formatDate = function (dateObj, formatStr) {
             const gregorianYear = origFormatDate.call(instance, dateObj, "Y");
-            const buddhistYear = (parseInt(gregorianYear) + 543).toString();
+            const buddhistYear = (
+              instance.currentYear > 2500 ? gregorianYear : parseInt(gregorianYear) + 543
+            ).toString();
             return origFormatDate.call(instance, dateObj, formatStr.replace("Y", buddhistYear));
           };
 
@@ -71,9 +81,10 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
           updateCalendarYear(instance);
         },
 
-        onChange: function (selectedDates, dateStr, instance) {
+        onChange: function (_, dateStr, instance) {
           // Convert to Buddhist year only if it's not already in Buddhist format
-          const buddhistYearDateStr = formatWithBuddhistYear(dateStr);
+          const buddhistYearDateStr =
+            instance.currentYear > 2500 ? convertToGregorianYear(dateStr) : formatWithBuddhistYear(dateStr);
 
           // Update the input field value with the Buddhist year
           if (instance.input) {
@@ -93,7 +104,27 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
         onYearChange: function (selectedDates, dateStr, instance) {
           updateCalendarYear(instance);
         },
+        onOpen: () => {
+          const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
+          console.log("Modal scroll wrapper:", wrapper);
+
+          if (wrapper) {
+            wrapper.style.overflow = "hidden";
+            // wrapper.style.height = "auto";
+            // wrapper.style.maxHeight = "unset";
+          }
+        },
+
+        onClose: () => {
+          const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
+          if (wrapper) {
+            wrapper.style.overflow = "";
+            // wrapper.style.height = "";
+            // wrapper.style.maxHeight = "";
+          }
+        },
       });
+      // }, 0);
     }
 
     return () => {
@@ -137,7 +168,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
     return `${day}/${month}/${gregorianYear}`;
   };
 
-  return <input ref={inputRef} type="text" className="form-control" placeholder={placeholder} />;
+  return <input ref={inputRef} type="text" className="form-control " placeholder={placeholder} />;
 });
 
 DatePicker.displayName = "DatePicker";

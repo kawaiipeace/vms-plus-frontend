@@ -27,20 +27,20 @@
   color: #cecfd2;
 }
 
-.dark-mode .tablist{
+.dark-mode .tablist {
   background-color: #0c111d;
   color: #f5f5f6;
 }
 
-.dark-mode .title-progress{
+.dark-mode .title-progress {
   color: black !important;
 }
 
-.dark-mode .title-progress-header{
+.dark-mode .title-progress-header {
   background-color: white !important;
 }
 
-.dark-mode .page-header{
+.dark-mode .page-header {
   background-color: #0c111d;
   color: #f5f5f6;
 }
@@ -1302,11 +1302,12 @@
   background-image: url(/assets/img/graphic/card_header_status.svg);
 }
 
-.card-approvallicprogress  .card-header{
+.card-approvallicprogress .card-header {
   background-image: none;
 }
 
-.card-approvalprogress .card-body, .card-approvallicprogress .card-body  {
+.card-approvalprogress .card-body,
+.card-approvallicprogress .card-body {
   gap: 1.5rem;
 }
 
@@ -3431,12 +3432,15 @@
   color: #f5f5f6;
 }
 
+
 .flatpickr-calendar {
   margin-left: -2.75rem;
   border-radius: 1rem;
   min-width: 312px;
   box-shadow: none !important;
   border: 1px solid;
+  z-index: 99999 !important;
+  /* position: fixed !important; */
 }
 
 .light-mode .flatpickr-calendar {
@@ -3459,6 +3463,8 @@
   padding-bottom: 0rem;
   align-items: center;
 }
+
+
 
 .flatpickr-calendar .flatpickr-months .flatpickr-prev-month,
 .flatpickr-calendar .flatpickr-months .flatpickr-next-month {
@@ -3850,6 +3856,12 @@
 
 .modal .modal-body {
   padding: 1.5rem;
+}
+
+.modal .modal-body[style*="overflow"] {
+  overflow: hidden !important;
+  max-height: unset !important;
+  height: auto !important;
 }
 
 @media (max-width: 767px) {
@@ -5328,59 +5340,60 @@ body {
   color: #f5f5f6;
 }
 
-.dark-mode .checkbox{
+.dark-mode .checkbox {
   border-color: #61646C;
 }
 
-.dark-mode .checkbox:hover{
+.dark-mode .checkbox:hover {
   outline: 0px 0px 0px 4px #ECECED 12%;
 }
 
-.light-mode .drop-list-custom{
+.light-mode .drop-list-custom {
   background-color: white;
   color: white;
 }
 
-.dark-mode .numInput{
+.dark-mode .numInput {
   background-color: #0c111d;
   color: white;
 }
 
-.dark-mode .card-body{
+.dark-mode .card-body {
   background-color: #0c111d;
   color: #f5f5f6;
 }
 
 
-.dark-mode .numInput:focus, .dark-mode .numInput:hover{
+.dark-mode .numInput:focus,
+.dark-mode .numInput:hover {
   background-color: #0c111d;
   color: white;
 }
 
-.dark-mode .drop-list-custom{
+.dark-mode .drop-list-custom {
   background-color: #0c111d;
   color: white;
 }
 
-.dark-mode .drop-list-custom li{
+.dark-mode .drop-list-custom li {
   color: white;
 }
 
-.dark-mode .drop-list-custom li:hover{
+.dark-mode .drop-list-custom li:hover {
   background-color: #161B26;
 }
 
-.dark-mode .modal-box{
+.dark-mode .modal-box {
   background-color: #0c111d;
   color: #f5f5f6;
 }
 
-.dark-mode .modal-header{
+.dark-mode .modal-header {
   background-color: #0c111d;
   color: #f5f5f6;
 }
 
-.dark-mode .modal-action{
+.dark-mode .modal-action {
   background-color: #0c111d;
   color: #f5f5f6;
 }
@@ -6463,13 +6476,13 @@ a {
 }
 
 
-.dark-mode .join-item{
-  color:#CECFD2;
+.dark-mode .join-item {
+  color: #CECFD2;
 }
 
-.dark-mode .pagination .join-item.active  {
+.dark-mode .pagination .join-item.active {
   background-color: #61646C !important;
-  color:#F5F5F6;
+  color: #F5F5F6;
 }
 
 .light-mode .modal-backdrop {

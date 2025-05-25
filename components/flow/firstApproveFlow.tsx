@@ -1,15 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import ZeroRecord from "@/components/zeroRecord";
-import FilterModal from "@/components/modal/filterModal";
-import { useRouter } from "next/navigation";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import Paginationselect from "@/components/table/paginationSelect";
-import dayjs from "dayjs";
+import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "@/components/requestStatusBox";
-import { firstApproverRequests } from "@/services/bookingApprover";
 import FirstApproverListTable from "@/components/table/first-approver-list-table";
+import ZeroRecord from "@/components/zeroRecord";
+import { firstApproverRequests } from "@/services/bookingApprover";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
-import FilterSortModal from "../modal/filterSortModal";
 
 interface PaginationType {
   limit: number;
@@ -45,7 +42,6 @@ export default function FirstApproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
-  const router = useRouter();
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -63,19 +59,17 @@ export default function FirstApproveFlow() {
     }));
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } =
-    {
-      "20": { iconName: "schedule", status: "info" },
-      "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "check", status: "success" },
-      "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
-      "90": { iconName: "delete", status: "default" },
-    };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "20": { iconName: "schedule", status: "info" },
+    "21": { iconName: "reply", status: "warning" },
+    "30": { iconName: "check", status: "success" },
+    "31": { iconName: "reply", status: "warning" },
+    "40": { iconName: "check", status: "success" },
+    "90": { iconName: "delete", status: "default" },
+  };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -94,9 +88,7 @@ export default function FirstApproveFlow() {
     selectedEndDate: string;
   }) => {
     const mappedNames = selectedStatuses.map(
-      (code) =>
-        summary.find((item) => item.ref_request_status_code === code)
-          ?.ref_request_status_name || code
+      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
@@ -111,30 +103,20 @@ export default function FirstApproveFlow() {
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
+      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
+        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
+          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
+          return name !== filterValue;
+        });
 
         setFilterNum(updatedStatuses.length);
 
@@ -215,20 +197,10 @@ export default function FirstApproveFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
+                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -246,20 +218,10 @@ export default function FirstApproveFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
+                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -270,70 +232,61 @@ export default function FirstApproveFlow() {
       </div>
 
       <div className="flex justify-between items-center mt-5 md:flex-row flex-col w-full gap-3">
-  {/* Left side: Search */}
-  <div className="w-full md:w-auto">
-    <div className="input-group input-group-search hidden">
-      <div className="input-group-prepend">
-        <span className="input-group-text search-ico-info">
-          <i className="material-symbols-outlined">search</i>
-        </span>
-      </div>
-      <input
-        type="text"
-        id="myInputTextField"
-        className="form-control dt-search-input"
-        placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
-        value={params.search}
-        onChange={(e) =>
-          setParams((prevParams) => ({
-            ...prevParams,
-            search: e.target.value,
-            page: 1,
-          }))
-        }
-      />
-    </div>
-  </div>
+        {/* Left side: Search */}
+        <div className="w-full md:w-auto">
+          <div className="input-group input-group-search hidden">
+            <div className="input-group-prepend">
+              <span className="input-group-text search-ico-info">
+                <i className="material-symbols-outlined">search</i>
+              </span>
+            </div>
+            <input
+              type="text"
+              id="myInputTextField"
+              className="form-control dt-search-input"
+              placeholder="เลขที่คำขอ, ผู้ใช้, ยานพาหนะ, สถานที่"
+              value={params.search}
+              onChange={(e) =>
+                setParams((prevParams) => ({
+                  ...prevParams,
+                  search: e.target.value,
+                  page: 1,
+                }))
+              }
+            />
+          </div>
+        </div>
 
-  {/* Right side on desktop, stacked below on mobile */}
-  <div className="flex gap-4 w-full md:w-auto md:ml-auto">
-    <button
-      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-      onClick={() => filterModalRef.current?.openModal()}
-    >
-      <div className="flex items-center gap-1">
-        <i className="material-symbols-outlined">filter_list</i>
-        ตัวกรอง
-        <span className="badge badge-brand badge-outline rounded-[50%]">
-          {filterNum}
-        </span>
-      </div>
-    </button>
+        {/* Right side on desktop, stacked below on mobile */}
+        <div className="flex gap-4 w-full md:w-auto md:ml-auto">
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+            onClick={() => filterModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              ตัวกรอง
+              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
+            </div>
+          </button>
 
-    <button
-      className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-      onClick={() => filterSortModalRef.current?.openModal()}
-    >
-      <div className="flex items-center gap-1">
-        <i className="material-symbols-outlined">filter_list</i>
-        เรียงลำดับ
+          <button
+            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
+            onClick={() => filterSortModalRef.current?.openModal()}
+          >
+            <div className="flex items-center gap-1">
+              <i className="material-symbols-outlined">filter_list</i>
+              เรียงลำดับ
+            </div>
+          </button>
+        </div>
       </div>
-    </button>
-  </div>
-</div>
-
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span
-            key={index}
-            className="badge badge-brand badge-outline rounded-sm mr-2"
-          >
+          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
             {name}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("status", name)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
               close_small
             </i>
           </span>
@@ -341,10 +294,7 @@ export default function FirstApproveFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("date", filterDate)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
               close_small
             </i>
           </span>
@@ -354,10 +304,7 @@ export default function FirstApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <FirstApproverListTable
-              defaultData={dataRequest}
-              pagination={pagination}
-            />
+            <FirstApproverListTable defaultData={dataRequest} pagination={pagination} />
           </div>
 
           <PaginationControls
@@ -381,13 +328,7 @@ export default function FirstApproveFlow() {
           />
         ))
       )}
-      <FilterModal
-        ref={filterModalRef}
-        statusData={summary}
-        onSubmitFilter={handleFilterSubmit}
-      />
-
-     
+      <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
     </>
   );
 }

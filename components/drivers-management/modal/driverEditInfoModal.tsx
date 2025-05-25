@@ -1,19 +1,19 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react";
-import CustomSelect from "@/components/drivers-management/customSelect";
 import DatePicker from "@/components/datePicker";
-import RadioButton from "@/components/radioButton";
-import * as Yup from "yup";
+import CustomSelect from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
+import RadioButton from "@/components/radioButton";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import * as Yup from "yup";
 
 import {
-  listUseByOtherRadio,
+  driverUpdateContractDetails,
   listDriverDepartment,
   listDriverVendors,
-  driverUpdateContractDetails,
+  listUseByOtherRadio,
 } from "@/services/driversManagement";
 
 import { DriverInfoType, DriverUpdateContractDetails } from "@/app/types/drivers-management-type";
-import { convertToThaiDate, convertToISO8601 } from "@/utils/driver-management";
+import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
 interface UseByOtherRadioItem {
   ref_other_use_desc: string;
@@ -65,10 +65,23 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       driverUseByOther: Yup.string().required("กรุณาเลือกหน่วยงานอื่นสามารถขอใช้งานได้"),
     });
 
+    const [openModal, setOpenModal] = useState(false);
+
     useImperativeHandle(ref, () => ({
-      openModal: () => modalRef.current?.showModal(),
-      closeModal: () => modalRef.current?.close(),
+      openModal: () => {
+        modalRef.current?.showModal();
+        setOpenModal(true);
+      },
+      closeModal: () => {
+        modalRef.current?.close();
+        setOpenModal(false);
+      },
     }));
+
+    const handleCloseModal = () => {
+      modalRef.current?.close();
+      setOpenModal(false); // Update state to reflect modal is closed
+    };
 
     useEffect(() => {
       if (driverInfo) {
@@ -154,7 +167,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         // Submit form data
         const response = await driverUpdateContractDetails({ params });
         if (response.status === 200) {
-          modalRef.current?.close();
+          handleCloseModal();
           onUpdateDriver(true);
           setUpdateType("basicInfo");
         } else {
@@ -211,206 +224,218 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     };
 
     return (
-      <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col bg-white">
-          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">แก้ไขข้อมูลสัญญาจ้างและสังกัด</div>
-            <form method="dialog">
-              <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </form>
-          </div>
-          <form className="form" onSubmit={handleSubmit}>
-            <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5] max-h-[60vh]">
-              <div className="form-section">
-                <div className="form-section-body">
-                  <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                    <div className="w-full">
-                      <label className="label font-semibold text-black">เลขที่สัญญาจ้าง</label>
-                      <div className={`input-group`}>
-                        <input
-                          type="text"
-                          name="driverContractNo"
-                          className="form-control"
-                          placeholder="เลขที่สัญญาจ้าง"
-                          value={formData.driverContractNo}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      {formErrors.driverContractNo && <FormHelper text={String(formErrors.driverContractNo)} />}
-                    </div>
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label font-semibold text-black">หน่วยงานผู้ว่าจ้าง</label>
-                        <CustomSelect
-                          w="w-full"
-                          options={driverDepartmentList}
-                          value={
-                            driverDepartmentList.find((option) => option.value === formData.driverEmployingAgency) ||
-                            null
-                          }
-                          onChange={(selected) => {
-                            setFormData((prev) => ({ ...prev, driverEmployingAgency: selected.value }));
-                          }}
-                        />
-                        {formErrors.driverEmployingAgency && (
-                          <FormHelper text={String(formErrors.driverEmployingAgency)} />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label font-semibold text-black">บริษัทผู้รับจ้าง</label>
-                        <CustomSelect
-                          w="w-full"
-                          options={driverVendorsList}
-                          value={
-                            driverVendorsList.find((option) => option.value === formData.driverContractorCompany) ||
-                            null
-                          }
-                          onChange={(selected) => {
-                            setFormData((prev) => ({ ...prev, driverContractorCompany: selected.value }));
-                          }}
-                        />
-                        {formErrors.driverContractorCompany && (
-                          <FormHelper text={String(formErrors.driverContractorCompany)} />
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label font-semibold text-black">หน่วยงานที่สังกัด</label>
-                        <CustomSelect
-                          w="w-full"
-                          options={driverDepartmentList}
-                          value={
-                            driverDepartmentList.find((option) => option.value === formData.driverDepartment) || null
-                          }
-                          onChange={(selected) => {
-                            setFormData((prev) => ({ ...prev, driverDepartment: selected.value }));
-                          }}
-                        />
-                        {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label font-semibold text-black">วันเริ่มต้นสัญญาจ้าง</label>
-                        <div className={`input-group`}>
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
-                            </span>
+      <>
+        {openModal && (
+          <div className={`modal modal-middle modal-open`}>
+            <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col bg-white">
+              <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+                <div className="modal-title">แก้ไขข้อมูลสัญญาจ้างและสังกัด</div>
+                <form method="dialog">
+                  <button
+                    className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                    onClick={handleCloseModal}
+                  >
+                    <i className="material-symbols-outlined">close</i>
+                  </button>
+                </form>
+              </div>
+              <form className="form" onSubmit={handleSubmit}>
+                <div className="modal-scroll-wrapper overflow-y-auto max-h-[70vh] h-[60vh] ">
+                  <div className="modal-body  text-center h-[60vh] max-h-[60vh]">
+                    <div className="form-section">
+                      <div className="form-section-body">
+                        <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                          <div className="w-full">
+                            <label className="label font-semibold text-black">เลขที่สัญญาจ้าง</label>
+                            <div className={`input-group`}>
+                              <input
+                                type="text"
+                                name="driverContractNo"
+                                className="form-control"
+                                placeholder="เลขที่สัญญาจ้าง"
+                                value={formData.driverContractNo}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                            {formErrors.driverContractNo && <FormHelper text={String(formErrors.driverContractNo)} />}
                           </div>
-                          <DatePicker
-                            placeholder="เลือกวันที่เริ่มต้น"
-                            defaultValue={convertToThaiDate(formData.driverContractStartDate)}
-                            onChange={(dateStr) => handleChangeContractStartDate(dateStr)}
-                          />
-                        </div>
-                        {formErrors.driverContractStartDate && (
-                          <FormHelper text={String(formErrors.driverContractStartDate)} />
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label font-semibold text-black">วันสิ้นสุดสัญญาจ้าง</label>
-                        <div className={`input-group`}>
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
-                            </span>
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label font-semibold text-black">หน่วยงานผู้ว่าจ้าง</label>
+                              <CustomSelect
+                                w="w-full"
+                                options={driverDepartmentList}
+                                value={
+                                  driverDepartmentList.find(
+                                    (option) => option.value === formData.driverEmployingAgency
+                                  ) || null
+                                }
+                                onChange={(selected) => {
+                                  setFormData((prev) => ({ ...prev, driverEmployingAgency: selected.value }));
+                                }}
+                              />
+                              {formErrors.driverEmployingAgency && (
+                                <FormHelper text={String(formErrors.driverEmployingAgency)} />
+                              )}
+                            </div>
                           </div>
-                          <DatePicker
-                            placeholder="เลือกวันที่สิ้นสุด"
-                            defaultValue={convertToThaiDate(formData.driverContractEndDate)}
-                            onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
-                          />
                         </div>
-                        {formErrors.driverContractEndDate && (
-                          <FormHelper text={String(formErrors.driverContractEndDate)} />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label font-semibold text-black">ประเภทการปฏิบัติงาน</label>
-                        <div className="custom-group">
-                          <RadioButton
-                            name="operationType"
-                            label="ปฏิบัติงานปกติ"
-                            value="1"
-                            selectedValue={`${operationType}`}
-                            setSelectedValue={setOperationType}
-                          />
-                          <RadioButton
-                            name="operationType"
-                            label="สำรอง"
-                            value="2"
-                            selectedValue={`${operationType}`}
-                            setSelectedValue={setOperationType}
-                          />
+                        <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label font-semibold text-black">บริษัทผู้รับจ้าง</label>
+                              <CustomSelect
+                                w="w-full"
+                                options={driverVendorsList}
+                                value={
+                                  driverVendorsList.find(
+                                    (option) => option.value === formData.driverContractorCompany
+                                  ) || null
+                                }
+                                onChange={(selected) => {
+                                  setFormData((prev) => ({ ...prev, driverContractorCompany: selected.value }));
+                                }}
+                              />
+                              {formErrors.driverContractorCompany && (
+                                <FormHelper text={String(formErrors.driverContractorCompany)} />
+                              )}
+                            </div>
+                          </div>
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label font-semibold text-black">หน่วยงานที่สังกัด</label>
+                              <CustomSelect
+                                w="w-full"
+                                options={driverDepartmentList}
+                                value={
+                                  driverDepartmentList.find((option) => option.value === formData.driverDepartment) ||
+                                  null
+                                }
+                                onChange={(selected) => {
+                                  setFormData((prev) => ({ ...prev, driverDepartment: selected.value }));
+                                }}
+                              />
+                              {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label font-semibold text-black">วันเริ่มต้นสัญญาจ้าง</label>
+                              <div className={`input-group`}>
+                                <div className="input-group-prepend">
+                                  <span className="input-group-text">
+                                    <i className="material-symbols-outlined">calendar_month</i>
+                                  </span>
+                                </div>
+                                <DatePicker
+                                  placeholder="เลือกวันที่เริ่มต้น"
+                                  defaultValue={convertToThaiDate(formData.driverContractStartDate)}
+                                  onChange={(dateStr) => handleChangeContractStartDate(dateStr)}
+                                />
+                              </div>
+                              {formErrors.driverContractStartDate && (
+                                <FormHelper text={String(formErrors.driverContractStartDate)} />
+                              )}
+                            </div>
+                          </div>
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label font-semibold text-black">วันสิ้นสุดสัญญาจ้าง</label>
+                              <div className={`input-group`}>
+                                <div className="input-group-prepend">
+                                  <span className="input-group-text">
+                                    <i className="material-symbols-outlined">calendar_month</i>
+                                  </span>
+                                </div>
+                                <DatePicker
+                                  placeholder="เลือกวันที่สิ้นสุด"
+                                  defaultValue={convertToThaiDate(formData.driverContractEndDate)}
+                                  onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
+                                />
+                              </div>
+                              {formErrors.driverContractEndDate && (
+                                <FormHelper text={String(formErrors.driverContractEndDate)} />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label font-semibold text-black">ประเภทการปฏิบัติงาน</label>
+                              <div className="custom-group">
+                                <RadioButton
+                                  name="operationType"
+                                  label="ปฏิบัติงานปกติ"
+                                  value="1"
+                                  selectedValue={`${operationType}`}
+                                  setSelectedValue={setOperationType}
+                                />
+                                <RadioButton
+                                  name="operationType"
+                                  label="สำรอง"
+                                  value="2"
+                                  selectedValue={`${operationType}`}
+                                  setSelectedValue={setOperationType}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full">
+                            <div className="form-group">
+                              <label className="label justify-start font-semibold text-black">
+                                พนักงานที่ถูกปฏิบัติงานแทน<span className="text-[#98A2B3]">(ถ้ามี)</span>
+                              </label>
+                              <CustomSelect w="w-full" options={[]} value={null} onChange={() => {}} />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid gird-cols-1">
+                          <div className="form-group">
+                            <label className="label font-semibold text-black">หน่วยงานอื่นสามารถขอใช้งานได้</label>
+                            <div className="custom-group">
+                              {useByotherRadio.map((item, index) => {
+                                return (
+                                  <RadioButton
+                                    key={index}
+                                    name="useByOther"
+                                    label={item.ref_other_use_desc}
+                                    value={`${item.ref_other_use_code}`}
+                                    selectedValue={`${formData.driverUseByOther}`}
+                                    setSelectedValue={() => {
+                                      setFormData({ ...formData, driverUseByOther: Number(item.ref_other_use_code) });
+                                    }}
+                                  />
+                                );
+                              })}
+                            </div>
+                            {formErrors.driverUseByOther && <FormHelper text={String(formErrors.driverUseByOther)} />}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="w-full">
-                      <div className="form-group">
-                        <label className="label justify-start font-semibold text-black">
-                          พนักงานที่ถูกปฏิบัติงานแทน<span className="text-[#98A2B3]">(ถ้ามี)</span>
-                        </label>
-                        <CustomSelect w="w-full" options={[]} value={null} onChange={() => {}} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid gird-cols-1">
-                    <div className="form-group">
-                      <label className="label font-semibold text-black">หน่วยงานอื่นสามารถขอใช้งานได้</label>
-                      <div className="custom-group">
-                        {useByotherRadio.map((item, index) => {
-                          return (
-                            <RadioButton
-                              key={index}
-                              name="useByOther"
-                              label={item.ref_other_use_desc}
-                              value={`${item.ref_other_use_code}`}
-                              selectedValue={`${formData.driverUseByOther}`}
-                              setSelectedValue={() => {
-                                setFormData({ ...formData, driverUseByOther: Number(item.ref_other_use_code) });
-                              }}
-                            />
-                          );
-                        })}
-                      </div>
-                      {formErrors.driverUseByOther && <FormHelper text={String(formErrors.driverUseByOther)} />}
                     </div>
                   </div>
                 </div>
-              </div>
+                <div className="modal-action mt-5 flex gap-3 justify-end px-4 pb-4">
+                  <div>
+                    <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                      ยกเลิก
+                    </button>
+                  </div>
+                  <button type="submit" className="btn btn-primary">
+                    บันทึก
+                  </button>
+                </div>
+              </form>
             </div>
-            <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
-              <div>
-                <button className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
-                  ยกเลิก
-                </button>
-              </div>
-              <button type="submit" className="btn btn-primary">
-                บันทึก
-              </button>
-            </div>
-          </form>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+            {/* <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form> */}
+          </div>
+        )}
+      </>
     );
   }
 );

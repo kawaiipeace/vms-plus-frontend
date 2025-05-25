@@ -362,7 +362,7 @@ export const deleteCarpoolVehicle = async (id: string) => {
 export const getCarpoolVehicleDetails = async (id: string) => {
   const data = [
     {
-      mas_vehicle_uid: "f3b29096-140e-49dc-97ee-17fa9352aff6",
+      mas_vehicle_uid: id,
     },
   ];
   try {
@@ -394,6 +394,18 @@ export const putCarpoolSetActive = async (id: string, is_active: string) => {
       mas_carpool_uid: id,
       is_active,
     });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const putCarpoolUpdate = async (id: string, data: CarpoolForm) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/update/" + id,
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -450,7 +462,7 @@ export const deleteCarpoolDriver = async (id: string) => {
 export const getCarpoolDriverDetails = async (id: string) => {
   const data = [
     {
-      mas_driver_uid: "ec4a2cee-aded-47bd-9d93-4a1a74cb58a4",
+      mas_driver_uid: id,
     },
   ];
   try {
