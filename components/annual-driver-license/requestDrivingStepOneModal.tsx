@@ -391,7 +391,7 @@ const RequestDrivingStepOneModal = forwardRef<
                         />
                       </div>
                     </div>
-                    {requestData?.license_status !== "มีผลปีถัดไป" && requestData?.next_license_status_code === "" && (
+                    {(requestData?.license_status !== "มีผลปีถัดไป" || requestData?.next_license_status_code === "") && (
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">ประจำปี</label>
