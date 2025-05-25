@@ -10,6 +10,7 @@ import ListFlow from "./flow/listFlow";
 import RequestStatusBox from "./requestStatusBox";
 import PaginationControls from "./table/pagination-control";
 import ZeroRecord from "./zeroRecord";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface PaginationType {
   limit: number;
@@ -99,7 +100,7 @@ export default function ArpproveFlow() {
       (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
     );
 
-    const date = selectedStartDate + " - " + selectedEndDate;
+    const date = convertToBuddhistDateTime(selectedStartDate).date + " - " + convertToBuddhistDateTime(selectedEndDate).date;
 
     setFilterNames(mappedNames);
     if (selectedStartDate && selectedEndDate) {
@@ -256,9 +257,11 @@ export default function ArpproveFlow() {
               <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
-          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block flex items-center">
+          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block">
+            <div className="flex items-center">
             <i className="material-symbols-outlined">add</i>
             สร้างคำขอใช้
+            </div>
           </button>
         </div>
       </div>

@@ -28,7 +28,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
             <Popover.Trigger asChild>
                 <div className="input-group">
                     <i className="material-symbols-outlined text-lg text-gray-500">calendar_month</i>
-                    <button className="min-w-[210px] max-w-[210px]">
+                    <button className="min-w-[210px] max-w-[210px] text-left">
                         {formattedRange}
                     </button>
                 </div>
@@ -37,7 +37,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
             <Popover.Portal>
                 <Popover.Content
                     sideOffset={5}
-                    className="bg-white shadow-lg rounded-lg z-50 p-2"
+                    className="bg-white shadow-lg rounded-lg !z-[9999] p-2"
                 >
                     <DayPicker
                         mode="range"
