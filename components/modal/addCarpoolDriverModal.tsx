@@ -78,6 +78,7 @@ const AddCarpoolDriverModal = forwardRef<
         currentRef.removeEventListener("scroll", handleScroll);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -90,6 +91,7 @@ const AddCarpoolDriverModal = forwardRef<
         setSearch("");
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.name]);
 
   useEffect(() => {
@@ -103,10 +105,12 @@ const AddCarpoolDriverModal = forwardRef<
         CBRef.current.checked = true;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked]);
 
   useEffect(() => {
     fetchCarpoolDriverFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   const handleConfirm = async () => {
@@ -260,7 +264,7 @@ const AddCarpoolDriverModal = forwardRef<
 
           <div className="modal-footer p-5 grid grid-cols-4 gap-3 border-t border-[#eaecf0]">
             <div className="h-full flex items-center text-primary-grayText">
-              เลือก 2 คัน
+              เลือก {checked.length} คน
             </div>
             <form method="dialog" className="col-span-1 col-start-3">
               <button className="btn btn-secondary w-full">ปิด</button>
