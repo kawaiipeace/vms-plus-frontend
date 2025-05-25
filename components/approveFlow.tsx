@@ -299,7 +299,7 @@ export default function ArpproveFlow() {
           />
         </>
       )}
-      {dataRequest !== null && dataRequest?.length <= 0 && (
+      {( dataRequest !== null && pagination.total > 0 )&& (
         <ZeroRecord
           imgSrc="/assets/img/empty/search_not_found.png"
           title="ไม่พบข้อมูล"
@@ -309,9 +309,9 @@ export default function ArpproveFlow() {
           btnType="secondary"
           useModal={handleClearAllFilters}
         />
-      )}
+      ) }
 
-      {dataRequest === null && (
+      {pagination.total <= 0 && (
         <ZeroRecord
           imgSrc="/assets/img/empty/add_carpool.svg"
           title="สร้างคำขอใช้ยานพาหนะ"
