@@ -225,7 +225,7 @@ export default function CarpoolTimeLine() {
       <SearchInput
         defaultValue={vehicleParams.search}
         placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-        onChange={debouncedSetVehicleParams}
+        onSearch={debouncedSetVehicleParams}
       />
       <div className="flex gap-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -290,7 +290,7 @@ export default function CarpoolTimeLine() {
       <SearchInput
         defaultValue={driverParams.search}
         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-        onChange={debouncedSetDriverParams}
+        onSearch={debouncedSetDriverParams}
       />
       <div className="flex gap-4">
         <button
