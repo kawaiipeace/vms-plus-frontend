@@ -10,6 +10,7 @@ import Tooltip from "@/components/tooltips";
 import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
 import {
+  fetchCostCenter,
   fetchCostTypes,
   fetchUserApproverUsers,
   fetchVehicleUsers,
@@ -22,58 +23,61 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
-const schema = yup.object().shape({
-  telInternal: yup.string().min(4, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
-  telMobile: yup
-    .string()
-    .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
-    .required("กรุณากรอกเบอร์โทรศัพท์"),
-  workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
-  purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
-  remark: yup.string(),
-  referenceNumber: yup.string(),
-  startDate: yup.string(),
-  endDate: yup.string(),
-  refCostTypeCode: yup.string(),
-  timeStart: yup.string(),
-  timeEnd: yup.string(),
-  attachmentFile: yup.string(),
-  deptSapShort: yup.string(),
-  wbsNumber: yup
-    .string()
-    .when("refCostTypeCode", {
+const schema = yup
+  .object()
+  .shape({
+    telInternal: yup.string().min(4, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
+    telMobile: yup
+      .string()
+      .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
+      .required("กรุณากรอกเบอร์โทรศัพท์"),
+    workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
+    purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
+    remark: yup.string(),
+    referenceNumber: yup.string(),
+    startDate: yup.string(),
+    endDate: yup.string(),
+    refCostTypeCode: yup.string(),
+    timeStart: yup.string(),
+    timeEnd: yup.string(),
+    attachmentFile: yup.string(),
+    deptSapShort: yup.string(),
+    wbsNumber: yup.string().when("refCostTypeCode", {
       is: (val: string) => val === "3",
       then: (schema) => schema.required("กรุณาระบุเลขที่ WBS"),
       otherwise: (schema) => schema.optional(),
     }),
-  deptSap: yup.string(),
-  userImageUrl: yup.string(),
-  costOrigin: yup
-    .string()
-    .when("refCostTypeCode", {
+    deptSap: yup.string(),
+    userImageUrl: yup.string(),
+    costOrigin: yup.string().when("refCostTypeCode", {
       is: (val: string) => val === "1" || val === "2",
       then: (schema) => schema.required("กรุณาระบุการเบิกค่าใช้จ่าย"),
       otherwise: (schema) => schema.optional(),
     }),
-  costCenter: yup.string().optional(),
-  pmOrderNo: yup.string(),
-  activityNo: yup.string(),
-  networkNo: yup.string(),
-}).test(
-  "at-least-one-for-4",
-  "กรุณาระบุ เลขที่ใบสั่ง หรือ เลขที่กิจกรรม หรือ เลขที่โครงข่าย สำหรับประเภทงบประมาณนี้",
-  function (value) {
-    if (value.refCostTypeCode === "4") {
-      return !!(value.pmOrderNo || value.activityNo || value.networkNo);
+    costCenter: yup.string().optional(),
+    pmOrderNo: yup.string(),
+    activityNo: yup.string(),
+    networkNo: yup.string(),
+  })
+  .test(
+    "at-least-one-for-4",
+    "กรุณาระบุ เลขที่ใบสั่ง หรือ เลขที่กิจกรรม หรือ เลขที่โครงข่าย สำหรับประเภทงบประมาณนี้",
+    function (value) {
+      if (value.refCostTypeCode === "4") {
+        return !!(value.pmOrderNo || value.activityNo || value.networkNo);
+      }
+      return true;
     }
-    return true;
-  }
-);
+  );
 
 interface costType {
   ref_cost_type_code: string;
   ref_cost_type_name: string;
   ref_cost_no: string;
+}
+
+interface costCenter {
+  cost_center: string;
 }
 
 export default function RequestForm() {
@@ -82,17 +86,33 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTripType, setSelectedTripType] = useState("1");
   const { formData, updateFormData } = useFormContext();
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
-  const [costTypeOptions, setCostTypeOptions] = useState<{ value: string; label: string }[]>([]);
-  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{ value: string; label: string }>({
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
+    []
+  );
+  const [costTypeOptions, setCostTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{
+    value: string;
+    label: string;
+  }>({
     value: "",
     label: "",
   });
-  const [costCenterOptions, setCostCenterOptions] = useState<{ value: string; label: string }[]>([]);
-  const [selectedCostCenterOption, setSelectedCostCenterOption] = useState<{ value: string; label: string }>();
-  const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
+  const [costCenterOptions, setCostCenterOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedCostCenterOption, setSelectedCostCenterOption] = useState<{
+    value: string;
+    label: string;
+  }>();
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [passengerCount, setPassengerCount] = useState(1);
   const [costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
+  const [costCenterDatas, setCostCenterDatas] = useState<costCenter[]>([]);
   const [fileError, setFileError] = useState("");
   const [approverData, setApproverData] = useState<ApproverUserType>();
 
@@ -148,8 +168,33 @@ export default function RequestForm() {
       }
     };
 
+    const fetchCostCenterRequest = async () => {
+      try {
+        const response = await fetchCostCenter();
+        if (response.status === 200) {
+          const costCenterData = response.data;
+          setCostCenterDatas(costCenterData);
+          const costCenterArr = [
+            ...costCenterData.map(
+              (cost: {
+                cost_center: string;
+              }) => ({
+                value: cost.cost_center,
+                label: cost.cost_center,
+              })
+            ),
+          ];
+
+          setCostCenterOptions(costCenterArr);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
     fetchRequests();
     fetchCostTypeRequest();
+    fetchCostCenterRequest();
   }, []);
 
   useEffect(() => {
@@ -182,13 +227,15 @@ export default function RequestForm() {
     }
   }, [vehicleUserDatas, formData.costCenter]);
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
 
   useEffect(() => {
     if (driverOptions.length > 0 && !selectedVehicleUserOption) {
       setSelectedVehicleUserOption(driverOptions[0]);
     }
-  }, [driverOptions]);
+  }, [driverOptions, selectedVehicleUserOption]);
 
   useEffect(() => {
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
@@ -250,16 +297,18 @@ export default function RequestForm() {
     }
   };
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedCostTypeOption(selectedOption as { value: string; label: string });
+    setSelectedCostTypeOption(
+      selectedOption as { value: string; label: string }
+    );
     setValue("refCostTypeCode", selectedOption.value); // <-- add this line
     setValue("costOrigin", "");
-  
+
     if (selectedOption.value === "1") {
       const data = costTypeDatas.find(
         (cost: { ref_cost_type_code: string }) =>
           cost.ref_cost_type_code === selectedOption.value
       );
-  
+
       if (data) {
         setValue("costOrigin", data.ref_cost_no);
       }
@@ -362,6 +411,58 @@ export default function RequestForm() {
     }
   }, [formData, costTypeDatas]);
 
+  const handleDriverSearch = async (search: string) => {
+    // Debounce handled by parent component or elsewhere
+    if (search.trim().length < 3) {
+      setLoadingDrivers(true);
+      try {
+        const response = await fetchVehicleUsers("");
+        if (response.status === 200) {
+          const vehicleUserData = response.data;
+          const driverOptionsArray = vehicleUserData.map(
+            (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          );
+          setDriverOptions(driverOptionsArray);
+        } else {
+          setDriverOptions([]);
+        }
+      } catch (error) {
+        setDriverOptions([]);
+        console.error("Error resetting options:", error);
+      } finally {
+        setLoadingDrivers(false);
+      }
+      return;
+    }
+  
+    setLoadingDrivers(true);
+    try {
+      const response = await fetchVehicleUsers(search);
+      if (response.status === 200) {
+        const vehicleUserData = response.data;
+        const driverOptionsArray = vehicleUserData.map(
+          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.emp_id})`,
+          })
+        );
+        setDriverOptions(driverOptionsArray);
+      } else {
+        setDriverOptions([]);
+      }
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        setDriverOptions([]);
+        console.error("Search failed:", error);
+      }
+    } finally {
+      setLoadingDrivers(false);
+    }
+  };
+
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     const result = selectedVehicleUserOption.label.split("(")[0].trim();
@@ -421,8 +522,11 @@ export default function RequestForm() {
                       w="w-full"
                       options={driverOptions}
                       value={selectedVehicleUserOption}
-                      searchable={true}
                       onChange={handleVehicleUserChange}
+                      showDescriptions={true}
+                      onSearchInputChange={handleDriverSearch}
+                      loading={loadingDrivers}
+                      enableSearchOnApi={true}
                     />
                   </div>
                 </div>
@@ -807,7 +911,7 @@ export default function RequestForm() {
                   </div>
                 )}
                 {selectedCostTypeOption?.value === "2" && (
-                  <div className="md:col-span-3 col-span-12">
+                  <div className="md:col-span-4 col-span-12">
                     <div className="form-group">
                       <label className="form-label">ศูนย์ต้นทุน</label>
                       <CustomSelect
