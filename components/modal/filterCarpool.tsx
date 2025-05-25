@@ -192,6 +192,10 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
             <button
               type="button"
               className="btn btn-tertiary btn-resetfilter block mr-auto bg-transparent shadow-none border-none"
+              onClick={() => {
+                setSelected(defaultSelected);
+                setStatus(["0", "1", "2"]);
+              }}
             >
               ล้างตัวกรอง
             </button>
