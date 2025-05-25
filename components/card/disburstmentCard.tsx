@@ -21,6 +21,7 @@ export default function DisburstmentCard({
   const [costTypeData, setCostTypeData] = useState<any>();
 
   useEffect(() => {
+    console.log('tt',activityNo);
     if (refCostTypeCode) {
       const fetchCostTypeFromCodeFunc = async () => {
         try {
@@ -51,7 +52,7 @@ export default function DisburstmentCard({
               </div>
             </div>
           )}
-          {(refCostTypeCode === "1" || refCostTypeCode === "2") && (
+          {(String(refCostTypeCode) === "1" || String(refCostTypeCode) === "2") && (
             <>
               {costCenter && (
                 <div className="col-span-12 md:col-span-6">
@@ -67,7 +68,7 @@ export default function DisburstmentCard({
             </>
           )}
 
-          {refCostTypeCode === "3" && (
+          {String(refCostTypeCode) === "3" && (
             <>
               {activityNo && (
                 <div className="col-span-12 md:col-span-6">
@@ -106,7 +107,7 @@ export default function DisburstmentCard({
               )}
             </>
           )}
-          {refCostTypeCode === "4" && (
+          {String(refCostTypeCode) === "4" && (
             <>
               {pmOrderNo && (
                 <div className="col-span-12 md:col-span-6">
