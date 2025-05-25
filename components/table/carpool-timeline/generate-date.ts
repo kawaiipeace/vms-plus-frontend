@@ -1,3 +1,4 @@
+import { DriverTimelineTransformData } from "@/app/types/carpool-management-type";
 import { VehicleTimelineTransformData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
@@ -121,7 +122,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
 export function transformDriverApiToTableData(
   rawData: any,
   dates: any[]
-): VehicleTimelineTransformData[] {
+): DriverTimelineTransformData[] {
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
@@ -130,16 +131,15 @@ export function transformDriverApiToTableData(
     return timeline;
   };
 
-  const vehicles: any[] = rawData ?? [];
+  const drivers: any[] = rawData ?? [];
 
-  return vehicles.map((vehicle) => {
+  return drivers.map((driver) => {
     const timeline = createEmptyTimeline();
     let status = "";
     let carUserDetail: Record<string, string> = {};
     let driverDetail: Record<string, string> = {};
-    console.log("timeline: ", timeline);
 
-    vehicle.vehicle_trn_requests?.forEach((req: any) => {
+    driver.driver_trn_requests?.forEach((req: any) => {
       if (req.trip_details.length === 0) return;
 
       status = req.time_line_status;
@@ -150,8 +150,8 @@ export function transformDriverApiToTableData(
       carUserDetail.userContactInternalNumber =
         req.car_user_internal_contact_number || "1234";
 
-      driverDetail.driverName = req.driver.driver_name;
-      driverDetail.licensePlate = vehicle.vehicle_license_plate;
+      driverDetail.driverName = driver.driver_name;
+      driverDetail.licensePlate = "";
 
       req.trip_details?.forEach((trip: any) => {
         const start = dayjs(trip.trip_start_datetime);
@@ -174,14 +174,15 @@ export function transformDriverApiToTableData(
     });
 
     const result = {
-      vehicleLicensePlate: vehicle.vehicle_license_plate,
-      vehicleBrandModel: vehicle.vehicle_model_name,
-      vehicleBrandName: vehicle.vehicle_brand_name,
-      vehicleType: vehicle.vehicle_car_type_detail,
-      vehicleDepartment: vehicle.vehicle_dept_name,
-      distance: vehicle.vehicle_mileage,
-      vehicleStatus: status,
+      driverContactNumber: driver.driver_mobile_contact_number,
+      driverDeptSapShortNameWork: driver.driver_dept_sap_short_name_work,
+      driverName: driver.driver_name,
+      driverNickname: driver.driver_nickname,
+      masDriverUid: driver.mas_driver_uid,
+      workLastMonth: driver.work_last_month,
+      workThisMonth: driver.work_this_month,
       timeline: timeline,
+      status,
     };
 
     return result;
