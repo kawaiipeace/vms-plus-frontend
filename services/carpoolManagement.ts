@@ -480,10 +480,8 @@ export const getCarpoolDriverDetails = async (id: string) => {
 export const getCarpoolVehicleTimeline = async (id: string, params: any) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/vehicle-timeline/2e67e277-330b-46ed-86c9-5140fa2b0dc8?start_date=2025-01-01&end_date=2025-03-01"
-      // "carpool-management/vehicle-timeline/" +
-      //   "2e67e277-330b-46ed-86c9-5140fa2b0dc8" || id,
-      // { params }
+      "carpool-management/vehicle-timeline/" + id,
+      { params }
     );
 
     return response;
@@ -495,10 +493,8 @@ export const getCarpoolVehicleTimeline = async (id: string, params: any) => {
 export const getCarpoolDriverTimeline = async (id: string, params: any) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/driver-timeline/2e67e277-330b-46ed-86c9-5140fa2b0dc8?start_date=2025-01-01&end_date=2025-03-01"
-      // "carpool-management/driver-timeline/" +
-      //   "2b6d1de8-960c-4746-b595-b747deede2b4" || id,
-      // { params }
+      "carpool-management/driver-timeline/" + id,
+      { params }
     );
 
     return response;
