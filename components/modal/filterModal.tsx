@@ -9,7 +9,7 @@ import DateRangePicker from "../vehicle/input/dateRangeInput";
 import dayjs from "dayjs";
 
 interface Props {
-  statusData: summaryType[];
+  statusData?: summaryType[];
   department?: boolean;
   onSubmitFilter: (filters: {
     selectedStatuses: string[];
@@ -140,6 +140,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                         </div>
                       </div>
                     )}
+                    {statusData &&
                     <div className="col-span-12">
                       <div className="form-group">
                         <label className="form-label">สถานะคำขอ</label>
@@ -181,6 +182,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                             ))}
                       </div>
                     </div>
+  }
                   </div>
 
                   <div className="grid grid-cols-12 gap-4">
