@@ -5,13 +5,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { DataTable } from "../time-table";
-import { generateDateObjects } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import VehicleTimeLineDetailModal, {
   VehicleTimelineRef,
 } from "../../vehicle/vehicle-timeline-detail-modal";
 import dayjs from "dayjs";
-import { transformDriverApiToTableData } from "./generate-date";
+import {
+  generateDateObjects,
+  transformDriverApiToTableData,
+} from "./generate-date";
 
 const statusColorMap = {
   รออนุมัติ: {
@@ -128,7 +130,7 @@ const useColumns = (
           {
             id: key,
             header: () => {
-              const isToday = dayjs().format("YYYY-MM-DD") === date.toString();
+              const isToday = dayjs().format("D_M_YYYY") === date.toString();
               const className = isToday
                 ? "text-white bg-brand-900 rounded-full p-1"
                 : "";
@@ -142,7 +144,9 @@ const useColumns = (
             },
             cell: (info) => {
               const { timeline, status } = info.getValue();
-              const dayTimeline = timeline?.[`day_${day}_${month}_${fullYear}`];
+              // console.log("timeline: ", timeline);
+              // console.log(`day_${date}`);
+              const dayTimeline = timeline?.[`day_${date}`];
               const holidayClass = holiday ? "text-white bg-gray-100" : "";
 
               const statusColors =

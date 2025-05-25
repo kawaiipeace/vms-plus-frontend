@@ -12,7 +12,7 @@ import VehicleTimeLineDetailModal, {
 import dayjs from "dayjs";
 import {
   generateDateObjects,
-  transformDriverApiToTableData,
+  transformVehicleApiToTableData,
 } from "./generate-date";
 
 interface RequestListTableProps {
@@ -140,7 +140,7 @@ const useColumns = (
           {
             id: key,
             header: () => {
-              const isToday = dayjs().format("YYYY-MM-DD") === date.toString();
+              const isToday = dayjs().format("D_M_YYYY") === date.toString();
               const className = isToday
                 ? "text-white bg-brand-900 rounded-full p-1"
                 : "";
@@ -154,7 +154,7 @@ const useColumns = (
             },
             cell: (info) => {
               const { timeline, status } = info.getValue();
-              const dayTimeline = timeline[`day_${day}_${month}_${fullYear}`];
+              const dayTimeline = timeline[`day_${date}`];
               const holidayClass = holiday ? "text-white bg-gray-100" : "";
               const statusColors =
                 statusColorMap[status as keyof typeof statusColorMap] || {};
@@ -223,7 +223,7 @@ export default function CarpoolVehicleListTable({
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
   const dates = useGenerateDates(params);
   const dataTransform = useMemo(
-    () => transformDriverApiToTableData(dataRequest, dates),
+    () => transformVehicleApiToTableData(dataRequest, dates),
     [dataRequest, dates]
   );
   const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
