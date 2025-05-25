@@ -191,7 +191,7 @@ const DriverAppointmentModal = forwardRef<
                               <i className="material-symbols-outlined">calendar_month</i>
                             </span>
                           </div>
-                          <DatePicker placeholder="01/01/2567" onChange={handleDateChange} />
+                          <DatePicker placeholder="ระบุวันที่เริ่มต้นเดินทาง" onChange={handleDateChange} />
                         </div>
                         {errors.pickupDate && <FormHelper text={String(errors.pickupDate.message)} />}
                       </div>

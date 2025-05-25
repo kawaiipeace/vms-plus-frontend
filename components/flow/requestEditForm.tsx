@@ -158,7 +158,7 @@ Props) {
                     </div>
                     <div className="supporting-text-group">
                       <div className="supporting-text">
-                        {updatedFormData.vehicleUserDeptSap}
+                        {updatedFormData.vehicleUserEmpId}
                       </div>
                       <div className="supporting-text">
                         {updatedFormData.deptSapShort}
