@@ -16,6 +16,7 @@ import {
   fetchVehicleUsers,
   uploadFile,
 } from "@/services/masterService";
+import { convertToThaiDate } from "@/utils/driver-management";
 import { shortenFilename } from "@/utils/shortenFilename";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
@@ -168,11 +169,8 @@ export default function RequestForm() {
       }
     };
 
-
-
     fetchRequests();
     fetchCostTypeRequest();
-
   }, []);
 
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
@@ -215,7 +213,7 @@ export default function RequestForm() {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
           const data = response.data[0];
-          console.log('approver',data);
+          console.log("approver", data);
           setApproverData(data);
         }
       } catch (error) {
@@ -369,7 +367,11 @@ export default function RequestForm() {
         if (response.status === 200) {
           const vehicleUserData = response.data;
           const driverOptionsArray = vehicleUserData.map(
-            (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            (user: {
+              emp_id: string;
+              full_name: string;
+              dept_sap: string;
+            }) => ({
               value: user.emp_id,
               label: `${user.full_name} (${user.emp_id})`,
             })
@@ -386,7 +388,7 @@ export default function RequestForm() {
       }
       return;
     }
-  
+
     setLoadingDrivers(true);
     try {
       const response = await fetchVehicleUsers(search);
@@ -403,7 +405,7 @@ export default function RequestForm() {
         setDriverOptions([]);
       }
     } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
+      if ((error as Error).name !== "AbortError") {
         setDriverOptions([]);
         console.error("Search failed:", error);
       }
@@ -413,7 +415,6 @@ export default function RequestForm() {
   };
 
   const handleCostCenterSearch = async (search: string) => {
-
     if (search.trim().length > 3) {
       setLoadingCostCenter(true);
       try {
@@ -422,14 +423,10 @@ export default function RequestForm() {
           const costCenterData = response.data;
           setCostCenterDatas(costCenterData);
           const costCenterArr = [
-            ...costCenterData.map(
-              (cost: {
-                cost_center: string;
-              }) => ({
-                value: cost.cost_center,
-                label: cost.cost_center,
-              })
-            ),
+            ...costCenterData.map((cost: { cost_center: string }) => ({
+              value: cost.cost_center,
+              label: cost.cost_center,
+            })),
           ];
 
           setCostCenterOptions(costCenterArr);
@@ -444,7 +441,7 @@ export default function RequestForm() {
       }
       return;
     }
-  
+
     setLoadingCostCenter(true);
     try {
       const response = await fetchVehicleUsers(search);
@@ -461,7 +458,7 @@ export default function RequestForm() {
         setDriverOptions([]);
       }
     } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
+      if ((error as Error).name !== "AbortError") {
         setDriverOptions([]);
         console.error("Search failed:", error);
       }
@@ -647,8 +644,10 @@ export default function RequestForm() {
                           </i>
                         </span>
                       </div>
+
                       <DatePicker
-                        placeholder={formData?.startDate || "ระบุวันที่"}
+                        placeholder="ระบุวันที่เริ่มต้นเดินทาง"
+                        defaultValue={convertToThaiDate(formData.startDate)}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -661,6 +660,7 @@ export default function RequestForm() {
                     <div className="input-group">
                       <TimePicker
                         defaultValue={formData.timeStart}
+                        placeholder="ระบุเวลาที่ออกเดินทาง"
                         onChange={(dateStr) => setValue("timeStart", dateStr)}
                       />
                     </div>
@@ -678,8 +678,10 @@ export default function RequestForm() {
                           </i>
                         </span>
                       </div>
+
                       <DatePicker
-                        placeholder={formData?.endDate || "ระบุวันที่"}
+                        placeholder="ระบุวันที่สิ้นสุดเดินทาง"
+                        defaultValue={convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
                       />
                     </div>
@@ -692,6 +694,7 @@ export default function RequestForm() {
                     <div className="input-group">
                       <TimePicker
                         defaultValue={formData.timeEnd}
+                        placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
                       />
                     </div>

@@ -109,6 +109,7 @@ const RequestDrivingStepTwoModal = forwardRef<
       const fetchFinalApproversData = async () => {
         try {
           const response = await fetchUserApprovalLic();
+          console.log('response',response);
           if (response && response.data) {
             setFinalApprovers(response.data[0]);
           }
@@ -276,10 +277,14 @@ const RequestDrivingStepTwoModal = forwardRef<
                     keyboard_arrow_left
                   </i>{" "}
                   ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                  {requestData?.license_status === "มีผลปีถัดไป" &&
-                    dayjs().year() + 543}{" "}
-                  {requestData?.next_license_status !== "" &&
-                    dayjs().year() + 544}
+                  {(requestData?.license_status !== "ไม่มี" && requestData?.license_status !== "") && (
+                  <>
+                    {requestData?.license_status === "มีผลปีถัดไป" &&
+                      `${dayjs().year() + 543}`}{" "}
+                    {requestData?.next_license_status !== "" &&
+                      `${dayjs().year() + 544}`}
+                  </>
+                )}
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"

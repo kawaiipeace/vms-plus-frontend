@@ -106,12 +106,10 @@ Props) {
 
         fetchVehicleDetailData();
       }
-      if(parsedData?.vehicleSelect){
+      if (parsedData?.vehicleSelect) {
         const fetchVehicleInfoFunc = async () => {
           try {
-            const response = await fetchVehicleInfo(
-              parsedData?.vehicleSelect
-            );
+            const response = await fetchVehicleInfo(parsedData?.vehicleSelect);
             setAvailableDriver(response.data.number_of_available_drivers);
           } catch (error) {
             console.error("API Error:", error);
@@ -119,7 +117,6 @@ Props) {
         };
         fetchVehicleInfoFunc();
       }
-  
     }
   }, []);
 
@@ -276,12 +273,16 @@ Props) {
                 แก้ไข
               </button>
             </div>
-            {updatedFormData.refCostTypeCode && 
-            <DisburstmentCard
-              refCostTypeCode={updatedFormData.refCostTypeCode}
-              costCenter={updatedFormData.costCenter}
-            />
-}
+            {updatedFormData.refCostTypeCode && (
+              <DisburstmentCard
+                refCostTypeCode={updatedFormData.refCostTypeCode}
+                costCenter={updatedFormData.costCenter}
+                activityNo={updatedFormData.activityNo}
+                wbsNo={updatedFormData.wbsNo}
+                networkNo={updatedFormData.networkNo}
+                pmOrderNo={updatedFormData.pmOrderNo}
+              />
+            )}
           </div>
         </div>
 
@@ -389,7 +390,9 @@ Props) {
                 <CarDetailCard vehicle={vehicleDetail} />
               )}
 
-            {updatedFormData.isAdminChooseDriver && <ChooseDriverCard number={availableDriver} />}
+            {updatedFormData.isAdminChooseDriver && (
+              <ChooseDriverCard number={availableDriver} />
+            )}
 
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
@@ -406,7 +409,6 @@ Props) {
                 </div>
               )
             )}
-
           </div>
           {approverCard && (
             <div className="form-section">
@@ -454,7 +456,6 @@ Props) {
         onUpdate={handleModalUpdate}
       />
       <ApproverModal ref={approverModalRef} onUpdate={handleModalUpdate} />
-
     </>
   );
 }

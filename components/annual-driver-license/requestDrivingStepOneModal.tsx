@@ -41,6 +41,7 @@ export interface ValueFormStep1 {
 interface ReturnCarAddModalProps {
   useBy?: string;
   id?: string;
+  profile?: string;
   requestData?: DriverLicenseCardType;
   edit?: boolean;
   progress?: string;
@@ -414,7 +415,7 @@ const RequestDrivingStepOneModal = forwardRef<
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title">
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                {requestData?.license_status !== "" && (
+                {(requestData?.license_status !== "ไม่มี" && requestData?.license_status !== "") && (
                   <>
                     {requestData?.license_status === "มีผลปีถัดไป" &&
                       `${dayjs().year() + 543}`}{" "}
