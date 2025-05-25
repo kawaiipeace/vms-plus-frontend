@@ -1,24 +1,22 @@
 "use client";
 
-import React, { useState, useRef, useEffect, Suspense } from "react";
 import FilterModal from "@/components/drivers-management/filterModal";
-import ZeroRecord from "@/components/zeroRecord";
-import DriverListTable from "@/components/drivers-management/table/driverListTable";
-import PaginationControls from "@/components/table/pagination-control";
-import CreateDriverManagementModal from "@/components/modal/createDriverManagementModal";
-import UploadCSVModal from "@/components/modal/uploadCSVModal";
 import DriverActiveModal from "@/components/drivers-management/modal/driverActiveModal";
 import DriverExportReportModal from "@/components/drivers-management/modal/driverExportReportModal";
+import DriverListTable from "@/components/drivers-management/table/driverListTable";
+import CreateDriverManagementModal from "@/components/modal/createDriverManagementModal";
+import UploadCSVModal from "@/components/modal/uploadCSVModal";
+import PaginationControls from "@/components/table/pagination-control";
 import ToastCustom from "@/components/toastCustom";
+import ZeroRecord from "@/components/zeroRecord";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 
 // import dayjs from "dayjs";
 
-import {
-  driversMamagement,
-  updateDriverStatus,
-  driverDelete,
-} from "@/services/driversManagement";
+import { DriverInfoType } from "@/app/types/drivers-management-type";
 import { RequestListType } from "@/app/types/request-list-type";
+import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
+import DriverDeleteModal from "../modal/driverDeleteModal";
 
 interface PaginationType {
   limit: number;
@@ -34,20 +32,13 @@ const paginationDefault: PaginationType = {
   totalPages: 0,
 };
 
-function ToastCustomComponent({
-  type,
-}: {
-  type: { text: string; value?: string };
-  driverName?: string;
-}) {
+function ToastCustomComponent({ type }: { type: { text: string; value?: string }; driverName?: string }) {
   return (
     <>
       {type.text === "import" && (
         <ToastCustom
           title="สร้างข้อมูลพนักงานขับรถสำเร็จ"
-          desc={
-            <span>นำเข้าข้อมูลพนักงานขับรถ {type.value} คน เรียบร้อยแล้ว</span>
-          }
+          desc={<span>นำเข้าข้อมูลพนักงานขับรถ {type.value} คน เรียบร้อยแล้ว</span>}
           status="success"
         />
       )}
@@ -70,15 +61,13 @@ const DriversListTab = () => {
     limit: 10,
   });
   const [data, setData] = useState<RequestListType[]>([]);
-  const [pagination, setPagination] =
-    useState<PaginationType>(paginationDefault);
+  const [pagination, setPagination] = useState<PaginationType>(paginationDefault);
   const [driverUid, setDriverUid] = useState<string>("");
   const [driverUpdated, setDriverUpdated] = useState<boolean>(false); // [updated]
+  const [driverInfo, setDriverInfo] = useState<DriverInfoType | null>({});
   // const [pagination, setPagination] = useState<PaginationType>(pagenation);
   const [selectedRow, setSelectedRow] = useState({});
-  const [updateType, setUpdateType] = useState<{ text: string; value: string }>(
-    { text: "", value: "" }
-  );
+  const [updateType, setUpdateType] = useState<{ text: string; value: string }>({ text: "", value: "" });
   // const [resultNonFound, setResultNonFound] = useState(false);
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -105,6 +94,11 @@ const DriversListTab = () => {
     closeModal: () => void;
   } | null>(null);
 
+  const driverDeleteModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
   useEffect(() => {
     const fetchDriversListFunc = async () => {
       try {
@@ -113,7 +107,7 @@ const DriversListTab = () => {
         const { total, totalPages } = result.pagination;
         // console.log(params.limit);
         setData(result.drivers ?? []);
-        console.log("driver",result.drivers);
+        console.log("driver", result.drivers);
         setPagination({
           limit: params.limit,
           page: params.page,
@@ -195,8 +189,7 @@ const DriversListTab = () => {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -214,11 +207,9 @@ const DriversListTab = () => {
         updateDriverStatus(driverUid, isActive)
           .then((response) => {
             // Optimistically update the UI
-            setData(prevData => 
-              prevData.map(driver => 
-                driver?.mas_driver_uid === driverUid 
-                  ? { ...driver, is_active: parseInt(isActive) } 
-                  : driver
+            setData((prevData) =>
+              prevData.map((driver) =>
+                driver?.mas_driver_uid === driverUid ? { ...driver, is_active: parseInt(isActive) } : driver
               )
             );
           })
@@ -231,21 +222,23 @@ const DriversListTab = () => {
       console.error("Error updating driver status:", error);
     }
   };
-  const handleDeleteDriver = async (driverName: string, driverUid: string) => {
-    const params = {
-      driver_name: driverName,
-      mas_driver_uid: driverUid,
-    };
-    try {
-      const response = await driverDelete(params);
-      if (response.status === 200) {
-        // Handle successful deletion
-        console.log("Driver deleted successfully");
-        setDriverUpdated(true);
-      }
-    } catch (error) {
-      console.error("Error deleting driver:", error);
-    }
+  const handleDeleteDriver = async (driverName: string, driverUid: string, driverInfo: any) => {
+    setDriverInfo(driverInfo);
+    driverDeleteModalRef.current?.openModal();
+    // const params = {
+    //   driver_name: driverName,
+    //   mas_driver_uid: driverUid,
+    // };
+    // try {
+    //   const response = await driverDelete(params);
+    //   if (response.status === 200) {
+    //     // Handle successful deletion
+    //     console.log("Driver deleted successfully");
+    //     setDriverUpdated(true);
+    //   }
+    // } catch (error) {
+    //   console.error("Error deleting driver:", error);
+    // }
   };
 
   const handleUpdateSelectedRow = (row: Record<string, string | undefined>) => {
@@ -259,9 +252,7 @@ const DriversListTab = () => {
         <div className="page-header-left">
           <div className="page-title">
             <span className="page-title-label">พนักงานขับรถ</span>
-            <span className="badge badge-outline badge-gray !rounded">
-              {pagination.total} คน
-            </span>
+            <span className="badge badge-outline badge-gray !rounded">{pagination.total} คน</span>
           </div>
         </div>
       </div>
@@ -301,9 +292,7 @@ const DriversListTab = () => {
             <i className="material-symbols-outlined">download</i>
             รายงาน
             {Object.keys(selectedRow).length > 0 && (
-              <span className="badge badge-brand badge-outline rounded-[50%]">
-                {Object.keys(selectedRow).length}
-              </span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">{Object.keys(selectedRow).length}</span>
             )}
           </button>
           <button
@@ -366,9 +355,7 @@ const DriversListTab = () => {
       />
       <UploadCSVModal
         ref={uploadCSVModalRef}
-        onUpdateType={(text: string, value?: string) =>
-          setUpdateType({ text, value: value ?? "" })
-        }
+        onUpdateType={(text: string, value?: string) => setUpdateType({ text, value: value ?? "" })}
       />
       <CreateDriverManagementModal
         ref={createDriverManagementModalRef}
@@ -379,11 +366,16 @@ const DriversListTab = () => {
           }>
         }
       />
-      <DriverExportReportModal
-        ref={driverExportReportModalRef}
-        selectedRow={selectedRow}
-      />
+      <DriverExportReportModal ref={driverExportReportModalRef} selectedRow={selectedRow} />
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilter} />
+      <DriverDeleteModal
+        ref={driverDeleteModalRef}
+        driverInfo={driverInfo || {}}
+        deleteDriverType={"delete"}
+        onValidateDelete={() => {
+          setDriverUpdated(true);
+        }}
+      />
       <Suspense fallback={<div></div>}>
         <ToastCustomComponent type={updateType} />
       </Suspense>

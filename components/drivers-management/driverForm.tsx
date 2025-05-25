@@ -71,7 +71,7 @@ const DriverForm = () => {
     driverDepartment: "",
     driverContractStartDate: "",
     driverContractEndDate: "",
-    driverOperationType: 1,
+    driverOperationType: "1",
     driverUseByOther: 0,
     driverLicenseType: "",
     driverLicenseNo: "",
@@ -118,9 +118,11 @@ const DriverForm = () => {
     driverNickname: Yup.string().required("กรุณาระบุชื่อเล่น"),
     driverContactNumber: Yup.string()
       .matches(/^(^$|[0-9]+)$/, "กรุณาระบุเฉพาะตัวเลข")
-      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
-      .max(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
-      .min(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก"),
+      // .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      // .max(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      // .min(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .optional()
+      .nonNullable(),
     driverBirthdate: Yup.string().required("กรุณาเลือกวันเกิด"),
     driverIdentificationNo: Yup.string()
       .required("กรุณาระบุเลขบัตรประชาชน")
@@ -264,7 +266,7 @@ const DriverForm = () => {
         },
         driver_name: formData.driverName,
         driver_nickname: formData.driverNickname,
-        is_replacement: "0",
+        is_replacement: formData.driverOperationType,
         mas_vendor_code: formData.driverContractorCompany,
         ref_other_use_code: useByOther,
         work_type: Number(formData.driverOverNightStay),
@@ -355,6 +357,14 @@ const DriverForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       driverImage: newImages.file_url,
+    }));
+  };
+
+  const handleChangeOperationType = (value: string) => {
+    setOperationType(value);
+    setFormData((prevData) => ({
+      ...prevData,
+      driverOperationType: value,
     }));
   };
 
@@ -688,15 +698,15 @@ const DriverForm = () => {
                     name="operationType"
                     label="ปฏิบัติงานปกติ"
                     value="1"
-                    selectedValue={operationType}
-                    setSelectedValue={setOperationType}
+                    selectedValue={formData.driverOperationType}
+                    setSelectedValue={handleChangeOperationType}
                   />
                   <RadioButton
                     name="operationType"
                     label="สำรอง"
                     value="2"
-                    selectedValue={operationType}
-                    setSelectedValue={setOperationType}
+                    selectedValue={formData.driverOperationType}
+                    setSelectedValue={handleChangeOperationType}
                   />
                 </div>
                 {formErrors.driverOperationType && <FormHelper text={String(formErrors.driverOperationType)} />}

@@ -1,28 +1,30 @@
 "use client";
 
-import React, { useRef, useEffect, useState, Suspense } from "react";
-import { useSidebar } from "@/contexts/sidebarContext";
+import AlertCustom from "@/components/drivers-management/alertCustom";
+import DriverBasicInfoCard from "@/components/drivers-management/card/driverBasicInfoCard";
+import DriverDriveInfoCard from "@/components/drivers-management/card/driverDriveInfoCard";
+import DriverEmployeeContractCard from "@/components/drivers-management/card/driverEmployeeContractCard";
+import DocumentListInfo from "@/components/drivers-management/documentListInfo";
+import DriverActiveModal from "@/components/drivers-management/modal/driverActiveModal";
+import DriverDeleteModal from "@/components/drivers-management/modal/driverDeleteModal";
+import DriverEditBasicInfoModal from "@/components/drivers-management/modal/driverEditBasicInfoModal";
+import DriverEditDocModal from "@/components/drivers-management/modal/driverEditDocModal";
+import DriverEditLicenseModal from "@/components/drivers-management/modal/driverEditLicenseModal";
+import DriverLeaveFormModal from "@/components/drivers-management/modal/driverLeaveFormModal";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
-import ToggleSwitch from "@/components/toggleSwitch";
-import DriverActiveModal from "@/components/drivers-management/modal/driverActiveModal";
-import DriverBasicInfoCard from "@/components/drivers-management/card/driverBasicInfoCard";
-import DriverEmployeeContractCard from "@/components/drivers-management/card/driverEmployeeContractCard";
-import DriverDriveInfoCard from "@/components/drivers-management/card/driverDriveInfoCard";
-import DocumentListInfo from "@/components/drivers-management/documentListInfo";
-import AlertCustom from "@/components/drivers-management/alertCustom";
-import DriverEditBasicInfoModal from "@/components/drivers-management/modal/driverEditBasicInfoModal";
-import DriverEditLicenseModal from "@/components/drivers-management/modal/driverEditLicenseModal";
-import DriverEditDocModal from "@/components/drivers-management/modal/driverEditDocModal";
-import DriverLeaveFormModal from "@/components/drivers-management/modal/driverLeaveFormModal";
-import DriverDeleteModal from "@/components/drivers-management/modal/driverDeleteModal";
 import ToastCustom from "@/components/toastCustom";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import ToggleSwitch from "@/components/toggleSwitch";
+import { useSidebar } from "@/contexts/sidebarContext";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 
-import { DriverInfo, updateDriverStatus, driverStatusRef } from "@/services/driversManagement";
+import { DriverInfo, driverStatusRef, listDriverVendors, updateDriverStatus } from "@/services/driversManagement";
 
+import { DriverMasType } from "@/app/types/driver-user-type";
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import DriverEditInfoModal from "@/components/drivers-management/modal/driverEditInfoModal";
+import { getCarpoolDriverDetails } from "@/services/carpoolManagement";
 
 interface DriverStatus {
   ref_driver_status_code: string;
@@ -114,6 +116,8 @@ const DriverViewProfilePage = () => {
   const [updateType, setUpdateType] = useState<string>("");
   const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
   const [driverStatusDesc, setDriverStatusDesc] = useState<string>("");
+  const [driverVendorsList, setDriverVendorsList] = useState([]);
+  const [vehicleUserData, setVehicleUserData] = useState<DriverMasType>();
 
   const driverActiveModalRef = useRef<{
     openModal: () => void;
@@ -154,6 +158,7 @@ const DriverViewProfilePage = () => {
     const fetchDriverInfo = async () => {
       try {
         const driverUid = driverId; // Replace with actual driver UID
+
         const response = await DriverInfo(driverUid);
         if (response.status === 200) {
           setDriverInfo(response.data.driver);
@@ -179,8 +184,31 @@ const DriverViewProfilePage = () => {
       }
     };
 
+    const fetchDriverVendors = async () => {
+      try {
+        const response = await listDriverVendors();
+        setDriverVendorsList(response.data);
+      } catch (error) {
+        console.error("Error fetching driver department data:", error);
+      }
+    };
+
+    const fetchVehicleUserData = async () => {
+      try {
+        const response = await getCarpoolDriverDetails(driverId);
+        if (response.status === 200) {
+          const res = response.data;
+          setVehicleUserData(res[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
     fetchDriverInfo();
     fetchDriverStatus();
+    fetchDriverVendors();
+    fetchVehicleUserData();
     setDriverUpdated(false);
     router.replace(`/drivers-management/view/${driverId}?active=${isActive}`);
   }, [driverUpdated, driverId, isActive, router]);
@@ -215,6 +243,7 @@ const DriverViewProfilePage = () => {
       console.error("Error updating driver status:", error);
     }
   };
+  console.log("driverInfo", driverInfo);
 
   return (
     <>
@@ -245,8 +274,8 @@ const DriverViewProfilePage = () => {
                   <span className="page-title-label">{driverInfo?.driver_name}</span>
                   <div className="flex items-center">
                     <i className="material-symbols-outlined text-[#A80689] !text-3xl">star</i>
-                    <span className="px-2">4.6</span>
-                    <span>(200)</span>
+                    <span className="px-2">{vehicleUserData?.driver_average_satisfaction_score}</span>
+                    <span>({vehicleUserData?.driver_satisfaction_score_count})</span>
                   </div>
                   {driverInfo?.driver_status?.ref_driver_status_desc === "ปฏิบัติงานปกติ" ? (
                     <div className="badge badge-pill-outline badge-success whitespace-nowrap">
@@ -323,7 +352,8 @@ const DriverViewProfilePage = () => {
                           isActive={isActive}
                           driverActiveModalRef={driverActiveModalRef}
                           driverId={driverId}
-                          useInView={true}
+                          // useInView={true}
+                          onUpdateStatusDriver={handleUpdateStatusDriver}
                         />
                         <span className="pl-2">เปิดใช้งาน</span>
                       </div>
@@ -376,7 +406,9 @@ const DriverViewProfilePage = () => {
                       แก้ไข
                     </button>
                   </div>
-                  {driverInfo && <DriverEmployeeContractCard driverInfo={driverInfo} />}
+                  {driverInfo && (
+                    <DriverEmployeeContractCard driverInfo={driverInfo} driverVendorsList={driverVendorsList} />
+                  )}
                 </div>
                 <div className="form-section">
                   <div className="form-section-header">

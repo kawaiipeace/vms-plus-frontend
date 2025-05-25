@@ -1,4 +1,3 @@
-import React from "react";
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
@@ -6,7 +5,15 @@ import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
-const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => {
+const DriverEmployeeContractCard = ({
+  driverInfo,
+  driverVendorsList,
+}: {
+  driverInfo: DriverInfoType;
+  driverVendorsList?: any[];
+}) => {
+  const vendor = driverVendorsList?.find((vendor) => vendor.mas_vendor_code === driverInfo?.mas_vendor_code);
+
   return (
     <>
       <div className="form-card">
@@ -17,28 +24,28 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                 <i className="material-symbols-outlined">receipt_long</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">เลขที่สัญญาจ้าง</h5>
-                  <p>{driverInfo?.driver_dept_sap_short_name_hire}</p>
+                  <p>{driverInfo?.contract_no}</p>
                 </div>
               </div>
               <div className="flex col-span-1">
                 <i className="material-symbols-outlined">partner_exchange</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">หน่วยงานผู้ว่าจ้าง</h5>
-                  <p>{driverInfo?.driver_dept_sap_short_name_work}</p>
+                  <p>{driverInfo?.driver_dept_sap_short_name_hire}</p>
                 </div>
               </div>
               <div className="flex col-span-1">
                 <i className="material-symbols-outlined">apartment</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">บริษัทผู้รับจ้าง</h5>
-                  <p>{}</p>
+                  <p>{vendor?.mas_vendor_name}</p>
                 </div>
               </div>
               <div className="flex col-span-1">
                 <i className="material-symbols-outlined">groups</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">หน่วยงานที่สังกัด</h5>
-                  <p>{}</p>
+                  <p>{driverInfo?.driver_dept_sap_short_name_work}</p>
                 </div>
               </div>
               <div className="flex col-span-1">

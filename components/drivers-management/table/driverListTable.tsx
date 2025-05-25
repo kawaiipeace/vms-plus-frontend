@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useState, useEffect, HTMLProps } from "react";
+import { RequestListType } from "@/app/types/request-list-type";
 import { DataTable } from "@/components/table/dataTable";
+import ToggleSwitch from "@/components/toggleSwitch";
 import {
+  ColumnDef,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
   SortingState,
   useReactTable,
-  ColumnDef,
 } from "@tanstack/react-table";
-import { RequestListType } from "@/app/types/request-list-type";
-import Image from "next/image";
 import dayjs from "dayjs";
-import ToggleSwitch from "@/components/toggleSwitch";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import React, { HTMLProps, useEffect, useState } from "react";
 
 interface DriverListTableProps {
   approved_job_driver_end_date?: string;
@@ -55,7 +55,7 @@ interface Props {
   }>;
   handleToggleChange?: (driverId: string) => void;
   onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
-  handleDeleteDriver?: (driverName: string, driverUid: string) => void;
+  handleDeleteDriver?: (driverName: string, driverUid: string, driverInfo: any) => void;
   handleUpdateSelectedRow?: (selectedRow: Record<string, string | undefined>) => void;
 }
 
@@ -106,7 +106,7 @@ const DriverListTable = ({
               checked: table.getIsAllRowsSelected(),
               indeterminate: table.getIsSomeRowsSelected(),
               onChange: table.getToggleAllRowsSelectedHandler(),
-              className: "checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+              className: "checkbox [--chkbg:#A80689] checkbox-sm rounded-md",
             }}
           />
         </div>
@@ -119,7 +119,7 @@ const DriverListTable = ({
               disabled: !row.getCanSelect(),
               indeterminate: row.getIsSomeSelected(),
               onChange: row.getToggleSelectedHandler(),
-              className:  "checkbox [--chkbg:#A80689] checkbox-sm rounded-md",
+              className: "checkbox [--chkbg:#A80689] checkbox-sm rounded-md",
             }}
           />
         </div>
@@ -244,7 +244,7 @@ const DriverListTable = ({
               ) : status === "สำรอง" ? (
                 <div className="badge badge-pill-outline badge-info whitespace-nowrap">{status}</div>
               ) : status === "ให้ออก(BackList)" ? (
-                <div className="badge badge-pill-outline badge-gray whitespace-nowrap">{status}</div>
+                <div className="badge badge-pill-outline badge-neutral whitespace-nowrap">{status}</div>
               ) : (
                 <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>
               )}
@@ -305,7 +305,8 @@ const DriverListTable = ({
                   handleDeleteDriver &&
                   handleDeleteDriver(
                     (row.original as DriverListTableProps).driver_name ?? "",
-                    (row.original as DriverListTableProps).mas_driver_uid ?? ""
+                    (row.original as DriverListTableProps).mas_driver_uid ?? "",
+                    row.original as DriverListTableProps
                   )
                 }
               >

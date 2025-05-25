@@ -1,11 +1,11 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import UploadFilePDF from "@/components/uploadFilePDF";
 import UploadFilePreview from "@/components/drivers-management/uploadFilePreview";
-import * as Yup from "yup";
 import FormHelper from "@/components/formHelper";
+import UploadFilePDF from "@/components/uploadFilePDF";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import * as Yup from "yup";
 
-import { driverUpdateDocument } from "@/services/driversManagement";
 import { DriverInfoType, DriverUpdateDocumentPayload } from "@/app/types/drivers-management-type";
+import { driverUpdateDocument } from "@/services/driversManagement";
 
 interface DriverEditDocModalProps {
   driverInfo?: DriverInfoType | null;
@@ -155,18 +155,8 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
               <div className="form-section">
                 <div className="form-section-body">
                   <div className="w-full">
-                    <label className="label font-semibold text-black">รูปใบขับขี่</label>
-                    <div className="mb-3">
-                      <UploadFilePDF onImageChange={handleFileChange} />
-                    </div>
-                    {formData.driverLicense && (
-                      <UploadFilePreview file={formData.driverLicense} onDeleteFile={() => setFilePDF(undefined)} />
-                    )}
-                    {formErrors?.driverLicense && <FormHelper text={String(formErrors?.driverLicense)} />}
-                  </div>
-                  <div className="w-full">
                     <label className="label font-semibold text-black justify-start">
-                      รูปใบรับรองการอบรม, บัตรประชาชน, ทะเบียนบ้าน ฯลฯ&nbsp;
+                      รูปใบรับรอง, บัตรประชาชน, ทะเบียนบ้าน ฯลฯ&nbsp;
                       <span className="text-[#98A2B3]">(ถ้ามี)</span>
                     </label>
                     <div className="mb-3">
@@ -178,6 +168,16 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
                       ))}
                     </div>
                     {formErrors?.driverDocument && <FormHelper text={String(formErrors?.driverDocument)} />}
+                  </div>
+                  <div className="w-full">
+                    <label className="label font-semibold text-black">รูปใบขับขี่</label>
+                    <div className="mb-3">
+                      <UploadFilePDF onImageChange={handleFileChange} />
+                    </div>
+                    {formData.driverLicense && (
+                      <UploadFilePreview file={formData.driverLicense} onDeleteFile={() => setFilePDF(undefined)} />
+                    )}
+                    {formErrors?.driverLicense && <FormHelper text={String(formErrors?.driverLicense)} />}
                   </div>
                 </div>
               </div>

@@ -19,9 +19,11 @@
 .toggle {
   transition: none !important;
 }
+
 .toggle::before {
   transition: none !important;
 }
+
 .dark-mode .avatar {
   background-color: #333741;
   color: #cecfd2;
@@ -993,6 +995,32 @@
   background-color: #1f242f;
   border-color: #333741;
   color: #85888e;
+}
+
+.light-mode .badge.badge-accent {
+  background-color: #ECFDFB;
+  border-color: #ABEFED;
+  color: #067276;
+}
+
+.dark-mode .badge.badge-accent {
+  background-color: #053321;
+  border-color: #085D3A;
+  color: #75E0A7;
+}
+
+.light-mode .badge.badge-accent.badge-pill-outline,
+.light-mode .badge.badge-accent.badge-outline {
+  background-color: #ECFDFB;
+  border-color: #ABEFED;
+  color: #067276;
+}
+
+.dark-mode .badge.badge-accent.badge-pill-outline,
+.dark-mode .badge.badge-accent.badge-outline {
+  background-color: #053321;
+  border-color: #085D3A;
+  color: #75E0A7;
 }
 
 .light-mode .breadcrumbs>ul>li+ ::before {

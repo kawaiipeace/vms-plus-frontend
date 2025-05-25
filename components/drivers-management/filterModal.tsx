@@ -244,6 +244,10 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                                         ? "badge-warning"
                                         : statusItem.ref_driver_status_desc === "หมดสัญญาจ้าง"
                                         ? "badge-gray"
+                                        : statusItem.ref_driver_status_desc.includes("ให้ออก")
+                                        ? "badge-neutral"
+                                        : statusItem.ref_driver_status_desc.includes("ทดแทน")
+                                        ? "badge-accent"
                                         : "badge-info"
                                     }`}
                                   >

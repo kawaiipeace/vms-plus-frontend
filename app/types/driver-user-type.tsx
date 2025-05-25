@@ -10,6 +10,7 @@ export interface DriverType {
   contract_end_date: string;
   driver_contact_number: string;
   driver_average_satisfaction_score: number;
+  driver_satisfaction_score_count: number;
   driver_birthdate: string;
   age: string;
   driver_license: {

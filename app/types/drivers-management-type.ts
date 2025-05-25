@@ -113,11 +113,13 @@ export interface DriverUpdateContractDetails {
   approved_job_driver_end_date: string;
   approved_job_driver_start_date: string;
   contract_no: string;
-  driver_dept_sap_short_name_hire: string;
-  driver_dept_sap_short_name_work: string;
+  driver_dept_sap_hire: string;
+  driver_dept_sap_work: string;
   mas_driver_uid: string;
   mas_vendor_code: string;
   ref_other_use_code: number;
+  is_replacement: string;
+  replacement_driver_uid?: string;
 }
 
 export interface DriverUpdateLicenseDetails {

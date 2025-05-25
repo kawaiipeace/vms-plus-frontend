@@ -1,16 +1,17 @@
-import React, { forwardRef, useImperativeHandle, useRef, useEffect, useState } from "react";
-import Image from "next/image";
 import CustomSelect from "@/components/drivers-management/customSelect";
-import { driverReplacementLists, driverDelete, driverLayoff, driverResign } from "@/services/driversManagement";
-import * as Yup from "yup";
-import { useRouter } from "next/navigation";
 import FormHelper from "@/components/formHelper";
+import { driverDelete, driverLayoff, driverReplacementLists, driverResign } from "@/services/driversManagement";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import * as Yup from "yup";
 
 import { DriverInfoType, DriverReplacementDetails } from "@/app/types/drivers-management-type";
 
 interface Props {
   driverInfo?: DriverInfoType;
   deleteDriverType?: string;
+  onValidateDelete?: () => void;
 }
 
 interface DeleteDriverParams {
@@ -25,7 +26,7 @@ interface CustomSelectOption {
 }
 
 const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ driverInfo, deleteDriverType }, ref) => {
+  ({ driverInfo, deleteDriverType, onValidateDelete }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const router = useRouter();
     const [btnDisabled, setBtnDisabled] = useState(true);
@@ -73,7 +74,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
 
     useEffect(() => {
       const fetchDriverReplacementLists = async () => {
-        const name = "";
+        const name = driverInfo?.driver_name || "";
         try {
           const response = await driverReplacementLists(name);
           const driverReplacementData: CustomSelectOption[] = response.data.map((item: DriverReplacementDetails) => {
@@ -82,6 +83,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
               label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
             };
           });
+
           setDriverReplacementList(driverReplacementData);
           // setDriverReplacementList(response.data);
         } catch (error) {
@@ -90,7 +92,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
       };
 
       fetchDriverReplacementLists();
-    }, []);
+    }, [driverInfo]);
 
     useEffect(() => {
       handleCheckInputLayoff(formData_2);
@@ -112,6 +114,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
           };
           const response = await driverDelete(params);
           if (response.status === 200) {
+            onValidateDelete?.();
             modalRef.current?.close();
             router.push("/drivers-management?delete=success&driverName=" + formData_1.driver_name);
           } else {

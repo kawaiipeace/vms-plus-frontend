@@ -1,18 +1,23 @@
 import DatePicker from "@/components/datePicker";
-import CustomSelect from "@/components/drivers-management/customSelect";
+import CustomSelect, { CustomSelectOption } from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as Yup from "yup";
 
 import {
+  driverReplacementLists,
   driverUpdateContractDetails,
   listDriverDepartment,
   listDriverVendors,
   listUseByOtherRadio,
 } from "@/services/driversManagement";
 
-import { DriverInfoType, DriverUpdateContractDetails } from "@/app/types/drivers-management-type";
+import {
+  DriverInfoType,
+  DriverReplacementDetails,
+  DriverUpdateContractDetails,
+} from "@/app/types/drivers-management-type";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
 interface UseByOtherRadioItem {
@@ -31,6 +36,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     const modalRef = useRef<HTMLDialogElement>(null);
     const [operationType, setOperationType] = useState<string>("1");
     const [useByotherRadio, setUseByotherRadio] = useState<UseByOtherRadioItem[]>([]);
+    const [driverReplacementList, setDriverReplacementList] = useState<CustomSelectOption[]>([]);
     // const [useByOther, setUseByOther] = useState<string>("0");
     const [driverDepartmentList, setDriverDepartmentList] = useState<
       { value: string; label: string; labelDetail: string }[]
@@ -44,6 +50,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       driverDepartment: "",
       driverContractorCompany: "",
       driverUseByOther: 0,
+      driverOperationType: "1",
+      driverReplacementEmployee: "",
     });
     const [formErrors, setFormErrors] = useState({
       driverContractStartDate: "",
@@ -53,6 +61,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       driverDepartment: "",
       driverContractorCompany: "",
       driverUseByOther: "",
+      driverOperationType: "",
+      driverReplacementEmployee: "",
     });
 
     // const [disableStartDate, setDisableStartDate] = useState<string>();
@@ -66,6 +76,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       driverDepartment: Yup.string().required("กรุณาเลือกหน่วยงานที่สังกัด"),
       driverContractorCompany: Yup.string().required("กรุณาเลือกบริษัทผู้รับจ้าง"),
       driverUseByOther: Yup.string().required("กรุณาเลือกหน่วยงานอื่นสามารถขอใช้งานได้"),
+      driverOperationType: Yup.string().required("กรุณาเลือกประเภทการปฏิบัติงาน"),
+      driverReplacementEmployee: Yup.string().optional(),
     });
 
     const [openModal, setOpenModal] = useState(false);
@@ -87,15 +99,24 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     };
 
     useEffect(() => {
-      if (driverInfo) {
+      if (driverInfo && driverDepartmentList.length > 0) {
+        const initialEmployingAgency = driverDepartmentList.find(
+          (option) => option.label === driverInfo.driver_dept_sap_short_name_hire
+        );
+        const initialDepartment = driverDepartmentList.find(
+          (option) => option.label === driverInfo.driver_dept_sap_short_name_work
+        );
+
         setFormData({
           driverContractStartDate: driverInfo.approved_job_driver_start_date || "",
           driverContractEndDate: driverInfo.approved_job_driver_end_date || "",
           driverContractNo: driverInfo.contract_no || "",
-          driverEmployingAgency: driverInfo.driver_dept_sap_short_name_hire || "",
-          driverDepartment: driverInfo.driver_dept_sap_short_name_work || "",
+          driverEmployingAgency: initialEmployingAgency?.value || "",
+          driverDepartment: initialDepartment?.value || "",
           driverContractorCompany: driverInfo.mas_vendor_code || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
+          driverOperationType: driverInfo.is_replacement || "1",
+          driverReplacementEmployee: "",
         });
         // setDisableEndDate(
         //   driverInfo.approved_job_driver_start_date
@@ -108,7 +129,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         //     : undefined
         // );
       }
-    }, [driverInfo]);
+    }, [driverInfo, driverDepartmentList]);
 
     useEffect(() => {
       const fetchUseByOtherRadio = async () => {
@@ -128,7 +149,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
               return {
                 value: item.dept_sap,
                 label: item.dept_short,
-                labelDetail: item.dept_full,
+                // labelDetail: item.dept_full,
               };
             }
           );
@@ -162,6 +183,27 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       fetchUseByOtherRadio();
     }, []);
 
+    useEffect(() => {
+      const fetchDriverReplacementLists = async () => {
+        const name = driverInfo?.driver_name || "";
+        try {
+          const response = await driverReplacementLists(name);
+          const driverReplacementData: CustomSelectOption[] = response.data.map((item: DriverReplacementDetails) => {
+            return {
+              value: item.mas_driver_uid,
+              label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
+            };
+          });
+
+          setDriverReplacementList(driverReplacementData);
+        } catch (error) {
+          console.error("Error fetching driver replacement lists:", error);
+        }
+      };
+
+      fetchDriverReplacementLists();
+    }, [driverInfo]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
@@ -171,12 +213,15 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           approved_job_driver_end_date: formData.driverContractEndDate,
           approved_job_driver_start_date: formData.driverContractStartDate,
           contract_no: formData.driverContractNo,
-          driver_dept_sap_short_name_hire: formData.driverEmployingAgency,
-          driver_dept_sap_short_name_work: formData.driverDepartment,
+          driver_dept_sap_hire: formData.driverEmployingAgency,
+          driver_dept_sap_work: formData.driverDepartment,
           mas_driver_uid: driverInfo?.mas_driver_uid || "",
           mas_vendor_code: formData.driverContractorCompany,
           ref_other_use_code: formData.driverUseByOther,
+          is_replacement: formData.driverOperationType,
+          replacement_driver_uid: formData.driverReplacementEmployee,
         };
+
         // Submit form data
         const response = await driverUpdateContractDetails({ params });
         if (response.status === 200) {
@@ -203,6 +248,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
             driverDepartment: "",
             driverContractorCompany: "",
             driverUseByOther: "",
+            driverOperationType: "",
+            driverReplacementEmployee: "",
           });
           setFormErrors((prevErrors) => ({
             ...prevErrors,
@@ -388,15 +435,21 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                   name="operationType"
                                   label="ปฏิบัติงานปกติ"
                                   value="1"
-                                  selectedValue={`${operationType}`}
-                                  setSelectedValue={setOperationType}
+                                  selectedValue={formData.driverOperationType}
+                                  setSelectedValue={(v) => {
+                                    setOperationType(v);
+                                    setFormData((prev) => ({ ...prev, driverOperationType: v }));
+                                  }}
                                 />
                                 <RadioButton
                                   name="operationType"
                                   label="สำรอง"
                                   value="2"
-                                  selectedValue={`${operationType}`}
-                                  setSelectedValue={setOperationType}
+                                  selectedValue={formData.driverOperationType}
+                                  setSelectedValue={(v) => {
+                                    setOperationType(v);
+                                    setFormData((prev) => ({ ...prev, driverOperationType: v }));
+                                  }}
                                 />
                               </div>
                             </div>
@@ -406,7 +459,18 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                               <label className="label justify-start font-semibold text-black">
                                 พนักงานที่ถูกปฏิบัติงานแทน<span className="text-[#98A2B3]">(ถ้ามี)</span>
                               </label>
-                              <CustomSelect w="w-full" options={[]} value={null} onChange={() => {}} />
+                              <CustomSelect
+                                w="w-full"
+                                options={driverReplacementList}
+                                value={
+                                  driverReplacementList.find(
+                                    (option) => option.value === formData.driverReplacementEmployee
+                                  ) || null
+                                }
+                                onChange={(selected) => {
+                                  setFormData((prev) => ({ ...prev, driverReplacementEmployee: selected.value }));
+                                }}
+                              />
                             </div>
                           </div>
                         </div>
