@@ -13,7 +13,7 @@ export default function ApproveFlow() {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-4 gap-4 mb-4">
         <RequestStatusBox iconName="schedule" status="info" title="รออนุมัติ" number={3} />
         <RequestStatusBox iconName="reply" status="warning" title="ตีกลับคำขอ" number={1} />
         <RequestStatusBox iconName="check" status="success" title="อนุมัติ" number={1} />

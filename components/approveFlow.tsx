@@ -196,7 +196,7 @@ export default function ArpproveFlow() {
   return (
     <>
       <div className="hidden md:block">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-4 gap-4 mb-4">
           {summary !== null && (
             <>
               {summary.map((item) => {

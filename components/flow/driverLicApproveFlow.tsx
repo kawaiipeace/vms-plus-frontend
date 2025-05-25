@@ -276,7 +276,7 @@ export default function DriverLicApproveFlow() {
 
       {/* Desktop status boxes */}
       <div className="hidden md:block">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_annual_driver_status_code];
             if (!config || item.count === 0) return null;

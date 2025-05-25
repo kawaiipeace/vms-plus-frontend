@@ -207,7 +207,7 @@ export default function AdminVehiclePickupFlow() {
       </div>
 
       <div className="hidden md:block">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 

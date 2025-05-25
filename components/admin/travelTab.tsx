@@ -12,7 +12,7 @@ export default function TravelTab() {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-4 gap-4 mb-4">
         <RequestStatusBox iconName="directions_car" status="warning" title="รอรับยานพาหนะ" number={3} />
         <RequestStatusBox iconName="car_crash" status="error" title="รับยานพาหนะล่าช้า" number={1} />
         <RequestStatusBox iconName="travel_luggage_and_bags" status="info" title="อยู่ระหว่างเดินทาง" number={1} />
