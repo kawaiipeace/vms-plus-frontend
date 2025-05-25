@@ -356,10 +356,11 @@ export default function DriverLicApproveFlow() {
           />
         </>
       ) : (
+        
         <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขออนุมัติ"
+          desc={<>เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br> รายการคำขอที่รออนุมัติจะแสดงที่นี่ </>}
           button="ล้างตัวกรอง"
           displayBtn={activeFilters.length > 0}
           btnType="secondary"
