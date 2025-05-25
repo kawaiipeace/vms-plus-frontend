@@ -34,7 +34,6 @@ const DriverInfoCarpoolModal = forwardRef<
       const fetchVehicleUserData = async () => {
         try {
           const response = await getCarpoolDriverDetails(id);
-          console.log("driver---", response.data);
           if (response.status === 200) {
             const res = response.data;
             setVehicleUserData(res[0]);
@@ -106,10 +105,10 @@ const DriverInfoCarpoolModal = forwardRef<
                       </div>
                       <div className="supporting-text-group">
                         <div className="supporting-text">
-                          {vehicleUserData?.driver_id || "-"}
+                          {vehicleUserData?.mas_vendor_code || "-"}
                         </div>
                         <div className="supporting-text">
-                          {vehicleUserData?.driver_dept_sap || "-"}
+                          {vehicleUserData?.mas_vendor_name || "-"}
                         </div>
                       </div>
                     </div>
@@ -156,7 +155,7 @@ const DriverInfoCarpoolModal = forwardRef<
                             <i className="material-symbols-outlined">person</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {vehicleUserData?.driver_contact_number || "-"}
+                                {vehicleUserData?.age || "-"}
                               </div>
                             </div>
                           </div>
@@ -204,7 +203,7 @@ const DriverInfoCarpoolModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">เลขที่ใบอนุญาต</div>
                           <div className="form-text">
-                            {/* {vehicleUserData?.driver_license?.driver_license_no} */}
+                            {vehicleUserData?.driver_license_no}
                           </div>
                         </div>
                       </div>
@@ -218,12 +217,11 @@ const DriverInfoCarpoolModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-text">
-                            {/* {
-                              convertToBuddhistDateTime(
-                                vehicleUserData?.driver_license
-                                  ?.driver_license_end_date
-                              ).date
-                            } */}
+                            {vehicleUserData?.driver_license_end_date
+                              ? convertToBuddhistDateTime(
+                                  vehicleUserData?.driver_license_end_date
+                                ).date
+                              : "-"}
                           </div>
                         </div>
                       </div>
@@ -261,11 +259,11 @@ const DriverInfoCarpoolModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">มีผลถึงวันที่</div>
                           <div className="form-text">
-                            {
-                              convertToBuddhistDateTime(
-                                vehicleUserData?.contract_end_date
-                              ).date
-                            }
+                            {vehicleUserData?.approved_job_driver_end_date
+                              ? convertToBuddhistDateTime(
+                                  vehicleUserData?.approved_job_driver_end_date
+                                ).date
+                              : "-"}
                           </div>
                         </div>
                       </div>
