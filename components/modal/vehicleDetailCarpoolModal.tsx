@@ -62,6 +62,9 @@ const VehicleDetailCarpoolModel = forwardRef<
   return (
     <dialog ref={modalRef} className="modal">
       <div className="modal-box max-w-[1200px] p-0 relative bg-white">
+        <div className="bottom-sheet" {...swipeDownHandlers}>
+          <div className="bottom-sheet-icon"></div>
+        </div>
         <div className="modal-header flex justify-between">
           <h2 className="text-lg font-bold">รายละเอียด</h2>
           <button
@@ -126,9 +129,7 @@ const VehicleDetailCarpoolModel = forwardRef<
                 <CarCardItem
                   icon="local_gas_station"
                   title="ประเภทเชื้อเพลิง"
-                  value={
-                    vehicleDetail?.ref_fuel_type?.ref_fuel_type_name_th || "-"
-                  }
+                  value={vehicleDetail?.fuel_type_name || "-"}
                 />
                 <CarCardItem
                   icon="airline_seat_recline_extra"
@@ -149,16 +150,12 @@ const VehicleDetailCarpoolModel = forwardRef<
                 <CarCardItem
                   icon="airport_shuttle"
                   title="รหัสข้างรถ"
-                  value={`${
-                    vehicleDetail?.vehicle_department?.vehicle_pea_id || "-"
-                  }`}
+                  value={`${vehicleDetail?.vehicle_pea_id || "-"}`}
                 />
                 <CarCardItem
                   icon="local_parking"
                   title="สถานที่จอดรถ"
-                  value={`${
-                    vehicleDetail?.vehicle_department?.parking_place || "-"
-                  }`}
+                  value={`${vehicleDetail?.parking_place || "-"}`}
                 />
               </div>
             </div>

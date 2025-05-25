@@ -56,19 +56,22 @@ export default function CarpoolProcessFour() {
     if (refetch) {
       fetchCarpoolVehicleSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
   useEffect(() => {
     if (!id) {
       if (formData.mas_carpool_uid) fetchCarpoolVehicleSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
     if (id) {
       fetchCarpoolVehicleSearchFunc();
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const fetchCarpoolVehicleSearchFunc = async (newPagination?: any) => {
     try {

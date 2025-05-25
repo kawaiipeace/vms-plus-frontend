@@ -44,4 +44,9 @@ export interface DriverWorkType {
 
 export interface DriverMasType extends DriverType {
   ref_driver_status_code: string;
+  mas_vendor_code: string;
+  mas_vendor_name: string;
+  driver_license_no: string;
+  driver_license_end_date: string;
+  approved_job_driver_end_date: string;
 }

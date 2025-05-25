@@ -67,4 +67,7 @@ export interface VehicleMasType extends VehicleDetailType {
   ref_vehicle_type_name: string;
   vehicle_owner_dept_short: string;
   fleet_card_no: string;
+  fuel_type_name: string;
+  vehicle_pea_id: string;
+  parking_place: string;
 }
