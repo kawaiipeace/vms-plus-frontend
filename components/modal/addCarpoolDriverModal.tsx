@@ -48,7 +48,7 @@ const AddCarpoolDriverModal = forwardRef<
     try {
       const response = await getCarpoolDriver(params);
       const result = response.data;
-      setDrivers([...drivers, ...result.drivers]);
+      setDrivers(result.drivers);
       // setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
