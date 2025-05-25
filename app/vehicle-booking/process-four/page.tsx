@@ -78,7 +78,7 @@ export default function ProcessFour() {
         work_place: formData.workPlace || "",
         is_system_choose_vehicle: formData.isSystemChooseVehicle || "0",
         pm_order_no: formData.pmOrderNo || "",
-        wbs_no: formData.wbsNo || "",
+        wbs_no: formData.wbsNumber || "",
         activity_no: formData.activityNo || "",
         cost_center: formData.costCenter || "",
       };

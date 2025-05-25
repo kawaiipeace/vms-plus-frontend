@@ -278,7 +278,7 @@ Props) {
                 refCostTypeCode={updatedFormData.refCostTypeCode}
                 costCenter={updatedFormData.costCenter}
                 activityNo={updatedFormData.activityNo}
-                wbsNo={updatedFormData.wbsNo}
+                wbsNo={updatedFormData.wbsNumber}
                 networkNo={updatedFormData.networkNo}
                 pmOrderNo={updatedFormData.pmOrderNo}
               />

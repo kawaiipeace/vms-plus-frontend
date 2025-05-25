@@ -6,8 +6,9 @@ import { updateCost } from "@/services/bookingUser";
 import { fetchCostTypes, fetchCostCenter } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { register } from "module";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
 
 interface Props {
@@ -72,10 +73,12 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
     const [costCenterOptions, setCostCenterOptions] = useState<{ value: string; label: string }[]>([]);
     const [selectedCostCenterOption, setSelectedCostCenterOption] = useState<{ value: string; label: string }>();
     
+    
     const { 
       handleSubmit, 
       reset, 
       setValue, 
+      control,
       watch,
       formState: { errors, isValid } 
     } = useForm({
@@ -97,6 +100,10 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
       activityNo: "",
       networkNo: ""
     });
+    const wbsNumber = useWatch({ control, name: "wbsNumber" });
+    const activityNo = useWatch({ control, name: "activityNo" });
+    const pmOrderNo = useWatch({ control, name: "pmOrderNo" });
+    const networkNo = useWatch({ control, name: "networkNo" });
 
     useEffect(() => {
       const fetchCostTypeRequest = async () => {
@@ -178,6 +185,10 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
     };
 
     const handleCostTypeChange = (option: any) => {
+      setValue('wbsNumber',"");
+      setValue('activityNo',"");
+      setValue('pmOrderNo',"");
+      setValue('networkNo',"");
       setSelectedCostTypeOption(option);
       setValue("refCostTypeCode", option.value);
       setValue("costCenter", "");
@@ -206,7 +217,7 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
       const initialValues = {
         refCostTypeCode: requestData?.ref_cost_type_code || formData.refCostTypeCode || "",
         costCenter: requestData?.cost_no || formData.costCenter || "",
-        wbsNumber: requestData?.wbs_number || formData.wbsNo || "",
+        wbsNumber: requestData?.wbs_number || formData.wbsNumber || "",
         pmOrderNo: requestData?.pm_order_no || formData.pmOrderNo || "",
         activityNo: requestData?.activity_no || formData.activityNo || "",
         networkNo: requestData?.network_no || formData.networkNo || ""
@@ -380,7 +391,7 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             type="text"
                             className="form-control"
                             placeholder="ระบุเลขที่ WBS"
-                            value={formValues.wbsNumber}
+                            value={wbsNumber}
                             onChange={(e) => {
                               setValue("wbsNumber", e.target.value);
                               setFormValues(prev => ({ ...prev, wbsNumber: e.target.value }));
@@ -402,7 +413,7 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             type="text"
                             className="form-control"
                             placeholder="ระบุเลขที่โครงข่าย"
-                            value={formValues.networkNo}
+                            value={networkNo}
                             onChange={(e) => {
                               setValue("networkNo", e.target.value);
                               setFormValues(prev => ({ ...prev, networkNo: e.target.value }));
@@ -419,7 +430,7 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             type="text"
                             className="form-control"
                             placeholder="ระบุเลขที่กิจกรรม"
-                            value={formValues.activityNo}
+                            value={activityNo}
                             onChange={(e) => {
                               setValue("activityNo", e.target.value);
                               setFormValues(prev => ({ ...prev, activityNo: e.target.value }));
@@ -440,7 +451,7 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
                           type="text"
                           className="form-control"
                           placeholder="ระบุเลขที่ใบสั่ง"
-                          value={formValues.pmOrderNo}
+                          value={pmOrderNo}
                           onChange={(e) => {
                             setValue("pmOrderNo", e.target.value);
                             setFormValues(prev => ({ ...prev, pmOrderNo: e.target.value }));
