@@ -3,6 +3,7 @@ import { loadReportAddFuel, loadReportTripDetail } from "@/services/vehicleServi
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import DatePicker from "../datePicker";
+import dayjs from "dayjs";
 
 export type ReportModalRef = {
   open: () => void;
@@ -57,8 +58,8 @@ interface ReportBodyProps {
 const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, ref) => {
   const reportRef = useRef<HTMLDialogElement>(null);
   const [params, setParams] = useState<VehicleManagementReportApiParams>({
-    start_date: new Date().toISOString().split("T")[0],
-    end_date: new Date().toISOString().split("T")[0],
+    start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
+    end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
     show_all: "0",
   });
 
@@ -116,25 +117,10 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
                       </div>
                       <DatePicker
                         placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
-                        onChange={(e) => setParams({ ...params, start_date: e })}
-                        defaultValue={new Date(params.start_date).toISOString().split("T")[0]}
+                        onChange={(e) => setParams({ ...params, start_date: e.toString() })}
+                        defaultValue={params.start_date}
                       />
-                      <div className="input-group-append hidden" data-clear>
-                        <span className="input-group-text search-ico-trailing">
-                          <i className="material-symbols-outlined">close</i>
-                        </span>
-                      </div>
                     </div>
-                    {/* <div className="input-group">
-                    <i className="material-symbols-outlined">calendar_month</i>
-
-                    <input
-                      type="date"
-                      className="form-control border-0"
-                      value={new Date(params.start_date).toISOString().split("T")[0]}
-                      onChange={(e) => setParams({ ...params, start_date: e.target.value })}
-                    />
-                  </div> */}
                   </div>
 
                   {/* Date End */}
@@ -149,23 +135,9 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
                       <DatePicker
                         placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
                         onChange={(e) => setParams({ ...params, end_date: e })}
-                        defaultValue={new Date(params.end_date).toISOString().split("T")[0]}
+                        defaultValue={params.end_date}
                       />
-                      <div className="input-group-append hidden" data-clear>
-                        <span className="input-group-text search-ico-trailing">
-                          <i className="material-symbols-outlined">close</i>
-                        </span>
-                      </div>
                     </div>
-                    {/* <div className="input-group">
-                      <i className="material-symbols-outlined">calendar_month</i>
-                      <input
-                        type="date"
-                        className="form-control border-0"
-                        value={new Date(params.end_date).toISOString().split("T")[0]}
-                        onChange={(e) => setParams({ ...params, end_date: e.target.value })}
-                      />
-                    </div> */}
                   </div>
                 </div>
 
