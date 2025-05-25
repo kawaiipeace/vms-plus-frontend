@@ -364,10 +364,15 @@ const RequestDrivingStepTwoModal = forwardRef<
                 <div className="text-left mt-5">
                   การกดปุ่ม "ขออนุมัติ" จะถือว่าท่านรับรองว่ามีคุณสมบัติถูกต้อง
                   <br></br>
-                  <Link href="#" className="text-[#444CE7] underline">
+                  <a
+                    href="/assets/อนุมัติให้พนักงานขับขี่รถยนต์ กฟภ. โดยใช้.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#444CE7] underline"
+                  >
                     ตามอนุมัติ ผวก. ลว. 16 ก.พ. 2541 เรื่อง ให้พนักงานของ กฟภ.
                     ขับรถยนต์ที่ใช้ใบอนุญาตขับขี่ส่วนบุคคล
-                  </Link>{" "}
+                  </a>
                 </div>
               </div>
               <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
