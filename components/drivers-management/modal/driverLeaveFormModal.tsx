@@ -87,12 +87,14 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
         const name = "";
         try {
           const response = await driverReplacementLists(name);
-          const driverReplacementData: CustomSelectOption[] = response.data.map((item: DriverReplacementDetails) => {
-            return {
-              value: item.mas_driver_uid,
-              label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
-            };
-          });
+          const driverReplacementData: CustomSelectOption[] = response.data
+            .filter((e: DriverReplacementDetails) => e.driver_name !== driverInfo?.driver_name)
+            .map((item: DriverReplacementDetails) => {
+              return {
+                value: item.mas_driver_uid,
+                label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
+              };
+            });
           setDriverReplacementList(driverReplacementData);
           // setDriverReplacementList(response.data);
         } catch (error) {
@@ -102,7 +104,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
 
       fetchLeaveTimeList();
       fetchDriverReplacementLists();
-    }, []);
+    }, [driverInfo]);
 
     useEffect(() => {
       handleLeaveTimeCheck(formData);

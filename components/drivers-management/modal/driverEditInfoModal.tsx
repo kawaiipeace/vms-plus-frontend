@@ -50,7 +50,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       driverDepartment: "",
       driverContractorCompany: "",
       driverUseByOther: 0,
-      driverOperationType: "1",
+      driverOperationType: "0",
       driverReplacementEmployee: "",
     });
     const [formErrors, setFormErrors] = useState({
@@ -115,7 +115,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driverDepartment: initialDepartment?.value || "",
           driverContractorCompany: driverInfo.mas_vendor_code || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
-          driverOperationType: driverInfo.is_replacement || "1",
+          driverOperationType: driverInfo.is_replacement || "0",
           driverReplacementEmployee: "",
         });
         // setDisableEndDate(
@@ -185,15 +185,17 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
 
     useEffect(() => {
       const fetchDriverReplacementLists = async () => {
-        const name = driverInfo?.driver_name || "";
         try {
+          const name = "";
           const response = await driverReplacementLists(name);
-          const driverReplacementData: CustomSelectOption[] = response.data.map((item: DriverReplacementDetails) => {
-            return {
-              value: item.mas_driver_uid,
-              label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
-            };
-          });
+          const driverReplacementData: CustomSelectOption[] = response.data
+            .filter((e: DriverReplacementDetails) => e.driver_name !== driverInfo?.driver_name)
+            .map((item: DriverReplacementDetails) => {
+              return {
+                value: item.mas_driver_uid,
+                label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
+              };
+            }); // Exclude current driver
 
           setDriverReplacementList(driverReplacementData);
         } catch (error) {
@@ -221,6 +223,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           is_replacement: formData.driverOperationType,
           replacement_driver_uid: formData.driverReplacementEmployee,
         };
+
+        console.log("Submitting form with params:", params);
 
         // Submit form data
         const response = await driverUpdateContractDetails({ params });
@@ -434,7 +438,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 <RadioButton
                                   name="operationType"
                                   label="ปฏิบัติงานปกติ"
-                                  value="1"
+                                  value="0"
                                   selectedValue={formData.driverOperationType}
                                   setSelectedValue={(v) => {
                                     setOperationType(v);
@@ -444,7 +448,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 <RadioButton
                                   name="operationType"
                                   label="สำรอง"
-                                  value="2"
+                                  value="1"
                                   selectedValue={formData.driverOperationType}
                                   setSelectedValue={(v) => {
                                     setOperationType(v);

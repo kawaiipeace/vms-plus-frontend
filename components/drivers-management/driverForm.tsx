@@ -71,7 +71,7 @@ const DriverForm = () => {
     driverDepartment: "",
     driverContractStartDate: "",
     driverContractEndDate: "",
-    driverOperationType: "1",
+    driverOperationType: "0",
     driverUseByOther: 0,
     driverLicenseType: "",
     driverLicenseNo: "",
@@ -697,14 +697,14 @@ const DriverForm = () => {
                   <RadioButton
                     name="operationType"
                     label="ปฏิบัติงานปกติ"
-                    value="1"
+                    value="0"
                     selectedValue={formData.driverOperationType}
                     setSelectedValue={handleChangeOperationType}
                   />
                   <RadioButton
                     name="operationType"
                     label="สำรอง"
-                    value="2"
+                    value="1"
                     selectedValue={formData.driverOperationType}
                     setSelectedValue={handleChangeOperationType}
                   />

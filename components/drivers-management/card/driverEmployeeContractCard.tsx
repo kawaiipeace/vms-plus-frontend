@@ -66,7 +66,7 @@ const DriverEmployeeContractCard = ({
                 <i className="material-symbols-outlined">business_center</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">ประเภทการปฏิบัติงาน</h5>
-                  <p>{driverInfo?.alert_driver_status}</p>
+                  <p>{driverInfo?.is_replacement === "0" ? "ปฏิบัติงานปกติ" : "สำรอง"}</p>
                 </div>
               </div>
               <div className="flex col-span-1">

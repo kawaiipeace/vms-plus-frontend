@@ -243,7 +243,6 @@ const DriverViewProfilePage = () => {
       console.error("Error updating driver status:", error);
     }
   };
-  console.log("driverInfo", driverInfo);
 
   return (
     <>
@@ -458,12 +457,14 @@ const DriverViewProfilePage = () => {
           setUpdateType={setUpdateType}
         />
       )}
-      <DriverEditInfoModal
-        ref={driverEditInfoModalRef}
-        driverInfo={driverInfo}
-        onUpdateDriver={setDriverUpdated}
-        setUpdateType={setUpdateType}
-      />
+      {driverInfo && (
+        <DriverEditInfoModal
+          ref={driverEditInfoModalRef}
+          driverInfo={driverInfo}
+          onUpdateDriver={setDriverUpdated}
+          setUpdateType={setUpdateType}
+        />
+      )}
       <DriverEditLicenseModal
         ref={driverEditLicenseModalRef}
         driverInfo={driverInfo}
@@ -476,13 +477,21 @@ const DriverViewProfilePage = () => {
         onUpdateDriver={setDriverUpdated}
         setUpdateType={setUpdateType}
       />
-      <DriverLeaveFormModal
-        ref={driverLeaveFormModalRef}
-        driverInfo={driverInfo}
-        onUpdateDriver={setDriverUpdated}
-        setUpdateType={setUpdateType}
-      />
-      <DriverDeleteModal ref={driverDeleteModalRef} driverInfo={driverInfo ?? {}} deleteDriverType={deleteModalType} />
+      {driverInfo && (
+        <DriverLeaveFormModal
+          ref={driverLeaveFormModalRef}
+          driverInfo={driverInfo}
+          onUpdateDriver={setDriverUpdated}
+          setUpdateType={setUpdateType}
+        />
+      )}
+      {driverInfo && (
+        <DriverDeleteModal
+          ref={driverDeleteModalRef}
+          driverInfo={driverInfo ?? {}}
+          deleteDriverType={deleteModalType}
+        />
+      )}
 
       <Suspense fallback={<div></div>}>
         <IsActiveWrapper setIsActive={setIsActive} />

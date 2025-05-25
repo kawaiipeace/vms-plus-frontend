@@ -74,15 +74,17 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
 
     useEffect(() => {
       const fetchDriverReplacementLists = async () => {
-        const name = driverInfo?.driver_name || "";
         try {
+          const name = "";
           const response = await driverReplacementLists(name);
-          const driverReplacementData: CustomSelectOption[] = response.data.map((item: DriverReplacementDetails) => {
-            return {
-              value: item.mas_driver_uid,
-              label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
-            };
-          });
+          const driverReplacementData: CustomSelectOption[] = response.data
+            .filter((e: DriverReplacementDetails) => e.driver_name !== driverInfo?.driver_name)
+            .map((item: DriverReplacementDetails) => {
+              return {
+                value: item.mas_driver_uid,
+                label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
+              };
+            });
 
           setDriverReplacementList(driverReplacementData);
           // setDriverReplacementList(response.data);
