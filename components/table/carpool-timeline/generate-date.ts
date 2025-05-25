@@ -12,7 +12,7 @@ export function transformVehicleApiToTableData(
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
-      timeline[`day_${i}`] = [];
+      timeline[dates[i - 1].key] = [];
     }
     return timeline;
   };
@@ -47,7 +47,7 @@ export function transformVehicleApiToTableData(
         const duration = Math.max(dayEnd - dayStart + 1, 1);
         const destinationPlace = trip.trip_destination_place;
 
-        timeline[`day_${dayStart}`]?.push({
+        timeline[`day_${start.format("D_M_YYYY")}`]?.push({
           tripDetailId: trip.trn_trip_detail_uid,
           destinationPlace: destinationPlace,
           startTime: start.format("HH:mm"),
@@ -83,7 +83,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
 
     const holidayMap = new Map(
       response.map((item: any) => [
-        dayjs(item.mas_holidays_date).format("YYYY-MM-DD"),
+        dayjs(item.mas_holidays_date).format("D_M_YYYY"),
         item.mas_holidays_detail,
       ])
     );
@@ -95,10 +95,10 @@ export async function generateDateObjects(startDate: string, endDate: string) {
     let current = start;
 
     while (current.isBefore(end) || current.isSame(end)) {
-      const formattedDate = current.format("YYYY-MM-DD");
+      const formattedDate = current.format("D_M_YYYY");
 
       dates.push({
-        key: `day_${current.date()}`,
+        key: `day_${formattedDate}`,
         date: formattedDate,
         day: current.date(),
         month: current.format("MMM"),
@@ -125,7 +125,7 @@ export function transformDriverApiToTableData(
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
-      timeline[`day_${i}`] = [];
+      timeline[dates[i - 1].key] = [];
     }
     return timeline;
   };
@@ -137,6 +137,7 @@ export function transformDriverApiToTableData(
     let status = "";
     let carUserDetail: Record<string, string> = {};
     let driverDetail: Record<string, string> = {};
+    console.log("timeline: ", timeline);
 
     vehicle.vehicle_trn_requests?.forEach((req: any) => {
       if (req.trip_details.length === 0) return;
@@ -160,7 +161,7 @@ export function transformDriverApiToTableData(
         const duration = Math.max(dayEnd - dayStart + 1, 1);
         const destinationPlace = trip.trip_destination_place;
 
-        timeline[`day_${dayStart}`]?.push({
+        timeline[`day_${start.format("D_M_YYYY")}`]?.push({
           tripDetailId: trip.trn_trip_detail_uid,
           destinationPlace: destinationPlace,
           startTime: start.format("HH:mm"),
