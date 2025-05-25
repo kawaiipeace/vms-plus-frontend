@@ -10,6 +10,8 @@ interface DatePickerProps {
   placeholder?: string;
   defaultValue?: string; // Add defaultValue prop
   onChange?: (dateStr: string) => void;
+  // minDate?: DateOption; // Optional prop for minimum date
+  // maxDate?: DateOption; // Optional prop for maximum date
 }
 
 // interface ExtendedFlatpickrInstance extends FlatpickrInstance {
@@ -49,6 +51,8 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
         dateFormat: "d/m/Y",
         locale: Thai,
         allowInput: true,
+        // minDate: minDate, // Set a minimum date
+        // maxDate: maxDate, // Set a maximum date
         // position: "auto",
         defaultDate: defaultValue ? convertToGregorianYear(defaultValue) : undefined, // Convert defaultValue to Gregorian
         monthSelectorType: "static",
@@ -82,6 +86,8 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
         },
 
         onChange: function (_, dateStr, instance) {
+          console.log("onChange", dateStr, instance);
+
           // Convert to Buddhist year only if it's not already in Buddhist format
           const buddhistYearDateStr =
             instance.currentYear > 2500 ? convertToGregorianYear(dateStr) : formatWithBuddhistYear(dateStr);
@@ -106,7 +112,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(({ placeholder, de
         },
         onOpen: () => {
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
-          console.log("Modal scroll wrapper:", wrapper);
 
           if (wrapper) {
             wrapper.style.overflow = "hidden";

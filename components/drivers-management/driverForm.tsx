@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import ImageUpload from "@/components/imageUpload";
-import ImagePreview from "@/components/imagePreview";
 import DatePicker from "@/components/datePicker";
-import RadioButton from "@/components/radioButton";
 import CustomSelect from "@/components/drivers-management/customSelect";
-import UploadFilePDF from "@/components/uploadFilePDF";
 import UploadFilePreview from "@/components/drivers-management/uploadFilePreview";
 import FormHelper from "@/components/formHelper";
-import * as Yup from "yup";
+import ImagePreview from "@/components/imagePreview";
+import ImageUpload from "@/components/imageUpload";
+import RadioButton from "@/components/radioButton";
+import UploadFilePDF from "@/components/uploadFilePDF";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import * as Yup from "yup";
 
 import {
-  listUseByOtherRadio,
+  DriverCreate,
+  listDriverDepartment,
   listDriverLicense,
   listDriverVendors,
-  listDriverDepartment,
-  DriverCreate,
+  listUseByOtherRadio,
 } from "@/services/driversManagement";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
-import { UploadFileType } from "@/app/types/upload-type";
 import { DriverCreateDetails } from "@/app/types/drivers-management-type";
+import { UploadFileType } from "@/app/types/upload-type";
 
 interface UseByOtherRadioItem {
   ref_other_use_desc: string;
@@ -107,18 +107,27 @@ const DriverForm = () => {
     driverLicensePDF: "",
   });
 
+  // const [disableStartDate, setDisableStartDate] = useState<string>();
+  // const [disableEndDate, setDisableEndDate] = useState<string>();
+  // const [disableDriverStartDate, setDisableDriverStartDate] = useState<string>();
+  // const [disableDriverEndDate, setDisableDriverEndDate] = useState<string>();
+
   const driverFormSchema = Yup.object().shape({
     driverImage: Yup.string().required("กรุณาอัพโหลดรูปภาพ"),
     driverName: Yup.string().required("กรุณาระบุชื่อ-นามสกุล"),
     driverNickname: Yup.string().required("กรุณาระบุชื่อเล่น"),
     driverContactNumber: Yup.string()
       .matches(/^(^$|[0-9]+)$/, "กรุณาระบุเฉพาะตัวเลข")
-      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก"),
+      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .max(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .min(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก"),
     driverBirthdate: Yup.string().required("กรุณาเลือกวันเกิด"),
     driverIdentificationNo: Yup.string()
       .required("กรุณาระบุเลขบัตรประชาชน")
       .matches(/^[0-9]+$/, "กรุณาระบุเฉพาะตัวเลข")
-      .length(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก"),
+      .length(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก")
+      .max(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก")
+      .min(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก"),
     driverOverNightStay: Yup.number().required("กรุณาเลือกการค้างคืน"),
     driverContractNo: Yup.string().required("กรุณาระบุเลขที่สัญญาจ้าง"),
     driverEmployingAgency: Yup.string().required("กรุณาเลือกหน่วยงานผู้ว่าจ้าง"),
@@ -129,7 +138,11 @@ const DriverForm = () => {
     driverOperationType: Yup.string().required("กรุณาเลือกประเภทการปฏิบัติงาน"),
     driverUseByOther: Yup.string().required("กรุณาเลือกหน่วยงานอื่นสามารถขอใช้งานได้"),
     driverLicenseType: Yup.string().required("กรุณาเลือกประเภทใบขับขี่"),
-    driverLicenseNo: Yup.string().required("กรุณาระบุเลขที่ใบขับขี่").length(10, "กรุณาระบุเลขที่ใบขับขี่ 10 หลัก"),
+    driverLicenseNo: Yup.string()
+      .required("กรุณาระบุเลขที่ใบขับขี่")
+      .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+      .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+      .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
     driverLicenseStartDate: Yup.string().required("กรุณาเลือกวันที่ออกใบขับขี่"),
     driverLicenseEndDate: Yup.string().required("กรุณาเลือกวันที่หมดอายุใบขับขี่"),
     driverLicensePDF: Yup.string().required("กรุณาอัพโหลดใบขับขี่"),
@@ -351,6 +364,8 @@ const DriverForm = () => {
       ...prevData,
       driverContractStartDate: dateStrISO,
     }));
+
+    // setDisableStartDate(dateStr);
   };
 
   const handleChangeContractEndDate = (dateStr: string) => {
@@ -359,6 +374,8 @@ const DriverForm = () => {
       ...prevData,
       driverContractEndDate: dateStrISO,
     }));
+
+    // setDisableEndDate(dateStr);
   };
 
   const handleChangeDriverLicenseStartDate = (dateStr: string) => {
@@ -367,6 +384,7 @@ const DriverForm = () => {
       ...prevData,
       driverLicenseStartDate: dateStrISO,
     }));
+    // setDisableDriverStartDate(dateStr);
   };
 
   const handleChangeDriverLicenseEndDate = (dateStr: string) => {
@@ -375,6 +393,7 @@ const DriverForm = () => {
       ...prevData,
       driverLicenseEndDate: dateStrISO,
     }));
+    // setDisableDriverEndDate(dateStr);
   };
 
   const handleFileChange = (newImages: UploadFileType2) => {
@@ -636,6 +655,7 @@ const DriverForm = () => {
                     placeholder="เลือกวันที่เริ่มต้น"
                     defaultValue={convertToThaiDate(formData.driverContractStartDate)}
                     onChange={(dateStr) => handleChangeContractStartDate(dateStr)}
+                    // maxDate={disableEndDate ? convertToISO8601(disableEndDate) : undefined}
                   />
                 </div>
                 {formErrors.driverContractStartDate && <FormHelper text={String(formErrors.driverContractStartDate)} />}
@@ -654,6 +674,7 @@ const DriverForm = () => {
                     placeholder="เลือกวันที่สิ้นสุด"
                     defaultValue={convertToThaiDate(formData.driverContractEndDate)}
                     onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
+                    // minDate={disableStartDate ? convertToISO8601(disableStartDate) : undefined}
                   />
                 </div>
                 {formErrors.driverContractEndDate && <FormHelper text={String(formErrors.driverContractEndDate)} />}
@@ -738,6 +759,7 @@ const DriverForm = () => {
                       placeholder="ระบุเลขที่ใบขับขี่"
                       value={formData.driverLicenseNo}
                       onChange={handleInputChange}
+                      maxLength={8}
                     />
                   </div>
                   {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}
@@ -758,6 +780,7 @@ const DriverForm = () => {
                       placeholder="เลือกวันที่ออกใบขับขี่"
                       defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
                       onChange={(dateStr) => handleChangeDriverLicenseStartDate(dateStr)}
+                      // maxDate={disableDriverEndDate ? convertToISO8601(disableDriverEndDate) : undefined}
                     />
                   </div>
                   {formErrors.driverLicenseStartDate && <FormHelper text={String(formErrors.driverLicenseStartDate)} />}
@@ -778,6 +801,7 @@ const DriverForm = () => {
                       placeholder="เลือกวันที่หมดอายุใบขับขี่"
                       defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
                       onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
+                      // minDate={disableDriverStartDate ? convertToISO8601(disableDriverStartDate) : undefined}
                     />
                   </div>
                   {formErrors.driverLicenseEndDate && <FormHelper text={String(formErrors.driverLicenseEndDate)} />}

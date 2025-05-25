@@ -1,16 +1,15 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import ImageUpload from "@/components/imageUpload";
 import DatePicker from "@/components/datePicker";
-import RadioButton from "@/components/radioButton";
-import * as Yup from "yup";
-import ImagePreview from "@/components/imagePreview";
 import FormHelper from "@/components/formHelper";
+import ImagePreview from "@/components/imagePreview";
+import ImageUpload from "@/components/imageUpload";
+import RadioButton from "@/components/radioButton";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import * as Yup from "yup";
 
-import { UploadFileType } from "@/app/types/upload-type";
 import { DriverInfoType, DriverUpdateDetails } from "@/app/types/drivers-management-type";
 
-import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 import { driverUpdateDetail } from "@/services/driversManagement";
+import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
 interface DriverEditBasicInfoModalProps {
   driverInfo?: DriverInfoType;
@@ -53,18 +52,35 @@ const DriverEditBasicInfoModal = forwardRef<
     nickname: Yup.string().required("กรุณากรอกชื่อเล่น"),
     contactNumber: Yup.string()
       .matches(/^(^$|[0-9]+)$/, "กรุณาระบุเฉพาะตัวเลข")
-      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก"),
+      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .max(10, "กรุณาระบุเลขบัตรประชาชน 10 หลัก")
+      .min(10, "กรุณาระบุเลขบัตรประชาชน 10 หลัก"),
     identificationNo: Yup.string()
       .required("กรุณาระบุเลขบัตรประชาชน")
       .matches(/^[0-9]+$/, "กรุณาระบุเฉพาะตัวเลข")
-      .length(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก"),
+      .length(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก")
+      .max(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก")
+      .min(13, "กรุณาระบุเลขบัตรประชาชน 13 หลัก"),
     birthdate: Yup.string().required("กรุณาเลือกวันเกิด"),
   });
 
+  const [openModal, setOpenModal] = useState(false);
+
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
-    closeModal: () => modalRef.current?.close(),
+    openModal: () => {
+      modalRef.current?.showModal();
+      setOpenModal(true);
+    },
+    closeModal: () => {
+      modalRef.current?.close();
+      setOpenModal(false);
+    },
   }));
+
+  const handleCloseModal = () => {
+    modalRef.current?.close();
+    setOpenModal(false); // Update state to reflect modal is closed
+  };
 
   useEffect(() => {
     setFormData({
@@ -95,7 +111,7 @@ const DriverEditBasicInfoModal = forwardRef<
       // Submit form data
       const response = await driverUpdateDetail({ params });
       if (response.status === 200) {
-        modalRef.current?.close();
+        handleCloseModal();
         onUpdateDriver(true);
         setUpdateType("basicInfo");
       } else {
@@ -150,161 +166,169 @@ const DriverEditBasicInfoModal = forwardRef<
   };
 
   return (
-    <dialog ref={modalRef} className={`modal modal-middle`}>
-      <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col bg-white">
-        <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">เพิ่มข้อมูลนัดหมายพนักงานขับรถ</div>
-          <form method="dialog">
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-              <i className="material-symbols-outlined">close</i>
-            </button>
-          </form>
-        </div>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5]">
-            {formData.image === "" && <ImageUpload onImageChange={handleImageChange} />}
-            <div className="image-preview flex flex-wrap gap-3 !mt-0">
-              {formData.image && (
-                <ImagePreview
-                  image={formData.image}
-                  onDelete={() => {
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      image: "",
-                    }));
-                  }}
-                />
-              )}
+    <>
+      {openModal && (
+        <div className={`modal modal-middle modal-open`}>
+          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col bg-white">
+            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+              <div className="modal-title">เพิ่มข้อมูลนัดหมายพนักงานขับรถ</div>
+              <form method="dialog">
+                <button
+                  className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                  onClick={handleCloseModal}
+                >
+                  <i className="material-symbols-outlined">close</i>
+                </button>
+              </form>
             </div>
-            {formErrors.image && <FormHelper text={String(formErrors.image)} />}
-            <div className="form-section">
-              <div className="form-section-body">
-                <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                  <div className="w-full">
-                    <label className="label font-semibold text-black">ชื่อ-นามสกุล</label>
-                    <div className={`input-group`}>
-                      <input
-                        type="text"
-                        name="name"
-                        className="form-control"
-                        placeholder="ชื่อ-นามสกุล"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    {formErrors.name && <FormHelper text={String(formErrors.name)} />}
-                  </div>
-                  <div className="w-full">
-                    <label className="label font-semibold text-black">ชื่อเล่น</label>
-                    <div className={`input-group`}>
-                      <input
-                        type="text"
-                        name="nickname"
-                        className="form-control"
-                        placeholder="ชื่อเล่น"
-                        value={formData.nickname}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    {formErrors.nickname && <FormHelper text={String(formErrors.nickname)} />}
-                  </div>
+            <form className="form" onSubmit={handleSubmit}>
+              <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5]">
+                {formData.image === "" && <ImageUpload onImageChange={handleImageChange} />}
+                <div className="image-preview flex flex-wrap gap-3 !mt-0">
+                  {formData.image && (
+                    <ImagePreview
+                      image={formData.image}
+                      onDelete={() => {
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          image: "",
+                        }));
+                      }}
+                    />
+                  )}
                 </div>
-                <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                  <div className="w-full">
-                    <label className="label font-semibold text-black">เบอร์ติดต่อ</label>
-                    <div className={`input-group`}>
-                      <input
-                        type="text"
-                        name="contactNumber"
-                        className="form-control"
-                        placeholder="เบอร์ติดต่อ"
-                        value={formData.contactNumber}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    {formErrors.contactNumber && <FormHelper text={String(formErrors.contactNumber)} />}
-                  </div>
-                  <div className="w-full">
-                    <label className="label font-semibold text-black">เลขบัตรประชาชน</label>
-                    <div className={`input-group`}>
-                      <input
-                        type="text"
-                        name="identificationNo"
-                        className="form-control"
-                        placeholder="เลขบัตรประชาชน"
-                        value={formData.identificationNo}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    {formErrors.identificationNo && <FormHelper text={String(formErrors.identificationNo)} />}
-                  </div>
-                </div>
-                <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                  <div className="w-full">
-                    <label className="label font-semibold text-black">วันเกิด</label>
-                    <div className={`input-group`}>
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">calendar_month</i>
-                        </span>
+                {formErrors.image && <FormHelper text={String(formErrors.image)} />}
+                <div className="form-section">
+                  <div className="form-section-body">
+                    <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                      <div className="w-full">
+                        <label className="label font-semibold text-black">ชื่อ-นามสกุล</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            name="name"
+                            className="form-control"
+                            placeholder="ชื่อ-นามสกุล"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        {formErrors.name && <FormHelper text={String(formErrors.name)} />}
                       </div>
-                      <DatePicker
-                        placeholder="วันเกิด"
-                        defaultValue={convertToThaiDate(formData.birthdate)}
-                        onChange={(dateStr) => handleChangeBirthdate(dateStr)}
-                      />
+                      <div className="w-full">
+                        <label className="label font-semibold text-black">ชื่อเล่น</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            name="nickname"
+                            className="form-control"
+                            placeholder="ชื่อเล่น"
+                            value={formData.nickname}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        {formErrors.nickname && <FormHelper text={String(formErrors.nickname)} />}
+                      </div>
                     </div>
-                    {formErrors.birthdate && <FormHelper text={String(formErrors.birthdate)} />}
-                  </div>
-                  <div className="w-full">
-                    <label className="label font-semibold text-black">การค้่างคืน</label>
-                    <div className="custom-group">
-                      <RadioButton
-                        name="overNightStay"
-                        label="ค้างคืนได้"
-                        value="1"
-                        selectedValue={`${formData.overNightStay}`}
-                        setSelectedValue={() => {
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            overNightStay: 1,
-                          }));
-                        }}
-                      />
-                      <RadioButton
-                        name="overNightStay"
-                        label="ค้างคืนไม่ได้"
-                        value="2"
-                        selectedValue={`${formData.overNightStay}`}
-                        setSelectedValue={() => {
-                          setFormData((prevData) => ({
-                            ...prevData,
-                            overNightStay: 2,
-                          }));
-                        }}
-                      />
+                    <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                      <div className="w-full">
+                        <label className="label font-semibold text-black">เบอร์ติดต่อ</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            name="contactNumber"
+                            className="form-control"
+                            placeholder="เบอร์ติดต่อ"
+                            value={formData.contactNumber}
+                            onChange={handleInputChange}
+                            maxLength={10}
+                          />
+                        </div>
+                        {formErrors.contactNumber && <FormHelper text={String(formErrors.contactNumber)} />}
+                      </div>
+                      <div className="w-full">
+                        <label className="label font-semibold text-black">เลขบัตรประชาชน</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            name="identificationNo"
+                            className="form-control"
+                            placeholder="เลขบัตรประชาชน"
+                            value={formData.identificationNo}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        {formErrors.identificationNo && <FormHelper text={String(formErrors.identificationNo)} />}
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                      <div className="w-full">
+                        <label className="label font-semibold text-black">วันเกิด</label>
+                        <div className={`input-group`}>
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">calendar_month</i>
+                            </span>
+                          </div>
+                          <DatePicker
+                            placeholder="วันเกิด"
+                            defaultValue={convertToThaiDate(formData.birthdate)}
+                            onChange={(dateStr) => handleChangeBirthdate(dateStr)}
+                          />
+                        </div>
+                        {formErrors.birthdate && <FormHelper text={String(formErrors.birthdate)} />}
+                      </div>
+                      <div className="w-full">
+                        <label className="label font-semibold text-black">การค้่างคืน</label>
+                        <div className="custom-group">
+                          <RadioButton
+                            name="overNightStay"
+                            label="ค้างคืนได้"
+                            value="1"
+                            selectedValue={`${formData.overNightStay}`}
+                            setSelectedValue={() => {
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                overNightStay: 1,
+                              }));
+                            }}
+                          />
+                          <RadioButton
+                            name="overNightStay"
+                            label="ค้างคืนไม่ได้"
+                            value="2"
+                            selectedValue={`${formData.overNightStay}`}
+                            setSelectedValue={() => {
+                              setFormData((prevData) => ({
+                                ...prevData,
+                                overNightStay: 2,
+                              }));
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+              <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
+                <div>
+                  <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                    ไม่ใช่ตอนนี้
+                  </button>
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  บันทึก
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
-            <div>
-              <button className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
-                ไม่ใช่ตอนนี้
-              </button>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              บันทึก
-            </button>
-          </div>
-        </form>
-      </div>
-      <form method="dialog" className="modal-backdrop">
+          {/* <form method="dialog" className="modal-backdrop">
         <button>close</button>
-      </form>
-    </dialog>
+      </form> */}
+        </div>
+      )}
+    </>
   );
 });
 

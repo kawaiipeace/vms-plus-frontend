@@ -8,7 +8,8 @@ export const convertToISO8601 = (thaiDate: string): string => {
   return isoDate.split(".")[0] + "Z";
 };
 
-export const convertToThaiDate = (isoDate: string): string => {
+export const convertToThaiDate = (isoDate?: string): string | undefined => {
+  if (!isoDate) return;
   const date = new Date(isoDate);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0"); // เดือนเริ่มจาก 0

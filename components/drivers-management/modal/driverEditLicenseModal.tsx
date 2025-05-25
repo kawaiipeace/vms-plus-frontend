@@ -48,7 +48,11 @@ const DriverEditLicenseModal = forwardRef<
 
   const driverLicenseSchema = Yup.object().shape({
     driverLicenseType: Yup.string().required("ประเภทใบขับขี่ไม่ถูกต้อง"),
-    driverLicenseNo: Yup.string().required("เลขที่ใบขับขี่ไม่ถูกต้อง"),
+    driverLicenseNo: Yup.string()
+      .required("เลขที่ใบขับขี่ไม่ถูกต้อง")
+      .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+      .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+      .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
     driverLicenseStartDate: Yup.string().required("วันที่ออกใบขับขี่ไม่ถูกต้อง"),
     driverLicenseEndDate: Yup.string().required("วันที่หมดอายุใบขับขี่ไม่ถูกต้อง"),
   });
@@ -215,6 +219,7 @@ const DriverEditLicenseModal = forwardRef<
                                 placeholder="เลขที่ใบขับขี่"
                                 value={formData.driverLicenseNo}
                                 onChange={handleInputChange}
+                                maxLength={8}
                               />
                             </div>
                             {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}

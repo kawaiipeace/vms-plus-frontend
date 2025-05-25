@@ -31,6 +31,8 @@ const DriverExportReportModal = forwardRef<
     driverReportEndDate: Yup.string().required("กรุณาเลือกวันที่สิ้นสุด"),
   });
   const [openModal, setOpenModal] = useState(false);
+  // const [disableStartDate, setDisableStartDate] = useState<string>();
+  // const [disableEndDate, setDisableEndDate] = useState<string>();
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
@@ -127,6 +129,7 @@ const DriverExportReportModal = forwardRef<
       ...prevData,
       driverReportStartDate: dateStrISO,
     }));
+    // setDisableStartDate(dateStr);
   };
 
   const handleChangeReportEndDate = (dateStr: string) => {
@@ -136,6 +139,7 @@ const DriverExportReportModal = forwardRef<
       ...prevData,
       driverReportEndDate: dateStrISO,
     }));
+    // setDisableEndDate(dateStr);
   };
 
   return (
@@ -173,6 +177,7 @@ const DriverExportReportModal = forwardRef<
                                 placeholder="เลือกวันที่เริ่มต้น"
                                 defaultValue={convertToThaiDate(formData.driverReportStartDate)}
                                 onChange={(dateStr) => handleChangeReportStartDate(dateStr)}
+                                // maxDate={disableEndDate ? convertToISO8601(disableEndDate) : undefined}
                               />
                             </div>
                             {formErrors.driverReportStartDate && (
@@ -193,6 +198,7 @@ const DriverExportReportModal = forwardRef<
                                 placeholder="เลือกวันที่สิ้นสุด"
                                 defaultValue={convertToThaiDate(formData.driverReportEndDate)}
                                 onChange={(dateStr) => handleChangeReportEndDate(dateStr)}
+                                // minDate={disableStartDate ? convertToISO8601(disableStartDate) : undefined}
                               />
                             </div>
                             {formErrors.driverReportEndDate && (

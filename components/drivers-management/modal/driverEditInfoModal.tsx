@@ -55,6 +55,9 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       driverUseByOther: "",
     });
 
+    // const [disableStartDate, setDisableStartDate] = useState<string>();
+    // const [disableEndDate, setDisableEndDate] = useState<string>();
+
     const driverEditInfoSchema = Yup.object().shape({
       driverContractStartDate: Yup.string().required("กรุณาเลือกวันที่เริ่มต้นสัญญาจ้าง"),
       driverContractEndDate: Yup.string().required("กรุณาเลือกวันที่สิ้นสุดสัญญาจ้าง"),
@@ -94,6 +97,16 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driverContractorCompany: driverInfo.mas_vendor_code || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
         });
+        // setDisableEndDate(
+        //   driverInfo.approved_job_driver_start_date
+        //     ? convertToThaiDate(driverInfo.approved_job_driver_start_date)
+        //     : undefined
+        // );
+        // setDisableStartDate(
+        //   driverInfo.approved_job_driver_end_date
+        //     ? convertToThaiDate(driverInfo.approved_job_driver_end_date)
+        //     : undefined
+        // );
       }
     }, [driverInfo]);
 
@@ -213,6 +226,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         ...prevData,
         driverContractStartDate: dateStrISO,
       }));
+      // setDisableStartDate(dateStr);
     };
 
     const handleChangeContractEndDate = (dateStr: string) => {
@@ -221,6 +235,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         ...prevData,
         driverContractEndDate: dateStrISO,
       }));
+
+      // setDisableEndDate(dateStr);
     };
 
     return (
@@ -333,6 +349,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                   placeholder="เลือกวันที่เริ่มต้น"
                                   defaultValue={convertToThaiDate(formData.driverContractStartDate)}
                                   onChange={(dateStr) => handleChangeContractStartDate(dateStr)}
+                                  // maxDate={disableEndDate || undefined}
                                 />
                               </div>
                               {formErrors.driverContractStartDate && (
@@ -353,6 +370,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                   placeholder="เลือกวันที่สิ้นสุด"
                                   defaultValue={convertToThaiDate(formData.driverContractEndDate)}
                                   onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
+                                  // minDate={disableStartDate || undefined}
                                 />
                               </div>
                               {formErrors.driverContractEndDate && (

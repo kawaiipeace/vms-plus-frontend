@@ -42,7 +42,13 @@ interface ReturnCarAddModalProps {
 const formStep1Schema = yup.object().shape({
   driverLicenseType: yup.object().nullable().required("กรุณาเลือกประเภทการขับขี่").default(null),
   year: yup.string().required("กรุณาเลือกปี").default(""),
-  licenseNumber: yup.string().required("กรุณาระบุเลขที่ใบขับขี่").default(""),
+  licenseNumber: yup
+    .string()
+    .required("กรุณาระบุเลขที่ใบขับขี่")
+    .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .default(""),
   licenseExpiryDate: yup.string().required("กรุณาระบุวันที่สิ้นอายุ").default(""),
   licenseImages: yup
     .array()
@@ -426,7 +432,13 @@ const RequestDrivingStepOneModal = forwardRef<
                             name="licenseNumber"
                             control={control}
                             render={({ field }) => (
-                              <input {...field} type="text" className="form-control" placeholder="ระบุเลขที่ใบขับขี่" />
+                              <input
+                                {...field}
+                                type="text"
+                                className="form-control"
+                                placeholder="ระบุเลขที่ใบขับขี่"
+                                maxLength={8}
+                              />
                             )}
                           />
                         </div>
