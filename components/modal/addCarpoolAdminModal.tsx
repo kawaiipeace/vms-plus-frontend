@@ -73,7 +73,7 @@ const AddCarpoolAdminModal = forwardRef<
           const result = response.data;
           setAdminSelected({
             value: result.admin_emp_no,
-            label: result.admin_emp_name,
+            label: result.admin_emp_name + " (" + result.admin_emp_no + ")",
           });
           setDeptSapShort(result.admin_dept_sap_short);
           setInternalContactNumber(result.internal_contact_number);

@@ -74,7 +74,8 @@ const AddCarpoolApproverModal = forwardRef<
           const result = response.data;
           setSelectedApprover({
             value: result.approver_emp_no,
-            label: result.approver_emp_name,
+            label:
+              result.approver_emp_name + " (" + result.approver_emp_no + ")",
           });
           setDeptSapShort(result.approver_dept_sap_short);
           setInternalContactNumber(result.internal_contact_number);
