@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import RequestListTable from "@/components/drivers-management/table/timeline-list-table";
-import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
+import FilterModal, {
+  FilterModalRef,
+} from "@/components/drivers-management/modal/filterTimelineModal";
 // import { getVehicleTimeline } from "@/services/vehicleService";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
 import VehicleStatus from "@/components/vehicle/status";
 import SearchInput from "@/components/vehicle/input/search";
-import VehicleTimeLineDetailModal, {
-  VehicleTimelineRef,
-} from "@/components/drivers-management/modal/driver-timeline-detail-modal";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import PaginationControls from "@/components/table/pagination-control";
 import VehicleNoData from "@/components/vehicle/noData";
 
 import { getDriverTimeline } from "@/services/driversManagement";
 import DateRangePicker from "../vehicle/input/dateRangeInput";
+import { debounce } from "lodash";
 
 export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -37,17 +37,14 @@ export default function VehicleTimeLine() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedOption, setSelectedOption] = useState<"all" | "first">("all");
   const [lastMonth, setLastMonth] = useState<string>("");
-  const [modalData, setModalData] = useState<any>({});
+  // const [modalData, setModalData] = useState<any>({});
 
   const filterModalRef = useRef<FilterModalRef>(null);
-  const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(params);
         const response = await getDriverTimeline(params);
-        console.log(response.data.drivers);
         setDataRequest(response.data.drivers);
         setLastMonth(response.data.last_month);
 
@@ -79,13 +76,18 @@ export default function VehicleTimeLine() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({ ...prevParams, limit, page: 1 }));
   };
 
   const handleFilterSubmit = (filterParams: any) => {
-    const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
-    const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
+    const workType = filterParams.driverWorkType
+      .map((item: any) => item)
+      .join(",");
+    const driverStatus = filterParams.vehicleStatus
+      .map((item: any) => item)
+      .join(",");
     const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
     setParams((prev) => ({
       ...prev,
@@ -117,12 +119,23 @@ export default function VehicleTimeLine() {
     </div>
   );
 
+  const debouncedSetParams = useMemo(
+    () =>
+      debounce((value: string) => {
+        setParams((prev) => ({
+          ...prev,
+          search: value,
+        }));
+      }, 500),
+    []
+  );
+
   const Actions = () => (
     <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-5">
       <SearchInput
         defaultValue={params.search}
         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-        onSearch={(value: string) => setParams((prev) => ({ ...prev, search: value }))}
+        onSearch={debouncedSetParams}
       />
       <div className="flex gap-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -136,13 +149,15 @@ export default function VehicleTimeLine() {
             from: dayjs(params.start_date).toDate(),
             to: dayjs(params.end_date).toDate(),
           }}
-          onChange={(range) =>
+          onChange={(range) => {
             setParams((prev) => ({
               ...prev,
-              start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+              start_date: range?.from
+                ? dayjs(range?.from).format("YYYY-MM-DD")
+                : "",
               end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-            }))
-          }
+            }));
+          }}
         />
         <button
           onClick={handleOpenFilterModal}
@@ -166,12 +181,16 @@ export default function VehicleTimeLine() {
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (dropdownRef.current && !(dropdownRef.current as any).contains(event.target)) {
+        if (
+          dropdownRef.current &&
+          !(dropdownRef.current as any).contains(event.target)
+        ) {
           setShowDropdown(false);
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     return (
@@ -184,7 +203,9 @@ export default function VehicleTimeLine() {
               role="menuitem"
             >
               {selectedOption === "all" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
+                <i className="material-symbols-outlined text-blue-600 mr-2">
+                  check
+                </i>
               ) : (
                 <span className="w-4 mr-2" />
               )}
@@ -196,7 +217,9 @@ export default function VehicleTimeLine() {
               role="menuitem"
             >
               {selectedOption === "first" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
+                <i className="material-symbols-outlined text-blue-600 mr-2">
+                  check
+                </i>
               ) : (
                 <span className="w-4 mr-2" />
               )}
@@ -212,10 +235,10 @@ export default function VehicleTimeLine() {
               params={params}
               selectedOption={selectedOption}
               lastMonth={lastMonth}
-              onClickDetail={(data: any) => {
-                setModalData(data);
-                vehicleTimelineDetailRef.current?.open();
-              }}
+              // onClickDetail={(data: any) => {
+              //   setModalData(data);
+              //   vehicleTimelineDetailRef.current?.open();
+              // }}
             />
             <PaginationControls
               pagination={pagination}
@@ -241,8 +264,11 @@ export default function VehicleTimeLine() {
       <Header />
       <Actions />
       <RenderTableOrNoData />
-      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
-      <VehicleTimeLineDetailModal ref={vehicleTimelineDetailRef} modalData={modalData} />
+      <FilterModal
+        ref={filterModalRef}
+        onSubmitFilter={handleFilterSubmit}
+        flag="TIMELINE"
+      />
     </div>
   );
 }
