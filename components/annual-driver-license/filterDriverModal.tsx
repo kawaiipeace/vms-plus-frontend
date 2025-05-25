@@ -10,6 +10,8 @@ import CustomSelect, { CustomSelectOption } from "../customSelect";
 
 interface Props {
   statusData: summaryDriverType[];
+  startDate?: string;
+  endDate?: string;
   onSubmitFilter: (filters: {
     selectedStatuses: string[];
     selectedStartDate: string;
@@ -20,7 +22,7 @@ interface Props {
 }
 
 const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ statusData, onSubmitFilter }, ref) => {
+  ({ statusData, onSubmitFilter, startDate, endDate }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const [openModal, setOpenModal] = useState(false);
 
@@ -40,8 +42,8 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
       setOpenModal(false); // Update state to reflect modal is closed
     };
 
-    const [selectedStartDate, setSelectedStartDate] = useState<string>("");
-    const [selectedEndDate, setSelectedEndDate] = useState<string>("");
+    const [selectedStartDate, setSelectedStartDate] = useState<string>(startDate || "");
+    const [selectedEndDate, setSelectedEndDate] = useState<string>(endDate || "");
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
     const [selectedLicenseTypes, setSelectedLicenseTypes] = useState<string[]>([]);
     const [vehicleCatOptions, setVehicleCatOptions] = useState<{ value: string; label: string }[]>([]);
@@ -49,6 +51,15 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
 
     const startDatePickerRef = useRef<DatePickerRef>(null);
     const endDatePickerRef = useRef<DatePickerRef>(null);
+
+    // useEffect(() => {
+    //   console.log("FilterDriverModal useEffect", startDate, endDate);
+
+    //   startDatePickerRef.current?.setValue(startDate ? dayjs(startDate).format("YYYY-MM-DD") : "");
+    //   endDatePickerRef.current?.setValue(endDate || "");
+    //   setSelectedStartDate(startDate ? dayjs(startDate).format("YYYY-MM-DD") : "");
+    //   setSelectedEndDate(endDate || "");
+    // }, [openModal]);
 
     const handleStartDateChange = (dateStr: string) => {
       setSelectedStartDate(dateStr);
@@ -256,6 +267,7 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             ref={startDatePickerRef}
                             placeholder={"ระบุช่วงวันที่สร้างคำของ"}
                             onChange={handleStartDateChange}
+                            defaultValue={selectedStartDate || ""}
                           />
                           <div className="input-group-append hidden" data-clear>
                             <span className="input-group-text search-ico-trailing">
@@ -279,6 +291,7 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
                             ref={endDatePickerRef}
                             placeholder={"ระบุช่วงวันที่สิ้นอายุใบอนุญาตขับขี่"}
                             onChange={handleEndDateChange}
+                            defaultValue={selectedEndDate || ""}
                           />
                           <div className="input-group-append hidden" data-clear>
                             <span className="input-group-text search-ico-trailing">

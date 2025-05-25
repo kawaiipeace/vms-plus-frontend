@@ -85,49 +85,53 @@ const FilterCancelModal = forwardRef<{ openModal: () => void; closeModal: () => 
                   </button>
                 </form>
               </div>
-              <div className="modal-body overflow-y-auto flex flex-col gap-4 h-[90vh]">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">วันที่เริ่มเดินทาง</label>
-                      <div className="input-group flatpickr">
-                        <div className="input-group-prepend" data-toggle="">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
-                        </div>
-                        <DatePicker
-                          ref={startDatePickerRef}
-                          placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
-                          onChange={handleStartDateChange}
-                        />
-                        <div className="input-group-append hidden" data-clear>
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
+              <div className="modal-scroll-wrapper overflow-y-auto">
+                <div className="modal-body  flex flex-col gap-4 h-[90vh]">
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">วันที่เริ่มเดินทาง</label>
+                        <div className="input-group flatpickr">
+                          <div className="input-group-prepend" data-toggle="">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">calendar_month</i>
+                            </span>
+                          </div>
+                          <DatePicker
+                            ref={startDatePickerRef}
+                            placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
+                            onChange={handleStartDateChange}
+                            defaultValue={selectedStartDate}
+                          />
+                          <div className="input-group-append hidden" data-clear>
+                            <span className="input-group-text search-ico-trailing">
+                              <i className="material-symbols-outlined">close</i>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="col-span-12">
-                    <div className="form-group">
-                      <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
-                      <div className="input-group flatpickr">
-                        <div className="input-group-prepend" data-toggle="">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
-                        </div>
-                        <DatePicker
-                          ref={endDatePickerRef} // Attach ref to end date picker
-                          placeholder={"ระบุช่วงวันที่สิ้นสุดเดินทาง"}
-                          onChange={handleEndDateChange}
-                        />
-                        <div className="input-group-append hidden" data-clear>
-                          <span className="input-group-text search-ico-trailing">
-                            <i className="material-symbols-outlined">close</i>
-                          </span>
+                    <div className="col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
+                        <div className="input-group flatpickr">
+                          <div className="input-group-prepend" data-toggle="">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">calendar_month</i>
+                            </span>
+                          </div>
+                          <DatePicker
+                            ref={endDatePickerRef} // Attach ref to end date picker
+                            placeholder={"ระบุช่วงวันที่สิ้นสุดเดินทาง"}
+                            onChange={handleEndDateChange}
+                            defaultValue={selectedEndDate}
+                          />
+                          <div className="input-group-append hidden" data-clear>
+                            <span className="input-group-text search-ico-trailing">
+                              <i className="material-symbols-outlined">close</i>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

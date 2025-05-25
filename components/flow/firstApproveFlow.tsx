@@ -4,7 +4,6 @@ import RequestStatusBox from "@/components/requestStatusBox";
 import FirstApproverListTable from "@/components/table/first-approver-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { firstApproverRequests } from "@/services/bookingApprover";
-import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
 
@@ -94,7 +93,7 @@ export default function FirstApproveFlow() {
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
+
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
@@ -103,8 +102,8 @@ export default function FirstApproveFlow() {
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate,
+      enddate: selectedEndDate,
     }));
   };
 

@@ -3,7 +3,6 @@ import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import FilterModal from "@/components/modal/filterModal";
 import RequestListTable from "@/components/table/request-list-table";
 import { requests } from "@/services/bookingUser";
-import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ListFlow from "./flow/listFlow";
@@ -107,11 +106,12 @@ export default function ArpproveFlow() {
     }
 
     setFilterNum(selectedStatuses.length);
+
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate,
+      enddate: selectedEndDate,
     }));
   };
 
@@ -256,7 +256,10 @@ export default function ArpproveFlow() {
               <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
-          <button onClick={addNewRequest} className="btn btn-primary h-[40px] min-h-[40px] hidden md:block flex items-center">
+          <button
+            onClick={addNewRequest}
+            className="btn btn-primary h-[40px] min-h-[40px] hidden md:block flex items-center"
+          >
             <i className="material-symbols-outlined">add</i>
             สร้างคำขอใช้
           </button>
@@ -299,7 +302,7 @@ export default function ArpproveFlow() {
           />
         </>
       )}
-      {( dataRequest !== null && pagination.total > 0 )&& (
+      {dataRequest !== null && pagination.total > 0 && (
         <ZeroRecord
           imgSrc="/assets/img/empty/search_not_found.png"
           title="ไม่พบข้อมูล"
@@ -309,7 +312,7 @@ export default function ArpproveFlow() {
           btnType="secondary"
           useModal={handleClearAllFilters}
         />
-      ) }
+      )}
 
       {pagination.total <= 0 && (
         <ZeroRecord

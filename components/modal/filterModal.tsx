@@ -108,7 +108,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
       endDatePickerRef.current?.reset(); // Reset end date picker
     };
 
-    const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+    const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
     return (
       <div>
@@ -208,7 +208,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                     <div className="col-span-12">
                       <div className="form-group">
                         <label className="form-label">วันที่เดินทาง</label>
-                        <div className="input-group flatpickr">
+                        <div className="input-group ">
                           <div className="input-group-prepend" data-toggle="">
                             <span className="input-group-text">
                               <i className="material-symbols-outlined">calendar_month</i>
@@ -218,6 +218,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                             ref={startDatePickerRef}
                             placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
                             onChange={handleStartDateChange}
+                            defaultValue={selectedStartDate}
                           />
                           <div className="input-group-append hidden" data-clear>
                             <span className="input-group-text search-ico-trailing">
@@ -227,7 +228,6 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>

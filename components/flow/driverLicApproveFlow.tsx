@@ -186,7 +186,7 @@ export default function DriverLicApproveFlow() {
     }
 
     setActiveFilters(newFilters);
-    console.log("date", convertToISO(selectedStartDate, "00:00"));
+
     // Update API params
     setParams((prev) => ({
       ...prev,
@@ -356,11 +356,14 @@ export default function DriverLicApproveFlow() {
           />
         </>
       ) : (
-        
         <ZeroRecord
           imgSrc="/assets/img/graphic/empty.svg"
           title="ไม่มีคำขออนุมัติ"
-          desc={<>เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br> รายการคำขอที่รออนุมัติจะแสดงที่นี่ </>}
+          desc={
+            <>
+              เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br> รายการคำขอที่รออนุมัติจะแสดงที่นี่{" "}
+            </>
+          }
           button="ล้างตัวกรอง"
           displayBtn={activeFilters.length > 0}
           btnType="secondary"
@@ -368,7 +371,13 @@ export default function DriverLicApproveFlow() {
         />
       )}
 
-      <FilterDriverModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
+      <FilterDriverModal
+        ref={filterModalRef}
+        statusData={summary}
+        onSubmitFilter={handleFilterSubmit}
+        startDate={params.start_created_request_datetime}
+        endDate={params.end_driver_license_expire_date}
+      />
     </>
   );
 }

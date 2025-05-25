@@ -2,10 +2,14 @@ import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
 
 export const convertToISO8601 = (thaiDate: string): string => {
-  const [day, month, buddhistYear] = thaiDate.split("/").map(Number);
-  const gregorianYear = buddhistYear - 543; // แปลงปีพุทธศักราชเป็นคริสต์ศักราช
-  const isoDate = new Date(Date.UTC(gregorianYear, month - 1, day)).toISOString();
-  return isoDate.split(".")[0] + "Z";
+  const [year, month, day] = thaiDate.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.toISOString().split(".")[0] + "Z";
+
+  // const [day, month, buddhistYear] = thaiDate.split("/").map(Number);
+  // const gregorianYear = buddhistYear - 543; // แปลงปีพุทธศักราชเป็นคริสต์ศักราช
+  // const isoDate = new Date(Date.UTC(gregorianYear, month - 1, day)).toISOString();
+  // return isoDate.split(".")[0] + "Z";
 };
 
 export const convertToThaiDate = (isoDate?: string): string | undefined => {

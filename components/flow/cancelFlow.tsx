@@ -3,7 +3,6 @@ import FilterCancelModal from "@/components/modal/filterCancelModal";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { requests } from "@/services/bookingUser";
-import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
 import ListFlow from "./listFlow";
@@ -65,8 +64,8 @@ export default function CancelFlow() {
 
     setParams((prevParams) => ({
       ...prevParams,
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate,
+      enddate: selectedEndDate,
     }));
   };
 
