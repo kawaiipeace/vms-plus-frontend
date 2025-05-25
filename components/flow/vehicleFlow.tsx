@@ -6,9 +6,10 @@ import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
 import ReportModal, { ReportModalRef } from "../vehicle/vehicleReportModal";
 import VehicleTable from "../table/vehicle-table";
 import { PaginationType, VehicleInputParams, VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
-import { VehicleManagementStatus } from "@/app/types/vehicle-management/vehicle-constant";
 
 export default function VehicleFlow() {
+    const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         limit: 10,
         page: 1,
@@ -26,9 +27,6 @@ export default function VehicleFlow() {
         page: pagination.page,
         limit: pagination.limit,
     });
-    const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
-    const [selectedRows, setSelectedRows] = useState<string[]>([]);
-    const [notFound, setNotFound] = useState(false);
 
     // Handle Filter Modal
     const filterModalRef = useRef<FilterModalRef>(null);
@@ -46,19 +44,15 @@ export default function VehicleFlow() {
         const fetchData = async () => {
             try {
                 const response = await fetchVehicles(params);
-                if (response === VehicleManagementStatus.NO_VEHICLES_FOUND) {
-                    setNotFound(true);
-                } else {
-                    setNotFound(false);
-                    const { total, totalPages } = response.pagination;
-                    setDataRequest(response.vehicles);
-                    setPagination({
-                        limit: params.limit,
-                        page: params.page,
-                        total,
-                        totalPages,
-                    });
-                }
+                const { total, totalPages } = response.pagination;
+
+                setDataRequest(response.vehicles);
+                setPagination({
+                    limit: params.limit,
+                    page: params.page,
+                    total,
+                    totalPages,
+                });
             } catch (error) {
                 console.error("Error fetching vehicles:", error);
             }
@@ -100,6 +94,7 @@ export default function VehicleFlow() {
             ref_fuel_type_id: params.fuelType,
             ref_vehicle_category_code: params.vehicleType,
             vehicle_owner_dept_sap: params.vehicleDepartment,
+            is_tax_credit: params.taxVehicle.join(","),
             ref_vehicle_status_code: params.vehicleStatus.map(item => item).join(","),
         }));
     };
@@ -154,11 +149,11 @@ export default function VehicleFlow() {
         </div>
     );
 
-    const renderTableOrNoData = () => { 
-        if (dataRequest?.length > 0 && !notFound) {
+    const renderTableOrNoData = () => {
+        if (dataRequest.length > 0) {
             return (
                 <>
-                    <VehicleTable data={dataRequest} useModal={handleSelectItem}/>
+                    <VehicleTable data={dataRequest} useModal={handleSelectItem} />
                     <PaginationControls
                         pagination={pagination}
                         onPageChange={handlePageChange}
@@ -168,7 +163,7 @@ export default function VehicleFlow() {
             );
         }
 
-        if (notFound) {
+        if (dataRequest.length === 0) {
             return (
                 <VehicleNoData
                     imgSrc={"/assets/img/empty/search_not_found.png"}
@@ -177,20 +172,19 @@ export default function VehicleFlow() {
                     button={"ล้างตัวกรอง"}
                     useModal={handleClearAllFilters}
                 />
-
-                // <VehicleNoData
-                //     imgSrc={"/assets/img/empty/add_vehicle.svg"}
-                //     title={"เพิ่มยานพาหนะ"}
-                //     desc={"เริ่มต้นด้วยการสร้างข้อมูลยานพาหนะคันแรก"}
-                //     button={"สร้างข้อมูล"}
-                //     icon={"add"}
-                //     btnType={"primary"}
-                //     link={"/vehicle/create"}
-                //     displayBtn={true}
-                // />
             );
         }
 
+        // <VehicleNoData
+        //     imgSrc={"/assets/img/empty/add_vehicle.svg"}
+        //     title={"เพิ่มยานพาหนะ"}
+        //     desc={"เริ่มต้นด้วยการสร้างข้อมูลยานพาหนะคันแรก"}
+        //     button={"สร้างข้อมูล"}
+        //     icon={"add"}
+        //     btnType={"primary"}
+        //     link={"/vehicle/create"}
+        //     displayBtn={true}
+        // />
         return null;
     };
 
@@ -201,7 +195,7 @@ export default function VehicleFlow() {
             {renderTableOrNoData()}
 
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TABLE_LIST" />
-            <ReportModal ref={reportModalRef} selected={selectedRows}/>
+            <ReportModal ref={reportModalRef} selected={selectedRows} />
         </div>
     );
 }

@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface SearchInputProps {
     defaultValue?: string;
     placeholder?: string;
-    onChange?: (value: string) => void;
+    onSearch?: (value: string) => void;
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ defaultValue, placeholder, onChange }) => {
-    const [search, setSearch] = useState(defaultValue || "");
+const SearchInput: React.FC<SearchInputProps> = ({
+    defaultValue = "",
+    placeholder = "Search...",
+    onSearch,
+}) => {
+    const [searchTerm, setSearchTerm] = useState(defaultValue);
+
+    useEffect(() => {
+        if (searchTerm.length <= 2 && searchTerm.length !== 0) return;
+
+        if (searchTerm != defaultValue) {
+            onSearch?.(searchTerm);
+        }
+    }, [searchTerm, onSearch]);
+
 
     return (
         <div className="block">
@@ -19,19 +32,14 @@ const SearchInput: React.FC<SearchInputProps> = ({ defaultValue, placeholder, on
                 </div>
                 <input
                     type="text"
-                    id="search1"
                     className="form-control dt-search-input"
-                    placeholder={placeholder || "Search..."}
-                    value={search}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setSearch(value);
-                        onChange?.(value);
-                    }}
+                    placeholder={placeholder}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
         </div>
     );
-}
+};
 
 export default SearchInput;
