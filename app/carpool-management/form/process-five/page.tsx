@@ -56,18 +56,21 @@ export default function CarpoolProcessFive() {
     if (refetch) {
       fetchCarpoolDriverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
   useEffect(() => {
     if (!id) {
       if (formData.mas_carpool_uid) fetchCarpoolDriverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
     if (id) {
       fetchCarpoolDriverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCarpoolDriverSearchFunc = async (newPagination?: any) => {
@@ -204,6 +207,7 @@ export default function CarpoolProcessFive() {
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
+                            defaultChecked={active === "1"}
                             checked={active === "1"}
                             onClick={handleActive}
                             className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"

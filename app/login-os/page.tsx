@@ -1,14 +1,17 @@
 "use client";
 
-import LoginHeader from "@/components/loginHeader";
 import BackButton from "@/components/backButton";
-import { requestOTP, requestThaiID } from "@/services/authService";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import FormHelper from "@/components/formHelper";
+import LoginHeader from "@/components/loginHeader";
+import ErrorLoginModal from "@/components/modal/errorLoginModal";
+import { requestOTP, requestThaiID } from "@/services/authService";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Cookies from "js-cookie";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
 
 const schema = yup.object().shape({
   phone: yup.string().required("กรุณาระบุเบอร์โทรศัพท์"),
@@ -16,6 +19,18 @@ const schema = yup.object().shape({
 
 export default function LoginOS() {
   const router = useRouter();
+  const errorLoginModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  useEffect(() => {
+    const errorThaiId = sessionStorage.getItem("errorThaiId");
+    if (errorThaiId) {
+      errorLoginModalRef.current?.openModal();
+    }
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -29,7 +44,8 @@ export default function LoginOS() {
       const response = await requestOTP(data.phone);
       if (response.status === 200) {
         const otpID = response.data.otpId;
-        sessionStorage.setItem("phone", data.phone);
+        Cookies.set("phone", data.phone, { path: "/" });
+        // sessionStorage.setItem("phone", data.phone);
         sessionStorage.setItem("otpID", otpID);
         sessionStorage.setItem("refCode", response.data.refCode);
         router.push(`/login-authen`);
@@ -41,8 +57,9 @@ export default function LoginOS() {
   const clickThaiID = async () => {
     try {
       const response = await requestThaiID();
+
       if (response.status === 200) {
-        router.push(response.data.url)
+        router.push(response.data.url);
       }
     } catch (error) {
       console.log(error);
@@ -53,10 +70,13 @@ export default function LoginOS() {
     e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
   };
 
+  const onCloseModal = () => {
+    sessionStorage.removeItem("errorThaiId");
+  };
+
   return (
     <div className="page-login page-login-outsource">
       <LoginHeader />
-
       <form onSubmit={handleSubmit(onSubmit)} className="login-container">
         <BackButton />
         <div className="login-heading">
@@ -67,16 +87,9 @@ export default function LoginOS() {
           <label className="form-label">เบอร์โทรศัพท์</label>
           <label className="input-group flex items-center gap-2">
             <span className="flex items-center justify-center h-10 w-10 text-gray-400">
-              <i className="material-symbols-outlined icon-settings-300-20">
-                smartphone
-              </i>
+              <i className="material-symbols-outlined icon-settings-300-20">smartphone</i>
             </span>
-            <input
-              {...register("phone")}
-              type="text"
-              onInput={handlePhoneChange}
-              placeholder="ระบุเบอร์โทรศัพท์"
-            />
+            <input {...register("phone")} type="text" onInput={handlePhoneChange} placeholder="ระบุเบอร์โทรศัพท์" />
           </label>
           {errors.phone && <FormHelper text={String(errors.phone.message)} />}
         </div>
@@ -90,15 +103,10 @@ export default function LoginOS() {
           className="btn btn-secondary btn-login-thaiid border border-[#D0D5DD]"
           onClick={clickThaiID}
         >
-          ลงชื่อเข้าใช้งานผ่าน ThaID{" "}
-          <Image
-            src="/assets/img/thaiid.png"
-            width={20}
-            height={20}
-            alt=""
-          ></Image>
+          ลงชื่อเข้าใช้งานผ่าน ThaID <Image src="/assets/img/thaiid.png" width={20} height={20} alt=""></Image>
         </button>
       </form>
+      <ErrorLoginModal ref={errorLoginModalRef} onCloseModal={onCloseModal} />
     </div>
   );
 }

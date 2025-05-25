@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
+import axios from "axios";
 
 // Function to get the API configuration
 export const getApiConfig = () => {
   const fallback = {
-    baseURL: 'http://pntdev.ddns.net:28084/api',
-    apiKey: '2c5SF8BDhWKzdTY5MIFXEh9PummQMhK8w2TIUobJnYbAxaUmYo1sYTc2Hwo3xNWj',
-    callbackURL: 'http://localhost/callback_code_token',
+    baseURL: "http://pntdev.ddns.net:28084/api",
+    apiKey: "2c5SF8BDhWKzdTY5MIFXEh9PummQMhK8w2TIUobJnYbAxaUmYo1sYTc2Hwo3xNWj",
+    callbackURL: "http://localhost/callback_code_token",
   };
 
-  if (typeof window !== 'undefined' && window.__ENV__) {
+  if (typeof window !== "undefined" && window.__ENV__) {
     return {
       baseURL: window.__ENV__.NEXT_PUBLIC_CLIENT_API_HOST || fallback.baseURL,
       apiKey: window.__ENV__.NEXT_PUBLIC_API_KEY || fallback.apiKey,
@@ -20,11 +20,10 @@ export const getApiConfig = () => {
   return fallback;
 };
 
-
 const axiosInstance = axios.create({
   headers: {
-    accept: 'application/json',
-    'Content-Type': 'application/json',
+    accept: "application/json",
+    "Content-Type": "application/json",
   },
 });
 
@@ -33,15 +32,15 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const { baseURL, apiKey } = getApiConfig();
     config.baseURL = baseURL;
-    config.headers['X-ApiKey'] = apiKey;  
+    config.headers["X-ApiKey"] = apiKey;
 
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 // Flag to prevent multiple refresh calls at the same time
@@ -66,6 +65,18 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const response = error.response;
+
+    const InvalidOTP = response?.data?.error === "Invalid OTP" && originalRequest.url === "login/verify-otp";
+    const InvalidThaiID = originalRequest.url === "login/authen-thaiid";
+
+    if (error.response?.status === 401 && !originalRequest._retry && InvalidOTP) {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry && InvalidThaiID) {
+      return Promise.reject(error);
+    }
 
     // If error is 401 (Unauthorized), try refreshing the token
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -85,9 +96,9 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = localStorage.getItem("refreshToken");
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          throw new Error("No refresh token available");
         }
 
         // Send refresh token request
@@ -96,7 +107,7 @@ axiosInstance.interceptors.response.use(
         });
 
         const newAccessToken = refreshResponse.data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken);
+        localStorage.setItem("accessToken", newAccessToken);
 
         // Process the queue with the new token
         processQueue(null, newAccessToken);
@@ -106,9 +117,9 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (err) {
         processQueue(err);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/';
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/";
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -116,7 +127,7 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosInstance;

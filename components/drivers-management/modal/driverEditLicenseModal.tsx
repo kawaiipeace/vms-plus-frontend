@@ -1,13 +1,13 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import CustomSelect from "@/components/drivers-management/customSelect";
 import DatePicker from "@/components/datePicker";
-import * as Yup from "yup";
+import CustomSelect from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import * as Yup from "yup";
 
-import { listDriverLicense, driverUpdateLicenseDetails } from "@/services/driversManagement";
+import { driverUpdateLicenseDetails, listDriverLicense } from "@/services/driversManagement";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
-import { DriverUpdateLicenseDetails, DriverInfoType } from "@/app/types/drivers-management-type";
+import { DriverInfoType, DriverUpdateLicenseDetails } from "@/app/types/drivers-management-type";
 
 interface CustomSelectOption {
   value: string;
@@ -53,10 +53,23 @@ const DriverEditLicenseModal = forwardRef<
     driverLicenseEndDate: Yup.string().required("วันที่หมดอายุใบขับขี่ไม่ถูกต้อง"),
   });
 
+  const [openModal, setOpenModal] = useState(false);
+
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
-    closeModal: () => modalRef.current?.close(),
+    openModal: () => {
+      modalRef.current?.showModal();
+      setOpenModal(true);
+    },
+    closeModal: () => {
+      modalRef.current?.close();
+      setOpenModal(false);
+    },
   }));
+
+  const handleCloseModal = () => {
+    modalRef.current?.close();
+    setOpenModal(false); // Update state to reflect modal is closed
+  };
 
   useEffect(() => {
     if (driverInfo) {
@@ -104,7 +117,7 @@ const DriverEditLicenseModal = forwardRef<
 
       const response = await driverUpdateLicenseDetails({ params });
       if (response.status === 200) {
-        modalRef.current?.close();
+        handleCloseModal();
         onUpdateDriver(true);
         setUpdateType("basicInfo");
       }
@@ -157,109 +170,118 @@ const DriverEditLicenseModal = forwardRef<
   };
 
   return (
-    <dialog ref={modalRef} className={`modal modal-middle`}>
-      <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col bg-white">
-        <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">แก้ไขข้อมูลการขับขี่</div>
-          <form method="dialog">
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-              <i className="material-symbols-outlined">close</i>
-            </button>
-          </form>
-        </div>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="modal-body overflow-y-auto text-center border-b-[1px] border-[#E5E5E5]">
-            <div className="form-section">
-              <div className="form-section-body">
-                <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                  <div className="w-full">
-                    <div className="form-group">
-                      <label className="label font-semibold text-black">ประเภทใบขับขี่</label>
-                      <CustomSelect
-                        w="w-full"
-                        options={driverLicenseList}
-                        value={driverLicenseList.find((option) => option.value === formData.driverLicenseType) || null}
-                        onChange={(selected) => setFormData((prev) => ({ ...prev, driverLicenseType: selected.value }))}
-                      />
-                      {formErrors.driverLicenseType && <FormHelper text={String(formErrors.driverLicenseType)} />}
-                    </div>
-                  </div>
-                  <div className="w-full">
-                    <div className="form-group">
-                      <label className="label font-semibold text-black">เลขที่ใบขับขี่</label>
-                      <div className={`input-group`}>
-                        <input
-                          type="text"
-                          name="driverLicenseNo"
-                          className="form-control"
-                          placeholder="เลขที่ใบขับขี่"
-                          value={formData.driverLicenseNo}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}
-                    </div>
-                  </div>
-                </div>
-                <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
-                  <div className="w-full">
-                    <div className="form-group">
-                      <label className="label font-semibold text-black">วันที่ออกใบขับขี่</label>
-                      <div className={`input-group`}>
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
+    <>
+      {openModal && (
+        <div className={`modal modal-middle modal-open`}>
+          <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col bg-white">
+            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+              <div className="modal-title">แก้ไขข้อมูลการขับขี่</div>
+              <form method="dialog">
+                <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                  <i className="material-symbols-outlined">close</i>
+                </button>
+              </form>
+            </div>
+            <form className="form" onSubmit={handleSubmit}>
+              <div className="modal-scroll-wrapper overflow-y-auto">
+                <div className="modal-body  text-center ">
+                  <div className="form-section">
+                    <div className="form-section-body">
+                      <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                        <div className="w-full">
+                          <div className="form-group">
+                            <label className="label font-semibold text-black">ประเภทใบขับขี่</label>
+                            <CustomSelect
+                              w="w-full"
+                              options={driverLicenseList}
+                              value={
+                                driverLicenseList.find((option) => option.value === formData.driverLicenseType) || null
+                              }
+                              onChange={(selected) =>
+                                setFormData((prev) => ({ ...prev, driverLicenseType: selected.value }))
+                              }
+                            />
+                            {formErrors.driverLicenseType && <FormHelper text={String(formErrors.driverLicenseType)} />}
+                          </div>
                         </div>
-                        <DatePicker
-                          placeholder="เลือกวันที่ออกใบขับขี่"
-                          defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
-                          onChange={(dateStr) => handleChangeDriverLicenseStartDate(dateStr)}
-                        />
-                      </div>
-                      {formErrors.driverLicenseStartDate && (
-                        <FormHelper text={String(formErrors.driverLicenseStartDate)} />
-                      )}
-                    </div>
-                  </div>
-                  <div className="w-full">
-                    <div className="form-group">
-                      <label className="label font-semibold text-black">วันที่หมดอายุใบขับขี่</label>
-                      <div className={`input-group`}>
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
-                            <i className="material-symbols-outlined">calendar_month</i>
-                          </span>
+                        <div className="w-full">
+                          <div className="form-group">
+                            <label className="label font-semibold text-black">เลขที่ใบขับขี่</label>
+                            <div className={`input-group`}>
+                              <input
+                                type="text"
+                                name="driverLicenseNo"
+                                className="form-control"
+                                placeholder="เลขที่ใบขับขี่"
+                                value={formData.driverLicenseNo}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                            {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}
+                          </div>
                         </div>
-                        <DatePicker
-                          placeholder="เลือกวันที่หมดอายุใบขับขี่"
-                          defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
-                          onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
-                        />
                       </div>
-                      {formErrors.driverLicenseEndDate && <FormHelper text={String(formErrors.driverLicenseEndDate)} />}
+                      <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+                        <div className="w-full">
+                          <div className="form-group">
+                            <label className="label font-semibold text-black">วันที่ออกใบขับขี่</label>
+                            <div className={`input-group`}>
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">calendar_month</i>
+                                </span>
+                              </div>
+                              <DatePicker
+                                placeholder="เลือกวันที่ออกใบขับขี่"
+                                defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
+                                onChange={(dateStr) => handleChangeDriverLicenseStartDate(dateStr)}
+                              />
+                            </div>
+                            {formErrors.driverLicenseStartDate && (
+                              <FormHelper text={String(formErrors.driverLicenseStartDate)} />
+                            )}
+                          </div>
+                        </div>
+                        <div className="w-full">
+                          <div className="form-group">
+                            <label className="label font-semibold text-black">วันที่หมดอายุใบขับขี่</label>
+                            <div className={`input-group`}>
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">calendar_month</i>
+                                </span>
+                              </div>
+                              <DatePicker
+                                placeholder="เลือกวันที่หมดอายุใบขับขี่"
+                                defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
+                                onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
+                              />
+                            </div>
+                            {formErrors.driverLicenseEndDate && (
+                              <FormHelper text={String(formErrors.driverLicenseEndDate)} />
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+              <div className="modal-action mt-5 flex gap-3 justify-end px-4 pb-4">
+                <div>
+                  <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                    ยกเลิก
+                  </button>
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  บันทึก
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
-            <div>
-              <button className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
-                ยกเลิก
-              </button>
-            </div>
-            <button type="submit" className="btn btn-primary">
-              บันทึก
-            </button>
-          </div>
-        </form>
-      </div>
-      <form method="dialog" className="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
+        </div>
+      )}
+    </>
   );
 });
 

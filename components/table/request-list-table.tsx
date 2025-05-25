@@ -207,8 +207,6 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
         const after = dayjs().isAfter(end);
         const isPeaEm = row.original.is_pea_employee_driver;
 
-        console.log(row.original);
-
         return (
           <div className="text-left flex">
             {statusValue == "รออนุมัติ" ||
