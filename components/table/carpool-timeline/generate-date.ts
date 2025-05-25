@@ -125,7 +125,6 @@ export function transformDriverApiToTableData(
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
-      console.log("dates: ", dates);
       timeline[dates[i - 1].key] = [];
     }
     return timeline;
