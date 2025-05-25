@@ -216,7 +216,7 @@ export default function CarpoolVehicleListTable({
   lastMonth,
 }: RequestListTableProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [detailRequest, setDetailRequest] = useState({});
+  const [detailRequest, setDetailRequest] = useState<any[]>([]);
   const [dateSelected, setDateSelected] = useState<string | null>(null);
 
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);

@@ -133,7 +133,9 @@ export default function CarpoolCalendar() {
 
             <CarpoolManagementTabs active={0} />
 
-            <div>{/* <CarpoolTimeLine /> */}</div>
+            <div>
+              <CarpoolTimeLine />
+            </div>
 
             <ConfirmCancelCreateCarpoolModal
               id={""}

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import RequestListTable from "../table/timeline-list-table";
-import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
 import "flatpickr/dist/themes/material_blue.css";
 import DateRangePicker from "../vehicle/input/dateRangeInput";
 import dayjs from "dayjs";
@@ -17,6 +16,12 @@ import { useSearchParams } from "next/navigation";
 import CarpoolVehicleListTable from "../table/timeline-carpool-vehicle-list-table";
 import CarpoolDriverListTable from "../table/timeline-carpool-driver-list-table";
 import { debounce } from "lodash";
+import VehicleFilterModal, {
+  VehicleFilterModalRef,
+} from "../carpool-management/modal/vehicleFilterModal";
+import DriverFilterModal, {
+  DriverFilterModalRef,
+} from "../carpool-management/modal/driverFilterModal";
 
 export default function CarpoolTimeLine() {
   const id = useSearchParams().get("id");
@@ -58,8 +63,8 @@ export default function CarpoolTimeLine() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedOption, setSelectedOption] = useState<"all" | "first">("all");
 
-  const filterVehicleModalRef = useRef<FilterModalRef>(null);
-  const filterDriverModalRef = useRef<FilterModalRef>(null);
+  const filterVehicleModalRef = useRef<VehicleFilterModalRef>(null);
+  const filterDriverModalRef = useRef<DriverFilterModalRef>(null);
 
   useEffect(() => {
     if (id) {
@@ -353,7 +358,7 @@ export default function CarpoolTimeLine() {
 
         {dataVehicle.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolVehicleListTable
               dataRequest={dataVehicle}
               params={vehicleParams}
               selectedOption={selectedOption}
@@ -432,7 +437,7 @@ export default function CarpoolTimeLine() {
 
         {dataDriver.length !== 0 ? (
           <>
-            <RequestListTable
+            <CarpoolDriverListTable
               dataRequest={dataDriver}
               params={driverParams}
               selectedOption={selectedOption}
@@ -465,12 +470,12 @@ export default function CarpoolTimeLine() {
       <DriverHeader />
       <DriverActions />
       <RenderDriverTableOrNoData />
-      <FilterModal
+      <VehicleFilterModal
         ref={filterVehicleModalRef}
         onSubmitFilter={handleVehicleFilterSubmit}
         flag="TIMELINE"
       />
-      <FilterModal
+      <DriverFilterModal
         ref={filterDriverModalRef}
         onSubmitFilter={handleDriverFilterSubmit}
         flag="TIMELINE"
