@@ -136,26 +136,18 @@ export default function LoginAuthen() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace") {
-      e.preventDefault(); // กัน default ที่จะไม่พา focus ถอย
-
+      e.preventDefault();
       const newOtp = [...otp];
-
       if (otp[index]) {
-        // ถ้ามีค่าในช่องนี้ → ลบ และถอยกลับ
+        // If current input is not empty, just clear it (don't move focus)
         newOtp[index] = "";
         setOtp(newOtp);
-
-        if (index > 0) {
-          const prevInput = document.getElementById(`otp-input-${index - 1}`);
-          prevInput?.focus();
-        }
       } else if (index > 0) {
-        // ถ้าไม่มีค่าแล้ว → ลบช่องก่อนหน้า
+        // If current input is empty, move focus to previous and clear it
+        const prevInput = document.getElementById(`otp-input-${index - 1}`);
+        if (prevInput) prevInput.focus();
         newOtp[index - 1] = "";
         setOtp(newOtp);
-
-        const prevInput = document.getElementById(`otp-input-${index - 1}`);
-        prevInput?.focus();
       }
     }
   };
