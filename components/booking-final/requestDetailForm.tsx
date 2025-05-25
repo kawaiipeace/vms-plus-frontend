@@ -90,7 +90,11 @@ export default function RequestDetailForm({
       )}
 
       {requestData?.ref_request_status_name == "อนุมัติแล้ว" && (
-        <AlertCustom title="คำขอใช้ยานพาหนะนี้ถูกอนุมัติแล้ว" status="success" desc={""} />
+        <AlertCustom
+          title="คำขอใช้ยานพาหนะนี้ถูกอนุมัติแล้ว"
+          status="success"
+          desc={""}
+        />
       )}
 
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
@@ -102,7 +106,7 @@ export default function RequestDetailForm({
             <VehicleUserInfoCard
               id={requestData?.vehicle_user_emp_id || ""}
               requestData={requestData}
-              displayPhone={true} 
+              displayPhone={true}
             />
           </div>
 
@@ -167,6 +171,11 @@ export default function RequestDetailForm({
             {requestData?.ref_cost_type_code && (
               <DisburstmentCard
                 refCostTypeCode={requestData?.ref_cost_type_code}
+                costCenter={requestData?.cost_center}
+                activityNo={requestData?.activity_no}
+                wbsNo={requestData?.wbs_number}
+                networkNo={requestData?.network_no}
+                pmOrderNo={requestData?.pm_order_no}
               />
             )}
           </div>

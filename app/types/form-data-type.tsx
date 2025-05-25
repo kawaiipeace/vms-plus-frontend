@@ -12,7 +12,7 @@ export interface FormDataType {
   costNo?: string;
   costOrigin?: string;
   costCenter?: string;
-  wbsNo?: string;
+  wbsNumber?: string;
   networkNo?: string;
   activityNo?: string;
   pmOrderNo?: string;

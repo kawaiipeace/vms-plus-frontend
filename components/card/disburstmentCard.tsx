@@ -21,6 +21,7 @@ export default function DisburstmentCard({
   const [costTypeData, setCostTypeData] = useState<any>();
 
   useEffect(() => {
+    console.log('tt',activityNo);
     if (refCostTypeCode) {
       const fetchCostTypeFromCodeFunc = async () => {
         try {
@@ -44,70 +45,82 @@ export default function DisburstmentCard({
                 <i className="material-symbols-outlined">paid</i>
                 <div className="form-plaintext-group">
                   <div className="form-label">ประเภทงบประมาณ</div>
-                  <div className="form-text">{costTypeData.ref_cost_type_name}</div>
+                  <div className="form-text">
+                    {costTypeData.ref_cost_type_name}
+                  </div>
                 </div>
               </div>
             </div>
           )}
-
-          {costCenter && (
-            <div className="col-span-12 md:col-span-6">
-              <div className="form-group form-plaintext">
-                <i className="material-symbols-outlined">account_balance</i>
-                <div className="form-plaintext-group">
-                  <div className="form-label">ศูนย์ต้นทุน</div>
-                  <div className="form-text">{costCenter}</div>
+          {(String(refCostTypeCode) === "1" || String(refCostTypeCode) === "2") && (
+            <>
+              {costCenter && (
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    <i className="material-symbols-outlined">account_balance</i>
+                    <div className="form-plaintext-group">
+                      <div className="form-label">ศูนย์ต้นทุน</div>
+                      <div className="form-text">{costCenter}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
 
-          {activityNo && (
-            <div className="col-span-12 md:col-span-6">
-              <div className="form-group form-plaintext">
-                {/* <i className="material-symbols-outlined">list_alt</i> */}
-                <div className="form-plaintext-group">
-                  <div className="form-label">Activity No.</div>
-                  <div className="form-text">{activityNo}</div>
+          {String(refCostTypeCode) === "3" && (
+            <>
+              {activityNo && (
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    {/* <i className="material-symbols-outlined">list_alt</i> */}
+                    <div className="form-plaintext-group">
+                      <div className="form-label">เลขที่กิจกรรม</div>
+                      <div className="form-text">{activityNo}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {wbsNo && (
-            <div className="col-span-12 md:col-span-6">
-              <div className="form-group form-plaintext">
-                {/* <i className="material-symbols-outlined">timeline</i> */}
-                <div className="form-plaintext-group">
-                  <div className="form-label">WBS No.</div>
-                  <div className="form-text">{wbsNo}</div>
+              {wbsNo && (
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    {/* <i className="material-symbols-outlined">timeline</i> */}
+                    <div className="form-plaintext-group">
+                      <div className="form-label">เลขที่ WBS</div>
+                      <div className="form-text">{wbsNo}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {networkNo && (
-            <div className="col-span-12 md:col-span-6">
-              <div className="form-group form-plaintext">
-                {/* <i className="material-symbols-outlined">share</i> */}
-                <div className="form-plaintext-group">
-                  <div className="form-label">Network No.</div>
-                  <div className="form-text">{networkNo}</div>
+              {networkNo && (
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    {/* <i className="material-symbols-outlined">share</i> */}
+                    <div className="form-plaintext-group">
+                      <div className="form-label">เลขที่โตรงข่าย</div>
+                      <div className="form-text">{networkNo}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
-
-          {pmOrderNo && (
-            <div className="col-span-12 md:col-span-6">
-              <div className="form-group form-plaintext">
-                {/* <i className="material-symbols-outlined">assignment</i> */}
-                <div className="form-plaintext-group">
-                  <div className="form-label">PM/Order No.</div>
-                  <div className="form-text">{pmOrderNo}</div>
+          {String(refCostTypeCode) === "4" && (
+            <>
+              {pmOrderNo && (
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    {/* <i className="material-symbols-outlined">assignment</i> */}
+                    <div className="form-plaintext-group">
+                      <div className="form-label">เลขที่ใบสั่ง</div>
+                      <div className="form-text">{pmOrderNo}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

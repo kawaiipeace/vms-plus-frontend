@@ -54,7 +54,7 @@ export default function KeyPickUpDetailForm({
             <VehicleUserInfoCard
               id={requestData?.vehicle_user_emp_id || ""}
               requestData={requestData}
-              displayPhone={true} 
+              displayPhone={true}
             />
           </div>
 
@@ -106,6 +106,11 @@ export default function KeyPickUpDetailForm({
             {requestData?.ref_cost_type_code && (
               <DisburstmentCard
                 refCostTypeCode={requestData?.ref_cost_type_code}
+                costCenter={requestData?.cost_center}
+                activityNo={requestData?.activity_no}
+                wbsNo={requestData?.wbs_number}
+                networkNo={requestData?.network_no}
+                pmOrderNo={requestData?.pm_order_no}
               />
             )}
           </div>
@@ -117,9 +122,7 @@ export default function KeyPickUpDetailForm({
               <div className="form-section-header-title">ยานพาหนะ</div>
             </div>
 
-            <VehicleDetailCard
-              requestData={requestData}
-            />
+            <VehicleDetailCard requestData={requestData} />
 
             {requestData?.is_pea_employee_driver === "1" ? (
               <div className="mt-5">

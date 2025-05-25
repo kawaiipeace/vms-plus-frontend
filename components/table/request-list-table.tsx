@@ -108,19 +108,19 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
     },
     {
       accessorKey: "vehicle_license_plate",
-      header: () => <div className="text-center">ยานพาหนะ</div>,
+      header: () => <div className="text-left">ยานพาหนะ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
+      cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
     },
     {
       accessorKey: "work_place",
-      header: () => <div className="text-center">สถานที่ปฏิบัติงาน</div>,
+      header: () => <div className="text-left">สถานที่ปฏิบัติงาน</div>,
       enableSorting: false,
-      cell: ({ getValue }) => <div className="text-center">{getValue() as string}</div>,
+      cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
     },
     {
       accessorKey: "start_datetime",
-      header: () => <div className="text-center">วันที่เดินทาง</div>,
+      header: () => <div className="text-left">วันที่เดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(row.original.start_datetime || "");
