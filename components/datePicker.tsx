@@ -32,9 +32,11 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         }
       },
       setValue: (value: string) => {
+        // const gDate = parseDate(convertToGregorian(value));
+
         if (flatpickrInstance.current && value) {
-          const dateObj = new Date(value);
-          flatpickrInstance.current.setDate(dateObj, true);
+          console.log("setValue", value);
+          flatpickrInstance.current.setDate(value, true);
         }
       },
     }));

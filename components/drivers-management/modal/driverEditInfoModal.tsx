@@ -238,6 +238,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
 
       // setDisableEndDate(dateStr);
     };
+    console.log("DriverEditInfoModal rendered with formData:", formData);
 
     return (
       <>
