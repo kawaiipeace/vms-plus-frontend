@@ -16,7 +16,7 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
               <div className="flex col-span-1">
                 <i className="material-symbols-outlined">receipt_long</i>
                 <div className="pl-2">
-                  <h5 className="font-semibold mb-1">ข้อมูลสัญญาจ้างและสังกัด</h5>
+                  <h5 className="font-semibold mb-1">เลขที่สัญญาจ้าง</h5>
                   <p>{driverInfo?.driver_dept_sap_short_name_hire}</p>
                 </div>
               </div>

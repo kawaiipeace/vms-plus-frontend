@@ -99,7 +99,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
             return {
               value: item.dept_sap,
               label: item.dept_short,
-              labelDetail: item.dept_full,
+              // labelDetail: item.dept_full,
             };
           }
         );
