@@ -49,12 +49,11 @@ const schema = yup
     }),
     deptSap: yup.string(),
     userImageUrl: yup.string(),
-    costOrigin: yup.string().when("refCostTypeCode", {
+    costCenter: yup.string().when("refCostTypeCode", {
       is: (val: string) => val === "1" || val === "2",
       then: (schema) => schema.required("กรุณาระบุการเบิกค่าใช้จ่าย"),
       otherwise: (schema) => schema.optional(),
     }),
-    costCenter: yup.string().optional(),
     pmOrderNo: yup.string(),
     activityNo: yup.string(),
     networkNo: yup.string(),
@@ -169,64 +168,12 @@ export default function RequestForm() {
       }
     };
 
-    const fetchCostCenterRequest = async () => {
-      try {
-        const response = await fetchCostCenter();
-        if (response.status === 200) {
-          const costCenterData = response.data;
-          setCostCenterDatas(costCenterData);
-          const costCenterArr = [
-            ...costCenterData.map(
-              (cost: {
-                cost_center: string;
-              }) => ({
-                value: cost.cost_center,
-                label: cost.cost_center,
-              })
-            ),
-          ];
 
-          setCostCenterOptions(costCenterArr);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
 
     fetchRequests();
     fetchCostTypeRequest();
-    fetchCostCenterRequest();
+
   }, []);
-
-  useEffect(() => {
-    if (vehicleUserDatas.length > 0) {
-      // filter out undefined dept_sap
-      // const uniqueDepartments = Array.from(
-      //   new Set(
-      //     vehicleUserDatas
-      //       .map((user) => user.dept_sap)
-      //       .filter((deptSap): deptSap is string => !!deptSap)
-      //   )
-      // ).map((deptSap) => {
-      //   const user = vehicleUserDatas.find((u) => u.dept_sap === deptSap);
-      //   return {
-      //     value: deptSap,
-      //     label: `${user?.dept_sap_short ?? ""} (${deptSap})`,
-      //   };
-      // });
-
-      // setCostCenterOptions(uniqueDepartments);
-
-      // if (formData.costCenter) {
-      //   const defaultCostCenter = uniqueDepartments.find(
-      //     (option) => option.value === formData.costCenter
-      //   );
-      //   if (defaultCostCenter) {
-      //     setSelectedCostCenterOption(defaultCostCenter);
-      //   }
-      // }
-    }
-  }, [vehicleUserDatas]);
 
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
     driverOptions[0]
@@ -268,6 +215,7 @@ export default function RequestForm() {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
           const data = response.data[0];
+          console.log('approver',data);
           setApproverData(data);
         }
       } catch (error) {
@@ -302,7 +250,7 @@ export default function RequestForm() {
       selectedOption as { value: string; label: string }
     );
     setValue("refCostTypeCode", selectedOption.value); // <-- add this line
-    setValue("costOrigin", "");
+    setValue("costCenter", "");
 
     if (selectedOption.value === "1") {
       const data = costTypeDatas.find(
@@ -311,7 +259,7 @@ export default function RequestForm() {
       );
 
       if (data) {
-        setValue("costOrigin", data.cost_center);
+        setValue("costCenter", data.cost_center);
       }
     }
   };
@@ -320,7 +268,7 @@ export default function RequestForm() {
     setSelectedCostCenterOption(
       selectedOption as { value: string; label: string }
     );
-    setValue("costOrigin", selectedOption.value);
+    setValue("costCenter", selectedOption.value);
   };
 
   const handleFileChange = async (
@@ -371,7 +319,7 @@ export default function RequestForm() {
       deptSapShort: formData.deptSapShort || "",
       deptSap: formData.vehicleUserDeptSap || "",
       userImageUrl: formData.userImageUrl || "",
-      costOrigin: formData.costNo || "",
+      costCenter: formData.costCenter || "",
       pmOrderNo: formData.pmOrderNo || "",
       networkNo: formData.networkNo || "",
       activityNo: formData.activityNo || "",
@@ -408,7 +356,7 @@ export default function RequestForm() {
         value: data.ref_cost_type_code,
         label: data.ref_cost_type_name,
       });
-      setValue("costOrigin", data.cost_center);
+      setValue("costCenter", data.cost_center);
     }
   }, [formData, costTypeDatas]);
 
@@ -465,11 +413,11 @@ export default function RequestForm() {
   };
 
   const handleCostCenterSearch = async (search: string) => {
-    // Debounce handled by parent component or elsewhere
-    if (search.trim().length < 3) {
-      setLoadingDrivers(true);
+
+    if (search.trim().length > 3) {
+      setLoadingCostCenter(true);
       try {
-        const response = await fetchCostCenter(); //addsearh
+        const response = await fetchCostCenter(search);
         if (response.status === 200) {
           const costCenterData = response.data;
           setCostCenterDatas(costCenterData);
@@ -486,10 +434,10 @@ export default function RequestForm() {
 
           setCostCenterOptions(costCenterArr);
         } else {
-          setDriverOptions([]);
+          setCostCenterOptions([]);
         }
       } catch (error) {
-        setDriverOptions([]);
+        setCostCenterOptions([]);
         console.error("Error resetting options:", error);
       } finally {
         setLoadingCostCenter(false);
@@ -537,9 +485,9 @@ export default function RequestForm() {
     data.approvedRequestEmpName = approverData?.full_name;
 
     if (selectedCostTypeOption?.value === "2" && selectedCostCenterOption) {
-      data.costNo = selectedCostCenterOption.value;
+      data.costCenter = selectedCostCenterOption.value;
     } else {
-      data.costNo = data.costOrigin;
+      data.costCenter = data.costCenter;
     }
     localStorage.setItem("processOne", "Done");
     updateFormData(data);
@@ -963,7 +911,7 @@ export default function RequestForm() {
                         <input
                           type="text"
                           className="form-control"
-                          {...register("costOrigin")}
+                          {...register("costCenter")}
                         />
                       </div>
                     </div>

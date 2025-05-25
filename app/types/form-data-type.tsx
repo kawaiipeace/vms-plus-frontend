@@ -10,6 +10,7 @@ export interface FormDataType {
   purpose?: string;
   attachmentFile?: string;
   costNo?: string;
+  costOrigin?: string;
   costCenter?: string;
   wbsNo?: string;
   networkNo?: string;

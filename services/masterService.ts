@@ -57,9 +57,9 @@ export const fetchCostTypes = async () => {
   }
 };
 
-export const fetchCostCenter = async () => {
+export const fetchCostCenter = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("ref/cost-center");
+    const response = await axiosInstance.get("ref/cost-center?search=" + search);
     return response;
   } catch (error) {
     throw error;
@@ -157,7 +157,7 @@ export const fetchVehicleKeyType = async () => {
 
 export const fetchUserApproverUsers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-final-approval-users?search=" + search);
+    const response = await axiosInstance.get("mas/user-confirmer-users?search=" + search);
 
     return response;
   } catch (error) {
