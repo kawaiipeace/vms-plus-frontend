@@ -80,7 +80,11 @@ export default function LoginOS() {
       <LoginHeader />
 
       <form onSubmit={handleSubmit(onSubmit)} className="login-container">
-        <BackButton />
+        <BackButton
+          onClick={() => {
+            router.push("/");
+          }}
+        />
         <div className="login-heading">
           <div className="login-heading-title">ลงชื่อเข้าใช้งาน</div>
           <div className="login-heading-subtitle">สำหรับพนักงานขับรถ</div>
