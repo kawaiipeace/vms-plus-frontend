@@ -1,22 +1,12 @@
 import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import {
-  getFuelType,
-  getVehicleDepartment,
-  getVehicleType,
-} from "@/services/vehicleService";
-import { driverStatusRef } from "@/services/driversManagement";
-import {
   FuelTypeApiResponse,
   VehicleDepartmentApiResponse,
   VehicleTypeApiResponse,
 } from "@/app/types/vehicle-management/vehicle-list-type";
 import BadgeStatus from "@/components/carpool-management/modal/status";
+import { driverStatusRef } from "@/services/driversManagement";
+import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 type Props = {
   flag: string;
@@ -74,14 +64,12 @@ export interface VehicleInputParams {
 }
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
-  <div className="flex justify-between items-center bg-white p-6 border-b border-gray-300">
+  <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
     <div className="flex gap-4 items-center">
       <i className="material-symbols-outlined text-gray-500">filter_list</i>
       <div className="flex flex-col">
         <span className="text-xl font-bold">ตัวกรอง</span>
-        <span className="text-gray-500 text-sm">
-          กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ
-        </span>
+        <span className="text-gray-500 text-sm">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</span>
       </div>
     </div>
     <button onClick={onClose}>
@@ -112,17 +100,12 @@ const ModalBody = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
-  const handleCheckboxToggle = (
-    key: keyof VehicleInputParams,
-    value: string
-  ) => {
+  const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
     setFormData((prev) => {
       const current = prev[key] as string[];
       return {
         ...prev,
-        [key]: current.includes(value)
-          ? current.filter((v) => v !== value)
-          : [...current, value],
+        [key]: current.includes(value) ? current.filter((v) => v !== value) : [...current, value],
       };
     });
   };
@@ -139,29 +122,16 @@ const ModalBody = ({
             <span className="text-base font-semibold">สถานะใช้งาน</span>
             <div>
               {statusDriver.map((option, index) => (
-                <div
-                  className="custom-control custom-checkbox custom-control-inline"
-                  key={index}
-                >
+                <div className="custom-control custom-checkbox custom-control-inline" key={index}>
                   <input
                     type="checkbox"
                     defaultChecked
                     id={`option1-${index}`}
-                    checked={formData.taxVehicle.includes(
-                      option.ref_request_status_code
-                    )}
-                    onChange={() =>
-                      handleCheckboxToggle(
-                        "taxVehicle",
-                        option.ref_request_status_code
-                      )
-                    }
+                    checked={formData.taxVehicle.includes(option.ref_request_status_code)}
+                    onChange={() => handleCheckboxToggle("taxVehicle", option.ref_request_status_code)}
                     className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                   />
-                  <label
-                    className="custom-control-label"
-                    htmlFor={`option1-${index}`}
-                  >
+                  <label className="custom-control-label" htmlFor={`option1-${index}`}>
                     {option.ref_request_status_name}
                   </label>
                 </div>
@@ -175,29 +145,16 @@ const ModalBody = ({
             <span className="text-base font-semibold">ประเภทค้างคืน</span>
             <div className="custom-group flex-col !gap-0">
               {driverWorkType.map((option, index) => (
-                <div
-                  className="custom-control custom-checkbox custom-control-inline"
-                  key={index}
-                >
+                <div className="custom-control custom-checkbox custom-control-inline" key={index}>
                   <input
                     type="checkbox"
                     defaultChecked
                     id={`option2-${index}`}
-                    checked={formData.driverWorkType.includes(
-                      option.ref_request_status_code
-                    )}
-                    onChange={() =>
-                      handleCheckboxToggle(
-                        "driverWorkType",
-                        option.ref_request_status_code
-                      )
-                    }
+                    checked={formData.driverWorkType.includes(option.ref_request_status_code)}
+                    onChange={() => handleCheckboxToggle("driverWorkType", option.ref_request_status_code)}
                     className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                   />
-                  <label
-                    className="custom-control-label"
-                    htmlFor={`option2-${index}`}
-                  >
+                  <label className="custom-control-label" htmlFor={`option2-${index}`}>
                     {option.ref_request_status_name}
                   </label>
                 </div>
@@ -217,21 +174,11 @@ const ModalBody = ({
                       type="checkbox"
                       defaultChecked
                       id={`option3-${index}`}
-                      checked={formData.vehicleStatus.includes(
-                        status.ref_driver_status_code
-                      )}
-                      onChange={() =>
-                        handleCheckboxToggle(
-                          "vehicleStatus",
-                          status.ref_driver_status_code
-                        )
-                      }
+                      checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
+                      onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                     />
-                    <label
-                      className="custom-control-label"
-                      htmlFor={`option3-${index}`}
-                    >
+                    <label className="custom-control-label" htmlFor={`option3-${index}`}>
                       <div className="custom-control-label-group">
                         <BadgeStatus status={status.ref_driver_status_desc} />
                       </div>
@@ -250,22 +197,22 @@ const ModalBody = ({
 const ModalFooter = ({
   onClick,
   onSubmit,
+  onCancel,
 }: {
   onClick: () => void;
   onSubmit: () => void;
+  onCancel: () => void;
 }) => {
   return (
     <div className="flex p-4">
       <div className="flex items-center gap-2">
         <button className="btn btn-ghost" onClick={onClick}>
-          <span className="text-base text-brand-900 font-bold">
-            ล้างตัวกรอง
-          </span>
+          <span className="text-base text-brand-900 font-bold">ล้างตัวกรอง</span>
         </button>
       </div>
 
       <div className="flex gap-2 ml-auto">
-        <button className="btn btn-secondary" onClick={onClick}>
+        <button className="btn btn-secondary" type="button" onClick={onCancel}>
           ยกเลิก
         </button>
         <button className="btn btn-primary" onClick={onSubmit}>
@@ -276,17 +223,50 @@ const ModalFooter = ({
   );
 };
 
-const FilterModal = forwardRef<FilterModalRef, Props>(
-  ({ onSubmitFilter, flag }, ref) => {
-    const dialogRef = useRef<HTMLDialogElement>(null);
-    const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
+const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag }, ref) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
 
-    useImperativeHandle(ref, () => ({
-      open: () => dialogRef.current?.showModal(),
-      close: () => dialogRef.current?.close(),
-    }));
+  useImperativeHandle(ref, () => ({
+    open: () => dialogRef.current?.showModal(),
+    close: () => dialogRef.current?.close(),
+  }));
 
-    const [params, setParams] = useState<VehicleInputParams>({
+  const [params, setParams] = useState<VehicleInputParams>({
+    fuelType: "",
+    vehicleType: "",
+    vehicleDepartment: "",
+    taxVehicle: [],
+    vehicleStatus: [],
+    driverWorkType: [],
+  });
+  const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
+  const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
+  const [vehicleType, setVehicleType] = useState<VehicleTypeApiResponse[]>([]);
+  const statusDriver: {
+    ref_request_status_name: string;
+    ref_request_status_code: string;
+  }[] = [
+    { ref_request_status_name: "ใช้งาน", ref_request_status_code: "1" },
+    { ref_request_status_name: "ไม่ใช้งาน", ref_request_status_code: "0" },
+  ];
+  const driverWorkType: {
+    ref_request_status_name: string;
+    ref_request_status_code: string;
+  }[] = [
+    { ref_request_status_name: "ได้", ref_request_status_code: "1" },
+    { ref_request_status_name: "ไม่ได้", ref_request_status_code: "2" },
+  ];
+
+  const handleSubmitFilter = () => {
+    console.log("submit filter", params);
+    onSubmitFilter?.(params);
+    dialogRef.current?.close();
+  };
+
+  const handleClearFilter = () => {
+    console.log("clear filter");
+    setParams({
       fuelType: "",
       vehicleType: "",
       vehicleDepartment: "",
@@ -294,110 +274,71 @@ const FilterModal = forwardRef<FilterModalRef, Props>(
       vehicleStatus: [],
       driverWorkType: [],
     });
-    const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
-    const [vehicleDepartment, setVehicleDepartment] = useState<
-      VehicleDepartmentApiResponse[]
-    >([]);
-    const [vehicleType, setVehicleType] = useState<VehicleTypeApiResponse[]>(
-      []
-    );
-    const statusDriver: {
-      ref_request_status_name: string;
-      ref_request_status_code: string;
-    }[] = [
-      { ref_request_status_name: "ใช้งาน", ref_request_status_code: "1" },
-      { ref_request_status_name: "ไม่ใช้งาน", ref_request_status_code: "0" },
-    ];
-    const driverWorkType: {
-      ref_request_status_name: string;
-      ref_request_status_code: string;
-    }[] = [
-      { ref_request_status_name: "ได้", ref_request_status_code: "1" },
-      { ref_request_status_name: "ไม่ได้", ref_request_status_code: "2" },
-    ];
+  };
+  const handleCancelFilter = () => {
+    console.log("cancel filter");
+    dialogRef.current?.close();
+  };
 
-    const handleSubmitFilter = () => {
-      console.log("submit filter", params);
-      onSubmitFilter?.(params);
-      dialogRef.current?.close();
+  useEffect(() => {
+    const fetchData = async () => {
+      const [fetchFuelType, fetchVehicleDepartment, fetchVehicleType] = await Promise.all([
+        getFuelType(),
+        getVehicleDepartment(),
+        getVehicleType(),
+      ]);
+
+      setFuelType(fetchFuelType.options);
+      setVehicleDepartment(fetchVehicleDepartment.options);
+      setVehicleType(fetchVehicleType.options);
     };
-
-    const handleClearFilter = () => {
-      console.log("clear filter");
-      setParams({
-        fuelType: "",
-        vehicleType: "",
-        vehicleDepartment: "",
-        taxVehicle: [],
-        vehicleStatus: [],
-        driverWorkType: [],
-      });
-    };
-
-    useEffect(() => {
-      const fetchData = async () => {
-        const [fetchFuelType, fetchVehicleDepartment, fetchVehicleType] =
-          await Promise.all([
-            getFuelType(),
-            getVehicleDepartment(),
-            getVehicleType(),
-          ]);
-
-        setFuelType(fetchFuelType.options);
-        setVehicleDepartment(fetchVehicleDepartment.options);
-        setVehicleType(fetchVehicleType.options);
-      };
-      const fetchDriverStatus = async () => {
-        try {
-          const response = await driverStatusRef();
-          if (response.status === 200) {
-            const driverStatusArr: DriverStatus[] = response.data;
-            setDriverStatus(driverStatusArr);
-          } else {
-            console.error("Failed to fetch driver status");
-          }
-        } catch (error) {
-          console.error("Error fetching driver status:", error);
+    const fetchDriverStatus = async () => {
+      try {
+        const response = await driverStatusRef();
+        if (response.status === 200) {
+          const driverStatusArr: DriverStatus[] = response.data;
+          setDriverStatus(driverStatusArr);
+        } else {
+          console.error("Failed to fetch driver status");
         }
-      };
+      } catch (error) {
+        console.error("Error fetching driver status:", error);
+      }
+    };
 
-      fetchDriverStatus();
-      fetchData();
-    }, []);
+    fetchDriverStatus();
+    fetchData();
+  }, []);
 
-    return (
-      <dialog ref={dialogRef} className="modal">
-        <div className="modal-box max-w-[450px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh] bg-white">
-          <ModalHeader onClose={() => dialogRef.current?.close()} />
+  return (
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box max-w-[450px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh] bg-white">
+        <ModalHeader onClose={() => dialogRef.current?.close()} />
 
-          {/* Content scroll ได้ */}
-          <div className="flex-1 overflow-y-auto">
-            <ModalBody
-              fuelTypes={fuelType}
-              vehicleDepartments={vehicleDepartment}
-              vehicleTypes={vehicleType}
-              flag={flag}
-              setParams={setParams}
-              params={params}
-              driverStatus={driverStatus}
-              statusDriver={statusDriver}
-              driverWorkType={driverWorkType}
-            />
-          </div>
-
-          {/* Footer ลอยอยู่ล่างเสมอ */}
-          <ModalFooter
-            onClick={handleClearFilter}
-            onSubmit={handleSubmitFilter}
+        {/* Content scroll ได้ */}
+        <div className="flex-1 overflow-y-auto">
+          <ModalBody
+            fuelTypes={fuelType}
+            vehicleDepartments={vehicleDepartment}
+            vehicleTypes={vehicleType}
+            flag={flag}
+            setParams={setParams}
+            params={params}
+            driverStatus={driverStatus}
+            statusDriver={statusDriver}
+            driverWorkType={driverWorkType}
           />
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
-    );
-  }
-);
+
+        {/* Footer ลอยอยู่ล่างเสมอ */}
+        <ModalFooter onClick={handleClearFilter} onSubmit={handleSubmitFilter} onCancel={handleCancelFilter} />
+      </div>
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  );
+});
 
 FilterModal.displayName = "FilterModal";
 export default FilterModal;

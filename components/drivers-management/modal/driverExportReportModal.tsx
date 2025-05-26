@@ -166,8 +166,8 @@ const DriverExportReportModal = forwardRef<
                       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                         <div className="w-full">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">วันที่เริ่มต้น</label>
-                            <div className={`input-group`}>
+                            <label className="form-label">วันที่เริ่มต้น</label>
+                            <div className={`input-group flatpickr`}>
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
                                   <i className="material-symbols-outlined">calendar_month</i>
@@ -187,8 +187,8 @@ const DriverExportReportModal = forwardRef<
                         </div>
                         <div className="w-full">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">วันที่สิ้นสุด</label>
-                            <div className={`input-group`}>
+                            <label className="form-label">วันที่สิ้นสุด</label>
+                            <div className={`input-group flatpickr`}>
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
                                   <i className="material-symbols-outlined">calendar_month</i>
@@ -208,17 +208,19 @@ const DriverExportReportModal = forwardRef<
                         </div>
                       </div>
                       <div className="grid grid-cols-1 mt-3">
-                        <div className="w-full flex rounded-2xl bg-white border-[#D0D5DD] border-[1px] p-4 items-stretch">
-                          <Image src="/assets/img/empty/add_driver.svg" alt="" width={100} height={100} />
-                          <div className="text-left">
-                            <h5 className="text-[#344054] font-semibold pl-4">ประวัติการทำงานของพนักงานขับรถ</h5>
-                            <p className="text-[#667085] font-semibold text-sm pl-4">ดาวน์โหลดไฟล์ .XLSX</p>
-                            <p className="text-[#667085] text-sm pl-4">เลือก {Object.keys(selectedRow).length} คน</p>
-                          </div>
-                          <div className="ml-auto">
-                            <button type="submit">
-                              <i className="material-symbols-outlined text-[#A80689]">download</i>
-                            </button>
+                        <div className=" card card-body p-4 ">
+                          <div className="w-full flex rounded-2xl  items-stretch">
+                            <Image src="/assets/img/empty/add_driver.svg" alt="" width={100} height={100} />
+                            <div className="text-left">
+                              <h5 className="text-[#344054] font-semibold pl-4">ประวัติการทำงานของพนักงานขับรถ</h5>
+                              <p className="text-[#667085] font-semibold text-sm pl-4">ดาวน์โหลดไฟล์ .XLSX</p>
+                              <p className="text-[#667085] text-sm pl-4">เลือก {Object.keys(selectedRow).length} คน</p>
+                            </div>
+                            <div className="ml-auto">
+                              <button type="submit">
+                                <i className="material-symbols-outlined text-[#A80689]">download</i>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

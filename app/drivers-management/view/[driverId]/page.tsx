@@ -465,12 +465,14 @@ const DriverViewProfilePage = () => {
           setUpdateType={setUpdateType}
         />
       )}
-      <DriverEditLicenseModal
-        ref={driverEditLicenseModalRef}
-        driverInfo={driverInfo}
-        onUpdateDriver={setDriverUpdated}
-        setUpdateType={setUpdateType}
-      />
+      {driverInfo && (
+        <DriverEditLicenseModal
+          ref={driverEditLicenseModalRef}
+          driverInfo={driverInfo}
+          onUpdateDriver={setDriverUpdated}
+          setUpdateType={setUpdateType}
+        />
+      )}
       <DriverEditDocModal
         ref={driverEditDocModalRef}
         driverInfo={driverInfo}

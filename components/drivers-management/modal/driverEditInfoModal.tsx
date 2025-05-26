@@ -313,7 +313,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                       <div className="form-section-body">
                         <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                           <div className="w-full">
-                            <label className="label font-semibold text-black">เลขที่สัญญาจ้าง</label>
+                            <label className="label form-label">เลขที่สัญญาจ้าง</label>
                             <div className={`input-group`}>
                               <input
                                 type="text"
@@ -328,7 +328,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           </div>
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label font-semibold text-black">หน่วยงานผู้ว่าจ้าง</label>
+                              <label className="label form-label">หน่วยงานผู้ว่าจ้าง</label>
                               <CustomSelect
                                 w="w-full"
                                 options={driverDepartmentList}
@@ -350,7 +350,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                         <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label font-semibold text-black">บริษัทผู้รับจ้าง</label>
+                              <label className="label form-label">บริษัทผู้รับจ้าง</label>
                               <CustomSelect
                                 w="w-full"
                                 options={driverVendorsList}
@@ -370,7 +370,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           </div>
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label font-semibold text-black">หน่วยงานที่สังกัด</label>
+                              <label className="label form-label">หน่วยงานที่สังกัด</label>
                               <CustomSelect
                                 w="w-full"
                                 options={driverDepartmentList}
@@ -389,7 +389,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                         <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label font-semibold text-black">วันเริ่มต้นสัญญาจ้าง</label>
+                              <label className="label form-label">วันเริ่มต้นสัญญาจ้าง</label>
                               <div className={`input-group`}>
                                 <div className="input-group-prepend">
                                   <span className="input-group-text">
@@ -410,7 +410,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           </div>
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label font-semibold text-black">วันสิ้นสุดสัญญาจ้าง</label>
+                              <label className="label form-label">วันสิ้นสุดสัญญาจ้าง</label>
                               <div className={`input-group`}>
                                 <div className="input-group-prepend">
                                   <span className="input-group-text">
@@ -433,7 +433,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                         <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label font-semibold text-black">ประเภทการปฏิบัติงาน</label>
+                              <label className="label form-label">ประเภทการปฏิบัติงาน</label>
                               <div className="custom-group">
                                 <RadioButton
                                   name="operationType"
@@ -460,7 +460,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           </div>
                           <div className="w-full">
                             <div className="form-group">
-                              <label className="label justify-start font-semibold text-black">
+                              <label className="justify-start label form-label">
                                 พนักงานที่ถูกปฏิบัติงานแทน<span className="text-[#98A2B3]">(ถ้ามี)</span>
                               </label>
                               <CustomSelect
@@ -480,7 +480,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                         </div>
                         <div className="grid gird-cols-1">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">หน่วยงานอื่นสามารถขอใช้งานได้</label>
+                            <label className="label form-label">หน่วยงานอื่นสามารถขอใช้งานได้</label>
                             <div className="custom-group">
                               {useByotherRadio.map((item, index) => {
                                 return (
@@ -506,7 +506,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                 </div>
                 <div className="modal-action mt-5 flex gap-3 justify-end px-4 pb-4">
                   <div>
-                    <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                    <button className="btn btn-secondary w-full" type="button" onClick={handleCloseModal}>
                       ยกเลิก
                     </button>
                   </div>

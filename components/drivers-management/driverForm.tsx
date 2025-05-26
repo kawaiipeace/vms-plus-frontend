@@ -493,7 +493,7 @@ const DriverForm = () => {
                 <div className="form-group">
                   <label className="form-label">วันเกิด</label>
                   {/* {formData.driverBirthdate} */}
-                  <div className={`input-group`}>
+                  <div className={`input-group flatpickr`}>
                     <div className="input-group-prepend">
                       <span className="input-group-text">
                         <i className="material-symbols-outlined">calendar_month</i>
@@ -655,7 +655,7 @@ const DriverForm = () => {
             <div className="col-span-12 md:col-span-3">
               <div className="form-group">
                 <label className="form-label">วันเริ่มต้นสัญญาจ้าง</label>
-                <div className={`input-group`}>
+                <div className={`input-group flatpickr`}>
                   <div className="input-group-prepend">
                     <span className="input-group-text">
                       <i className="material-symbols-outlined">calendar_month</i>
@@ -674,7 +674,7 @@ const DriverForm = () => {
             <div className="col-span-12 md:col-span-3">
               <div className="form-group">
                 <label className="form-label">วันสิ้นสุดสัญญาจ้าง</label>
-                <div className={`input-group`}>
+                <div className={`input-group flatpickr`}>
                   <div className="input-group-prepend">
                     <span className="input-group-text">
                       <i className="material-symbols-outlined">calendar_month</i>
@@ -780,7 +780,7 @@ const DriverForm = () => {
               <div>
                 <div className="form-group">
                   <label className="form-label">วันที่ออกใบขับขี่</label>
-                  <div className={`input-group`}>
+                  <div className={`input-group flatpickr`}>
                     <div className="input-group-prepend">
                       <span className="input-group-text">
                         <i className="material-symbols-outlined">calendar_month</i>
@@ -801,7 +801,7 @@ const DriverForm = () => {
               <div>
                 <div className="form-group">
                   <label className="form-label">วันที่หมดอายุใบขับขี่</label>
-                  <div className={`input-group`}>
+                  <div className={`input-group flatpickr`}>
                     <div className="input-group-prepend">
                       <span className="input-group-text">
                         <i className="material-symbols-outlined">calendar_month</i>

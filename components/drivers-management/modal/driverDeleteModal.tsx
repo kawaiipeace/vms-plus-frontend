@@ -343,23 +343,19 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
                 </>
               )}
               <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
-                <button className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
+                <button className="btn btn-secondary w-full" type="button" onClick={() => modalRef.current?.close()}>
                   ไม่ใช่ตอนนี้
                 </button>
-                <button
-                  type="submit"
-                  className="btn bg-[#D92D20] hover:bg-[#D92D20] text-white border-[#D92D20] hover:border-[#D92D20] col-span-1"
-                  disabled={btnDisabled}
-                >
+                <button type="submit" className="btn btn-primary-danger col-span-1" disabled={btnDisabled}>
                   {deleteDriverType === "delete" ? "ลบพนักงาน" : deleteDriverType === "resign" ? "ลาออก" : "ให้ออก"}
                 </button>
               </div>
             </div>
           </form>
         </div>
-        <form method="dialog" className="modal-backdrop">
+        {/* <form method="dialog" className="modal-backdrop">
           <button>close</button>
-        </form>
+        </form> */}
       </dialog>
     );
   }

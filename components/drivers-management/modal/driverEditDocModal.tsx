@@ -155,7 +155,7 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
               <div className="form-section">
                 <div className="form-section-body">
                   <div className="w-full">
-                    <label className="label font-semibold text-black justify-start">
+                    <label className="form-label label justify-start">
                       รูปใบรับรอง, บัตรประชาชน, ทะเบียนบ้าน ฯลฯ&nbsp;
                       <span className="text-[#98A2B3]">(ถ้ามี)</span>
                     </label>
@@ -170,7 +170,7 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
                     {formErrors?.driverDocument && <FormHelper text={String(formErrors?.driverDocument)} />}
                   </div>
                   <div className="w-full">
-                    <label className="label font-semibold text-black">รูปใบขับขี่</label>
+                    <label className="label form-label">รูปใบขับขี่</label>
                     <div className="mb-3">
                       <UploadFilePDF onImageChange={handleFileChange} />
                     </div>
@@ -184,7 +184,7 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
             </div>
             <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
               <div>
-                <button className="btn btn-secondary w-full" onClick={() => modalRef.current?.close()}>
+                <button className="btn btn-secondary w-full" type="button" onClick={() => modalRef.current?.close()}>
                   ยกเลิก
                 </button>
               </div>

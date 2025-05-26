@@ -1,20 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
 import RequestListTable from "@/components/drivers-management/table/timeline-list-table";
-import FilterModal, {
-  FilterModalRef,
-} from "@/components/drivers-management/modal/filterTimelineModal";
+import { useEffect, useMemo, useRef, useState } from "react";
 // import { getVehicleTimeline } from "@/services/vehicleService";
-import "flatpickr/dist/themes/material_blue.css";
-import dayjs from "dayjs";
-import VehicleStatus from "@/components/vehicle/status";
-import SearchInput from "@/components/vehicle/input/search";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import PaginationControls from "@/components/table/pagination-control";
+import SearchInput from "@/components/vehicle/input/search";
 import VehicleNoData from "@/components/vehicle/noData";
+import VehicleStatus from "@/components/vehicle/status";
+import dayjs from "dayjs";
+import "flatpickr/dist/themes/material_blue.css";
 
 import { getDriverTimeline } from "@/services/driversManagement";
-import DateRangePicker from "../vehicle/input/dateRangeInput";
 import { debounce } from "lodash";
+import DateRangePicker from "../vehicle/input/dateRangeInput";
 
 export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -76,18 +74,13 @@ export default function VehicleTimeLine() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({ ...prevParams, limit, page: 1 }));
   };
 
   const handleFilterSubmit = (filterParams: any) => {
-    const workType = filterParams.driverWorkType
-      .map((item: any) => item)
-      .join(",");
-    const driverStatus = filterParams.vehicleStatus
-      .map((item: any) => item)
-      .join(",");
+    const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
+    const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
     const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
     setParams((prev) => ({
       ...prev,
@@ -152,9 +145,7 @@ export default function VehicleTimeLine() {
           onChange={(range) => {
             setParams((prev) => ({
               ...prev,
-              start_date: range?.from
-                ? dayjs(range?.from).format("YYYY-MM-DD")
-                : "",
+              start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
               end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
             }));
           }}
@@ -181,31 +172,25 @@ export default function VehicleTimeLine() {
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (
-          dropdownRef.current &&
-          !(dropdownRef.current as any).contains(event.target)
-        ) {
+        if (dropdownRef.current && !(dropdownRef.current as any).contains(event.target)) {
           setShowDropdown(false);
         }
       };
       document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     return (
       <div>
         {showDropdown && (
-          <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
+          <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50 ">
             <button
               onClick={() => handleSelect("all")}
               className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
               role="menuitem"
             >
               {selectedOption === "all" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">
-                  check
-                </i>
+                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
               ) : (
                 <span className="w-4 mr-2" />
               )}
@@ -217,9 +202,7 @@ export default function VehicleTimeLine() {
               role="menuitem"
             >
               {selectedOption === "first" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">
-                  check
-                </i>
+                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
               ) : (
                 <span className="w-4 mr-2" />
               )}
@@ -264,11 +247,7 @@ export default function VehicleTimeLine() {
       <Header />
       <Actions />
       <RenderTableOrNoData />
-      <FilterModal
-        ref={filterModalRef}
-        onSubmitFilter={handleFilterSubmit}
-        flag="TIMELINE"
-      />
+      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
     </div>
   );
 }

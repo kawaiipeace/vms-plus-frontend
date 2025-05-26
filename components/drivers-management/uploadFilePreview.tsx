@@ -5,6 +5,7 @@ interface UploadFilePreviewProps {
 
 const UploadFilePreview = ({ file, onDeleteFile }: { file: UploadFilePreviewProps; onDeleteFile: () => void }) => {
   return (
+    // <div className="card card-body p-0 mb-4">
     <div className="w-full flex rounded-2xl bg-white border-[#D0D5DD] border-[1px] p-4 items-center">
       <div className="rounded-full bg-[#F2F4F7] w-[40px] h-[40px] flex items-center justify-center">
         <i className="material-symbols-outlined text-[#667085]">draft</i>
@@ -21,6 +22,7 @@ const UploadFilePreview = ({ file, onDeleteFile }: { file: UploadFilePreviewProp
         </button>
       </div>
     </div>
+    // </div>
   );
 };
 

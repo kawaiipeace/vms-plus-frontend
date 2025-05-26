@@ -328,7 +328,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                 </div>
                 <div className="modal-action mt-5 flex gap-3 justify-end px-4 pb-4">
                   <div>
-                    <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                    <button className="btn btn-secondary w-full" type="button" onClick={handleCloseModal}>
                       ยกเลิก
                     </button>
                   </div>

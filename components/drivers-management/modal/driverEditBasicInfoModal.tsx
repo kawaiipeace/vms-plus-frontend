@@ -171,7 +171,7 @@ const DriverEditBasicInfoModal = forwardRef<
         <div className={`modal modal-middle modal-open`}>
           <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col bg-white">
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-              <div className="modal-title">เพิ่มข้อมูลนัดหมายพนักงานขับรถ</div>
+              <div className="modal-title">แก้ไขข้อมูลทั่วไป</div>
               <form method="dialog">
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
@@ -202,7 +202,7 @@ const DriverEditBasicInfoModal = forwardRef<
                   <div className="form-section-body">
                     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                       <div className="w-full">
-                        <label className="label font-semibold text-black">ชื่อ-นามสกุล</label>
+                        <label className="label form-label">ชื่อ-นามสกุล</label>
                         <div className={`input-group`}>
                           <input
                             type="text"
@@ -216,7 +216,7 @@ const DriverEditBasicInfoModal = forwardRef<
                         {formErrors.name && <FormHelper text={String(formErrors.name)} />}
                       </div>
                       <div className="w-full">
-                        <label className="label font-semibold text-black">ชื่อเล่น</label>
+                        <label className="label form-label">ชื่อเล่น</label>
                         <div className={`input-group`}>
                           <input
                             type="text"
@@ -232,7 +232,7 @@ const DriverEditBasicInfoModal = forwardRef<
                     </div>
                     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                       <div className="w-full">
-                        <label className="label font-semibold text-black">เบอร์ติดต่อ</label>
+                        <label className="label form-label">เบอร์ติดต่อ</label>
                         <div className={`input-group`}>
                           <input
                             type="text"
@@ -247,7 +247,7 @@ const DriverEditBasicInfoModal = forwardRef<
                         {formErrors.contactNumber && <FormHelper text={String(formErrors.contactNumber)} />}
                       </div>
                       <div className="w-full">
-                        <label className="label font-semibold text-black">เลขบัตรประชาชน</label>
+                        <label className="label form-label">เลขบัตรประชาชน</label>
                         <div className={`input-group`}>
                           <input
                             type="text"
@@ -263,7 +263,7 @@ const DriverEditBasicInfoModal = forwardRef<
                     </div>
                     <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                       <div className="w-full">
-                        <label className="label font-semibold text-black">วันเกิด</label>
+                        <label className="label form-label">วันเกิด</label>
                         <div className={`input-group`}>
                           <div className="input-group-prepend">
                             <span className="input-group-text">
@@ -279,7 +279,7 @@ const DriverEditBasicInfoModal = forwardRef<
                         {formErrors.birthdate && <FormHelper text={String(formErrors.birthdate)} />}
                       </div>
                       <div className="w-full">
-                        <label className="label font-semibold text-black">การค้่างคืน</label>
+                        <label className="label form-label">การค้่างคืน</label>
                         <div className="custom-group">
                           <RadioButton
                             name="overNightStay"
@@ -313,7 +313,7 @@ const DriverEditBasicInfoModal = forwardRef<
               </div>
               <div className="modal-footer mt-5 flex gap-3 justify-end px-4 pb-4">
                 <div>
-                  <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                  <button className="btn btn-secondary w-full" type="button" onClick={handleCloseModal}>
                     ไม่ใช่ตอนนี้
                   </button>
                 </div>

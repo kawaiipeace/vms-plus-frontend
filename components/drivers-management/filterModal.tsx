@@ -189,14 +189,14 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                   </div>
                 </div>
               </div>
-              <form method="dialog">
-                <button
-                  className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
-                  onClick={handleCloseModal}
-                >
-                  <i className="material-symbols-outlined">close</i>
-                </button>
-              </form>
+              {/* <form method="dialog"> */}
+              <button
+                className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                onClick={handleCloseModal}
+              >
+                <i className="material-symbols-outlined">close</i>
+              </button>
+              {/* </form> */}
             </div>
             <div className="modal-scroll-wrapper overflow-y-auto h-[74vh] max-h-full">
               <div className="modal-body  flex flex-col gap-4 md:h-[76vh] h-[70vh] md:max-h-full max-h-[70vh]">
@@ -330,6 +330,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                           ref={startDatePickerRef}
                           placeholder={"ระบุวันที่หมดอายุใบขับขี่"}
                           onChange={handleStartDateChange}
+                          defaultValue={selectedStartDate} // Set default value if needed
                         />
                         <div className="input-group-append hidden" data-clear>
                           <span className="input-group-text search-ico-trailing">
@@ -353,6 +354,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                           ref={endDatePickerRef} // Attach ref to end date picker
                           placeholder={"ระบุวันที่สิ้นสุดปฏิบัติงาน"}
                           onChange={handleEndDateChange}
+                          defaultValue={selectedEndDate} // Set default value if needed
                         />
                         <div className="input-group-append hidden" data-clear>
                           <span className="input-group-text search-ico-trailing">

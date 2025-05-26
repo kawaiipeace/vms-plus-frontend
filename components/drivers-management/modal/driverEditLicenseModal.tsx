@@ -194,7 +194,7 @@ const DriverEditLicenseModal = forwardRef<
                       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                         <div className="w-full">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">ประเภทใบขับขี่</label>
+                            <label className="label form-label">ประเภทใบขับขี่</label>
                             <CustomSelect
                               w="w-full"
                               options={driverLicenseList}
@@ -210,7 +210,7 @@ const DriverEditLicenseModal = forwardRef<
                         </div>
                         <div className="w-full">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">เลขที่ใบขับขี่</label>
+                            <label className="label form-label">เลขที่ใบขับขี่</label>
                             <div className={`input-group`}>
                               <input
                                 type="text"
@@ -229,8 +229,8 @@ const DriverEditLicenseModal = forwardRef<
                       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                         <div className="w-full">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">วันที่ออกใบขับขี่</label>
-                            <div className={`input-group`}>
+                            <label className="label form-label">วันที่ออกใบขับขี่</label>
+                            <div className={`input-group flatpickr`}>
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
                                   <i className="material-symbols-outlined">calendar_month</i>
@@ -241,6 +241,11 @@ const DriverEditLicenseModal = forwardRef<
                                 defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
                                 onChange={(dateStr) => handleChangeDriverLicenseStartDate(dateStr)}
                               />
+                              <div className="input-group-append hidden" data-clear>
+                                <span className="input-group-text search-ico-trailing">
+                                  <i className="material-symbols-outlined">close</i>
+                                </span>
+                              </div>
                             </div>
                             {formErrors.driverLicenseStartDate && (
                               <FormHelper text={String(formErrors.driverLicenseStartDate)} />
@@ -249,8 +254,8 @@ const DriverEditLicenseModal = forwardRef<
                         </div>
                         <div className="w-full">
                           <div className="form-group">
-                            <label className="label font-semibold text-black">วันที่หมดอายุใบขับขี่</label>
-                            <div className={`input-group`}>
+                            <label className="label form-label">วันที่หมดอายุใบขับขี่</label>
+                            <div className={`input-group flatpickr`}>
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
                                   <i className="material-symbols-outlined">calendar_month</i>
@@ -274,7 +279,7 @@ const DriverEditLicenseModal = forwardRef<
               </div>
               <div className="modal-action mt-5 flex gap-3 justify-end px-4 pb-4">
                 <div>
-                  <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                  <button className="btn btn-secondary w-full" type="button" onClick={handleCloseModal}>
                     ยกเลิก
                   </button>
                 </div>

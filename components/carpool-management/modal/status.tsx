@@ -3,20 +3,14 @@ const STATUS_COLOR: Record<string, string> = {
   orange: "border-orange-300 bg-orange-100 text-orange-700",
   blue: "border-blue-300 bg-blue-100 text-blue-700",
   red: "border-red-300 bg-red-100 text-red-700",
-  gray: "border-gray-300 bg-gray-100",
+  gray: "border-gray-300 bg-gray-100 text-gray-700",
   violet: "border-[#FED8F6] bg-[#FFF5FD] text-[#A80689]",
 };
 
 const STATUS_COLOR_GROUPS: Record<string, string[]> = {
   green: ["ปกติ", "เสร็จสิ้น", "ปฏิบัติงานปกติ"],
   orange: ["บำรุงรักษา", "รออนุมัติ", "ลาป่วย/ลากิจ", "ลา (ป่วย/กิจ)"],
-  blue: [
-    "ใช้ชั่วคราว",
-    "ระหว่างโอน",
-    "ค้างแรม",
-    "ทดแทน",
-    "ทดแทน (ปฏิบัติงานแทนคนอื่น, ย้ายมาจากสถานะสำรอง)",
-  ],
+  blue: ["ใช้ชั่วคราว", "ระหว่างโอน", "ค้างแรม", "ทดแทน", "ทดแทน (ปฏิบัติงานแทนคนอื่น, ย้ายมาจากสถานะสำรอง)"],
   violet: ["สำรอง"],
   red: ["ส่งซ่อม", "ไป - กลับ", "ให้ออก", "ให้ออก(BackList)"],
   gray: ["สิ้นสุดสัญญา", "ลาออก"],
@@ -36,10 +30,6 @@ export default function BadgeStatus({ status }: Readonly<BadgeStatusProps>) {
   const className = STATUS_COLOR_MAP.get(status) || STATUS_COLOR["gray"];
 
   return (
-    <span
-      className={`w-30 text-sm text-center font-bold px-3 py-1 rounded-full border ${className}`}
-    >
-      {status}
-    </span>
+    <span className={`w-30 text-sm text-center font-bold px-3 py-1 rounded-full border ${className}`}>{status}</span>
   );
 }
