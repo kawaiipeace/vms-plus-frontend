@@ -185,6 +185,13 @@ export default function CarpoolVehicleTable({
       accessorKey: "vehicle_mileage",
       header: () => <div className="text-center">เลขไมล์ล่าสุด</div>,
       enableSorting: true,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="เลขไมล์ล่าสุด">
+            {row.original.vehicle_mileage.toLocaleString()}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "age",
@@ -323,6 +330,13 @@ export default function CarpoolVehicleTable({
       accessorKey: "vehicle_mileage",
       header: () => <div className="text-center">เลขไมล์ล่าสุด</div>,
       enableSorting: true,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="เลขไมล์ล่าสุด">
+            {row.original.vehicle_mileage.toLocaleString()}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "age",
