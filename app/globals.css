@@ -470,11 +470,13 @@
 .dark-mode .btn.btn-tertiary,
 .dark-mode .btn.btn-tertiary:focus {
   color: #cecfd2;
+  fill: #cecfd2;
 }
 
 .dark-mode .btn.btn-tertiary i,
 .dark-mode .btn.btn-tertiary:focus i {
   color: #cecfd2;
+  fill: #cecfd2;
 }
 
 .light-mode .btn.btn-tertiary:focus:hover,
@@ -498,6 +500,7 @@
 .dark-mode .btn.btn-tertiary:focus:hover {
   background-color: #1f242f;
   color: #f0f1f1;
+  fill: #f0f1f1;
 }
 
 .dark-mode .btn.btn-tertiary:focus:hover i,
@@ -505,6 +508,7 @@
 .dark-mode .btn.btn-tertiary:focus:focus:hover i,
 .dark-mode .btn.btn-tertiary:focus:hover i {
   color: #f0f1f1;
+  fill: #f0f1f1;
 }
 
 .light-mode .btn.btn-tertiary:disabled,
@@ -526,6 +530,7 @@
 .dark-mode .btn.btn-tertiary:focus:disabled,
 .dark-mode .btn.btn-tertiary:focus.disabled {
   color: #85888e;
+  fill: #85888e;
 }
 
 .dark-mode .btn.btn-tertiary:disabled i,
@@ -533,6 +538,8 @@
 .dark-mode .btn.btn-tertiary:focus:disabled i,
 .dark-mode .btn.btn-tertiary:focus.disabled i {
   color: #85888e;
+  fill: #85888e;
+
 }
 
 .btn.btn-tertiary:not(:disabled):not(.disabled):active:focus,
@@ -3508,6 +3515,7 @@
   justify-content: center;
 }
 
+
 .flatpickr-calendar .flatpickr-months .flatpickr-current-month {
   display: flex;
   gap: 0.25rem;
@@ -3594,34 +3602,34 @@
 .light-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.today:hover,
 .light-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day:focus,
 .light-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day:hover {
-  background-color: #f2f4f7;
-  border-color: #f2f4f7;
-  color: #a80689;
+  background-color: #f2f4f7 !important;
+  border-color: #f2f4f7 !important;
+  color: #a80689 !important;
 }
 
 .dark-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.today:focus,
 .dark-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.today:hover,
 .dark-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day:focus,
 .dark-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day:hover {
-  background-color: #333741;
-  border-color: #333741;
-  color: #f5f5f6;
+  background-color: #333741 !important;
+  border-color: #333741 !important;
+  color: #f5f5f6 !important;
 }
 
 .light-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.selected {
-  background-color: #a80689;
-  border-color: #a80689;
-  color: #ffffff;
+  background-color: #a80689 !important;
+  border-color: #a80689 !important;
+  color: #ffffff !important;
 }
 
 .dark-mode .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.selected {
-  background-color: #a80689;
-  border-color: #a80689;
-  color: #ffffff;
+  background-color: #a80689 !important;
+  border-color: #a80689 !important;
+  color: #ffffff !important;
 }
 
 .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.today {
-  border-color: transparent;
+  border-color: transparent !important;
 }
 
 .flatpickr-calendar .flatpickr-innerContainer .flatpickr-day.today::before {

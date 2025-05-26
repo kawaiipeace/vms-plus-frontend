@@ -30,7 +30,7 @@ const CreateDriverManagementModal = forwardRef<
             </button>
           </form>
         </div>
-        <div className="modal-body overflow-y-auto text-center bg-white">
+        <div className="modal-body overflow-y-auto text-center">
           <button
             className="flex border-slate-300 border-[1px] rounded-2xl shadow-none w-full p-3 mb-3"
             onClick={() => router.push("/drivers-management/create")}
