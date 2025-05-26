@@ -1,7 +1,7 @@
 import { VehicleManagementStatus } from "@/app/types/vehicle-management/vehicle-constant";
 import { VehicleManagementReportApiParamsInput } from "@/app/types/vehicle-management/vehicle-list-type";
 import axiosInstance from "@/utils/axiosInstance";
-import {saveAs} from "file-saver";
+import { saveAs } from "file-saver";
 
 interface RequestParams {
     [key: string]: any;
@@ -19,7 +19,7 @@ export const fetchVehicles = async (params: RequestParams) => {
         const status = error.response?.status;
         const message = error.response?.data?.message;
 
-        if(status === 404 && message === "No vehicles found"){
+        if (status === 404 && message === "No vehicles found") {
             console.warn("No vehicles found for params:", params);
             return VehicleManagementStatus.NO_VEHICLES_FOUND;
         }
@@ -42,7 +42,16 @@ export const updateVehicleStatus = async (body: UpdateVehicleBody) => {
 export const getFuelType = async () => {
     try {
         const { data } = await axiosInstance.get("ref/fuel-type");
-        return data;
+        const customDate = {
+            data,
+            options: data.map((item: any) => ({
+                label: item.ref_fuel_type_name_th,
+                value: item.ref_fuel_type_id,
+                desc: item.ref_fuel_type_name_th || '-'
+            }))
+        };
+
+        return customDate;
     } catch (error: any) {
         console.error("Error fetching fuel type:", error.message || error);
         throw new Error("Failed to fetch fuel type");
@@ -52,7 +61,16 @@ export const getFuelType = async () => {
 export const getVehicleDepartment = async () => {
     try {
         const { data } = await axiosInstance.get("mas/vehicle-departments");
-        return data;
+        const customData = {
+            data,
+            options: data.map((item: any) => ({
+                label: item.dept_sap_short,
+                value: item.vehicle_owner_dept_sap,
+                desc: item.dept_sap_full
+            }))
+        };
+
+        return customData;
     } catch (error: any) {
         console.error("Error fetching fuel type:", error.message || error);
         throw new Error("Failed to fetch fuel type");
@@ -62,20 +80,29 @@ export const getVehicleDepartment = async () => {
 export const getVehicleType = async () => {
     try {
         const { data } = await axiosInstance.get("vehicle/car-types-by-detail");
-        return data;
+        const customData = {
+            data,
+            options: data.map((item: any) => ({
+                label: item.car_type_detail,
+                value: item.car_type_detail,
+                desc: '-'
+            }))
+        };
+
+        return customData;
     } catch (error: any) {
         console.error("Error fetching vehicle type:", error.message || error);
         throw new Error("Failed to fetch vehicle type");
     }
 }
 
-export const loadReportTripDetail = async ({params, body}: VehicleManagementReportApiParamsInput) => {
+export const loadReportTripDetail = async ({ params, body }: VehicleManagementReportApiParamsInput) => {
     try {
         const { data } = await axiosInstance.post(
-            "vehicle-management/report-trip-detail", 
-            body, 
-            { 
-                params, 
+            "vehicle-management/report-trip-detail",
+            body,
+            {
+                params,
                 responseType: "blob"
             }
         );
@@ -91,11 +118,11 @@ export const loadReportTripDetail = async ({params, body}: VehicleManagementRepo
     }
 }
 
-export const loadReportAddFuel = async ({params, body}: VehicleManagementReportApiParamsInput) => {
+export const loadReportAddFuel = async ({ params, body }: VehicleManagementReportApiParamsInput) => {
     try {
         const { data } = await axiosInstance.post(
-            "vehicle-management/report-add-fuel", 
-            body, 
+            "vehicle-management/report-add-fuel",
+            body,
             {
                 params,
                 responseType: "blob"
@@ -125,8 +152,8 @@ export const getVehicleTimeline = async (params: any) => {
 
 export const getHoliday = async (params: any) => {
     try {
-        const {data} = await axiosInstance.get("mas/holidays", { params });
-        
+        const { data } = await axiosInstance.get("mas/holidays", { params });
+
         return data;
     } catch (error: any) {
         console.error("Error fetching report trip detail:", error.message || error);

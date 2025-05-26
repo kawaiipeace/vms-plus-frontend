@@ -1,9 +1,10 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import VehicleStatus from "./status";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
-import { FuelTypeApiResponse, VehicleDepartmentApiResponse, VehicleInputParams, VehicleStatusProps, VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
+import { CustomData, FuelTypeApiCustomData, FuelTypeApiResponse, VehicleDepartmentApiResponse, VehicleDepartmentCustomData, VehicleInputParams, VehicleStatusProps, VehicleTypeApiCustomData, VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
+import CustomSelect from "../customSelect";
 
-type Props = {
+type FilterProps = {
     flag: string;
     onSubmitFilter?: (params: VehicleInputParams) => void;
 };
@@ -27,15 +28,24 @@ const VEHICLE_STATUS = [
 ];
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
-    <div className="flex justify-between items-center bg-white p-6 border-b border-gray-300">
-        <div className="flex gap-4 items-center">
-            <i className="material-symbols-outlined text-gray-500">filter_list</i>
-            <div className="flex flex-col">
-                <span className="text-xl font-bold">ตัวกรอง</span>
-                <span className="text-gray-500 text-sm">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</span>
+    <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+        <div className="modal-header-group flex gap-4 items-center">
+            <div className="featured-ico featured-ico-gray">
+                <i className="material-symbols-outlined icon-settings-400-24">filter_list</i>
+            </div>
+            <div className="modal-header-content">
+                <div className="modal-header-top">
+                    <div className="modal-title">ตัวกรอง</div>
+                </div>
+                <div className="modal-header-bottom">
+                    <div className="modal-subtitle">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</div>
+                </div>
             </div>
         </div>
-        <button onClick={onClose}>
+
+        <button
+            className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+            onClick={onClose}>
             <i className="material-symbols-outlined">close</i>
         </button>
     </div>
@@ -50,6 +60,9 @@ const ModalBody = ({
     params
 }: VehicleStatusProps) => {
     const [formData, setFormData] = useState<VehicleInputParams>(params);
+    const [vehicleTypeOptions, setVehicleTypeOptions] = useState<CustomData>({ label: "ทั้งหมด", value: "" });
+    const [vehicleDepartmentOptions, setVehicleDepartmentOptions] = useState<CustomData>({ label: "ทั้งหมด", value: "" });
+    const [fuelTypeOptions, setFuelTypeOptions] = useState<CustomData>({ label: "ทั้งหมด", value: "" });
 
     useEffect(() => {
         setFormData(params);
@@ -74,63 +87,63 @@ const ModalBody = ({
     };
 
     return (
-        <div className="flex flex-col">
-            <div className="overflow-y-auto p-4">
-                <div className="mb-4">
-                    <span>ประเภทยานพาหนะ</span>
-                    <select
-                        className="select bg-white select-bordered w-full mt-2"
-                        value={formData.vehicleType}
-                        onChange={(e) => handleChange("vehicleType", e.target.value)}
-                    >
-                        <option value="">ทั้งหมด</option>
-                        {vehicleTypes.map((vt: VehicleTypeApiResponse) => (
-                            <option key={vt.car_type_detail} value={vt.car_type_detail}>
-                                {vt.car_type_detail}
-                            </option>
-                        ))}
-                    </select>
+        <div className="modal-body flex flex-col gap-4 h-[70vh] max-h-[70vh]">
+            <div className="grid grid-cols-12 gap-4">
+                <div className="col-span-12">
+                    <div className="form-group">
+                        <label className="form-label">ปรเภทะยานพาหนะ</label>
+                        <CustomSelect
+                            w="md:w-full"
+                            options={vehicleTypes}
+                            value={vehicleTypeOptions}
+                            enableSearchOnApi={true}
+                            onChange={(selectedValue: CustomData) => {
+                                handleChange("vehicleType", selectedValue.value);
+                                setVehicleTypeOptions(selectedValue);
+                            }}
+                        />
+                    </div>
                 </div>
 
                 {flag == 'TABLE_LIST' && (
-                    <div className="mb-4">
-                        <span>ประเภทเชื้อเพลิง</span>
-                        <select
-                            className="select bg-white select-bordered w-full mt-2"
-                            value={formData.fuelType}
-                            onChange={(e) => handleChange("fuelType", e.target.value)}
-                        >
-                            <option value="">ทั้งหมด</option>
-                            {fuelTypes.map((fuelType: FuelTypeApiResponse) => (
-                                <option key={fuelType.ref_fuel_type_id} value={fuelType.ref_fuel_type_id}>
-                                    {fuelType.ref_fuel_type_name_th}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="col-span-12">
+                        <div className="form-group">
+                            <span className="form-label">ประเภทเชื้อเพลิง</span>
+                            <CustomSelect
+                                w="md:w-full"
+                                options={fuelTypes}
+                                value={fuelTypeOptions}
+                                enableSearchOnApi={true}
+                                onChange={(selectedValue) => {
+                                    handleChange("fuelType", selectedValue.value);
+                                    setFuelTypeOptions(selectedValue);
+                                }}
+                            />
+                        </div>
                     </div>
                 )}
 
-                <div className="mb-4">
-                    <span>สังกัดยานพาหนะ</span>
-                    <select
-                        className="select bg-white select-bordered w-full mt-2"
-                        value={formData.vehicleDepartment}
-                        onChange={(e) => handleChange("vehicleDepartment", e.target.value)}
-                    >
-                        <option value="">ทั้งหมด</option>
-                        {vehicleDepartments.map((vd: VehicleDepartmentApiResponse) => (
-                            <option key={vd.vehicle_owner_dept_sap} value={vd.vehicle_owner_dept_sap}>
-                                {vd.dept_sap_full}
-                            </option>
-                        ))}
-                    </select>
+                <div className="col-span-12">
+                    <div className="form-group">
+                        <span className="form-label">สังกัดยานพาหนะ</span>
+                        <CustomSelect
+                            w="md:w-full"
+                            options={vehicleDepartments}
+                            value={vehicleDepartmentOptions}
+                            enableSearchOnApi={true}
+                            onChange={(selectedValue) => {
+                                handleChange("vehicleDepartment", selectedValue.value);
+                                setVehicleDepartmentOptions(selectedValue);
+                            }}
+                        />
+                    </div>
                 </div>
 
                 {flag == 'TABLE_LIST' && (
                     <>
-                        <div className="mb-4">
-                            <div>
-                                <span className="text-base font-semibold">เครดิตภาษี</span>
+                        <div className="col-span-12">
+                            <div className="form-group">
+                                <span className="form-label">เครดิตภาษี</span>
                                 <div>
                                     {TAX_TYPE.map((option, index) => (
                                         <div key={index} className="flex gap-2">
@@ -150,25 +163,28 @@ const ModalBody = ({
                             </div>
                         </div>
 
-                        <div className="mb-4">
-                            <span>สถานะ</span>
-                            <div className="flex flex-col gap-2 mt-2">
-                                {VEHICLE_STATUS.map((status, index) => (
-                                    <div key={index} className="flex items-center gap-2">
-                                        <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                id={`status-${index}`}
-                                                className="checkbox checkbox-primary h-5 w-5"
-                                                checked={formData.vehicleStatus.includes(status.id)}
-                                                onChange={() => handleCheckboxToggle('vehicleStatus', status.id)}
-                                            />
-                                            <VehicleStatus status={status.name} />
-                                        </label>
-                                    </div>
-                                ))}
+                        <div className="col-span-12">
+                            <div className="form-group">
+                                <span>สถานะ</span>
+                                <div className="flex flex-col gap-2 mt-2">
+                                    {VEHICLE_STATUS.map((status, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                            <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`status-${index}`}
+                                                    className="checkbox checkbox-primary h-5 w-5"
+                                                    checked={formData.vehicleStatus.includes(status.id)}
+                                                    onChange={() => handleCheckboxToggle('vehicleStatus', status.id)}
+                                                />
+                                                <VehicleStatus status={status.name} />
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div></>
+                        </div>
+                    </>
                 )}
             </div>
         </div>
@@ -185,26 +201,32 @@ const ModalFooter = (
     }) => {
 
     return (
-        <div className="flex p-4">
-            <div className="flex items-center gap-2">
-                <button className="btn btn-ghost" onClick={onClick}>
+        <>
+            <div className="left">
+                <button
+                    type="button"
+                    className="btn btn-tertiary btn-resetfilter block mr-auto bg-transparent shadow-none border-none"
+                    onClick={onClick}>
                     <span className="text-base text-brand-900 font-bold">ล้างตัวกรอง</span>
                 </button>
             </div>
 
-            <div className="flex gap-2 ml-auto">
+            <div className="flex gap-3 items-center">
                 <button className="btn btn-secondary" onClick={onClick}>
                     ยกเลิก
                 </button>
-                <button className="btn btn-primary" onClick={onSubmit}>
+                <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={onSubmit}>
                     ตกลง
                 </button>
             </div>
-        </div>
+        </>
     );
 };
 
-const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag }, ref) => {
+const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, flag }, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -218,11 +240,10 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
-
     });
-    const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
-    const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
-    const [vehicleType, setVehicleType] = useState<VehicleTypeApiResponse[]>([]);
+    const [fuelType, setFuelType] = useState<FuelTypeApiCustomData[]>([]);
+    const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentCustomData[]>([]);
+    const [vehicleType, setVehicleType] = useState<VehicleTypeApiCustomData[]>([]);
 
     const handleSubmitFilter = () => {
         console.log("submit filter", params);
@@ -248,9 +269,9 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
                 getVehicleType()
             ]);
 
-            setFuelType(fetchFuelType);
-            setVehicleDepartment(fetchVehicleDepartment);
-            setVehicleType(fetchVehicleType);
+            setVehicleType(fetchVehicleType.options);
+            setFuelType(fetchFuelType.options);
+            setVehicleDepartment(fetchVehicleDepartment.options);
         }
 
         fetchData();
@@ -262,7 +283,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
                 <ModalHeader onClose={() => dialogRef.current?.close()} />
 
                 {/* Content scroll ได้ */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="modal-scroll-wrapper overflow-y-auto">
                     <ModalBody
                         fuelTypes={fuelType}
                         vehicleDepartments={vehicleDepartment}
@@ -274,8 +295,11 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
                 </div>
 
                 {/* Footer ลอยอยู่ล่างเสมอ */}
-                <ModalFooter onClick={handleClearFilter} onSubmit={handleSubmitFilter} />
+                <div className="modal-action absolute bottom-0 gap-3 mt-0 w-full flex justify-between">
+                    <ModalFooter onClick={handleClearFilter} onSubmit={handleSubmitFilter} />
+                </div>
             </div>
+
             <form method="dialog" className="modal-backdrop">
                 <button>close</button>
             </form>

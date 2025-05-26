@@ -5,6 +5,12 @@ export interface PaginationType {
   totalPages: number;
 }
 
+export interface CustomData {
+  label: React.ReactNode | string;
+  value: string;
+  desc?: string;
+}
+
 export interface VehicleManagementApiResponse {
   age: string;
   fleet_card_no: string;
@@ -49,6 +55,10 @@ export interface VehicleTypeApiResponse {
   car_type_detail: string;
 }
 
+export interface VehicleTypeApiCustomData extends CustomData {}
+export interface FuelTypeApiCustomData extends CustomData {}
+export interface VehicleDepartmentCustomData extends CustomData {}
+
 export interface VehicleManagementReportApiParams {
   start_date: string;
   end_date: string;
@@ -83,9 +93,9 @@ export interface VehicleInputParams {
 }
 
 export interface VehicleStatusProps {
-  vehicleDepartments: VehicleDepartmentApiResponse[];
-  fuelTypes: FuelTypeApiResponse[];
-  vehicleTypes: VehicleTypeApiResponse[];
+  vehicleDepartments: VehicleDepartmentCustomData[];
+  fuelTypes: FuelTypeApiCustomData[];
+  vehicleTypes: VehicleTypeApiCustomData[];
   flag: string;
   params: VehicleInputParams;
   setParams: (params: VehicleInputParams) => void;
