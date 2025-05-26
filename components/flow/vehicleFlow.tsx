@@ -103,7 +103,7 @@ export default function VehicleFlow() {
         <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
             <span className="text-xl font-bold">ยานพาหนะ</span>
             <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                {pagination.total} คัน
+                {pagination.total ?? 0} คัน
             </span>
         </div>
     );

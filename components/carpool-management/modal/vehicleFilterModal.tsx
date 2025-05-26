@@ -252,7 +252,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
           getVehicleStatus(),
         ]);
 
-        setVehicleType(fetchVehicleType);
+        setVehicleType(fetchVehicleType.options);
         setVehicleStatus(fetchVehicleStatus);
         setParams({
           ...params,

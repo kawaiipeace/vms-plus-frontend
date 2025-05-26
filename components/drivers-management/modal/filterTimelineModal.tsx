@@ -343,9 +343,9 @@ const FilterModal = forwardRef<FilterModalRef, Props>(
             getVehicleType(),
           ]);
 
-        setFuelType(fetchFuelType);
-        setVehicleDepartment(fetchVehicleDepartment);
-        setVehicleType(fetchVehicleType);
+        setFuelType(fetchFuelType.options);
+        setVehicleDepartment(fetchVehicleDepartment.options);
+        setVehicleType(fetchVehicleType.options);
       };
       const fetchDriverStatus = async () => {
         try {
