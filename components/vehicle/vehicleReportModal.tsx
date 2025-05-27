@@ -1,9 +1,10 @@
 import { RepoCardProps, VehicleManagementReportApiParams } from "@/app/types/vehicle-management/vehicle-list-type";
 import { loadReportAddFuel, loadReportTripDetail } from "@/services/vehicleService";
 import Image from "next/image";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import DatePicker from "../datePicker";
 import dayjs from "dayjs";
+import AlertCustom from "../alertCustom";
 
 export type ReportModalRef = {
   open: () => void;
@@ -27,16 +28,19 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
 
 const ReportCard = ({ imageSrc, title, description, count, onClick }: RepoCardProps) => (
   <div className="flex items-center justify-between bg-white border border-gray-300 rounded-lg p-4">
-    <Image src={imageSrc} width={100} height={100} alt="" />
-    <div className="flex flex-col gap-2">
-      <span>{title}</span>
-      <span>{description}</span>
-      <span>{count} คัน</span>
+      <Image src={imageSrc} width={100} height={100} alt="" />
+      <div className="flex flex-col gap-2">
+        <span>{title}</span>
+        <span>{description}</span>
+        <span>{count} คัน</span>
+      </div>
+      <button
+        className="material-symbols-outlined text-brand-900 disabled:text-gray-400"
+        onClick={onClick}
+        aria-label="Download">
+        download
+      </button>
     </div>
-    <button className="material-symbols-outlined text-brand-900" onClick={onClick} aria-label="Download">
-      download
-    </button>
-  </div>
 );
 
 const CheckboxWithLabel = ({ id, name, label }: { id: string; name: string; label: string }) => (
@@ -56,14 +60,28 @@ interface ReportBodyProps {
 }
 
 const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, ref) => {
-  const reportRef = useRef<HTMLDialogElement>(null);
+  const [startDate, setStartDate] = useState(() => dayjs().startOf("month"));
+  const [endDate, setEndDate] = useState(() => dayjs().endOf("month"));
+  const [isDateInvalid, setIsDateInvalid] = useState(false);
   const [params, setParams] = useState<VehicleManagementReportApiParams>({
     start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
     end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
     show_all: "0",
   });
-
   const [openModal, setOpenModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+  // Reference to the dialog element
+  const reportRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    if (endDate.isBefore(startDate, "day")) {
+      setIsDateInvalid(true);
+      return;
+    }
+
+    setIsDateInvalid(false);
+  }, [startDate, endDate]);
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -82,19 +100,29 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
   };
 
   const _handleDownloadReportUseVehicle = async () => {
-    const response = await loadReportTripDetail({
+    if(isDateInvalid) {
+      setAlertMessage("วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่มต้น");
+      return;
+    }
+
+    setAlertMessage(null);
+    await loadReportTripDetail({
       params,
       body: selected,
     });
-    console.log("Download report for Use Vehicle", response);
   };
 
   const _handleDownloadReportFuel = async () => {
-    const response = await loadReportAddFuel({
+    if(isDateInvalid) {
+      setAlertMessage("วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่มต้น");
+      return;
+    }
+
+    setAlertMessage(null);
+    await loadReportAddFuel({
       params,
       body: selected,
     });
-    console.log("Download report for Fuel", response);
   };
 
   return (
@@ -117,8 +145,8 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
                       </div>
                       <DatePicker
                         placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
-                        onChange={(e) => setParams({ ...params, start_date: e.toString() })}
-                        defaultValue={params.start_date}
+                        onChange={(date) => setStartDate(dayjs(date))}
+                        defaultValue={startDate.format("YYYY-MM-DD")}
                       />
                     </div>
                   </div>
@@ -134,8 +162,8 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
                       </div>
                       <DatePicker
                         placeholder={"ระบุช่วงวันที่เริ่มเดินทาง"}
-                        onChange={(e) => setParams({ ...params, end_date: e })}
-                        defaultValue={params.end_date}
+                        onChange={(date) => setEndDate(dayjs(date))}
+                        defaultValue={endDate.format("YYYY-MM-DD")}
                       />
                     </div>
                   </div>
@@ -162,6 +190,13 @@ const ReportModal = forwardRef<ReportModalRef, ReportBodyProps>(({ selected }, r
                   name="vehicleReport"
                   label="แสดงข้อมูลยานพาหนะที่ไม่อยู่ในรายการปัจุบันด้วย (ถ้ามี)"
                 />
+
+                {alertMessage && (
+                  <AlertCustom
+                    title="Date Error"
+                    desc={alertMessage}
+                  />
+                )}
               </div>
             </div>
           </div>

@@ -95,11 +95,15 @@ export default function VehicleTimeLine() {
     };
 
     const Header = () => (
-        <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
-            <span className="text-xl font-bold">ยานพาหนะ</span>
-            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                {pagination.total} คัน
-            </span>
+        <div className="page-section-header border-0 mt-5">
+            <div className="page-header-left">
+                <div className="page-title">
+                    <span className="page-title-label">ปฏิทินการจอง</span>
+                    <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+                        {pagination.total ?? 0} คัน
+                    </span>
+                </div>
+            </div>
         </div>
     );
 

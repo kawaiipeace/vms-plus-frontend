@@ -32,6 +32,15 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
         setReqData(data);
     }, [data]);
 
+    const selectedRows = watch('selectedRows');
+    useEffect(() => {
+        const currentSelected = Object.entries(selectedRows)
+            .filter(([_, v]) => v)
+            .map(([id]) => id);
+
+        useModal(currentSelected);
+    }, [selectedRows]);
+
     // Handle toggle action for 'is_active' value
     const handleToggle = async (id: string, isActive: string) => {
         const newValue = isActive === "1" ? "0" : "1";
@@ -82,12 +91,6 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
             });
 
             setValue('selectedRows', newSelected);
-
-            const currentSelected = Object.entries(newSelected)
-                .filter(([_, v]) => v)
-                .map(([id]) => id);
-
-            useModal(currentSelected);
         };
 
         return (
@@ -124,10 +127,11 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
                             checked={field.value || false}
                             onChange={(e) => {
                                 field.onChange(e);
-                                const selectedIds = Object.entries(watch('selectedRows'))
-                                    .filter(([_, checked]) => checked)
-                                    .map(([id]) => id);
-                                useModal(selectedIds);
+
+                                setValue('selectedRows', {
+                                    ...watch('selectedRows'),
+                                    [row.original.mas_vehicle_uid]: e.target.checked,
+                                });
                             }}
                         />
                     )}
