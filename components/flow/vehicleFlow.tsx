@@ -100,11 +100,15 @@ export default function VehicleFlow() {
     };
 
     const renderHeader = () => (
-        <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
-            <span className="text-xl font-bold">ยานพาหนะ</span>
-            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                {pagination.total ?? 0} คัน
-            </span>
+        <div className="page-section-header border-0 mt-5">
+            <div className="page-header-left">
+                <div className="page-title">
+                    <span className="page-title-label">ยานพาหนะ</span>
+                    <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+                        {pagination.total ?? 0} คัน
+                    </span>
+                </div>
+            </div>
         </div>
     );
 
@@ -130,18 +134,21 @@ export default function VehicleFlow() {
 
             <div className="flex gap-4">
                 <button
-                    className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-1 transition cursor-pointer"
                     onClick={handleOpenFilterModal}
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
                 >
                     <i className="material-symbols-outlined">filter_list</i>
                     <span className="text-sm font-bold">ตัวกรอง</span>
                 </button>
-                <button className="flex gap-2 px-4 py-1 border border-gray-300 rounded-lg transition cursor-pointer" onClick={handleOpenReportModal}>
+                <button
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition disabled:bg-gray-100"
+                    onClick={handleOpenReportModal}
+                    disabled={!selectedRows.length}>
                     <i className="material-symbols-outlined">download</i>
                     <span className="text-sm font-bold">รายงาน</span>
                     <span className="border border-gray-300 w-6 h-6 rounded-full">{selectedRows.length}</span>
                 </button>
-                <button className="px-4 py-1 border border-gray-300 rounded-lg transition cursor-pointer bg-primary-default">
+                <button className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-primary-default text-gray-700 shadow-sm transition">
                     <i className="material-symbols-outlined text-white">add</i>
                     <span className="text-sm font-bold text-white">สร้างข้อมูล</span>
                 </button>
