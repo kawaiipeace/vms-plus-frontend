@@ -60,7 +60,7 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
           </div>
           <div className="modal-body overflow-y-auto text-center">
             <div className="form-section">
-              <div className="grid gap-5 grid-cols-12 w-[328px] max-w-[328px] bg-[url('/assets/img/annual_card.png')] bg-center bg-no-repeat p-0 rounded-xl mx-auto pb-[13%]">
+              <div className="grid gap-5 grid-cols-12 w-[328px] max-w-[328px] bg-[url('/assets/img/annual_driving_card.svg')] bg-center bg-no-repeat p-0 rounded-xl mx-auto pb-[13%]">
                 <div className="flex justify-center col-span-12 bg-brand-900 rounded-t-xl">
                   <div className="text-center p-2">
                     <p className="font-bold text-base text-white">ใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี</p>

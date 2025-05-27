@@ -215,8 +215,8 @@ const RequestDrivingStepOneModal = forwardRef<
       requestData?.driver_license?.driver_license_no ||
       "",
     licenseExpiryDate:
-      licRequestDetail?.driver_license_expire_date ||
-      requestData?.driver_license?.driver_license_expire_date ||
+      convertToBuddhistDateTime(licRequestDetail?.driver_license_expire_date || "").date ||
+      convertToBuddhistDateTime(requestData?.driver_license?.driver_license_expire_date).date ||
       "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
@@ -285,7 +285,7 @@ const RequestDrivingStepOneModal = forwardRef<
 
   // Fetch options
   useEffect(() => {
-    console.log('reqstepone',RequestDrivingStepOneModal);
+    console.log("reqstepone", requestData);
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -415,14 +415,16 @@ const RequestDrivingStepOneModal = forwardRef<
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title">
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                {(requestData?.license_status !== "ไม่มี" && requestData?.license_status !== "") && (
-                  <>
-                    {requestData?.license_status === "มีผลปีถัดไป" &&
-                      `${dayjs().year() + 543}`}{" "}
-                    {requestData?.next_license_status !== "" &&
-                      `${dayjs().year() + 544}`}
-                  </>
-                )}
+                {requestData?.license_status !== "ไม่มี" &&
+                  requestData?.license_status !== "" &&
+                  requestData?.license_status !== "ตีกลับ" && (
+                    <>
+                      {requestData?.license_status === "มีผลปีถัดไป" &&
+                        `${dayjs().year() + 543}`}{" "}
+                      {requestData?.next_license_status !== "" &&
+                        `${dayjs().year() + 544}`}
+                    </>
+                  )}
               </div>
               <form method="dialog">
                 <button

@@ -19,6 +19,7 @@ import RequestStatusLicDetailModal from "./annual-driver-license/modal/requestSt
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import RequestDrivingStepTwoModal from "./annual-driver-license/requestDrivingStepTwoModal";
 import { UploadFileType } from "@/app/types/upload-type";
+
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
   year: string;
@@ -203,7 +204,7 @@ export default function Header() {
           <ToastCustom
             title={toast.title}
             desc={toast.desc}
-            status={toast.status}
+            status={"success"}
           />
         )}
 
@@ -247,8 +248,8 @@ export default function Header() {
                         </div>
                         <div className="sidebar-users-position">
                           รหัสพนักงาน : {profile.emp_id} <br />
-                          ตำแหน่ง : {profile.position}  <br />
-                          สังกัด : {profile.dept_sap_full}
+                          ตำแหน่ง : {profile.posi_text}  <br />
+                          สังกัด : {profile.dept_sap_short}
                         </div>
                       </div>
                     </div>
