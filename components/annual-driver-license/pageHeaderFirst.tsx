@@ -1,9 +1,11 @@
 import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import ApproveRequestModal from "@/components/modal/approveRequestModal";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import FileBackRequestModal from "../modal/fileBackModal";
+import { useProfile } from "@/contexts/profileContext";
+import { fetchProfile } from "@/services/authService";
 
 interface Props {
   data: RequestAnnualDriver;
@@ -22,6 +24,7 @@ export default function PageHeaderFirst({ data }: Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+  const { profile, setProfile } = useProfile();
 
   return (
     <div className="page-header">
@@ -69,26 +72,26 @@ export default function PageHeaderFirst({ data }: Props) {
               </span>
             ))}
         </div>
-        {data?.ref_request_annual_driver_status_code !== "30" && 
-        <button
-          className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-          onClick={() => cancelRequestModalRef.current?.openModal()}
-        >
-          ยกเลิกคำขอ
-        </button>
-}
+        {data?.ref_request_annual_driver_status_code !== "30" && (
+          <button
+            className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+            onClick={() => cancelRequestModalRef.current?.openModal()}
+          >
+            ยกเลิกคำขอ
+          </button>
+        )}
         {data?.ref_request_annual_driver_status_code !== "11" && (
           <>
             {" "}
-            {data?.ref_request_annual_driver_status_code !== "30" && 
-            <button
-              className="btn btn-secondary"
-              onClick={() => fileBackRequestModalRef.current?.openModal()}
-            >
-              <i className="material-symbols-outlined">reply</i>
-              ตีกลับให้แก้ไข
-            </button>
-}
+            {data?.ref_request_annual_driver_status_code !== "30" && (
+              <button
+                className="btn btn-secondary"
+                onClick={() => fileBackRequestModalRef.current?.openModal()}
+              >
+                <i className="material-symbols-outlined">reply</i>
+                ตีกลับให้แก้ไข
+              </button>
+            )}
             <button
               className="btn btn-primary"
               onClick={() => approveRequestModalRef.current?.openModal()}
@@ -111,6 +114,17 @@ export default function PageHeaderFirst({ data }: Props) {
           desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
           placeholder="โปรดระบุเหตุผลที่ตีกลับ"
           confirmText="ตีกลับคำขอ"
+          onSuccess={() => {
+            const refreshProfile = async () => {
+              try {
+                const response = await fetchProfile();
+                setProfile(response.data);
+              } catch (error) {
+                console.error("Failed to refresh profile:", error);
+              }
+            };
+            refreshProfile();
+          }}
         />
       )}
       {data?.ref_request_annual_driver_status_code === "20" && (
@@ -122,34 +136,68 @@ export default function PageHeaderFirst({ data }: Props) {
           desc="เมื่อยกเลิกคำขอแล้ว ผู้ขออนุมัติจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
           placeholder="โปรดระบุเหตุผลที่ตีกลับ"
           confirmText="ตีกลับคำขอ"
+          onSuccess={() => {
+            const refreshProfile = async () => {
+              try {
+                const response = await fetchProfile();
+                setProfile(response.data);
+              } catch (error) {
+                console.error("Failed to refresh profile:", error);
+              }
+            };
+            refreshProfile();
+          }}
         />
       )}
 
       {data?.ref_request_annual_driver_status_code === "10" && (
-        <>        <ApproveRequestModal
-        id={data?.trn_request_annual_driver_uid}
-        ref={approveRequestModalRef}
-        title={"ยืนยันผ่านการตรวจสอบ"}
-        role="licAdmin"
-        desc={
-          <>
-            คุณต้องการยืนยันผ่านการตรวจสอบ
-            <br />
-            และส่งคำขอไปยังผู้อนุมัติใช่หรือไม่
-          </>
-        }
-        confirmText="อนุมัติคำขอ"
-      />
-
-      <CancelRequestModal
-      id={data?.trn_request_annual_driver_uid || ""}
-      ref={cancelRequestModalRef}
-      title="ยืนยันยกเลิกคำขอ?"
-      desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
-      role="licAdmin"
-      confirmText="ยกเลิกคำขอ"
-    /></>
-
+        <>
+          {" "}
+          <ApproveRequestModal
+            id={data?.trn_request_annual_driver_uid}
+            ref={approveRequestModalRef}
+            title={"ยืนยันผ่านการตรวจสอบ"}
+            role="licAdmin"
+            desc={
+              <>
+                คุณต้องการยืนยันผ่านการตรวจสอบ
+                <br />
+                และส่งคำขอไปยังผู้อนุมัติใช่หรือไม่
+              </>
+            }
+            confirmText="อนุมัติคำขอ"
+            onSuccess={() => {
+              const refreshProfile = async () => {
+                try {
+                  const response = await fetchProfile();
+                  setProfile(response.data);
+                } catch (error) {
+                  console.error("Failed to refresh profile:", error);
+                }
+              };
+              refreshProfile();
+            }}
+          />
+          <CancelRequestModal
+            id={data?.trn_request_annual_driver_uid || ""}
+            ref={cancelRequestModalRef}
+            title="ยืนยันยกเลิกคำขอ?"
+            desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
+            role="licAdmin"
+            confirmText="ยกเลิกคำขอ"
+            onSuccess={() => {
+              const refreshProfile = async () => {
+                try {
+                  const response = await fetchProfile();
+                  setProfile(response.data);
+                } catch (error) {
+                  console.error("Failed to refresh profile:", error);
+                }
+              };
+              refreshProfile();
+            }}
+          />
+        </>
       )}
 
       {data?.ref_request_annual_driver_status_code === "20" && (
@@ -168,6 +216,17 @@ export default function PageHeaderFirst({ data }: Props) {
               </>
             }
             confirmText="อนุมัติคำขอ"
+            onSuccess={() => {
+              const refreshProfile = async () => {
+                try {
+                  const response = await fetchProfile();
+                  setProfile(response.data);
+                } catch (error) {
+                  console.error("Failed to refresh profile:", error);
+                }
+              };
+              refreshProfile();
+            }}
           />
           <CancelRequestModal
             id={data?.trn_request_annual_driver_uid || ""}
@@ -176,6 +235,17 @@ export default function PageHeaderFirst({ data }: Props) {
             desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
             role="licFinalAdmin"
             confirmText="ยกเลิกคำขอ"
+            onSuccess={() => {
+              const refreshProfile = async () => {
+                try {
+                  const response = await fetchProfile();
+                  setProfile(response.data);
+                } catch (error) {
+                  console.error("Failed to refresh profile:", error);
+                }
+              };
+              refreshProfile();
+            }}
           />
         </>
       )}

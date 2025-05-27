@@ -5,6 +5,8 @@ export interface Profile {
   internal_number: string;
   mobile_number: string;
   dept_sap_full: string;
+  dept_sap_short: string;
+  posi_text:string;
   license_status: string;
   license_status_code: string;
   position: string;

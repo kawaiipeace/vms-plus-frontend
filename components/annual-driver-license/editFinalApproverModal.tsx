@@ -71,8 +71,9 @@ const EditApproverModal = forwardRef<
       setIsLoading(true);
       try {
         const response = await fetchUserApprovalLic("");
-        console.log('userapprovelist',response);
-        if (response.status === 200) {
+    
+        if (response) {
+          console.log('userapprovelist',response);
           const vehicleUserData: VehicleUserType[] = response.data;
           const driverOptionsArray = vehicleUserData.map(
             (user: VehicleUserType) => ({

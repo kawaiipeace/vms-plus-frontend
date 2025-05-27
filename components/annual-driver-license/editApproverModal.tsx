@@ -71,7 +71,7 @@ const EditApproverModal = forwardRef<
     const fetchVehicleUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchUserConfirmerLic();
+        const response = await fetchUserConfirmerLic("");
         if (response.status === 200) {
           const vehicleUserData: VehicleUserType[] = response.data;
           const driverOptionsArray = vehicleUserData.map(
@@ -95,7 +95,7 @@ const EditApproverModal = forwardRef<
             const defaultApprover = driverOptionsArray.find(
               opt => opt.value === requestData.confirmed_request_emp_id
             );
-            
+            console.log('default',defaultApprover);
             if (defaultApprover) {
               setSelectedVehicleUserOption(defaultApprover);
               setValue("name", defaultApprover.full_name || defaultApprover.label || "");

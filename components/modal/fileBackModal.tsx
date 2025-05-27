@@ -23,12 +23,13 @@ interface Props {
   confirmText: string;
   placeholder?: string;
   role?: string;
+  onSuccess?: () => void;
 }
 
 const FileBackRequestModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, link, confirmText, placeholder, role }, ref) => {
+>(({ id, title, desc, link, confirmText, placeholder, role, onSuccess }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
   const [inputValue, setInputValue] = useState("");
@@ -96,6 +97,10 @@ const FileBackRequestModal = forwardRef<
                 data.result?.request_no
             );
           } else if (role === "licAdmin") {
+            if(onSuccess) {
+              onSuccess
+            }
+   
             router.push(
               "/administrator/booking-approver?sendbacklic-req=success&request-id=" +
                 data.result?.request_annual_driver_no

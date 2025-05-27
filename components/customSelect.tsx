@@ -81,17 +81,19 @@ export default function CustomSelect({
     };
   }, []);
 
-  // Filter options based on input text
   const filteredOptions = enableSearchOnApi
-    ? options // For API search, options are assumed already filtered by parent.
-    : inputText.trim().length >= 3
-      ? options.filter(option => {
-          const text =
-            (typeof option.label === "string" ? option.label : option.value) +
-            (option.desc ? ` ${option.desc}` : "");
-          return text.toLowerCase().includes(inputText.toLowerCase());
-        })
-      : options; // Show all options when search text is less than 3 chars if not API search
+  ? options
+  : inputText.trim().length >= 3
+    ? options.filter(option => {
+        const text =
+          (typeof option.label === "string" ? option.label : option.value) +
+          (option.desc ? ` ${option.desc}` : "");
+        return text.toLowerCase().includes(inputText.toLowerCase());
+      })
+    : value?.value
+    ? options.filter(option => option.value === value.value) // Show only selected
+    : options;
+
 
   // Determine if dropdown should be shown
   const shouldShowDropdown =
