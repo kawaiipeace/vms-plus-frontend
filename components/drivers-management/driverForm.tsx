@@ -1,4 +1,4 @@
-import DatePicker from "@/components/datePicker";
+import DatePicker from "@/components/drivers-management/datePicker";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import UploadFilePreview from "@/components/drivers-management/uploadFilePreview";
 import FormHelper from "@/components/formHelper";
@@ -42,6 +42,23 @@ interface UploadFileType2 {
   file_url: string;
   message?: string;
   file_size?: string;
+}
+
+export function formatDateToThai(dateStr: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "";
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+export function convertToISO8601FromThai(dateStr: string): string {
+  if (!dateStr) return "";
+  const [day, month, year] = dateStr.split("/");
+  if (!day || !month || !year) return "";
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
 const DriverForm = () => {
@@ -107,9 +124,9 @@ const DriverForm = () => {
     driverLicensePDF: "",
   });
 
-  // const [disableStartDate, setDisableStartDate] = useState<string>();
+  const [disableStartDate, setDisableStartDate] = useState<string>();
   // const [disableEndDate, setDisableEndDate] = useState<string>();
-  // const [disableDriverStartDate, setDisableDriverStartDate] = useState<string>();
+  const [disableDriverStartDate, setDisableDriverStartDate] = useState<string>();
   // const [disableDriverEndDate, setDisableDriverEndDate] = useState<string>();
 
   const driverFormSchema = Yup.object().shape({
@@ -370,12 +387,13 @@ const DriverForm = () => {
 
   const handleChangeContractStartDate = (dateStr: string) => {
     const dateStrISO = convertToISO8601(dateStr);
+    const thaiDate = formatDateToThai(dateStrISO);
     setFormData((prevData) => ({
       ...prevData,
       driverContractStartDate: dateStrISO,
     }));
 
-    // setDisableStartDate(dateStr);
+    setDisableStartDate(thaiDate);
   };
 
   const handleChangeContractEndDate = (dateStr: string) => {
@@ -390,11 +408,12 @@ const DriverForm = () => {
 
   const handleChangeDriverLicenseStartDate = (dateStr: string) => {
     const dateStrISO = convertToISO8601(dateStr);
+    const thaiDate = formatDateToThai(dateStrISO);
     setFormData((prevData) => ({
       ...prevData,
       driverLicenseStartDate: dateStrISO,
     }));
-    // setDisableDriverStartDate(dateStr);
+    setDisableDriverStartDate(thaiDate);
   };
 
   const handleChangeDriverLicenseEndDate = (dateStr: string) => {
@@ -664,7 +683,10 @@ const DriverForm = () => {
                   <DatePicker
                     placeholder="เลือกวันที่เริ่มต้น"
                     defaultValue={convertToThaiDate(formData.driverContractStartDate)}
-                    onChange={(dateStr) => handleChangeContractStartDate(dateStr)}
+                    onChange={(dateStr) => {
+                      handleChangeContractStartDate(dateStr);
+                      setFormData((prev) => ({ ...prev, driverContractEndDate: "" }));
+                    }}
                     // maxDate={disableEndDate ? convertToISO8601(disableEndDate) : undefined}
                   />
                 </div>
@@ -673,18 +695,25 @@ const DriverForm = () => {
             </div>
             <div className="col-span-12 md:col-span-3">
               <div className="form-group">
-                <label className="form-label">วันสิ้นสุดสัญญาจ้าง</label>
+                <label className="form-label">
+                  วันสิ้นสุดสัญญาจ้าง
+                  {/* {disableStartDate && <div>{disableStartDate}</div>} */}
+                </label>
                 <div className={`input-group flatpickr`}>
                   <div className="input-group-prepend">
                     <span className="input-group-text">
                       <i className="material-symbols-outlined">calendar_month</i>
                     </span>
                   </div>
+
                   <DatePicker
+                    key={disableStartDate || "default"}
                     placeholder="เลือกวันที่สิ้นสุด"
                     defaultValue={convertToThaiDate(formData.driverContractEndDate)}
                     onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
-                    // minDate={disableStartDate ? convertToISO8601(disableStartDate) : undefined}
+                    minDate={disableStartDate ? disableStartDate : undefined}
+                    // minDate="27/05/2025"
+                    disabled={disableStartDate ? false : true}
                   />
                 </div>
                 {formErrors.driverContractEndDate && <FormHelper text={String(formErrors.driverContractEndDate)} />}
@@ -789,7 +818,10 @@ const DriverForm = () => {
                     <DatePicker
                       placeholder="เลือกวันที่ออกใบขับขี่"
                       defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
-                      onChange={(dateStr) => handleChangeDriverLicenseStartDate(dateStr)}
+                      onChange={(dateStr) => {
+                        handleChangeDriverLicenseStartDate(dateStr);
+                        setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
+                      }}
                       // maxDate={disableDriverEndDate ? convertToISO8601(disableDriverEndDate) : undefined}
                     />
                   </div>
@@ -808,10 +840,12 @@ const DriverForm = () => {
                       </span>
                     </div>
                     <DatePicker
+                      key={disableDriverStartDate || "default"}
                       placeholder="เลือกวันที่หมดอายุใบขับขี่"
                       defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
                       onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
-                      // minDate={disableDriverStartDate ? convertToISO8601(disableDriverStartDate) : undefined}
+                      minDate={disableDriverStartDate ? disableDriverStartDate : undefined}
+                      disabled={disableDriverStartDate ? false : true}
                     />
                   </div>
                   {formErrors.driverLicenseEndDate && <FormHelper text={String(formErrors.driverLicenseEndDate)} />}

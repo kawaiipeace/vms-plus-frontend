@@ -1,4 +1,4 @@
-import DatePicker from "@/components/datePicker";
+import DatePicker from "@/components/drivers-management/datePicker";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
@@ -8,6 +8,7 @@ import { driverUpdateLicenseDetails, listDriverLicense } from "@/services/driver
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
 import { DriverInfoType, DriverUpdateLicenseDetails } from "@/app/types/drivers-management-type";
+import { formatDateToThai } from "@/components/drivers-management/driverForm";
 
 interface CustomSelectOption {
   value: string;
@@ -33,6 +34,7 @@ const DriverEditLicenseModal = forwardRef<
 >(({ driverInfo, onUpdateDriver, setUpdateType }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [driverLicenseList, setDriverLicenseList] = React.useState<CustomSelectOption[]>([]);
+  const [disableStartDate, setDisableStartDate] = useState<string>();
   const [formData, setFormData] = useState({
     driverLicenseType: "",
     driverLicenseNo: "",
@@ -159,10 +161,13 @@ const DriverEditLicenseModal = forwardRef<
 
   const handleChangeDriverLicenseStartDate = (dateStr: string) => {
     const dateStrISO = convertToISO8601(dateStr);
+    const thaiDate = formatDateToThai(dateStrISO);
     setFormData((prevData) => ({
       ...prevData,
       driverLicenseStartDate: dateStrISO,
     }));
+
+    setDisableStartDate(thaiDate);
   };
 
   const handleChangeDriverLicenseEndDate = (dateStr: string) => {
@@ -239,7 +244,10 @@ const DriverEditLicenseModal = forwardRef<
                               <DatePicker
                                 placeholder="เลือกวันที่ออกใบขับขี่"
                                 defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
-                                onChange={(dateStr) => handleChangeDriverLicenseStartDate(dateStr)}
+                                onChange={(dateStr) => {
+                                  handleChangeDriverLicenseStartDate(dateStr);
+                                  setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
+                                }}
                               />
                               <div className="input-group-append hidden" data-clear>
                                 <span className="input-group-text search-ico-trailing">
@@ -262,9 +270,12 @@ const DriverEditLicenseModal = forwardRef<
                                 </span>
                               </div>
                               <DatePicker
+                                key={disableStartDate || "default"} // Reset DatePicker when disableStartDate changes
                                 placeholder="เลือกวันที่หมดอายุใบขับขี่"
                                 defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
                                 onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
+                                minDate={disableStartDate ? disableStartDate : undefined}
+                                disabled={disableStartDate ? false : true}
                               />
                             </div>
                             {formErrors.driverLicenseEndDate && (

@@ -125,7 +125,7 @@ const ModalBody = ({
                 <div className="custom-control custom-checkbox custom-control-inline" key={index}>
                   <input
                     type="checkbox"
-                    defaultChecked
+                    // defaultChecked
                     id={`option1-${index}`}
                     checked={formData.taxVehicle.includes(option.ref_request_status_code)}
                     onChange={() => handleCheckboxToggle("taxVehicle", option.ref_request_status_code)}
@@ -148,7 +148,7 @@ const ModalBody = ({
                 <div className="custom-control custom-checkbox custom-control-inline" key={index}>
                   <input
                     type="checkbox"
-                    defaultChecked
+                    // defaultChecked
                     id={`option2-${index}`}
                     checked={formData.driverWorkType.includes(option.ref_request_status_code)}
                     onChange={() => handleCheckboxToggle("driverWorkType", option.ref_request_status_code)}
@@ -172,7 +172,7 @@ const ModalBody = ({
                   <div className="custom-control custom-checkbox custom-control-inline">
                     <input
                       type="checkbox"
-                      defaultChecked
+                      // defaultChecked
                       id={`option3-${index}`}
                       checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
                       onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}

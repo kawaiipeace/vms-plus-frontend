@@ -1,4 +1,4 @@
-import DatePicker from "@/components/datePicker";
+import DatePicker from "@/components/drivers-management/datePicker";
 import CustomSelect, { CustomSelectOption } from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
@@ -19,6 +19,7 @@ import {
   DriverUpdateContractDetails,
 } from "@/app/types/drivers-management-type";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
+import { formatDateToThai } from "@/components/drivers-management/driverForm";
 
 interface UseByOtherRadioItem {
   ref_other_use_desc: string;
@@ -42,6 +43,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       { value: string; label: string; labelDetail: string }[]
     >([]);
     const [driverVendorsList, setDriverVendorsList] = useState<{ value: string; label: string }[]>([]);
+    const [disableStartDate, setDisableStartDate] = useState<string>();
     const [formData, setFormData] = useState({
       driverContractStartDate: "",
       driverContractEndDate: "",
@@ -273,11 +275,13 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
 
     const handleChangeContractStartDate = (dateStr: string) => {
       const dateStrISO = convertToISO8601(dateStr);
+      const thaiDate = formatDateToThai(dateStrISO);
       setFormData((prevData) => ({
         ...prevData,
         driverContractStartDate: dateStrISO,
       }));
       // setDisableStartDate(dateStr);
+      setDisableStartDate(thaiDate);
     };
 
     const handleChangeContractEndDate = (dateStr: string) => {
@@ -399,7 +403,10 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 <DatePicker
                                   placeholder="เลือกวันที่เริ่มต้น"
                                   defaultValue={convertToThaiDate(formData.driverContractStartDate)}
-                                  onChange={(dateStr) => handleChangeContractStartDate(dateStr)}
+                                  onChange={(dateStr) => {
+                                    handleChangeContractStartDate(dateStr);
+                                    setFormData((prev) => ({ ...prev, driverContractEndDate: "" }));
+                                  }}
                                   // maxDate={disableEndDate || undefined}
                                 />
                               </div>
@@ -418,10 +425,13 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                   </span>
                                 </div>
                                 <DatePicker
+                                  key={disableStartDate || "default"} // Reset DatePicker when disableStartDate changes
                                   placeholder="เลือกวันที่สิ้นสุด"
                                   defaultValue={convertToThaiDate(formData.driverContractEndDate)}
                                   onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
                                   // minDate={disableStartDate || undefined}
+                                  minDate={disableStartDate ? disableStartDate : undefined}
+                                  disabled={disableStartDate ? false : true}
                                 />
                               </div>
                               {formErrors.driverContractEndDate && (
