@@ -4,6 +4,7 @@ export interface CustomSelectOption {
   value: string;
   label: React.ReactNode | string;
   desc?: string;
+  imageUrl?: string; // Optional image URL for the option
 }
 
 interface SelectProps {
@@ -13,6 +14,7 @@ interface SelectProps {
   value?: CustomSelectOption | null;
   onChange: (selected: CustomSelectOption) => void;
   showDescriptions?: boolean;
+  isInputOil?: boolean;
   disabled?: boolean;
   placeholder?: string;
   allowFreeInput?: boolean;
@@ -28,6 +30,7 @@ export default function CustomSelect({
   value,
   onChange,
   showDescriptions = false,
+  isInputOil = false,
   disabled = false,
   placeholder = "กรุณาเลือก",
   allowFreeInput = false,
@@ -82,34 +85,25 @@ export default function CustomSelect({
   }, []);
 
   const filteredOptions = enableSearchOnApi
-  ? options
-  : inputText.trim().length >= 3
-    ? options.filter(option => {
+    ? options
+    : inputText.trim().length >= 3
+    ? options.filter((option) => {
         const text =
-          (typeof option.label === "string" ? option.label : option.value) +
-          (option.desc ? ` ${option.desc}` : "");
+          (typeof option.label === "string" ? option.label : option.value) + (option.desc ? ` ${option.desc}` : "");
         return text.toLowerCase().includes(inputText.toLowerCase());
       })
     : value?.value
-    ? options.filter(option => option.value === value.value) // Show only selected
+    ? options.filter((option) => option.value === value.value) // Show only selected
     : options;
-
 
   // Determine if dropdown should be shown
   const shouldShowDropdown =
-    isOpen &&
-    (
-      (!enableSearchOnApi && options.length > 0) ||
-      (enableSearchOnApi && inputText.trim().length >= 3)
-    );
+    isOpen && ((!enableSearchOnApi && options.length > 0) || (enableSearchOnApi && inputText.trim().length >= 3));
 
   // Handle outside click to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setHighlightedIndex(-1);
       }
@@ -133,13 +127,9 @@ export default function CustomSelect({
       setHighlightedIndex(0);
     } else if (isOpen) {
       if (e.key === "ArrowDown") {
-        setHighlightedIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : 0
-        );
+        setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : 0));
       } else if (e.key === "ArrowUp") {
-        setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredOptions.length - 1
-        );
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : filteredOptions.length - 1));
       } else if (e.key === "Enter" && highlightedIndex >= 0) {
         const selected = filteredOptions[highlightedIndex];
         onChange(selected);
@@ -154,7 +144,15 @@ export default function CustomSelect({
 
   // Render dropdown option
   const renderDropdownOption = (option: CustomSelectOption) => {
-    if (!showDescriptions || !option.desc) return <div>{option.label}</div>;
+    if (!!option?.imageUrl && isInputOil) {
+      return (
+        <div className="flex items-center gap-1">
+          <img src={option.imageUrl} alt={"oil-image-" + option.imageUrl} width={24} height={24} />
+          <span className="">{option.label}</span>
+        </div>
+      );
+    }
+    if (!showDescriptions || !option.desc || !isInputOil) return <div>{option.label}</div>;
     return (
       <div className="flex flex-col">
         <div className="font-medium">{option.label}</div>
@@ -178,21 +176,34 @@ export default function CustomSelect({
             </span>
           </div>
         )}
-        <input
-          ref={inputRef}
-          className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md"
-          value={inputText}
-          placeholder={placeholder}
-          disabled={disabled}
-          onFocus={() => !disabled && setIsOpen(true)}
-          onChange={e => {
-            setInputText(e.target.value);
-            setIsOpen(true);
-            setHighlightedIndex(0);
-            userTypingRef.current = true;
-          }}
-          onKeyDown={handleKeyDown}
-        />
+        {isInputOil ? (
+          !value?.value || value.value === "" ? (
+            <div className="flex items-center gap-1 flex-1 bg-transparent  border-0 px-0 py-0 h-full text-md">
+              {placeholder}
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 flex-1 bg-transparent  border-0 px-0 py-0 h-full text-md">
+              <img src={value?.imageUrl} alt={"oil-image-" + value?.imageUrl} width={24} height={24} />
+              <span className="">{value?.label}</span>
+            </div>
+          )
+        ) : (
+          <input
+            ref={inputRef}
+            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md"
+            value={inputText}
+            placeholder={placeholder}
+            disabled={disabled}
+            onFocus={() => !disabled && setIsOpen(true)}
+            onChange={(e) => {
+              setInputText(e.target.value);
+              setIsOpen(true);
+              setHighlightedIndex(0);
+              userTypingRef.current = true;
+            }}
+            onKeyDown={handleKeyDown}
+          />
+        )}
         <div className="flex-shrink-0 w-8 text-right cursor-pointer" onClick={() => setIsOpen((open) => !open)}>
           <i className="material-symbols-outlined">keyboard_arrow_down</i>
         </div>
@@ -220,15 +231,11 @@ export default function CustomSelect({
                 }}
               >
                 {renderDropdownOption(option)}
-                {value?.value === option.value && (
-                  <span className="material-symbols-outlined ml-auto">check</span>
-                )}
+                {value?.value === option.value && <span className="material-symbols-outlined ml-auto">check</span>}
               </li>
             ))
           ) : (
-            <div className="px-4 py-2 text-gray-500">
-              ไม่พบข้อมูล
-            </div>
+            <div className="px-4 py-2 text-gray-500">ไม่พบข้อมูล</div>
           )}
         </ul>
       )}
