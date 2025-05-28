@@ -1,4 +1,5 @@
 import { adminAcceptVehicle } from "@/services/adminService";
+import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -69,17 +70,20 @@ const ConfirmReturnVehicleModal = forwardRef<
     const acceptVehicle = async () => {
       try {
         // selectedDate is in "DD/MM/BBBB" (Buddhist year)
-        const [day, month, buddhistYear] = selectedDate.split("/");
-        const gregorianYear = parseInt(buddhistYear) - 543;
+        // console.log("selectedDate:", selectedDate);
 
-        // selectedTime is "HH:mm"
-        const [hours, minutes] = selectedTime.split(":").map(Number);
+        // const [day, month, buddhistYear] = selectedDate.split("/");
+        // const gregorianYear = parseInt(buddhistYear) - 543;
 
-        // Create ISO Date object in UTC
-        const date = new Date(Date.UTC(gregorianYear, parseInt(month) - 1, parseInt(day), hours, minutes, 0));
+        // // selectedTime is "HH:mm"
+        // const [hours, minutes] = selectedTime.split(":").map(Number);
+
+        // // Create ISO Date object in UTC
+        // const date = new Date(Date.UTC(gregorianYear, parseInt(month) - 1, parseInt(day), hours, minutes, 0));
 
         // Get ISO string like "2025-04-16T14:30:00Z"
-        const acceptedVehicleDatetime = date.toISOString();
+        const acceptedVehicleDatetime = convertToISO(selectedDate, selectedTime);
+        // date.toISOString();
 
         const payload = {
           accepted_vehicle_datetime: acceptedVehicleDatetime,

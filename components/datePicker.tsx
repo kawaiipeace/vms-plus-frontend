@@ -62,8 +62,22 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         // ✅ Save ISO (Gregorian)
         dateFormat: "Y-m-d",
 
+        static: window.innerWidth <= 768, // ✅ ทำให้แสดงด้านล่าง input ในมือถือ
+        positionElement: inputRef.current, // ✅ อ้างอิงตำแหน่งกับ input เสมอ
+
         // ✅ Support Thai year input
         parseDate: (datestr) => {
+          // if (!datestr) return undefined;
+          console.log("parseDate", datestr);
+
+          if (datestr.includes("-")) {
+            // กรณี ISO
+            return new Date(datestr);
+          }
+
+          // const [d, m, y] = datestr.split("/").map(Number);
+          // const gYear = y > 2500 ? y - 543 : y;
+          // return new Date(gYear, m - 1, d);
           const [d, m, y] = datestr.split("/").map(Number);
           const gYear = y > 2500 ? y - 543 : y;
           return new Date(gYear, m - 1, d);
@@ -78,16 +92,20 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         },
 
         defaultDate: defaultValue ? parseDate(convertToGregorian(defaultValue)) : undefined,
-        minDate: minDate ? parseDate(convertToGregorian(minDate)) : undefined,
-        maxDate: maxDate ? parseDate(convertToGregorian(maxDate)) : undefined,
+        // minDate: minDate ? parseDate(convertToGregorian(minDate)) : undefined,
+        // maxDate: maxDate ? parseDate(convertToGregorian(maxDate)) : undefined,
 
         onChange: (selectedDates, _dateStr, instance) => {
+          console.log("onChange", selectedDates, _dateStr, instance);
+
           const selected = selectedDates?.[0];
           if (!selected) return;
           // const iso = selected.toISOString().split("T")[0];
           // onChange?.(iso);
           // ส่งออกใน local format แบบไม่มี timezone
           const localDate = dayjs(selected).format("YYYY-MM-DD"); // ✅ ไม่มี -1 วัน
+          console.log("onChange", localDate);
+
           onChange?.(localDate);
           updateCalendarYear(instance);
         },

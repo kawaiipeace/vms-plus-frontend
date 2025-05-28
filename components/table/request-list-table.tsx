@@ -167,6 +167,7 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
         const id = row.original.trn_request_uid;
+        console.log("id", id);
 
         const progressType = {
           "50": "รอรับกุญแจ",
