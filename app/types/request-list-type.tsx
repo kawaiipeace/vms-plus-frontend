@@ -31,6 +31,7 @@ export type RequestListType = Partial<{
   received_key_end_datetime: string;
   parking_place: string;
   returned_vehicle_remark: string;
+  mas_driver_uid: string;
 }>;
 
 export interface summaryType {

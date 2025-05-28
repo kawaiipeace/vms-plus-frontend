@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import ZeroRecord from "@/components/zeroRecord";
-import FilterModal from "@/components/modal/filterModal";
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import dayjs from "dayjs";
-import RequestStatusBox from "@/components/requestStatusBox";
-import PaginationControls from "@/components/table/pagination-control";
+import FilterModal from "@/components/modal/filterModal";
 import FilterSortModal from "@/components/modal/filterSortModal";
-import { fetchRequests } from "@/services/bookingFinal";
+import RequestStatusBox from "@/components/requestStatusBox";
 import FinalListTable from "@/components/table/final-list-table";
+import PaginationControls from "@/components/table/pagination-control";
+import ZeroRecord from "@/components/zeroRecord";
+import { fetchRequests } from "@/services/bookingFinal";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
 
 interface PaginationType {
   limit: number;
@@ -61,22 +61,20 @@ export default function FinalApproveFlow() {
     }));
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } =
-    {
-      "40": { iconName: "schedule", status: "info" },
-      "41": { iconName: "check", status: "success" },
-      "50": { iconName: "check", status: "success" },
-      "51": { iconName: "vpn_key", status: "info" },
-      "60": { iconName: "directions_car", status: "info" },
-      "70": { iconName: "build", status: "warning" },
-      "71": { iconName: "build", status: "warning" },
-      "80": { iconName: "done_all", status: "success" },
-      "90": { iconName: "delete", status: "default" },
-    };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "40": { iconName: "schedule", status: "info" },
+    "41": { iconName: "check", status: "success" },
+    "50": { iconName: "check", status: "success" },
+    "51": { iconName: "vpn_key", status: "info" },
+    "60": { iconName: "directions_car", status: "info" },
+    "70": { iconName: "build", status: "warning" },
+    "71": { iconName: "build", status: "warning" },
+    "80": { iconName: "done_all", status: "success" },
+    "90": { iconName: "delete", status: "default" },
+  };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -96,11 +94,8 @@ export default function FinalApproveFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
-
     const mappedNames = selectedStatuses.map(
-      (code) =>
-        summary.find((item) => item.ref_request_status_code === code)
-          ?.ref_request_status_name || code
+      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
@@ -116,23 +111,19 @@ export default function FinalApproveFlow() {
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
       vehicle_owner_dept_sap: department || "",
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
   const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    if(filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด"){
+    if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
       setParams((prevParams) => ({
         ...prevParams,
         order_by: "start_datetime",
         order_dir: "desc",
       }));
-    }else{
+    } else {
       setParams((prevParams) => ({
         ...prevParams,
         order_by: "request_no",
@@ -143,19 +134,13 @@ export default function FinalApproveFlow() {
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
+      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
+        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
+          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
+          return name !== filterValue;
+        });
 
         setFilterNum(updatedStatuses.length);
 
@@ -235,20 +220,10 @@ export default function FinalApproveFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
+                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -266,35 +241,24 @@ export default function FinalApproveFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div
-                key={item.ref_request_status_code}
-                className="min-w-[38%] flex-shrink-0"
-              >
+              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={
-                    config.status as
-                      | "info"
-                      | "warning"
-                      | "success"
-                      | "default"
-                      | "error"
-                  }
+                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
                   title={item.ref_request_status_name}
                   number={item.count}
                   onClick={() => {
                     setParams((prevParams) => ({
                       ...prevParams,
                       ref_request_status_code: item.ref_request_status_code,
-                      page: 1, 
+                      page: 1,
                     }));
-          
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
                       setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
                     }
-          
+
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
                   }}
                 />
@@ -339,9 +303,7 @@ export default function FinalApproveFlow() {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">
-                {filterNum}
-              </span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
             </div>
           </button>
 
@@ -359,15 +321,9 @@ export default function FinalApproveFlow() {
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span
-            key={index}
-            className="badge badge-brand badge-outline rounded-sm mr-2"
-          >
+          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
             {name}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("status", name)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
               close_small
             </i>
           </span>
@@ -375,10 +331,7 @@ export default function FinalApproveFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i
-              className="material-symbols-outlined cursor-pointer"
-              onClick={() => removeFilter("date", filterDate)}
-            >
+            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
               close_small
             </i>
           </span>
@@ -388,7 +341,7 @@ export default function FinalApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <FinalListTable defaultData={dataRequest} pagination={pagination}  />
+            <FinalListTable defaultData={dataRequest} pagination={pagination} />
           </div>
 
           <PaginationControls
@@ -412,17 +365,9 @@ export default function FinalApproveFlow() {
           />
         ))
       )}
-      <FilterModal
-        ref={filterModalRef}
-        statusData={summary}
-        department={true}
-        onSubmitFilter={handleFilterSubmit}
-      />
+      <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
 
-      <FilterSortModal
-        ref={filterSortModalRef}
-        onSubmitFilter={handleFilterSortSubmit}
-      />
+      <FilterSortModal ref={filterSortModalRef} onSubmitFilter={handleFilterSortSubmit} />
     </>
   );
 }

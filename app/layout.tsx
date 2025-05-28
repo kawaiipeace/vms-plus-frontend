@@ -37,6 +37,9 @@ export default function RootLayout({
           src="/env/env-config.js"
           strategy="beforeInteractive"
         />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#317EFB" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
 
       <Head>
@@ -45,18 +48,18 @@ export default function RootLayout({
 
       <body className="light-mode">
         <ProfileProvider>
-          <ToastProvider>
-            <SidebarProvider>
-              <RequestDetailProvider>
-                <FormProvider>
+          <SidebarProvider>
+            <RequestDetailProvider>
+              <FormProvider>
+                <ToastProvider>
                   <CarpoolProvider>
                     {" "}
                     <Suspense>{children}</Suspense>
                   </CarpoolProvider>
-                </FormProvider>
-              </RequestDetailProvider>
-            </SidebarProvider>
-          </ToastProvider>
+                </ToastProvider>
+              </FormProvider>
+            </RequestDetailProvider>
+          </SidebarProvider>
         </ProfileProvider>
       </body>
     </html>

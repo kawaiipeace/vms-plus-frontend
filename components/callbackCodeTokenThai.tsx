@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { getThaiIdData } from '@/services/authService';
+import { getThaiIdData } from "@/services/authService";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function CallbackCodeTokenThai() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const code = searchParams.get('code');
+  const code = searchParams.get("code");
 
   useEffect(() => {
     const getKeyData = async () => {
@@ -15,12 +15,14 @@ export default function CallbackCodeTokenThai() {
         try {
           const response = await getThaiIdData(code);
           if (response.status === 200) {
-            localStorage.setItem('accessToken', response.data.accessToken);
-            localStorage.setItem('refreshToken', response.data.refreshToken);
-            router.push('/vehicle-booking/request-list');
+            localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem("refreshToken", response.data.refreshToken);
+            router.push("/vehicle-booking/request-list");
           }
         } catch (error) {
-          console.error('Error fetching thai id data:', error);
+          router.push("/login-os");
+          console.error("Error fetching thai id data:", error);
+          sessionStorage.setItem("errorThaiId", "true");
         }
       }
     };
@@ -30,4 +32,3 @@ export default function CallbackCodeTokenThai() {
 
   return <div></div>;
 }
-

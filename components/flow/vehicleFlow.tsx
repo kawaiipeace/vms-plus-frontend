@@ -6,9 +6,10 @@ import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
 import ReportModal, { ReportModalRef } from "../vehicle/vehicleReportModal";
 import VehicleTable from "../table/vehicle-table";
 import { PaginationType, VehicleInputParams, VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
-import { VehicleManagementStatus } from "@/app/types/vehicle-management/vehicle-constant";
 
 export default function VehicleFlow() {
+    const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         limit: 10,
         page: 1,
@@ -26,9 +27,6 @@ export default function VehicleFlow() {
         page: pagination.page,
         limit: pagination.limit,
     });
-    const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
-    const [selectedRows, setSelectedRows] = useState<string[]>([]);
-    const [notFound, setNotFound] = useState(false);
 
     // Handle Filter Modal
     const filterModalRef = useRef<FilterModalRef>(null);
@@ -46,19 +44,15 @@ export default function VehicleFlow() {
         const fetchData = async () => {
             try {
                 const response = await fetchVehicles(params);
-                if (response === VehicleManagementStatus.NO_VEHICLES_FOUND) {
-                    setNotFound(true);
-                } else {
-                    setNotFound(false);
-                    const { total, totalPages } = response.pagination;
-                    setDataRequest(response.vehicles);
-                    setPagination({
-                        limit: params.limit,
-                        page: params.page,
-                        total,
-                        totalPages,
-                    });
-                }
+                const { total, totalPages } = response.pagination;
+
+                setDataRequest(response.vehicles);
+                setPagination({
+                    limit: params.limit,
+                    page: params.page,
+                    total,
+                    totalPages,
+                });
             } catch (error) {
                 console.error("Error fetching vehicles:", error);
             }
@@ -100,16 +94,21 @@ export default function VehicleFlow() {
             ref_fuel_type_id: params.fuelType,
             ref_vehicle_category_code: params.vehicleType,
             vehicle_owner_dept_sap: params.vehicleDepartment,
+            is_tax_credit: params.taxVehicle.join(","),
             ref_vehicle_status_code: params.vehicleStatus.map(item => item).join(","),
         }));
     };
 
     const renderHeader = () => (
-        <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
-            <span className="text-xl font-bold">ยานพาหนะ</span>
-            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                {pagination.total} คัน
-            </span>
+        <div className="page-section-header border-0 mt-5">
+            <div className="page-header-left">
+                <div className="page-title">
+                    <span className="page-title-label">ยานพาหนะ</span>
+                    <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+                        {pagination.total ?? 0} คัน
+                    </span>
+                </div>
+            </div>
         </div>
     );
 
@@ -135,18 +134,21 @@ export default function VehicleFlow() {
 
             <div className="flex gap-4">
                 <button
-                    className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-1 transition cursor-pointer"
                     onClick={handleOpenFilterModal}
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
                 >
                     <i className="material-symbols-outlined">filter_list</i>
                     <span className="text-sm font-bold">ตัวกรอง</span>
                 </button>
-                <button className="flex gap-2 px-4 py-1 border border-gray-300 rounded-lg transition cursor-pointer" onClick={handleOpenReportModal}>
+                <button
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition disabled:bg-gray-100"
+                    onClick={handleOpenReportModal}
+                    disabled={!selectedRows.length}>
                     <i className="material-symbols-outlined">download</i>
                     <span className="text-sm font-bold">รายงาน</span>
                     <span className="border border-gray-300 w-6 h-6 rounded-full">{selectedRows.length}</span>
                 </button>
-                <button className="px-4 py-1 border border-gray-300 rounded-lg transition cursor-pointer bg-primary-default">
+                <button className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-primary-default text-gray-700 shadow-sm transition">
                     <i className="material-symbols-outlined text-white">add</i>
                     <span className="text-sm font-bold text-white">สร้างข้อมูล</span>
                 </button>
@@ -154,11 +156,11 @@ export default function VehicleFlow() {
         </div>
     );
 
-    const renderTableOrNoData = () => { 
-        if (dataRequest?.length > 0 && !notFound) {
+    const renderTableOrNoData = () => {
+        if (dataRequest.length > 0) {
             return (
                 <>
-                    <VehicleTable data={dataRequest} useModal={handleSelectItem}/>
+                    <VehicleTable data={dataRequest} useModal={handleSelectItem} />
                     <PaginationControls
                         pagination={pagination}
                         onPageChange={handlePageChange}
@@ -168,7 +170,7 @@ export default function VehicleFlow() {
             );
         }
 
-        if (notFound) {
+        if (dataRequest.length === 0) {
             return (
                 <VehicleNoData
                     imgSrc={"/assets/img/empty/search_not_found.png"}
@@ -177,20 +179,19 @@ export default function VehicleFlow() {
                     button={"ล้างตัวกรอง"}
                     useModal={handleClearAllFilters}
                 />
-
-                // <VehicleNoData
-                //     imgSrc={"/assets/img/empty/add_vehicle.svg"}
-                //     title={"เพิ่มยานพาหนะ"}
-                //     desc={"เริ่มต้นด้วยการสร้างข้อมูลยานพาหนะคันแรก"}
-                //     button={"สร้างข้อมูล"}
-                //     icon={"add"}
-                //     btnType={"primary"}
-                //     link={"/vehicle/create"}
-                //     displayBtn={true}
-                // />
             );
         }
 
+        // <VehicleNoData
+        //     imgSrc={"/assets/img/empty/add_vehicle.svg"}
+        //     title={"เพิ่มยานพาหนะ"}
+        //     desc={"เริ่มต้นด้วยการสร้างข้อมูลยานพาหนะคันแรก"}
+        //     button={"สร้างข้อมูล"}
+        //     icon={"add"}
+        //     btnType={"primary"}
+        //     link={"/vehicle/create"}
+        //     displayBtn={true}
+        // />
         return null;
     };
 
@@ -201,7 +202,7 @@ export default function VehicleFlow() {
             {renderTableOrNoData()}
 
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TABLE_LIST" />
-            <ReportModal ref={reportModalRef} selected={selectedRows}/>
+            <ReportModal ref={reportModalRef} selected={selectedRows} />
         </div>
     );
 }

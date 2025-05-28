@@ -15,13 +15,7 @@ const CallToDriverModal = forwardRef<
   Props // Props type
 >(
   (
-    {
-      imgSrc,
-      name,
-      phone,
-      title = "ติดต่อผู้ดูแลยานพาหนะ",
-      subTitle = "คุณต้องการโทรหาผู้ดูแลยานพาหนะหรือไม่?",
-    },
+    { imgSrc, name, phone, title = "ติดต่อผู้ดูแลยานพาหนะ", subTitle = "คุณต้องการโทรหาผู้ดูแลยานพาหนะหรือไม่?" },
     ref
   ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
@@ -51,25 +45,20 @@ const CallToDriverModal = forwardRef<
             </form>
           </div>
           <div className="modal-body overflow-y-auto px-4 mt-4">
-            <div className="flex items-center gap-3 bg-[#F9FAFB] p-3 rounded-xl">
-              <div className="w-[80px] h-[80px] overflow-hidden rounded-full relative">
-                <Image
-                  className="object-cover object-center"
-                  src={imgSrc}
-                  alt={name}
-                  layout="fill"
-                />
-              </div>
-              <div>
-                <h6 className="font-bold text-xl">{name}</h6>
-                <p className="text-xl">{phone}</p>
+            <div className="card card-body p-0">
+              <div className="flex items-center gap-3 p-3 rounded-xl">
+                <div className="w-[80px] h-[80px] overflow-hidden rounded-full relative">
+                  <Image className="object-cover object-center" src={imgSrc} alt={name} layout="fill" />
+                </div>
+                <div>
+                  <h6 className="font-bold text-xl">{name || "-"}</h6>
+                  <p className="text-xl">{phone || "-"}</p>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
               <form method="dialog">
-                <button className="btn btn-secondary w-full">
-                  ไม่ใช่ตอนนี้
-                </button>
+                <button className="btn btn-secondary w-full">ไม่ใช่ตอนนี้</button>
               </form>
               <form
                 method="dialog"

@@ -203,7 +203,7 @@ export default function RequestDetailForm({
                       <div className="form-label font-semibold">
                         รูปใบขับขี่
                       </div>
-                      <div className="w-full relative">
+                      <div className="w-[50%] relative">
                         <Image
                           src={
                             requestData?.driver_license_img ||

@@ -1,8 +1,7 @@
-import React from "react";
-import Image from "next/image";
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
+import Image from "next/image";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -18,7 +17,7 @@ const DriverBasicInfoCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => 
                 <Image src={driverInfo?.driver_image || "/assets/img/avatar.svg"} width={100} height={100} alt="" />
                 <div className="flex flex-col justify-center pl-4">
                   <h5 className="font-semibold mb-1">
-                    {driverInfo?.driver_name}({driverInfo?.driver_nickname})
+                    {driverInfo?.driver_name} ({driverInfo?.driver_nickname})
                   </h5>
                   <div className="flex items-center gap-2">
                     <span>{dayjs(driverInfo?.driver_birthdate).format("D/MM/BBBB")}</span>

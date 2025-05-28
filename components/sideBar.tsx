@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useProfile } from "@/contexts/profileContext";
+import { useSidebar } from "@/contexts/sidebarContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useSidebar } from "@/contexts/sidebarContext";
-import { useProfile } from "@/contexts/profileContext";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   menuName?: string;
@@ -83,27 +83,29 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/vehicle-booking/request-list",
           roles: [
             "vehicle-user",
-            "level1-approval",
-            "admin-approval",
-            "admin-dept-approval",
-            "final-approval",
-            "admin-super",
+            // "level1-approval",
+            // "admin-approval",
+            // "license-approval",
+            // "final-approval",
+            // "admin-dept",
+            // "admin-region",
+            // "admin-super",
           ],
         },
         {
-          title: "อนุมัติขอคำใช้และใบอนุญาต",
+          title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-approver",
           roles: [
             "level1-approval",
-            "admin-approval",
-            "admin-dept-approval",
-            "admin-super",
+            // "admin-approval",
+            // "admin-dept",
+            // "admin-super",
           ],
         },
         {
           title: "งานพนักงานขับรถ",
           link: "/vehicle-in-use/driver",
-          roles: ["driver", "admin-super"],
+          roles: ["driver"],
         },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
@@ -115,7 +117,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-approval", "admin-dept-approval", "admin-super"],
+          roles: ["admin-approval","license-approval"],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",
@@ -129,38 +131,38 @@ export default function SideBar({ menuName }: SidebarProps) {
       icon: "database",
       label: "ข้อมูลพนักงานและยานพาหนะ",
       items: [
-        {
-          title: "ผู้ดูแลยานพาหนะ",
-          link: "/carpool-management",
-          roles: ["admin-super"],
-        },
+        // {
+        //   title: "ผู้ดูแลยานพาหนะ",
+        //   link: "/carpool-management",
+        //   roles: ["admin-super"],
+        // },
         {
           title: "ข้อมูลพนักงานขับรถ",
-          link: "request-list",
+          link: "/drivers-management",
           roles: ["admin-super"],
         },
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-super"],
+          roles: ["admin-region"],
         },
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super"],
+          roles: ["admin-dept"],
         },
-        {
-          title: "ข้อมูล Fleet card",
-          link: "request-list",
-          roles: ["admin-super"],
-        },
+        // {
+        //   title: "ข้อมูล Fleet card",
+        //   link: "request-list",
+        //   roles: ["admin-super"],
+        // },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
   ].filter((menu) => menu.items.length > 0); // Only show menus that have items
 
   return (
     <div
-      className={`sidebar !z-50 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
+      className={`sidebar !z-2 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
         isExpanded || isPinned
           ? "w-[280px] min-w-[280px] max-w-[280px]"
           : "w-[80px]"

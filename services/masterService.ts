@@ -2,7 +2,9 @@ import axiosInstance from "@/utils/axiosInstance";
 
 export const fetchVehicleUsers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-vehicle-users?search=" + search);
+    const response = await axiosInstance.get(
+      "mas/user-vehicle-users?search=" + search
+    );
 
     return response;
   } catch (error) {
@@ -12,7 +14,9 @@ export const fetchVehicleUsers = async (search?: string) => {
 
 export const fetchReceivedKeyUsers = async (id: string, search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-received-key-users?search=" + search + "&trn_request_uid=" + id);
+    const response = await axiosInstance.get(
+      "mas/user-received-key-users?search=" + search + "&trn_request_uid=" + id
+    );
 
     return response;
   } catch (error) {
@@ -22,7 +26,9 @@ export const fetchReceivedKeyUsers = async (id: string, search?: string) => {
 
 export const fetchUserDrivers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-driver-users?search=" + search);
+    const response = await axiosInstance.get(
+      "mas/user-driver-users?search=" + search
+    );
 
     return response;
   } catch (error) {
@@ -51,6 +57,17 @@ export const fetchDriverCertificateType = async () => {
 export const fetchCostTypes = async () => {
   try {
     const response = await axiosInstance.get("ref/cost-type");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchCostCenter = async (search?: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "ref/cost-center?search=" + search
+    );
     return response;
   } catch (error) {
     throw error;
@@ -101,7 +118,11 @@ export const fetchVehicleDepartments = async () => {
   }
 };
 
-export const fetchDrivers = async (params: { name?: string; page?: number; limit?: number }) => {
+export const fetchDrivers = async (params: {
+  name?: string;
+  page?: number;
+  limit?: number;
+}) => {
   try {
     const response = await axiosInstance.get("driver/search", { params });
     return response;
@@ -110,9 +131,15 @@ export const fetchDrivers = async (params: { name?: string; page?: number; limit
   }
 };
 
-export const fetchOtherDeptDrivers = async (params: { name?: string; page?: number; limit?: number }) => {
+export const fetchOtherDeptDrivers = async (params: {
+  name?: string;
+  page?: number;
+  limit?: number;
+}) => {
   try {
-    const response = await axiosInstance.get("driver/search-other-dept", { params });
+    const response = await axiosInstance.get("driver/search-other-dept", {
+      params,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -148,7 +175,9 @@ export const fetchVehicleKeyType = async () => {
 
 export const fetchUserApproverUsers = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-final-approval-users?search=" + search);
+    const response = await axiosInstance.get(
+      "mas/user-confirmer-users?search=" + search
+    );
 
     return response;
   } catch (error) {
@@ -167,7 +196,9 @@ export const fetchVehicleInfo = async (code: string) => {
 
 export const fetchLogs = async (id: string, params: any) => {
   try {
-    const response = await axiosInstance.get("log/request/" + id + "?page=" + params.page + "&limit=" + params.limit);
+    const response = await axiosInstance.get(
+      "log/request/" + id + "?page=" + params.page + "&limit=" + params.limit
+    );
     return response;
   } catch (error) {
     throw error;
@@ -210,7 +241,10 @@ export const fetchRequestKeyDetail = async (id: string) => {
 
 export const cancelKeyPickup = async (data: any) => {
   try {
-    const response = await axiosInstance.put("received-key-user/update-canceled", data);
+    const response = await axiosInstance.put(
+      "received-key-user/update-canceled",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -219,7 +253,10 @@ export const cancelKeyPickup = async (data: any) => {
 
 export const updateKeyPickupDriver = async (data: any) => {
   try {
-    const response = await axiosInstance.put("received-key-user/update-key-pickup-driver", data);
+    const response = await axiosInstance.put(
+      "received-key-user/update-key-pickup-driver",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -228,7 +265,10 @@ export const updateKeyPickupDriver = async (data: any) => {
 
 export const updateKeyPickupPea = async (data: any) => {
   try {
-    const response = await axiosInstance.put("received-key-user/update-key-pickup-pea", data);
+    const response = await axiosInstance.put(
+      "received-key-user/update-key-pickup-pea",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -237,7 +277,10 @@ export const updateKeyPickupPea = async (data: any) => {
 
 export const updateKeyPickupOutsider = async (data: any) => {
   try {
-    const response = await axiosInstance.put("received-key-user/update-key-pickup-outsider", data);
+    const response = await axiosInstance.put(
+      "received-key-user/update-key-pickup-outsider",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -246,7 +289,10 @@ export const updateKeyPickupOutsider = async (data: any) => {
 
 export const updateReceivedKeyConfirmed = async (data: any) => {
   try {
-    const response = await axiosInstance.put("received-key-user/update-recieived-key-confirmed", data);
+    const response = await axiosInstance.put(
+      "received-key-user/update-recieived-key-confirmed",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -282,7 +328,9 @@ export const fetchPaymentTypeCode = async () => {
 
 export const fetchSatisfactionSurveyQuestions = async () => {
   try {
-    const response = await axiosInstance.get("mas/satisfaction_survey_questions");
+    const response = await axiosInstance.get(
+      "mas/satisfaction_survey_questions"
+    );
 
     return response;
   } catch (error) {
@@ -290,22 +338,26 @@ export const fetchSatisfactionSurveyQuestions = async () => {
   }
 };
 
-export const fetchUserApprovalLic = async () => {
+export const fetchUserConfirmerLic = async (search?:string) => {
   try {
-    const response = await axiosInstance.get("mas/user-confirmer-license-users");
+    const response = await axiosInstance.get(
+      "mas/user-confirmer-license-users?search=" + search
+    );
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchUserFinalApprovalLic = async () => {
+
+export const fetchUserApprovalLic = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/user-approval-license-users");
+    const response = await axiosInstance.get(
+      "mas/user-approval-license-users?search=" + search
+    );
+    console.log('mainres',response);
     return response;
   } catch (error) {
     throw error;
   }
 };
-
-

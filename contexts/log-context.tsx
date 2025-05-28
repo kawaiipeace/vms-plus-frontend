@@ -34,7 +34,6 @@ export const LogProvider = ({ children }: { children: React.ReactNode }) => {
   const loadLogs = async (requestId: string) => {
     try {
       const response = await fetchLogs(requestId, params);
-      console.log('logs',response);
       const requestList = response.data.logs;
       const { total, totalPages } = response.data;
 

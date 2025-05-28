@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface JourneyDetailCardProps {
   displayOn?: string;
   startDate?: string;
@@ -35,7 +33,7 @@ export default function JourneyDetailCard({
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่ / เวลาเดินทาง</div>
                 <div className="form-text">
-                  {startDate} - {endDate} {timeStart} - {timeEnd}
+                  {startDate} {timeStart} - {endDate} {timeEnd}
                 </div>
               </div>
             </div>
@@ -60,7 +58,7 @@ export default function JourneyDetailCard({
                   <i className="material-symbols-outlined">groups</i>
                   <div className="form-plaintext-group">
                     <div className="form-label">จำนวนผู้โดยสาร</div>
-                    <div className="form-text">{numberOfPassenger} (รวมผู้ขับขี่)</div>
+                    <div className="form-text">{numberOfPassenger ? `${numberOfPassenger} (รวมผู้ขับขี่)` : ""} </div>
                   </div>
                 </div>
               </div>
@@ -72,7 +70,7 @@ export default function JourneyDetailCard({
               <i className="material-symbols-outlined">travel_luggage_and_bags</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ประเภท</div>
-                <div className="form-text">{tripType === 1 ? "ไป-กลับ" : "ค้างแรม"}</div>
+                <div className="form-text">{tripType ? (tripType === 1 ? "ไป-กลับ" : "ค้างแรม") : ""}</div>
               </div>
             </div>
           </div>

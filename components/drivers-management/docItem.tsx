@@ -1,5 +1,3 @@
-import React from "react";
-
 const DocItem = ({ documentName, documentUrl }: { documentName?: string; documentUrl?: string }) => {
   return (
     <div className="w-full flex rounded-2xl bg-white border-[#D0D5DD] border-[1px] p-4 items-center">
@@ -8,7 +6,6 @@ const DocItem = ({ documentName, documentUrl }: { documentName?: string; documen
       </div>
       <div>
         <h5 className="text-[#344054] font-semibold text-sm pl-4">{documentName}</h5>
-        <p className="text-[#667085] text-sm pl-4">200 KB</p>
       </div>
       <div className="ml-auto flex gap-x-2">
         <button onClick={() => window.open(documentUrl, "download")}>
