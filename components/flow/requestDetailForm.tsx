@@ -108,7 +108,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-              {editable && (
+              {(editable && requestData?.ref_request_status_code !== "50") && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => vehicleUserModalRef.current?.openModal()}
@@ -129,7 +129,7 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-              {editable && (
+              {(editable && requestData?.ref_request_status_code !== "50")  && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => journeyDetailModalRef.current?.openModal()}
@@ -167,7 +167,7 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
-              {editable && (
+              {(editable && requestData?.ref_request_status_code !== "50")  && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() =>
@@ -188,7 +188,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
-              {editable && (
+              {(editable && requestData?.ref_request_status_code !== "50")  && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                   onClick={() => referenceModalRef.current?.openModal()}
@@ -207,7 +207,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
-              {editable && (
+              {(editable && requestData?.ref_request_status_code !== "50")  && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                   data-toggle="modal"
@@ -268,7 +268,7 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {editable && (
+                          {(editable && requestData?.ref_request_status_code !== "50")  && (
                             <button
                               className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                               onClick={() =>
@@ -321,7 +321,7 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {editable && (
+                          {(editable && requestData?.ref_request_status_code !== "50")  && (
                             <button
                               className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                               onClick={() =>

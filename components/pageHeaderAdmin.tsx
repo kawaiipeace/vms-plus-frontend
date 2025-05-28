@@ -56,7 +56,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
   };
 
   return (
-    <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
+    <div className="page-header w-full sticky top-[64px] z-[2] bg-white pt-5 pb-3 !mb-0">
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">

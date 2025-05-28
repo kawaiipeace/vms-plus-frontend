@@ -17,7 +17,6 @@ export default function ApproveVehicleForAdminTabs() {
           try {
             const response = await fetchMenus();
             const result = response.data;
-            console.log('adminressult',result);
             setStatusData(result);
           } catch (error) {
             console.error("Error fetching status data:", error);

@@ -4,7 +4,7 @@ export interface CustomSelectOption {
   value: string;
   label: React.ReactNode | string;
   desc?: string;
-  imageUrl?: string; // Optional image URL for the option
+  imageUrl?: string;
 }
 
 interface SelectProps {
@@ -47,14 +47,10 @@ export default function CustomSelect({
   const userTypingRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Debounce input for async search
   useEffect(() => {
     if (onSearchInputChange && userTypingRef.current) {
       const trimmedInput = inputText.trim();
-
-      // Only proceed if input has changed and meets minimum length
       if (trimmedInput !== lastSearchTerm && trimmedInput.length >= 3) {
-        // Cancel any pending request
         if (abortControllerRef.current) {
           abortControllerRef.current.abort();
         }
@@ -65,7 +61,7 @@ export default function CustomSelect({
         const handler = setTimeout(() => {
           onSearchInputChange(trimmedInput);
           setLastSearchTerm(trimmedInput);
-        }, 500); // Increased debounce time
+        }, 500);
 
         return () => {
           clearTimeout(handler);
@@ -75,7 +71,6 @@ export default function CustomSelect({
     }
   }, [inputText, onSearchInputChange, lastSearchTerm]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (abortControllerRef.current) {
@@ -86,21 +81,20 @@ export default function CustomSelect({
 
   const filteredOptions = enableSearchOnApi
     ? options
-    : inputText.trim().length >= 3
-    ? options.filter((option) => {
+    : options.filter((option) => {
+        const trimmed = inputText.trim();
+        if (trimmed === "") return true;
         const text =
-          (typeof option.label === "string" ? option.label : option.value) + (option.desc ? ` ${option.desc}` : "");
-        return text.toLowerCase().includes(inputText.toLowerCase());
-      })
-    : value?.value
-    ? options.filter((option) => option.value === value.value) // Show only selected
-    : options;
+          (typeof option.label === "string" ? option.label : option.value) +
+          (option.desc ? ` ${option.desc}` : "");
+        return text.toLowerCase().includes(trimmed.toLowerCase());
+      });
 
-  // Determine if dropdown should be shown
   const shouldShowDropdown =
-    isOpen && ((!enableSearchOnApi && options.length > 0) || (enableSearchOnApi && inputText.trim().length >= 3));
+    isOpen &&
+    ((!enableSearchOnApi && options.length > 0) ||
+      (enableSearchOnApi && inputText.trim().length >= 3));
 
-  // Handle outside click to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -112,7 +106,6 @@ export default function CustomSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  // Sync inputText when value prop changes
   useEffect(() => {
     if (!isOpen) {
       setInputText(value?.label?.toString() || "");
@@ -120,7 +113,6 @@ export default function CustomSelect({
     }
   }, [value, isOpen]);
 
-  // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
       setIsOpen(true);
@@ -142,13 +134,12 @@ export default function CustomSelect({
     }
   };
 
-  // Render dropdown option
   const renderDropdownOption = (option: CustomSelectOption) => {
     if (!!option?.imageUrl && isInputOil) {
       return (
         <div className="flex items-center gap-1">
           <img src={option.imageUrl} alt={"oil-image-" + option.imageUrl} width={24} height={24} />
-          <span className="">{option.label}</span>
+          <span>{option.label}</span>
         </div>
       );
     }
@@ -176,15 +167,16 @@ export default function CustomSelect({
             </span>
           </div>
         )}
+
         {isInputOil ? (
           !value?.value || value.value === "" ? (
-            <div className="flex items-center gap-1 flex-1 bg-transparent  border-0 px-0 py-0 h-full text-md">
+            <div className="flex items-center gap-1 flex-1 bg-transparent border-0 px-0 py-0 h-full text-md">
               {placeholder}
             </div>
           ) : (
-            <div className="flex items-center gap-1 flex-1 bg-transparent  border-0 px-0 py-0 h-full text-md">
+            <div className="flex items-center gap-1 flex-1 bg-transparent border-0 px-0 py-0 h-full text-md">
               <img src={value?.imageUrl} alt={"oil-image-" + value?.imageUrl} width={24} height={24} />
-              <span className="">{value?.label}</span>
+              <span>{value?.label}</span>
             </div>
           )
         ) : (
@@ -204,7 +196,30 @@ export default function CustomSelect({
             onKeyDown={handleKeyDown}
           />
         )}
-        <div className="flex-shrink-0 w-8 text-right cursor-pointer" onClick={() => setIsOpen((open) => !open)}>
+
+        {/* Clear button */}
+        {value?.value && !disabled && (
+          <div
+            className="flex-shrink-0 w-8 text-right cursor-pointer text-gray-400 hover:text-gray-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              setInputText("");
+              onChange({ value: "", label: "" });
+              userTypingRef.current = false;
+            }}
+          >
+            <i className="material-symbols-outlined">close_small</i>
+          </div>
+        )}
+
+        {/* Dropdown arrow */}
+        <div
+          className="flex-shrink-0 w-8 text-right cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen((open) => !open);
+          }}
+        >
           <i className="material-symbols-outlined">keyboard_arrow_down</i>
         </div>
       </div>

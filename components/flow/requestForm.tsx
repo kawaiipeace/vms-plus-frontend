@@ -184,7 +184,12 @@ export default function RequestForm() {
   }, [driverOptions, selectedVehicleUserOption]);
 
   useEffect(() => {
-
+    if(!formData.timeStart){
+      setValue('timeStart', "08:00");
+    }
+    if(!formData.timeEnd){
+      setValue('timeEnd', "16:00");
+    }
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
       if (formData.vehicleUserEmpId) {
         setSelectedVehicleUserOption({
@@ -207,13 +212,6 @@ export default function RequestForm() {
           setValue("userImageUrl", defaultVehicleUser.image_url);
         }
       }
-    }
-
-    if(!formData.timeStart){
-      setValue('timeStart', "08:00");
-    }
-    if(!formData.timeEnd){
-      setValue('timeEnd', "16:00");
     }
 
     const fetchApprover = async () => {
@@ -656,6 +654,7 @@ export default function RequestForm() {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
+                        // minDate={startDate} 
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -675,7 +674,7 @@ export default function RequestForm() {
                       </div>
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
-                        onChange={(timeStr) => setValue("timeStart", timeStr)}
+                        onChange={(dateStr) => setValue("timeStart", dateStr)}
                       />
                     </div>
                   </div>
@@ -694,9 +693,11 @@ export default function RequestForm() {
                       </div>
 
                       <DatePicker
+                        key={startDate || "default"} 
                         placeholder="ระบุวันที่สิ้นสุดเดินทาง"
                         defaultValue={formData.endDate ? convertToThaiDate(formData.endDate) : "08:00"}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
+                        minDate={convertToThaiDate(startDate)}
                       />
                     </div>
                   </div>

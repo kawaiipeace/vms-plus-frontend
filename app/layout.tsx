@@ -37,9 +37,9 @@ export default function RootLayout({
           src="/env/env-config.js"
           strategy="beforeInteractive"
         />
-        <link rel="manifest" href="/manifest.json" />
+        {/* <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#317EFB" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" /> */}
       </head>
 
       <Head>

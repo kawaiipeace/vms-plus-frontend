@@ -103,14 +103,13 @@ const KeyPickupModal = forwardRef<{ openModal: () => void; closeModal: () => voi
 
     return (
       <>
-        {openModal && (
-          <div className={`modal modal-middle modal-open`}>
-            <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-              <div className="bottom-sheet" {...swipeDownHandlers}>
-                <div className="bottom-sheet-icon"></div>
-              </div>
-              <div className="modal-scroll-wrapper overflow-y-auto">
-                <div className="modal-body text-center  !p-0">
+         <dialog ref={modalRef} className={`modal modal-middle`}>
+        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="bottom-sheet" {...swipeDownHandlers}>
+            <div className="bottom-sheet-icon"></div>
+          </div>
+
+          <div className="modal-body text-center  !p-0">
                   <form onSubmit={handleSubmit(onSubmitForm)} method="dialog" className="w-full">
                     <Image
                       src="/assets/img/graphic/confirm_key.svg"
@@ -202,14 +201,11 @@ const KeyPickupModal = forwardRef<{ openModal: () => void; closeModal: () => voi
                     </div>
                   </form>
                 </div>
-              </div>
-            </div>
+        </div>
 
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </div>
-        )}
+
+      </dialog>
+
       </>
     );
   }

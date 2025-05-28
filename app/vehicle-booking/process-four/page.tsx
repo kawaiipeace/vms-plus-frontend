@@ -56,11 +56,11 @@ export default function ProcessFour() {
         ),
         is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
         is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
-        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "",
+        // mas_carpool_driver_uid: formData.masCarpoolDriverUid || "",
         mas_vehicle_uid: formData.vehicleSelect || "",
         number_of_passengers: formData.numberOfPassenger || 0,
         objective: formData.purpose || "",
-        pickup_datetime: formData.pickupDatetime || "",
+        // pickup_datetime: formData.pickupDatetime || "",
         pickup_place: formData.pickupPlace || "",
         ref_cost_type_code: parseInt(formData.refCostTypeCode || "") || 101,
         reference_number: formData.referenceNumber || "",
@@ -82,6 +82,8 @@ export default function ProcessFour() {
         activity_no: formData.activityNo || "",
         cost_center: formData.costCenter || "",
       };
+
+      console.log('formdata',mappedData);
 
       try {
         const response = await createRequest(mappedData);

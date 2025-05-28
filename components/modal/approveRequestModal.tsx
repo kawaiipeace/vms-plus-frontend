@@ -126,7 +126,7 @@ const ApproveRequestModal = forwardRef<
 
           <div className="modal-body overflow-y-auto text-center">
             <Image
-              src="/assets/img/graphic/confirm_request.svg"
+              src="/assets/img/graphic/confirm_approval.svg"
               className="w-full confirm-img"
               width={100}
               height={100}
