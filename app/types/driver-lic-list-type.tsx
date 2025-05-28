@@ -145,6 +145,7 @@ export interface RequestAnnualDriver {
   license_status: string;
   next_license_status: string;
   next_license_status_code: string;
+  next_trn_request_annual_driver_uid: string;
   
   // Progress tracking
   progress_request_status: ProgressStatus[];

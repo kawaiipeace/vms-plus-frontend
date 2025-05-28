@@ -82,11 +82,16 @@ export default function CarpoolVehicleTable({
             status: "success",
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }
@@ -132,7 +137,7 @@ export default function CarpoolVehicleTable({
       enableSorting: false,
     },
     {
-      accessorKey: "ref_fuel_type_id",
+      accessorKey: "fuel_type_name",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
     },
@@ -159,7 +164,7 @@ export default function CarpoolVehicleTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="เครดิตภาษี">
-            {row.original.is_tax_credit === "1" ? (
+            {row.original.is_tax_credit ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
@@ -180,6 +185,13 @@ export default function CarpoolVehicleTable({
       accessorKey: "vehicle_mileage",
       header: () => <div className="text-center">เลขไมล์ล่าสุด</div>,
       enableSorting: true,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="เลขไมล์ล่าสุด">
+            {row.original.vehicle_mileage.toLocaleString()}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "age",
@@ -270,7 +282,7 @@ export default function CarpoolVehicleTable({
       enableSorting: false,
     },
     {
-      accessorKey: "ref_fuel_type_id",
+      accessorKey: "fuel_type_name",
       header: () => <div className="text-left">ประเภทเชื้อเพลิง</div>,
       enableSorting: false,
     },
@@ -297,7 +309,7 @@ export default function CarpoolVehicleTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="เครดิตภาษี">
-            {row.original.is_tax_credit === "1" ? (
+            {row.original.is_tax_credit ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
@@ -318,6 +330,13 @@ export default function CarpoolVehicleTable({
       accessorKey: "vehicle_mileage",
       header: () => <div className="text-center">เลขไมล์ล่าสุด</div>,
       enableSorting: true,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="เลขไมล์ล่าสุด">
+            {row.original.vehicle_mileage.toLocaleString()}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "age",
@@ -371,6 +390,7 @@ export default function CarpoolVehicleTable({
               <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                 <input
                   type="checkbox"
+                  defaultChecked={row.original.is_active === "1" ? true : false}
                   checked={row.original.is_active === "1" ? true : false}
                   onClick={() =>
                     handleActive(
@@ -454,27 +474,10 @@ export default function CarpoolVehicleTable({
         title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
         desc={
           "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
             ?.vehicle_license_plate +
           " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_owner_dept_short +
-          " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
-        }
-        confirmText={"นำยานพาหนะออก"}
-        onConfirm={handleDelete}
-      />
-
-      <ConfirmCancelCreateCarpoolModal
-        id={""}
-        ref={cancelCreateModalRef}
-        title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
-        desc={
-          "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_license_plate +
-          " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
+          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
             ?.vehicle_owner_dept_short +
           " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
         }

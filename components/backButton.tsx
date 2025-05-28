@@ -1,14 +1,21 @@
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function BackButton() {
+interface BackButtonProps {
+  onClick?: () => void;
+}
+
+export default function BackButton({ onClick }: BackButtonProps) {
   const router = useRouter();
-  
+
   return (
-    <Link href="#" onClick={() => router.back()} className="btn btn-tertiary btn-back no-underline shadow-none bg-transparent border-none">
+    <Link
+      href={onClick ? "/" : "/login-os"}
+      onClick={onClick ? onClick : () => router.back()}
+      className="btn btn-tertiary btn-back no-underline shadow-none bg-transparent border-none"
+    >
       <i className="material-symbols-outlined">keyboard_arrow_left</i>
       ย้อนกลับ
     </Link>
   );
-};
-
+}

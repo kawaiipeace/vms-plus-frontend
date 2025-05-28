@@ -12,12 +12,13 @@ interface Props {
   role?: string;
   desc: React.ReactNode;
   confirmText: string;
+  onSuccess?: () => void;
 }
 
 const ApproveRequestModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, role, desc, confirmText }, ref) => {
+>(({ id, title, role, desc, confirmText, onSuccess }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -79,11 +80,16 @@ const ApproveRequestModal = forwardRef<
               basePath = "/administrator/booking-final";
           }
           if (role === "licAdmin") {
-            
+            if(onSuccess) {
+              onSuccess
+            }
             router.push(
               `${basePath}?approvelic-req=success&request-id=${requestId}`
             );
           }else  if (role === "licFinalAdmin") {
+            if(onSuccess) {
+              onSuccess
+            }
             router.push(
               `${basePath}?approvelicfinal-req=success&request-id=${requestId}`
             );

@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useProfile } from "@/contexts/profileContext";
+import { useSidebar } from "@/contexts/sidebarContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useSidebar } from "@/contexts/sidebarContext";
-import { useProfile } from "@/contexts/profileContext";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   menuName?: string;
@@ -91,7 +91,7 @@ export default function SideBar({ menuName }: SidebarProps) {
           ],
         },
         {
-          title: "อนุมัติขอคำใช้และใบอนุญาต",
+          title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-approver",
           roles: [
             "level1-approval",
@@ -129,14 +129,14 @@ export default function SideBar({ menuName }: SidebarProps) {
       icon: "database",
       label: "ข้อมูลพนักงานและยานพาหนะ",
       items: [
-        {
-          title: "ผู้ดูแลยานพาหนะ",
-          link: "/carpool-management",
-          roles: ["admin-super"],
-        },
+        // {
+        //   title: "ผู้ดูแลยานพาหนะ",
+        //   link: "/carpool-management",
+        //   roles: ["admin-super"],
+        // },
         {
           title: "ข้อมูลพนักงานขับรถ",
-          link: "request-list",
+          link: "/drivers-management",
           roles: ["admin-super"],
         },
         {
@@ -149,18 +149,18 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/carpool-management",
           roles: ["admin-super"],
         },
-        {
-          title: "ข้อมูล Fleet card",
-          link: "request-list",
-          roles: ["admin-super"],
-        },
+        // {
+        //   title: "ข้อมูล Fleet card",
+        //   link: "request-list",
+        //   roles: ["admin-super"],
+        // },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
   ].filter((menu) => menu.items.length > 0); // Only show menus that have items
 
   return (
     <div
-      className={`sidebar !z-50 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
+      className={`sidebar !z-2 transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
         isExpanded || isPinned
           ? "w-[280px] min-w-[280px] max-w-[280px]"
           : "w-[80px]"

@@ -14,8 +14,7 @@ import CustomSelectApprover, {
   CustomSelectOption,
 } from "./customSelectApprover";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
-import { fetchUserApprovalLic } from "@/services/masterService";
-import { updateAnnualApprover } from "@/services/driver";
+import { fetchUserConfirmerLic } from "@/services/masterService";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface EditApproverModalProps {
@@ -68,11 +67,11 @@ const EditApproverModal = forwardRef<
   };
 
   useEffect(() => {
-    console.log('resquset',requestData);
+    console.log('resquset=======>',requestData);
     const fetchVehicleUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchUserApprovalLic();
+        const response = await fetchUserConfirmerLic("");
         if (response.status === 200) {
           const vehicleUserData: VehicleUserType[] = response.data;
           const driverOptionsArray = vehicleUserData.map(
@@ -91,12 +90,12 @@ const EditApproverModal = forwardRef<
 
           setDriverOptions(driverOptionsArray);
           
-          // Set default approver if requestData has approved_request_emp_id
-          if (requestData?.approved_request_emp_id) {
+          // Set default approver if requestData has confirmed_request_emp_id
+          if (requestData?.confirmed_request_emp_id) {
             const defaultApprover = driverOptionsArray.find(
-              opt => opt.value === requestData.approved_request_emp_id
+              opt => opt.value === requestData.confirmed_request_emp_id
             );
-            
+            console.log('default',defaultApprover);
             if (defaultApprover) {
               setSelectedVehicleUserOption(defaultApprover);
               setValue("name", defaultApprover.full_name || defaultApprover.label || "");
@@ -115,7 +114,7 @@ const EditApproverModal = forwardRef<
 
   const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;
-
+    console.log('selected',selectedVehicleUserOption)
     try {
       if (onUpdate) {
         onUpdate({

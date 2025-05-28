@@ -1,5 +1,6 @@
 "use client";
 
+import CarpoolTimeLine from "@/components/flow/carpoolTimeLine";
 import Header from "@/components/header";
 import ConfirmCancelCreateCarpoolModal from "@/components/modal/confirmCancelCreateCarpoolModal";
 import SideBar from "@/components/sideBar";
@@ -31,7 +32,7 @@ export default function CarpoolCalendar() {
       );
       if (response.request.status === 200) {
         router.push(
-          "/carpool-management/form/process-five?id=" +
+          "/carpool-management/form/calendar?id=" +
             id +
             "&name=" +
             name +
@@ -113,7 +114,7 @@ export default function CarpoolCalendar() {
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
-                            checked={active === "1"}
+                            // checked={active === "1"}
                             onClick={handleActive}
                             className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
                           />
@@ -132,7 +133,9 @@ export default function CarpoolCalendar() {
 
             <CarpoolManagementTabs active={0} />
 
-            <div></div>
+            <div>
+              <CarpoolTimeLine />
+            </div>
 
             <ConfirmCancelCreateCarpoolModal
               id={""}

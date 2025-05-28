@@ -41,7 +41,6 @@ export default function DriverPeaInfoCard({
       if (!driverEmpID) return;
       try {
         const res = await fetchVehicleUsers(driverEmpID);
-        console.log("driver---", res.data);
         setFetchedDriver(res.data[0]);
       } catch (error) {
         console.error("Error fetching driver data:", error);

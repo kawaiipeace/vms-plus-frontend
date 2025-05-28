@@ -1,6 +1,6 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
 
 interface CreateDriverManagementModalProps {
   csvModalRef: React.RefObject<{
@@ -30,7 +30,7 @@ const CreateDriverManagementModal = forwardRef<
             </button>
           </form>
         </div>
-        <div className="modal-body overflow-y-auto text-center bg-white">
+        <div className="modal-body overflow-y-auto text-center">
           <button
             className="flex border-slate-300 border-[1px] rounded-2xl shadow-none w-full p-3 mb-3"
             onClick={() => router.push("/drivers-management/create")}
@@ -57,7 +57,7 @@ const CreateDriverManagementModal = forwardRef<
               <Image src="/assets/img/graphic/csv_import.svg" width={120} height={120} alt="csv" />
             </div>
             <div className="text-left px-5">
-              <h6 className="font-bold text-lg">สร้างจำนวนมาก</h6>
+              <h6 className="font-bold text-lg">สร้างข้อมูลพนักงานขับรถ</h6>
               <p>อัปโหลดไฟล์ .CSV</p>
             </div>
             <div className="ml-auto">

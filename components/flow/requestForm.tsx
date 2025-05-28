@@ -9,7 +9,14 @@ import TimePicker from "@/components/timePicker";
 import Tooltip from "@/components/tooltips";
 import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
-import { fetchCostTypes, fetchUserApproverUsers, fetchVehicleUsers, uploadFile } from "@/services/masterService";
+import {
+  fetchCostCenter,
+  fetchCostTypes,
+  fetchUserApproverUsers,
+  fetchVehicleUsers,
+  uploadFile,
+} from "@/services/masterService";
+import { convertToThaiDate } from "@/utils/driver-management";
 import { shortenFilename } from "@/utils/shortenFilename";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
@@ -17,32 +24,60 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
-const schema = yup.object().shape({
-  telInternal: yup.string().min(4,"กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
-  telMobile: yup
-    .string()
-    .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
-    .required("กรุณากรอกเบอร์โทรศัพท์"),
-  workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
-  purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
-  remark: yup.string(),
-  referenceNumber: yup.string(),
-  startDate: yup.string(),
-  endDate: yup.string(),
-  refCostTypeCode: yup.string(),
-  timeStart: yup.string(),
-  timeEnd: yup.string(),
-  attachmentFile: yup.string(),
-  deptSapShort: yup.string(),
-  deptSap: yup.string(),
-  userImageUrl: yup.string(),
-  costOrigin: yup.string().required("กรุณาระบุการเบิกค่าใช้จ่าย"),
-});
+const schema = yup
+  .object()
+  .shape({
+    telInternal: yup.string().min(4, "กรุณากรอกเบอร์ภายในให้ถูกต้อง"),
+    telMobile: yup
+      .string()
+      .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
+      .required("กรุณากรอกเบอร์โทรศัพท์"),
+    workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
+    purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
+    remark: yup.string(),
+    referenceNumber: yup.string(),
+    startDate: yup.string(),
+    endDate: yup.string(),
+    refCostTypeCode: yup.string(),
+    timeStart: yup.string(),
+    timeEnd: yup.string(),
+    attachmentFile: yup.string(),
+    deptSapShort: yup.string(),
+    wbsNumber: yup.string().when("refCostTypeCode", {
+      is: (val: string) => val === "3",
+      then: (schema) => schema.required("กรุณาระบุเลขที่ WBS"),
+      otherwise: (schema) => schema.optional(),
+    }),
+    deptSap: yup.string(),
+    userImageUrl: yup.string(),
+    costCenter: yup.string().when("refCostTypeCode", {
+      is: (val: string) => val === "1" || val === "2",
+      then: (schema) => schema.required("กรุณาระบุการเบิกค่าใช้จ่าย"),
+      otherwise: (schema) => schema.optional(),
+    }),
+    pmOrderNo: yup.string(),
+    activityNo: yup.string(),
+    networkNo: yup.string(),
+  })
+  .test(
+    "at-least-one-for-4",
+    "กรุณาระบุ เลขที่ใบสั่ง หรือ เลขที่กิจกรรม หรือ เลขที่โครงข่าย สำหรับประเภทงบประมาณนี้",
+    function (value) {
+      if (value.refCostTypeCode === "4") {
+        return !!(value.pmOrderNo || value.activityNo || value.networkNo);
+      }
+      return true;
+    }
+  );
 
 interface costType {
   ref_cost_type_code: string;
   ref_cost_type_name: string;
-  ref_cost_no: string;
+  cost_center: string;
+}
+
+interface costCenter {
+  cost_center: string;
 }
 
 export default function RequestForm() {
@@ -51,14 +86,34 @@ export default function RequestForm() {
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
   const [selectedTripType, setSelectedTripType] = useState("1");
   const { formData, updateFormData } = useFormContext();
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
-  const [costTypeOptions, setCostTypeOptions] = useState<{ value: string; label: string }[]>([]);
-  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState(costTypeOptions[0]);
-
-  const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
-
-  const [passengerCount, setPassengerCount] = useState(0);
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
+  const [loadingCostCenter, setLoadingCostCenter] = useState(false);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
+    []
+  );
+  const [costTypeOptions, setCostTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{
+    value: string;
+    label: string;
+  }>({
+    value: "",
+    label: "",
+  });
+  const [costCenterOptions, setCostCenterOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [selectedCostCenterOption, setSelectedCostCenterOption] = useState<{
+    value: string;
+    label: string;
+  }>();
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [passengerCount, setPassengerCount] = useState(1);
   const [costTypeDatas, setCostTypeDatas] = useState<costType[]>([]);
+  const [costCenterDatas, setCostCenterDatas] = useState<costCenter[]>([]);
   const [fileError, setFileError] = useState("");
   const [approverData, setApproverData] = useState<ApproverUserType>();
 
@@ -70,10 +125,16 @@ export default function RequestForm() {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
           const driverOptionsArray = [
-            ...vehicleUserData.map((user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.dept_sap})`,
-            })),
+            ...vehicleUserData.map(
+              (user: {
+                emp_id: string;
+                full_name: string;
+                dept_sap: string;
+              }) => ({
+                value: user.emp_id,
+                label: `${user.full_name} (${user.emp_id})`,
+              })
+            ),
           ];
 
           setDriverOptions(driverOptionsArray);
@@ -83,8 +144,6 @@ export default function RequestForm() {
       }
     };
 
-    
-
     const fetchCostTypeRequest = async () => {
       try {
         const response = await fetchCostTypes();
@@ -92,10 +151,15 @@ export default function RequestForm() {
           const costTypeData = response.data;
           setCostTypeDatas(costTypeData);
           const costTypeArr = [
-            ...costTypeData.map((cost: { ref_cost_type_code: string; ref_cost_type_name: string }) => ({
-              value: cost.ref_cost_type_code,
-              label: cost.ref_cost_type_name,
-            })),
+            ...costTypeData.map(
+              (cost: {
+                ref_cost_type_code: string;
+                ref_cost_type_name: string;
+              }) => ({
+                value: cost.ref_cost_type_code,
+                label: cost.ref_cost_type_name,
+              })
+            ),
           ];
 
           setCostTypeOptions(costTypeArr);
@@ -108,28 +172,32 @@ export default function RequestForm() {
     fetchRequests();
     fetchCostTypeRequest();
   }, []);
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
+
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
 
   useEffect(() => {
     if (driverOptions.length > 0 && !selectedVehicleUserOption) {
       setSelectedVehicleUserOption(driverOptions[0]);
     }
-  }, [driverOptions]);
-  
+  }, [driverOptions, selectedVehicleUserOption]);
 
   useEffect(() => {
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
       if (formData.vehicleUserEmpId) {
         setSelectedVehicleUserOption({
           value: formData.vehicleUserEmpId,
-          label: `${formData.vehicleUserEmpName} (${formData.vehicleUserDeptSap})`,
+          label: `${formData.vehicleUserEmpName} (${formData.vehicleUserEmpId})`,
         });
       } else {
-        const defaultVehicleUser = vehicleUserDatas.find((user) => user.emp_id === profile.emp_id);
+        const defaultVehicleUser = vehicleUserDatas.find(
+          (user) => user.emp_id === profile.emp_id
+        );
         if (defaultVehicleUser) {
           setSelectedVehicleUserOption({
             value: defaultVehicleUser.emp_id,
-            label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.dept_sap})`,
+            label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.emp_id})`,
           });
           setValue("telInternal", defaultVehicleUser.tel_internal);
           setValue("telMobile", defaultVehicleUser.tel_mobile);
@@ -145,6 +213,7 @@ export default function RequestForm() {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
           const data = response.data[0];
+          console.log("approver", data);
           setApproverData(data);
         }
       } catch (error) {
@@ -153,13 +222,18 @@ export default function RequestForm() {
     };
 
     fetchApprover();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, vehicleUserDatas]);
 
-  const handleVehicleUserChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedVehicleUserOption(selectedOption as { value: string; label: string });
+  const handleVehicleUserChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
+    setSelectedVehicleUserOption(
+      selectedOption as { value: string; label: string }
+    );
 
-    const empData = vehicleUserDatas.find((user: { emp_id: string }) => user.emp_id === selectedOption.value);
+    const empData = vehicleUserDatas.find(
+      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+    );
 
     if (empData) {
       setValue("telInternal", empData.tel_internal);
@@ -169,21 +243,35 @@ export default function RequestForm() {
       setValue("userImageUrl", empData.image_url);
     }
   };
-
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedCostTypeOption(selectedOption as { value: string; label: string });
-  
+    setSelectedCostTypeOption(
+      selectedOption as { value: string; label: string }
+    );
+    setValue("refCostTypeCode", selectedOption.value); // <-- add this line
+    setValue("costCenter", "");
+
     if (selectedOption.value === "1") {
       const data = costTypeDatas.find(
-        (cost: { ref_cost_type_code: string }) => cost.ref_cost_type_code === selectedOption.value
+        (cost: { ref_cost_type_code: string }) =>
+          cost.ref_cost_type_code === selectedOption.value
       );
-  
+
       if (data) {
-        setValue("costOrigin", data.ref_cost_no);
+        setValue("costCenter", data.cost_center);
       }
-    } 
+    }
   };
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleCostCenterChange = (selectedOption: CustomSelectOption) => {
+    setSelectedCostCenterOption(
+      selectedOption as { value: string; label: string }
+    );
+    setValue("costCenter", selectedOption.value);
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (!event.target.files) return;
     const file = event.target.files?.[0];
     setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
@@ -208,6 +296,7 @@ export default function RequestForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
@@ -228,9 +317,20 @@ export default function RequestForm() {
       deptSapShort: formData.deptSapShort || "",
       deptSap: formData.vehicleUserDeptSap || "",
       userImageUrl: formData.userImageUrl || "",
-      costOrigin: formData.costNo || ""
+      costCenter: formData.costCenter || "",
+      pmOrderNo: formData.pmOrderNo || "",
+      networkNo: formData.networkNo || "",
+      activityNo: formData.activityNo || "",
     },
   });
+
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+  const isOvernightDisabled = startDate === endDate;
+
+  // ADD: Require cost center for type 2
+  const isCostCenterRequired =
+    selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
 
   useEffect(() => {
     if (formData.numberOfPassenger) {
@@ -245,7 +345,8 @@ export default function RequestForm() {
     }
 
     const data = costTypeDatas.find(
-      (cost: { ref_cost_type_code: string }) => String(cost.ref_cost_type_code) === String(formData.refCostTypeCode)
+      (cost: { ref_cost_type_code: string }) =>
+        String(cost.ref_cost_type_code) === String(formData.refCostTypeCode)
     );
 
     if (data) {
@@ -253,25 +354,138 @@ export default function RequestForm() {
         value: data.ref_cost_type_code,
         label: data.ref_cost_type_name,
       });
-      setValue("costOrigin", data.ref_cost_no);
+      setValue("costCenter", data.cost_center);
     }
   }, [formData, costTypeDatas]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleDriverSearch = async (search: string) => {
+    // Debounce handled by parent component or elsewhere
+    if (search.trim().length < 3) {
+      setLoadingDrivers(true);
+      try {
+        const response = await fetchVehicleUsers("");
+        if (response.status === 200) {
+          const vehicleUserData = response.data;
+          const driverOptionsArray = vehicleUserData.map(
+            (user: {
+              emp_id: string;
+              full_name: string;
+              dept_sap: string;
+            }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          );
+          setDriverOptions(driverOptionsArray);
+        } else {
+          setDriverOptions([]);
+        }
+      } catch (error) {
+        setDriverOptions([]);
+        console.error("Error resetting options:", error);
+      } finally {
+        setLoadingDrivers(false);
+      }
+      return;
+    }
+
+    setLoadingDrivers(true);
+    try {
+      const response = await fetchVehicleUsers(search);
+      if (response.status === 200) {
+        const vehicleUserData = response.data;
+        const driverOptionsArray = vehicleUserData.map(
+          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.emp_id})`,
+          })
+        );
+        setDriverOptions(driverOptionsArray);
+      } else {
+        setDriverOptions([]);
+      }
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        setDriverOptions([]);
+        console.error("Search failed:", error);
+      }
+    } finally {
+      setLoadingDrivers(false);
+    }
+  };
+
+  const handleCostCenterSearch = async (search: string) => {
+    if (search.trim().length > 3) {
+      setLoadingCostCenter(true);
+      try {
+        const response = await fetchCostCenter(search);
+        if (response.status === 200) {
+          const costCenterData = response.data;
+          setCostCenterDatas(costCenterData);
+          const costCenterArr = [
+            ...costCenterData.map((cost: { cost_center: string }) => ({
+              value: cost.cost_center,
+              label: cost.cost_center,
+            })),
+          ];
+
+          setCostCenterOptions(costCenterArr);
+        } else {
+          setCostCenterOptions([]);
+        }
+      } catch (error) {
+        setCostCenterOptions([]);
+        console.error("Error resetting options:", error);
+      } finally {
+        setLoadingCostCenter(false);
+      }
+      return;
+    }
+
+    setLoadingCostCenter(true);
+    try {
+      const response = await fetchVehicleUsers(search);
+      if (response.status === 200) {
+        const vehicleUserData = response.data;
+        const driverOptionsArray = vehicleUserData.map(
+          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.emp_id})`,
+          })
+        );
+        setDriverOptions(driverOptionsArray);
+      } else {
+        setDriverOptions([]);
+      }
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        setDriverOptions([]);
+        console.error("Search failed:", error);
+      }
+    } finally {
+      setLoadingDrivers(false);
+    }
+  };
+
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption.value;
     const result = selectedVehicleUserOption.label.split("(")[0].trim();
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;
     data.numberOfPassenger = passengerCount;
-    data.refCostTypeCode = selectedCostTypeOption.value;
+    data.refCostTypeCode = selectedCostTypeOption?.value;
     data.tripType = selectedTripType;
     data.approvedRequestDeptSap = approverData?.dept_sap;
     data.approvedRequestDeptSapFull = approverData?.dept_sap_full;
     data.approvedRequestDeptSapShort = approverData?.dept_sap_short;
     data.approvedRequestEmpId = approverData?.emp_id;
     data.approvedRequestEmpName = approverData?.full_name;
-    data.costNo = data.costOrigin;
+
+    if (selectedCostTypeOption?.value === "2" && selectedCostCenterOption) {
+      data.costCenter = selectedCostCenterOption.value;
+    } else {
+      data.costCenter = data.costCenter;
+    }
     localStorage.setItem("processOne", "Done");
     updateFormData(data);
     router.push("process-two");
@@ -286,7 +500,9 @@ export default function RequestForm() {
               <div className="page-section-header border-0">
                 <div className="page-header-left">
                   <div className="page-title">
-                    <span className="page-title-label">ข้อมูลผู้ใช้ยานพาหนะ</span>
+                    <span className="page-title-label">
+                      ข้อมูลผู้ใช้ยานพาหนะ
+                    </span>
                   </div>
                 </div>
               </div>
@@ -311,6 +527,10 @@ export default function RequestForm() {
                       options={driverOptions}
                       value={selectedVehicleUserOption}
                       onChange={handleVehicleUserChange}
+                      showDescriptions={true}
+                      onSearchInputChange={handleDriverSearch}
+                      loading={loadingDrivers}
+                      enableSearchOnApi={true}
                     />
                   </div>
                 </div>
@@ -329,7 +549,9 @@ export default function RequestForm() {
                     <div className="input-group is-readonly">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">business_center</i>
+                          <i className="material-symbols-outlined">
+                            business_center
+                          </i>
                         </span>
                       </div>
                       <input
@@ -346,7 +568,11 @@ export default function RequestForm() {
                 <div className="flex-1">
                   <div className="form-group">
                     <label className="form-label">เบอร์ภายใน</label>
-                    <div className={`input-group ${errors.telInternal && "is-invalid"}`}>
+                    <div
+                      className={`input-group ${
+                        errors.telInternal && "is-invalid"
+                      }`}
+                    >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="material-symbols-outlined">call</i>
@@ -359,17 +585,25 @@ export default function RequestForm() {
                         placeholder="ระบุเบอร์ภายใน"
                       />
                     </div>
-                    {errors.telInternal && <FormHelper text={String(errors.telInternal.message)} />}
+                    {errors.telInternal && (
+                      <FormHelper text={String(errors.telInternal.message)} />
+                    )}
                   </div>
                 </div>
 
                 <div className="flex-1">
                   <div className="form-group">
                     <label className="form-label">เบอร์โทรศัพท์</label>
-                    <div className={`input-group ${errors.telMobile && "is-invalid"}`}>
+                    <div
+                      className={`input-group ${
+                        errors.telMobile && "is-invalid"
+                      }`}
+                    >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">smartphone</i>
+                          <i className="material-symbols-outlined">
+                            smartphone
+                          </i>
                         </span>
                       </div>
                       <input
@@ -379,7 +613,9 @@ export default function RequestForm() {
                         placeholder="ระบุเบอร์โทรศัพท์"
                       />
                     </div>
-                    {errors.telMobile && <FormHelper text={String(errors.telMobile.message)} />}
+                    {errors.telMobile && (
+                      <FormHelper text={String(errors.telMobile.message)} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -389,7 +625,9 @@ export default function RequestForm() {
               <div className="page-section-header border-0">
                 <div className="page-header-left">
                   <div className="page-title">
-                    <span className="page-title-label">รายละเอียดการเดินทาง</span>
+                    <span className="page-title-label">
+                      รายละเอียดการเดินทาง
+                    </span>
                   </div>
                 </div>
               </div>
@@ -401,11 +639,15 @@ export default function RequestForm() {
                     <div className="input-group">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">calendar_month</i>
+                          <i className="material-symbols-outlined">
+                            calendar_month
+                          </i>
                         </span>
                       </div>
+
                       <DatePicker
-                        placeholder={formData?.startDate || "ระบุวันที่"}
+                        placeholder="ระบุวันที่เริ่มต้นเดินทาง"
+                        defaultValue={convertToThaiDate(formData.startDate)}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -418,6 +660,7 @@ export default function RequestForm() {
                     <div className="input-group">
                       <TimePicker
                         defaultValue={formData.timeStart}
+                        placeholder="ระบุเวลาที่ออกเดินทาง"
                         onChange={(dateStr) => setValue("timeStart", dateStr)}
                       />
                     </div>
@@ -430,11 +673,15 @@ export default function RequestForm() {
                     <div className="input-group">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">calendar_month</i>
+                          <i className="material-symbols-outlined">
+                            calendar_month
+                          </i>
                         </span>
                       </div>
+
                       <DatePicker
-                        placeholder={formData?.endDate || "ระบุวันที่"}
+                        placeholder="ระบุวันที่สิ้นสุดเดินทาง"
+                        defaultValue={convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
                       />
                     </div>
@@ -447,6 +694,7 @@ export default function RequestForm() {
                     <div className="input-group">
                       <TimePicker
                         defaultValue={formData.timeEnd}
+                        placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
                       />
                     </div>
@@ -456,10 +704,14 @@ export default function RequestForm() {
                 <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">
-                      จำนวนผู้โดยสาร <span className="form-optional">(รวมผู้ขับขี่)</span>
+                      จำนวนผู้โดยสาร{" "}
+                      <span className="form-optional">(รวมผู้ขับขี่)</span>
                     </label>
 
-                    <NumberInput value={passengerCount} onChange={setPassengerCount} />
+                    <NumberInput
+                      value={passengerCount}
+                      onChange={setPassengerCount}
+                    />
                   </div>
                 </div>
 
@@ -480,6 +732,7 @@ export default function RequestForm() {
                         label="ค้างแรม"
                         value="2"
                         selectedValue={selectedTripType}
+                        disabled={isOvernightDisabled}
                         setSelectedValue={setSelectedTripType}
                       />
                     </div>
@@ -489,10 +742,16 @@ export default function RequestForm() {
                 <div className="col-span-12 md:col-span-6">
                   <div className="form-group">
                     <label className="form-label">สถานที่ปฏิบัติงาน</label>
-                    <div className={`input-group ${errors.workPlace && "is-invalid"}`}>
+                    <div
+                      className={`input-group ${
+                        errors.workPlace && "is-invalid"
+                      }`}
+                    >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">emoji_transportation</i>
+                          <i className="material-symbols-outlined">
+                            emoji_transportation
+                          </i>
                         </span>
                       </div>
                       <input
@@ -502,14 +761,20 @@ export default function RequestForm() {
                         placeholder="ระบุสถานที่ปฏิบัติงาน"
                       />
                     </div>
-                    {errors.workPlace && <FormHelper text={String(errors.workPlace.message)} />}
+                    {errors.workPlace && (
+                      <FormHelper text={String(errors.workPlace.message)} />
+                    )}
                   </div>
                 </div>
 
                 <div className="col-span-12 md:col-span-6">
                   <div className="form-group">
                     <label className="form-label">วัตถุประสงค์</label>
-                    <div className={`input-group ${errors.purpose && "is-invalid"}`}>
+                    <div
+                      className={`input-group ${
+                        errors.purpose && "is-invalid"
+                      }`}
+                    >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="material-symbols-outlined">target</i>
@@ -522,14 +787,17 @@ export default function RequestForm() {
                         placeholder="ระบุวัตถุประสงค์"
                       />
                     </div>
-                    {errors.purpose && <FormHelper text={String(errors.purpose.message)} />}
+                    {errors.purpose && (
+                      <FormHelper text={String(errors.purpose.message)} />
+                    )}
                   </div>
                 </div>
 
                 <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">
-                      เลขที่หนังสืออ้างอิง <span className="form-optional">(ถ้ามี)</span>
+                      เลขที่หนังสืออ้างอิง{" "}
+                      <span className="form-optional">(ถ้ามี)</span>
                     </label>
                     <div className="input-group">
                       <div className="input-group-prepend">
@@ -552,12 +820,17 @@ export default function RequestForm() {
                     <label className="form-label">
                       เอกสารแนบ <span className="form-optional">(ถ้ามี)</span>
                     </label>
-                    <div className={`input-group input-uploadfile ${fileError && "is-invalid"}`}>
-                      {/* <input type="file" className="file-input hidden" /> */}
+                    <div
+                      className={`input-group input-uploadfile ${
+                        fileError && "is-invalid"
+                      }`}
+                    >
                       <label className="flex items-center gap-2 cursor-pointer">
                         <div className="input-group-prepend">
                           <span className="input-group-text">
-                            <i className="material-symbols-outlined">attach_file</i>
+                            <i className="material-symbols-outlined">
+                              attach_file
+                            </i>
                           </span>
                         </div>
                         <input
@@ -566,7 +839,9 @@ export default function RequestForm() {
                           className="file-input hidden"
                           onChange={handleFileChange}
                         />
-                        <div className="input-uploadfile-label w-full">{fileName}</div>
+                        <div className="input-uploadfile-label w-full">
+                          {fileName}
+                        </div>
                       </label>
                     </div>
                     {fileError && <FormHelper text={fileError} />}
@@ -584,7 +859,12 @@ export default function RequestForm() {
                           <i className="material-symbols-outlined">sms</i>
                         </span>
                       </div>
-                      <input type="text" className="form-control" {...register("remark")} placeholder="ระบุหมายเหตุ" />
+                      <input
+                        type="text"
+                        className="form-control"
+                        {...register("remark")}
+                        placeholder="ระบุหมายเหตุ"
+                      />
                     </div>
                   </div>
                 </div>
@@ -613,28 +893,123 @@ export default function RequestForm() {
                     />
                   </div>
                 </div>
-
-                <div className="md:col-span-3 col-span-12">
-                  <div className="form-group">
-                    <label className="form-label">ศูนย์ต้นทุน</label>
-                    <div className={`input-group ${selectedCostTypeOption?.value === "1" ? 'is-readonly' : ''}`}>
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">crop_free</i>
-                        </span>
+                {selectedCostTypeOption?.value === "1" && (
+                  <div className="md:col-span-3 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">ศูนย์ต้นทุน</label>
+                      <div
+                        className={`input-group ${
+                          selectedCostTypeOption?.value === "1"
+                            ? "is-readonly"
+                            : ""
+                        }`}
+                      >
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">
+                              crop_free
+                            </i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          {...register("costCenter")}
+                        />
                       </div>
-                      <input type="text" className="form-control" {...register("costOrigin")} />
                     </div>
                   </div>
-                </div>
+                )}
+                {selectedCostTypeOption?.value === "2" && (
+                  <div className="md:col-span-4 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">ศูนย์ต้นทุน</label>
+                      <CustomSelect
+                        iconName="business_center"
+                        w="w-full"
+                        options={costCenterOptions}
+                        value={selectedCostCenterOption}
+                        onChange={handleCostCenterChange}
+                        onSearchInputChange={handleCostCenterSearch}
+                        loading={loadingCostCenter}
+                        enableSearchOnApi={true}
+                      />
+                    </div>
+                  </div>
+                )}
+                {selectedCostTypeOption?.value === "3" && (
+                  <>
+                    <div className="md:col-span-3 col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">เลขที่ WBS</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ระบุเลขที่ WBS"
+                            {...register("wbsNumber")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:col-span-3 col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">เลขที่โครงข่าย</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ระบุเลขที่โครงข่าย"
+                            {...register("networkNo")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:col-span-3 col-span-12">
+                      <div className="form-group">
+                        <label className="form-label">เลขที่กิจกรรม</label>
+                        <div className={`input-group`}>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="ระบุเลขที่กิจกรรม"
+                            {...register("activityNo")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+                {selectedCostTypeOption?.value === "4" && (
+                  <div className="md:col-span-3 col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">เลขที่ใบสั่ง</label>
+                      <div className={`input-group`}>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="ระบุเลขที่ใบสั่ง"
+                          {...register("pmOrderNo")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+
         <div className="form-action">
-          <button type="submit" className="btn btn-primary" disabled={!isValid}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={!isValid || isCostCenterRequired}
+          >
             ต่อไป
-            <i className="material-symbols-outlined icon-settings-300-24">arrow_right_alt</i>
+            <i className="material-symbols-outlined icon-settings-300-24">
+              arrow_right_alt
+            </i>
           </button>
         </div>
       </form>

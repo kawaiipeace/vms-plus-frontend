@@ -56,18 +56,21 @@ export default function CarpoolProcessFive() {
     if (refetch) {
       fetchCarpoolDriverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
   useEffect(() => {
     if (!id) {
       if (formData.mas_carpool_uid) fetchCarpoolDriverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
     if (id) {
       fetchCarpoolDriverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCarpoolDriverSearchFunc = async (newPagination?: any) => {
@@ -75,8 +78,8 @@ export default function CarpoolProcessFive() {
       const response = await getCarpoolDriverSearch(
         id || formData.mas_carpool_uid,
         {
-          ...newPagination,
           ...pagination,
+          ...newPagination,
         }
       );
       const result = response.data;
@@ -93,10 +96,6 @@ export default function CarpoolProcessFive() {
       ...pagination,
       page: newPage,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
@@ -107,11 +106,6 @@ export default function CarpoolProcessFive() {
       limit,
       page: 1,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
   };
 
   const handleActive = async () => {
@@ -204,6 +198,7 @@ export default function CarpoolProcessFive() {
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
+                            defaultChecked={active === "1"}
                             checked={active === "1"}
                             onClick={handleActive}
                             className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
@@ -233,7 +228,7 @@ export default function CarpoolProcessFive() {
                   <div className="page-section-header border-0 !pb-0">
                     <div className="page-header-left">
                       <div className="page-title">
-                        <span className="page-title-label">ยานพาหนะ</span>
+                        <span className="page-title-label">พนักงานขับรถ</span>
                         <span className="badge badge-outline badge-gray !rounded">
                           {pagination.total} คัน
                         </span>
@@ -283,10 +278,9 @@ export default function CarpoolProcessFive() {
                     alt=""
                     className="w-[200px] h-[200px]"
                   ></Image>
-                  <div className="emptystate-title">เพิ่มผู้อนุมัติ</div>
+                  <div className="emptystate-title">เพิ่มพนักงานขับรถ</div>
                   <div className="emptystate-text">
-                    <div>ผู้อนุมัติมีหน้าที่อนุมัติการจองยานพาหนะ</div>
-                    <div>และพนักงานขับรถในขั้นตอนสุดท้่าย</div>
+                    <div>พนักงานขับรถที่จะให้บริการในกลุ่มนี้</div>
                   </div>
                   <div className="emptystate-action">
                     {!id && (

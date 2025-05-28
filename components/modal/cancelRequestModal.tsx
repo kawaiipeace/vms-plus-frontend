@@ -4,7 +4,11 @@ import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
 import { cancelRequest } from "@/services/bookingUser";
-import { updateApproverLicAnnualCancel, updateFinalApproverLicAnnualCancel, updateUserLicAnnualCancel } from "@/services/driver";
+import {
+  updateApproverLicAnnualCancel,
+  updateFinalApproverLicAnnualCancel,
+  updateUserLicAnnualCancel,
+} from "@/services/driver";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
 import {
@@ -41,6 +45,7 @@ interface Props {
   datetime?: string;
   tax_invoice_no?: string;
   onBack?: () => void;
+  onSuccess?: () => void;
 }
 
 const CancelRequestModal = forwardRef<
@@ -60,7 +65,8 @@ const CancelRequestModal = forwardRef<
       fuelId,
       datetime,
       tax_invoice_no,
-      onBack
+      onBack,
+      onSuccess
     },
     ref
   ) => {
@@ -69,7 +75,7 @@ const CancelRequestModal = forwardRef<
     const modalRef = useRef<HTMLDialogElement>(null);
     const [inputValue, setInputValue] = useState("");
     const [isValid, setIsValid] = useState(false);
-      const { showToast } = useToast();
+    const { showToast } = useToast();
 
     const schema = yup.object().shape({
       input: yup.string().required("This field is required"),
@@ -157,12 +163,15 @@ const CancelRequestModal = forwardRef<
                 "/administrator/request-list?cancel-req=success&request-id=" +
                   data.result?.request_no
               );
-            }   else if (role === "licAdmin" || role === "licFinalAdmin") {
+            } else if (role === "licAdmin" || role === "licFinalAdmin") {
+              if(onSuccess) {
+                onSuccess
+              }
               router.push(
                 "/administrator/booking-approver?cancel-req=success&request-id=" +
                   data.result?.request_no
               );
-            }else if (role === "recordTravel") {
+            } else if (role === "recordTravel") {
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
               );
@@ -170,17 +179,18 @@ const CancelRequestModal = forwardRef<
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
               );
-            }else if (role === "userLic") {
+            } else if (role === "userLic") {
               showToast({
                 title: "ยกเลิกคำขอสำเร็จ",
                 desc: (
                   <>
-                    คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี 
+                    คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
                     <br />
-                    เลขที่ {data?.result?.request_annual_driver_no} ถูกยกเลิกเรียบร้อยแล้ว
+                    เลขที่ {data?.result?.request_annual_driver_no}{" "}
+                    ถูกยกเลิกเรียบร้อยแล้ว
                   </>
                 ),
-                status: "success"
+                status: "success",
               });
               modalRef.current?.close(); // Close the cancel modal first
               if (onBack) {

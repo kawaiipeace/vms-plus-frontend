@@ -58,10 +58,6 @@ export default function RequestTabs() {
     switch (code) {
       case "20,21,30,31,40,41,50,51,60,70,71":
         return <ArpproveFlow />;
-      case "50": // รับกุญแจ
-      case "60": // เดินทาง
-      case "70": // คืนยานพาหนะ
-        return "";
       case "80": // เสร็จสิ้น
         return <SuccessFlow />; // Replace with your component
       case "90": // ยกเลิก

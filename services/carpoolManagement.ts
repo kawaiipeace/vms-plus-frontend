@@ -400,6 +400,18 @@ export const putCarpoolSetActive = async (id: string, is_active: string) => {
   }
 };
 
+export const putCarpoolUpdate = async (id: string, data: CarpoolForm) => {
+  try {
+    const response = await axiosInstance.put(
+      "carpool-management/update/" + id,
+      data
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const putCarpoolSetVehicleActive = async (
   id: string,
   is_active: string
@@ -448,13 +460,78 @@ export const deleteCarpoolDriver = async (id: string) => {
 };
 
 export const getCarpoolDriverDetails = async (id: string) => {
+  const data = [
+    {
+      mas_driver_uid: id,
+    },
+  ];
   try {
-    const response = await axiosInstance.get(
-      "carpool-management/driver-detail/" + id
+    const response = await axiosInstance.post(
+      "carpool-management/driver-mas-details",
+      data
     );
 
     return response;
   } catch (error) {
     throw error;
+  }
+};
+
+export const getCarpoolVehicleTimeline = async (id: string, params: any) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/vehicle-timeline/" + id,
+      { params }
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolDriverTimeline = async (id: string, params: any) => {
+  try {
+    const response = await axiosInstance.get(
+      "carpool-management/driver-timeline/" + id,
+      { params }
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCarpoolExport = async (params: any) => {
+  try {
+    const response = await axiosInstance.get("carpool-management/export", {
+      params,
+      responseType: "blob",
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getVehicleStatus = async () => {
+  try {
+    const { data } = await axiosInstance.get("ref/vehicle-status");
+    return data;
+  } catch (error: any) {
+    console.error("Error fetching vehicle type:", error.message || error);
+    throw new Error("Failed to fetch vehicle type");
+  }
+};
+
+export const getDriverStatus = async () => {
+  try {
+    const { data } = await axiosInstance.get("ref/driver-status");
+    return data;
+  } catch (error: any) {
+    console.error("Error fetching vehicle type:", error.message || error);
+    throw new Error("Failed to fetch vehicle type");
   }
 };

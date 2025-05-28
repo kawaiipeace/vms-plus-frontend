@@ -1,5 +1,20 @@
 "use client";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import { UploadFileType } from "@/app/types/upload-type";
+import {
+  DriverLicenseCardType,
+  VehicleUserType,
+} from "@/app/types/vehicle-user-type";
+import { useToast } from "@/contexts/toast-context";
+import { createAnnualLic, resendLicenseAnnual } from "@/services/driver";
+import {
+  fetchUserApprovalLic,
+  fetchUserConfirmerLic,
+} from "@/services/masterService";
+import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import {
   forwardRef,
   useEffect,
@@ -7,24 +22,10 @@ import {
   useRef,
   useState,
 } from "react";
-import Link from "next/link";
-import EditApproverModal from "./editApproverModal";
-import {
-  VehicleUserType,
-} from "@/app/types/vehicle-user-type";
-import EditFinalApproverModal from "./editFinalApproverModal";
-import { createAnnualLic, resendLicenseAnnual } from "@/services/driver";
-import { useToast } from "@/contexts/toast-context";
 import ApproverInfoCard from "./ApproverInfoCard";
-import {
-  fetchUserApprovalLic,
-  fetchUserFinalApprovalLic,
-} from "@/services/masterService";
-import { convertToISO } from "@/utils/convertToISO";
-import { UploadFileType } from "@/app/types/upload-type";
-import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
-import { useRouter } from "next/navigation";
-import dayjs from "dayjs";
+import EditApproverModal from "./editApproverModal";
+import EditFinalApproverModal from "./editFinalApproverModal";
+import Link from "next/link";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -46,7 +47,7 @@ interface ReturnCarAddStep2ModalProps {
   editable?: boolean;
   valueFormStep1?: ValueFormStep1;
   requestData?: RequestAnnualDriver;
-
+  driverData?: DriverLicenseCardType;
   clearForm?: () => void;
   onSubmit?: () => void;
   onBack?: () => void;
@@ -62,6 +63,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     {
       valueFormStep1,
       requestData,
+      driverData,
       editable,
       onTrackStatus,
       clearForm,
@@ -80,10 +82,8 @@ const RequestDrivingStepTwoModal = forwardRef<
       closeModal: () => void;
     } | null>(null);
 
-    console.log("valueFormStep1", valueFormStep1);
     const [approvers, setApprovers] = useState<VehicleUserType>();
     const [finalApprovers, setFinalApprovers] = useState<VehicleUserType>();
-    const router = useRouter();
 
     const { showToast } = useToast();
 
@@ -95,7 +95,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     useEffect(() => {
       const fetchApproversData = async () => {
         try {
-          const response = await fetchUserApprovalLic();
+          const response = await fetchUserConfirmerLic("");
           if (response && response.data) {
             setApprovers(response.data[0]);
           }
@@ -106,8 +106,8 @@ const RequestDrivingStepTwoModal = forwardRef<
 
       const fetchFinalApproversData = async () => {
         try {
-          const response = await fetchUserFinalApprovalLic();
-          if (response && response.data) {
+          const response = await fetchUserApprovalLic("");
+          if (response) {
             setFinalApprovers(response.data[0]);
           }
         } catch (error) {
@@ -126,12 +126,36 @@ const RequestDrivingStepTwoModal = forwardRef<
       setFinalApprovers(updatedApprover);
     };
 
+    useEffect(() => {
+      console.log("rrequest", requestData);
+      if (requestData) {
+        setApprovers({
+          emp_id: requestData?.confirmed_request_emp_id || "",
+          full_name: requestData?.confirmed_request_emp_name || "",
+          image_url: requestData?.confirmed_request_image_url || "",
+          dept_sap_short: requestData?.confirmed_request_dept_sap_short || "",
+          tel_mobile: requestData?.confirmed_request_mobile_number || "",
+          tel_internal: requestData?.confirmed_request_phone_number || "",
+        });
+
+        setFinalApprovers({
+          emp_id: requestData?.approved_request_emp_id || "",
+          full_name: requestData?.approved_request_emp_name || "",
+          image_url: requestData?.approved_request_image_url || "",
+          dept_sap_short: requestData?.approved_request_dept_sap_short || "",
+          tel_mobile: requestData?.approved_request_mobile_number || "",
+          tel_internal: requestData?.approved_request_phone_number || "",
+        });
+      }
+    }, [requestData]);
+
     const handleSubmit = async () => {
+      console.log(valueFormStep1);
       try {
         const basePayload: any = {
           annual_yyyy: Number(valueFormStep1?.year),
-          approved_request_emp_id: approvers?.emp_id,
-          confirmed_request_emp_id: finalApprovers?.emp_id,
+          approved_request_emp_id: finalApprovers?.emp_id,
+          confirmed_request_emp_id: approvers?.emp_id,
           driver_license_expire_date: convertToISO(
             String(valueFormStep1?.licenseExpiryDate),
             "00:00"
@@ -141,78 +165,101 @@ const RequestDrivingStepTwoModal = forwardRef<
           ref_driver_license_type_code:
             valueFormStep1?.driverLicenseType?.value,
         };
-
-        // Add certificate fields only if they exist
-        if (valueFormStep1?.trainingEndDate) {
-          basePayload.driver_certificate_expire_date = convertToISO(
-            String(valueFormStep1.trainingEndDate),
-            "00:00"
-          );
-        }
-
+        console.log("payload======>", basePayload);
         if (
-          valueFormStep1?.certificateImages &&
-          valueFormStep1.certificateImages.length > 0
+          valueFormStep1?.driverLicenseType?.value === "2+" ||
+          valueFormStep1?.driverLicenseType?.value === "3+"
         ) {
-          basePayload.driver_certificate_img =
-            valueFormStep1.certificateImages[0].file_url;
-        }
+          // Add certificate fields only if they exist
+          if (valueFormStep1?.trainingEndDate) {
+            basePayload.driver_certificate_expire_date = convertToISO(
+              String(valueFormStep1.trainingEndDate),
+              "00:00"
+            );
+          }
 
-        if (valueFormStep1?.trainingDate) {
-          basePayload.driver_certificate_issue_date = convertToISO(
-            String(valueFormStep1.trainingDate),
-            "00:00"
-          );
-        }
+          if (
+            valueFormStep1?.certificateImages &&
+            valueFormStep1.certificateImages.length > 0
+          ) {
+            basePayload.driver_certificate_img =
+              valueFormStep1.certificateImages[0].file_url;
+          }
 
-        if (valueFormStep1?.courseName) {
-          basePayload.driver_certificate_name = valueFormStep1.courseName;
-        }
+          if (valueFormStep1?.trainingDate) {
+            basePayload.driver_certificate_issue_date = convertToISO(
+              String(valueFormStep1.trainingDate),
+              "00:00"
+            );
+          }
 
-        if (valueFormStep1?.certificateNumber) {
-          basePayload.driver_certificate_no = valueFormStep1.certificateNumber;
-        }
+          if (valueFormStep1?.courseName) {
+            basePayload.driver_certificate_name = valueFormStep1.courseName;
+          }
 
-        if (valueFormStep1?.vehicleType?.value) {
-          basePayload.driver_certificate_type_code = Number(
-            valueFormStep1.vehicleType.value
-          );
+          if (valueFormStep1?.certificateNumber) {
+            basePayload.driver_certificate_no =
+              valueFormStep1.certificateNumber;
+          }
+
+          if (valueFormStep1?.vehicleType?.value) {
+            basePayload.driver_certificate_type_code = Number(
+              valueFormStep1.vehicleType.value
+            );
+          }
         }
-        console.log(basePayload);
+        console.log("next", driverData?.next_trn_request_annual_driver_uid);
         let response;
+        let responseType;
         if (editable) {
+          const id = driverData?.license_status !== "อนุมัติแล้ว" ? driverData?.trn_request_annual_driver_uid : driverData?.next_trn_request_annual_driver_uid;
           response = await resendLicenseAnnual(
-            requestData?.trn_request_annual_driver_uid || "",
+            id || "",
             basePayload
           );
-          console.log('res',response);
+
+          responseType = "resend";
         } else {
           response = await createAnnualLic(basePayload);
+          responseType = "create";
         }
 
         if (response) {
-        
-          showToast({
-            title: "สร้างคำขอสำเร็จ",
-            desc: (
-              <>
-                สร้างคำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี <br />
-                เลขที่ {response?.data?.result?.request_annual_driver_no}{" "}
-                เรียบร้อยแล้ว
-              </>
-            ),
-            seeDetail: {
-              onClick: () => {
-                modalRef.current?.close();
-                if (onTrackStatus) {
-                  onTrackStatus();
-                }
-              },
-              text: "ติดตามสถานะ",
-            },
-            seeDetailText: "ติดตามสถานะ",
-            status: "success",
-          });
+          if(responseType === "create"){
+            showToast({
+              title: "สร้างคำขอสำเร็จ",
+              desc: (
+                <>
+                  สร้างคำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี <br />
+                  เลขที่ {response?.data?.result?.request_annual_driver_no}{" "}
+                  เรียบร้อยแล้ว <br />
+                  <Link
+                    className="text-brand-900 font-semibold"
+                    href={
+                      "/administrator/driver-license-confirmer" +
+                      response?.data?.result.trn_request_annual_driver_uid
+                    }
+                  >
+                    ติดตามสถานะ
+                  </Link>
+                </>
+              ),
+              status: "success",
+            });
+          }else{
+            showToast({
+              title: "แก้ไขสำเร็จ",
+              desc: (
+                <>
+                  ตีกลับคำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี <br />
+                  เลขที่ {response?.data?.result?.request_annual_driver_no}{" "}
+                  เรียบร้อยแล้ว <br />
+                </>
+              ),
+              status: "success",
+            });
+          }
+       
 
           // Close modal first
           modalRef.current?.close();
@@ -245,8 +292,14 @@ const RequestDrivingStepTwoModal = forwardRef<
                     keyboard_arrow_left
                   </i>{" "}
                   ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-              {requestData?.license_status === "มีผลปีถัดไป" && dayjs().year() + 543}{" "}
-              {requestData?.next_license_status !== "" && dayjs().year() + 544}
+                  {(driverData?.license_status !== "ไม่มี" && requestData?.license_status !== "ตีกลับ") &&
+                    <>
+                      {driverData?.license_status === "มีผลปีถัดไป" &&
+                        dayjs().year() + 543}
+                      {driverData?.next_license_status !== "" &&
+                        dayjs().year() + 544}
+                    </>
+                  }
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
@@ -265,38 +318,38 @@ const RequestDrivingStepTwoModal = forwardRef<
                   Step 2: ผู้อนุมัติ
                 </p>
 
-                { (approvers?.emp_id !== finalApprovers?.emp_id) && 
-                <div className="form-section">
-                  <div className="form-section-header">
-                    <div className="form-section-header-title">
-                      ผู้อนุมัติต้นสังกัด
-                    </div>
-                    {editable && (
-                      <button
-                        className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
+                {approvers?.emp_id !== finalApprovers?.emp_id && (
+                  <div className="form-section">
+                    <div className="form-section-header">
+                      <div className="form-section-header-title">
+                        ผู้อนุมัติต้นสังกัด
+                      </div>
+                      {editable && (
+                        <button
+                          className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
                             modalRef.current?.close();
-                          editApproverModalRef.current?.openModal();
-                        }}
-                      >
-                        แก้ไข
-                      </button>
-                    )}
+                            editApproverModalRef.current?.openModal();
+                          }}
+                        >
+                          แก้ไข
+                        </button>
+                      )}
+                    </div>
+                    <ApproverInfoCard
+                      user={{
+                        image_url: approvers?.image_url || "",
+                        full_name: approvers?.full_name || "",
+                        emp_id: approvers?.emp_id || "",
+                        dept_sap_short: approvers?.dept_sap_short || "",
+                        tel_mobile: approvers?.tel_mobile || "",
+                        tel_internal: approvers?.tel_internal || "",
+                      }}
+                    />
                   </div>
-                  <ApproverInfoCard
-                    user={{
-                      image_url: approvers?.image_url || "",
-                      full_name: approvers?.full_name || "",
-                      emp_id: approvers?.emp_id || "",
-                      dept_sap_short: approvers?.dept_sap_short || "",
-                      tel_mobile: approvers?.tel_mobile || "",
-                      tel_internal: approvers?.tel_internal || "",
-                    }}
-                  />
-                </div>
-}
+                )}
 
                 <div className="form-section">
                   <div className="form-section-header">
@@ -331,10 +384,15 @@ const RequestDrivingStepTwoModal = forwardRef<
                 <div className="text-left mt-5">
                   การกดปุ่ม "ขออนุมัติ" จะถือว่าท่านรับรองว่ามีคุณสมบัติถูกต้อง
                   <br></br>
-                  <Link href="#" className="text-[#444CE7] underline">
+                  <a
+                    href="/assets/อนุมัติให้พนักงานขับขี่รถยนต์ กฟภ. โดยใช้.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#444CE7] underline"
+                  >
                     ตามอนุมัติ ผวก. ลว. 16 ก.พ. 2541 เรื่อง ให้พนักงานของ กฟภ.
                     ขับรถยนต์ที่ใช้ใบอนุญาตขับขี่ส่วนบุคคล
-                  </Link>{" "}
+                  </a>
                 </div>
               </div>
               <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
@@ -371,7 +429,7 @@ const RequestDrivingStepTwoModal = forwardRef<
           requestData={requestData}
           title={"แก้ไขผู้อนุมัติต้นสังกัด"}
           onUpdate={handleApproverUpdate}
-            onBack={() => {
+          onBack={() => {
             editApproverModalRef.current?.closeModal();
             modalRef.current?.showModal();
           }}

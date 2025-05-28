@@ -56,25 +56,28 @@ export default function CarpoolProcessThree() {
     if (refetch) {
       fetchCarpoolApproverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
   useEffect(() => {
     if (!id) {
       if (formData.mas_carpool_uid) fetchCarpoolApproverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
     if (id) {
       fetchCarpoolApproverSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCarpoolApproverSearchFunc = async (newPagination?: any) => {
     try {
       const response = await getCarpoolApproverSearch(
         id || formData.mas_carpool_uid,
-        { ...newPagination, ...pagination }
+        { ...pagination, ...newPagination }
       );
       const result = response.data;
       setData(result.approvers);
@@ -90,10 +93,6 @@ export default function CarpoolProcessThree() {
       ...pagination,
       page: newPage,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
@@ -104,11 +103,6 @@ export default function CarpoolProcessThree() {
       limit,
       page: 1, // Reset to the first page when page size changes
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
   };
 
   const handleActive = async () => {
@@ -119,7 +113,7 @@ export default function CarpoolProcessThree() {
       );
       if (response.request.status === 200) {
         router.push(
-          "/carpool-management/form/process-five?id=" +
+          "/carpool-management/form/process-three?id=" +
             id +
             "&name=" +
             name +

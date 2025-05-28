@@ -3,7 +3,7 @@ import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import FilterModal from "@/components/modal/filterModal";
 import RequestListTable from "@/components/table/request-list-table";
 import { requests } from "@/services/bookingUser";
-import dayjs from "dayjs";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ListFlow from "./flow/listFlow";
@@ -22,7 +22,7 @@ export default function ArpproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
-    ref_request_status_code: "",
+    ref_request_status_code: "20,21,30,31,40,41,50,51,60,70,71",
     order_by: "request_no",
     order_dir: "desc",
     startdate: "",
@@ -69,7 +69,6 @@ export default function ArpproveFlow() {
       "70": { iconName: "key", status: "info" },
       "71": { iconName: "key", status: "info" },
       "80": { iconName: "check", status: "success" },
-      "90": { iconName: "delete", status: "default" },
     };
 
   const handlePageChange = (newPage: number) => {
@@ -104,7 +103,10 @@ export default function ArpproveFlow() {
           ?.ref_request_status_name || code
     );
 
-    const date = selectedStartDate + " - " + selectedEndDate;
+    const date =
+      convertToBuddhistDateTime(selectedStartDate).date +
+      " - " +
+      convertToBuddhistDateTime(selectedEndDate).date;
 
     setFilterNames(mappedNames);
     if (selectedStartDate && selectedEndDate) {
@@ -112,15 +114,12 @@ export default function ArpproveFlow() {
     }
 
     setFilterNum(selectedStatuses.length);
+
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
-      startdate:
-        selectedStartDate &&
-        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate:
-        selectedEndDate &&
-        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate,
+      enddate: selectedEndDate,
     }));
   };
 
@@ -186,7 +185,6 @@ export default function ArpproveFlow() {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
-          console.log("sum", summary);
           setDataRequest(requestList);
           setSummary(summary);
           setPagination({
@@ -243,7 +241,7 @@ export default function ArpproveFlow() {
       </div>
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
-        <div className="block">
+        <div className="block w-[25%]">
           <div className="input-group input-group-search hidden">
             <div className="input-group-prepend">
               <span className="input-group-text search-ico-info">
@@ -284,8 +282,10 @@ export default function ArpproveFlow() {
             onClick={addNewRequest}
             className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
           >
-            <i className="material-symbols-outlined">add</i>
-            สร้างคำขอใช้
+            <div className="flex items-center">
+              <i className="material-symbols-outlined">add</i>
+              สร้างคำขอใช้
+            </div>
           </button>
         </div>
       </div>
@@ -318,7 +318,7 @@ export default function ArpproveFlow() {
         )}
       </div>
 
-      {dataRequest?.length > 0 && dataRequest !== null &&
+      {dataRequest?.length > 0 && dataRequest !== null && (
         <>
           <div className="flex flex-col gap-3 md:gap-0 md:hidden">
             <ListFlow requestData={dataRequest} />
@@ -337,20 +337,21 @@ export default function ArpproveFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-       }
-{(dataRequest !== null && dataRequest?.length <= 0) && (
-         <ZeroRecord
-         imgSrc="/assets/img/empty/search_not_found.png"
-         title="ไม่พบข้อมูล"
-         desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-         button="ล้างตัวกรอง"
-         displayBtn={true}
-         btnType="secondary"
-         useModal={handleClearAllFilters}
-       />
       )}
 
-      {dataRequest === null && (
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
+        )
+      ) : (
         <ZeroRecord
           imgSrc="/assets/img/empty/add_carpool.svg"
           title="สร้างคำขอใช้ยานพาหนะ"

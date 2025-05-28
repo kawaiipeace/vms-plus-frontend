@@ -35,7 +35,7 @@ export default function JourneyDetailCard({
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่ / เวลาเดินทาง</div>
                 <div className="form-text">
-                  {startDate} - {endDate} {timeStart} - {timeEnd}
+                  {startDate} {timeStart}  - {endDate} {timeEnd}
                 </div>
               </div>
             </div>
