@@ -25,11 +25,10 @@ interface RefProps {
 
 const schema = yup.object().shape({
   referenceNumber: yup.string(),
-  attachmentFile: yup.mixed(),
 });
 
 const ReferenceModal = forwardRef<
-  { openModal: () => void; closeModal: () => void }, // Ref type
+  { openModal: () => void; closeModal: () => void },
   RefProps
 >(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -44,49 +43,50 @@ const ReferenceModal = forwardRef<
   const { formData, updateFormData } = useFormContext();
   const [fileError, setFileError] = useState("");
   const [fileValue, setFileValue] = useState("");
+  const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
 
   const { handleSubmit, reset, control } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
       referenceNumber: formData.referenceNumber || "",
-      attachmentFile: formData.attachmentFile || "",
     },
   });
-
-  const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
 
   useEffect(() => {
     if (formData.attachmentFile) {
       setFileName(shortenFilename(formData.attachmentFile));
+      setFileValue(formData.attachmentFile);
     }
   }, [formData.attachmentFile]);
 
   useEffect(() => {
     if (requestData) {
       reset({
-        referenceNumber: requestData?.reference_number,
-        attachmentFile: requestData?.attached_document,
+        referenceNumber: requestData?.reference_number || "",
       });
+      if (requestData?.attached_document) {
+        setFileName(shortenFilename(requestData.attached_document));
+        setFileValue(requestData.attached_document);
+      }
       hasReset.current = true;
     }
   }, [requestData, reset]);
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    onChange: (value: File | null) => void
-  ) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
     if (!file) return;
 
     try {
       const response = await uploadFile(file);
-      onChange(file);
       setFileValue(response.file_url);
       setFileName(shortenFilename(response.file_url));
+      setFileError("");
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
       setFileError(errorMessage);
+      setFileValue("");
+      setFileName("อัพโหลดเอกสารแนบ");
     }
   };
 
@@ -102,9 +102,10 @@ const ReferenceModal = forwardRef<
       }
 
       try {
-        const response = role === "admin" ? await adminUpdateRef(payload) : await updateRef(payload);
+        const response = role === "admin" 
+          ? await adminUpdateRef(payload) 
+          : await updateRef(payload);
 
-        console.log(response);
         if (response) {
           if (onUpdate) onUpdate(response.data);
           modalRef.current?.close();
@@ -114,12 +115,13 @@ const ReferenceModal = forwardRef<
         alert("Failed to update trip due to network error.");
       }
     } else {
-      if (onUpdate)
+      if (onUpdate) {
         onUpdate({
           ...data,
           referenceNumber: data.referenceNumber,
           attachmentFile: fileValue,
         });
+      }
 
       updateFormData({
         referenceNumber: data.referenceNumber,
@@ -166,7 +168,15 @@ const ReferenceModal = forwardRef<
                     <Controller
                       name="referenceNumber"
                       control={control}
-                      render={({ field }) => <input type="text" className="form-control" placeholder="" {...field} />}
+                      render={({ field }) => (
+                        <input 
+                          type="text" 
+                          className="form-control" 
+                          placeholder="" 
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                        />
+                      )}
                     />
                   </div>
                 </div>
@@ -178,25 +188,20 @@ const ReferenceModal = forwardRef<
                     เอกสารแนบ<span className="form-optional">(ถ้ามี)</span>
                   </label>
                   <div className="input-group input-uploadfile">
-                    <Controller
-                      name="attachmentFile"
-                      control={control}
-                      render={({ field: { onChange } }) => (
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">attach_file</i>
-                            </span>
-                          </div>
-                          <input
-                            type="file"
-                            className="file-input hidden"
-                            onChange={(e) => handleFileChange(e, onChange)}
-                          />
-                          <div className="input-uploadfile-label w-full">{fileName}</div>
-                        </label>
-                      )}
-                    />
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="material-symbols-outlined">attach_file</i>
+                        </span>
+                      </div>
+                      <input
+                        type="file"
+                        className="file-input hidden"
+                        onChange={handleFileChange}
+                        accept=".pdf"
+                      />
+                      <div className="input-uploadfile-label w-full">{fileName}</div>
+                    </label>
                   </div>
                   {fileError ? (
                     <FormHelper text={fileError} />

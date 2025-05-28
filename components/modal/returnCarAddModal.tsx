@@ -33,9 +33,9 @@ export interface ValueFormStep1 {
 }
 
 export const dataClean = [
-  { id: "0", name: "ล้างรถและดูดฝุ่น" },
-  { id: "1", name: "ล้างภายนอก" },
-  { id: "2", name: "ไม่ได้ดำเนินการ" },
+  { id: "1", name: "ล้างรถและดูดฝุ่น" },
+  { id: "2", name: "ล้างภายนอก" },
+  { id: "3", name: "ไม่ได้ดำเนินการ" },
 ];
 
 const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => void }, ReturnCarAddModalProps>(
@@ -99,7 +99,7 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
         const { date, time } = convertToBuddhistDateTime(data?.end_datetime || "");
         setSelectedDate(date);
         setSelectedTime(time);
-        setCleanType(data?.returned_cleanliness_level?.toLocaleString() || "");
+        setCleanType(data?.returned_cleanliness_level?.toLocaleString() || "1");
         setFuelQuantity(data?.fuel_start || 0);
         if (edit) {
           setFuelQuantity(data?.fuel_end || 0);
@@ -149,19 +149,19 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
     const handleSubmit = async () => {
       try {
         const imageList = data?.vehicle_images_returned;
-        console.log("selectedDate", selectedDate);
-        console.log("selectedTime", selectedTime);
 
         const returned_vehicle_datetime = selectedDate && selectedTime ? convertToISO(selectedDate, selectedTime) : "";
+        console.log("data", data);
+        console.log("id", id);
 
         const formData = {
           fuel_end: fuelQuantity,
           mile_end: Number(miles || "0"),
-          returned_cleanliness_level: cleanType ? Number(cleanType) : 0,
+          returned_cleanliness_level: cleanType ? Number(cleanType) : 1,
           returned_vehicle_datetime: returned_vehicle_datetime,
           returned_vehicle_emp_id: data?.returned_vehicle_emp_id,
           returned_vehicle_remark: remark,
-          trn_request_uid: data?.trn_request_uid,
+          trn_request_uid: data?.trn_request_uid || id,
           vehicle_images: imageList,
         };
         console.log("formData", formData);
@@ -446,12 +446,16 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
           </div>
         )}
         <ReturnCarAddStep2Modal
-          openStep1={handleCloseModal}
+          openStep1={() => {
+            modalRef.current?.showModal();
+            setOpenModal(true);
+            returnCarAddStep2ModalRef.current?.closeModal();
+          }}
           useBy={useBy}
           ref={returnCarAddStep2ModalRef}
           valueFormStep1={valueFormStep1}
           id={id}
-          requestData={requestData}
+          requestData={requestData || requestGetData}
           progress={progress}
         />
       </>

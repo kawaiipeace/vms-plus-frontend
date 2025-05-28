@@ -183,14 +183,8 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
           const imageSrc = getOilBrandImage(item.ref_oil_station_brand_name_th);
           return {
             value: item.ref_oil_station_brand_id.toString(),
-            label: (
-              <div className="flex items-center gap-1">
-                {item.ref_oil_station_brand_name_th && (
-                  <Image src={imageSrc} alt={"oil-image-" + item.ref_oil_station_brand_id} width={24} height={24} />
-                )}
-                <span className="ml-2">{item.ref_oil_station_brand_name_th}</span>
-              </div>
-            ),
+            label: item.ref_oil_station_brand_name_th,
+            imageUrl: imageSrc,
           };
         }),
       [oilStationBrandData]
@@ -218,7 +212,6 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
         tax_invoice_date,
         tax_invoice_no,
       } = valueForm;
-      console.log("payload", tax_invoice_date);
       if (
         !mile ||
         !price_per_liter ||
@@ -249,6 +242,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
             tax_invoice_no: tax_invoice_no,
             trn_request_uid: requestId,
           };
+          console.log("payload", payload);
 
           if (status) {
             const res =
@@ -309,7 +303,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
     return (
       <>
         {openModal && (
-          <dialog ref={modalRef} className="modal">
+          <div className="modal modal-open">
             <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
               <form>
                 <div className="bottom-sheet" {...swipeDownHandlers}>
@@ -331,8 +325,8 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                     <i className="material-symbols-outlined">close</i>
                   </button>
                 </div>
-                <div className="modal-scroll-wrapper  overflow-y-auto h-[70vh] max-h-[70vh]">
-                  <div className="modal-body  text-center h-[70vh]">
+                <div className="modal-scroll-wrapper  overflow-y-auto h-[65vh] max-h-[65vh]">
+                  <div className="modal-body  text-center h-[65vh]">
                     <div className="grid grid-cols-1 gap-4">
                       <div className="col-span-12">
                         <div className="form-group text-left">
@@ -341,12 +335,14 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                             w="w-full"
                             options={oilOptions}
                             value={valueForm.ref_oil_station_brand_id}
-                            onChange={(selected) =>
+                            onChange={(selected) => {
                               setValueForm((val) => ({
                                 ...val,
                                 ref_oil_station_brand_id: selected,
-                              }))
-                            }
+                              }));
+                            }}
+                            isInputOil={true}
+                            enableSearchOnApi={false}
                           />
                         </div>
                       </div>
@@ -393,7 +389,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                         <div className="">
                           <div className="form-group">
                             <label className="form-label">วันที่ใบเสร็จ</label>
-                            <div className="input-group">
+                            <div className="input-group flatpickr">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
                                   <i className="material-symbols-outlined">calendar_month</i>
@@ -550,7 +546,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
             </form>
-          </dialog>
+          </div>
         )}
       </>
     );

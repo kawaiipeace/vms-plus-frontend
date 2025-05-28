@@ -140,7 +140,7 @@ const CancelRequestModal = forwardRef<
 
             if (role === "firstApprover") {
               router.push(
-                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                "/administrator/booking-approver?cancel-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=" +
                   data.result?.request_no
               );
             } else if (role === "admin") {

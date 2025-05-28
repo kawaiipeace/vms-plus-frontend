@@ -83,7 +83,7 @@ const FileBackRequestModal = forwardRef<
 
           if (role === "firstApprover") {
             router.push(
-              "/administrator/booking-approver?sendback-req=success&request-id=" +
+              "/administrator/booking-approver?sendback-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=" +
                 data.result?.request_no
             );
           } else if (role === "admin") {

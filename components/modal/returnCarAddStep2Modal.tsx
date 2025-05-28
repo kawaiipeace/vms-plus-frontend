@@ -6,7 +6,6 @@ import Tooltip from "@/components/tooltips";
 import { AdminReturnedVehicle } from "@/services/adminService";
 import { DriverReturnedVehicle, updateReceiveVehicleImages } from "@/services/vehicleInUseDriver";
 import { UserReturnedVehicle } from "@/services/vehicleInUseUser";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { usePathname, useRouter } from "next/navigation";
@@ -72,12 +71,11 @@ const ReturnCarAddStep2Modal = forwardRef<
         return handleEditImage();
       }
 
+      console.log("valueFormStep1", valueFormStep1);
+
       const returned_vehicle_datetime =
         valueFormStep1?.selectedDate && valueFormStep1?.selectedTime
-          ? convertToISO(
-              convertToBuddhistDateTime(valueFormStep1?.selectedDate).date,
-              convertToBuddhistDateTime(valueFormStep1?.selectedTime).time
-            )
+          ? convertToISO(valueFormStep1?.selectedDate, valueFormStep1?.selectedTime)
           : "";
 
       const formData = {
@@ -85,9 +83,9 @@ const ReturnCarAddStep2Modal = forwardRef<
         mile_end: Number(valueFormStep1?.miles || "0"),
         returned_cleanliness_level: valueFormStep1?.cleanType ? Number(valueFormStep1?.cleanType) : 0,
         returned_vehicle_datetime: returned_vehicle_datetime,
-        returned_vehicle_emp_id: requestData?.returned_vehicle_emp_id,
+        returned_vehicle_emp_id: requestData?.vehicle_user_emp_id,
         returned_vehicle_remark: valueFormStep1?.remark,
-        trn_request_uid: requestData?.trn_request_uid,
+        trn_request_uid: requestData?.trn_request_uid || id,
         vehicle_images: imageList,
       };
       console.log("formData", formData);
@@ -153,7 +151,7 @@ const ReturnCarAddStep2Modal = forwardRef<
         returned_vehicle_datetime: requestData?.returned_vehicle_datetime,
         returned_vehicle_emp_id: requestData?.returned_vehicle_emp_id,
         returned_vehicle_remark: requestData?.returned_vehicle_remark,
-        trn_request_uid: requestData?.trn_request_uid,
+        trn_request_uid: requestData?.trn_request_uid || id,
         vehicle_images: imageList,
       };
 

@@ -106,7 +106,7 @@ export default function DriverSmallInfoCard({
                   </div>
                   <div className="card-item">
                     <i className="material-symbols-outlined">person</i>
-                    <span className="card-item-text">{driver.age} ปี</span>
+                    <span className="card-item-text">{driver.age}</span>
                   </div>
                 </>
               )}

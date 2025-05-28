@@ -64,20 +64,22 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
   return (
     <div>
       {progressType !== "การรับยานพาหนะ" && progressType !== "การคืนยานพาหนะ" && (
-        <div className="flex items-center bg-[#F9FAFB] -mx-4 px-4">
-          <p>{data?.request_no || "-"}</p>
-          <Link
-            className="ml-auto"
-            href={
-              progressType === "คืนยานพาหนะไม่สำเร็จ"
-                ? "/vehicle-in-use/driver/edit/" + data?.trn_request_uid + "?progressType=" + progressType
-                : "/vehicle-in-use/driver/request-list/" + data?.trn_request_uid + "?progressType=" + progressType
-            }
-          >
-            <button className="btn bg-transparent border-0 shadow-none text-[#A80689] p-0">
-              รายละเอียด <i className="material-symbols-outlined">keyboard_arrow_right</i>
-            </button>
-          </Link>
+        <div className="card card-body p-0 !border-0 !rounded-none">
+          <div className="flex items-center -mx-4 px-4">
+            <p>{data?.request_no || "-"}</p>
+            <Link
+              className="ml-auto"
+              href={
+                progressType === "คืนยานพาหนะไม่สำเร็จ"
+                  ? "/vehicle-in-use/driver/edit/" + data?.trn_request_uid + "?progressType=" + progressType
+                  : "/vehicle-in-use/driver/request-list/" + data?.trn_request_uid + "?progressType=" + progressType
+              }
+            >
+              <button className="btn bg-transparent border-0 shadow-none text-[#A80689] p-1">
+                รายละเอียด <i className="material-symbols-outlined">keyboard_arrow_right</i>
+              </button>
+            </Link>
+          </div>
         </div>
       )}
 
