@@ -174,7 +174,7 @@ export default function RequestDetailTabs({
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist z-[40] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
+      <div className="flex border-b tablist z-[] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
         {tabs.map((tab, index) => (
           <button
             key={index}

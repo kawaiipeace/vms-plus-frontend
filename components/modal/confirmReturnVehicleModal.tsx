@@ -2,9 +2,16 @@ import { adminAcceptVehicle } from "@/services/adminService";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import DatePicker, { DatePickerRef } from "../datePicker";
 import TimePicker from "../timePicker";
+import { convertToISO } from "@/utils/convertToISO";
 
 interface Props {
   id?: string;
@@ -59,27 +66,20 @@ const ConfirmReturnVehicleModal = forwardRef<
 
   useEffect(() => {
     const today = new Date();
-    const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
-      today.getDate()
-    ).padStart(2, "0")}`;
+    const localDate = `${today.getFullYear()}-${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     datePickerRef.current?.setValue(localDate);
   }, []);
 
   const handleConfirm = () => {
     const acceptVehicle = async () => {
       try {
-        // selectedDate is in "DD/MM/BBBB" (Buddhist year)
-        const [day, month, buddhistYear] = selectedDate.split("/");
-        const gregorianYear = parseInt(buddhistYear) - 543;
-
-        // selectedTime is "HH:mm"
-        const [hours, minutes] = selectedTime.split(":").map(Number);
-
-        // Create ISO Date object in UTC
-        const date = new Date(Date.UTC(gregorianYear, parseInt(month) - 1, parseInt(day), hours, minutes, 0));
-
         // Get ISO string like "2025-04-16T14:30:00Z"
-        const acceptedVehicleDatetime = date.toISOString();
+        const acceptedVehicleDatetime = convertToISO(
+          selectedDate,
+          selectedTime
+        );
 
         const payload = {
           accepted_vehicle_datetime: acceptedVehicleDatetime,
@@ -120,13 +120,17 @@ const ConfirmReturnVehicleModal = forwardRef<
                   alt=""
                 />
                 <div className="modal-content mt-3">
-                  <div className="confirm-title text-xl font-medium">ยืนยันรับคืนยานพาหนะ</div>
+                  <div className="confirm-title text-xl font-medium">
+                    ยืนยันรับคืนยานพาหนะ
+                  </div>
                   <div className="confirm-text">
                     คุณได้ตรวจสอบการคืนยานพาหนะ
                     <br />
                     และได้รับสิ่งที่ส่งมอบครบถ้วนแล้วใช่หรือไม่?
                   </div>
-                  <div className="text-left text-secondary font-semibold mt-3">สิ่งที่ส่งมอบ</div>
+                  <div className="text-left text-secondary font-semibold mt-3">
+                    สิ่งที่ส่งมอบ
+                  </div>
                   <div className="card rounded-md !border-none">
                     <div className="card-item-group !border-0 !rounded-md shadow-none outline-0">
                       <div className="card-item">
@@ -149,7 +153,9 @@ const ConfirmReturnVehicleModal = forwardRef<
                         <div className="input-group">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
+                              <i className="material-symbols-outlined">
+                                calendar_month
+                              </i>
                             </span>
                           </div>
                           <DatePicker
@@ -170,7 +176,9 @@ const ConfirmReturnVehicleModal = forwardRef<
                         <div className="input-group">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">schedule</i>
+                              <i className="material-symbols-outlined">
+                                schedule
+                              </i>
                             </span>
                           </div>
                           <TimePicker
@@ -185,10 +193,17 @@ const ConfirmReturnVehicleModal = forwardRef<
                 </div>
 
                 <div className="modal-footer mt-5 grid grid-cols-2 gap-3">
-                  <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                  <button
+                    className="btn btn-secondary w-full"
+                    onClick={handleCloseModal}
+                  >
                     ไม่ใช่ตอนนี้
                   </button>
-                  <button type="button" className="btn btn-primary col-span-1" onClick={handleConfirm}>
+                  <button
+                    type="button"
+                    className="btn btn-primary col-span-1"
+                    onClick={handleConfirm}
+                  >
                     ผ่านการตรวจสอบ
                   </button>
                 </div>

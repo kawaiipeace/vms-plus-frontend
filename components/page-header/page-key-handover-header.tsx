@@ -39,15 +39,19 @@ export default function PageKeyHandOverHeader({ data }: Props) {
   } | null>(null);
 
   const handleCopyRequestNo = async (text?: string) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // hide tooltip after 2 seconds
-    } catch (err) {
-      console.error("Copy failed:", err);
-    }
-  };
+  if (!text) return;
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    console.error("Clipboard API not available");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (err) {
+    console.error("Copy failed:", err);
+  }
+};
 
   const saveImage = () => {
     setAlertVisible(true);

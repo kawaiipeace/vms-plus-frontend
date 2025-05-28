@@ -26,15 +26,19 @@ export default function PageHeaderFirst({ data }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyRequestNo = async (text?: string) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // hide tooltip after 2 seconds
-    } catch (err) {
-      console.error("Copy failed:", err);
-    }
-  };
+  if (!text) return;
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    console.error("Clipboard API not available");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (err) {
+    console.error("Copy failed:", err);
+  }
+};
 
   return (
     <div className="page-header">
