@@ -83,11 +83,13 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/vehicle-booking/request-list",
           roles: [
             "vehicle-user",
-            "level1-approval",
-            "admin-approval",
-            "admin-dept-approval",
-            "final-approval",
-            "admin-super",
+            // "level1-approval",
+            // "admin-approval",
+            // "license-approval",
+            // "final-approval",
+            // "admin-dept",
+            // "admin-region",
+            // "admin-super",
           ],
         },
         {
@@ -95,15 +97,15 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/administrator/booking-approver",
           roles: [
             "level1-approval",
-            "admin-approval",
-            "admin-dept-approval",
-            "admin-super",
+            // "admin-approval",
+            // "admin-dept",
+            // "admin-super",
           ],
         },
         {
           title: "งานพนักงานขับรถ",
           link: "/vehicle-in-use/driver",
-          roles: ["driver", "admin-super"],
+          roles: ["driver"],
         },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
@@ -115,7 +117,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-approval", "admin-dept-approval", "admin-super"],
+          roles: ["admin-approval","license-approval"],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",
@@ -142,12 +144,12 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-super"],
+          roles: ["admin-region"],
         },
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super"],
+          roles: ["admin-dept"],
         },
         // {
         //   title: "ข้อมูล Fleet card",

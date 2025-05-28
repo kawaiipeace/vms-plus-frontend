@@ -15,17 +15,16 @@ export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  console.log('tttpp',params);
   const request_id = String(params.requestId);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
 
-    if (request_id) {
+    if (request_id) { 
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await fetchRequestDetail(request_id);
-       
+            console.log('rest===>',response.data);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);

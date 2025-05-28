@@ -184,6 +184,7 @@ export default function RequestForm() {
   }, [driverOptions, selectedVehicleUserOption]);
 
   useEffect(() => {
+
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
       if (formData.vehicleUserEmpId) {
         setSelectedVehicleUserOption({
@@ -206,6 +207,13 @@ export default function RequestForm() {
           setValue("userImageUrl", defaultVehicleUser.image_url);
         }
       }
+    }
+
+    if(!formData.timeStart){
+      setValue('timeStart', "08:00");
+    }
+    if(!formData.timeEnd){
+      setValue('timeEnd', "16:00");
     }
 
     const fetchApprover = async () => {
@@ -311,8 +319,8 @@ export default function RequestForm() {
       startDate: formData.startDate || "",
       endDate: formData.endDate || "",
       refCostTypeCode: formData.refCostTypeCode || "",
-      timeStart: formData.timeStart || "",
-      timeEnd: formData.timeEnd || "",
+      timeStart: formData.timeStart || "08:00",
+      timeEnd: formData.timeEnd || "16:00",
       attachmentFile: formData.attachmentFile || "",
       deptSapShort: formData.deptSapShort || "",
       deptSap: formData.vehicleUserDeptSap || "",
@@ -658,10 +666,16 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่ออกเดินทาง</label>
                     <div className="input-group">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="material-symbols-outlined">
+                          schedule
+                          </i>
+                        </span>
+                      </div>
                       <TimePicker
-                        defaultValue={formData.timeStart}
                         placeholder="ระบุเวลาที่ออกเดินทาง"
-                        onChange={(dateStr) => setValue("timeStart", dateStr)}
+                        onChange={(timeStr) => setValue("timeStart", timeStr)}
                       />
                     </div>
                   </div>
@@ -681,7 +695,7 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-                        defaultValue={convertToThaiDate(formData.endDate)}
+                        defaultValue={formData.endDate ? convertToThaiDate(formData.endDate) : "08:00"}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
                       />
                     </div>
@@ -692,6 +706,13 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="material-symbols-outlined">
+                          schedule
+                          </i>
+                        </span>
+                      </div>
                       <TimePicker
                         defaultValue={formData.timeEnd}
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"

@@ -244,6 +244,8 @@ export default function ProcessThree() {
       (user: { emp_id: string }) => user.emp_id === selectedDriverOption.value
     );
 
+    console.log('empdata',empData);
+
     if (empData) {
       setValue("isPeaEmployeeDriver", "1");
       setDriverLicenseNo(empData.annual_driver.driver_license_no);

@@ -94,9 +94,16 @@ const ApproveRequestModal = forwardRef<
               `${basePath}?approvelicfinal-req=success&request-id=${requestId}`
             );
           }else {
-            router.push(
-              `${basePath}?approve-req=success&request-id=${requestId}`
-            );
+          
+            if(role === "firstApprover"){
+              router.push(
+                `${basePath}?approve-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=${requestId}`
+              );
+            }else{
+              router.push(
+                `${basePath}?approve-req=success&request-id=${requestId}`
+              );
+            }
           }
         }
       } catch (error) {
