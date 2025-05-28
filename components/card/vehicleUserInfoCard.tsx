@@ -14,9 +14,11 @@ export default function VehicleUserInfoCard({ id, requestData, displayPhone }: P
   const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
 
   useEffect(() => {
+    console.log('requestdata',requestData);
     const fetchData = async () => {
       try {
         const res = await fetchVehicleUsers(id);
+        console.log(res);
         let user = res.data[0];
 
         // Override only contact numbers from requestData if available
