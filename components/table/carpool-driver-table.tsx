@@ -89,11 +89,16 @@ export default function CarpoolDriverTable({
             status: "success",
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }
@@ -139,7 +144,7 @@ export default function CarpoolDriverTable({
       enableSorting: false,
     },
     {
-      accessorKey: "carpool_contact_number",
+      accessorKey: "ref_driver_status_code",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
           <div className="text-center">ค้างคืน</div>
@@ -149,7 +154,19 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="ค้างคืน">
-            {/* {row.original} */}
+            {row.original.ref_driver_status_code === "1" ? (
+              <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
+                <i className="material-symbols-outlined text-[#ABEFC6]">
+                  check
+                </i>
+              </div>
+            ) : (
+              <div className="w-6 h-6 rounded-full border border-[#FECDCA] bg-[#FEF3F2] flex items-center justify-center">
+                <i className="material-symbols-outlined text-[#FECDCA]">
+                  close
+                </i>
+              </div>
+            )}
           </div>
         );
       },
@@ -254,7 +271,7 @@ export default function CarpoolDriverTable({
       enableSorting: false,
     },
     {
-      accessorKey: "carpool_contact_number",
+      accessorKey: "ref_driver_status_code",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
           <div className="text-center">ค้างคืน</div>
@@ -264,7 +281,19 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="ค้างคืน">
-            {/* {row.original} */}
+            {row.original.ref_driver_status_code === "1" ? (
+              <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
+                <i className="material-symbols-outlined text-[#ABEFC6]">
+                  check
+                </i>
+              </div>
+            ) : (
+              <div className="w-6 h-6 rounded-full border border-[#FECDCA] bg-[#FEF3F2] flex items-center justify-center">
+                <i className="material-symbols-outlined text-[#FECDCA]">
+                  close
+                </i>
+              </div>
+            )}
           </div>
         );
       },

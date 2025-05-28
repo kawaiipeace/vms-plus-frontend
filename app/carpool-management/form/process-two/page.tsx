@@ -52,18 +52,21 @@ export default function CarpoolProcessTwo() {
     if (refetch) {
       fetchCarpoolAdminSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
   useEffect(() => {
     if (!id) {
       if (formData.mas_carpool_uid) fetchCarpoolAdminSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
     if (id) {
       fetchCarpoolAdminSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCarpoolAdminSearchFunc = async (
@@ -73,8 +76,8 @@ export default function CarpoolProcessTwo() {
       const response = await getCarpoolAdminSearch(
         id || formData.mas_carpool_uid,
         {
-          ...newPagination,
           ...pagination,
+          ...newPagination,
         }
       );
       const result = response.data;
@@ -91,25 +94,17 @@ export default function CarpoolProcessTwo() {
       ...pagination,
       page: newPage,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    console.log("limit: ", limit, "-- newLimit: ", newLimit);
     fetchCarpoolAdminSearchFunc({
       ...pagination,
       limit,
       page: 1,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
   };
 
   const handleActive = async () => {
@@ -120,7 +115,7 @@ export default function CarpoolProcessTwo() {
       );
       if (response.request.status === 200) {
         router.push(
-          "/carpool-management/form/process-five?id=" +
+          "/carpool-management/form/process-two?id=" +
             id +
             "&name=" +
             name +

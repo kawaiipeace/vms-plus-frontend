@@ -1,10 +1,10 @@
 import { RequestListType } from "@/app/types/request-list-type";
-import FilterCancelModal from "@/components/modal/filterCancelModal";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { requests } from "@/services/bookingUser";
-import dayjs from "dayjs";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useRef, useState } from "react";
+import FilterModal from "../modal/filterModal";
 import PaginationControls from "../table/pagination-control";
 import ListFlow from "./listFlow";
 
@@ -57,7 +57,10 @@ export default function CancelFlow() {
     selectedStartDate: string;
     selectedEndDate: string;
   }) => {
-    const date = selectedStartDate + " - " + selectedEndDate;
+    const date =
+      convertToBuddhistDateTime(selectedStartDate).date +
+      " - " +
+      convertToBuddhistDateTime(selectedEndDate).date;
 
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
@@ -65,8 +68,8 @@ export default function CancelFlow() {
 
     setParams((prevParams) => ({
       ...prevParams,
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate: selectedStartDate,
+      enddate: selectedEndDate,
     }));
   };
 
@@ -98,7 +101,8 @@ export default function CancelFlow() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -168,11 +172,28 @@ export default function CancelFlow() {
         </div>
       </div>
 
-      {dataRequest?.length > 0 ? (
+      <div className="mt-3">
+        {filterDate && (
+          <span className="badge badge-brand badge-outline rounded-sm mr-2">
+            {filterDate}
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("date")}
+            >
+              close_small
+            </i>
+          </span>
+        )}
+      </div>
+
+      {dataRequest?.length > 0 && (
         <>
           <div className="hidden md:block">
             <div className="mt-2">
-              <RequestListTable defaultData={dataRequest} pagination={pagination} />
+              <RequestListTable
+                defaultData={dataRequest}
+                pagination={pagination}
+              />
             </div>
           </div>
 
@@ -186,18 +207,31 @@ export default function CancelFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
+      )}
+
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
+        )
       ) : (
         <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-          button="ล้างตัวกรอง"
-          displayBtn={true}
-          btnType="secondary"
-          useModal={handleClearAllFilters}
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ที่ถูกยกเลิก"
+          desc={<>รายการคำขอใช้ยานพาหนะที่ถูกยกเลิกจะแสดงที่นี่</>}
+          button="สร้างคำขอใช้"
+          displayBtn={false}
         />
       )}
-      <FilterCancelModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+
+      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
     </div>
   );
 }

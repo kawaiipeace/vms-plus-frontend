@@ -9,19 +9,21 @@ interface TimePickerProps {
   onChange?: (selectedTime: string) => void;
 }
 
-const TimePicker: React.FC<TimePickerProps> = ({
-  placeholder = "HH:MM",
-  defaultValue,
-  value,
-  onChange,
-}) => {
+const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM", defaultValue, value, onChange }) => {
   const timeInputRef = useRef<HTMLInputElement>(null);
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
 
   useEffect(() => {
-    console.log('defaultvalue', defaultValue);
-    console.log('value', value);
-    
+    console.log("defaultvalue", defaultValue);
+    console.log("value", value);
+
+    if (!timeInputRef.current) return;
+
+    // 🛑 สำคัญมาก: ป้องกันสร้างซ้ำ
+    if (flatpickrRef.current) {
+      flatpickrRef.current.destroy();
+    }
+
     // Initialize flatpickr
     flatpickrRef.current = flatpickr(timeInputRef.current!, {
       enableTime: true,

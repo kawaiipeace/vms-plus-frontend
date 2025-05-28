@@ -23,7 +23,7 @@ const UploadFileCSV: React.FC<UploadCSVFileProps> = ({ onFileChange }) => {
     if (!file) return;
 
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      alert("อนุญาตเฉพาะไฟล์ CSV เท่านั้น");
+      alert("ไม่สามารถนำเข้าได้เนื่องจาก File ผิด Format");
       e.target.value = "";
       return;
     }
@@ -55,7 +55,7 @@ const UploadFileCSV: React.FC<UploadCSVFileProps> = ({ onFileChange }) => {
     if (!file) return;
 
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      alert("อนุญาตเฉพาะไฟล์ CSV เท่านั้น");
+      alert("ไม่สามารถนำเข้าได้เนื่องจาก File ผิด Format");
       return;
     }
 

@@ -1,97 +1,120 @@
+import { VehicleTimelineTransformData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
+import 'dayjs/locale/th';
 
-export function transformApiToTableData(rawData: any, dates: any[]): any[] {
-    const createEmptyTimeline = () => {
-        const timeline: Record<string, any[]> = {};
-        for (let i = 1; i <= dates.length; i++) {
-            timeline[`day_${i}`] = [];
+dayjs.locale('th');
+
+export function transformApiToTableData(rawData: any, dates: any[]): VehicleTimelineTransformData[] {
+  const vehicles: any[] = rawData ?? [];
+
+  const createEmptyTimeline = () =>
+    dates.reduce((timeline: Record<string, any[]>, date: any) => {
+      timeline[date.key] = [];
+      return timeline;
+    }, {});
+
+  return vehicles.map(vehicle => {
+    const timeline = createEmptyTimeline();
+    let latestStatus = '';
+    let carUserDetail: Record<string, string> = {};
+    let driverDetail: Record<string, string> = {};
+
+    vehicle.vehicle_trn_requests?.forEach((request: any) => {
+      if (!request.trip_details?.length) return;
+
+      latestStatus = request.time_line_status;
+      carUserDetail = {
+        userName: request.vehicle_user_emp_name || 'นายไข่ สนาม',
+        userContactNumber: request.car_user_mobile_contact_number || '0912345678',
+        userContactInternalNumber: request.car_user_internal_contact_number || '1234',
+      };
+
+      driverDetail = {
+        driverName: request.driver?.driver_name || '',
+        licensePlate: vehicle.vehicle_license_plate || '',
+      };
+
+      request.trip_details.forEach((trip: any) => {        
+        const start = dayjs(trip.trip_start_datetime);
+        const end = dayjs(trip.trip_end_datetime);
+        const duration = Math.max(end.diff(start, 'day') + 1, 1);
+
+        
+        for (let i = 0; i < duration; i++) {
+          const currentDateKey = start.add(i, 'day').format('DD-MM-YYYY');
+          if (!timeline[currentDateKey]) continue;
+
+          timeline[currentDateKey].push({
+            tripDetailId: trip.trn_trip_detail_uid,
+            destinationPlace: trip.trip_destination_place,
+            startTime: start.format('HH:mm'),
+            duration: duration.toString(),
+            status: latestStatus,
+            carUserDetail,
+            driverDetail,
+          });
         }
-        return timeline;
-    };
-
-    const vehicles: any[] = rawData ?? [];
-    return vehicles.map(vehicle => {
-        const timeline = createEmptyTimeline();
-
-        vehicle.vehicle_t_requests?.forEach((req: any) => {
-            if (req.trip_details.length === 0) return;
-
-            req.trip_details?.forEach((trip: any) => {
-                const start = dayjs(trip.trip_start_datetime);
-                const end = dayjs(trip.trip_end_datetime);
-                const dayStart = start.date();
-                const dayEnd = end.date();
-                const duration = Math.max(dayEnd - dayStart + 1, 1);
-                const destinationPlace = trip.trip_destination_place
-
-                timeline[`day_${dayStart}`]?.push({
-                    schedule_title: destinationPlace,
-                    schedule_time: start.format("HH:mm"),
-                    schedule_range: duration.toString(),
-                    schedule_status_code: req.ref_request_status_code,
-                    schedule_status_name: req.ref_request_status_name,
-                });
-            });
-        });
-
-        
-        const result = {
-            vehicleLicensePlate: vehicle.vehicle_license_plate,
-            vehicleBrandModel: vehicle.vehicle_model_name,
-            vehicleBrandName: vehicle.vehicle_brand_name,
-            vehicleType: vehicle.vehicle_car_type_detail,
-            vehicleDepartment: vehicle.vehicle_dept_name,
-            distance: vehicle.vehicle_mileage,
-            timeLine: timeline
-        };
-        
-        return result;
+      });
     });
+
+    return {
+      vehicleLicensePlate: vehicle.vehicle_license_plate,
+      vehicleBrandModel: vehicle.vehicle_model_name,
+      vehicleBrandName: vehicle.vehicle_brand_name,
+      vehicleType: vehicle.vehicle_car_type_detail,
+      vehicleDepartment: vehicle.vehicle_dept_name,
+      distance: vehicle.vehicle_mileage,
+      vehicleStatus: latestStatus,
+      timeline,
+    };
+  });
 }
 
 export async function generateDateObjects(startDate: string, endDate: string) {
-    try {
-        const response = await getHoliday({
-            start_date: startDate,
-            end_date: endDate
-        });
+  try {
+    // Handle Holiday API call
+    const response = await getHoliday({ start_date: startDate, end_date: endDate });
+    const holidayMap = new Map(
+      response.map((item: any) => [
+        dayjs(item.mas_holidays_date).format("YYYY-MM-DD"),
+        item.mas_holidays_detail,
+      ])
+    );
 
-        const holidays = response.map((item: any) => ({
-            date: dayjs(item.mas_holidays_date).format("YYYY-MM-DD"),
-            detail: item.mas_holidays_detail,
-        }));
+    const dates = [];
+    let start = dayjs(startDate);
+    const end = dayjs(endDate);
 
-        const holidayMap = new Map(holidays.map((h: any) => [h.date, h.detail]));
+    while (start.isBefore(end) || start.isSame(end)) {
+      const formattedDate = start.format("YYYY-MM-DD");
+      const date = {
+        key: `day_${start.date()}_${start.month() + 1}_${start.year()}`,
+        date: formattedDate,
+        day: start.date(),
+        fullMonth: start.format("MMMM"),
+        month: start.format("MMM"),
+        fullYear: (start.year() + 543).toString(),
+        weekday: start.format("ddd"),
+        holiday: holidayMap.get(formattedDate) ?? null,
+      };
+      dates.push(date);
 
-        const start = dayjs(startDate);
-        const end = dayjs(endDate);
-        const dates: {
-            key: string;
-            date: string;
-            day: number;
-            month: string;
-            weekday: string;
-            holiday: string | null;
-        }[] = [];
-
-        let current = start;
-        while (current.isBefore(end) || current.isSame(end)) {
-            const formattedDate = current.format("YYYY-MM-DD");
-            dates.push({
-                key: `day_${current.date()}`,
-                date: formattedDate,
-                day: current.date(),
-                month: current.format("MMM"),
-                weekday: current.format("ddd"),
-                holiday: typeof holidayMap.get(formattedDate) === 'string' ? holidayMap.get(formattedDate) as string : null,
-            });
-            current = current.add(1, "day");
-        }
-
-        return dates;
-    } catch (e) {
-        console.error("Error in generateDateObjects:", e);
-        return [];
+      start = start.add(1, "day");
     }
+
+    return dates;
+  } catch (e) {
+    console.error("Error in generateDateObjects:", e);
+    return [];
+  }
 }
+
+export const DateLongTH = (date: Date) => {
+  const thDate = dayjs(date).locale('th');
+  const day = thDate.format("DD");
+  const month = thDate.format("MM");
+  const year = thDate.year() + 543;
+
+  return `${day}/${month}/${year}`;
+};

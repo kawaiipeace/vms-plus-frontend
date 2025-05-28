@@ -4,10 +4,12 @@ import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import RecordFuelAddModal from "@/components/modal/recordFuelAddModal";
 import ToastCustom from "@/components/toastCustom";
 import { RecordFuelTabProps } from "@/data/requestData";
+import { fetchOilStationBrandType } from "@/services/masterService";
 import { fetchDriverAddFuelDetails } from "@/services/vehicleInUseDriver";
 import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import { ColumnDef, CellContext } from "@tanstack/react-table";
+import { getOilBrandImage } from "@/utils/getOilBrandImage";
+import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
@@ -69,6 +71,15 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
   const deleteReq = searchParams.get("delete-fuel-req");
 
   const [requestFuelData, setRequestData] = useState<RecordFuelTabProps[]>([]);
+  const [oilStationBrandData, setOilStationBrandData] = useState<
+    {
+      ref_oil_station_brand_id: 1;
+      ref_oil_station_brand_name_th: string;
+      ref_oil_station_brand_name_en: string;
+      ref_oil_station_brand_name_full: string;
+      ref_oil_station_brand_img: string;
+    }[]
+  >([]);
   const [params, setParams] = useState({ search: "" });
   const [editData, setEditData] = useState<RecordFuelTabProps | undefined>();
 
@@ -92,24 +103,22 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
     closeModal: () => void;
   } | null>(null);
 
-  const fetchUserTravelDetailsFunc = useCallback(
-    async () => {
-      try {
-        let response;
-        if (role === "driver") {
-          response = await fetchDriverAddFuelDetails(requestId || "", params);
-        } else {
-          response = await fetchUserAddFuelDetails(requestId || "", params);
-        }
-        console.log("data---", response?.data);
-
-        setRequestData(response?.data);
-      } catch (error) {
-        console.error("Error fetching vehicle details:", error);
+  const fetchUserTravelDetailsFunc = useCallback(async () => {
+    try {
+      let response;
+      const responseOil = await fetchOilStationBrandType();
+      if (role === "driver") {
+        response = await fetchDriverAddFuelDetails(requestId || "", params);
+      } else {
+        response = await fetchUserAddFuelDetails(requestId || "", params);
       }
-    },
-    [params, requestId, role]
-  );
+      console.log("data---", response?.data);
+      setOilStationBrandData(responseOil.data);
+      setRequestData(response?.data);
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+    }
+  }, [params, requestId, role]);
 
   useEffect(() => {
     fetchUserTravelDetailsFunc();
@@ -118,16 +127,21 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
+        const oilStationBrand = oilStationBrandData.find(
+          (brand) => brand.ref_oil_station_brand_id === item.ref_oil_station_brand_id
+        );
         return {
           ...item,
-          ref_oil_station_brand_name: item.ref_oil_station_brand.ref_oil_station_brand_name_th,
+          ref_oil_station_brand_name: oilStationBrand?.ref_oil_station_brand_name_th || "",
           ref_fuel_type_name: item.ref_fuel_type.ref_fuel_type_name_th,
           ref_payment_type_name: item.ref_payment_type.ref_payment_type_name,
           ref_cost_type_name: item.ref_cost_type.ref_cost_type_name,
         };
       }),
-    [requestFuelData]
+    [requestFuelData, oilStationBrandData]
   );
+
+  console.log("requestData", requestData);
 
   const isAddAndEdit = ["เดินทาง", "เสร็จสิ้น", "รอตรวจสอบ", "ตีกลับยานพาหนะ"].includes(
     requestData?.ref_request_status_name || ""
@@ -169,13 +183,21 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
       accessorKey: "ref_oil_station_brand_name",
       header: () => <div className="text-center">สถานีบริการน้ำมัน</div>,
       enableSorting: false,
-      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => (
-        <div className="text-left" data-name="สถานีบริการน้ำมัน">
-          <div className="flex flex-col">
-            <div className="text-left">{row.original.ref_oil_station_brand_name}</div>
+      cell: ({ row }: CellContext<RecordFuelTabProps, unknown>) => {
+        const oilStationBrandName = row.original.ref_oil_station_brand_name;
+        const imageSrc = getOilBrandImage(oilStationBrandName);
+        return (
+          <div className="text-left" data-name="สถานีบริการน้ำมัน">
+            <div className="flex items-center gap-1 text-md">
+              <img src={imageSrc} alt={"oil-image-" + imageSrc} width={24} height={24} />
+              <span className="">{oilStationBrandName}</span>
+            </div>
+            {/* <div className="flex flex-col">
+              <div className="text-left">{row.original.ref_oil_station_brand_name}</div>
+            </div> */}
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       accessorKey: "ref_fuel_type_name",
@@ -324,8 +346,8 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                 <button
                   className="btn btn-secondary ml-auto"
                   onClick={() => {
-                    setEditData(undefined);
                     recordFuelAddModalRef.current?.openModal();
+                    setEditData(undefined);
                   }}
                 >
                   <i className="material-symbols-outlined">add</i>
@@ -362,12 +384,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
             </div>
           </>
         )}
-        <RecordFuelAddModal
-          ref={recordFuelAddModalRef}
-          requestId={requestId}
-          isPayment={true}
-          role={role}
-        />
+        <RecordFuelAddModal ref={recordFuelAddModalRef} requestId={requestId} isPayment={true} role={role} />
         <RecordFuelAddModal
           ref={recordFuelEditModalRef}
           requestId={requestId}

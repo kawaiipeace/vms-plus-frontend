@@ -1,19 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import RequestListTable from "../table/timeline-list-table";
 import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
 import { getVehicleTimeline } from "@/services/vehicleService";
 import "flatpickr/dist/themes/material_blue.css";
-import DateRangePicker from "../vehicle/input/dateRangeInput";
 import dayjs from "dayjs";
 import VehicleStatus from "../vehicle/status";
 import SearchInput from "../vehicle/input/search";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "../vehicle/vehicle-timeline-detail-modal";
-import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import PaginationControls from "../table/pagination-control";
 import VehicleNoData from "../vehicle/noData";
+import { DateRange } from "react-day-picker";
+import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
+import { debounce } from "lodash";
+import DateRangePicker from "../vehicle/input/dateRangeInput";
 
 export default function VehicleTimeLine() {
     const [dataRequest, setDataRequest] = useState<any[]>([]);
+    const [lastMonth, setLastMonth] = useState<string>('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<'all' | 'first'>('all');
+    const [selectedRange, setSelectedRange] = useState<DateRange | undefined>({
+        from: dayjs().startOf("month").toDate(),
+        to: dayjs().endOf("month").toDate(),
+    });
     const [pagination, setPagination] = useState<PaginationType>({
         limit: 10,
         page: 1,
@@ -27,17 +35,15 @@ export default function VehicleTimeLine() {
         page: pagination.page,
         limit: pagination.limit,
     });
-    const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedOption, setSelectedOption] = useState<'all' | 'first'>('all');
 
     const filterModalRef = useRef<FilterModalRef>(null);
-    const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await getVehicleTimeline(params);
                 setDataRequest(response.vehicles);
+                setLastMonth(response.last_month);
 
                 const { total, totalPages } = response.pagination;
                 setPagination({
@@ -55,7 +61,6 @@ export default function VehicleTimeLine() {
     }, [params]);
 
     const handleOpenFilterModal = () => filterModalRef.current?.open();
-    const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
     const toggleDropdown = () => setShowDropdown((prev) => !prev);
     const handleSelect = (option: 'all' | 'first') => {
         setSelectedOption(option);
@@ -90,40 +95,61 @@ export default function VehicleTimeLine() {
     };
 
     const Header = () => (
-        <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
-            <span className="text-xl font-bold">ยานพาหนะ</span>
-            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                {pagination.total} คัน
-            </span>
+        <div className="page-section-header border-0 mt-5">
+            <div className="page-header-left">
+                <div className="page-title">
+                    <span className="page-title-label">ปฏิทินการจอง</span>
+                    <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+                        {pagination.total ?? 0} คัน
+                    </span>
+                </div>
+            </div>
         </div>
     );
 
+    const debouncedSetParams = useMemo(
+        () =>
+            debounce((value: string) => {
+                if (value.length > 2 || value.length === 0) {
+                    setParams((prev) => ({ ...prev, search: value }));
+                }
+            }, 500),
+        []
+    );
+
     const Actions = () => (
-        <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-5">
-            <SearchInput
-                defaultValue={params.search}
-                placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-                onChange={(value: string) => setParams((prev) => ({ ...prev, search: value }))}
-            />
-            <div className="flex gap-4">
+        <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                <SearchInput
+                    defaultValue={params.search}
+                    placeholder="เลขทะเบียน, ยี่ห้อ"
+                    onSearch={(value) => debouncedSetParams(value)}
+                />
+
                 <div className="flex flex-wrap items-center gap-2">
                     <VehicleStatus status="รออนุมัติ" />
                     <VehicleStatus status="ไป - กลับ" />
                     <VehicleStatus status="ค้างแรม" />
                     <VehicleStatus status="เสร็จสิ้น" />
                 </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 justify-start md:justify-end">
                 <DateRangePicker
-                    defaultValue={{
-                        startDate: dayjs(params.start_date).toDate(),
-                        endDate: dayjs(params.end_date).toDate(),
-                    }}
-                    onChange={(startDate, endDate) =>
+                    date={selectedRange}
+                    onChange={(range) => {
                         setParams((prev) => ({
                             ...prev,
-                            start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : "",
-                            end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : "",
-                        }))
-                    }
+                            start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+                            end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+                        }));
+
+                        if (range?.from && range?.to) {
+                            setSelectedRange({ from: range.from, to: range.to });
+                        } else {
+                            setSelectedRange(undefined);
+                        }
+                    }}
                 /> 
                 <button
                     onClick={handleOpenFilterModal}
@@ -132,6 +158,7 @@ export default function VehicleTimeLine() {
                     <i className="material-symbols-outlined text-lg">filter_list</i>
                     <span className="text-base font-semibold">ตัวกรอง</span>
                 </button>
+
                 <button
                     onClick={toggleDropdown}
                     className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
@@ -156,7 +183,7 @@ export default function VehicleTimeLine() {
         }, []);
 
         return (
-            <div>
+            <div className="relative">
                 {showDropdown && (
                     <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
                         <button
@@ -187,14 +214,18 @@ export default function VehicleTimeLine() {
                 )}
 
                 {dataRequest.length !== 0 ? (
-                    <>
-                        <RequestListTable dataRequest={dataRequest} params={params} selectedOption={selectedOption}/>
+                    <div className="overflow-x-auto mt-4">
+                        <RequestListTable
+                            dataRequest={dataRequest}
+                            params={params}
+                            selectedOption={selectedOption}
+                            lastMonth={lastMonth} />
                         <PaginationControls
                             pagination={pagination}
                             onPageChange={handlePageChange}
                             onPageSizeChange={handlePageSizeChange}
                         />
-                    </>
+                    </div>
                 ) : (
                     <VehicleNoData
                         imgSrc={"/assets/img/empty/search_not_found.png"}
@@ -209,12 +240,11 @@ export default function VehicleTimeLine() {
     };
 
     return (
-        <div>
+        <div className="px-4 sm:px6 lg:px8 py6">
             <Header />
             <Actions />
             <RenderTableOrNoData />
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
-            <VehicleTimeLineDetailModal ref={vehicleTimelineDetailRef} />
         </div>
     );
 }

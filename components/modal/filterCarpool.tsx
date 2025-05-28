@@ -1,4 +1,3 @@
-import DatePicker from "@/components/datePicker";
 import useSwipeDown from "@/utils/swipeDown";
 import React, {
   forwardRef,
@@ -9,8 +8,24 @@ import React, {
 } from "react";
 import CustomSelect from "../customSelect";
 import { getCarpoolDepartmentByType } from "@/services/carpoolManagement";
+import { CarpoolParams } from "@/app/types/carpool-management-type";
 
-const FilterCarpoolModal = forwardRef((_, ref) => {
+interface Props {
+  params: CarpoolParams;
+  setParams: React.Dispatch<React.SetStateAction<CarpoolParams>>;
+}
+
+interface SelectProps {
+  value: string;
+  label: string | React.ReactNode;
+}
+
+const defaultSelected = {
+  label: "ทั้งหมด",
+  value: "ทั้งหมด",
+};
+
+const FilterCarpoolModal = forwardRef((props: Props, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -18,10 +33,9 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const [options, setOptions] = useState<
-    { value: string; label: string | React.ReactNode }[]
-  >([]);
-  const [selectedOption, setSelectedOption] = useState(options[0]);
+  const [options, setOptions] = useState<SelectProps[]>([]);
+  const [selected, setSelected] = useState<SelectProps>(defaultSelected);
+  const [status, setStatus] = useState<string[]>(["0", "1", "2"]);
 
   useEffect(() => {
     // Set options only once when component mounts
@@ -29,13 +43,12 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
       try {
         const response = await getCarpoolDepartmentByType("0");
         const result = response.data;
-        setOptions(
-          result.map((item: any) => ({
-            value: item.dept_sap,
-            label: item.dept_short,
-            subLabel: item.dept_full,
-          }))
-        );
+        const options = result.map((item: any) => ({
+          value: item.dept_sap,
+          label: item.dept_short,
+          subLabel: item.dept_full,
+        }));
+        setOptions([defaultSelected, ...options]);
       } catch (error) {
         console.error("Error fetching status data:", error);
       }
@@ -43,6 +56,25 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
 
     fetchDepartmentFunc();
   }, []);
+
+  const submitForm = () => {
+    const { params, setParams } = props;
+    const newParams = {
+      ...params,
+      dept_sap: selected.value === "ทั้งหมด" ? undefined : selected.value,
+      is_active: status.join(","),
+    };
+    setParams(newParams);
+    modalRef.current?.close();
+  };
+
+  const onChecked = (checked: boolean, value: "0" | "1" | "2") => {
+    if (checked) {
+      setStatus([...status, value]);
+    } else {
+      setStatus(status.filter((item) => item !== value));
+    }
+  };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -84,8 +116,8 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
                 <CustomSelect
                   w="100"
                   options={options}
-                  value={selectedOption}
-                  onChange={setSelectedOption}
+                  value={selected}
+                  onChange={setSelected}
                 />
               </div>
             </div>
@@ -98,6 +130,8 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
                     <input
                       type="checkbox"
                       defaultChecked
+                      checked={status.includes("1")}
+                      onChange={(e) => onChecked(e.target.checked, "1")}
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                     />
                     <label className="custom-control-label">
@@ -115,6 +149,8 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
                     <input
                       type="checkbox"
                       defaultChecked
+                      checked={status.includes("0")}
+                      onChange={(e) => onChecked(e.target.checked, "0")}
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                     />
                     <label className="custom-control-label">
@@ -132,6 +168,8 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
                     <input
                       type="checkbox"
                       defaultChecked
+                      checked={status.includes("2")}
+                      onChange={(e) => onChecked(e.target.checked, "2")}
                       className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                     />
                     <label className="custom-control-label">
@@ -154,6 +192,10 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
             <button
               type="button"
               className="btn btn-tertiary btn-resetfilter block mr-auto bg-transparent shadow-none border-none"
+              onClick={() => {
+                setSelected(defaultSelected);
+                setStatus(["0", "1", "2"]);
+              }}
             >
               ล้างตัวกรอง
             </button>
@@ -162,7 +204,7 @@ const FilterCarpoolModal = forwardRef((_, ref) => {
             <form method="dialog">
               <button className="btn btn-secondary">ยกเลิก</button>
             </form>
-            <form method="dialog">
+            <form method="dialog" onClick={submitForm}>
               <button className="btn btn-primary">ยืนยัน</button>
             </form>
           </div>

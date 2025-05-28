@@ -1,10 +1,10 @@
 "use client";
 
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
-import { listDriverDepartment, driverStatusRef } from "@/services/driversManagement";
+import CustomSelect from "@/components/drivers-management/customSelect";
+import { driverStatusRef, listDriverDepartment } from "@/services/driversManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import CustomSelect from "@/components/drivers-management/customSelect";
 
 interface Props {
   onSubmitFilter: (filter: {
@@ -70,13 +70,25 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
 
   const startDatePickerRef = useRef<DatePickerRef>(null);
   const endDatePickerRef = useRef<DatePickerRef>(null);
+  const [openModal, setOpenModal] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
-    closeModal: () => modalRef.current?.close(),
+    openModal: () => {
+      modalRef.current?.showModal();
+      setOpenModal(true);
+    },
+    closeModal: () => {
+      modalRef.current?.close();
+      setOpenModal(false);
+    },
   }));
 
-  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+  const handleCloseModal = () => {
+    modalRef.current?.close();
+    setOpenModal(false); // Update state to reflect modal is closed
+  };
+
+  const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
   useEffect(() => {
     const fetchDriverDepartment = async () => {
@@ -87,7 +99,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
             return {
               value: item.dept_sap,
               label: item.dept_short,
-              labelDetail: item.dept_full,
+              // labelDetail: item.dept_full,
             };
           }
         );
@@ -156,229 +168,246 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
   };
 
   return (
-    <dialog ref={modalRef} className="modal">
-      <div className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
-        <div className="bottom-sheet" {...swipeDownHandlers}>
-          <div className="bottom-sheet-icon"></div>
-        </div>
-        <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-header-group flex gap-4 items-center">
-            <div className="featured-ico featured-ico-gray">
-              <i className="material-symbols-outlined icon-settings-400-24">filter_list</i>
+    <>
+      {openModal && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
+            <div className="bottom-sheet" {...swipeDownHandlers}>
+              <div className="bottom-sheet-icon"></div>
             </div>
-            <div className="modal-header-content">
-              <div className="modal-header-top">
-                <div className="modal-title">ตัวกรอง</div>
-              </div>
-              <div className="modal-header-bottom">
-                <div className="modal-subtitle">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</div>
-              </div>
-            </div>
-          </div>
-          <form method="dialog">
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
-              <i className="material-symbols-outlined">close</i>
-            </button>
-          </form>
-        </div>
-        <div className="modal-body overflow-y-auto flex flex-col gap-4 md:h-[76vh] h-[70vh] md:max-h-full max-h-[70vh]">
-          <div className="grid grid-cols-1">
-            <div className="col-span-1">
-              <div className="form-group">
-                <label className="form-label">หน่วยงานสังกัด</label>
-              </div>
-            </div>
-            <div className="col-span-1">
-              <div className="form-group">
-                <CustomSelect
-                  w="w-full"
-                  options={driverDepartmentList}
-                  value={driverDepartmentOptions}
-                  onChange={handleDriverDepartmentChange}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="col-span-1">
-            <div className="form-group">
-              <label className="form-label">สถานะการปฏิบัติงาน</label>
-              {driverStatus != null && (
-                <>
-                  {driverStatus.map((statusItem, index) => (
-                    <div className="custom-group" key={index}>
-                      <div className="custom-control custom-checkbox custom-control-inline">
-                        <input
-                          type="checkbox"
-                          value={statusItem.ref_driver_status_code}
-                          checked={selectedStatuses.includes(statusItem.ref_driver_status_code)}
-                          onChange={() => handleCheckboxChange(statusItem.ref_driver_status_code)}
-                          className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                        />
-                        <label className="custom-control-label">
-                          <div className="custom-control-label-group">
-                            <span
-                              className={`badge badge-pill-outline ${
-                                statusItem.ref_driver_status_desc === "ลาออก"
-                                  ? "badge-error"
-                                  : statusItem.ref_driver_status_desc === "ปฏิบัติงานปกติ"
-                                  ? "badge-success"
-                                  : statusItem.ref_driver_status_desc === "ลา (ป่วย/กิจ)"
-                                  ? "badge-warning"
-                                  : statusItem.ref_driver_status_desc === "หมดสัญญาจ้าง"
-                                  ? "badge-gray"
-                                  : "badge-info"
-                              }`}
-                            >
-                              {statusItem.ref_driver_status_desc}
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1">
-            <div className="form-group">
-              <label className="form-label">สถานะใช้งาน</label>
-              {statusDriver != null && (
-                <>
-                  {statusDriver.map((statusItem, index) => (
-                    <div className="custom-group" key={index}>
-                      <div className="custom-control custom-checkbox custom-control-inline">
-                        <input
-                          type="checkbox"
-                          value={statusItem.ref_request_status_code}
-                          checked={selectedDriverStatus.includes(statusItem.ref_request_status_code)}
-                          onChange={() => handleCheckboxChangeDriverStatus(statusItem.ref_request_status_code)}
-                          className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                        />
-                        <label className="custom-control-label">
-                          <div className="custom-control-label-group">
-                            <span>{statusItem.ref_request_status_name}</span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="col-span-1">
-            <div className="form-group">
-              <label className="form-label">ประเภทค้างคืน</label>
-              {driverWorkType != null && (
-                <>
-                  {driverWorkType.map((statusItem, index) => (
-                    <div className="custom-group" key={index}>
-                      <div className="custom-control custom-checkbox custom-control-inline">
-                        <input
-                          type="checkbox"
-                          value={statusItem.ref_request_status_code}
-                          checked={selectedWorkType.includes(statusItem.ref_request_status_code)}
-                          onChange={() => handleCheckboxChangeWorkType(statusItem.ref_request_status_code)}
-                          className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                        />
-                        <label className="custom-control-label">
-                          <div className="custom-control-label-group">
-                            <span>{statusItem.ref_request_status_name}</span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12">
-              <div className="form-group">
-                <label className="form-label">วันที่หมดอายุใบขับขี่</label>
-                <div className="input-group flatpickr">
-                  <div className="input-group-prepend" data-toggle="">
-                    <span className="input-group-text">
-                      <i className="material-symbols-outlined">calendar_month</i>
-                    </span>
+            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+              <div className="modal-header-group flex gap-4 items-center">
+                <div className="featured-ico featured-ico-gray">
+                  <i className="material-symbols-outlined icon-settings-400-24">filter_list</i>
+                </div>
+                <div className="modal-header-content">
+                  <div className="modal-header-top">
+                    <div className="modal-title">ตัวกรอง</div>
                   </div>
-                  <DatePicker
-                    ref={startDatePickerRef}
-                    placeholder={"ระบุวันที่หมดอายุใบขับขี่"}
-                    onChange={handleStartDateChange}
-                  />
-                  <div className="input-group-append hidden" data-clear>
-                    <span className="input-group-text search-ico-trailing">
-                      <i className="material-symbols-outlined">close</i>
-                    </span>
+                  <div className="modal-header-bottom">
+                    <div className="modal-subtitle">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</div>
                   </div>
                 </div>
               </div>
+              {/* <form method="dialog"> */}
+              <button
+                className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                onClick={handleCloseModal}
+              >
+                <i className="material-symbols-outlined">close</i>
+              </button>
+              {/* </form> */}
             </div>
+            <div className="modal-scroll-wrapper overflow-y-auto h-[74vh] max-h-full">
+              <div className="modal-body  flex flex-col gap-4 md:h-[76vh] h-[70vh] md:max-h-full max-h-[70vh]">
+                <div className="grid grid-cols-1">
+                  <div className="col-span-1">
+                    <div className="form-group">
+                      <label className="form-label">หน่วยงานสังกัด</label>
+                    </div>
+                  </div>
+                  <div className="col-span-1">
+                    <div className="form-group">
+                      <CustomSelect
+                        w="w-full"
+                        options={driverDepartmentList}
+                        value={driverDepartmentOptions}
+                        onChange={handleDriverDepartmentChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <div className="form-group">
+                    <label className="form-label">สถานะการปฏิบัติงาน</label>
+                    {driverStatus != null && (
+                      <>
+                        {driverStatus.map((statusItem, index) => (
+                          <div className="custom-group" key={index}>
+                            <div className="custom-control custom-checkbox custom-control-inline">
+                              <input
+                                type="checkbox"
+                                value={statusItem.ref_driver_status_code}
+                                checked={selectedStatuses.includes(statusItem.ref_driver_status_code)}
+                                onChange={() => handleCheckboxChange(statusItem.ref_driver_status_code)}
+                                className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                              />
+                              <label className="custom-control-label">
+                                <div className="custom-control-label-group">
+                                  <span
+                                    className={`badge badge-pill-outline ${
+                                      statusItem.ref_driver_status_desc === "ลาออก"
+                                        ? "badge-error"
+                                        : statusItem.ref_driver_status_desc === "ปฏิบัติงานปกติ"
+                                        ? "badge-success"
+                                        : statusItem.ref_driver_status_desc === "ลา (ป่วย/กิจ)"
+                                        ? "badge-warning"
+                                        : statusItem.ref_driver_status_desc === "หมดสัญญาจ้าง"
+                                        ? "badge-gray"
+                                        : statusItem.ref_driver_status_desc.includes("ให้ออก")
+                                        ? "badge-neutral"
+                                        : statusItem.ref_driver_status_desc.includes("ทดแทน")
+                                        ? "badge-accent"
+                                        : "badge-info"
+                                    }`}
+                                  >
+                                    {statusItem.ref_driver_status_desc}
+                                  </span>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <div className="form-group">
+                    <label className="form-label">สถานะใช้งาน</label>
+                    {statusDriver != null && (
+                      <>
+                        {statusDriver.map((statusItem, index) => (
+                          <div className="custom-group" key={index}>
+                            <div className="custom-control custom-checkbox custom-control-inline">
+                              <input
+                                type="checkbox"
+                                value={statusItem.ref_request_status_code}
+                                checked={selectedDriverStatus.includes(statusItem.ref_request_status_code)}
+                                onChange={() => handleCheckboxChangeDriverStatus(statusItem.ref_request_status_code)}
+                                className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                              />
+                              <label className="custom-control-label">
+                                <div className="custom-control-label-group">
+                                  <span>{statusItem.ref_request_status_name}</span>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <div className="form-group">
+                    <label className="form-label">ประเภทค้างคืน</label>
+                    {driverWorkType != null && (
+                      <>
+                        {driverWorkType.map((statusItem, index) => (
+                          <div className="custom-group" key={index}>
+                            <div className="custom-control custom-checkbox custom-control-inline">
+                              <input
+                                type="checkbox"
+                                value={statusItem.ref_request_status_code}
+                                checked={selectedWorkType.includes(statusItem.ref_request_status_code)}
+                                onChange={() => handleCheckboxChangeWorkType(statusItem.ref_request_status_code)}
+                                className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                              />
+                              <label className="custom-control-label">
+                                <div className="custom-control-label-group">
+                                  <span>{statusItem.ref_request_status_name}</span>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">วันที่หมดอายุใบขับขี่</label>
+                      <div className="input-group flatpickr">
+                        <div className="input-group-prepend" data-toggle="">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">calendar_month</i>
+                          </span>
+                        </div>
+                        <DatePicker
+                          ref={startDatePickerRef}
+                          placeholder={"ระบุวันที่หมดอายุใบขับขี่"}
+                          onChange={handleStartDateChange}
+                          defaultValue={selectedStartDate} // Set default value if needed
+                        />
+                        <div className="input-group-append hidden" data-clear>
+                          <span className="input-group-text search-ico-trailing">
+                            <i className="material-symbols-outlined">close</i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-            <div className="col-span-12">
-              <div className="form-group">
-                <label className="form-label">วันที่สิ้นสุดปฏิบัติงาน</label>
-                <div className="input-group flatpickr">
-                  <div className="input-group-prepend" data-toggle="">
-                    <span className="input-group-text">
-                      <i className="material-symbols-outlined">calendar_month</i>
-                    </span>
-                  </div>
-                  <DatePicker
-                    ref={endDatePickerRef} // Attach ref to end date picker
-                    placeholder={"ระบุวันที่สิ้นสุดปฏิบัติงาน"}
-                    onChange={handleEndDateChange}
-                  />
-                  <div className="input-group-append hidden" data-clear>
-                    <span className="input-group-text search-ico-trailing">
-                      <i className="material-symbols-outlined">close</i>
-                    </span>
+                  <div className="col-span-12">
+                    <div className="form-group">
+                      <label className="form-label">วันที่สิ้นสุดปฏิบัติงาน</label>
+                      <div className="input-group flatpickr">
+                        <div className="input-group-prepend" data-toggle="">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">calendar_month</i>
+                          </span>
+                        </div>
+                        <DatePicker
+                          ref={endDatePickerRef} // Attach ref to end date picker
+                          placeholder={"ระบุวันที่สิ้นสุดปฏิบัติงาน"}
+                          onChange={handleEndDateChange}
+                          defaultValue={selectedEndDate} // Set default value if needed
+                        />
+                        <div className="input-group-append hidden" data-clear>
+                          <span className="input-group-text search-ico-trailing">
+                            <i className="material-symbols-outlined">close</i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="modal-action absolute bottom-0 gap-3 mt-0 w-full flex justify-between">
+              <div className="left">
+                <button
+                  type="button"
+                  className="btn btn-tertiary btn-resetfilter block mr-auto bg-transparent shadow-none border-none"
+                  onClick={handleResetFilters} // Attach the reset function
+                >
+                  ล้างตัวกรอง
+                </button>
+              </div>
+              <div className="flex gap-3 items-center">
+                {/* <form method="dialog"> */}
+                <button className="btn btn-secondary" onClick={handleCloseModal}>
+                  ยกเลิก
+                </button>
+                {/* </form> */}
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() =>
+                    onSubmitFilter({
+                      selectedStatuses,
+                      selectedDriverStatus,
+                      selectedWorkType,
+                      selectedStartDate,
+                      selectedEndDate,
+                      driverDepartmentOptions,
+                    })
+                  }
+                >
+                  ยืนยัน
+                </button>
+              </div>
+            </div>
           </div>
+          {/* <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form> */}
         </div>
-        <div className="modal-action absolute bottom-0 gap-3 mt-0 w-full flex justify-between">
-          <div className="left">
-            <button
-              type="button"
-              className="btn btn-tertiary btn-resetfilter block mr-auto bg-transparent shadow-none border-none"
-              onClick={handleResetFilters} // Attach the reset function
-            >
-              ล้างตัวกรอง
-            </button>
-          </div>
-          <div className="flex gap-3 items-center">
-            <form method="dialog">
-              <button className="btn btn-secondary">ยกเลิก</button>
-            </form>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                onSubmitFilter({
-                  selectedStatuses,
-                  selectedDriverStatus,
-                  selectedWorkType,
-                  selectedStartDate,
-                  selectedEndDate,
-                  driverDepartmentOptions,
-                })
-              }
-            >
-              ยืนยัน
-            </button>
-          </div>
-        </div>
-      </div>
-      <form method="dialog" className="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
+      )}
+    </>
   );
 });
 

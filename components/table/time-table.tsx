@@ -24,7 +24,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
     const renderTableHead = () => (
         <thead className="bg-gray-200">
             {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="text-base font-semibold">
+                <tr key={headerGroup.id} className="text-sm sm:text-base font-semibold">
                     {headerGroup.headers.map((header) => (
                         <th
                             key={header.id}

@@ -51,7 +51,7 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
 
           const driverOptionsArray = vehicleUserData.map((user: ApproverUserType) => ({
             value: user.emp_id,
-            label: `${user.full_name} (${user.dept_sap})`,
+            label: `${user.full_name} (${user.emp_id})`,
           }));
 
           setDriverOptions(driverOptionsArray);
@@ -64,10 +64,10 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
           if (selectedUser) {
             setSelectedVehicleUserOption({
               value: selectedUser.emp_id,
-              label: `${selectedUser.full_name} (${selectedUser.dept_sap})`,
+              label: `${selectedUser.full_name} (${selectedUser.emp_id})`,
             });
 
-            setCostName(selectedUser.dept_sap); // Set costName
+            setCostName(selectedUser.dept_sap_short); // Set costName
           } else {
             setSelectedVehicleUserOption(driverOptionsArray[0]);
             setCostName(driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || "");

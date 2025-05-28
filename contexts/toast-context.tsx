@@ -26,7 +26,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     show: false,
     title: '',
     desc: '',
-    status: 'info',
+    status: 'success',
     seeDetail: undefined,
     seeDetailText: '',
   });

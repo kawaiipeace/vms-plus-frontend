@@ -56,27 +56,30 @@ export default function CarpoolProcessFour() {
     if (refetch) {
       fetchCarpoolVehicleSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
   useEffect(() => {
     if (!id) {
       if (formData.mas_carpool_uid) fetchCarpoolVehicleSearchFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
     if (id) {
       fetchCarpoolVehicleSearchFunc();
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const fetchCarpoolVehicleSearchFunc = async (newPagination?: any) => {
     try {
       const response = await getCarpoolVehicleSearch(
         id || formData.mas_carpool_uid,
         {
-          ...newPagination,
           ...pagination,
+          ...newPagination,
         }
       );
       const result = response.data;
@@ -93,10 +96,6 @@ export default function CarpoolProcessFour() {
       ...pagination,
       page: newPage,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      page: newPage,
-    }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
@@ -107,11 +106,6 @@ export default function CarpoolProcessFour() {
       limit,
       page: 1,
     });
-    setPagination((prevParams) => ({
-      ...prevParams,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    }));
   };
 
   const handleActive = async () => {
@@ -122,7 +116,7 @@ export default function CarpoolProcessFour() {
       );
       if (response.request.status === 200) {
         router.push(
-          "/carpool-management/form/process-five?id=" +
+          "/carpool-management/form/process-four?id=" +
             id +
             "&name=" +
             name +
@@ -354,7 +348,7 @@ export default function CarpoolProcessFour() {
               <div className="form-action">
                 <button
                   onClick={() =>
-                    router.push("/carpool-management/form/process-three")
+                    router.push("/carpool-management/form/process-five")
                   }
                   className="btn btn-primary"
                 >

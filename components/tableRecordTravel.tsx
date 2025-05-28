@@ -74,7 +74,7 @@ export default function TableRecordTravelComponent<T>({
     <>
       <div className="block md:hidden space-y-4">
         {table.getRowModel().rows.map((row) => (
-          <div key={row.id} className="bg-white shadow-md rounded-lg border">
+          <div key={row.id} className="bg-white dark:bg-black shadow-md rounded-lg border">
             {row.getVisibleCells().map((cell) => {
               const value = cell.renderValue() as React.ReactNode;
               const dateTime = cell.column.id.includes("datetime") || cell.column.id.includes("date");

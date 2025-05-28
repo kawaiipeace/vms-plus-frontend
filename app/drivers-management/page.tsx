@@ -7,6 +7,7 @@ import SideBar from "@/components/sideBar";
 import DriversListTab from "@/components/drivers-management/tabs/driversListTab";
 import ToastCustom from "@/components/toastCustom";
 import { useSearchParams } from "next/navigation";
+import VehicleTimeLine from "@/components/drivers-management/driverManageTimeLineFlow";
 
 import { DriversManagementParams } from "@/app/types/drivers-management-type";
 
@@ -36,7 +37,9 @@ function RequestListContent() {
           title="สร้างข้อมูลพนักงานขับรถสำเร็จ"
           desc={
             <>
-              สร้างข้อมูลพนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> เรียบร้อยแล้ว
+              สร้างข้อมูลพนักงานขับรถ{" "}
+              <span className="font-semibold">{driverCreateName}</span>{" "}
+              เรียบร้อยแล้ว
             </>
           }
           status="success"
@@ -49,7 +52,8 @@ function RequestListContent() {
           title="ลบพนักงานขับรถสำเร็จ"
           desc={
             <>
-              พนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> <br />
+              พนักงานขับรถ{" "}
+              <span className="font-semibold">{driverCreateName}</span> <br />
               ถูกลบจากระบบเรียบร้อยแล้ว
             </>
           }
@@ -87,7 +91,7 @@ function RequestListContent() {
 const DriverManagementPage = () => {
   const [params, setParams] = useState<DriversManagementParams>({});
   // const [statusData, setStatusData] = useState<VehicleInUseDriverMenu[]>([]);
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0);
   const { isPinned } = useSidebar();
 
   // const getFilterData = () => {
@@ -155,7 +159,7 @@ const DriverManagementPage = () => {
       {
         order: 0,
         label: "ปฏิทินการจอง",
-        content: <div>ปฏิทินการจอง</div>,
+        content: <VehicleTimeLine />,
       },
       {
         order: 1,
@@ -172,7 +176,11 @@ const DriverManagementPage = () => {
     <>
       <div className="main-container">
         <SideBar menuName="ข้อมูลพนักงานขับรถ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -217,7 +225,7 @@ const DriverManagementPage = () => {
                 ))}
               </div>
 
-              <div>{tabs[activeTab]?.content}</div>
+              <div className="mt-6">{tabs[activeTab]?.content}</div>
             </div>
           </div>
         </div>

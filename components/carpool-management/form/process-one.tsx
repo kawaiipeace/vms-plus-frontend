@@ -1,3 +1,4 @@
+"use client";
 import {
   CarChoice,
   Carpool,
@@ -8,13 +9,14 @@ import CustomMultiSelect from "@/components/customMultiSelect";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
+import ToastCustom from "@/components/toastCustom";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import {
   chooseCarChoice,
   chooseDriverChoice,
-  getCarpoolDepartment,
   getCarpoolDepartmentByType,
   postCarpoolCreate,
+  putCarpoolUpdate,
 } from "@/services/carpoolManagement";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,10 +24,22 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 const schema = yup.object().shape({
-  carpool_authorized_depts: yup
-    .array()
-    .required("กรุณาระบุหน่วยงานที่ใช้บริการ"),
+  carpool_type: yup.string().required("กรุณาระบุประเภทกลุ่ม"),
+  carpool_authorized_depts: yup.array().when("carpool_type", {
+    is: (value: string) => value === "02" || value === "03",
+    then: (schema) =>
+      schema
+        .required("กรุณาระบุกลุ่มยานพาหนะที่ใช้บริการ")
+        .min(1, "กรุณาระบุกลุ่มยานพาหนะที่ใช้บริการ"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   carpool_contact_number: yup
     .string()
     .required("กรุณาระบุเบอร์ติดต่อ")
@@ -33,8 +47,12 @@ const schema = yup.object().shape({
     .required("กรุณากรอกเบอร์ติดต่อ"),
   carpool_contact_place: yup.string().required("กรุณาระบุสถานที่ติดต่อ"),
   carpool_name: yup.string().required("กรุณาระบุชื่อกลุ่ม"),
-  ref_carpool_choose_car_id: yup.number().required("กรุณาเลือกยานพาหนะ"),
-  ref_carpool_choose_driver_id: yup.number().required("กรุณาเลือกพนักงานขับรถ"),
+  ref_carpool_choose_car_id: yup
+    .number()
+    .required("กรุณาเลือกการเลือกยานพาหนะ"),
+  ref_carpool_choose_driver_id: yup
+    .number()
+    .required("กรุณาเลือกการเลือกพนักงานขับรถ"),
   remark: yup.string(),
   is_must_pass_status_30: yup.boolean(),
   is_must_pass_status_40: yup.boolean(),
@@ -50,6 +68,7 @@ const groupOptions = [
 
 export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const id = useSearchParams().get("id");
+  const name = useSearchParams().get("name");
   const router = useRouter();
 
   const [carSelected, setCarSelected] = useState<string>("");
@@ -62,6 +81,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const [departmentSelected, setDepartmentSelected] = useState<
     CustomSelectOption[]
   >([]);
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const { formData, updateFormData } = useFormContext();
 
@@ -69,11 +89,12 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
+      carpool_type: formData.carpool_type || "",
       carpool_authorized_depts: formData.carpool_authorized_depts || [],
       carpool_contact_number: formData.carpool_contact_number || "",
       carpool_contact_place: formData.carpool_contact_place || "",
@@ -129,15 +150,37 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     }
   }, [group]);
 
-  console.log("carpool: ", carpool);
+  useEffect(() => {
+    if (carpool) {
+      const { carpool_authorized_depts } = carpool;
+      const strArr = carpool_authorized_depts.map((item) => item.dept_sap);
+      const options = departments
+        .filter((item) => strArr.includes(item.dept_sap))
+        .map((item) => ({
+          value: item.dept_sap,
+          label: item.dept_short,
+          subLabel: item.dept_full,
+        }));
+
+      setValue("carpool_authorized_depts", carpool_authorized_depts);
+      setDepartmentSelected(options);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [departments]);
 
   useEffect(() => {
     if (carpool) {
-      const { carpool_name, carpool_contact_place, carpool_contact_number } =
-        carpool;
+      const {
+        carpool_name,
+        carpool_contact_place,
+        carpool_contact_number,
+        carpool_type,
+      } = carpool;
       setValue("carpool_name", carpool_name);
       setValue("carpool_contact_place", carpool_contact_place);
       setValue("carpool_contact_number", carpool_contact_number);
+      setValue("carpool_type", carpool_type);
+      setGroup(groupOptions.find((item) => item.value === carpool_type));
       setValue("ref_carpool_choose_car_id", carpool.ref_carpool_choose_car_id);
       setCarSelected(carpool.ref_carpool_choose_car_id.toString());
       setValue(
@@ -159,30 +202,53 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
         carpool.is_must_pass_status_50 === "1"
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carpool]);
 
   const onSubmit = async (data: any) => {
-    const carpool_authorized_depts = data.carpool_authorized_depts.map(
+    const carpool_authorized_depts = data.carpool_authorized_depts?.map(
       (e: { value: string }) => ({ dept_sap: e.value })
     );
+
+    const dataToApi = {
+      ...data,
+      carpool_authorized_depts:
+        data.carpool_type === "01" ? [] : carpool_authorized_depts,
+      ref_carpool_choose_car_id: Number(data.ref_carpool_choose_car_id),
+      ref_carpool_choose_driver_id: Number(data.ref_carpool_choose_driver_id),
+      is_must_pass_status_30: data.is_must_pass_status_30 ? "1" : "0",
+      is_must_pass_status_40: data.is_must_pass_status_40 ? "1" : "0",
+      is_must_pass_status_50: data.is_must_pass_status_50 ? "1" : "0",
+    };
+
     if (id) {
-      console.log("edit");
+      try {
+        const response = await putCarpoolUpdate(id, dataToApi);
+        if (response.request.status === 200) {
+          setToast({
+            title: "บันทึกการตั้งค่าสำเร็จ",
+            desc: "บันทึกการตั้งค่ากลุ่มยานพาหนะ " + name + " เรียบร้อยแล้ว",
+            status: "success",
+          });
+        }
+      } catch (error: any) {
+        console.log(error);
+        setToast({
+          title: "Error",
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
+          status: "error",
+        });
+      }
     } else if (formData.mas_carpool_uid && !id) {
       router.push("/carpool-management/form/process-two");
     } else {
       try {
-        const response = await postCarpoolCreate({
-          ...data,
-          carpool_authorized_depts,
-          ref_carpool_choose_car_id: Number(data.ref_carpool_choose_car_id),
-          ref_carpool_choose_driver_id: Number(
-            data.ref_carpool_choose_driver_id
-          ),
-          is_must_pass_status_30: data.is_must_pass_status_30 ? "1" : "0",
-          is_must_pass_status_40: data.is_must_pass_status_40 ? "1" : "0",
-          is_must_pass_status_50: data.is_must_pass_status_50 ? "1" : "0",
-        });
-        console.log(response.data);
+        const response = await postCarpoolCreate(dataToApi);
         if (response.request.status === 201) {
           updateFormData({
             ...data,
@@ -285,27 +351,31 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">
-                    หน่วยงานที่ใช้บริการกลุ่มยานพาหนะนี้ได้
-                  </label>
+                  <label className="form-label">ประเภทกลุ่มยานพาหนะ</label>
                   <CustomSelect
                     w="w-full"
                     options={groupOptions}
                     value={group}
-                    {...register("carpool_authorized_depts")}
-                    onChange={(e) => setGroup(e)}
+                    {...register("carpool_type")}
+                    onChange={(e) => {
+                      setGroup(e);
+                      setValue("carpool_type", e.value);
+                    }}
                   />
+                  <div>
+                    {errors.carpool_type && (
+                      <FormHelper text={String(errors.carpool_type.message)} />
+                    )}
+                  </div>
                 </div>
 
                 <div className="md:col-span-3">
-                  {group && (
+                  {group?.value && group.value !== "01" && (
                     <div className="form-group">
                       <label className="form-label">
-                        {
-                          groupOptions.find(
-                            (item) => item.value === group.value
-                          )?.label
-                        }
+                        {group.value === "02" && "การไฟฟ้าเขต"}
+                        {group.value === "03" &&
+                          "หน่วยงานที่ใช้บริการกลุ่มยานพาหนะนี้ได้"}
                       </label>
                       <CustomMultiSelect
                         w="w-full"
@@ -315,12 +385,24 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           subLabel: item.dept_full,
                         }))}
                         value={departmentSelected}
-                        {...register("carpool_authorized_depts")}
+                        {...register("carpool_authorized_depts", {
+                          required:
+                            group.value === "02" || group.value === "03",
+                        })}
                         onChange={(e) => {
                           setDepartmentSelected(e as CustomSelectOption[]);
                           setValue("carpool_authorized_depts", e);
                         }}
                       />
+                      <div>
+                        {errors.carpool_authorized_depts && (
+                          <FormHelper
+                            text={String(
+                              errors.carpool_authorized_depts.message
+                            )}
+                          />
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -369,6 +451,13 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                     ))}
                   </div>
                 </div>
+                <div className="text-error-border">
+                  {errors.ref_carpool_choose_car_id && (
+                    <FormHelper
+                      text={String(errors.ref_carpool_choose_car_id.message)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
@@ -400,6 +489,13 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                       />
                     ))}
                   </div>
+                </div>
+                <div className="text-error-border">
+                  {errors.ref_carpool_choose_driver_id && (
+                    <FormHelper
+                      text={String(errors.ref_carpool_choose_driver_id.message)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -471,19 +567,11 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
 
         <div className="form-action">
           {id ? (
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!isValid}
-            >
+            <button type="submit" className="btn btn-primary">
               บันทึกการตั้งค่า
             </button>
           ) : (
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!isValid}
-            >
+            <button type="submit" className="btn btn-primary">
               ต่อไป
               <i className="material-symbols-outlined icon-settings-300-24">
                 arrow_right_alt
@@ -492,6 +580,15 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
           )}
         </div>
       </form>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 }

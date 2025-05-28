@@ -14,6 +14,7 @@ export default function DriverCard({
   seeDetail,
   onVehicleSelect,
   adminDriverPickModalRef,
+  isSelected, // added
 }: {
   id: string;
   imgSrc: string;
@@ -27,6 +28,7 @@ export default function DriverCard({
     openModal: () => void;
     closeModal: () => void;
   }>;
+  isSelected?: boolean; // added
 }) {
   const driverAppointmentRef = useRef<{
     openModal: () => void;
@@ -43,16 +45,23 @@ export default function DriverCard({
   };
 
   return (
-    <div className="card">
+    <div
+      className={`card relative ${
+        isSelected ? "!border-2 !border-brand-900" : "border border-gray-200"
+      }`}
+    >
+      {/* Badge */}
+      {isSelected && (
+        <div className="absolute top-2 right-2">
+          <span className="badge badge-pill-outline badge-active bg-brand-100 whitespace-nowrap !rounded-md text-brand-800">
+            <i className="material-symbols-outlined">check</i>
+            เลือกอยู่
+          </span>
+        </div>
+      )}
       <div className="card-body">
-        <div className="card-img-top img-sm">
-          <Image
-            src={imgSrc}
-            width={100}
-            height={100}
-            className=""
-            alt="..."
-          ></Image>
+        <div className="card-img-top img-sm max-h-[180px]">
+          <Image src={imgSrc} width={100} height={100} alt="..." />
         </div>
         <div className="card-content">
           <div className="card-content-top">
@@ -73,6 +82,7 @@ export default function DriverCard({
             </div>
           </div>
         </div>
+
         <div className="flex w-full gap-3">
           {seeDetail && (
             <button
@@ -98,6 +108,7 @@ export default function DriverCard({
           </button>
         </div>
       </div>
+
       <DriverAppointmentModal
         ref={driverAppointmentRef}
         id={id}

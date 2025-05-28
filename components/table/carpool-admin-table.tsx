@@ -16,6 +16,7 @@ import {
 } from "@/services/carpoolManagement";
 import AddCarpoolAdminModal from "../modal/addCarpoolAdminModal";
 import ToastCustom from "../toastCustom";
+import Image from "next/image";
 
 interface PaginationType {
   limit: number;
@@ -105,11 +106,16 @@ export default function CarpoolAdminTable({
           });
           cancelCreateModalRef.current?.closeModal();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         setToast({
           title: "Error",
-          desc: <>{error}</>,
+          desc: (
+            <div>
+              <div>{error.response.data.error}</div>
+              <div>{error.response.data.message}</div>
+            </div>
+          ),
           status: "error",
         });
       }
@@ -121,6 +127,21 @@ export default function CarpoolAdminTable({
       accessorKey: "admin_emp_name",
       header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <div className="avatar avatar-sm">
+              <Image
+                src={row.original.image_url || "/assets/img/avatar.svg"}
+                width={36}
+                height={36}
+                alt="Profile Avatar"
+              ></Image>
+            </div>
+            {row.original.admin_emp_name}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "admin_dept_sap_short",

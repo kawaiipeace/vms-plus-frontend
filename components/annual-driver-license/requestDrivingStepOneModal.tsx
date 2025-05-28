@@ -1,11 +1,17 @@
 "use client";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import { UploadFileType } from "@/app/types/upload-type";
+import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
 import {
   fetchDriverCertificateType,
   fetchDriverLicenseType,
 } from "@/services/masterService";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
+import { yupResolver } from "@hookform/resolvers/yup";
+import dayjs from "dayjs";
 import {
   forwardRef,
   useEffect,
@@ -13,32 +19,29 @@ import {
   useRef,
   useState,
 } from "react";
-import ImageUpload from "../imageUpload";
-import { UploadFileType } from "@/app/types/upload-type";
-import ImagePreview from "../imagePreview";
-import CustomSelect from "../customSelect";
-import dayjs from "dayjs";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
-import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
+import CustomSelect from "../customSelect";
+import ImagePreview from "../imagePreview";
+import ImageUpload from "../imageUpload";
 
-interface ValueFormStep1 {
-  driverLicenseType: { value: string; label: string; desc?: string } | null;
+export interface ValueFormStep1 {
+  driverLicenseType: any;
   year: string;
   licenseNumber: string;
   licenseExpiryDate: string;
-  licenseImages: UploadFileType[];
-  courseName?: string;
-  certificateNumber?: string;
-  vehicleType?: { value: string; label: string; desc?: string } | null;
-  trainingDate?: string;
-  trainingEndDate?: string;
-  certificateImages?: UploadFileType[];
+  licenseImages: any;
+  courseName: string;
+  certificateNumber: string;
+  vehicleType: any;
+  trainingDate: string;
+  trainingEndDate: string;
+  certificateImages: any;
 }
-
 interface ReturnCarAddModalProps {
   useBy?: string;
   id?: string;
+  profile?: string;
   requestData?: DriverLicenseCardType;
   edit?: boolean;
   progress?: string;
@@ -47,10 +50,23 @@ interface ReturnCarAddModalProps {
 }
 
 const formStep1Schema = yup.object().shape({
-  driverLicenseType: yup.object().nullable().required("กรุณาเลือกประเภทการขับขี่"),
-  year: yup.string().required("กรุณาเลือกปี"),
-  licenseNumber: yup.string().required("กรุณาระบุเลขที่ใบขับขี่"),
-  licenseExpiryDate: yup.string().required("กรุณาระบุวันที่สิ้นอายุ"),
+  driverLicenseType: yup
+    .object()
+    .nullable()
+    .required("กรุณาเลือกประเภทการขับขี่")
+    .default(null),
+  year: yup.string().required("กรุณาเลือกปี").default(""),
+  licenseNumber: yup
+    .string()
+    .required("กรุณาระบุเลขที่ใบขับขี่")
+    .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .default(""),
+  licenseExpiryDate: yup
+    .string()
+    .required("กรุณาระบุวันที่สิ้นอายุ")
+    .default(""),
   licenseImages: yup
     .array()
     .of(
@@ -58,32 +74,49 @@ const formStep1Schema = yup.object().shape({
         file_url: yup.string().required("กรุณาอัปโหลดรูปใบขับขี่"),
       })
     )
-    .min(1, "กรุณาอัปโหลดรูปใบขับขี่"),
-  courseName: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุชื่อหลักสูตร"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  certificateNumber: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุเลขที่ใบรับรอง"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  vehicleType: yup.object().nullable().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาเลือกประเภทยานพาหนะ"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  trainingDate: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุวันที่อบรม"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  trainingEndDate: yup.string().when("driverLicenseType", {
-    is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
-    then: (schema) => schema.required("กรุณาระบุวันที่สิ้นอายุ"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
+    .min(1, "กรุณาอัปโหลดรูปใบขับขี่")
+    .default([]),
+  courseName: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุชื่อหลักสูตร"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
+  certificateNumber: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุเลขที่ใบรับรอง"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
+  vehicleType: yup
+    .object()
+    .nullable()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาเลือกประเภทยานพาหนะ"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(null),
+  trainingDate: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุวันที่อบรม"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
+  trainingEndDate: yup
+    .string()
+    .when("driverLicenseType", {
+      is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
+      then: (schema) => schema.required("กรุณาระบุวันที่สิ้นอายุ"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .default(""),
   certificateImages: yup
     .array()
     .of(
@@ -95,7 +128,8 @@ const formStep1Schema = yup.object().shape({
       is: (val: any) => val && (val.value === "2+" || val.value === "3+"),
       then: (schema) => schema.min(1, "กรุณาอัปโหลดรูปใบรับรอง"),
       otherwise: (schema) => schema.notRequired(),
-    }),
+    })
+    .default([]),
 });
 
 const RequestDrivingStepOneModal = forwardRef<
@@ -109,7 +143,6 @@ const RequestDrivingStepOneModal = forwardRef<
   const [vehicleTypeOptions, setVehicleTypeOptions] = useState<
     { value: string; label: string; desc: string }[]
   >([]);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // --- DEFAULT STATE LOGIC ---
   // Cost Type
@@ -119,8 +152,7 @@ const RequestDrivingStepOneModal = forwardRef<
     if (licRequestDetail?.ref_driver_license_type_code) {
       return (
         costTypeArr.find(
-          (type) =>
-            type.value === licRequestDetail.ref_driver_license_type_code
+          (type) => type.value === licRequestDetail.ref_driver_license_type_code
         ) || null
       );
     }
@@ -128,7 +160,8 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         costTypeArr.find(
           (type) =>
-            type.value === requestData.driver_license.driver_license_type_code.toString()
+            type.value ===
+            requestData.driver_license.driver_license_type_code.toString()
         ) || null
       );
     }
@@ -143,7 +176,8 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         vehicleTypeArr.find(
           (type) =>
-            type.value === licRequestDetail.driver_certificate_type_code.toString()
+            type.value ===
+            licRequestDetail.driver_certificate_type_code.toString()
         ) || null
       );
     }
@@ -151,7 +185,8 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         vehicleTypeArr.find(
           (type) =>
-            type.value === requestData?.driver_certificate.driver_certificate_type_code.toString()
+            type.value ===
+            requestData?.driver_certificate.driver_certificate_type_code.toString()
         ) || null
       );
     }
@@ -170,85 +205,87 @@ const RequestDrivingStepOneModal = forwardRef<
     }
     return "";
   };
-  
-  const [year, setYear] = useState<string>(getDefaultYear());
-  const [licenseNumber, setLicenseNumber] = useState<string>(
-    licRequestDetail?.driver_license_no ||
+
+  // Build default values object for react-hook-form
+  const buildDefaultValues = () => ({
+    driverLicenseType: getDefaultCostType(costTypeOptions),
+    year: getDefaultYear(),
+    licenseNumber:
+      licRequestDetail?.driver_license_no ||
       requestData?.driver_license?.driver_license_no ||
-      ""
-  );
-  const [licenseExpiryDate, setLicenseExpiryDate] = useState<string>(
-    licRequestDetail?.driver_license_expire_date ||
-      requestData?.driver_license?.driver_license_expire_date ||
-      ""
-  );
-  const [licenseImages, setLicenseImages] = useState<UploadFileType[]>(
-    licRequestDetail?.driver_license_img
+      "",
+    licenseExpiryDate:
+      convertToBuddhistDateTime(licRequestDetail?.driver_license_expire_date || "").date ||
+      convertToBuddhistDateTime(requestData?.driver_license?.driver_license_expire_date).date ||
+      "",
+    licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
       ? [{ file_url: requestData.driver_license?.driver_license_img }]
-      : []
-  );
-  const [courseName, setCourseName] = useState<string>(
-    licRequestDetail?.driver_certificate_name ||
+      : [],
+    courseName:
+      licRequestDetail?.driver_certificate_name ||
       requestData?.driver_license?.driver_certificate_name ||
-      ""
-  );
-  const [certificateNumber, setCertificateNumber] = useState<string>(
-    licRequestDetail?.driver_certificate_no ||
+      "",
+    certificateNumber:
+      licRequestDetail?.driver_certificate_no ||
       requestData?.driver_license?.driver_certificate_no ||
-      ""
-  );
-  const [trainingDate, setTrainingDate] = useState<string>(
-    licRequestDetail?.driver_certificate_issue_date ||
+      "",
+    vehicleType: getDefaultVehicleType(vehicleTypeOptions),
+    trainingDate:
+      licRequestDetail?.driver_certificate_issue_date ||
       requestData?.driver_license?.driver_certificate_issue_date ||
-      ""
-  );
-  const [trainingEndDate, setTrainingEndDate] = useState<string>(
-    licRequestDetail?.driver_certificate_expire_date ||
+      "",
+    trainingEndDate:
+      licRequestDetail?.driver_certificate_expire_date ||
       requestData?.driver_license?.driver_certificate_expire_date ||
-      ""
-  );
-  const [certificateImages, setCertificateImages] = useState<UploadFileType[]>(
-    licRequestDetail?.driver_certificate_img
+      "",
+    certificateImages: licRequestDetail?.driver_certificate_img
       ? [{ file_url: licRequestDetail.driver_certificate_img }]
       : requestData?.driver_license?.driver_certificate_img
       ? [{ file_url: requestData.driver_license?.driver_certificate_img }]
-      : []
+      : [],
+  });
+  const [defaultValues, setDefaultValues] = useState<ValueFormStep1>(
+    buildDefaultValues()
   );
 
-  const [selectedCostTypeOption, setSelectedCostTypeOption] = useState<{
-    value: string;
-    label: string;
-    desc?: string;
-  } | null>(null);
+  // react-hook-form
+  const {
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<ValueFormStep1>({
+    mode: "onChange",
+    resolver: yupResolver(formStep1Schema),
+    defaultValues,
+  });
 
-  const [selectedVehicleTypeOption, setSelectedVehicleTypeOption] = useState<{
-    value: string;
-    label: string;
-    desc?: string;
-  } | null>(null);
+  // Watch for select field for conditional rendering
+  const selectedCostTypeOption = watch("driverLicenseType");
+  const showAdditionalFields =
+    selectedCostTypeOption &&
+    (selectedCostTypeOption.value === "2+" ||
+      selectedCostTypeOption.value === "3+");
 
-  // Update cost/vehicle type when options or requestData/licRequestDetail changes
+  // Update default values when options or props change
   useEffect(() => {
-    if (costTypeOptions.length) {
-      setSelectedCostTypeOption(getDefaultCostType(costTypeOptions));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [costTypeOptions, licRequestDetail, requestData]);
-  useEffect(() => {
-    if (vehicleTypeOptions.length) {
-      setSelectedVehicleTypeOption(getDefaultVehicleType(vehicleTypeOptions));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vehicleTypeOptions, licRequestDetail, requestData]);
+    setDefaultValues(buildDefaultValues());
+    reset(buildDefaultValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    JSON.stringify(costTypeOptions),
+    JSON.stringify(vehicleTypeOptions),
+    requestData,
+    licRequestDetail,
+  ]);
 
-  useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
-    closeModal: () => modalRef.current?.close(),
-  }));
-
+  // Fetch options
   useEffect(() => {
+    console.log("reqstepone", requestData);
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -292,311 +329,211 @@ const RequestDrivingStepOneModal = forwardRef<
       }
     };
     fetchData();
-  }, [requestData, licRequestDetail]);
+  }, [requestData]);
 
-  const handleLicenseImageChange = (newImage: UploadFileType) => {
-    setLicenseImages([newImage]);
-  };
+  const [openModal, setOpenModal] = useState(false);
 
-  const handleCertificateImageChange = (newImage: UploadFileType) => {
-    setCertificateImages([newImage]);
-  };
-
-  const handleDeleteLicenseImage = (index: number) => {
-    setLicenseImages(licenseImages.filter((_, i) => i !== index));
-  };
-
-  const handleDeleteCertificateImage = (index: number) => {
-    setCertificateImages(certificateImages.filter((_, i) => i !== index));
-  };
-
-  const handleCostTypeChange = (option: any) => {
-    setSelectedCostTypeOption(option);
-    // reset vehicle/cert fields if changed out of range
-    if (!(option && (option.value === "2+" || option.value === "3+"))) {
-      setCourseName("");
-      setCertificateNumber("");
-      setSelectedVehicleTypeOption(null);
-      setTrainingDate("");
-      setTrainingEndDate("");
-      setCertificateImages([]);
-    }
-  };
-
-  const handleVehicleTypeChange = (option: any) => {
-    setSelectedVehicleTypeOption(option);
-  };
-
-  const showAdditionalFields =
-    selectedCostTypeOption &&
-    (selectedCostTypeOption.value === "2+" ||
-      selectedCostTypeOption.value === "3+");
-
-  const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
-
-  const nextStep = async () => {
-
-    const formData: ValueFormStep1 = {
-      driverLicenseType: selectedCostTypeOption,
-      year: year,
-      licenseNumber: licenseNumber,
-      licenseExpiryDate: licenseExpiryDate,
-      licenseImages: licenseImages,
-      ...(showAdditionalFields && {
-        courseName: courseName,
-        certificateNumber: certificateNumber,
-        vehicleType: selectedVehicleTypeOption,
-        trainingDate: trainingDate,
-        trainingEndDate: trainingEndDate,
-        certificateImages: certificateImages,
-      }),
-    };
-
-    try {
-      await formStep1Schema.validate(formData, { abortEarly: false });
-      setErrors({});
-      if (stepOneSubmit) {
-        stepOneSubmit(formData);
-      }
+  useImperativeHandle(ref, () => ({
+    openModal: () => {
+      modalRef.current?.showModal();
+      setOpenModal(true);
+    },
+    closeModal: () => {
       modalRef.current?.close();
-    } catch (validationError: any) {
-      // convert yup error to { [field]: message }
-      const errObj: { [key: string]: string } = {};
-      if (validationError.inner && Array.isArray(validationError.inner)) {
-        validationError.inner.forEach((err: any) => {
-          if (err.path && !errObj[err.path]) errObj[err.path] = err.message;
-        });
-      }
-      setErrors(errObj);
+      setOpenModal(false);
+    },
+  }));
+
+  const handleCloseModal = () => {
+    modalRef.current?.close();
+    setOpenModal(false); // Update state to reflect modal is closed
+  };
+
+  const isISODate = (str: string) => {
+    const date = new Date(str);
+    return !isNaN(date.getTime()) && str.includes("T");
+  };
+
+  // Handler for ImageUpload components
+  const handleLicenseImageChange = (newImage: UploadFileType) => {
+    setValue("licenseImages", [newImage]);
+  };
+  const handleCertificateImageChange = (newImage: UploadFileType) => {
+    setValue("certificateImages", [newImage]);
+  };
+  const handleDeleteLicenseImage = (index: number) => {
+    const imgs = watch("licenseImages");
+    setValue(
+      "licenseImages",
+      imgs.filter((_: any, i: number) => i !== index)
+    );
+  };
+  const handleDeleteCertificateImage = (index: number) => {
+    const imgs = watch("certificateImages");
+    setValue(
+      "certificateImages",
+      imgs.filter((_: any, i: number) => i !== index)
+    );
+  };
+
+  // Handler for CostType change (reset conditional fields)
+  const handleCostTypeChange = (option: any, onChange: (v: any) => void) => {
+    onChange(option);
+    if (!(option && (option.value === "2+" || option.value === "3+"))) {
+      setValue("courseName", "");
+      setValue("certificateNumber", "");
+      setValue("vehicleType", null);
+      setValue("trainingDate", "");
+      setValue("trainingEndDate", "");
+      setValue("certificateImages", []);
     }
+  };
+
+  const swipeDownHandlers = useSwipeDown(handleCloseModal);
+
+  const onSubmit = (formData: ValueFormStep1) => {
+    const expiry =
+      isISODate(formData.licenseExpiryDate) &&
+      (formData.licenseExpiryDate = convertToBuddhistDateTime(
+        formData.licenseExpiryDate
+      ).date);
+    console.log("formdata", formData);
+    if (stepOneSubmit) {
+      stepOneSubmit(formData);
+    }
+    handleCloseModal();
   };
 
   return (
     <>
-      <dialog ref={modalRef} className={`modal modal-middle`}>
-        <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-          <div className="bottom-sheet" {...swipeDownHandlers}>
-            <div className="bottom-sheet-icon"></div>
-          </div>
-          <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title">
-              ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-              {requestData?.license_status === "มีผลปีถัดไป" && dayjs().year() + 543}{" "}
-              {requestData?.next_license_status !== "" && dayjs().year() + 544}
+      {openModal && (
+        <div className={`modal modal-open modal-middle`}>
+          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+            <div className="bottom-sheet" {...swipeDownHandlers}>
+              <div className="bottom-sheet-icon"></div>
             </div>
-            <form method="dialog">
-              <button
-                className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
-                onClick={() => modalRef.current?.close()}
-              >
-                <i className="material-symbols-outlined">close</i>
-              </button>
-            </form>
-          </div>
-          <div className="modal-body overflow-y-auto text-center !bg-white">
-            {!edit && (
-              <p className="text-left text-base mb-2 font-semibold">
-                Step 1: ข้อมูลทั่วไป
-              </p>
-            )}
-
-            <div className="form-section">
-              <div className="grid w-full flex-wrap gap-5 grid-cols-12">
-                <div className="col-span-12">
-                  <div className="form-group text-left">
-                    <label className="form-label">ประเภทการขับขี่</label>
-                    <CustomSelect
-                      w="w-full"
-                      options={costTypeOptions}
-                      value={selectedCostTypeOption}
-                      onChange={handleCostTypeChange}
-                      showDescriptions={true}
-                    />
-                    {errors.driverLicenseType && (
-                      <div className="text-error text-xs mt-1">{errors.driverLicenseType}</div>
-                    )}
-                  </div>
-                </div>
-                {(requestData?.license_status !== "มีผลปีถัดไป" && requestData?.next_license_status_code === "") &&
-                  <div className="col-span-12">
-                    <div className="form-group text-left">
-                      <label className="form-label">ประจำปี</label>
-                      <div className="w-full flex gap-5">
-                        <RadioButton
-                          name="year"
-                          label={`${dayjs().year() + 543}`}
-                          value={`${dayjs().year() + 543}`}
-                          selectedValue={year}
-                          setSelectedValue={setYear}
-                        />
-                        <RadioButton
-                          name="year"
-                          label={`${dayjs().year() + 544}`}
-                          value={`${dayjs().year() + 544}`}
-                          selectedValue={year}
-                          setSelectedValue={setYear}
-                        />
-                      </div>
-                      {errors.year && (
-                        <div className="text-error text-xs mt-1">{errors.year}</div>
-                      )}
-                    </div>
-                  </div>
-                }
-
-                <div className="col-span-6">
-                  <div className="form-group text-left">
-                    <label className="form-label">เลขที่ใบขับขี่</label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="ระบุเลขที่ใบขับขี่"
-                        value={licenseNumber}
-                        onChange={(e) => setLicenseNumber(e.target.value)}
-                      />
-                    </div>
-                    {errors.licenseNumber && (
-                      <div className="text-error text-xs mt-1">{errors.licenseNumber}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-span-6">
-                  <div className="form-group text-left">
-                    <label className="form-label">วันที่สิ้นอายุ</label>
-                    <div className="input-group">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                            calendar_month
-                          </i>
-                        </span>
-                      </div>
-                      <DatePicker
-                        placeholder={"ระบุวันที่"}
-                        onChange={(date) => setLicenseExpiryDate(date)}
-                        defaultValue={licenseExpiryDate}
-                      />
-                    </div>
-                    {errors.licenseExpiryDate && (
-                      <div className="text-error text-xs mt-1">{errors.licenseExpiryDate}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-span-12">
-                  <div className="form-group text-left">
-                    <label className="form-label">รูปใบขับขี่</label>
-                    {licenseImages.length < 1 && (
-                      <ImageUpload onImageChange={handleLicenseImageChange} />
-                    )}
-                  </div>
-                  <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
-                    {licenseImages.map((image, index) => (
-                      <ImagePreview
-                        key={index}
-                        image={image.file_url}
-                        onDelete={() => handleDeleteLicenseImage(index)}
-                      />
-                    ))}
-                  </div>
-                  {errors.licenseImages && (
-                    <div className="text-error text-xs mt-1">{errors.licenseImages}</div>
+            <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
+              <div className="modal-title">
+                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
+                {requestData?.license_status !== "ไม่มี" &&
+                  requestData?.license_status !== "" &&
+                  requestData?.license_status !== "ตีกลับ" && (
+                    <>
+                      {requestData?.license_status === "มีผลปีถัดไป" &&
+                        `${dayjs().year() + 543}`}{" "}
+                      {requestData?.next_license_status !== "" &&
+                        `${dayjs().year() + 544}`}
+                    </>
                   )}
-                </div>
+              </div>
+              <form method="dialog">
+                <button
+                  className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                  onClick={handleCloseModal}
+                >
+                  <i className="material-symbols-outlined">close</i>
+                </button>
+              </form>
+            </div>
+            <div className="modal-scroll-wrapper overflow-y-auto">
+              <form
+                className="modal-body  text-center !bg-white"
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                {!edit && (
+                  <p className="text-left text-base mb-2 font-semibold">
+                    Step 1: ข้อมูลทั่วไป
+                  </p>
+                )}
 
-                {showAdditionalFields && (
-                  <>
+                <div className="form-section">
+                  <div className="grid w-full flex-wrap gap-5 grid-cols-12">
                     <div className="col-span-12">
-                      <div className="form-group">
-                        <label className="form-label">ชื่อหลักสูตร</label>
-                        <div className="input-group">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">
-                                developer_guide
-                              </i>
-                            </span>
-                          </div>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="ระบุชื่อหลักสูตร"
-                            value={courseName}
-                            onChange={(e) => setCourseName(e.target.value)}
-                          />
-                        </div>
-                        {errors.courseName && (
-                          <div className="text-error text-xs mt-1">{errors.courseName}</div>
-                        )}
+                      <div className="form-group text-left">
+                        <label className="form-label">ประเภทการขับขี่</label>
+                        <Controller
+                          name="driverLicenseType"
+                          control={control}
+                          render={({ field }) => (
+                            <CustomSelect
+                              w="w-full"
+                              options={costTypeOptions}
+                              value={field.value}
+                              onChange={(option) =>
+                                handleCostTypeChange(option, field.onChange)
+                              }
+                              showDescriptions={true}
+                            />
+                          )}
+                        />
                       </div>
                     </div>
+                    {(requestData?.license_status !== "มีผลปีถัดไป" ||
+                      requestData?.next_license_status_code === "") && (
+                      <div className="col-span-12">
+                        <div className="form-group text-left">
+                          <label className="form-label">ประจำปี</label>
+                          <div className="w-full flex gap-5">
+                            <Controller
+                              name="year"
+                              control={control}
+                              render={({ field }) => (
+                                <>
+                                  <RadioButton
+                                    name="year"
+                                    label={`${dayjs().year() + 543}`}
+                                    value={`${dayjs().year() + 543}`}
+                                    selectedValue={field.value}
+                                    setSelectedValue={field.onChange}
+                                  />
+                                  <RadioButton
+                                    name="year"
+                                    label={`${dayjs().year() + 544}`}
+                                    value={`${dayjs().year() + 544}`}
+                                    selectedValue={field.value}
+                                    setSelectedValue={field.onChange}
+                                  />
+                                </>
+                              )}
+                            />
+                          </div>
+                          {errors.year && (
+                            <div className="text-error text-xs mt-1">
+                              {errors.year.message}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="col-span-6">
-                      <div className="form-group">
-                        <label className="form-label">เลขที่ใบรับรอง</label>
+                      <div className="form-group text-left">
+                        <label className="form-label">เลขที่ใบขับขี่</label>
                         <div className="input-group">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">news</i>
-                            </span>
-                          </div>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="ระบุเลขที่ใบรับรอง"
-                            value={certificateNumber}
-                            onChange={(e) => setCertificateNumber(e.target.value)}
+                          <Controller
+                            name="licenseNumber"
+                            control={control}
+                            render={({ field }) => (
+                              <input
+                                {...field}
+                                type="text"
+                                className="form-control"
+                                placeholder="ระบุเลขที่ใบขับขี่"
+                                maxLength={8}
+                              />
+                            )}
                           />
                         </div>
-                        {errors.certificateNumber && (
-                          <div className="text-error text-xs mt-1">{errors.certificateNumber}</div>
+                        {errors.licenseNumber && (
+                          <div className="text-error text-xs mt-1">
+                            {errors.licenseNumber.message}
+                          </div>
                         )}
                       </div>
                     </div>
 
                     <div className="col-span-6">
                       <div className="form-group text-left">
-                        <label className="form-label">ประเภทยานพาหนะ</label>
-                        <CustomSelect
-                          w="w-full"
-                          options={vehicleTypeOptions}
-                          value={selectedVehicleTypeOption}
-                          onChange={handleVehicleTypeChange}
-                          iconName="front_loader"
-                        />
-                        {errors.vehicleType && (
-                          <div className="text-error text-xs mt-1">{errors.vehicleType}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="col-span-6">
-                      <div className="form-group">
-                        <label className="form-label">วันที่อบรม</label>
-                        <div className="input-group">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="material-symbols-outlined">
-                                calendar_month
-                              </i>
-                            </span>
-                          </div>
-                          <DatePicker
-                            placeholder={"ระบุวันที่"}
-                            onChange={(date) => setTrainingDate(date)}
-                            defaultValue={trainingDate}
-                          />
-                        </div>
-                        {errors.trainingDate && (
-                          <div className="text-error text-xs mt-1">{errors.trainingDate}</div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="col-span-6">
-                      <div className="form-group">
                         <label className="form-label">วันที่สิ้นอายุ</label>
                         <div className="input-group">
                           <div className="input-group-prepend">
@@ -606,72 +543,271 @@ const RequestDrivingStepOneModal = forwardRef<
                               </i>
                             </span>
                           </div>
-                          <DatePicker
-                            placeholder={"ระบุวันที่"}
-                            onChange={(date) => setTrainingEndDate(date)}
-                            defaultValue={trainingEndDate}
+                          <Controller
+                            name="licenseExpiryDate"
+                            control={control}
+                            render={({ field }) => (
+                              <DatePicker
+                                placeholder={"ระบุวันที่"}
+                                onChange={field.onChange}
+                                defaultValue={field.value}
+                              />
+                            )}
                           />
                         </div>
-                        {errors.trainingEndDate && (
-                          <div className="text-error text-xs mt-1">{errors.trainingEndDate}</div>
+                        {errors.licenseExpiryDate && (
+                          <div className="text-error text-xs mt-1">
+                            {errors.licenseExpiryDate.message}
+                          </div>
                         )}
                       </div>
                     </div>
 
                     <div className="col-span-12">
-                      <div className="form-group">
-                        <label className="form-label">รูปใบรับรอง</label>
-                        {certificateImages.length < 1 && (
-                          <ImageUpload
-                            onImageChange={handleCertificateImageChange}
-                          />
-                        )}
+                      <div className="form-group text-left">
+                        <label className="form-label">รูปใบขับขี่</label>
+                        <Controller
+                          name="licenseImages"
+                          control={control}
+                          render={({ field }) => {
+                            return field.value?.length < 1 ? (
+                              <ImageUpload
+                                onImageChange={handleLicenseImageChange}
+                              />
+                            ) : (
+                              <></>
+                            );
+                          }}
+                        />
                       </div>
                       <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
-                        {certificateImages.map((image, index) => (
-                          <ImagePreview
-                            key={index}
-                            image={image.file_url}
-                            onDelete={() => handleDeleteCertificateImage(index)}
-                          />
-                        ))}
+                        {watch("licenseImages")?.map(
+                          (
+                            image: { file_url: string | File },
+                            index: number
+                          ) => (
+                            <ImagePreview
+                              key={index}
+                              image={image.file_url || ""}
+                              onDelete={() => handleDeleteLicenseImage(index)}
+                            />
+                          )
+                        )}
                       </div>
-                      {errors.certificateImages && (
-                        <div className="text-error text-xs mt-1">{errors.certificateImages}</div>
-                      )}
                     </div>
-                  </>
-                )}
-              </div>
+
+                    {showAdditionalFields && (
+                      <>
+                        <div className="col-span-12">
+                          <div className="form-group">
+                            <label className="form-label">ชื่อหลักสูตร</label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    developer_guide
+                                  </i>
+                                </span>
+                              </div>
+                              <Controller
+                                name="courseName"
+                                control={control}
+                                render={({ field }) => (
+                                  <input
+                                    {...field}
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="ระบุชื่อหลักสูตร"
+                                  />
+                                )}
+                              />
+                            </div>
+                            {errors.courseName && (
+                              <div className="text-error text-xs mt-1">
+                                {errors.courseName.message}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">เลขที่ใบรับรอง</label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    news
+                                  </i>
+                                </span>
+                              </div>
+                              <Controller
+                                name="certificateNumber"
+                                control={control}
+                                render={({ field }) => (
+                                  <input
+                                    {...field}
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="ระบุเลขที่ใบรับรอง"
+                                  />
+                                )}
+                              />
+                            </div>
+                            {errors.certificateNumber && (
+                              <div className="text-error text-xs mt-1">
+                                {errors.certificateNumber.message}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-span-6">
+                          <div className="form-group text-left">
+                            <label className="form-label">ประเภทยานพาหนะ</label>
+                            <Controller
+                              name="vehicleType"
+                              control={control}
+                              render={({ field }) => (
+                                <CustomSelect
+                                  w="w-full"
+                                  options={vehicleTypeOptions}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  iconName="front_loader"
+                                />
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">วันที่อบรม</label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    calendar_month
+                                  </i>
+                                </span>
+                              </div>
+                              <Controller
+                                name="trainingDate"
+                                control={control}
+                                render={({ field }) => (
+                                  <DatePicker
+                                    placeholder={"ระบุวันที่"}
+                                    onChange={field.onChange}
+                                    defaultValue={field.value}
+                                  />
+                                )}
+                              />
+                            </div>
+                            {errors.trainingDate && (
+                              <div className="text-error text-xs mt-1">
+                                {errors.trainingDate.message}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">วันที่สิ้นอายุ</label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    calendar_month
+                                  </i>
+                                </span>
+                              </div>
+                              <Controller
+                                name="trainingEndDate"
+                                control={control}
+                                render={({ field }) => (
+                                  <DatePicker
+                                    placeholder={"ระบุวันที่"}
+                                    onChange={field.onChange}
+                                    defaultValue={field.value}
+                                  />
+                                )}
+                              />
+                            </div>
+                            {errors.trainingEndDate && (
+                              <div className="text-error text-xs mt-1">
+                                {errors.trainingEndDate.message}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-span-12">
+                          <div className="form-group">
+                            <label className="form-label">รูปใบรับรอง</label>
+                            <Controller
+                              name="certificateImages"
+                              control={control}
+                              render={({ field }) => {
+                                return field.value?.length < 1 ? (
+                                  <ImageUpload
+                                    onImageChange={handleCertificateImageChange}
+                                  />
+                                ) : (
+                                  <></>
+                                );
+                              }}
+                            />
+                          </div>
+                          <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
+                            {watch("certificateImages")?.map(
+                              (
+                                image: { file_url: string | File },
+                                index: number
+                              ) => (
+                                <ImagePreview
+                                  key={index}
+                                  image={image.file_url || ""}
+                                  onDelete={() =>
+                                    handleDeleteCertificateImage(index)
+                                  }
+                                />
+                              )
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="modal-action flex w-full gap-5 mt-3 mr-auto">
+                  <div className="">
+                    <button
+                      type="button"
+                      className="btn btn-secondary w-full"
+                      onClick={handleCloseModal}
+                    >
+                      ไม่ใช่ตอนนี้
+                    </button>
+                  </div>
+                  <div className="">
+                    <button
+                      type="submit"
+                      className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
+                    >
+                      ต่อไป
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-          <div className="modal-action flex w-full gap-5 mt-3 mr-auto">
-            <div className="">
-              <button
-                type="button"
-                className="btn btn-secondary w-full"
-                onClick={() => {
-                  modalRef.current?.close();
-                }}
-              >
-                ไม่ใช่ตอนนี้
-              </button>
-            </div>
-            <div className="">
-              <button
-                type="button"
-                className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"
-                onClick={nextStep}
-              >
-                ต่อไป
-              </button>
-            </div>
-          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      )}
     </>
   );
 });
