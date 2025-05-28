@@ -1,8 +1,8 @@
+import { RequestDetailType } from "@/app/types/request-detail-type";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { fetchVehicleUsers } from "@/services/masterService";
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { RequestDetailType } from "@/app/types/request-detail-type";
+import { useEffect, useState } from "react";
 
 interface Props {
   id: string;
@@ -10,11 +10,7 @@ interface Props {
   displayPhone?: boolean;
 }
 
-export default function VehicleUserInfoCard({
-  id,
-  requestData,
-  displayPhone
-}: Props) {
+export default function VehicleUserInfoCard({ id, requestData, displayPhone }: Props) {
   const [vehicleUser, setVehicleUser] = useState<VehicleUserType>();
 
   useEffect(() => {
@@ -55,47 +51,39 @@ export default function VehicleUserInfoCard({
             alt=""
           />
           <div className="form-plaintext-group align-self-center">
-            <div className="form-label">{vehicleUser?.full_name}</div>
+            <div className="form-label">{vehicleUser?.full_name || "-"}</div>
             <div className="supporting-text-group">
-              <div className="supporting-text">{vehicleUser?.emp_id}</div>
-              <div className="supporting-text">
-                {vehicleUser?.dept_sap_short}
-              </div>
+              <div className="supporting-text">{vehicleUser?.emp_id || "-"}</div>
+              <div className="supporting-text">{vehicleUser?.dept_sap_short || "-"}</div>
             </div>
           </div>
         </div>
-        {displayPhone &&
-        <div className="form-card-right align-self-center">
-          <div className="flex flex-wrap gap-4">
-            <div className="col-span-12 md:col-span-6">
-              <div className="form-group form-plaintext">
-                <i className="material-symbols-outlined">smartphone</i>
-                <div className="form-plaintext-group">
-                  <div className="form-text text-nowrap">
-                    {vehicleUser?.tel_mobile}
+        {displayPhone && (
+          <div className="form-card-right align-self-center">
+            <div className="flex flex-wrap gap-4">
+              <div className="col-span-12 md:col-span-6">
+                <div className="form-group form-plaintext">
+                  <i className="material-symbols-outlined">smartphone</i>
+                  <div className="form-plaintext-group">
+                    <div className="form-text text-nowrap">{vehicleUser?.tel_mobile || "-"}</div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {vehicleUser?.tel_internal && (
-              <div className="col-span-12 md:col-span-6">
-                <div className="form-group form-plaintext">
-                  <i className="material-symbols-outlined">call</i>
-                  <div className="form-plaintext-group">
-                    <div className="form-text text-nowrap">
-                      {vehicleUser?.tel_internal}
+              {vehicleUser?.tel_internal && (
+                <div className="col-span-12 md:col-span-6">
+                  <div className="form-group form-plaintext">
+                    <i className="material-symbols-outlined">call</i>
+                    <div className="form-plaintext-group">
+                      <div className="form-text text-nowrap">{vehicleUser?.tel_internal || "-"}</div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-
-        </div>
-         }
+        )}
       </div>
-
     </div>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 import { LogType } from "@/app/types/log-type";
+import { PaginationType } from "@/app/types/request-action-type";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { RequestHistoryLog, requestHistoryLogColumns } from "@/data/requestHistory";
+import { RequestHistoryLog } from "@/data/requestHistory";
 import { fetchLogs, fetchRequestKeyDetail } from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -9,12 +10,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ReturnCarTab from "../admin/returnCarTab";
 import KeyPickUp from "../flow/keyPickUp";
 import KeyPickUpDetailForm from "../flow/keyPickUpDetailForm";
-import TableComponent from "../tableKeyPickUp";
+import LogListTable from "../table/log-list-table";
+import PaginationControls from "../table/pagination-control";
 import KeyPickUpAppointment from "./keyPickUpAppointment";
 import ReceiveCarVehicleInUseTab from "./receiveCarVehicleInUseTab";
 import RecordFuelTab from "./recordFuelTab";
 import RecordTravelTab from "./recordTravelTab";
-// import ReturnCarTab from "./returnCarTab";
 
 interface Props {
   requestId: string;
@@ -31,8 +32,35 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const [requestUid] = useState(requestId);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
-  const [dataRequest, setDataRequest] = useState<RequestHistoryLog[]>([]);
   const [requestData, setRequestData] = useState<RequestDetailType>();
+
+  const [dataRequest, setDataRequest] = useState<LogType[]>([]);
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 10,
+  });
+  const [pagination, setPagination] = useState<PaginationType>({
+    limit: 10,
+    page: 1,
+    total: 0,
+    totalPages: 0,
+  });
+
+  const handlePageChange = (newPage: number) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: newPage,
+    }));
+  };
+
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit,
+      page: 1,
+    }));
+  };
 
   useEffect(() => {
     const fetchRequestDetailfunc = async () => {
@@ -42,9 +70,15 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
           page: 1,
           limit: 100,
         });
-        console.log("response", response.data);
+        const { total, totalPages } = responseLog.data;
 
         setRequestData(response.data);
+        setPagination({
+          limit: params.limit,
+          page: params.page,
+          total,
+          totalPages,
+        });
 
         const requestList = responseLog.data.logs;
         const mapDataRequest: RequestHistoryLog[] = requestList.map((item: LogType) => {
@@ -59,41 +93,15 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         });
 
         setLoading(false);
-        setDataRequest(mapDataRequest);
+        setDataRequest(requestList);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
       }
     };
 
-    // const fetchRequests = async () => {
-    //   try {
-    //     const response = await fetchLogs(requestUid, { page: 1, limit: 100 });
-    //     const requestList = response.data.logs;
-
-    //     const mapDataRequest: RequestHistoryLog[] = requestList.map((item: LogType) => {
-    //       const dateTime = convertToBuddhistDateTime(item.created_at);
-    //       return {
-    //         dateTime: dateTime.date + "" + dateTime.time,
-    //         operator: item.created_by_emp.emp_name,
-    //         position: item.created_by_emp.dept_sap,
-    //         detail: item.status.ref_request_status_desc,
-    //         remark: item.log_remark,
-    //       };
-    //     });
-
-    //     setLoading(false);
-    //     setDataRequest(mapDataRequest);
-    //   } catch (error) {
-    //     console.error("Error fetching requests:", error);
-    //   }
-    // };
-
     setLoading(true);
     if (requestId) {
-      console.log("requestId", requestId);
-
       fetchRequestDetailfunc();
-      // fetchRequests();
     }
   }, [requestId]);
 
@@ -167,7 +175,15 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ประวัติการดำเนินการ",
         content: (
           <>
-            <TableComponent data={dataRequest} columns={requestHistoryLogColumns} />
+            {/* <TableComponent data={dataRequest} columns={requestHistoryLogColumns} /> */}
+            <LogListTable defaultData={dataRequest} pagination={pagination} />
+            {dataRequest.length > 0 && (
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            )}
           </>
         ),
         badge: "",
