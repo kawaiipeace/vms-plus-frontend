@@ -1,10 +1,7 @@
-// import withBundleAnalyzer from "@next/bundle-analyzer";
+//import withBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -20,11 +17,6 @@ const nextConfig: NextConfig = {
         hostname: "*.pea.co.th",
       },
     ],
-  },
-  experimental: {
-    turbo: {
-      resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
-    },
   },
 };
 
