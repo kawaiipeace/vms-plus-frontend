@@ -113,27 +113,31 @@ const useColumns = (
       selectedOption === "all"
         ? [
           columnHelper.accessor("vehicleType", {
-            header: "ประเภทยานพาหนะ",
-            cell: (info) => <div className="text-base">{info.getValue()}</div>,
+            header: () => (
+              <div>
+                <span>ประเภทยานพาหนะ</span>
+              </div>
+            ),
+            cell: (info) => info.getValue(),
             enableSorting: false,
             meta: {
-              className: "hidden sm:table-cell sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px] border-b border-gray-500",
-            },
+              className: "hidden sm:table-cell sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px] border-b border-gray-500"
+            }
           }),
           columnHelper.accessor("vehicleDepartment", {
             header: "สังกัดยานพาหนะ",
             cell: (info) => <div className="text-base">{info.getValue()}</div>,
             enableSorting: false,
             meta: {
-              className: "hidden sm:table-cell sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px] border-b border-gray-500",
+              className: "sm:table-cell hidden sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px] border-b border-gray-500",
             },
           }),
           columnHelper.accessor("distance", {
             header: `ระยะทาง ${lastMonth}`,
-            cell: (info) => <div className="text-base">{info.getValue()}</div>,
+            cell: (info) => <div className="text-base">{parseInt(info.getValue()).toLocaleString()}</div>,
             enableSorting: true,
             meta: {
-              className: `hidden sm:table-cell sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line border-b border-gray-500 ${selectedOption === "all" && "border-r"
+              className: `sm:table-cell hidden sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line border-b border-gray-500 ${selectedOption === "all" && "border-r"
                 }`,
             },
           }),
@@ -205,7 +209,7 @@ export default function RequestListTable({
   const [dateSelected, setDateSelected] = useState<string | null>(null);
 
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
-  
+
   // Generate dates based on the provided params
   const dates = useGenerateDates(params);
 
@@ -239,7 +243,7 @@ export default function RequestListTable({
   }, []);
 
   return (
-    <div className="w-full overflow-x-auto py-4 pt-0 dataTable-bookingtimeline">
+    <div className="w-full overflow-x-auto py-4 pt-0">
       {!isLoading && <DataTable table={table} />}
       <VehicleTimeLineDetailModal
         ref={vehicleTimelineDetailRef}
