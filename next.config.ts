@@ -9,7 +9,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "*.pea.co.th",
+        hostname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
       },
       {
         protocol: "https",
