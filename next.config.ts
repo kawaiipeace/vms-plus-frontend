@@ -28,6 +28,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-})(nextConfig);
+// export default withBundleAnalyzer({
+//   enabled: process.env.ANALYZE === "true",
+// })(nextConfig);
