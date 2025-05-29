@@ -179,7 +179,7 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
         }),
         columnHelper.accessor('vehicle_mileage', {
             header: 'เลขไมล์ล่าสุด',
-            cell: info => info.getValue(),
+            cell: info => info.getValue().toLocaleString(),
             enableSorting: true,
         }),
         columnHelper.accessor('age', {

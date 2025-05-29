@@ -76,7 +76,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
 
     return (
         <div className="mt-5 overflow-x-auto rounded-none">
-            <table className="w-full dataTable">
+            <table className="min-w-[1000px] dataTable no-mobile-card">
                 {renderTableHead()}
                 {renderTableBody()}
             </table>
