@@ -2,6 +2,8 @@ FROM gitlab.pea.co.th:443/developer/vms-plus/web/dependency_proxy/containers/nod
 
 WORKDIR /app
 
+COPY . .
+
 # Install required dependencies
 RUN apk add --no-cache git libc6-compat=1.1.0-r4
 
@@ -12,7 +14,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies in production mode with frozen lockfile
-RUN pnpm install --frozen-lockfile --prefer-offline 
+# RUN pnpm install --frozen-lockfile --prefer-offline --prod
+RUN pnpm install
 
 # Set non-root user for security
 USER node
