@@ -260,7 +260,7 @@ const DriverViewProfilePage = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>ข้อมูลพนักงานขับรถ</a>
+                    <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>{driverInfo?.driver_name}</a>

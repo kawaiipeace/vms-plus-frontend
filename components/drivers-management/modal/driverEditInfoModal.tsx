@@ -223,7 +223,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           mas_vendor_code: formData.driverContractorCompany,
           ref_other_use_code: formData.driverUseByOther,
           is_replacement: formData.driverOperationType,
-          replacement_driver_uid: formData.driverReplacementEmployee,
+          replacement_driver_uid: formData.driverReplacementEmployee != "" ? formData.driverReplacementEmployee : null,
         };
 
         console.log("Submitting form with params:", params);
@@ -317,18 +317,20 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                       <div className="form-section-body">
                         <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
                           <div className="w-full">
-                            <label className="label form-label">เลขที่สัญญาจ้าง</label>
-                            <div className={`input-group`}>
-                              <input
-                                type="text"
-                                name="driverContractNo"
-                                className="form-control"
-                                placeholder="เลขที่สัญญาจ้าง"
-                                value={formData.driverContractNo}
-                                onChange={handleInputChange}
-                              />
+                            <div className="form-group">
+                              <label className="label form-label">เลขที่สัญญาจ้าง</label>
+                              <div className={`input-group`}>
+                                <input
+                                  type="text"
+                                  name="driverContractNo"
+                                  className="form-control"
+                                  placeholder="เลขที่สัญญาจ้าง"
+                                  value={formData.driverContractNo}
+                                  onChange={handleInputChange}
+                                />
+                              </div>
+                              {formErrors.driverContractNo && <FormHelper text={String(formErrors.driverContractNo)} />}
                             </div>
-                            {formErrors.driverContractNo && <FormHelper text={String(formErrors.driverContractNo)} />}
                           </div>
                           <div className="w-full">
                             <div className="form-group">
