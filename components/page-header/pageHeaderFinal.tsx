@@ -27,20 +27,30 @@ export default function PageHeaderFinal({ data, editable }: Props) {
 
   const [copied, setCopied] = useState(false);
 
-  const handleCopyRequestNo = async (text?: string) => {
+const handleCopyRequestNo = async (text?: string) => {
   if (!text) return;
-  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-    console.error("Clipboard API not available");
-    return;
-  }
+
   try {
-    await navigator.clipboard.writeText(text);
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed"; // prevent scroll
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   } catch (err) {
     console.error("Copy failed:", err);
   }
 };
+
 
   return (
     <div className="page-header w-full">

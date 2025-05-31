@@ -69,6 +69,14 @@ export type RequestDetailType = Partial<{
   received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;
   received_key_dept_sap_full: string;
+  confirmed_request_desk_phone: string;
+  confirmed_request_dept_name_full: string;
+  confirmed_request_dept_name_short: string;
+  confirmed_request_dept_sap: string;
+  confirmed_request_emp_id: string;
+  confirmed_request_emp_name: string;
+  confirmed_request_mobile_phone: string;
+  confirmed_request_position: string;
   received_key_dept_sap_short: string;
   received_key_image_url: string;
   received_key_emp_id: string;

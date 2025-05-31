@@ -361,3 +361,15 @@ export const fetchUserApprovalLic = async (search?: string) => {
     throw error;
   }
 };
+
+export const fetchNotify = async () => {
+  try {
+    const response = await axiosInstance.get(
+      "api/notification"
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

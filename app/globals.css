@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    /* -webkit-text-fill-color: #000 !important; */
+    transition: background-color 5000s ease-in-out 0s !important;
+  }
+  
+  /* Alternative approach that sometimes works better */
+  input:-webkit-autofill {
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+  }
+}
+
 
 .avatar {
   overflow: hidden;
@@ -3991,6 +4008,11 @@
     display: block;
     border-radius: 0.25rem;
   }
+
+input:-webkit-autofill {
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 
   .light-mode .bottom-sheet .bottom-sheet-icon {
     background-color: #eaecf0;

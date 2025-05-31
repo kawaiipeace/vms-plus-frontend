@@ -1,15 +1,25 @@
-import { ApproverUserType } from "@/app/types/approve-user-type";
 import { ProgressRequestType } from "@/app/types/progress-request-status";
-import { fetchUserApproverUsers } from "@/services/masterService";
 import { useEffect, useState } from "react";
 
+interface ApproverInfo {
+  confirmed_request_desk_phone: string;
+  confirmed_request_dept_name_full: string;
+  confirmed_request_dept_name_short: string;
+  confirmed_request_dept_sap: string;
+  confirmed_request_emp_id: string;
+  confirmed_request_emp_name: string;
+  confirmed_request_mobile_phone: string;
+  confirmed_request_position: string;
+}
+
+
 interface Props {
-  approverId?: string;
+  approverInfo?: ApproverInfo;
   progressSteps?: ProgressRequestType[];
 }
 
-export default function ApproveProgress({ approverId, progressSteps }: Props) {
-  const [approverData, setApproverData] = useState<ApproverUserType>();
+export default function ApproveProgress({ approverInfo, progressSteps }: Props) {
+  const [approverData, setApproverData] = useState<ApproverInfo>();
   const [currentStep, setCurrentStep] = useState("");
   const [nextPendingStep, setNextPendingStep] = useState("");
   const doneSteps =
@@ -26,17 +36,11 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
       setCurrentStep(currentStep?.progress_name || "");
       setNextPendingStep(nextPendingStep?.progress_name || "");
     }
-    const fetchApprover = async () => {
-      try {
-        const response = await fetchUserApproverUsers(approverId);
-        setApproverData(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
+    if (approverInfo) {
+      setApproverData(approverInfo);
+    }
 
-    fetchApprover();
-  }, [approverId, progressSteps]);
+  }, [approverInfo, progressSteps]);
 
   return (
     <div className="card card-approvalprogress">
@@ -140,7 +144,7 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
         )}
 
         {/* Approver Info */}
-        {approverId !== "" && (
+        {approverInfo && (
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title hidden md:block">
@@ -173,17 +177,17 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <div className="form-plaintext-group align-self-center">
-                    <div className="form-label">{approverData?.full_name}</div>
+                    <div className="form-label">{approverInfo?.confirmed_request_emp_name}</div>
                     <div className="supporting-text-group">
                       <div className="supporting-text">
-                        {approverData?.dept_sap_short}
+                        {approverInfo?.confirmed_request_dept_name_short}
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="form-card-right align-self-center">
                   <div className="flex gap-3 flex-wrap">
-                    {approverData?.tel_mobile && (
+                  
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
                           <i className="material-symbols-outlined">
@@ -191,19 +195,19 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
                           </i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowrap">
-                              {approverData?.tel_mobile}
+                              {approverInfo?.confirmed_request_mobile_phone ?? "-"}
                             </div>
                           </div>
                         </div>
                       </div>
-                    )}
-                    {approverData?.tel_internal && (
+               
+                    {approverInfo?.confirmed_request_desk_phone && (
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
                           <i className="material-symbols-outlined">call</i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowra">
-                              {approverData?.tel_internal}
+                              {approverInfo?.confirmed_request_desk_phone}
                             </div>
                           </div>
                         </div>

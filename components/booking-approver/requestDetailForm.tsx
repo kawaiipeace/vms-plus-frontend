@@ -158,7 +158,16 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              approverId={`${requestData?.approved_request_emp_id}`}
+              approverInfo={{
+                confirmed_request_desk_phone: requestData?.confirmed_request_desk_phone || "",
+                confirmed_request_dept_name_full: requestData?.confirmed_request_dept_name_full || "",
+                confirmed_request_dept_name_short: requestData?.confirmed_request_dept_name_short || "",
+                confirmed_request_dept_sap: requestData?.confirmed_request_dept_sap || "",
+                confirmed_request_emp_id: requestData?.confirmed_request_emp_id || "",
+                confirmed_request_emp_name: requestData?.confirmed_request_emp_name || "",
+                confirmed_request_mobile_phone: requestData?.confirmed_request_mobile_phone || "",
+                confirmed_request_position: requestData?.confirmed_request_position || "",
+              }}
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">

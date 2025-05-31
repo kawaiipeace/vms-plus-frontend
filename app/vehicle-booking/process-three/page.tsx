@@ -88,9 +88,7 @@ export default function ProcessThree() {
     page: 1,
     limit: 10,
   });
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-    driverOptions[0]
-  );
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{ value: string; label: string } | null>(null);
 
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
@@ -182,15 +180,22 @@ export default function ProcessThree() {
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
-    setSelectedVehicleUserOption(
-      selectedOption as { value: string; label: string }
-    );
 
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
     setValue("driverEmpName", "");
     setValue("driverDeptSap", "");
+
+    if(selectedOption.value === ""){
+      setSelectedVehicleUserOption(null);
+    }else{
+      setSelectedVehicleUserOption(
+        selectedOption as { value: string; label: string }
+      );
+    }
+   
+
 
     const empData = vehicleUserDatas.find(
       (user: { emp_id: string }) => user.emp_id === selectedOption.value
@@ -300,14 +305,15 @@ export default function ProcessThree() {
   });
 
   const handleDriverSearch = async (search: string) => {
-    console.log('test',search);
+
     // Debounce handled by parent component or elsewhere
-    if (search.trim().length < 3) {
+    if (search.trim().length >= 3) {
       setLoadingDrivers(true);
       try {
         const response = await fetchUserDrivers(search);
         if (response) {
           const vehicleUserData = response.data;
+
           const driverOptionsArray = vehicleUserData.map(
             (user: {
               emp_id: string;
