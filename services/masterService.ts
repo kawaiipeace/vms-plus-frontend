@@ -365,7 +365,7 @@ export const fetchUserApprovalLic = async (search?: string) => {
 export const fetchNotify = async () => {
   try {
     const response = await axiosInstance.get(
-      "api/notification"
+      "notification"
     );
 
     return response;

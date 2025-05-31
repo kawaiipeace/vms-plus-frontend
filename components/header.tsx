@@ -19,6 +19,7 @@ import RequestStatusLicDetailModal from "./annual-driver-license/modal/requestSt
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import RequestDrivingStepTwoModal from "./annual-driver-license/requestDrivingStepTwoModal";
 import { UploadFileType } from "@/app/types/upload-type";
+import NotificationDropdown from "./notificationDropdown";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -211,10 +212,8 @@ export default function Header() {
         <div className="navbar-end gap-[0.5rem]">
           <div className="flex gap-1">
             <ThemeToggle />
-            <button className="btn btn-tertiary btn-icon border-none shadow-none btn-notifications relative">
-              <i className="material-symbols-outlined">notifications</i>
-              <span className="badge badge-indicator badge-success badge-ping"></span>
-            </button>
+            <NotificationDropdown />
+         
           </div>
 
           <div className="header-users">
