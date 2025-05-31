@@ -203,7 +203,12 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                               <i className="material-symbols-outlined">calendar_month</i>
                             </span>
                           </div>
-                          <DatePicker placeholder={"ระบุวันที่"} onChange={(date) => setSelectedDate(date)} />
+                          <DatePicker
+                            placeholder={"ระบุวันที่"}
+                            onChange={(date) => {
+                              setSelectedDate(date);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>

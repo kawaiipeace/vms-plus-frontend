@@ -119,7 +119,7 @@ export interface DriverUpdateContractDetails {
   mas_vendor_code: string;
   ref_other_use_code: number;
   is_replacement: string;
-  replacement_driver_uid?: string;
+  replacement_driver_uid?: string | null;
 }
 
 export interface DriverUpdateLicenseDetails {

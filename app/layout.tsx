@@ -1,23 +1,23 @@
+import ThemeToggle from "@/components/themeToggle";
+import { CarpoolProvider } from "@/contexts/carpoolFormContext";
+import { ProfileProvider } from "@/contexts/profileContext";
+import { RequestDetailProvider } from "@/contexts/requestDetailContext";
+import { FormProvider } from "@/contexts/requestFormContext";
+import { SidebarProvider } from "@/contexts/sidebarContext";
+import { ToastProvider } from "@/contexts/toast-context";
 import type { Metadata } from "next";
 import Head from "next/head";
-import "./globals.css";
+import Script from "next/script";
+import { Suspense } from "react";
 import "../public/assets/css/ibmplexsansthai.css";
 import "../public/assets/css/ibmplexsansthailooped.css";
 import "../public/assets/css/ibmthaifonts.css";
 import "../public/assets/css/material-symbols.css";
-import ThemeToggle from "@/components/themeToggle";
-import { SidebarProvider } from "@/contexts/sidebarContext";
-import { FormProvider } from "@/contexts/requestFormContext";
-import { ProfileProvider } from "@/contexts/profileContext";
-import Script from "next/script";
-import { RequestDetailProvider } from "@/contexts/requestDetailContext";
-import { CarpoolProvider } from "@/contexts/carpoolFormContext";
-import { ToastProvider } from "@/contexts/toast-context";
-import { Suspense } from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Car Pool",
-  description: "Car Pool",
+  title: "VMS Plus",
+  description: "VMS Plus",
 };
 
 export default function RootLayout({

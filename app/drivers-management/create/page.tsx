@@ -12,11 +12,7 @@ const CreateDriverPage = () => {
     <>
       <div className="main-container">
         <SideBar menuName="ข้อมูลพนักงานขับรถ" />
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -28,7 +24,7 @@ const CreateDriverPage = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>ข้อมูลพนักงานขับรถ</a>
+                    <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>สร้างข้อมูลพนักงานขับรถ</a>
@@ -38,9 +34,7 @@ const CreateDriverPage = () => {
 
               <div className="page-group-header">
                 <div className="page-title">
-                  <span className="page-title-label">
-                    สร้างข้อมูลพนักงานขับรถ
-                  </span>
+                  <span className="page-title-label">สร้างข้อมูลพนักงานขับรถ</span>
                 </div>
               </div>
             </div>

@@ -2333,6 +2333,33 @@
   .dark-mode .dataTable tbody tr td+td {
     border-color: #333741;
   }
+
+  .no-mobile-card {
+    display: table !important;
+  }
+
+  .no-mobile-card thead {
+    display: table-header-group !important;
+  }
+
+  .no-mobile-card tbody {
+    display: table-row-group !important;
+  }
+
+  .no-mobile-card tbody tr {
+    display: table-row !important;
+    border: none !important;
+  }
+
+  .no-mobile-card tbody tr td {
+    /* display: table-cell !important; */
+    border-top: none !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .no-mobile-card tbody tr td [data-name]::before {
+    content: none !important;
+  }
 }
 
 .btn.dropdown-toggle {
