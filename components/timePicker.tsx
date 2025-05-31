@@ -5,17 +5,18 @@ import React, { useEffect, useRef } from "react";
 interface TimePickerProps {
   placeholder?: string;
   defaultValue?: string;
+  minTime?: string;
   value?: string;
   onChange?: (selectedTime: string) => void;
 }
 
-const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM", defaultValue, value, onChange }) => {
+const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, defaultValue, value, onChange }) => {
   const timeInputRef = useRef<HTMLInputElement>(null);
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
 
   useEffect(() => {
     console.log("defaultvalue", defaultValue);
-    console.log("value", value);
+    console.log("mintime", minTime);
 
     if (!timeInputRef.current) return;
 
@@ -29,7 +30,8 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM", defaultV
       enableTime: true,
       noCalendar: true,
       static: true,
-      defaultDate: defaultValue || undefined,
+      minTime: minTime,
+      defaultDate: defaultValue || "",
       dateFormat: "H:i",
       position: "below center",
       time_24hr: true,

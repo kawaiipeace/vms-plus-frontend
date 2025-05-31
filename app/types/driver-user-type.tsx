@@ -12,6 +12,7 @@ export interface DriverType {
   driver_average_satisfaction_score: number;
   driver_satisfaction_score_count: number;
   driver_birthdate: string;
+  vendor_name: string;
   age: string;
   driver_license: {
     driver_license_no: string;

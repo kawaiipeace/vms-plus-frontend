@@ -86,9 +86,9 @@ export default function DriverSmallInfoCard({
           </div>
           <div className="card-content w-[70%]">
             <div className="card-content-top">
-              <div className="card-title">{driver.driver_name}</div>
+              <div className="card-title">{driver.driver_name} {driver?.driver_nickname ? "("+driver?.driver_nickname+")" : ""}</div>
               <div className="supporting-text-group">
-                <div className="supporting-text">{driver.driver_dept_sap || "-"}</div>
+                <div className="supporting-text">{driver.vendor_name || "-"}</div>
               </div>
             </div>
 

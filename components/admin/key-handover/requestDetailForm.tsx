@@ -122,7 +122,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
             </div>
 
-            <ReferenceCard refNum={requestData?.reference_number} file={requestData?.attached_document} />
+            <ReferenceCard refNum={requestData?.doc_no} file={requestData?.doc_file} />
           </div>
 
           <div className="form-section">

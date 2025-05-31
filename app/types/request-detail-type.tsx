@@ -126,6 +126,9 @@ export type RequestDetailType = Partial<{
   activity_no?: string;
   network_no?: string;
   pm_order_no?: string;
+  work_description?: string;
+  doc_no?: string;
+  doc_file?:string;
 }>;
 
 export interface satisfactionSurveyAnswers {

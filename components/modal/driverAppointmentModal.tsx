@@ -4,6 +4,7 @@ import FormHelper from "@/components/formHelper";
 import TimePicker from "@/components/timePicker";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { fetchDriverDetail } from "@/services/masterService";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,7 +20,6 @@ interface DriverAppointmentModalProps {
 }
 
 const schema = yup.object().shape({
-  pickupDatetime: yup.string(),
   pickupPlace: yup.string().required("กรุณาระบุสถานที่นัดหมาย"),
   masCarpoolDriverUid: yup.string(),
   pickupDate: yup.string().required("กรุณาเลือกวันที่นัดหมาย"),
@@ -27,11 +27,11 @@ const schema = yup.object().shape({
 });
 
 const DriverAppointmentModal = forwardRef<
-  { openModal: () => void; closeModal: () => void }, // Ref type
-  DriverAppointmentModalProps // Props type
+  { openModal: () => void; closeModal: () => void },
+  DriverAppointmentModalProps
 >(({ onSubmit, id, onClickDetail }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const { updateFormData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
   const [openModal, setOpenModal] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -47,17 +47,23 @@ const DriverAppointmentModal = forwardRef<
 
   const handleCloseModal = () => {
     modalRef.current?.close();
-    setOpenModal(false); // Update state to reflect modal is closed
+    setOpenModal(false);
   };
 
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    watch,
+    formState: { errors, isValid }
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
+    defaultValues: {
+      pickupDate: convertToBuddhistDateTime(formData?.pickupDatetime || "").date || "",
+      pickupTime: convertToBuddhistDateTime(formData?.pickupDatetime || "").time || "",
+      pickupPlace: formData.pickupPlace
+    }
   });
 
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -69,25 +75,26 @@ const DriverAppointmentModal = forwardRef<
     limit: 10,
   });
 
+  const formValues = watch();
+  const isFormValid = isValid && selectedDate && selectedTime;
+
   const handleDateChange = (dateStr: string) => {
     setSelectedDate(dateStr);
-    setValue("pickupDate", dateStr);
+    setValue("pickupDate", dateStr, { shouldValidate: true });
   };
 
   const handleTimeChange = (dateStr: string) => {
     setSelectedTime(dateStr);
-    setValue("pickupTime", dateStr);
+    setValue("pickupTime", dateStr, { shouldValidate: true });
   };
 
   useEffect(() => {
-    console.log("id", id);
     if (id) {
       const fetchDriverData = async () => {
         try {
           const response = await fetchDriverDetail(String(id));
           if (response.status === 200) {
             setDriver(response.data);
-            console.log(response.data);
           }
         } catch (error) {
           console.error("Error fetching requests:", error);
@@ -99,6 +106,7 @@ const DriverAppointmentModal = forwardRef<
 
   const onSubmitForm = (data: any) => {
     const pickup = convertToISO(selectedDate, selectedTime);
+
     updateFormData({
       pickupDatetime: pickup,
       pickupPlace: data.pickupPlace,
@@ -120,14 +128,12 @@ const DriverAppointmentModal = forwardRef<
             </div>
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title">เพิ่มข้อมูลนัดหมายพนักงานขับรถ</div>
-              {/* <form method="dialog"> */}
               <button
                 className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
                 onClick={handleCloseModal}
               >
                 <i className="material-symbols-outlined">close</i>
               </button>
-              {/* </form> */}
             </div>
             <div className="modal-scroll-wrapper overflow-y-auto">
               <div className="modal-body">
@@ -146,16 +152,16 @@ const DriverAppointmentModal = forwardRef<
                         </div>
                         <div className="card-content">
                           <div className="card-content-top">
-                            <div className="card-title">{driver?.driver_name}</div>
+                            <div className="card-title">{driver?.driver_name}  {driver?.driver_nickname ? "("+driver?.driver_nickname+")" : ""}</div>
                             <div className="supporting-text-group">
-                              <div className="supporting-text">{driver?.driver_dept_sap}</div>
+                              <div className="supporting-text">{driver?.vendor_name}</div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="card-item w-full flex items-center gap-2">
                         <i className="material-symbols-outlined text-brand-900">smartphone</i>
-                        <span className="card-item-text">{driver?.driver_contact_number}</span>
+                        <span className="card-item-text">{driver?.driver_contact_number ?? "-"}</span>
                       </div>
                     </div>
                   </div>
@@ -174,6 +180,7 @@ const DriverAppointmentModal = forwardRef<
                           <input
                             type="text"
                             className="form-control select-none"
+                            defaultValue={formData?.pickupPlace} 
                             placeholder="ระบุสถานที่นัดหมาย"
                             {...register("pickupPlace")}
                           />
@@ -184,14 +191,18 @@ const DriverAppointmentModal = forwardRef<
 
                     <div className="col-span-12 md:col-span-6">
                       <div className="form-group">
-                        <label className="form-label">วันที่เริ่มต้นเดินทาง</label>
+                        <label className="form-label">วันที่นัดหมาย</label>
                         <div className="input-group">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
                               <i className="material-symbols-outlined">calendar_month</i>
                             </span>
                           </div>
-                          <DatePicker placeholder="ระบุวันที่เริ่มต้นเดินทาง" onChange={handleDateChange} />
+                          <DatePicker 
+                            placeholder="ระบุวันที่นัดหมาย" 
+                            defaultValue={convertToBuddhistDateTime(formData?.pickupDatetime || "").date} 
+                            onChange={handleDateChange} 
+                          />
                         </div>
                         {errors.pickupDate && <FormHelper text={String(errors.pickupDate.message)} />}
                       </div>
@@ -206,7 +217,11 @@ const DriverAppointmentModal = forwardRef<
                               <i className="material-symbols-outlined">schedule</i>
                             </span>
                           </div>
-                          <TimePicker onChange={handleTimeChange} placeholder="ระบุเวลานัดหมาย" />
+                          <TimePicker 
+                            onChange={handleTimeChange} 
+                            defaultValue={convertToBuddhistDateTime(formData?.pickupDatetime || "").time }  
+                            placeholder="ระบุเวลานัดหมาย" 
+                          />
                         </div>
                         {errors.pickupTime && <FormHelper text={String(errors.pickupTime.message)} />}
                       </div>
@@ -217,7 +232,11 @@ const DriverAppointmentModal = forwardRef<
                     <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
                       ยกเลิก
                     </button>
-                    <button type="submit" className="btn btn-primary">
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={!isFormValid}
+                    >
                       ยืนยัน
                     </button>
                   </div>
@@ -225,9 +244,6 @@ const DriverAppointmentModal = forwardRef<
               </div>
             </div>
           </div>
-          {/* <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form> */}
         </div>
       )}
     </div>

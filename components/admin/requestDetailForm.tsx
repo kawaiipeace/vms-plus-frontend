@@ -165,7 +165,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
               )}
             </div>
 
-            <ReferenceCard refNum={requestData?.reference_number} file={requestData?.attached_document} />
+            <ReferenceCard refNum={requestData?.doc_no} file={requestData?.doc_file} />
           </div>
 
           <div className="form-section">

@@ -155,7 +155,7 @@ export default function RequestDetailForm({
                 convertToBuddhistDateTime(requestData?.end_datetime || "").time
               }
               workPlace={requestData?.work_place}
-              purpose={requestData?.objective}
+              purpose={requestData?.work_description}
               remark={requestData?.remark}
               tripType={requestData?.trip_type}
               numberOfPassenger={requestData?.number_of_passengers}
@@ -199,8 +199,8 @@ export default function RequestDetailForm({
             </div>
 
             <ReferenceCard
-              refNum={requestData?.reference_number}
-              file={requestData?.attached_document}
+              refNum={requestData?.doc_no}
+              file={requestData?.doc_file}
             />
           </div>
 

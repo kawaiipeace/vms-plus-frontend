@@ -57,8 +57,8 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       mode: "onChange",
       resolver: yupResolver(schema),
       defaultValues: {
-        startDate: formData.startDate || "",
-        endDate: formData.endDate || "",
+        startDate: convertToBuddhistDateTime(formData.startDate || "").date || "",
+        endDate: convertToBuddhistDateTime(formData.endDate || "").date || "",
         timeStart: formData.timeStart || "",
         timeEnd: formData.timeEnd || "",
         workPlace: formData.workPlace || "",

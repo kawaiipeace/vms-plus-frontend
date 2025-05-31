@@ -20,7 +20,7 @@ import { convertToThaiDate } from "@/utils/driver-management";
 import { shortenFilename } from "@/utils/shortenFilename";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelectOnSearch from "@/components/customSelectOnSearch";
@@ -118,6 +118,18 @@ export default function RequestForm() {
   const [fileError, setFileError] = useState("");
   const [approverData, setApproverData] = useState<ApproverUserType>();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Add a handler to remove the uploaded file
+  const handleRemoveFile = () => {
+    setFileName("อัพโหลดเอกสารแนบ");
+    setValue("attachmentFile", "");
+    setFileError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -185,11 +197,11 @@ export default function RequestForm() {
   }, [driverOptions, selectedVehicleUserOption]);
 
   useEffect(() => {
-    if(!formData.timeStart){
-      setValue('timeStart', "08:00");
+    if (!formData.timeStart) {
+      setValue("timeStart", "08:00");
     }
-    if(!formData.timeEnd){
-      setValue('timeEnd', "16:00");
+    if (!formData.timeEnd) {
+      setValue("timeEnd", "16:00");
     }
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
       if (formData.vehicleUserEmpId) {
@@ -250,6 +262,7 @@ export default function RequestForm() {
       setValue("userImageUrl", empData.image_url);
     }
   };
+
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
     setSelectedCostTypeOption(
       selectedOption as { value: string; label: string }
@@ -331,8 +344,10 @@ export default function RequestForm() {
     },
   });
 
+  // Replace your existing watches and add:
   const startDate = watch("startDate");
   const endDate = watch("endDate");
+  const isSameDay = startDate === endDate;
   const isOvernightDisabled = startDate === endDate;
 
   // ADD: Require cost center for type 2
@@ -655,7 +670,7 @@ export default function RequestForm() {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
-                        // minDate={startDate} 
+                        // minDate={startDate}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -666,15 +681,18 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่ออกเดินทาง</label>
                     <div className="input-group">
-                    <div className="input-group-prepend">
+                      <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                          schedule
-                          </i>
+                          <i className="material-symbols-outlined">schedule</i>
                         </span>
                       </div>
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
+                        defaultValue={
+                          formData.timeEnd
+                            ? formData.timeEnd
+                            : "8:00"
+                        }
                         onChange={(dateStr) => setValue("timeStart", dateStr)}
                       />
                     </div>
@@ -694,11 +712,10 @@ export default function RequestForm() {
                       </div>
 
                       <DatePicker
-                        key={startDate || "default"} 
                         placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-                        defaultValue={formData.endDate ? convertToThaiDate(formData.endDate) : "08:00"}
+                        defaultValue={convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
-                        minDate={convertToThaiDate(startDate)}
+                        minDate={startDate}
                       />
                     </div>
                   </div>
@@ -708,17 +725,20 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
-                    <div className="input-group-prepend">
+                      <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                          schedule
-                          </i>
+                          <i className="material-symbols-outlined">schedule</i>
                         </span>
                       </div>
                       <TimePicker
-                        defaultValue={formData.timeEnd}
+                        defaultValue={
+                          formData.timeEnd
+                            ? formData.timeEnd
+                            : "16:00"
+                        }
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
+                        minTime={isSameDay ? watch("timeStart") : undefined}
                       />
                     </div>
                   </div>
@@ -848,24 +868,42 @@ export default function RequestForm() {
                         fileError && "is-invalid"
                       }`}
                     >
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
+                      <div className="flex items-center gap-2 w-full justify-between">
+                        {/* File input inside label for click-to-upload */}
+                        <label className="flex items-center gap-2 cursor-pointer mb-0">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">
+                                attach_file
+                              </i>
+                            </span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="file-input hidden"
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
+                          />
+                          <div className="input-uploadfile-label w-full">
+                            {fileName}
+                          </div>
+                        </label>
+                        {/* Remove button OUTSIDE the label */}
+                        {fileName !== "อัพโหลดเอกสารแนบ" && (
+                          <button
+                            type="button"
+                            onClick={handleRemoveFile}
+                            className="ml-2 text-gray-400 hover:text-gray-500"
+                            aria-label="Remove file"
+                            tabIndex={0}
+                          >
                             <i className="material-symbols-outlined">
-                              attach_file
+                              close_small
                             </i>
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="application/pdf"
-                          className="file-input hidden"
-                          onChange={handleFileChange}
-                        />
-                        <div className="input-uploadfile-label w-full">
-                          {fileName}
-                        </div>
-                      </label>
+                          </button>
+                        )}
+                      </div>
                     </div>
                     {fileError && <FormHelper text={fileError} />}
                   </div>

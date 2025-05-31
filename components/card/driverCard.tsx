@@ -13,6 +13,7 @@ export default function DriverCard({
   company,
   seeDetail,
   onVehicleSelect,
+  nickname,
   adminDriverPickModalRef,
   isSelected, // added
 }: {
@@ -24,6 +25,7 @@ export default function DriverCard({
   company: string;
   seeDetail?: boolean;
   onVehicleSelect: (id: string) => void;
+  nickname: string;
   adminDriverPickModalRef?: React.RefObject<{
     openModal: () => void;
     closeModal: () => void;
@@ -65,7 +67,7 @@ export default function DriverCard({
         </div>
         <div className="card-content">
           <div className="card-content-top">
-            <div className="card-title">{name}</div>
+            <div className="card-title">{name} {nickname ? "("+nickname+")" : ""}</div>
             <div className="card-supporting-text-group">
               <div className="card-supporting-text">{company}</div>
             </div>
