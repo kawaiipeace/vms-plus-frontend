@@ -35,6 +35,7 @@ interface VehicleUser {
     driver_license_no: string;
     driver_license_expire_date: string;
   };
+  posi_text: string;
 }
 
 const schema = yup.object().shape({
@@ -206,7 +207,7 @@ export default function ProcessThree() {
       setValue("driverMobileContact", empData.tel_mobile);
       setValue("driverEmpID", empData.emp_id);
       setValue("driverEmpName", empData.full_name);
-      setValue("driverDeptSap", empData.dept_sap_short);
+      setValue("driverDeptSap", empData.posi_text +"/"+ empData.dept_sap_short);
       setValue("isPeaEmployeeDriver", "1");
       setDriverLicenseNo(empData.annual_driver.driver_license_no);
       setAnnualYear(empData.annual_driver.annual_yyyy);

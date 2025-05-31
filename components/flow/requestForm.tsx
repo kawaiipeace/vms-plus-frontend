@@ -220,7 +220,7 @@ export default function RequestForm() {
           });
           setValue("telInternal", defaultVehicleUser.tel_internal);
           setValue("telMobile", defaultVehicleUser.tel_mobile);
-          setValue("deptSapShort", defaultVehicleUser.dept_sap_short);
+          setValue("deptSapShort", defaultVehicleUser.posi_text + "/" + defaultVehicleUser.dept_sap_short);
           setValue("deptSap", defaultVehicleUser.dept_sap);
           setValue("userImageUrl", defaultVehicleUser.image_url);
         }
