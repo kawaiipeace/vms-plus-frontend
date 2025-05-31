@@ -161,6 +161,7 @@ export default function ProcessFour() {
                 การกดปุ่ม “สร้างคำขอ” จะถือว่าท่านอ่านและตกลงยอมรับ
                 <a
                   onClick={() => termAndConditionModalRef.current?.openModal()}
+                  href="#"
                   className="text-info text-underline"
                 >
                   เงื่อนไข หลักเกณฑ์ และระเบียบการใช้ยานพาหนะ

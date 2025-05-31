@@ -99,7 +99,7 @@ export default function DisburstmentCard({
                   <div className="form-group form-plaintext">
                     {/* <i className="material-symbols-outlined">share</i> */}
                     <div className="form-plaintext-group">
-                      <div className="form-label">เลขที่โตรงข่าย</div>
+                      <div className="form-label">เลขที่โครงข่าย</div>
                       <div className="form-text">{networkNo}</div>
                     </div>
                   </div>

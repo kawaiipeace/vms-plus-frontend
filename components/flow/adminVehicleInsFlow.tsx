@@ -50,10 +50,6 @@ export default function AdminVehicleInsFlow() {
     closeModal: () => void;
   } | null>(null);
 
-  const filterSortModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -341,15 +337,6 @@ export default function AdminVehicleInsFlow() {
             </div>
           </button>
 
-          <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] md:hidden"
-            onClick={() => filterSortModalRef.current?.openModal()}
-          >
-            <div className="flex items-center gap-1">
-              <i className="material-symbols-outlined">filter_list</i>
-              เรียงลำดับ
-            </div>
-          </button>
         </div>
       </div>
 
@@ -415,10 +402,7 @@ export default function AdminVehicleInsFlow() {
         onSubmitFilter={handleFilterSubmit}
       />
 
-      <FilterSortModal
-        ref={filterSortModalRef}
-        onSubmitFilter={handleFilterSortSubmit}
-      />
+     
     </>
   );
 }
