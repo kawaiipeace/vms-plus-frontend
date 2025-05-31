@@ -3,6 +3,7 @@ import VehicleStatus from "./status";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
 import { CustomData, FuelTypeApiCustomData, FuelTypeApiResponse, VehicleDepartmentApiResponse, VehicleDepartmentCustomData, VehicleInputParams, VehicleStatusProps, VehicleTypeApiCustomData, VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 import CustomSelect from "../customSelect";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 type FilterProps = {
     flag: string;
@@ -92,7 +93,7 @@ const ModalBody = ({
                 <div className="col-span-12">
                     <div className="form-group">
                         <label className="form-label">ปรเภทะยานพาหนะ</label>
-                        <CustomSelect
+                        <CustomSelectOnSearch
                             w="md:w-full"
                             options={vehicleTypes}
                             value={vehicleTypeOptions}
@@ -109,7 +110,7 @@ const ModalBody = ({
                     <div className="col-span-12">
                         <div className="form-group">
                             <span className="form-label">ประเภทเชื้อเพลิง</span>
-                            <CustomSelect
+                            <CustomSelectOnSearch
                                 w="md:w-full"
                                 options={fuelTypes}
                                 value={fuelTypeOptions}
@@ -126,7 +127,7 @@ const ModalBody = ({
                 <div className="col-span-12">
                     <div className="form-group">
                         <span className="form-label">สังกัดยานพาหนะ</span>
-                        <CustomSelect
+                        <CustomSelectOnSearch
                             w="md:w-full"
                             options={vehicleDepartments}
                             value={vehicleDepartmentOptions}

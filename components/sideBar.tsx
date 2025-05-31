@@ -123,17 +123,17 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ข้อมูลพนักงานขับรถ",
           link: "/drivers-management",
-          roles: ["admin-super"],
+          roles: ["admin-super","admin-region","admin-dept"],
         },
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-region"],
+          roles: ["admin-super","admin-region","admin-dept"],
         },
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-dept"],
+          roles: ["admin-super","admin-region","admin-dept"],
         },
         // {
         //   title: "ข้อมูล Fleet card",

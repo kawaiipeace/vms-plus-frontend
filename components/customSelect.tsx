@@ -4,7 +4,7 @@ export interface CustomSelectOption {
   value: string;
   label: React.ReactNode | string;
   desc?: string;
-  imageUrl?: string;
+  imageUrl?: string; // Optional image URL for the option
 }
 
 interface SelectProps {
@@ -17,10 +17,6 @@ interface SelectProps {
   isInputOil?: boolean;
   disabled?: boolean;
   placeholder?: string;
-  allowFreeInput?: boolean;
-  onSearchInputChange?: (value: string) => void;
-  loading?: boolean;
-  enableSearchOnApi?: boolean;
 }
 
 export default function CustomSelect({
@@ -33,67 +29,14 @@ export default function CustomSelect({
   isInputOil = false,
   disabled = false,
   placeholder = "กรุณาเลือก",
-  allowFreeInput = false,
-  enableSearchOnApi,
-  onSearchInputChange,
-  loading = false,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [inputText, setInputText] = useState(value?.label?.toString() || "");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [lastSearchTerm, setLastSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const userTypingRef = useRef(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (onSearchInputChange && userTypingRef.current) {
-      const trimmedInput = inputText.trim();
-      if (trimmedInput !== lastSearchTerm && trimmedInput.length >= 3) {
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
+  const filteredOptions = options;
 
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
-
-        const handler = setTimeout(() => {
-          onSearchInputChange(trimmedInput);
-          setLastSearchTerm(trimmedInput);
-        }, 500);
-
-        return () => {
-          clearTimeout(handler);
-          controller.abort();
-        };
-      }
-    }
-  }, [inputText, onSearchInputChange, lastSearchTerm]);
-
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
-
-  const filteredOptions = enableSearchOnApi
-    ? options
-    : options.filter((option) => {
-        const trimmed = inputText.trim();
-        if (trimmed === "") return true;
-        const text =
-          (typeof option.label === "string" ? option.label : option.value) +
-          (option.desc ? ` ${option.desc}` : "");
-        return text.toLowerCase().includes(trimmed.toLowerCase());
-      });
-
-  const shouldShowDropdown =
-    isOpen &&
-    ((!enableSearchOnApi && options.length > 0) ||
-      (enableSearchOnApi && inputText.trim().length >= 3));
+  const shouldShowDropdown = isOpen;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -106,14 +49,7 @@ export default function CustomSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setInputText(value?.label?.toString() || "");
-      userTypingRef.current = false;
-    }
-  }, [value, isOpen]);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
       setIsOpen(true);
       setHighlightedIndex(0);
@@ -125,9 +61,7 @@ export default function CustomSelect({
       } else if (e.key === "Enter" && highlightedIndex >= 0) {
         const selected = filteredOptions[highlightedIndex];
         onChange(selected);
-        setInputText(selected.label ? selected.label.toString() : "");
         setIsOpen(false);
-        userTypingRef.current = false;
       } else if (e.key === "Escape") {
         setIsOpen(false);
       }
@@ -153,12 +87,12 @@ export default function CustomSelect({
   };
 
   return (
-    <div ref={dropdownRef} className="relative custom-select">
+    <div ref={dropdownRef} className="relative custom-select" onKeyDown={handleKeyDown} tabIndex={0}>
       <div
         className={`border ${w} max-${w} border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText overflow-hidden focus-within:border-primary-default focus-within:shadow-customPurple ${
           isOpen ? "shadow-customPurple border-primary-default" : ""
         }`}
-        onClick={() => !disabled && setIsOpen(true)}
+        onClick={() => !disabled && setIsOpen((prev) => !prev)}
       >
         {iconName && (
           <div className="input-group-prepend mr-1">
@@ -167,59 +101,21 @@ export default function CustomSelect({
             </span>
           </div>
         )}
-
         {isInputOil ? (
-          !value?.value || value.value === "" ? (
-            <div className="flex items-center gap-1 flex-1 bg-transparent border-0 px-0 py-0 h-full text-md">
-              {placeholder}
-            </div>
+          !value?.value ? (
+            <div className="flex items-center gap-1 flex-1 text-md">{placeholder}</div>
           ) : (
-            <div className="flex items-center gap-1 flex-1 bg-transparent border-0 px-0 py-0 h-full text-md">
+            <div className="flex items-center gap-1 flex-1 text-md">
               <img src={value?.imageUrl} alt={"oil-image-" + value?.imageUrl} width={24} height={24} />
               <span>{value?.label}</span>
             </div>
           )
         ) : (
-          <input
-            ref={inputRef}
-            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md"
-            value={inputText}
-            placeholder={placeholder}
-            disabled={disabled}
-            onFocus={() => !disabled && setIsOpen(true)}
-            onChange={(e) => {
-              setInputText(e.target.value);
-              setIsOpen(true);
-              setHighlightedIndex(0);
-              userTypingRef.current = true;
-            }}
-            onKeyDown={handleKeyDown}
-          />
-        )}
-
-        {/* Clear button */}
-        {value?.value && !disabled && (
-          <div
-            className="flex-shrink-0 w-8 text-right cursor-pointer text-gray-400 hover:text-gray-500"
-            onClick={(e) => {
-              e.stopPropagation();
-              setInputText("");
-              onChange({ value: "", label: "" });
-              userTypingRef.current = false;
-            }}
-          >
-            <i className="material-symbols-outlined">close_small</i>
+          <div className="flex-1 text-md truncate">
+            {value?.label || placeholder}
           </div>
         )}
-
-        {/* Dropdown arrow */}
-        <div
-          className="flex-shrink-0 w-8 text-right cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen((open) => !open);
-          }}
-        >
+        <div className="flex-shrink-0 w-8 text-right cursor-pointer">
           <i className="material-symbols-outlined">keyboard_arrow_down</i>
         </div>
       </div>
@@ -240,9 +136,7 @@ export default function CustomSelect({
                 onMouseEnter={() => setHighlightedIndex(idx)}
                 onClick={() => {
                   onChange(option);
-                  setInputText(option.label ? option.label.toString() : "");
                   setIsOpen(false);
-                  userTypingRef.current = false;
                 }}
               >
                 {renderDropdownOption(option)}

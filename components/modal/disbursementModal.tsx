@@ -10,6 +10,7 @@ import { register } from "module";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   requestData?: RequestDetailType;
@@ -367,7 +368,7 @@ const DisbursementModal = forwardRef<{ openModal: () => void; closeModal: () => 
                   <div className="col-span-12">
                     <div className="form-group">
                       <label className="form-label">ศูนย์ต้นทุน</label>
-                      <CustomSelect
+                      <CustomSelectOnSearch
                         iconName="business_center"
                         w="w-full"
                         options={costCenterOptions}

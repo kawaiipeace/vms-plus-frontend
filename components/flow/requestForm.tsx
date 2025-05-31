@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 
 const schema = yup
   .object()
@@ -527,7 +528,7 @@ export default function RequestForm() {
                       </Tooltip>
                     </label>
 
-                    <CustomSelect
+                    <CustomSelectOnSearch
                       iconName="person"
                       w="w-full"
                       options={driverOptions}
@@ -946,7 +947,7 @@ export default function RequestForm() {
                   <div className="md:col-span-4 col-span-12">
                     <div className="form-group">
                       <label className="form-label">ศูนย์ต้นทุน</label>
-                      <CustomSelect
+                      <CustomSelectOnSearch
                         iconName="business_center"
                         w="w-full"
                         options={costCenterOptions}

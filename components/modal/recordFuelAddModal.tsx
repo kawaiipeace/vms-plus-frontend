@@ -17,6 +17,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import CustomSelect, { CustomSelectOption } from "../customSelect";
 import Tooltip from "../tooltips";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   status?: boolean;
@@ -331,7 +332,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">สถานีบริการน้ำมัน</label>
-                          <CustomSelect
+                          <CustomSelectOnSearch
                             w="w-full"
                             options={oilOptions}
                             value={valueForm.ref_oil_station_brand_id}
