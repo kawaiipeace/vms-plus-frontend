@@ -437,7 +437,7 @@ const RequestDrivingStepOneModal = forwardRef<
             </div>
             <div className="modal-scroll-wrapper overflow-y-auto">
               <form
-                className="modal-body  text-center !bg-white"
+                className="modal-body text-center"
                 onSubmit={handleSubmit(onSubmit)}
               >
                 {!edit && (

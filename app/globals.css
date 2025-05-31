@@ -4000,6 +4000,14 @@
     background-color: #cecfd2;
   }
 
+  .light-mode .modal-body{
+    background-color: white;
+  }
+
+  .dark-mode .modal-body{
+    background-color: #cecfd2;
+  }
+
   .bottom-sheet+.modal-header,
   .bottom-sheet+.modal-body {
     padding-top: 0rem !important;
