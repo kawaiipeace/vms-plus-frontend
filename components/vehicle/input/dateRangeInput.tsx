@@ -1,6 +1,6 @@
 import * as Popover from '@radix-ui/react-popover';
-import { DayPicker, DateRange } from 'react-day-picker';
-import { HTMLAttributes, useState } from 'react';
+import { DayPicker, DateRange, DropdownProps } from 'react-day-picker';
+import { useState } from 'react';
 import 'react-day-picker/dist/style.css';
 import { DateLongTH } from '@/utils/vehicle-management';
 import { th, enUS } from 'date-fns/locale';
@@ -26,16 +26,69 @@ const DateRangePicker = ({ date, onChange }: Props) => {
         }
     };
 
-    const ThaiCaption = ({ children, ...props }: HTMLAttributes<HTMLSpanElement>) => {
-        const dateParts = typeof children === 'string' ? children.split(' ') : [];
-        const thaiYear = dateParts[1] ? parseInt(dateParts[1]) + 543 : '';
+    // const ThaiCaption = ({ children, ...props }: HTMLAttributes<HTMLSpanElement>) => {
+    //     const dateParts = typeof children === 'string' ? children.split(' ') : [];
+    //     const thaiYear = dateParts[1] ? parseInt(dateParts[1]) + 543 : '';
+
+    //     return (
+    //         <span {...props} className="ml-4 mt-1 text-gray-700 font-semibold">
+    //             {isTH ? `${dateParts[0]} ${thaiYear}` : children}
+    //         </span>
+    //     );
+    // };
+
+    const ThaiYearDropdown = (props: DropdownProps) => {
+        const { value, onChange, name, required, className } = props;
+
+        const currentYear = new Date().getFullYear();
+        // const thaiYears = Array.from({ length: 20 }, (_, i) => currentYear - i + 543);
+
+        const startYear = 2017; // ค.ศ.
+        const endYear = 2032;
+
+        const thaiYears = Array.from(
+            { length: endYear - startYear + 1 },
+            (_, i) => startYear + i + 543
+        );
 
         return (
-            <span {...props} className="ml-4 mt-1 text-gray-700 font-semibold">
-                {isTH ? `${dateParts[0]} ${thaiYear}` : children}
-            </span>
+            <select
+                className="bg-white border border-gray-300 rounded-lg p-2 ml-2 text-gray-400 appearance-none"
+                name={name}
+                required={required}
+                value={value}
+                onChange={onChange}
+            >
+                {thaiYears.map(thaiYear => (
+                    <option key={thaiYear} value={thaiYear - 543}>
+                        {thaiYear}
+                    </option>
+                ))}
+            </select>
         );
     };
+
+    const ThaiMonthDropdown = (props: DropdownProps) => {
+        const { value, onChange } = props;
+        const thaiMonths = [
+            'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน',
+            'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม',
+            'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+        ];
+
+        return (
+            <select 
+                className="bg-white border border-gray-300 rounded-lg p-2 ml-2 text-gray-400 appearance-none"
+                value={value}
+                onChange={onChange}>
+                {thaiMonths.map((month, index) => (
+                    <option key={index} value={index}>
+                        {month}
+                    </option>
+                ))}
+            </select>
+        );
+    }
 
     const handleConfirm = () => {
         if (range?.from && range?.to) {
@@ -67,7 +120,10 @@ const DateRangePicker = ({ date, onChange }: Props) => {
                         numberOfMonths={2}
                         showOutsideDays
                         onSelect={handleSelectDate}
-                        components={{ CaptionLabel: ThaiCaption }}
+                        components={{
+                            YearsDropdown: ThaiYearDropdown,
+                            MonthsDropdown: ThaiMonthDropdown,
+                        }}
                         className='text-sm w-full'
                         classNames={{
                             today: 'text-brand-900 font-bold',
