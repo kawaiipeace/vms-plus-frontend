@@ -234,8 +234,7 @@ const RequestStatusLicDetailModal = forwardRef<
                       </div>
                       <div className="form-card-right align-self-center">
                         <div className="flex gap-3 flex-wrap">
-                          {requestData?.progress_request_status_emp
-                            ?.mobile_number && (
+                       
                             <div className="col-span-12 md:col-span-6">
                               <div className="form-group form-plaintext">
                                 <i className="material-symbols-outlined">
@@ -251,9 +250,8 @@ const RequestStatusLicDetailModal = forwardRef<
                                 </div>
                               </div>
                             </div>
-                          )}
-                          {requestData?.progress_request_status_emp
-                            ?.phone_number && (
+                   
+                       
                             <div className="col-span-12 md:col-span-6">
                               <div className="form-group form-plaintext">
                                 <i className="material-symbols-outlined">
@@ -269,7 +267,7 @@ const RequestStatusLicDetailModal = forwardRef<
                                 </div>
                               </div>
                             </div>
-                          )}
+                       
                         </div>
                       </div>
                     </div>

@@ -196,6 +196,7 @@ export default function RequestForm() {
     }
   }, [driverOptions, selectedVehicleUserOption]);
 
+
   useEffect(() => {
     if (!formData.timeStart) {
       setValue("timeStart", "08:00");
@@ -220,7 +221,12 @@ export default function RequestForm() {
           });
           setValue("telInternal", defaultVehicleUser.tel_internal);
           setValue("telMobile", defaultVehicleUser.tel_mobile);
-          setValue("deptSapShort", defaultVehicleUser.posi_text + "/" + defaultVehicleUser.dept_sap_short);
+          setValue(
+            "deptSapShort",
+            defaultVehicleUser.posi_text +
+              "/" +
+              defaultVehicleUser.dept_sap_short
+          );
           setValue("deptSap", defaultVehicleUser.dept_sap);
           setValue("userImageUrl", defaultVehicleUser.image_url);
         }
@@ -349,7 +355,7 @@ export default function RequestForm() {
   const endDate = watch("endDate");
   const isSameDay = startDate === endDate;
   const isOvernightDisabled = startDate === endDate;
-
+  const [minTime, setMinTime] = useState("8:00");
   // ADD: Require cost center for type 2
   const isCostCenterRequired =
     selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
@@ -435,6 +441,7 @@ export default function RequestForm() {
       setLoadingDrivers(false);
     }
   };
+ 
 
   const handleCostCenterSearch = async (search: string) => {
     if (search.trim().length > 3) {
@@ -689,11 +696,13 @@ export default function RequestForm() {
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
                         defaultValue={
-                          formData.timeEnd
-                            ? formData.timeEnd
-                            : "8:00"
+                          formData.timeEnd ? formData.timeEnd : "8:00"
                         }
-                        onChange={(dateStr) => setValue("timeStart", dateStr)}
+                        onChange={(dateStr) => {
+                          setValue("timeStart", dateStr);
+                          console.log('datestr',dateStr);
+                          setMinTime(dateStr);
+                        }}
                       />
                     </div>
                   </div>
@@ -732,13 +741,11 @@ export default function RequestForm() {
                       </div>
                       <TimePicker
                         defaultValue={
-                          formData.timeEnd
-                            ? formData.timeEnd
-                            : "16:00"
+                          formData.timeEnd ? formData.timeEnd : "16:00"
                         }
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
-                        minTime={isSameDay ? watch("timeStart") : undefined}
+                        minTime={ isSameDay ? minTime : undefined}
                       />
                     </div>
                   </div>

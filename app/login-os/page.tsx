@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import Cookies from "js-cookie";
 
 const schema = yup.object().shape({
   phone: yup.string().required("กรุณาระบุเบอร์โทรศัพท์"),
@@ -47,7 +48,7 @@ export default function LoginOS() {
       const response = await requestOTP(data.phone);
       if (response.status === 200) {
         const otpID = response.data.otpId;
-        sessionStorage.setItem("phone", data.phone);
+        Cookies.set("phone", data.phone);
         sessionStorage.setItem("otpID", otpID);
         sessionStorage.setItem("refCode", response.data.refCode);
         router.push(`/login-authen`);
