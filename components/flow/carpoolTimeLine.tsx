@@ -50,6 +50,9 @@ export default function CarpoolTimeLine() {
     end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
     page: vehiclePagination.page,
     limit: vehiclePagination.limit,
+    is_active: "",
+    ref_vehicle_status_code: "",
+    vehicel_car_type_detail: "",
   });
   const [driverParams, setDriverParams] = useState({
     search: "",
@@ -57,6 +60,9 @@ export default function CarpoolTimeLine() {
     end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
     page: driverPagination.page,
     limit: driverPagination.limit,
+    is_active: "",
+    work_type: "",
+    ref_driver_status_code: "",
   });
 
   const [showDropdown, setShowDropdown] = useState(false);
@@ -175,6 +181,9 @@ export default function CarpoolTimeLine() {
       end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
       page: 1,
       limit: 10,
+      is_active: "",
+      ref_vehicle_status_code: "",
+      vehicel_car_type_detail: "",
     });
   };
 
@@ -185,6 +194,9 @@ export default function CarpoolTimeLine() {
       end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
       page: 1,
       limit: 10,
+      is_active: "",
+      work_type: "",
+      ref_driver_status_code: "",
     });
   };
 
@@ -256,14 +268,23 @@ export default function CarpoolTimeLine() {
         />
         <button
           onClick={handleOpenVehicleFilterModal}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          className="btn btn-secondary btn-filtersmodal flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
         >
           <i className="material-symbols-outlined text-lg">filter_list</i>
-          <span className="text-base font-semibold">ตัวกรอง</span>
+          <span className="text-base font-semibold">
+            ตัวกรอง{" "}
+            <span className="badge badge-brand badge-outline rounded-[50%]">
+              {vehicleParams.is_active?.split(",").filter((e) => e !== "")
+                .length +
+                vehicleParams.ref_vehicle_status_code
+                  ?.split(",")
+                  .filter((e) => e !== "").length || 0}
+            </span>
+          </span>
         </button>
         <button
           onClick={toggleDropdown}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          className="btn btn-secondary btn-filtersmodal flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
         >
           <i className="material-symbols-outlined text-lg">view_column</i>
         </button>
@@ -292,10 +313,21 @@ export default function CarpoolTimeLine() {
       <div className="flex gap-4">
         <button
           onClick={handleOpenDriverFilterModal}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          className="btn btn-secondary btn-filtersmodal flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
         >
           <i className="material-symbols-outlined text-lg">filter_list</i>
-          <span className="text-base font-semibold">ตัวกรอง</span>
+          <span className="text-base font-semibold">
+            ตัวกรอง{" "}
+            <span className="badge badge-brand badge-outline rounded-[50%]">
+              {driverParams.is_active?.split(",").filter((e) => e !== "")
+                .length +
+                driverParams.work_type?.split(",").filter((e) => e !== "")
+                  .length +
+                driverParams.ref_driver_status_code
+                  ?.split(",")
+                  .filter((e) => e !== "").length || 0}
+            </span>
+          </span>
         </button>
       </div>
     </div>
@@ -471,11 +503,15 @@ export default function CarpoolTimeLine() {
         ref={filterVehicleModalRef}
         onSubmitFilter={handleVehicleFilterSubmit}
         flag="TIMELINE"
+        vehicleParams={vehicleParams}
+        setVehicleParams={setVehicleParams}
       />
       <DriverFilterModal
         ref={filterDriverModalRef}
         onSubmitFilter={handleDriverFilterSubmit}
         flag="TIMELINE"
+        driverParams={driverParams}
+        setDriverParams={setDriverParams}
       />
     </div>
   );

@@ -31,6 +31,7 @@ interface Vehicle {
   car_type: string;
   vehicle_owner_dept_sap: string;
   vehicle_img: string;
+  vehicle_license_plate_province_full: string;
   seat: number;
   is_admin_choose_driver?: boolean;
 }
@@ -164,6 +165,7 @@ export default function ProcessTwo() {
 
   useEffect(() => {
     const fetchVehicleData = async () => {
+ 
       try {
         // Set limit to 8 for first page, 10 for others
         const currentLimit = params.page === 1 ? 10 : 10;
@@ -171,6 +173,7 @@ export default function ProcessTwo() {
           ...params,
           limit: currentLimit,
         });
+        console.log('fetchvhicles',response);
 
         if (response.status === 200) {
           // Combine carpools and vehicles for display
@@ -179,8 +182,10 @@ export default function ProcessTwo() {
             ...(response.data.vehicles || []),
           ];
           setVehicleCards(allCards);
+          console.log('responvehicle',allCards);
           setPaginationData(response.data.pagination);
         }
+     
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
@@ -357,6 +362,7 @@ export default function ProcessTwo() {
                               subTitle={vehicle.vehicle_license_plate}
                               carType={vehicle.car_type}
                               deptSap={vehicle.vehicle_owner_dept_sap}
+                              province={vehicle.vehicle_license_plate_province_full}
                               seat={vehicle.seat}
                               onSelect={() =>
                                 handleVehicleSelect(vehicle.mas_vehicle_uid)

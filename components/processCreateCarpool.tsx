@@ -163,7 +163,7 @@ export default function ProcessCreateCarpool({ step }: { step: number }) {
               step == 5 ? "active" : step > 5 ? "done" : ""
             }`}
           >
-            <span className="progress-step-no">05</span>
+            <span className="progress-step-no">5</span>
             <div className="progress-step-content">
               <div className="progress-step-title">เพิ่มพนักงานขับรถ</div>
               {/* <!-- <div className="progress-step-text">Supporting text</div> --> */}

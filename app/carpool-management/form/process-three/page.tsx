@@ -147,7 +147,7 @@ export default function CarpoolProcessThree() {
                     </a>
                   </li>
                   <li className="breadcrumb-item">
-                    <Link href="carpool-management">กลุ่มยานพาหนะ</Link>
+                    <Link href="/carpool-management">กลุ่มยานพาหนะ</Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     สร้างกลุ่มยานพาหนะ
@@ -178,8 +178,8 @@ export default function CarpoolProcessThree() {
                     <span
                       className={
                         active === "1"
-                          ? "text-[#98A2B3]"
-                          : "text-icon-error cursor-pointer"
+                          ? "text-[#98A2B3] font-bold"
+                          : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
                         active === "1"

@@ -343,7 +343,7 @@ const RequestStatusLicDetailModal = forwardRef<
       <DriverLicenseDetailModal
         ref={driverLicenseDetailModalRef}
         onBack={onBack}
-        requestData={driverData}
+        trn_id={requestData?.trn_request_annual_driver_uid}
       />
       <CancelRequestModal
         id={requestData?.trn_request_annual_driver_uid || ""}
