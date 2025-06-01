@@ -41,7 +41,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     const [driverDepartmentList, setDriverDepartmentList] = useState<
       { value: string; label: string; labelDetail: string }[]
     >([]);
-    const [driverVendorsList, setDriverVendorsList] = useState<{ value: string; label: string }[]>([]);
+    // const [driverVendorsList, setDriverVendorsList] = useState<{ value: string; label: string }[]>([]);
     const [disableStartDate, setDisableStartDate] = useState<string>();
     const [formData, setFormData] = useState({
       driverContractStartDate: "",
@@ -114,7 +114,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driverContractNo: driverInfo.contract_no || "",
           driverEmployingAgency: initialEmployingAgency?.value || "",
           driverDepartment: initialDepartment?.value || "",
-          driverContractorCompany: driverInfo.mas_vendor_code || "",
+          driverContractorCompany: driverInfo.vender_name || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
           driverOperationType: driverInfo.is_replacement || "0",
           driverReplacementEmployee: "",
