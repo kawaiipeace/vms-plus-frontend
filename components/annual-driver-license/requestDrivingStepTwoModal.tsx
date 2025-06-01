@@ -52,7 +52,7 @@ interface ReturnCarAddStep2ModalProps {
   onSubmit?: () => void;
   onBack?: () => void;
   edit?: boolean;
-  onTrackStatus?: () => void;
+  onTrackStatus?: (id:string) => void;
 }
 
 const RequestDrivingStepTwoModal = forwardRef<
@@ -231,7 +231,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                     onClick={(e) => {
                       e.stopPropagation();
                       if(onTrackStatus){
-                        onTrackStatus();
+                        onTrackStatus(response?.data?.result?.trn_request_annual_driver_uid);
                       }
                     }}
                   >

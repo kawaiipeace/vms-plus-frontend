@@ -238,7 +238,6 @@ export default function RequestForm() {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
           const data = response.data[0];
-          console.log("approver", data);
           setApproverData(data);
         }
       } catch (error) {
@@ -700,7 +699,6 @@ export default function RequestForm() {
                         }
                         onChange={(dateStr) => {
                           setValue("timeStart", dateStr);
-                          console.log('datestr',dateStr);
                           setMinTime(dateStr);
                         }}
                       />
@@ -957,6 +955,7 @@ export default function RequestForm() {
                       w="w-full"
                       options={costTypeOptions}
                       value={selectedCostTypeOption}
+                      position="top"
                       onChange={handleCostTypeChange}
                     />
                   </div>

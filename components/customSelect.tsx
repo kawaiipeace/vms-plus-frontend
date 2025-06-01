@@ -17,6 +17,7 @@ interface SelectProps {
   isInputOil?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  position?: "bottom" | "top"; // New position prop
 }
 
 export default function CustomSelect({
@@ -29,6 +30,7 @@ export default function CustomSelect({
   isInputOil = false,
   disabled = false,
   placeholder = "กรุณาเลือก",
+  position = "bottom", // Default to bottom
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -86,6 +88,9 @@ export default function CustomSelect({
     );
   };
 
+  // Calculate dropdown position class
+  const dropdownPositionClass = position === "top" ? "bottom-full mb-1" : "top-full mt-1";
+
   return (
     <div ref={dropdownRef} className="relative custom-select" onKeyDown={handleKeyDown} tabIndex={0}>
       <div
@@ -111,7 +116,7 @@ export default function CustomSelect({
             </div>
           )
         ) : (
-          <div className="flex-1 text-md truncate text-black">
+          <div className="flex-1 text-md truncate text-object-search">
             {value?.label || placeholder}
           </div>
         )}
@@ -121,7 +126,7 @@ export default function CustomSelect({
       </div>
 
       {shouldShowDropdown && (
-        <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg bg-white">
+        <ul className={`max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 ${dropdownPositionClass} w-full border border-gray-300 rounded-lg shadow-lg bg-white`}>
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option, idx) => (
               <li

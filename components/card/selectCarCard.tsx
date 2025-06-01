@@ -11,6 +11,7 @@ export default function SelectCarCard({
   deptSap,
   seat,
   vehicleId,
+  province,
   onSelect,
   isSelected = false, // Add this prop
 }: {
@@ -18,6 +19,7 @@ export default function SelectCarCard({
   title: string;
   subTitle: string;
   carType?: string;
+  province?:string;
   deptSap?: string;
   seat?: number;
   vehicleId: string;
@@ -52,7 +54,7 @@ export default function SelectCarCard({
         <div className="card-content">
           <div className="card-content-top">
             <div className="card-title">{title}</div>
-            <div className="card-subtitle">{subTitle}</div>
+            <div className="card-subtitle">{subTitle} {province}</div>
             <div className="card-supporting-text-group">
               <div className="card-supporting-text">{carType}</div>
               <div className="card-supporting-text">{deptSap}</div>

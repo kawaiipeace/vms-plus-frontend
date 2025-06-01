@@ -3,7 +3,7 @@ import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import DriverLicenseDetailModal from "./driverLicenseDetailModal";
 
 interface Props {
@@ -11,12 +11,19 @@ interface Props {
   profile?: Profile | null;
   onSubmit?: () => void;
   showRequestStatus?: () => void;
+  showNextRequestStatus?: () => void;
   onStepOne?: () => void;
   onStepOneEdit?: () => void;
 }
 
-const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ requestData, profile, showRequestStatus, onStepOne, onStepOneEdit }, ref) => {
+const DriverLicenseModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(
+  (
+    { requestData, profile, showRequestStatus,showNextRequestStatus, onStepOne, onStepOneEdit },
+    ref
+  ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     useImperativeHandle(ref, () => ({
       openModal: () => modalRef.current?.showModal(),
@@ -28,12 +35,21 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
       closeModal: () => void;
     } | null>(null);
 
+    const driverLicenseDetailNextModalRef = useRef<{
+      openModal: () => void;
+      closeModal: () => void;
+    } | null>(null);
+
+    
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
     const onBack = () => {
       modalRef.current?.showModal();
     };
 
+    useEffect(() => {
+      console.log("requesteata--------", requestData);
+    }, [requestData]);
     return (
       <dialog ref={modalRef} className="modal">
         <div
@@ -63,13 +79,17 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
               <div className="grid gap-5 grid-cols-12 w-[328px] max-w-[328px] bg-[url('/assets/img/annual_driving_card.svg')] bg-center bg-no-repeat p-0 rounded-xl mx-auto pb-[13%]">
                 <div className="flex justify-center col-span-12 bg-brand-900 rounded-t-xl">
                   <div className="text-center p-2">
-                    <p className="font-bold text-base text-white">ใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี</p>
+                    <p className="font-bold text-base text-white">
+                      ใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี
+                    </p>
                   </div>
                 </div>
                 <div className="flex justify-start items-center col-span-12 mt-0 px-3">
                   <div className="w-[80px] rounded-full overflow-hidden border-brand-900 border-4">
                     <Image
-                      src={profile?.image_url || "/assets/img/sample-avatar.png"}
+                      src={
+                        profile?.image_url || "/assets/img/sample-avatar.png"
+                      }
                       className="w-full"
                       width={100}
                       height={100}
@@ -80,15 +100,23 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                     <p className="font-bold text-xl">
                       {profile?.first_name} {profile?.last_name}
                     </p>
-                    <p>{profile?.dept_sap_full}</p>
+                    <p>{profile?.dept_sap_short}</p>
                     {profile?.license_status === "อนุมัติแล้ว" ? (
-                      <div className="badge badge-success">{profile.license_status}</div>
+                      <div className="badge badge-success">
+                        {profile.license_status}
+                      </div>
                     ) : profile?.license_status === "หมดอายุ" ? (
-                      <div className="badge badge-error">{profile.license_status}</div>
+                      <div className="badge badge-error">
+                        {profile.license_status}
+                      </div>
                     ) : profile?.license_status === "มีผลปีถัดไป" ? (
-                      <div className="badge badge-warning">{profile.license_status}</div>
+                      <div className="badge badge-warning">
+                        {profile.license_status}
+                      </div>
                     ) : profile?.license_status === "ไม่มี" ? (
-                      <div className="badge bg-brand-900 text-white">{profile.license_status}</div>
+                      <div className="badge bg-brand-900 text-white">
+                        {profile.license_status}
+                      </div>
                     ) : (
                       ""
                     )}
@@ -102,25 +130,16 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                           <div className="grid grid-cols-12 gap-y-3">
                             <div className="col-span-12">
                               <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">id_card</i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-label">เลขที่ใบขับขี่</div>
-                                  <div className="form-text text-left">
-                                    {requestData?.driver_license?.driver_license_no ?? ""}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="col-span-12">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">directions_car</i>
+                                <i className="material-symbols-outlined">
+                                  id_card
+                                </i>
                                 <div className="form-plaintext-group">
                                   <div className="form-label">
-                                    {requestData?.driver_license?.driver_license_type?.ref_driver_license_type_name}
+                                    เลขที่ใบขับขี่
                                   </div>
                                   <div className="form-text text-left">
-                                    {requestData?.driver_license?.driver_license_type?.ref_driver_license_type_desc}
+                                    {requestData?.driver_license
+                                      ?.driver_license_no ?? ""}
                                   </div>
                                 </div>
                               </div>
@@ -128,13 +147,40 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
 
                             <div className="col-span-12">
                               <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">calendar_month</i>
+                                <i className="material-symbols-outlined">
+                                  directions_car
+                                </i>
+                                <div className="form-plaintext-group">
+                                  <div className="form-label">
+                                    {
+                                      requestData?.driver_license
+                                        ?.driver_license_type
+                                        ?.ref_driver_license_type_name
+                                    }
+                                  </div>
+                                  <div className="form-text text-left">
+                                    {
+                                      requestData?.driver_license
+                                        ?.driver_license_type
+                                        ?.ref_driver_license_type_desc
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="col-span-12">
+                              <div className="form-group form-plaintext">
+                                <i className="material-symbols-outlined">
+                                  calendar_month
+                                </i>
                                 <div className="form-plaintext-group">
                                   <div className="form-label">วันที่มีผล</div>
                                   <div className="form-text text-left">
                                     {
                                       convertToBuddhistDateTime(
-                                        requestData?.driver_license?.driver_license_start_date || ""
+                                        requestData?.driver_license
+                                          ?.driver_license_start_date || ""
                                       ).date
                                     }
                                   </div>
@@ -144,13 +190,18 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
 
                             <div className="col-span-12">
                               <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">calendar_clock</i>
+                                <i className="material-symbols-outlined">
+                                  calendar_clock
+                                </i>
                                 <div className="form-plaintext-group">
-                                  <div className="form-label">มีผลถึงวันที่</div>
+                                  <div className="form-label">
+                                    มีผลถึงวันที่
+                                  </div>
                                   <div className="form-text text-left">
                                     {
                                       convertToBuddhistDateTime(
-                                        requestData?.driver_license?.driver_license_end_date || ""
+                                        requestData?.driver_license
+                                          ?.driver_license_end_date || ""
                                       ).date
                                     }
                                   </div>
@@ -160,7 +211,8 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                           </div>
                         ) : (
                           <div className="px-2 py-[3rem] text-color-secondary">
-                            ผู้บริหารระดับ 12 ขึ้นไป สามารถทำหน้าที่ขับรถยนต์ประจำปีได้โดยไม่ต้องขออนุมัติ
+                            ผู้บริหารระดับ 12 ขึ้นไป
+                            สามารถทำหน้าที่ขับรถยนต์ประจำปีได้โดยไม่ต้องขออนุมัติ
                           </div>
                         )}
                       </div>
@@ -180,16 +232,18 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       className="flex gap-2 items-center"
                       onClick={() => {
                         modalRef.current?.close();
-                        driverLicenseDetailModalRef.current?.openModal();
+                        driverLicenseDetailNextModalRef.current?.openModal();
                       }}
                     >
                       {" "}
-                      <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
+                      <span className="text-brand-900 text-sm">
+                        ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                      </span>
                       <div
                         className="badge badge-success"
                         onClick={() => {
                           modalRef.current?.close();
-                          driverLicenseDetailModalRef.current?.openModal();
+                          driverLicenseDetailNextModalRef.current?.openModal();
                         }}
                       >
                         {requestData.next_license_status}
@@ -201,16 +255,18 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       className="flex gap-2 items-center"
                       onClick={() => {
                         modalRef.current?.close();
-                        driverLicenseDetailModalRef.current?.openModal();
+                        driverLicenseDetailNextModalRef.current?.openModal();
                       }}
                     >
                       {" "}
-                      <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
+                      <span className="text-brand-900 text-sm">
+                        ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                      </span>
                       <div
                         className="badge badge-success"
                         onClick={() => {
                           modalRef.current?.close();
-                          driverLicenseDetailModalRef.current?.openModal();
+                          driverLicenseDetailNextModalRef.current?.openModal();
                         }}
                       >
                         {requestData.next_license_status}
@@ -226,8 +282,12 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       }}
                     >
                       {" "}
-                      <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
-                      <div className="badge badge-success">{requestData.next_license_status}</div>
+                      <span className="text-brand-900 text-sm">
+                        ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                      </span>
+                      <div className="badge badge-success">
+                        {requestData.next_license_status}
+                      </div>
                     </a>
                   ) : requestData?.next_license_status === "ตีกลับ" ? (
                     <a
@@ -239,8 +299,12 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       }}
                     >
                       {" "}
-                      <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
-                      <div className="badge badge-warning">{requestData.next_license_status}</div>
+                      <span className="text-brand-900 text-sm">
+                        ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                      </span>
+                      <div className="badge badge-warning">
+                        {requestData.next_license_status}
+                      </div>
                     </a>
                   ) : requestData?.next_license_status === "รออนุมัติ" ? (
                     <a
@@ -248,12 +312,16 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       className="flex gap-2 items-center"
                       onClick={() => {
                         modalRef.current?.close();
-                        if (showRequestStatus) showRequestStatus();
+                        if (showNextRequestStatus) showNextRequestStatus();
                       }}
                     >
                       {" "}
-                      <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
-                      <div className="badge badge-info">{requestData.next_license_status}</div>
+                      <span className="text-brand-900 text-sm">
+                        ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                      </span>
+                      <div className="badge badge-info">
+                        {requestData.next_license_status}
+                      </div>
                     </a>
                   ) : requestData?.next_license_status === "ยกเลิก" ? (
                     <a
@@ -261,12 +329,16 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       className="flex gap-2 items-center"
                       onClick={() => {
                         modalRef.current?.close();
-                        if (showRequestStatus) showRequestStatus();
+                        if (showNextRequestStatus) showNextRequestStatus();
                       }}
                     >
                       {" "}
-                      <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
-                      <div className="badge badge-info">{requestData.next_license_status}</div>
+                      <span className="text-brand-900 text-sm">
+                        ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                      </span>
+                      <div className="badge badge-info">
+                        {requestData.next_license_status}
+                      </div>
                     </a>
                   ) : (
                     requestData?.next_license_status === "ไม่มี" && (
@@ -278,7 +350,9 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
                         }}
                       >
                         {" "}
-                        <span className="text-brand-900 text-sm">ขออนุมัติประจำปี {requestData?.next_annual_yyyy}</span>
+                        <span className="text-brand-900 text-sm">
+                          ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
+                        </span>
                       </a>
                     )
                   )}
@@ -306,7 +380,17 @@ const DriverLicenseModal = forwardRef<{ openModal: () => void; closeModal: () =>
             )}
           </div>
         </div>
-        <DriverLicenseDetailModal ref={driverLicenseDetailModalRef} onBack={onBack} requestData={requestData} />
+        <DriverLicenseDetailModal
+          ref={driverLicenseDetailModalRef}
+          onBack={onBack}
+          trn_id={requestData?.trn_request_annual_driver_uid}
+        />
+
+<DriverLicenseDetailModal
+          ref={driverLicenseDetailNextModalRef}
+          onBack={onBack}
+          trn_id={requestData?.next_trn_request_annual_driver_uid}
+        />
       </dialog>
     );
   }

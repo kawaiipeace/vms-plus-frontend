@@ -154,7 +154,9 @@ export default function FirstApproveFlow() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
+        
         const response = await firstApproverRequests(params);
+        console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;

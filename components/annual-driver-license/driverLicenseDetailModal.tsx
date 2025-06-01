@@ -8,19 +8,19 @@ import { fetchRequestLicStatusDetail } from "@/services/driver";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface Props {
-  requestData?: DriverLicenseCardType;
+  trn_id?: string;
   onBack?: () => void;
 }
 
 const DriverLicenseDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ requestData, onBack }, ref) => {
+>(({ trn_id, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
     openModal: () => {
-      if (requestData) {
-        getStatusLicDetail(requestData?.trn_request_annual_driver_uid);
+      if (trn_id) {
+        getStatusLicDetail(trn_id);
       }
       modalRef.current?.showModal();
     },
@@ -60,6 +60,34 @@ const DriverLicenseDetailModal = forwardRef<
       // Generate a filename based on the license number
       const licenseNo =
       licRequestDetail?.driver_license_no || "driver_license";
+      download(`${licenseNo}.jpg`, url);
+
+      // Clean up
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
+  const handleDownloadCert = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      if (!licRequestDetail?.driver_certificate_img) {
+        console.error("No image URL available");
+        return;
+      }
+
+      // For demonstration, we'll use the image URL from the requestData
+      // In a real app, you might need to fetch from your API endpoint
+      const imageUrl = licRequestDetail.driver_certificate_img;
+
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      // Generate a filename based on the license number
+      const licenseNo =
+      licRequestDetail?.driver_certificate_no || "driver_certificate";
       download(`${licenseNo}.jpg`, url);
 
       // Clean up
@@ -321,6 +349,35 @@ const DriverLicenseDetailModal = forwardRef<
                         </div>
                       </div>
                     </div>
+
+                    <div className="col-span-12 mt-3">
+                    <div className="form-plaintext-group">
+                      <div className="form-label font-semibold">
+                        รูปใบรับรองการอบรม
+                      </div>
+                      <div className="w-full relative">
+                        <Image
+                          src={
+                            licRequestDetail?.driver_certificate_img ||
+                            "/assets/img/ex_driver_license.png"
+                          }
+                          className="w-full"
+                          width={100}
+                          height={100}
+                          alt=""
+                        />
+                        <button
+                          onClick={handleDownloadCert}
+                          className="btn btn-circle btn-secondary absolute top-5 right-5 btn-md"
+                        >
+                          {" "}
+                          <i className="material-symbols-outlined">
+                            download
+                          </i>{" "}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
