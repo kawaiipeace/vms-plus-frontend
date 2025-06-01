@@ -206,6 +206,8 @@ const AddCarpoolApproverModal = forwardRef<
                       }))}
                       value={selectedApprover}
                       onChange={selectApprover}
+                      enableSearch
+                      classNamePlaceholder="flex-1 text-start"
                     />
                   </div>
                 </div>

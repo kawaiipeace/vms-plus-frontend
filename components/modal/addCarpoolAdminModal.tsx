@@ -204,6 +204,8 @@ const AddCarpoolAdminModal = forwardRef<
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}
+                      enableSearch
+                      classNamePlaceholder="flex-1 text-start"
                     />
                   </div>
                 </div>
