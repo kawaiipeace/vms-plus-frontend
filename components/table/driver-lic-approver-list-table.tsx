@@ -187,7 +187,7 @@ export default function DriverLicApproverListTable({
                 onClick={() =>
                   router.push(
                     licType === "ตรวจสอบ"
-                      ? "/administrator/driver-license-confirmer/"
+                      ? "/administrator/driver-license-confirmer/" +  row.original.trn_request_annual_driver_uid
                       : "/administrator/driver-license-approver/" +
                           row.original.trn_request_annual_driver_uid
                   )

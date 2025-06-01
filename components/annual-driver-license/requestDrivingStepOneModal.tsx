@@ -47,6 +47,7 @@ interface ReturnCarAddModalProps {
   progress?: string;
   licRequestDetail?: RequestAnnualDriver;
   stepOneSubmit?: (data: ValueFormStep1) => void;
+  onBack?: () => void;
 }
 
 const formStep1Schema = yup.object().shape({
@@ -55,7 +56,7 @@ const formStep1Schema = yup.object().shape({
     .nullable()
     .required("กรุณาเลือกประเภทการขับขี่")
     .default(null),
-    year: yup.string().required("กรุณาเลือกปี"),
+  year: yup.string().required("กรุณาเลือกปี"),
   licenseNumber: yup
     .string()
     .required("กรุณาระบุเลขที่ใบขับขี่")
@@ -136,7 +137,7 @@ const formStep1Schema = yup.object().shape({
 const RequestDrivingStepOneModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   ReturnCarAddModalProps
->(({ requestData, licRequestDetail, edit, stepOneSubmit }, ref) => {
+>(({ requestData, licRequestDetail, edit, stepOneSubmit, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string; desc: string }[]
@@ -201,24 +202,25 @@ const RequestDrivingStepOneModal = forwardRef<
     if (requestData?.next_license_status !== "") {
       return (dayjs().year() + 544).toString();
     }
+    
     if (requestData?.license_status === "มีผลปีถัดไป") {
       return (dayjs().year() + 543).toString();
     }
-    return "";
+    return (dayjs().year() + 543).toString();
   };
 
   // Build default values object for react-hook-form
   const buildDefaultValues = () => ({
     driverLicenseType: getDefaultCostType(costTypeOptions),
-    year: (dayjs().year() + 543).toString(),
-    licenseNumber:
-      licRequestDetail?.driver_license_no ||
-      requestData?.driver_license?.driver_license_no ||
-      "",
-    licenseExpiryDate:
-      convertToBuddhistDateTime(licRequestDetail?.driver_license_expire_date || "").date ||
-      convertToBuddhistDateTime(requestData?.driver_license?.driver_license_expire_date).date ||
-      "",
+    year: (requestData?.license_status === "อนุมัติแล้ว" && requestData?.next_license_status_code === "00" ?  (dayjs().year() + 544).toString() :  (dayjs().year() + 543).toString()),
+    licenseNumber: requestData ? (requestData?.next_license_status_code === "00" ? "" : requestData?.driver_license?.driver_license_no) : "",
+    licenseExpiryDate: requestData
+      ? convertToBuddhistDateTime(
+          requestData?.driver_license?.driver_license_expire_date
+        ).date
+      : convertToBuddhistDateTime(
+          licRequestDetail?.driver_license_expire_date || ""
+        ).date || "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
@@ -272,12 +274,10 @@ const RequestDrivingStepOneModal = forwardRef<
     (selectedCostTypeOption.value === "2+" ||
       selectedCostTypeOption.value === "3+");
 
-
   useEffect(() => {
-  
     setDefaultValues(buildDefaultValues());
+    console.log('defaultyear',defaultValues);
     reset(buildDefaultValues());
-
   }, [
     JSON.stringify(costTypeOptions),
     JSON.stringify(vehicleTypeOptions),
@@ -292,7 +292,7 @@ const RequestDrivingStepOneModal = forwardRef<
         const response = await fetchDriverLicenseType();
         if (response.status === 200) {
           const costTypeData = response.data;
- 
+
           const costTypeArr = [
             ...costTypeData.map(
               (cost: {
@@ -307,7 +307,7 @@ const RequestDrivingStepOneModal = forwardRef<
             ),
           ];
           setCostTypeOptions(costTypeArr);
-          console.log('costtypeoption',costTypeArr);
+          console.log("costtypeoption", costTypeArr);
         }
         const responseVehicle = await fetchDriverCertificateType();
         if (responseVehicle.status === 200) {
@@ -356,13 +356,6 @@ const RequestDrivingStepOneModal = forwardRef<
     const date = new Date(str);
     return !isNaN(date.getTime()) && str.includes("T");
   };
-
-  useEffect(() => {
-    console.log('Current year value:', watch('year'));
-    console.log('Form validity:', isValid);
-    console.log('Errors:', errors);
-    isValid == true;
-  }, [watch('year'), isValid, errors]);
 
   // Handler for ImageUpload components
   const handleLicenseImageChange = (newImage: UploadFileType) => {
@@ -423,7 +416,17 @@ const RequestDrivingStepOneModal = forwardRef<
               <div className="bottom-sheet-icon"></div>
             </div>
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-              <div className="modal-title">
+              <div className="modal-title items-center flex">
+                <i
+                  className="material-symbols-outlined cursor-pointer"
+                  onClick={() => {
+                    if (onBack) {
+                      onBack();
+                    }
+                  }}
+                >
+                  keyboard_arrow_left
+                </i>{" "}
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
                 {requestData?.license_status !== "ไม่มี" &&
                   requestData?.license_status !== "" &&
@@ -478,8 +481,7 @@ const RequestDrivingStepOneModal = forwardRef<
                         />
                       </div>
                     </div>
-                    {(requestData?.license_status !== "มีผลปีถัดไป" ||
-                      requestData?.next_license_status_code === "") && (
+                    {requestData?.next_license_status_code === "ไม่มี" && (
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">ประจำปี</label>
@@ -533,7 +535,9 @@ const RequestDrivingStepOneModal = forwardRef<
                                 inputMode="numeric"
                                 pattern="\d*"
                                 onChange={(e) => {
-                                  const val = e.target.value.replace(/\D/g, "").slice(0, 8); // remove non-digits and limit to 8
+                                  const val = e.target.value
+                                    .replace(/\D/g, "")
+                                    .slice(0, 8); // remove non-digits and limit to 8
                                   field.onChange(val);
                                 }}
                                 value={field.value}
@@ -748,6 +752,7 @@ const RequestDrivingStepOneModal = forwardRef<
                                     placeholder={"ระบุวันที่"}
                                     onChange={field.onChange}
                                     defaultValue={field.value}
+                                    minDate={watch('trainingDate')}
                                   />
                                 )}
                               />

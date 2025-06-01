@@ -277,7 +277,7 @@ export default function CarpoolDriverListTable({
       <VehicleTimeLineDetailModal
         ref={vehicleTimelineDetailRef}
         detailRequest={detailRequest}
-        currentDate={dateSelected || ""}
+        currentDate={dateSelected ?? ""}
       />
     </div>
   );

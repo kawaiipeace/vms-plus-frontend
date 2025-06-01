@@ -19,6 +19,7 @@ export default function ApproveVehicleTabs({ licType }: Props) {
   );
 
   useEffect(() => {
+    console.log('lictype',licType);
     const fetchMenuFunc = async () => {
       try {
         let response;

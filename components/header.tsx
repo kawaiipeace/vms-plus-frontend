@@ -35,14 +35,15 @@ interface ValueFormStep1 {
   certificateImages?: UploadFileType[];
 }
 
-
 export default function Header() {
   const { profile, setProfile } = useProfile();
   const router = useRouter();
   const [driverUser, setDriverUser] = useState<DriverLicenseCardType>();
   const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
   const [isEditable, setIsEditable] = useState(false);
-  const [pendingOpenModal, setPendingOpenModal] = useState<null | "driver" | "request" | "detail">(null);
+  const [pendingOpenModal, setPendingOpenModal] = useState<
+    null | "driver" | "request" | "detail"
+  >(null);
   const [licRequestDetail, setLicRequestDetail] =
     useState<RequestAnnualDriver>();
   const { toast } = useToast();
@@ -74,7 +75,7 @@ export default function Header() {
   const getDriverUserCard = async () => {
     try {
       const response = await driverLicenseUserCard();
-      console.log('driveruserardorg',response);
+      console.log("driveruserardorg", response);
       if (response) {
         setDriverUser(response.data.driver);
         return response.data.driver;
@@ -94,7 +95,10 @@ export default function Header() {
       RequestDrivingStepOneModalRef.current?.openModal();
       setPendingOpenModal(null);
     }
-    if (pendingOpenModal === "detail" && driverUser?.trn_request_annual_driver_uid) {
+    if (
+      pendingOpenModal === "detail" &&
+      driverUser?.trn_request_annual_driver_uid
+    ) {
       getStatusLicDetail(driverUser.trn_request_annual_driver_uid).then(() => {
         RequestStatusLicDetailModaRef.current?.openModal();
         setPendingOpenModal(null);
@@ -115,7 +119,7 @@ export default function Header() {
   };
 
   const handleOneSubmit = (data: ValueFormStep1) => {
-    console.log('data===')
+    console.log("data===");
     setValueFormStep1(data);
     RequestDrivingStepTwoModalRef.current?.openModal();
   };
@@ -124,7 +128,7 @@ export default function Header() {
     await getDriverUserCard();
     setPendingOpenModal("driver");
   };
-  
+
   const handleOpenRequestDrivingModal = async () => {
     await getDriverUserCard();
     setPendingOpenModal("request");
@@ -132,14 +136,11 @@ export default function Header() {
 
   const handleOpenRequestCreateReturnDrivingModal = async () => {
     await getDriverUserCard();
-    if(driverUser){
+    if (driverUser) {
       await getStatusLicDetail(driverUser?.trn_request_annual_driver_uid);
     }
     setPendingOpenModal("request");
   };
-
-
-  
 
   useEffect(() => {
     if (toast.show) {
@@ -155,19 +156,54 @@ export default function Header() {
     }
   }, [toast.show, setProfile]);
 
-
   const handleOpenRequestDetailDrivingModal = async () => {
     try {
       const newDriver = await getDriverUserCard();
-      if(newDriver){
+      if (newDriver) {
         if (newDriver?.trn_request_annual_driver_uid) {
-          const res = await getStatusLicDetail(newDriver.trn_request_annual_driver_uid);
-          if(res){
+          const res = await getStatusLicDetail(
+            newDriver.trn_request_annual_driver_uid
+          );
+          if (res) {
             RequestStatusLicDetailModaRef.current?.openModal();
           }
         }
       }
-     
+    } catch (error) {
+      console.error("Error opening request detail modal:", error);
+    }
+  };
+
+  const handleOpenRequestDetailNextDrivingModal = async () => {
+    try {
+      const newDriver = await getDriverUserCard();
+      if (newDriver) {
+        if (newDriver?.next_trn_request_annual_driver_uid) {
+          const res = await getStatusLicDetail(
+            newDriver.next_trn_request_annual_driver_uid
+          );
+          if (res) {
+            RequestStatusLicDetailModaRef.current?.openModal();
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error opening request detail modal:", error);
+    }
+  };
+
+  const handleOpenRequestDetailIDDrivingModal = async (id: string) => {
+    try {
+      const newDriver = await getDriverUserCard();
+
+      if (newDriver) {
+        if (newDriver?.trn_request_annual_driver_uid) {
+          const res = await getStatusLicDetail(id);
+          if (res) {
+            RequestStatusLicDetailModaRef.current?.openModal();
+          }
+        }
+      }
     } catch (error) {
       console.error("Error opening request detail modal:", error);
     }
@@ -192,214 +228,216 @@ export default function Header() {
 
   return (
     <>
-    <div className="header items-center">
-      <div className="navbar p-0 items-center min-h-0">
-        <div className="navbar-start">
-          <div className="header-brand block md:hidden">
-            <a href="">
-              <Image
-                src="/assets/img/brand.svg"
-                width={98}
-                height={40}
-                alt=""
-              ></Image>
-            </a>
-          </div>
-          <ToggleSidebar />
-        </div>
-
-        {toast.show && (
-          <ToastCustom
-            title={toast.title}
-            desc={toast.desc}
-            status={"success"}
-          />
-        )}
-
-        <div className="navbar-end gap-[0.5rem]">
-          <div className="flex gap-1">
-            <ThemeToggle />
-            <NotificationDropdown />
-         
-          </div>
-
-          <div className="header-users">
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="">
+      <div className="header items-center">
+        <div className="navbar p-0 items-center min-h-0">
+          <div className="navbar-start">
+            <div className="header-brand block md:hidden">
+              <a href="">
                 <Image
-                  src={profile?.image_url || "/assets/img/avatar.svg"}
-                  width={36}
-                  height={36}
-                  alt="User Avatar"
+                  src="/assets/img/brand.svg"
+                  width={98}
+                  height={40}
+                  alt=""
                 ></Image>
-              </div>
-              <ul
-                tabIndex={0}
-                className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-[280px] p-2 shadow"
-              >
-                {profile && (
+              </a>
+            </div>
+            <ToggleSidebar />
+          </div>
+
+          {toast.show && (
+            <ToastCustom
+              title={toast.title}
+              desc={toast.desc}
+              status={"success"}
+            />
+          )}
+
+          <div className="navbar-end gap-[0.5rem]">
+            <div className="flex gap-1">
+              <ThemeToggle />
+              <NotificationDropdown />
+            </div>
+
+            <div className="header-users">
+              <div className="dropdown dropdown-end">
+                <div tabIndex={0} role="button" className="">
+                  <Image
+                    src={profile?.image_url || "/assets/img/avatar.svg"}
+                    width={36}
+                    height={36}
+                    alt="User Avatar"
+                  ></Image>
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-[280px] p-2 shadow"
+                >
+                  {profile && (
+                    <li className="nav-item">
+                      <div className="nav-link sidebar-users">
+                        <div className="avatar avatar-sm">
+                          <Image
+                            src={profile?.image_url || "/assets/img/avatar.svg"}
+                            width={36}
+                            height={36}
+                            alt="Profile Avatar"
+                          ></Image>
+                        </div>
+                        <div className="sidebar-users-content">
+                          <div className="sidebar-users-name">
+                            {profile.first_name} {profile.last_name}
+                          </div>
+                          <div className="sidebar-users-position">
+                            รหัสพนักงาน : {profile.emp_id} <br />
+                            ตำแหน่ง : {profile.posi_text} <br />
+                            สังกัด : {profile.dept_sap_short}
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  )}
                   <li className="nav-item">
-                    <div className="nav-link sidebar-users">
-                      <div className="avatar avatar-sm">
-                        <Image
-                          src={profile?.image_url || "/assets/img/avatar.svg"}
-                          width={36}
-                          height={36}
-                          alt="Profile Avatar"
-                        ></Image>
-                      </div>
-                      <div className="sidebar-users-content">
-                        <div className="sidebar-users-name">
-                          {profile.first_name} {profile.last_name}
+                    <div className="flex justify-between gap-2 items-center">
+                      {profile?.license_status === "อนุมัติแล้ว" ? (
+                        <>
+                          <a
+                            className="nav-link toggle-mode gap-1 flex items-center"
+                            onClick={handleOpenDriverLicenseModal}
+                          >
+                            <i className="material-symbols-outlined">id_card</i>
+                            <span className="nav-link-label">
+                              ขอทำหน้าที่ขับรถยนต์
+                            </span>
+                          </a>
+                          <div className="badge badge-success">
+                            {profile.license_status}
+                          </div>
+                        </>
+                      ) : profile?.license_status === "หมดอายุ" ? (
+                        <>
+                          <a
+                            className="nav-link toggle-mode gap-1 flex items-center"
+                            onClick={handleOpenDriverLicenseModal}
+                          >
+                            <i className="material-symbols-outlined">id_card</i>
+                            <span className="nav-link-label">
+                              ขอทำหน้าที่ขับรถยนต์
+                            </span>
+                          </a>
+                          <div className="badge badge-error">
+                            {profile.license_status}
+                          </div>
+                        </>
+                      ) : profile?.license_status === "มีผลปีถัดไป" ? (
+                        <div className="badge badge-warning">
+                          {profile.license_status}
                         </div>
-                        <div className="sidebar-users-position">
-                          รหัสพนักงาน : {profile.emp_id} <br />
-                          ตำแหน่ง : {profile.posi_text}  <br />
-                          สังกัด : {profile.dept_sap_short}
-                        </div>
-                      </div>
+                      ) : profile?.license_status === "รออนุมัติ" ? (
+                        <>
+                          <a
+                            className="nav-link toggle-mode gap-1 flex items-center"
+                            onClick={handleOpenRequestDetailDrivingModal}
+                          >
+                            <i className="material-symbols-outlined">id_card</i>
+                            <span className="nav-link-label">
+                              ขอทำหน้าที่ขับรถยนต์
+                            </span>
+                          </a>
+                          <div className="badge badge-gray">
+                            {profile.license_status}
+                          </div>
+                        </>
+                      ) : profile?.license_status === "ตีกลับ" ? (
+                        <>
+                          <a
+                            className="nav-link toggle-mode gap-1 flex items-center"
+                            onClick={handleOpenRequestDetailDrivingModal}
+                          >
+                            <i className="material-symbols-outlined">id_card</i>
+                            <span className="nav-link-label">
+                              ขอทำหน้าที่ขับรถยนต์
+                            </span>
+                          </a>
+                          <div className="badge badge-warning">
+                            {profile.license_status}
+                          </div>
+                        </>
+                      ) : profile?.license_status === "ยกเลิก" ? (
+                        <>
+                          <a
+                            className="nav-link toggle-mode gap-1 flex items-center"
+                            onClick={handleOpenRequestDrivingModal}
+                          >
+                            <i className="material-symbols-outlined">id_card</i>
+                            <span className="nav-link-label">
+                              ขอทำหน้าที่ขับรถยนต์
+                            </span>
+                          </a>
+                          <div className="badge bg-brand-900 text-white">
+                            ไม่มี
+                          </div>
+                        </>
+                      ) : (
+                        profile?.license_status === "ไม่มี" && (
+                          <>
+                            <a
+                              className="nav-link toggle-mode gap-1 flex items-center"
+                              onClick={() => handleOpenRequestDrivingModal()}
+                            >
+                              <i className="material-symbols-outlined">
+                                id_card
+                              </i>
+                              <span className="nav-link-label">
+                                ขอทำหน้าที่ขับรถยนต์
+                              </span>
+                              <div className="badge bg-brand-900 text-white">
+                                ไม่มี
+                              </div>
+                            </a>
+                          </>
+                        )
+                      )}
                     </div>
                   </li>
-                )}
-                <li className="nav-item">
-                  <div className="flex justify-between gap-2 items-center">
-                    {profile?.license_status === "อนุมัติแล้ว" ? (
-                      <>
-                        <a
-                          className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={handleOpenDriverLicenseModal}
-                        >
-                          <i className="material-symbols-outlined">id_card</i>
-                          <span className="nav-link-label">
-                            ขอทำหน้าที่ขับรถยนต์
-                          </span>
-                        </a>
-                        <div className="badge badge-success">
-                          {profile.license_status}
-                        </div>
-                      </>
-                    ) : profile?.license_status === "หมดอายุ" ? (
-                      <>
-                        <a
-                          className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={handleOpenDriverLicenseModal}
-                        >
-                          <i className="material-symbols-outlined">id_card</i>
-                          <span className="nav-link-label">
-                            ขอทำหน้าที่ขับรถยนต์
-                          </span>
-                        </a>
-                        <div className="badge badge-error">
-                          {profile.license_status}
-                        </div>
-                      </>
-                    ) : profile?.license_status === "มีผลปีถัดไป" ? (
-                      <div className="badge badge-warning">
-                        {profile.license_status}
-                      </div>
-                    ) : profile?.license_status === "รออนุมัติ" ? (
-                      <>
-                      <a
-                        className="nav-link toggle-mode gap-1 flex items-center"
-                        onClick={handleOpenRequestDetailDrivingModal}
-                      >
-                        <i className="material-symbols-outlined">id_card</i>
-                        <span className="nav-link-label">
-                          ขอทำหน้าที่ขับรถยนต์
-                        </span>
-                      </a>
-                      <div className="badge badge-gray">
-                        {profile.license_status}
-                      </div>
-                    </>
-                    ) : profile?.license_status === "ตีกลับ" ? (
-                      <>
-                      <a
-                        className="nav-link toggle-mode gap-1 flex items-center"
-                        onClick={handleOpenRequestDetailDrivingModal}
-                      >
-                        <i className="material-symbols-outlined">id_card</i>
-                        <span className="nav-link-label">
-                          ขอทำหน้าที่ขับรถยนต์
-                        </span>
-                      </a>
-                      <div className="badge badge-warning">
-                        {profile.license_status}
-                      </div>
-                    </>
-                    ) : profile?.license_status === "ยกเลิก" ? (
-                      <>
-                        <a
-                          className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={handleOpenRequestDrivingModal}
-                        >
-                          <i className="material-symbols-outlined">id_card</i>
-                          <span className="nav-link-label">
-                            ขอทำหน้าที่ขับรถยนต์
-                          </span>
-                        </a>
-                        <div className="badge bg-brand-900 text-white">
-                          ไม่มี
-                        </div>
-                      </>
-                    ) : profile?.license_status === "ไม่มี" && (
-                      <>
-                        <a
-                          className="nav-link toggle-mode gap-1 flex items-center"
-                          onClick={() => handleOpenRequestDrivingModal()}
-                        >
-                          <i className="material-symbols-outlined">id_card</i>
-                          <span className="nav-link-label">
-                            ขอทำหน้าที่ขับรถยนต์
-                          </span>
-                          <div className="badge bg-brand-900 text-white">
-                          ไม่มี
-                        </div>
-                        </a>
-
-                      </>
-                    )}
-                  </div>
-                </li>
-                {/* <li className="nav-item">
+                  {/* <li className="nav-item">
                   <a href="" className="nav-link">
                     <i className="material-symbols-outlined">person_check</i>
                     <span className="nav-link-label">มอบอำนาจอนุมัติ</span>
                   </a>
                 </li> */}
-                {/* <li className="nav-item">
+                  {/* <li className="nav-item">
                   <a className="nav-link toggle-lock">
                     <i className="material-symbols-outlined">lock</i>
                     <span className="nav-link-label">ล็อกหน้าจอ</span>
                   </a>
                 </li> */}
 
-                <hr />
-                <li className="nav-item">
-                  <Link href="#" onClick={logOutFunc} className="nav-link">
-                    <i className="material-symbols-outlined">logout</i>
-                    <span className="nav-link-label">ออกจากระบบ</span>
-                  </Link>
-                </li>
-              </ul>
+                  <hr />
+                  <li className="nav-item">
+                    <Link href="#" onClick={logOutFunc} className="nav-link">
+                      <i className="material-symbols-outlined">logout</i>
+                      <span className="nav-link-label">ออกจากระบบ</span>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    
-    </div>
-   
+
       <DriverLicenseModal
         ref={driverLicenseModalRef}
         profile={profile || null}
         requestData={driverUser}
         showRequestStatus={handleOpenRequestDetailDrivingModal}
-         onStepOneEdit={() => {
-          setIsEditable(true); 
+        showNextRequestStatus={handleOpenRequestDetailNextDrivingModal}
+        onStepOneEdit={() => {
+          setIsEditable(true);
           handleOpenRequestCreateReturnDrivingModal();
         }}
         onStepOne={() => {
-          setIsEditable(false); 
+          setIsEditable(false);
           handleOpenRequestDrivingModal();
         }}
       />
@@ -409,7 +447,7 @@ export default function Header() {
         requestData={licRequestDetail}
         driverData={driverUser}
         onStepOne={() => {
-          setIsEditable(true); 
+          setIsEditable(true);
           RequestDrivingStepOneModalRef.current?.openModal();
         }}
       />
@@ -419,6 +457,10 @@ export default function Header() {
         licRequestDetail={licRequestDetail}
         requestData={driverUser}
         stepOneSubmit={handleOneSubmit}
+        onBack={() => {
+          RequestDrivingStepOneModalRef.current?.closeModal();
+          driverLicenseModalRef.current?.openModal();
+        }}
       />
 
       <RequestDrivingStepTwoModal
@@ -427,12 +469,13 @@ export default function Header() {
         valueFormStep1={valueFormStep1}
         driverData={driverUser}
         requestData={licRequestDetail}
-        editable={isEditable} 
-        onTrackStatus={handleOpenRequestDetailDrivingModal}
+        editable={isEditable}
+        onTrackStatus={handleOpenRequestDetailIDDrivingModal}
         onBack={() => {
           RequestDrivingStepTwoModalRef.current?.closeModal();
           RequestDrivingStepOneModalRef.current?.openModal();
         }}
-      /></>
+      />
+    </>
   );
 }
