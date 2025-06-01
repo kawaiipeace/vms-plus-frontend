@@ -335,7 +335,7 @@ export default function Header() {
                           ไม่มี
                         </div>
                       </>
-                    ) : profile?.license_status === "" && (
+                    ) : profile?.license_status === "ไม่มี" && (
                       <>
                         <a
                           className="nav-link toggle-mode gap-1 flex items-center"
@@ -345,6 +345,9 @@ export default function Header() {
                           <span className="nav-link-label">
                             ขอทำหน้าที่ขับรถยนต์
                           </span>
+                          <div className="badge bg-brand-900 text-white">
+                          ไม่มี
+                        </div>
                         </a>
 
                       </>

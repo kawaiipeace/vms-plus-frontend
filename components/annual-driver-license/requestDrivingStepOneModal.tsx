@@ -55,11 +55,12 @@ const formStep1Schema = yup.object().shape({
     .nullable()
     .required("กรุณาเลือกประเภทการขับขี่")
     .default(null),
-  year: yup.string().required("กรุณาเลือกปี").default(""),
+    year: yup.string().required("กรุณาเลือกปี"),
   licenseNumber: yup
     .string()
     .required("กรุณาระบุเลขที่ใบขับขี่")
     .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    .matches(/^\d{8}$/, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก (ตัวเลขเท่านั้น)")
     .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
     .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
     .default(""),
@@ -209,7 +210,7 @@ const RequestDrivingStepOneModal = forwardRef<
   // Build default values object for react-hook-form
   const buildDefaultValues = () => ({
     driverLicenseType: getDefaultCostType(costTypeOptions),
-    year: getDefaultYear(),
+    year: (dayjs().year() + 543).toString(),
     licenseNumber:
       licRequestDetail?.driver_license_no ||
       requestData?.driver_license?.driver_license_no ||
@@ -257,7 +258,7 @@ const RequestDrivingStepOneModal = forwardRef<
     control,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<ValueFormStep1>({
     mode: "onChange",
     resolver: yupResolver(formStep1Schema),
@@ -271,11 +272,12 @@ const RequestDrivingStepOneModal = forwardRef<
     (selectedCostTypeOption.value === "2+" ||
       selectedCostTypeOption.value === "3+");
 
-  // Update default values when options or props change
+
   useEffect(() => {
+  
     setDefaultValues(buildDefaultValues());
     reset(buildDefaultValues());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [
     JSON.stringify(costTypeOptions),
     JSON.stringify(vehicleTypeOptions),
@@ -283,7 +285,6 @@ const RequestDrivingStepOneModal = forwardRef<
     licRequestDetail,
   ]);
 
-  // Fetch options
   useEffect(() => {
     console.log("reqstepone", requestData);
     const fetchData = async () => {
@@ -291,6 +292,7 @@ const RequestDrivingStepOneModal = forwardRef<
         const response = await fetchDriverLicenseType();
         if (response.status === 200) {
           const costTypeData = response.data;
+ 
           const costTypeArr = [
             ...costTypeData.map(
               (cost: {
@@ -305,6 +307,7 @@ const RequestDrivingStepOneModal = forwardRef<
             ),
           ];
           setCostTypeOptions(costTypeArr);
+          console.log('costtypeoption',costTypeArr);
         }
         const responseVehicle = await fetchDriverCertificateType();
         if (responseVehicle.status === 200) {
@@ -353,6 +356,13 @@ const RequestDrivingStepOneModal = forwardRef<
     const date = new Date(str);
     return !isNaN(date.getTime()) && str.includes("T");
   };
+
+  useEffect(() => {
+    console.log('Current year value:', watch('year'));
+    console.log('Form validity:', isValid);
+    console.log('Errors:', errors);
+    isValid == true;
+  }, [watch('year'), isValid, errors]);
 
   // Handler for ImageUpload components
   const handleLicenseImageChange = (newImage: UploadFileType) => {
@@ -516,10 +526,17 @@ const RequestDrivingStepOneModal = forwardRef<
                             render={({ field }) => (
                               <input
                                 {...field}
-                                type="text"
+                                type="text" // must be text to use maxLength
                                 className="form-control"
                                 placeholder="ระบุเลขที่ใบขับขี่"
                                 maxLength={8}
+                                inputMode="numeric"
+                                pattern="\d*"
+                                onChange={(e) => {
+                                  const val = e.target.value.replace(/\D/g, "").slice(0, 8); // remove non-digits and limit to 8
+                                  field.onChange(val);
+                                }}
+                                value={field.value}
                               />
                             )}
                           />

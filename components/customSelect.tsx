@@ -77,7 +77,7 @@ export default function CustomSelect({
         </div>
       );
     }
-    if (!showDescriptions || !option.desc || !isInputOil) return <div>{option.label}</div>;
+    if (!showDescriptions || !option.desc) return <div>{option.label}</div>;
     return (
       <div className="flex flex-col">
         <div className="font-medium">{option.label}</div>
@@ -111,7 +111,7 @@ export default function CustomSelect({
             </div>
           )
         ) : (
-          <div className="flex-1 text-md truncate">
+          <div className="flex-1 text-md truncate text-black">
             {value?.label || placeholder}
           </div>
         )}
