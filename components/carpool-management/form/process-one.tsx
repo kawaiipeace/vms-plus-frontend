@@ -89,7 +89,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
@@ -571,7 +571,11 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
               บันทึกการตั้งค่า
             </button>
           ) : (
-            <button type="submit" className="btn btn-primary">
+            <button
+              disabled={!isValid}
+              type="submit"
+              className="btn btn-primary"
+            >
               ต่อไป
               <i className="material-symbols-outlined icon-settings-300-24">
                 arrow_right_alt
