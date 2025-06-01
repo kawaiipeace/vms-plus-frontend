@@ -175,7 +175,7 @@ const AddCarpoolDriverModal = forwardRef<
                   type="text"
                   id="myInputTextField"
                   className="form-control dt-search-input !w-60"
-                  placeholder="ชื่อกลุ่มยานพาหนะ, ผู้รับผิดชอบหลัก"
+                  placeholder="ชื่อ-นามสกุล ,ชื่อเล่น ,สังกัด"
                   value={params.name}
                   onChange={(e) =>
                     setParams((prevParams) => ({

@@ -230,7 +230,7 @@ export default function CarpoolProcessFive() {
                       <div className="page-title">
                         <span className="page-title-label">พนักงานขับรถ</span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          {pagination.total} คัน
+                          {pagination.total} คน
                         </span>
                       </div>
                     </div>

@@ -194,7 +194,7 @@ const AddCarpoolAdminModal = forwardRef<
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <div className="form-group">
-                    <label className="form-label">ผู้ใช้ยานพาหนะ</label>
+                    <label className="form-label">ผู้ดูแลยานพาหนะ</label>
                     <CustomSelect
                       iconName="person"
                       w="w-full"
