@@ -21,7 +21,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 
 interface ToastProps {
@@ -71,9 +71,6 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const name = useSearchParams().get("name");
   const router = useRouter();
 
-  const [carSelected, setCarSelected] = useState<string>("");
-  const [driverSelected, setDriverSelected] = useState<string>("");
-
   const [carRadio, setCarRadio] = useState<CarChoice[]>([]);
   const [driverRadio, setDriverRadio] = useState<DriverChoice[]>([]);
   const [departments, setDepartments] = useState<CarpoolDepartment[]>([]);
@@ -89,6 +86,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
@@ -182,12 +180,10 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
       setValue("carpool_type", carpool_type);
       setGroup(groupOptions.find((item) => item.value === carpool_type));
       setValue("ref_carpool_choose_car_id", carpool.ref_carpool_choose_car_id);
-      setCarSelected(carpool.ref_carpool_choose_car_id.toString());
       setValue(
         "ref_carpool_choose_driver_id",
         carpool.ref_carpool_choose_driver_id
       );
-      setDriverSelected(carpool.ref_carpool_choose_driver_id.toString());
       setValue("remark", carpool.remark);
       setValue(
         "is_must_pass_status_30",
@@ -434,23 +430,31 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
               </div>
 
               <div className="col-span-12 md:col-span-3">
-                <div className="form-group">
-                  <div className="custom-group">
-                    {carRadio.map((item) => (
-                      <RadioButton
-                        key={item.ref_carpool_choose_car_id}
-                        name="tripType"
-                        label={item.type_of_choose_car}
-                        value={item.ref_carpool_choose_car_id.toString()}
-                        selectedValue={carSelected}
-                        setSelectedValue={(e) => {
-                          setCarSelected(e);
-                          setValue("ref_carpool_choose_car_id", Number(e));
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <Controller
+                  name="ref_carpool_choose_car_id"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="col-span-12 md:col-span-3">
+                      <div className="form-group">
+                        <div className="custom-group">
+                          {carRadio.map((item) => (
+                            <RadioButton
+                              key={item.ref_carpool_choose_car_id}
+                              name="tripType"
+                              label={item.type_of_choose_car}
+                              value={item.ref_carpool_choose_car_id.toString()}
+                              selectedValue={field.value?.toString()}
+                              setSelectedValue={(e) => {
+                                field.onChange(Number(e));
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                />
+
                 <div className="text-error-border">
                   {errors.ref_carpool_choose_car_id && (
                     <FormHelper
@@ -473,23 +477,28 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
               </div>
 
               <div className="col-span-12 md:col-span-3">
-                <div className="form-group">
-                  <div className="custom-group">
-                    {driverRadio.map((item) => (
-                      <RadioButton
-                        key={item.ref_carpool_choose_driver_id}
-                        name="tripType"
-                        label={item.type_of_choose_driver}
-                        value={item.ref_carpool_choose_driver_id.toString()}
-                        selectedValue={driverSelected}
-                        setSelectedValue={(e) => {
-                          setDriverSelected(e);
-                          setValue("ref_carpool_choose_driver_id", Number(e));
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <Controller
+                  name="ref_carpool_choose_driver_id"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="form-group">
+                      <div className="custom-group">
+                        {driverRadio.map((item) => (
+                          <RadioButton
+                            key={item.ref_carpool_choose_driver_id}
+                            name="tripType"
+                            label={item.type_of_choose_driver}
+                            value={item.ref_carpool_choose_driver_id.toString()}
+                            selectedValue={field.value?.toString()}
+                            setSelectedValue={(e) => {
+                              field.onChange(Number(e));
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                />
                 <div className="text-error-border">
                   {errors.ref_carpool_choose_driver_id && (
                     <FormHelper
