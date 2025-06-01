@@ -215,7 +215,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
               <button className="btn btn-secondary">ยกเลิก</button>
             </form>
             <form method="dialog" onClick={submitForm}>
-              <button className="btn btn-primary">ยืนยัน</button>
+              <button className="btn btn-primary">ตกลง</button>
             </form>
           </div>
         </div>
