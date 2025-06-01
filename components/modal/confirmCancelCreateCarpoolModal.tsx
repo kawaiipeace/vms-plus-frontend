@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import ToastCustom from "../toastCustom";
+import { setTimeout } from "timers";
 
 interface Props {
   id: string;
@@ -57,12 +58,14 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
           });
           if (response.request.status === 200) {
             modalRef.current?.close();
-            router.push("/carpool-management");
             setToast({
               title: "ลบกลุ่มยานพาหนะสำเร็จ",
               desc: "กลุ่มยานพาหนะ " + inputValue + " ถูกลบจากระบบแล้ว",
               status: "success",
             });
+            setTimeout(() => {
+              router.push("/carpool-management");
+            }, 1000);
           }
         } else {
           updateFormData({});

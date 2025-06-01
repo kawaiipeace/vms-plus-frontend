@@ -181,8 +181,8 @@ export default function CarpoolProcessFive() {
                     <span
                       className={
                         active === "1"
-                          ? "text-[#98A2B3]"
-                          : "text-icon-error cursor-pointer"
+                          ? "text-[#98A2B3] font-bold"
+                          : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
                         active === "1"
