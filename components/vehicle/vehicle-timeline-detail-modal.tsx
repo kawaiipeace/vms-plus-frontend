@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 
@@ -7,16 +8,14 @@ export type VehicleTimelineRef = {
 };
 
 interface VehicleTimeLineDetailModalProps {
-  detailRequest: any;
-  currentDate: any;
+  detailRequest: any[];
+  currentDate: string;
 }
 
 const VehicleTimeLineDetailModal = forwardRef<
   VehicleTimelineRef,
   VehicleTimeLineDetailModalProps
 >(({ detailRequest, currentDate }, ref) => {
-  console.log("detailRequest", detailRequest);
-
   const detailRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -24,14 +23,33 @@ const VehicleTimeLineDetailModal = forwardRef<
     close: () => detailRef.current?.close(),
   }));
 
+  const imgPath = new Map([
+    ["รออนุมัติ", "/assets/img/vehicle/pending_approval.svg"],
+    ["ไป - กลับ", "/assets/img/vehicle/completed.svg"],
+    ["ค้างแรม", "/assets/img/vehicle/with_overnight_stay.svg"],
+    ["เสร็จสิ้น", "/assets/img/vehicle/completed.svg"],
+  ]);
+
   const CardBox = ({ data }: { data: any }) => {
+    const {
+      status,
+      schedule_title,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      duration,
+      driverDetail,
+      carUserDetail,
+    } = data;
+
     return (
       <div className="border border-gray-300 rounded-xl p-4 bg-white shadow-sm w-full max-w-xl">
         <div className="grid grid-cols-[auto_1fr] gap-4">
           {/* Image Section */}
           <div className="flex items-start justify-center">
             <Image
-              src="/assets/img/return_complete.png"
+              src={imgPath.get(status) ?? "/assets/img/vehicle/check_car_complete.png"}
               width={150}
               height={150}
               alt="check_car_complete"
@@ -43,7 +61,7 @@ const VehicleTimeLineDetailModal = forwardRef<
           <div className="grid grid-cols-1">
             <div className="flex flex-col gap-2 text-base">
               <div className="flex justify-between">
-                <span className="text-xl font-bold">{data.status}</span>
+                <span className="text-xl font-bold">{status}</span>
                 <i
                   className="material-symbols-outlined text-xl text-gray-600 cursor-pointer"
                   onClick={() => {}}
@@ -51,26 +69,25 @@ const VehicleTimeLineDetailModal = forwardRef<
                   chevron_right
                 </i>
               </div>
-              <span className="font-medium text-gray-700">
-                {data.schedule_title}
-              </span>
+              <span className="font-medium text-gray-700">{schedule_title}</span>
               <span className="text-gray-500">
-                02/01/2568 08:30 - 13:30 | {data.status}
+                {dayjs(startDate).format('DD/MM/YYYY')}
+                {parseInt(duration) > 1 ? ` - ${dayjs(endDate).format('DD/MM/YYYY')}` : ""} {startTime} - {endTime} | {status}
               </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 text-base text-gray-500">
+            <div className="grid grid-cols-2 text-base text-gray-500">
               <div className="flex items-center gap-1">
                 <i className="material-symbols-outlined text-base text-gray-600">
                   directions_car
                 </i>
-                <span>{data.driverDetail.licensePlate}</span>
+                <span>{driverDetail.licensePlate}</span>
               </div>
               <div className="flex items-center gap-1">
                 <i className="material-symbols-outlined text-base text-gray-600">
                   person
                 </i>
-                <span className="text-sm">{`${data.driverDetail.driverName} (ชาย)`}</span>
+                <span className="text-sm">{`${driverDetail.driverName} (ชาย)`}</span>
               </div>
             </div>
           </div>
@@ -81,9 +98,9 @@ const VehicleTimeLineDetailModal = forwardRef<
           <span>ผู้ใช้ยานพาหนะ</span>
         </div>
 
-        <div className="grid grid-cols-[200px_auto] gap-2 mt-2 justify-between rounded-xl bg-gray-100 p-4">
+        <div className="grid grid-cols-[200px_auto] gap-2 mt-2 rounded-xl bg-gray-100 p-4">
           <div className="flex flex-col">
-            <span className="font-bold">{data.carUserDetail.userName}</span>
+            <span className="font-bold">{carUserDetail.userName}</span>
             <span className="text-gray-500">นรค.6 กอพ.1 ฝพจ.</span>
           </div>
 
@@ -93,9 +110,7 @@ const VehicleTimeLineDetailModal = forwardRef<
                 smartphone
               </i>
               <span className="text-sm text-gray-500">
-                {data.carUserDetail.userContactNumber !== ""
-                  ? data.carUserDetail.userContactNumber
-                  : "-"}
+                {carUserDetail.userContactNumber || "-"}
               </span>
             </div>
 
@@ -104,9 +119,7 @@ const VehicleTimeLineDetailModal = forwardRef<
                 phone
               </i>
               <span className="text-sm text-gray-500">
-                {data.carUserDetail.userContactInternalNumber !== ""
-                  ? data.carUserDetail.userContactInternalNumber
-                  : "-"}
+                {carUserDetail.userContactInternalNumber || "-"}
               </span>
             </div>
           </div>
@@ -123,7 +136,7 @@ const VehicleTimeLineDetailModal = forwardRef<
         </div>
 
         <div className="flex flex-col gap-4 mt-5 overflow-y-auto max-h-[400px]">
-          {detailRequest.map((item: any, index: number) => (
+          {detailRequest.map((item, index) => (
             <CardBox key={index} data={item} />
           ))}
         </div>

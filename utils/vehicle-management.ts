@@ -35,20 +35,23 @@ export function transformApiToTableData(rawData: any, dates: any[]): VehicleTime
         licensePlate: vehicle.vehicle_license_plate || '',
       };
 
-      request.trip_details.forEach((trip: any) => {        
+      request.trip_details.forEach((trip: any) => {
         const start = dayjs(trip.trip_start_datetime);
         const end = dayjs(trip.trip_end_datetime);
         const duration = Math.max(end.diff(start, 'day') + 1, 1);
 
         
         for (let i = 0; i < duration; i++) {
-          const currentDateKey = start.add(i, 'day').format('DD-MM-YYYY');
-          if (!timeline[currentDateKey]) continue;
+          const currentDateKey = `${start.add(i, 'day').date()}_${start.month() + 1}_${start.year()}`;
+          if (!timeline[`day_${currentDateKey}`]) continue;
 
-          timeline[currentDateKey].push({
+          timeline[`day_${currentDateKey}`].push({
             tripDetailId: trip.trn_trip_detail_uid,
+            startDate: start,
+            endDate: end,
             destinationPlace: trip.trip_destination_place,
             startTime: start.format('HH:mm'),
+            endTime: end.format('HH:mm'),
             duration: duration.toString(),
             status: latestStatus,
             carUserDetail,
@@ -77,7 +80,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
     const response = await getHoliday({ start_date: startDate, end_date: endDate });
     const holidayMap = new Map(
       response.map((item: any) => [
-        dayjs(item.mas_holidays_date).format("YYYY-MM-DD"),
+        dayjs(item.mas_holidays_date).format("YYYY/MM/DD"),
         item.mas_holidays_detail,
       ])
     );
@@ -87,7 +90,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
     const end = dayjs(endDate);
 
     while (start.isBefore(end) || start.isSame(end)) {
-      const formattedDate = start.format("YYYY-MM-DD");
+      const formattedDate = start.format("YYYY/MM/DD");
       const date = {
         key: `day_${start.date()}_${start.month() + 1}_${start.year()}`,
         date: formattedDate,
