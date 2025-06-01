@@ -38,6 +38,13 @@ export default function CarpoolManagementTable({
     pageSize: pagination.limit,
   });
 
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination]);
+
   const columns: ColumnDef<Carpool>[] = [
     {
       accessorKey: "carpool_name",

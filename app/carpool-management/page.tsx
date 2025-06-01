@@ -231,8 +231,8 @@ export default function CarpoolManagement() {
                         pagination={{
                           limit: pagination.limit,
                           page: pagination.page,
-                          totalPages: 1,
-                          total: 10,
+                          totalPages: pagination.totalPages,
+                          total: pagination.total,
                         }}
                         onPageChange={handlePageChange}
                         onPageSizeChange={handlePageSizeChange}
