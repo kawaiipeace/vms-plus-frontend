@@ -59,7 +59,8 @@ export default function LoginAuthen() {
   }, [timeLeft]);
 
   const requestOTPAgain = async () => {
-    if (timerText === "ขอรหัสใหม่อีกครั้ง") return;
+    console.log('ttt');
+    // if (timerText === "ขอรหัสใหม่อีกครั้ง") return;
     if (!phone || phone === null || timeLeft > 0) return;
 
     setIsResending(true);

@@ -5,7 +5,7 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
-import { fetchRequestDetail } from "@/services/driver";
+import { fetchFinalRequestDetail } from "@/services/driver";
 import RequestDetailForm from "@/components/annual-driver-license/requestDetailForm";
 import PageHeaderFirst from "@/components/annual-driver-license/pageHeaderFirst";
 
@@ -21,7 +21,7 @@ export default function RequestDetail() {
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {
-          const response = await fetchRequestDetail(request_id);
+          const response = await fetchFinalRequestDetail(request_id);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -45,7 +45,7 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeaderFirst data={requestData} />}
-            <RequestDetailForm licType="ตรวจสอบ" requestId={request_id} />
+            <RequestDetailForm licType="อนุมัติ" requestId={request_id} />
           </div>
         </div>
       </div>

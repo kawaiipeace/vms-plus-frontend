@@ -16,7 +16,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, 
 
   useEffect(() => {
     console.log("defaultvalue", defaultValue);
-    console.log("mintime", minTime);
+    console.log("mintime==>", minTime);
 
     if (!timeInputRef.current) return;
 
@@ -49,7 +49,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, 
         flatpickrRef.current = null;
       }
     };
-  }, []); // Empty dependency array - only initialize once
+  }, [minTime]); // Empty dependency array - only initialize once
 
   // Handle updates to defaultValue
   useEffect(() => {

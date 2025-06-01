@@ -78,9 +78,21 @@ export default function SideBar({ menuName }: SidebarProps) {
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
-          link: "/administrator/booking-approver",
+          link: "/administrator/booking-approver?licenseType=ตรวจสอบ",
           roles: [
             "level1-approval",
+            // "license-approval",
+            // "admin-approval",
+            // "admin-dept",
+            // "admin-super",
+          ],
+        },
+        {
+          title: "อนุมัติคำขอใช้และใบอนุญาต",
+          link: "/administrator/booking-approver?licenseType=อนุมัติ",
+          roles: [
+            // "level1-approval",
+            "license-approval",
             // "admin-approval",
             // "admin-dept",
             // "admin-super",
@@ -101,7 +113,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-approval", "license-approval"],
+          roles: ["admin-approval"],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",

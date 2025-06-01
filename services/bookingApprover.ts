@@ -71,3 +71,33 @@ export const fetchMenus = async () => {
     throw error;
   }
 };
+
+export const fetchFinalApproverMenus = async () => {
+  try {
+    const response = await axiosInstance.get('driver-license-approver/menu-requests');
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchFinalApproverRequests = async (params: {
+  search?: string;
+  ref_request_status_code?: string;
+  startdate?: string;
+  enddate?: string;
+  order_by?: string;
+  order_dir?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const response = await axiosInstance.get('driver-license-approver/search-requests', { params });
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+

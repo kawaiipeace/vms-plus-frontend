@@ -1,32 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation"; // <-- Import this if using Next.js 13+
 import FirstApproveFlow from "@/components/flow/firstApproveFlow";
-import { fetchMenus } from "@/services/bookingApprover";
+import { fetchFinalApproverMenus, fetchMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
 import DriverLicApproveFlow from "../flow/driverLicApproveFlow";
 
-export default function ApproveVehicleTabs() {
+interface Props {
+  licType?: string;
+}
+
+export default function ApproveVehicleTabs({ licType }: Props) {
   const [statusData, setStatusData] = useState<summaryType[]>([]);
   const [activeTab, setActiveTab] = useState(0);
   const searchParams = useSearchParams(); // <-- Get query params
 
-  const activeTabLabel = decodeURIComponent(searchParams.get("activeTab") || "");
+  const activeTabLabel = decodeURIComponent(
+    searchParams.get("activeTab") || ""
+  );
 
   useEffect(() => {
     const fetchMenuFunc = async () => {
       try {
-        const response = await fetchMenus();
+        let response;
+        if(licType === "ตรวจสอบ"){
+          response = await fetchMenus();
+        }else{
+          response = await fetchFinalApproverMenus();
+
+        }
+
         const result = response.data;
         setStatusData(result);
 
         // Find the tab index based on label match
         const index = result.findIndex(
-          (item: { ref_request_status_name: string; }) => item.ref_request_status_name === activeTabLabel
+          (item: { ref_request_status_name: string }) =>
+            item.ref_request_status_name === activeTabLabel
         );
         if (index !== -1) {
           setActiveTab(index);
         }
-
       } catch (error) {
         console.error("Error fetching status data:", error);
       }
@@ -39,7 +52,7 @@ export default function ApproveVehicleTabs() {
       case "20,21,30":
         return <FirstApproveFlow />;
       case "00":
-        return <DriverLicApproveFlow />;
+        return <DriverLicApproveFlow licType={licType || ""} />;
       case "90":
         return <div></div>;
       default:

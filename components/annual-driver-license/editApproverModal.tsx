@@ -98,7 +98,7 @@ const EditApproverModal = forwardRef<
             if (defaultApprover) {
               setSelectedVehicleUserOption(defaultApprover);
               setValue("name", defaultApprover.full_name || defaultApprover.label || "");
-              setValue("position", defaultApprover.posi_text || "");
+              setValue("position", defaultApprover.posi_text +"/"+ defaultApprover.dept_sap_short || "");
             }
           }
         }

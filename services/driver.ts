@@ -170,6 +170,17 @@ export const resendLicenseAnnual = async (id: string, payload: any) => {
   }
 };
 
+export const fetchFinalRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get('driver-license-approver/license-annual/' + id);
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 
