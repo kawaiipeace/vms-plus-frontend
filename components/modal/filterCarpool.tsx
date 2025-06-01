@@ -35,7 +35,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
 
   const [options, setOptions] = useState<SelectProps[]>([]);
   const [selected, setSelected] = useState<SelectProps>(defaultSelected);
-  const [status, setStatus] = useState<string[]>(["0", "1", "2"]);
+  const [status, setStatus] = useState<string[]>([]);
 
   useEffect(() => {
     // Set options only once when component mounts
@@ -56,6 +56,15 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
 
     fetchDepartmentFunc();
   }, []);
+
+  useEffect(() => {
+    if (props.params.dept_sap === "") {
+      setSelected(defaultSelected);
+    }
+    if (props.params.is_active === "") {
+      setStatus([]);
+    }
+  }, [props.params]);
 
   const submitForm = () => {
     const { params, setParams } = props;
@@ -190,14 +199,15 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
         <div className="modal-action absolute bottom-0 gap-3 mt-0 w-full flex justify-between">
           <div className="left">
             <button
-              type="button"
-              className="btn btn-tertiary btn-resetfilter block mr-auto bg-transparent shadow-none border-none"
+              className="btn btn-ghost"
               onClick={() => {
                 setSelected(defaultSelected);
-                setStatus(["0", "1", "2"]);
+                setStatus([]);
               }}
             >
-              ล้างตัวกรอง
+              <span className="text-base text-brand-900 font-bold">
+                ล้างตัวกรอง
+              </span>
             </button>
           </div>
           <div className="flex gap-3 items-center">

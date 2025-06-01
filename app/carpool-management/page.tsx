@@ -107,7 +107,7 @@ export default function CarpoolManagement() {
   };
 
   const handleClearAllFilters = () => {
-    setParams({});
+    setParams({ ...params, page: 1, is_active: "", search: "", dept_sap: "" });
     setPagination(defaultPagination);
   };
 
@@ -185,7 +185,12 @@ export default function CarpoolManagement() {
                           <i className="material-symbols-outlined">
                             filter_list
                           </i>
-                          ตัวกรอง
+                          ตัวกรอง{" "}
+                          <span className="badge badge-brand badge-outline rounded-[50%]">
+                            {params.is_active
+                              ?.split(",")
+                              .filter((e) => e !== "").length || 0}
+                          </span>
                         </div>
                       </button>
                       <button
