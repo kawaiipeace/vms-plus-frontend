@@ -1,10 +1,10 @@
 "use client";
 
 import DatePicker, { DatePickerRef } from "@/components/datePicker";
-import CustomSelect from "@/components/drivers-management/customSelect";
 import { driverStatusRef, listDriverDepartment } from "@/services/driversManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 
 interface Props {
   onSubmitFilter: (filter: {
@@ -208,10 +208,11 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                   </div>
                   <div className="col-span-1">
                     <div className="form-group">
-                      <CustomSelect
-                        w="w-full"
+                      <CustomSelectOnSearch
+                        w="md:w-full"
                         options={driverDepartmentList}
                         value={driverDepartmentOptions}
+                        enableSearchOnApi={true}
                         onChange={handleDriverDepartmentChange}
                       />
                     </div>
@@ -397,7 +398,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                     })
                   }
                 >
-                  ยืนยัน
+                  ตกลง
                 </button>
               </div>
             </div>

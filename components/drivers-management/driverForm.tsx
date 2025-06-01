@@ -213,26 +213,26 @@ const DriverForm = () => {
       }
     };
 
-    const fetchDriverVendors = async () => {
-      try {
-        const response = await listDriverVendors();
-        const driverDepartmentData = response.data.map((item: { mas_vendor_code: string; mas_vendor_name: string }) => {
-          return {
-            value: item.mas_vendor_code,
-            label: item.mas_vendor_name,
-          };
-        });
-        // console.log(driverDepartmentData);
-        setDriverVendorsList(driverDepartmentData);
-      } catch (error) {
-        console.error("Error fetching driver department data:", error);
-      }
-    };
+    // const fetchDriverVendors = async () => {
+    //   try {
+    //     const response = await listDriverVendors();
+    //     const driverDepartmentData = response.data.map((item: { mas_vendor_code: string; mas_vendor_name: string }) => {
+    //       return {
+    //         value: item.mas_vendor_code,
+    //         label: item.mas_vendor_name,
+    //       };
+    //     });
+    //     // console.log(driverDepartmentData);
+    //     setDriverVendorsList(driverDepartmentData);
+    //   } catch (error) {
+    //     console.error("Error fetching driver department data:", error);
+    //   }
+    // };
 
     fetchUseByOtherRadio();
     fetchDriverLicense();
     fetchDriverDepartment();
-    fetchDriverVendors();
+    // fetchDriverVendors();
   }, []);
 
   useEffect(() => {
@@ -284,7 +284,7 @@ const DriverForm = () => {
         driver_name: formData.driverName,
         driver_nickname: formData.driverNickname,
         is_replacement: formData.driverOperationType,
-        mas_vendor_code: formData.driverContractorCompany,
+        vendor_name: formData.driverContractorCompany,
         ref_other_use_code: useByOther,
         work_type: Number(formData.driverOverNightStay),
       };
@@ -639,7 +639,7 @@ const DriverForm = () => {
               <div>
                 <div className="form-group">
                   <label className="form-label">บริษัทผู้รับจ้าง</label>
-                  <CustomSelect
+                  {/* <CustomSelect
                     w="w-full"
                     options={driverVendorsList}
                     value={
@@ -648,6 +648,14 @@ const DriverForm = () => {
                     onChange={(selected) =>
                       setFormData((prev) => ({ ...prev, driverContractorCompany: selected.value }))
                     }
+                  /> */}
+                  <input
+                    type="text"
+                    name="driverContractorCompany"
+                    className="form-control"
+                    placeholder="บริษัทผู้รับจ้าง"
+                    value={formData.driverContractorCompany}
+                    onChange={handleInputChange}
                   />
                   {formErrors.driverContractorCompany && (
                     <FormHelper text={String(formErrors.driverContractorCompany)} />

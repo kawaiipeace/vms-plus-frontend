@@ -121,6 +121,8 @@ const DriverEditLicenseModal = forwardRef<
         mas_driver_uid: driverInfo?.mas_driver_uid || "",
       };
 
+      console.log("Form data before validation:", params);
+
       const response = await driverUpdateLicenseDetails({ params });
       if (response.status === 200) {
         handleCloseModal();

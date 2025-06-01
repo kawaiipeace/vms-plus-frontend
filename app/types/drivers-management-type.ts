@@ -48,7 +48,7 @@ export interface DriverInfoType {
   work_type?: number;
   contract_no?: string;
   driver_dept_sap_short_name_hire?: string;
-  mas_vendor_code?: string;
+  vender_name?: string;
   driver_dept_sap_short_name_work?: string;
   approved_job_driver_start_date?: string;
   approved_job_driver_end_date?: string;
@@ -93,7 +93,7 @@ export interface DriverCreateDetails {
   driver_name: string;
   driver_nickname: string;
   is_replacement: string;
-  mas_vendor_code: string;
+  vendor_name: string;
   ref_other_use_code: string;
   work_type: number;
 }
@@ -116,7 +116,7 @@ export interface DriverUpdateContractDetails {
   driver_dept_sap_hire: string;
   driver_dept_sap_work: string;
   mas_driver_uid: string;
-  mas_vendor_code: string;
+  vendor_name: string;
   ref_other_use_code: number;
   is_replacement: string;
   replacement_driver_uid?: string | null;
