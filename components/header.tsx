@@ -74,8 +74,10 @@ export default function Header() {
   const getDriverUserCard = async () => {
     try {
       const response = await driverLicenseUserCard();
+      console.log('driveruserardorg',response);
       if (response) {
         setDriverUser(response.data.driver);
+        return response.data.driver;
       }
     } catch (error) {
       console.log(error);
@@ -105,6 +107,7 @@ export default function Header() {
       const response = await fetchRequestLicStatusDetail(id);
       if (response) {
         setLicRequestDetail(response.data);
+        return response.data;
       }
     } catch (error) {
       console.log(error);
@@ -155,12 +158,16 @@ export default function Header() {
 
   const handleOpenRequestDetailDrivingModal = async () => {
     try {
-      await getDriverUserCard();
-      if (driverUser?.trn_request_annual_driver_uid) {
-        await getStatusLicDetail(driverUser.trn_request_annual_driver_uid);
-        // Now that both requests are complete, open the modal
-        RequestStatusLicDetailModaRef.current?.openModal();
+      const newDriver = await getDriverUserCard();
+      if(newDriver){
+        if (newDriver?.trn_request_annual_driver_uid) {
+          const res = await getStatusLicDetail(newDriver.trn_request_annual_driver_uid);
+          if(res){
+            RequestStatusLicDetailModaRef.current?.openModal();
+          }
+        }
       }
+     
     } catch (error) {
       console.error("Error opening request detail modal:", error);
     }
@@ -421,7 +428,7 @@ export default function Header() {
         driverData={driverUser}
         requestData={licRequestDetail}
         editable={isEditable} 
-        onTrackStatus={() => handleOpenRequestDetailDrivingModal}
+        onTrackStatus={handleOpenRequestDetailDrivingModal}
         onBack={() => {
           RequestDrivingStepTwoModalRef.current?.closeModal();
           RequestDrivingStepOneModalRef.current?.openModal();

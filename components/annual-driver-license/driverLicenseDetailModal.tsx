@@ -2,8 +2,10 @@ import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import DriverLicProgress from "../driverLicProgress";
+import { fetchRequestLicStatusDetail } from "@/services/driver";
+import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 
 interface Props {
   requestData?: DriverLicenseCardType;
@@ -16,9 +18,17 @@ const DriverLicenseDetailModal = forwardRef<
 >(({ requestData, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      if (requestData) {
+        getStatusLicDetail(requestData?.trn_request_annual_driver_uid);
+      }
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
+
+  const [licRequestDetail, setLicRequestDetail] =
+    useState<RequestAnnualDriver>();
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -34,14 +44,14 @@ const DriverLicenseDetailModal = forwardRef<
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      if (!requestData?.driver_license.driver_license_image) {
+      if (!licRequestDetail?.driver_license_img) {
         console.error("No image URL available");
         return;
       }
 
       // For demonstration, we'll use the image URL from the requestData
       // In a real app, you might need to fetch from your API endpoint
-      const imageUrl = requestData.driver_license.driver_license_image;
+      const imageUrl = licRequestDetail.driver_license_img;
 
       const response = await fetch(imageUrl);
       const blob = await response.blob();
@@ -49,7 +59,7 @@ const DriverLicenseDetailModal = forwardRef<
 
       // Generate a filename based on the license number
       const licenseNo =
-        requestData.driver_license.driver_license_no || "driver_license";
+      licRequestDetail?.driver_license_no || "driver_license";
       download(`${licenseNo}.jpg`, url);
 
       // Clean up
@@ -59,6 +69,17 @@ const DriverLicenseDetailModal = forwardRef<
     }
   };
 
+  const getStatusLicDetail = async (id: string) => {
+    try {
+      const response = await fetchRequestLicStatusDetail(id);
+      if (response) {
+        setLicRequestDetail(response.data);
+        return response.data;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <dialog ref={modalRef} className="modal">
       <div
@@ -83,9 +104,9 @@ const DriverLicenseDetailModal = forwardRef<
               keyboard_arrow_left
             </i>{" "}
             <div className="">
-              <p>เลขที่่คำขอ {requestData?.request_annual_driver_no} </p>
+              <p>เลขที่่คำขอ {licRequestDetail?.request_annual_driver_no} </p>
               <span className="text-color-secondary text-base font-normal">
-                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestData?.annual_yyyy}
+                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {licRequestDetail?.annual_yyyy}
               </span>
             </div>
           </div>
@@ -113,13 +134,13 @@ const DriverLicenseDetailModal = forwardRef<
                       <div className="form-plaintext-group">
                         <div className="form-label">
                           {
-                            requestData?.driver_license?.driver_license_type
+                            licRequestDetail?.driver_license_type
                               ?.ref_driver_license_type_name
                           }
                         </div>
                         <div className="form-text">
                           {
-                            requestData?.driver_license?.driver_license_type
+                            licRequestDetail?.driver_license_type
                               ?.ref_driver_license_type_desc
                           }
                         </div>
@@ -146,7 +167,7 @@ const DriverLicenseDetailModal = forwardRef<
                       <div className="form-plaintext-group">
                         <div className="form-label">เลขที่ใบอนุญาต</div>
                         <div className="form-text">
-                          {requestData?.driver_license?.driver_license_no}
+                          {licRequestDetail?.driver_license_no}
                         </div>
                       </div>
                     </div>
@@ -162,8 +183,7 @@ const DriverLicenseDetailModal = forwardRef<
                         <div className="form-text">
                           {
                             convertToBuddhistDateTime(
-                              requestData?.driver_license
-                                ?.driver_license_end_date || ""
+                              licRequestDetail?.driver_license_expire_date || ""
                             ).date
                           }
                         </div>
@@ -178,7 +198,7 @@ const DriverLicenseDetailModal = forwardRef<
                       <div className="w-full relative">
                         <Image
                           src={
-                            requestData?.driver_license.driver_license_image ||
+                            licRequestDetail?.driver_license_img ||
                             "/assets/img/ex_driver_license.png"
                           }
                           className="w-full"
@@ -202,9 +222,9 @@ const DriverLicenseDetailModal = forwardRef<
               </div>
             </div>
           </div>
-          {(requestData?.driver_license?.ref_driver_license_type_code ===
+          {(licRequestDetail?.ref_driver_license_type_code ===
             "2+" ||
-            requestData?.driver_license?.ref_driver_license_type_code ===
+            licRequestDetail?.ref_driver_license_type_code ===
               "3+") && (
             <div className="form-section">
               <div className="form-section-header">
@@ -224,8 +244,7 @@ const DriverLicenseDetailModal = forwardRef<
                           <div className="form-desc">
                             {" "}
                             {
-                              requestData?.driver_certificate
-                                .driver_certificate_name
+                              licRequestDetail?.driver_certificate_name
                             }
                           </div>
                         </div>
@@ -240,8 +259,7 @@ const DriverLicenseDetailModal = forwardRef<
                           <div className="form-desc">
                             {" "}
                             {
-                              requestData?.driver_certificate
-                                .driver_certificate_no
+                              licRequestDetail?.driver_certificate_no
                             }
                           </div>
                         </div>
@@ -258,8 +276,7 @@ const DriverLicenseDetailModal = forwardRef<
                           <div className="form-desc">
                             {" "}
                             {
-                              requestData?.driver_certificate
-                                .driver_certificate_type
+                              licRequestDetail?.driver_certificate_type
                                 .ref_driver_certificate_type_name
                             }
                           </div>
@@ -278,8 +295,7 @@ const DriverLicenseDetailModal = forwardRef<
                             {" "}
                             {
                               convertToBuddhistDateTime(
-                                requestData?.driver_certificate
-                                  .driver_certificate_issue_date
+                                licRequestDetail?.driver_certificate_issue_date
                               ).date
                             }
                           </div>
@@ -298,8 +314,7 @@ const DriverLicenseDetailModal = forwardRef<
                             {" "}
                             {
                               convertToBuddhistDateTime(
-                                requestData?.driver_certificate
-                                  .driver_certificate_issue_date
+                                licRequestDetail?.driver_certificate_expire_date
                               ).date
                             }
                           </div>
@@ -321,7 +336,7 @@ const DriverLicenseDetailModal = forwardRef<
 
             <div className="process-driver">
               <DriverLicProgress
-                progressSteps={requestData?.progress_request_history}
+                progressSteps={licRequestDetail?.progress_request_history}
               />
             </div>
           </div>

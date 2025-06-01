@@ -42,6 +42,7 @@ const EditApproverModal = forwardRef<
   useImperativeHandle(ref, () => ({
     openModal: () => {
       modalRef.current?.showModal();
+      fetchVehicleUserData();
     },
     closeModal: () => modalRef.current?.close(),
   }));
@@ -66,7 +67,7 @@ const EditApproverModal = forwardRef<
     }
   };
 
-  useEffect(() => {
+
     const fetchVehicleUserData = async () => {
       setIsLoading(true);
       try {
@@ -110,8 +111,8 @@ const EditApproverModal = forwardRef<
         setIsLoading(false);
       }
     };
-    fetchVehicleUserData();
-  }, [requestData]);
+  
+
 
   const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;

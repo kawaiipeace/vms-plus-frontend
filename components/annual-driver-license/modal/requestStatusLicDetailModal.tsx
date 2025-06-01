@@ -187,6 +187,7 @@ const RequestStatusLicDetailModal = forwardRef<
                               <div className="progress-step-title">
                                 {progress_name}
                               </div>
+                              {progress_datetime !== "0001-01-01T00:00:00Z" &&
                               <div className="progress-step-text">
                                 {" "}
                                 {convertToBuddhistDateTime(
@@ -197,6 +198,7 @@ const RequestStatusLicDetailModal = forwardRef<
                                     progress_datetime || ""
                                   ).time}{" "}
                               </div>
+                               }
                             </div>
                           </div>
                         );

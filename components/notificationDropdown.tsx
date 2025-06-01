@@ -14,7 +14,7 @@ export default function NotificationDropdown() {
     const loadNotifications = async () => {
       try {
         const response = await fetchNotify();
-        console.log('res',response);
+        console.log("res", response);
         setNotifications(response.data.notifications);
         setUnreadCount(
           response.data.notifications.filter(
@@ -110,7 +110,7 @@ export default function NotificationDropdown() {
           <div className="border-b border-gray-200 px-4 py-3">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-gray-900">
-                Notifications
+                All notifications
               </h3>
               {/* {unreadCount > 0 && (
                 <button
@@ -181,11 +181,15 @@ export default function NotificationDropdown() {
                         <p className="text-xs text-gray-400">
                           {notification.duration}
                         </p>
-                        {!notification.is_read && (
-                          <span className="inline-flex items-center rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">
-                            New
-                          </span>
-                        )}
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            notification.is_read
+                              ? "bg-gray-200 text-gray-600"
+                              : "bg-green-100 text-green-800"
+                          }`}
+                        >
+                          {notification.is_read ? "Read" : "Unread"}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -193,7 +197,6 @@ export default function NotificationDropdown() {
               ))
             )}
           </div>
-       
         </div>
       )}
     </div>
