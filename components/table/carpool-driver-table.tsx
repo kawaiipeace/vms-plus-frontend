@@ -102,7 +102,7 @@ export default function CarpoolDriverTable({
             });
           }
         } catch (error: any) {
-          console.log(error);
+          console.error(error);
           setToast({
             title: "Error",
             desc: (
@@ -146,7 +146,7 @@ export default function CarpoolDriverTable({
         setRefetch(true);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -495,13 +495,13 @@ export default function CarpoolDriverTable({
           "คุณต้องการนำพนักงานขับรถ " +
           defaultData.find((item) =>
             id
-              ? item.mas_carpool_approver_uid === deleteId
+              ? item.mas_carpool_driver_uid === deleteId
               : item.mas_driver_uid === deleteId
           )?.driver_name +
           "(" +
           defaultData.find((item) =>
             id
-              ? item.mas_carpool_approver_uid === deleteId
+              ? item.mas_carpool_driver_uid === deleteId
               : item.mas_driver_uid === deleteId
           )?.driver_nickname +
           ")" +
