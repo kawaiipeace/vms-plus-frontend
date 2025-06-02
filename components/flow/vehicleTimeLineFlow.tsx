@@ -122,7 +122,7 @@ export default function VehicleTimeLine() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center">
                 <SearchInput
                     defaultValue={params.search}
-                    placeholder="เลขทะเบียน, ยี่ห้อ"
+                    placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
                     onSearch={(value) => debouncedSetParams(value)}
                 />
 
