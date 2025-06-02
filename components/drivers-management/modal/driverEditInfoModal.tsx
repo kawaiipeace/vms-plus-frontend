@@ -9,7 +9,6 @@ import {
   driverReplacementLists,
   driverUpdateContractDetails,
   listDriverDepartment,
-  listDriverVendors,
   listUseByOtherRadio,
 } from "@/services/driversManagement";
 
@@ -42,7 +41,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     const [driverDepartmentList, setDriverDepartmentList] = useState<
       { value: string; label: string; labelDetail: string }[]
     >([]);
-    const [driverVendorsList, setDriverVendorsList] = useState<{ value: string; label: string }[]>([]);
+    // const [driverVendorsList, setDriverVendorsList] = useState<{ value: string; label: string }[]>([]);
     const [disableStartDate, setDisableStartDate] = useState<string>();
     const [formData, setFormData] = useState({
       driverContractStartDate: "",
@@ -115,7 +114,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driverContractNo: driverInfo.contract_no || "",
           driverEmployingAgency: initialEmployingAgency?.value || "",
           driverDepartment: initialDepartment?.value || "",
-          driverContractorCompany: driverInfo.mas_vendor_code || "",
+          driverContractorCompany: driverInfo.vender_name || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
           driverOperationType: driverInfo.is_replacement || "0",
           driverReplacementEmployee: "",
@@ -162,26 +161,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         }
       };
 
-      const fetchDriverVendors = async () => {
-        try {
-          const response = await listDriverVendors();
-          const driverDepartmentData = response.data.map(
-            (item: { mas_vendor_code: string; mas_vendor_name: string }) => {
-              return {
-                value: item.mas_vendor_code,
-                label: item.mas_vendor_name,
-              };
-            }
-          );
-          // console.log(driverDepartmentData);
-          setDriverVendorsList(driverDepartmentData);
-        } catch (error) {
-          console.error("Error fetching driver department data:", error);
-        }
-      };
-
       fetchDriverDepartment();
-      fetchDriverVendors();
       fetchUseByOtherRadio();
     }, []);
 
@@ -220,7 +200,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driver_dept_sap_hire: formData.driverEmployingAgency,
           driver_dept_sap_work: formData.driverDepartment,
           mas_driver_uid: driverInfo?.mas_driver_uid || "",
-          mas_vendor_code: formData.driverContractorCompany,
+          vendor_name: formData.driverContractorCompany,
           ref_other_use_code: formData.driverUseByOther,
           is_replacement: formData.driverOperationType,
           replacement_driver_uid: formData.driverReplacementEmployee != "" ? formData.driverReplacementEmployee : null,
@@ -357,7 +337,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           <div className="w-full">
                             <div className="form-group">
                               <label className="label form-label">บริษัทผู้รับจ้าง</label>
-                              <CustomSelect
+                              {/* <CustomSelect
                                 w="w-full"
                                 options={driverVendorsList}
                                 value={
@@ -368,6 +348,14 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 onChange={(selected) => {
                                   setFormData((prev) => ({ ...prev, driverContractorCompany: selected.value }));
                                 }}
+                              /> */}
+                              <input
+                                type="text"
+                                name="driverContractorCompany"
+                                className="form-control"
+                                placeholder="บริษัทผู้รับจ้าง"
+                                value={formData.driverContractorCompany}
+                                onChange={handleInputChange}
                               />
                               {formErrors.driverContractorCompany && (
                                 <FormHelper text={String(formErrors.driverContractorCompany)} />

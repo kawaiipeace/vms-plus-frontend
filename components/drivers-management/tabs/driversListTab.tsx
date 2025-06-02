@@ -17,6 +17,7 @@ import { DriverInfoType } from "@/app/types/drivers-management-type";
 import { RequestListType } from "@/app/types/request-list-type";
 import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
 import DriverDeleteModal from "../modal/driverDeleteModal";
+import VehicleNoData from "@/components/vehicle/noData";
 
 interface PaginationType {
   limit: number;
@@ -246,6 +247,22 @@ const DriversListTab = () => {
     setSelectedRow(row);
   };
 
+  const handleClearAllFilters = () => {
+    setParams({
+      search: "",
+      driver_dept_sap_work: "",
+      work_type: "",
+      ref_driver_status_code: "",
+      is_active: "",
+      driver_license_end_date: "",
+      approved_job_driver_end_date: "",
+      order_by: "",
+      order_dir: "",
+      page: 1,
+      limit: pagination.limit,
+    });
+  };
+
   return (
     <>
       <div className="page-section-header border-0 mt-5">
@@ -333,7 +350,14 @@ const DriversListTab = () => {
         </>
       ) : (
         <>
-          <ZeroRecord
+          <VehicleNoData
+            imgSrc={"/assets/img/empty/search_not_found.png"}
+            title={"ไม่พบข้อมูล"}
+            desc={"เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง"}
+            button={"ล้างตัวกรอง"}
+            useModal={handleClearAllFilters}
+          />
+          {/* <ZeroRecord
             imgSrc="/assets/img/empty/add_driver.svg"
             title="เพิ่มพนักงานขับรถ"
             desc={<>เริ่มต้นด้วยการสร้างข้อมูลพนักงานขับรถคนแรก</>}
@@ -341,7 +365,7 @@ const DriversListTab = () => {
             displayBtn={true}
             icon="add"
             useModal={() => createDriverManagementModalRef.current?.openModal()}
-          />
+          /> */}
         </>
       )}
 
