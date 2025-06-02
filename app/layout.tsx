@@ -14,10 +14,12 @@ import "../public/assets/css/ibmplexsansthailooped.css";
 import "../public/assets/css/ibmthaifonts.css";
 import "../public/assets/css/material-symbols.css";
 import "./globals.css";
+import RootLayoutClient from "./layout-client";
 
 export const metadata: Metadata = {
   title: "VMS Plus",
   description: "VMS Plus",
+  manifest: '/web.manifest',
 };
 
 export default function RootLayout({
@@ -47,20 +49,21 @@ export default function RootLayout({
       </Head>
 
       <body className="light-mode">
-        <ProfileProvider>
-          <SidebarProvider>
-            <RequestDetailProvider>
-              <FormProvider>
-                <ToastProvider>
-                  <CarpoolProvider>
-                    {" "}
-                    <Suspense>{children}</Suspense>
-                  </CarpoolProvider>
-                </ToastProvider>
-              </FormProvider>
-            </RequestDetailProvider>
-          </SidebarProvider>
-        </ProfileProvider>
+        <RootLayoutClient>
+          <ProfileProvider>
+            <SidebarProvider>
+              <RequestDetailProvider>
+                <FormProvider>
+                  <ToastProvider>
+                    <CarpoolProvider>
+                      <Suspense>{children}</Suspense>
+                    </CarpoolProvider>
+                  </ToastProvider>
+                </FormProvider>
+              </RequestDetailProvider>
+            </SidebarProvider>
+          </ProfileProvider>
+        </RootLayoutClient>
       </body>
     </html>
   );
