@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import NumberInput from "@/components/numberInput";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -12,6 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import RadioButton from "../radioButton";
 import FormHelper from "../formHelper";
+import { convertToThaiDate } from "@/utils/driver-management";
 
 interface Props {
   requestData?: RequestDetailType;
@@ -58,8 +60,8 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       mode: "onChange",
       resolver: yupResolver(schema),
       defaultValues: {
-        startDate: formData.startDate || "",
-        endDate: formData.endDate || "",
+        startDate: convertToThaiDate(formData.startDate || ""),
+        endDate: convertToThaiDate(formData.endDate || ""),
         timeStart: formData.timeStart || "",
         timeEnd: formData.timeEnd || "",
         workPlace: formData.workPlace || "",
@@ -71,8 +73,8 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
     useEffect(() => {
       if (requestData) {
         reset({
-          startDate: convertToBuddhistDateTime(requestData?.start_datetime || "").date || "",
-          endDate: convertToBuddhistDateTime(requestData?.end_datetime || "").date || "",
+          startDate: convertToThaiDate(requestData?.start_datetime || "") || "",
+          endDate: convertToThaiDate(requestData?.end_datetime || "") || "",
           timeStart: convertToBuddhistDateTime(requestData?.start_datetime || "").time || "",
           timeEnd: convertToBuddhistDateTime(requestData?.end_datetime || "").time || "",
           workPlace: requestData?.work_place || "",
@@ -113,10 +115,10 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       } else {
         // fallback to form state update only
         const updatedata = {
-          startDate: data.startDate,
-          endDate: data.endDate,
-          timeStart: data.timeStart,
-          timeEnd: data.timeEnd,
+          // startDate: data.startDate,
+          // endDate: data.endDate,
+          // timeStart: data.timeStart,
+          // timeEnd: data.timeEnd,
           workPlace: data.workPlace,
           purpose: data.purpose,
           remark: data.remark,

@@ -16,6 +16,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import { updateVehicleType } from "@/services/bookingUser";
 import Image from "next/image";
 import useSwipeDown from "@/utils/swipeDown";
+import { useProfile } from "@/contexts/profileContext";
 
 const schema = yup.object().shape({
   requestedVehicleTypeName: yup.string(),
@@ -41,6 +42,7 @@ const VehiclePickModel = forwardRef<
   VehiclePickModelProps
 >(({ process, onSelect, onUpdate, requestData, selectType }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const { profile } = useProfile();
   const hasReset = useRef(false);
 
   useImperativeHandle(ref, () => ({
@@ -52,7 +54,7 @@ const VehiclePickModel = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
-  const { updateFormData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
   const [selectedCarTypeId, setSelectedCarTypeId] = useState("");
   const [selectedCarTypeName, setSelectedCarTypeName] = useState("");
   const [vehicleCatData, setVehicleCatData] = useState<VehicleCat[]>([]);
@@ -67,20 +69,22 @@ const VehiclePickModel = forwardRef<
     return result;
   }, [vehicleCatData]);
 
+  const vehicleParams = {
+    emp_id: profile?.emp_id,
+    start_date: `${formData.startDate} ${formData.timeStart}`,
+    end_date: `${formData.endDate} ${formData.timeEnd}`,
+  };
 
-    const fetchVehicleCarTypesData = async () => {
-      try {
-        const response = await fetchVehicleCarTypes("");
-        if (response.status === 200) {
-          setVehicleCatData(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching vehicle types:", error);
+  const fetchVehicleCarTypesData = async () => {
+    try {
+      const response = await fetchVehicleCarTypes(vehicleParams);
+      if (response.status === 200) {
+        setVehicleCatData(response.data);
       }
-    };
-
-  
-
+    } catch (error) {
+      console.error("Error fetching vehicle types:", error);
+    }
+  };
 
   const { setValue } = useForm({
     mode: "onChange",
@@ -135,9 +139,7 @@ const VehiclePickModel = forwardRef<
                     </div>
                     <div className="card-content">
                       <div className="card-content-top">
-                        <div className="card-title">
-                          {selectType}
-                        </div>
+                        <div className="card-title">{selectType}</div>
                         <div className="supporting-text-group">
                           <div className="supporting-text">สายงานดิจิทัล</div>
                         </div>
@@ -157,9 +159,7 @@ const VehiclePickModel = forwardRef<
                     </div>
                     <div className="card-content">
                       <div className="card-content-top">
-                        <div className="card-title">
-                        {selectType}
-                        </div>
+                        <div className="card-title">{selectType}</div>
                         <div className="supporting-text-group">
                           <div className="supporting-text">สายงานดิจิทัล</div>
                         </div>
@@ -198,9 +198,9 @@ const VehiclePickModel = forwardRef<
 
                 <div className="px-0">
                   <div className="grid grid-cols-3 gap-4">
-                    {groupedVehicles[currentSlide]?.map((vehicle) => (
+                    {groupedVehicles[currentSlide]?.map((vehicle, index) => (
                       <div
-                        key={vehicle.ref_vehicle_type_code}
+                        key={index}
                         className="h-full"
                       >
                         <CarTypeCard
@@ -213,7 +213,7 @@ const VehiclePickModel = forwardRef<
                           name="carType"
                           selectedValue={selectedCarTypeName}
                           setSelectedValue={() => {
-                            setSelectedCarTypeId(vehicle.ref_vehicle_type_code);
+                            setSelectedCarTypeId(vehicle.ref_vehicle_type_name);
                             setSelectedCarTypeName(
                               vehicle.ref_vehicle_type_name
                             );

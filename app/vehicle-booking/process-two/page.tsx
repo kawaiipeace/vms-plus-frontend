@@ -191,6 +191,7 @@ export default function ProcessTwo() {
             ...(response.data.vehicles || []),
           ];
           setVehicleCards(allCards);
+          console.log('vehicles',allCards);
           setPaginationData(response.data.pagination);
         }
       } catch (error) {
@@ -412,6 +413,11 @@ export default function ProcessTwo() {
                                     ? "ระบบเลือกยานพาหนะให้อัตโนมัติ"
                                     : "ผู้ดูแลยานพาหนะเลือกให้"
                                 )
+                              }
+                              isSelected={
+                                selectedVehicle === carpool.mas_carpool_uid ||
+                                formData.vehicleSelect ===
+                                  carpool.mas_carpool_uid
                               }
                             />
                           );

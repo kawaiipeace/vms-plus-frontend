@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation"; // <-- Import this if using Next.js 13+
 import FirstApproveFlow from "@/components/flow/firstApproveFlow";
-import { fetchFinalApproverMenus, fetchMenus } from "@/services/bookingApprover";
+import { fetchConfirmerMenus, fetchFinalApproverMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
 import DriverLicApproveFlow from "../flow/driverLicApproveFlow";
+import { fetchMenus } from "@/services/bookingAdmin";
 
 interface Props {
   licType?: string;
@@ -24,10 +25,11 @@ export default function ApproveVehicleTabs({ licType }: Props) {
       try {
         let response;
         if(licType === "ตรวจสอบ"){
-          response = await fetchMenus();
-        }else{
+          response = await fetchConfirmerMenus();
+        }else if(licType === "อนุมัติ"){
           response = await fetchFinalApproverMenus();
-
+        }else{
+          response = await fetchConfirmerMenus();
         }
 
         const result = response.data;

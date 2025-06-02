@@ -1,4 +1,3 @@
-"use client";
 import { ApproverUserType } from "@/app/types/approve-user-type";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
@@ -197,6 +196,7 @@ export default function RequestForm() {
     }
   }, [driverOptions, selectedVehicleUserOption]);
 
+
   useEffect(() => {
     if (!formData.timeStart) {
       setValue("timeStart", "08:00");
@@ -239,7 +239,6 @@ export default function RequestForm() {
         if (response.status === 200) {
           const data = response.data[0];
           setApproverData(data);
-          console.log('approver',data);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -273,15 +272,15 @@ export default function RequestForm() {
     setSelectedCostTypeOption(
       selectedOption as { value: string; label: string }
     );
-    setValue("refCostTypeCode", selectedOption.value);
-    setSelectedCostCenterOption(undefined); // Clear the selected cost center
-    setValue("costCenter", ""); // Clear the cost center value
+    setValue("refCostTypeCode", selectedOption.value); // <-- add this line
+    setValue("costCenter", "");
 
     if (selectedOption.value === "1") {
       const data = costTypeDatas.find(
         (cost: { ref_cost_type_code: string }) =>
           cost.ref_cost_type_code === selectedOption.value
       );
+
       if (data) {
         setValue("costCenter", data.cost_center);
       }
@@ -345,7 +344,6 @@ export default function RequestForm() {
       userImageUrl: formData.userImageUrl || "",
       costCenter: formData.costCenter || "",
       pmOrderNo: formData.pmOrderNo || "",
-      wbsNumber: formData.wbsNumber || "",
       networkNo: formData.networkNo || "",
       activityNo: formData.activityNo || "",
     },
@@ -359,17 +357,18 @@ export default function RequestForm() {
   const [minTime, setMinTime] = useState("8:00");
   // ADD: Require cost center for type 2
   const isCostCenterRequired =
-    selectedCostTypeOption?.value === "2" && !watch("costCenter");
+    selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
 
   useEffect(() => {
-    if (formData.costCenter && formData.refCostTypeCode === "2") {
-      const selectedOption = {
-        value: formData.costCenter,
-        label: formData.costCenter,
-      };
+    if (formData.numberOfPassenger) {
+      setPassengerCount(formData.numberOfPassenger);
+    }
+    if (formData.tripType) {
+      setSelectedTripType(String(formData.tripType));
+    }
 
-      setSelectedCostCenterOption(selectedOption);
-      setValue("costCenter", selectedOption.value);
+    if (formData.attachmentFile) {
+      setFileName(shortenFilename(String(formData?.attachmentFile)));
     }
 
     const data = costTypeDatas.find(
@@ -382,10 +381,7 @@ export default function RequestForm() {
         value: data.ref_cost_type_code,
         label: data.ref_cost_type_name,
       });
-      // Only set costCenter automatically for type "1"
-      if (data.ref_cost_type_code === "1") {
-        setValue("costCenter", data.cost_center);
-      }
+      setValue("costCenter", data.cost_center);
     }
   }, [formData, costTypeDatas]);
 
@@ -444,9 +440,10 @@ export default function RequestForm() {
       setLoadingDrivers(false);
     }
   };
+ 
 
   const handleCostCenterSearch = async (search: string) => {
-    if (search.trim().length > 3) {
+    if (search.trim().length < 3) {
       setLoadingCostCenter(true);
       try {
         const response = await fetchCostCenter(search);
@@ -746,7 +743,7 @@ export default function RequestForm() {
                         }
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
-                        minTime={isSameDay ? minTime : undefined}
+                        minTime={ isSameDay ? minTime : undefined}
                       />
                     </div>
                   </div>
@@ -1004,9 +1001,6 @@ export default function RequestForm() {
                         loading={loadingCostCenter}
                         enableSearchOnApi={true}
                       />
-                      {isCostCenterRequired && (
-                        <FormHelper text="กรุณาระบุศูนย์ต้นทุน" />
-                      )}
                     </div>
                   </div>
                 )}

@@ -104,13 +104,8 @@ export default function RequestDetailForm({
             </div>
 
             <JourneyDetailCard
-              startDate={
-                convertToBuddhistDateTime(requestData?.start_datetime || "")
-                  .date
-              }
-              endDate={
-                convertToBuddhistDateTime(requestData?.end_datetime || "").date
-              }
+              startDate={requestData?.start_datetime}
+              endDate={requestData?.end_datetime}
               timeStart={
                 convertToBuddhistDateTime(requestData?.start_datetime || "")
                   .time
@@ -159,14 +154,22 @@ export default function RequestDetailForm({
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
               approverInfo={{
-                confirmed_request_desk_phone: requestData?.confirmed_request_desk_phone || "",
-                confirmed_request_dept_name_full: requestData?.confirmed_request_dept_name_full || "",
-                confirmed_request_dept_name_short: requestData?.confirmed_request_dept_name_short || "",
-                confirmed_request_dept_sap: requestData?.confirmed_request_dept_sap || "",
-                confirmed_request_emp_id: requestData?.confirmed_request_emp_id || "",
-                confirmed_request_emp_name: requestData?.confirmed_request_emp_name || "",
-                confirmed_request_mobile_phone: requestData?.confirmed_request_mobile_phone || "",
-                confirmed_request_position: requestData?.confirmed_request_position || "",
+                confirmed_request_desk_phone:
+                  requestData?.confirmed_request_desk_phone || "",
+                confirmed_request_dept_name_full:
+                  requestData?.confirmed_request_dept_name_full || "",
+                confirmed_request_dept_name_short:
+                  requestData?.confirmed_request_dept_name_short || "",
+                confirmed_request_dept_sap:
+                  requestData?.confirmed_request_dept_sap || "",
+                confirmed_request_emp_id:
+                  requestData?.confirmed_request_emp_id || "",
+                confirmed_request_emp_name:
+                  requestData?.confirmed_request_emp_name || "",
+                confirmed_request_mobile_phone:
+                  requestData?.confirmed_request_mobile_phone || "",
+                confirmed_request_position:
+                  requestData?.confirmed_request_position || "",
               }}
             />
 
@@ -264,12 +267,9 @@ export default function RequestDetailForm({
                 )}
 
                 {requestData?.vehicle &&
-                  !requestData?.is_admin_choose_vehicle &&
-                  requestData?.is_admin_choose_vehicle === "0" && (
-                    <CarDetailCard
-                      vehicle={requestData?.vehicle}
-                      seeDetail={true}
-                    />
+                  (!requestData?.is_admin_choose_vehicle ||
+                    requestData?.is_admin_choose_vehicle === "0") && (
+                    <CarDetailCard vehicle={requestData?.vehicle} seeDetail={true} />
                   )}
 
                 {requestData?.is_admin_choose_driver &&
@@ -281,6 +281,10 @@ export default function RequestDetailForm({
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5">
+                    <div className="form-section-header">
+                      <div className="form-section-header-title">ผู้ขับขี่</div>
+                    </div>
+
                     <DriverPeaInfoCard
                       driver_emp_id={requestData?.driver_emp_id}
                       driver_emp_name={requestData?.driver_emp_name}
@@ -298,10 +302,17 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
+                      <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
+                        </div>
+                      </div>
+
                       <DriverSmallInfoCard
                         driverDetail={requestData?.driver}
                         id={requestData?.driver.driver_id}
                         seeDetail={true}
+                        noBack={true}
                       />
                     </div>
                   )

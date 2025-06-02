@@ -326,7 +326,7 @@ export default function ProcessThree() {
 
   const handleDriverSearch = async (search: string) => {
     // Debounce handled by parent component or elsewhere
-    if (search.trim().length >= 3) {
+    if (search.trim().length < 3) {
       setLoadingDrivers(true);
       try {
         const response = await fetchUserDrivers(search);

@@ -7,11 +7,13 @@ export default function AutoCarCard({
   title,
   desc,
   onSelect,
+  isSelected = false, // Add this prop
 }: {
   imgSrc: string;
   title: string;
   desc: string;
   onSelect: (vehicleTitle: string) => void; // Define the type of onSelect
+  isSelected?: boolean; // Add this prop type
 }) {
   const vehiclePickModalRef = useRef<{
     openModal: () => void;
@@ -20,7 +22,14 @@ export default function AutoCarCard({
 console.log('tttttitle',title);
 
   return (
-    <div className="card">
+    <div className={`card relative ${isSelected ? "!border-2 !border-brand-900" : ""}`}>
+       {isSelected && (
+        <div className="absolute top-2 right-2">
+        <span className="badge badge-pill-outline badge-active bg-brand-100 whitespace-nowrap !rounded-md text-brand-800">
+        <i className="material-symbols-outlined">check</i>
+         เลือกอยู่</span> 
+       </div>
+      )}
       <div className="card-body">
         <div className="card-img-top h-[27vh]">
           <Image

@@ -63,7 +63,7 @@ export const firstApproverApproveRequest = async (data: ApproveRequestType) => {
   }
 }
 
-export const fetchMenus = async () => {
+export const fetchConfirmerMenus = async () => {
   try {
     const response = await axiosInstance.get('booking-confirmer/menu-requests');
     return response;

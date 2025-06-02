@@ -32,8 +32,8 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId
           <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
             <Image
               src={(vehicle?.vehicle_imgs && vehicle?.vehicle_imgs[0]) || "/assets/img/sample-car.jpeg"}
-              width={100}
-              height={100}
+              width={400}
+              height={200}
               className="object-cover w-full h-full"
               alt="vehicle image"
             />

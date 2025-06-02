@@ -14,6 +14,7 @@ interface DriverSmallInfoCardProps {
   showPhone?: boolean;
   selectDriver?: boolean;
   reqId?: string;
+  noBack?: boolean;
 }
 
 export default function DriverSmallInfoCard({
@@ -24,6 +25,7 @@ export default function DriverSmallInfoCard({
   id,
   selectDriver,
   reqId,
+  noBack,
 }: DriverSmallInfoCardProps) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
@@ -86,9 +88,16 @@ export default function DriverSmallInfoCard({
           </div>
           <div className="card-content w-[70%]">
             <div className="card-content-top">
-              <div className="card-title">{driver.driver_name} {driver?.driver_nickname ? "("+driver?.driver_nickname+")" : ""}</div>
+              <div className="card-title">
+                {driver.driver_name}{" "}
+                {driver?.driver_nickname
+                  ? "(" + driver?.driver_nickname + ")"
+                  : ""}
+              </div>
               <div className="supporting-text-group">
-                <div className="supporting-text">{driver.vendor_name || "-"}</div>
+                <div className="supporting-text">
+                  {driver.vendor_name || "-"}
+                </div>
               </div>
             </div>
 
@@ -96,13 +105,17 @@ export default function DriverSmallInfoCard({
               {showPhone ? (
                 <div className="card-item">
                   <i className="material-symbols-outlined">smartphone</i>
-                  <span className="card-item-text">{driver.driver_contact_number}</span>
+                  <span className="card-item-text">
+                    {driver.driver_contact_number}
+                  </span>
                 </div>
               ) : (
                 <>
                   <div className="card-item">
                     <i className="material-symbols-outlined">star</i>
-                    <span className="card-item-text">{driver.driver_average_satisfaction_score}</span>
+                    <span className="card-item-text">
+                      {driver.driver_average_satisfaction_score}
+                    </span>
                   </div>
                   <div className="card-item">
                     <i className="material-symbols-outlined">person</i>
@@ -142,7 +155,9 @@ export default function DriverSmallInfoCard({
             <hr />
             <div className="form-section">
               <div className="form-section-header">
-                <div className="form-section-header-title">การนัดหมายพนักงานขับรถ</div>
+                <div className="form-section-header-title">
+                  การนัดหมายพนักงานขับรถ
+                </div>
               </div>
 
               <div className="form-card">
@@ -160,7 +175,9 @@ export default function DriverSmallInfoCard({
 
                     <div className="col-span-12 md:col-span-12">
                       <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">calendar_month</i>
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่และเวลา</div>
                           <div className="form-text">01/01/2567</div>
@@ -175,14 +192,28 @@ export default function DriverSmallInfoCard({
         )}
       </div>
 
-      <AdminDriverPickModal ref={adminDriverPickModalRef} reqId={reqId} onClickDetail={seeDriverDetail} />
-
-      <DriverInfoModal
-        ref={driverInfoModalRef}
-        id={driverDetail?.mas_driver_uid}
-        pickable={true}
-        onBack={() => adminDriverPickModalRef.current?.openModal()}
+      <AdminDriverPickModal
+        ref={adminDriverPickModalRef}
+        reqId={reqId}
+        onClickDetail={seeDriverDetail}
       />
+
+      {noBack && (
+        <DriverInfoModal
+          ref={driverInfoModalRef}
+          id={driverDetail?.mas_driver_uid}
+          pickable={false}
+        />
+      )}
+
+      {!noBack && (
+        <DriverInfoModal
+          ref={driverInfoModalRef}
+          id={driverDetail?.mas_driver_uid}
+          pickable={true}
+          onBack={() => adminDriverPickModalRef.current?.openModal()}
+        />
+      )}
 
       {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
     </div>

@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import {
   AppointmentDriverCard,
@@ -108,7 +109,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-              {(editable && requestData?.ref_request_status_code !== "50") && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => vehicleUserModalRef.current?.openModal()}
@@ -129,7 +130,7 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-              {(editable && requestData?.ref_request_status_code !== "50")  && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => journeyDetailModalRef.current?.openModal()}
@@ -140,13 +141,8 @@ export default function RequestDetailForm({
             </div>
 
             <JourneyDetailCard
-              startDate={
-                convertToBuddhistDateTime(requestData?.start_datetime || "")
-                  .date
-              }
-              endDate={
-                convertToBuddhistDateTime(requestData?.end_datetime || "").date
-              }
+              startDate={requestData?.start_datetime}
+              endDate={requestData?.end_datetime}
               timeStart={
                 convertToBuddhistDateTime(requestData?.start_datetime || "")
                   .time
@@ -167,7 +163,7 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
-              {(editable && requestData?.ref_request_status_code !== "50")  && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() =>
@@ -188,7 +184,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
-              {(editable && requestData?.ref_request_status_code !== "50")  && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                   onClick={() => referenceModalRef.current?.openModal()}
@@ -207,7 +203,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
-              {(editable && requestData?.ref_request_status_code !== "50")  && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                   data-toggle="modal"
@@ -219,14 +215,14 @@ export default function RequestDetailForm({
               )}
             </div>
             {requestData?.ref_cost_type_code && (
-               <DisburstmentCard
-               refCostTypeCode={requestData?.ref_cost_type_code}
-               costCenter={requestData?.cost_center}
-               activityNo={requestData?.activity_no}
-               wbsNo={requestData?.wbs_number}
-               networkNo={requestData?.network_no}
-               pmOrderNo={requestData?.pm_order_no}
-             />
+              <DisburstmentCard
+                refCostTypeCode={requestData?.ref_cost_type_code}
+                costCenter={requestData?.cost_center}
+                activityNo={requestData?.activity_no}
+                wbsNo={requestData?.wbs_number}
+                networkNo={requestData?.network_no}
+                pmOrderNo={requestData?.pm_order_no}
+              />
             )}
           </div>
         </div>
@@ -236,14 +232,22 @@ export default function RequestDetailForm({
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
               approverInfo={{
-                confirmed_request_desk_phone: requestData?.confirmed_request_desk_phone || "",
-                confirmed_request_dept_name_full: requestData?.confirmed_request_dept_name_full || "",
-                confirmed_request_dept_name_short: requestData?.confirmed_request_dept_name_short || "",
-                confirmed_request_dept_sap: requestData?.confirmed_request_dept_sap || "",
-                confirmed_request_emp_id: requestData?.confirmed_request_emp_id || "",
-                confirmed_request_emp_name: requestData?.confirmed_request_emp_name || "",
-                confirmed_request_mobile_phone: requestData?.confirmed_request_mobile_phone || "",
-                confirmed_request_position: requestData?.confirmed_request_position || "",
+                confirmed_request_desk_phone:
+                  requestData?.confirmed_request_desk_phone || "",
+                confirmed_request_dept_name_full:
+                  requestData?.confirmed_request_dept_name_full || "",
+                confirmed_request_dept_name_short:
+                  requestData?.confirmed_request_dept_name_short || "",
+                confirmed_request_dept_sap:
+                  requestData?.confirmed_request_dept_sap || "",
+                  confirmed_request_emp_id:
+                  requestData?.confirmed_request_emp_id || "",
+                confirmed_request_emp_name:
+                  requestData?.confirmed_request_emp_name || "",
+                confirmed_request_mobile_phone:
+                  requestData?.confirmed_request_mobile_phone || "",
+                confirmed_request_position:
+                  requestData?.confirmed_request_position || "",
               }}
             />
 
@@ -277,16 +281,17 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {(editable && requestData?.ref_request_status_code !== "50")  && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
+                          {editable &&
+                            requestData?.ref_request_status_code !== "50" && (
+                              <button
+                                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                                onClick={() =>
+                                  vehiclePickModalRef.current?.openModal()
+                                }
+                              >
+                                เลือกประเภทยานพาหนะ
+                              </button>
+                            )}
                         </div>
 
                         <div className="card-item-group d-flex">
@@ -330,16 +335,17 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {(editable && requestData?.ref_request_status_code !== "50")  && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
+                          {editable &&
+                            requestData?.ref_request_status_code !== "50" && (
+                              <button
+                                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                                onClick={() =>
+                                  vehiclePickModalRef.current?.openModal()
+                                }
+                              >
+                                เลือกประเภทยานพาหนะ
+                              </button>
+                            )}
                         </div>
 
                         <div className="card-item-group d-flex">

@@ -1,3 +1,5 @@
+import { convertToThaiDate } from "@/utils/driver-management";
+
 interface JourneyDetailCardProps {
   displayOn?: string;
   startDate?: string;
@@ -33,7 +35,7 @@ export default function JourneyDetailCard({
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่ / เวลาเดินทาง</div>
                 <div className="form-text">
-                  {startDate} {timeStart} - {endDate} {timeEnd}
+                  {convertToThaiDate(startDate)} {timeStart} - {convertToThaiDate(endDate)} {timeEnd}
                 </div>
               </div>
             </div>
@@ -70,7 +72,7 @@ export default function JourneyDetailCard({
               <i className="material-symbols-outlined">travel_luggage_and_bags</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ประเภท</div>
-                <div className="form-text">{tripType ? (tripType === 0 ? "ไป-กลับ" : "ค้างแรม") : ""}</div>
+                <div className="form-text">{tripType ? (Number(tripType) === 0 ? "ไป-กลับ" : "ค้างแรม") : ""}</div>
               </div>
             </div>
           </div>

@@ -26,6 +26,7 @@ export default function ApproveProgress({ approverInfo, progressSteps }: Props) 
     progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
   const [isApproverOpen, setIsApproverOpen] = useState(false);
   useEffect(() => {
+    console.log('approveinfo',approverInfo);
     if (progressSteps) {
       const currentStep = progressSteps?.find(
         (step) => step.progress_icon === "1" || step.progress_icon === "2"
@@ -150,6 +151,7 @@ export default function ApproveProgress({ approverInfo, progressSteps }: Props) 
               <div className="form-section-header-title hidden md:block">
                 ผู้อนุมัติต้นสังกัด
               </div>
+         
               <div className="block md:hidden w-full">
                 <button
                   className="flex w-full p-0 h-auto w-100"
@@ -165,7 +167,54 @@ export default function ApproveProgress({ approverInfo, progressSteps }: Props) 
                 </button>
               </div>
             </div>
+            {approverInfo && (
+          <div className="form-section mt-4 md:block hidden">
 
+            <div className="form-card">
+              <div className="form-card-body form-card-inline">
+                <div className="form-group form-plaintext form-users">
+                  <div className="form-plaintext-group align-self-center">
+                    <div className="form-label">
+                      {approverInfo?.confirmed_request_emp_name}
+                    </div>
+                    <div className="supporting-text-group">
+                      <div className="supporting-text">
+                        {approverInfo?.confirmed_request_dept_name_short}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="form-card-right align-self-center">
+                  <div className="flex gap-3 flex-wrap">
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">smartphone</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-text text-nowrap">
+                            {approverInfo?.confirmed_request_mobile_phone ||
+                              "-"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">call</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-text text-nowrap">
+                            {approverInfo?.confirmed_request_desk_phone ||
+                              "-"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
             <div
               className={`w-full form-card md:block transition-all duration-500 ease-in-out overflow-hidden ${
                 isApproverOpen
@@ -220,6 +269,7 @@ export default function ApproveProgress({ approverInfo, progressSteps }: Props) 
           </div>
         )}
       </div>
+    
     </div>
   );
 }
