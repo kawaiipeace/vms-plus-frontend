@@ -134,6 +134,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
   }
 
   const handleResetFilters = () => {
+    setDriverDepartmentOptions({ value: "", label: "ทั้งหมด" });
     setSelectedStatuses([]);
     setSelectedDriverStatus([]);
     setSelectedWorkType([]);
