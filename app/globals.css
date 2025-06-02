@@ -19,6 +19,11 @@
   }
 }
 
+img {
+  image-rendering: -webkit-optimize-contrast; /* Chrome */
+  image-rendering: crisp-edges; /* Standard */
+}
+
 
 .avatar {
   overflow: hidden;

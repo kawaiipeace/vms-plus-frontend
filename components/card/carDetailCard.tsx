@@ -46,12 +46,12 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId
               <div className="card-subtitle">{vehicle?.vehicle_license_plate} {vehicle?.vehicle_license_plate_province_full}</div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{vehicle?.CarType}</div>
-                <div className="supporting-text">{vehicle?.vehicle_owner_dept_sap}</div>
+                <div className="supporting-text">{vehicle?.vehicle_department?.vehicle_owner_dept_short}</div>
               </div>
             </div>
 
             <div className="card-item-group grid">
-              {vehicle?.is_has_fleet_card === 1 && (
+              {vehicle?.vehicle_department?.fleet_card_no && (
                 <div className="card-item col-span-2">
                   <i className="material-symbols-outlined">credit_card</i>
                   <span className="card-item-text">บัตรเติมน้ำมัน</span>

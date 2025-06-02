@@ -11,6 +11,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import RadioButton from "../radioButton";
+import FormHelper from "../formHelper";
 
 interface Props {
   requestData?: RequestDetailType;
@@ -23,8 +24,8 @@ const schema = yup.object().shape({
   endDate: yup.string(),
   timeStart: yup.string(),
   timeEnd: yup.string(),
-  workPlace: yup.string().required(),
-  purpose: yup.string().required(),
+  workPlace: yup.string().required("กรุณาระบุสถานที่ปฏิบัติงาน"),
+  purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
   remark: yup.string().optional(),
   tripType: yup.number(),
   numberOfPassenger: yup.number(),
@@ -57,8 +58,8 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       mode: "onChange",
       resolver: yupResolver(schema),
       defaultValues: {
-        startDate: convertToBuddhistDateTime(formData.startDate || "").date || "",
-        endDate: convertToBuddhistDateTime(formData.endDate || "").date || "",
+        startDate: formData.startDate || "",
+        endDate: formData.endDate || "",
         timeStart: formData.timeStart || "",
         timeEnd: formData.timeEnd || "",
         workPlace: formData.workPlace || "",
@@ -224,7 +225,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       <RadioButton
                         name="tripType"
                         label="ไป-กลับ"
-                        value="1"
+                        value="0"
                         selectedValue={selectedTripType}
                         setSelectedValue={setSelectedTripType}
                       />
@@ -233,7 +234,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       <RadioButton
                         name="tripType"
                         label="ค้างแรม"
-                        value="0"
+                        value="1"
                         selectedValue={selectedTripType}
                         setSelectedValue={setSelectedTripType}
                       />
@@ -245,26 +246,40 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">สถานที่ปฏิบัติงาน</label>
-                  <div className="input-group">
+                  <div
+                  className={`input-group ${
+                    errors.workPlace && "is-invalid"
+                  }`}
+                >
                     <Controller
                       name="workPlace"
                       control={control}
                       render={({ field }) => <input type="text" className="form-control border-0" {...field} />}
                     />
                   </div>
+                  {errors.workPlace && (
+                  <FormHelper text={String(errors.workPlace.message)} />
+                )}
                 </div>
               </div>
 
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">วัตถุประสงค์</label>
-                  <div className="input-group">
+                  <div
+                  className={`input-group ${
+                    errors.purpose && "is-invalid"
+                  }`}
+                >
                     <Controller
                       name="purpose"
                       control={control}
                       render={({ field }) => <input type="text" className="form-control border-0" {...field} />}
                     />
                   </div>
+                  {errors.purpose && (
+                  <FormHelper text={String(errors.purpose.message)} />
+                )}
                 </div>
               </div>
 

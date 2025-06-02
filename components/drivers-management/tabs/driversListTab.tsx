@@ -70,6 +70,7 @@ const DriversListTab = () => {
   const [selectedRow, setSelectedRow] = useState({});
   const [updateType, setUpdateType] = useState<{ text: string; value: string }>({ text: "", value: "" });
   // const [resultNonFound, setResultNonFound] = useState(false);
+  const [filterCount, setFilterCount] = useState(0);
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -101,6 +102,7 @@ const DriversListTab = () => {
   } | null>(null);
 
   useEffect(() => {
+    let countFilters = 0;
     const fetchDriversListFunc = async () => {
       try {
         const response = await driversMamagement(params);
@@ -122,6 +124,12 @@ const DriversListTab = () => {
       }
     };
 
+    Object.keys(params).forEach((key) => {
+      if (key === "work_type" || key === "ref_driver_status_code" || key === "is_active") {
+        countFilters += params[key] ? params[key].split(",").length : 0;
+      }
+    });
+    setFilterCount(countFilters);
     fetchDriversListFunc();
   }, [params, driverUpdated, updateType]);
 
@@ -263,6 +271,11 @@ const DriversListTab = () => {
     });
   };
 
+  // const handleCountFilters = () => {
+  //   const filterCount = Object.values(params).filter((value) => value !== "" && value !== undefined).length;
+  //   console.log("Filter count:", filterCount);
+  // };
+
   return (
     <>
       <div className="page-section-header border-0 mt-5">
@@ -299,6 +312,7 @@ const DriversListTab = () => {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
+              <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
             </div>
           </button>
           <button

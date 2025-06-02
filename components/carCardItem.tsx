@@ -8,6 +8,8 @@ interface Props {
 }
 
 export default function CarCardItem({ icon, title, value, images }: Props) {
+
+  
   return (
     <div className="card-item flex justify-between items-center">
       <div className="flex items-center w-50 gap-2 flex-wrap">

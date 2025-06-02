@@ -148,9 +148,11 @@ export default function VehicleFlow() {
                     <span className="text-sm font-bold">รายงาน</span>
                     <span className="border border-gray-300 w-6 h-6 rounded-full">{selectedRows.length}</span>
                 </button>
-                <button className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-primary-default text-gray-700 shadow-sm transition">
-                    <i className="material-symbols-outlined text-white">add</i>
-                    <span className="text-sm font-bold text-white">สร้างข้อมูล</span>
+                <button 
+                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-primary-default text-gray-700 shadow-sm transition disabled:bg-gray-100 disabled:text-black text-white"
+                    disabled={true}>
+                    <i className="material-symbols-outlined">add</i>
+                    <span className="text-sm font-bold">สร้างข้อมูล</span>
                 </button>
             </div>
         </div>

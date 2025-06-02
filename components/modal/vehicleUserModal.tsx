@@ -25,7 +25,7 @@ interface VehicleUserModalProps {
 const schema = yup.object().shape({
   name: yup.string(),
   position: yup.string(),
-  internalPhone: yup.string().optional(),
+  internalPhone: yup.string().required("กรุณากรอกเบอร์ภายใน"),
   mobilePhone: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")

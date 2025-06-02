@@ -26,21 +26,10 @@ const DateRangePicker = ({ date, onChange }: Props) => {
         }
     };
 
-    // const ThaiCaption = ({ children, ...props }: HTMLAttributes<HTMLSpanElement>) => {
-    //     const dateParts = typeof children === 'string' ? children.split(' ') : [];
-    //     const thaiYear = dateParts[1] ? parseInt(dateParts[1]) + 543 : '';
-
-    //     return (
-    //         <span {...props} className="ml-4 mt-1 text-gray-700 font-semibold">
-    //             {isTH ? `${dateParts[0]} ${thaiYear}` : children}
-    //         </span>
-    //     );
-    // };
-
     const ThaiYearDropdown = (props: DropdownProps) => {
         const { value, onChange, name, required, className } = props;
 
-        const currentYear = new Date().getFullYear();
+        // const currentYear = new Date().getFullYear();
         // const thaiYears = Array.from({ length: 20 }, (_, i) => currentYear - i + 543);
 
         const startYear = 2017; // ค.ศ.
@@ -119,6 +108,8 @@ const DateRangePicker = ({ date, onChange }: Props) => {
                         selected={range}
                         numberOfMonths={2}
                         showOutsideDays
+                        fromYear={2017}
+                        toYear={3000}
                         onSelect={handleSelectDate}
                         components={{
                             YearsDropdown: ThaiYearDropdown,

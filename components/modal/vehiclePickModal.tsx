@@ -46,6 +46,7 @@ const VehiclePickModel = forwardRef<
   useImperativeHandle(ref, () => ({
     openModal: () => {
       hasReset.current = false;
+      fetchVehicleCarTypesData();
       modalRef.current?.showModal();
     },
     closeModal: () => modalRef.current?.close(),
@@ -66,10 +67,10 @@ const VehiclePickModel = forwardRef<
     return result;
   }, [vehicleCatData]);
 
-  useEffect(() => {
+
     const fetchVehicleCarTypesData = async () => {
       try {
-        const response = await fetchVehicleCarTypes();
+        const response = await fetchVehicleCarTypes("");
         if (response.status === 200) {
           setVehicleCatData(response.data);
         }
@@ -78,8 +79,8 @@ const VehiclePickModel = forwardRef<
       }
     };
 
-    fetchVehicleCarTypesData();
-  }, []);
+  
+
 
   const { setValue } = useForm({
     mode: "onChange",

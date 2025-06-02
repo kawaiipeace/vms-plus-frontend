@@ -7,9 +7,14 @@ import Pagination from "@/components/pagination";
 import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
 import ZeroRecord from "@/components/zeroRecord";
+import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
-import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
+import {
+  fetchSearchVehicles,
+  fetchVehicleCarTypes,
+  fetchVehicleDepartmentTypes,
+} from "@/services/masterService";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -33,6 +38,7 @@ interface Vehicle {
   vehicle_img: string;
   vehicle_license_plate_province_full: string;
   seat: number;
+  vehicle_owner_dept_short: string;
   is_admin_choose_driver?: boolean;
 }
 
@@ -73,8 +79,12 @@ export default function ProcessTwo() {
   });
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const { isPinned } = useSidebar();
+  const { profile } = useProfile();
   const [params, setParams] = useState({
     search: "",
+    emp_id: "",
+    start_date: "",
+    end_date: "",
     vehicle_owner_dept: "",
     car_type: "",
     category_code: "",
@@ -86,14 +96,14 @@ export default function ProcessTwo() {
     { value: string; label: string }[]
   >([]);
 
-  const orgOptions = [
-    { label: "ทุกสังกัด", value: "" },
-    { label: "หน่วยงานต้นสังกัด", value: "หน่วยงานต้นสังกัด" },
-    { label: "ฝพจ.", value: "ฝพจ." },
-    { label: "กอพ.2", value: "กอพ.2" },
-  ];
+  const [orgOptions, setOrgOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
-  const [selectedOrgOption, setSelectedOrgOption] = useState(orgOptions[0]);
+  const [selectedOrgOption, setSelectedOrgOption] = useState<{
+    value: string;
+    label: string;
+  }>({ value: "", label: "ทุกสังกัด" });
   const [selectedVehicleOption, setSelectedVehicleOption] = useState<{
     value: string;
     label: string;
@@ -165,49 +175,57 @@ export default function ProcessTwo() {
 
   useEffect(() => {
     const fetchVehicleData = async () => {
- 
       try {
-        // Set limit to 8 for first page, 10 for others
         const currentLimit = params.page === 1 ? 10 : 10;
-        const response = await fetchVehicles({
+        const response = await fetchSearchVehicles({
           ...params,
           limit: currentLimit,
+          emp_id: profile?.emp_id,
+          start_date: `${formData.startDate} ${formData.timeStart}`,
+          end_date: `${formData.endDate} ${formData.timeEnd}`,
         });
-        console.log('fetchvhicles',response);
 
         if (response.status === 200) {
-          // Combine carpools and vehicles for display
           const allCards = [
             ...(response.data.carpools || []),
             ...(response.data.vehicles || []),
           ];
           setVehicleCards(allCards);
-          console.log('responvehicle',allCards);
           setPaginationData(response.data.pagination);
         }
-     
       } catch (error) {
-        console.error("Error fetching requests:", error);
+        console.error("Error fetching vehicle data:", error);
       }
     };
 
     const fetchVehicleCarTypesData = async () => {
+      if (
+        !profile?.emp_id ||
+        !formData.startDate ||
+        !formData.timeStart ||
+        !formData.endDate ||
+        !formData.timeEnd
+      ) {
+        // Required data not available yet
+        return;
+      }
+      const vehicleParams = {
+        emp_id: profile?.emp_id,
+        start_date: `${formData.startDate} ${formData.timeStart}`,
+        end_date: `${formData.endDate} ${formData.timeEnd}`,
+      };
+
       try {
-        const response = await fetchVehicleCarTypes();
+        const response = await fetchVehicleCarTypes( vehicleParams );
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
-            ...vehicleCatData.map(
-              (cat: {
-                ref_vehicle_type_code: string;
-                ref_vehicle_type_name: string;
-              }) => ({
-                value: cat.ref_vehicle_type_code,
-                label: cat.ref_vehicle_type_name,
-              })
-            ),
+            ...vehicleCatData.map((cat: { ref_vehicle_type_name: string }) => ({
+              value: cat.ref_vehicle_type_name,
+              label: cat.ref_vehicle_type_name,
+            })),
           ];
 
           setVehicleCatOptions(vehicleCatArr);
@@ -216,13 +234,63 @@ export default function ProcessTwo() {
           );
         }
       } catch (error) {
-        console.error("Error fetching requests:", error);
+        console.error("Error fetching vehicle car types:", error);
       }
     };
 
-    fetchVehicleData();
-    fetchVehicleCarTypesData();
-  }, [params]);
+    const fetchVehicleDepartmentsData = async () => {
+      if (
+        !profile?.emp_id ||
+        !formData.startDate ||
+        !formData.timeStart ||
+        !formData.endDate ||
+        !formData.timeEnd
+      ) {
+        // Required data not available yet
+        return;
+      }
+      const vehicleParams = {
+        emp_id: profile?.emp_id,
+        start_date: `${formData.startDate} ${formData.timeStart}`,
+        end_date: `${formData.endDate} ${formData.timeEnd}`,
+      };
+      try {
+        const response = await fetchVehicleDepartmentTypes( vehicleParams );
+
+        if (response.status === 200) {
+          const vehicleCatData = response.data;
+          const vehicleCatArr = [
+            { value: "", label: "ทุกสังกัด" },
+            ...vehicleCatData.map(
+              (cat: { dept_sap: string; dept_short: string }) => ({
+                value: cat.dept_sap,
+                label: cat.dept_short,
+              })
+            ),
+          ];
+
+          setOrgOptions(vehicleCatArr);
+          setSelectedOrgOption((prev) =>
+            prev.value ? prev : vehicleCatArr[0]
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching vehicle car types:", error);
+      }
+    };
+    if (profile?.emp_id) {
+      fetchVehicleData();
+      fetchVehicleCarTypesData();
+      fetchVehicleDepartmentsData();
+    }
+  }, [
+    params,
+    profile?.emp_id,
+    formData.startDate,
+    formData.timeStart,
+    formData.endDate,
+    formData.timeEnd,
+  ]);
 
   if (loading) return null;
 
@@ -361,8 +429,10 @@ export default function ProcessTwo() {
                               title={`${vehicle.vehicle_brand_name} ${vehicle.vehicle_model_name}`}
                               subTitle={vehicle.vehicle_license_plate}
                               carType={vehicle.car_type}
-                              deptSap={vehicle.vehicle_owner_dept_sap}
-                              province={vehicle.vehicle_license_plate_province_full}
+                              deptSap={vehicle.vehicle_owner_dept_short}
+                              province={
+                                vehicle.vehicle_license_plate_province_full
+                              }
                               seat={vehicle.seat}
                               onSelect={() =>
                                 handleVehicleSelect(vehicle.mas_vehicle_uid)
