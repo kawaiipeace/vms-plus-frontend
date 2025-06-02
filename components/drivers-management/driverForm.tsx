@@ -157,11 +157,10 @@ const DriverForm = () => {
     driverOperationType: Yup.string().required("กรุณาเลือกประเภทการปฏิบัติงาน"),
     driverUseByOther: Yup.string().required("กรุณาเลือกหน่วยงานอื่นสามารถขอใช้งานได้"),
     driverLicenseType: Yup.string().required("กรุณาเลือกประเภทใบขับขี่"),
-    driverLicenseNo: Yup.string()
-      .required("กรุณาระบุเลขที่ใบขับขี่")
-      .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
-      .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
-      .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
+    driverLicenseNo: Yup.string().required("กรุณาระบุเลขที่ใบขับขี่"),
+    // .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    // .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    // .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
     driverLicenseStartDate: Yup.string().required("กรุณาเลือกวันที่ออกใบขับขี่"),
     driverLicenseEndDate: Yup.string().required("กรุณาเลือกวันที่หมดอายุใบขับขี่"),
     driverLicensePDF: Yup.string().required("กรุณาอัพโหลดใบขับขี่"),
@@ -806,7 +805,7 @@ const DriverForm = () => {
                       placeholder="ระบุเลขที่ใบขับขี่"
                       value={formData.driverLicenseNo}
                       onChange={handleInputChange}
-                      maxLength={8}
+                      // maxLength={8}
                     />
                   </div>
                   {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}
