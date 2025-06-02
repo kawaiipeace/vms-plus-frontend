@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomSelect, { CustomSelectOption } from "../customSelect";
+import { CustomSelectOption } from "../customSelect";
 import {
   getCarpoolAdmin,
   getCarpoolAdminDetails,
@@ -17,6 +17,7 @@ import { CarpoolAdmin } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
+import CustomSearchSelect from "../customSelectSerch";
 
 interface Props {
   id?: string;
@@ -195,7 +196,7 @@ const AddCarpoolAdminModal = forwardRef<
                 <div className="col-span-2">
                   <div className="form-group">
                     <label className="form-label">ผู้ดูแลยานพาหนะ</label>
-                    <CustomSelect
+                    <CustomSearchSelect
                       iconName="person"
                       w="w-full"
                       options={admins.map((item) => ({
