@@ -4,6 +4,7 @@ import {
   CarpoolDriverCreate,
   CarpoolDriverParams,
   CarpoolForm,
+  CarpoolFormToApi,
   CarpoolParams,
   CarpoolVehicleCreate,
   CarpoolVehicleParams,
@@ -128,7 +129,7 @@ export const getCarpoolManagementId = async (id: string) => {
   }
 };
 
-export const postCarpoolCreate = async (data: CarpoolForm) => {
+export const postCarpoolCreate = async (data: CarpoolFormToApi) => {
   try {
     const response = await axiosInstance.post(
       "carpool-management/create",
