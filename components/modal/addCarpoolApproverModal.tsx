@@ -18,6 +18,7 @@ import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
 import CustomSearchSelect from "../customSelectSerch";
+import FormHelper from "../formHelper";
 
 interface Props {
   id?: string;
@@ -45,6 +46,7 @@ const AddCarpoolApproverModal = forwardRef<
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [validPhone, setValidPhone] = useState<boolean>(false);
 
   const { formData } = useFormContext();
 
@@ -169,6 +171,7 @@ const AddCarpoolApproverModal = forwardRef<
     const mobile = approve?.tel_mobile;
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
+    if (mobile) setValidPhone(!/^\d{10}$/.test(mobile ?? ""));
     setDeptSapShort(approve?.dept_sap_short);
   };
 
@@ -273,9 +276,19 @@ const AddCarpoolApproverModal = forwardRef<
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
                         value={mobile_contact_number}
-                        onChange={(e) => setMobileContactNumber(e.target.value)}
+                        onChange={(e) => {
+                          setMobileContactNumber(e.target.value);
+                          if (e.target.value) {
+                            setValidPhone(!/^\d{10}$/.test(e.target.value));
+                          } else {
+                            setValidPhone(false);
+                          }
+                        }}
                       />
                     </div>
+                    {validPhone && (
+                      <FormHelper text={"กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง"} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -290,6 +303,7 @@ const AddCarpoolApproverModal = forwardRef<
               type="button"
               className="btn btn-primary col-span-1"
               onClick={handleConfirm}
+              disabled={validPhone}
             >
               {editId ? "บันทึก" : "เพิ่ม"}
             </button>

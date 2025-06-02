@@ -65,7 +65,8 @@ export default function CustomSearchSelect({
   const shouldShowDropdown =
     isOpen &&
     ((!enableSearch && options.length > 0) ||
-      (enableSearch && inputText.trim().length >= 3));
+      (enableSearch && inputText.trim().length >= 3) ||
+      (enableSearch && !value));
 
   // Handle outside click to close dropdown
   useEffect(() => {
