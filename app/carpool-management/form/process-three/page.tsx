@@ -60,13 +60,6 @@ export default function CarpoolProcessThree() {
   }, [refetch]);
 
   useEffect(() => {
-    if (!id) {
-      if (formData.mas_carpool_uid) fetchCarpoolApproverSearchFunc();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]);
-
-  useEffect(() => {
     if (id) {
       fetchCarpoolApproverSearchFunc();
     }
@@ -75,10 +68,10 @@ export default function CarpoolProcessThree() {
 
   const fetchCarpoolApproverSearchFunc = async (newPagination?: any) => {
     try {
-      const response = await getCarpoolApproverSearch(
-        id || formData.mas_carpool_uid,
-        { ...pagination, ...newPagination }
-      );
+      const response = await getCarpoolApproverSearch(id || "", {
+        ...pagination,
+        ...newPagination,
+      });
       const result = response.data;
       setData(result.approvers);
       setRefetch(false);
@@ -89,20 +82,35 @@ export default function CarpoolProcessThree() {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchCarpoolApproverSearchFunc({
-      ...pagination,
-      page: newPage,
-    });
+    if (id) {
+      fetchCarpoolApproverSearchFunc({
+        ...pagination,
+        page: newPage,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        page: newPage,
+      });
+    }
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    fetchCarpoolApproverSearchFunc({
-      ...pagination,
-      limit,
-      page: 1, // Reset to the first page when page size changes
-    });
+    if (id) {
+      fetchCarpoolApproverSearchFunc({
+        ...pagination,
+        limit,
+        page: 1, // Reset to the first page when page size changes
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    }
   };
 
   const handleActive = async () => {
@@ -122,9 +130,14 @@ export default function CarpoolProcessThree() {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
+  const start = (pagination.page - 1) * pagination.limit;
+  const dataTable = id
+    ? data
+    : (formData.carpool_approvers || []).slice(start, start + pagination.limit);
 
   return (
     <div>
@@ -218,7 +231,7 @@ export default function CarpoolProcessThree() {
               <ProcessCreateCarpool step={3} />
             )}
 
-            {data.length > 0 && (
+            {dataTable.length > 0 && (
               <>
                 <div className="flex items-center justify-between">
                   <div className="page-section-header border-0 !pb-0">
@@ -226,7 +239,10 @@ export default function CarpoolProcessThree() {
                       <div className="page-title">
                         <span className="page-title-label">ผู้อนุมัติ</span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          {pagination.total} คน
+                          {id
+                            ? pagination.total
+                            : (formData.carpool_approvers || []).length}{" "}
+                          คน
                         </span>
                       </div>
                     </div>
@@ -246,7 +262,7 @@ export default function CarpoolProcessThree() {
                 </div>
 
                 <CarpoolApproverTable
-                  defaultData={data}
+                  defaultData={dataTable}
                   pagination={pagination}
                   setRefetch={setRefetch}
                 />
@@ -255,8 +271,15 @@ export default function CarpoolProcessThree() {
                   pagination={{
                     limit: pagination.limit,
                     page: pagination.page,
-                    totalPages: pagination.totalPages,
-                    total: pagination.total,
+                    totalPages: id
+                      ? pagination.totalPages
+                      : Math.ceil(
+                          (formData.carpool_approvers || []).length /
+                            pagination.limit
+                        ),
+                    total: id
+                      ? pagination.total
+                      : (formData.carpool_approvers || []).length,
                   }}
                   onPageChange={handlePageChange}
                   onPageSizeChange={handlePageSizeChange}
@@ -264,7 +287,7 @@ export default function CarpoolProcessThree() {
               </>
             )}
 
-            {data.length === 0 && (
+            {dataTable.length === 0 && (
               <div className="zerorecord">
                 <div className="emptystate">
                   <Image
@@ -342,12 +365,13 @@ export default function CarpoolProcessThree() {
               remove={!!id}
             />
 
-            {data.length > 0 && !id && (
+            {dataTable.length > 0 && !id && (
               <div className="form-action">
                 <button
-                  onClick={() =>
-                    router.push("/carpool-management/form/process-four")
-                  }
+                  onClick={() => {
+                    localStorage.setItem("carpoolProcessThree", "Done");
+                    router.push("/carpool-management/form/process-four");
+                  }}
                   className="btn btn-primary"
                 >
                   ต่อไป

@@ -7,6 +7,7 @@ import {
 } from "@/app/types/carpool-management-type";
 import CustomMultiSelect from "@/components/customMultiSelect";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
+import CustomSearchSelect from "@/components/customSelectSerch";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
 import ToastCustom from "@/components/toastCustom";
@@ -15,7 +16,6 @@ import {
   chooseCarChoice,
   chooseDriverChoice,
   getCarpoolDepartmentByType,
-  postCarpoolCreate,
   putCarpoolUpdate,
 } from "@/services/carpoolManagement";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -92,20 +92,27 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      carpool_type: formData.carpool_type || "",
-      carpool_authorized_depts: formData.carpool_authorized_depts || [],
-      carpool_contact_number: formData.carpool_contact_number || "",
-      carpool_contact_place: formData.carpool_contact_place || "",
-      carpool_name: formData.carpool_name || "",
-      ref_carpool_choose_car_id: formData.ref_carpool_choose_car_id,
-      ref_carpool_choose_driver_id: formData.ref_carpool_choose_driver_id,
-      remark: formData.remark || "",
-      is_must_pass_status_30: formData.is_must_pass_status_30 === "1",
-      is_must_pass_status_40: formData.is_must_pass_status_40 === "1",
-      is_must_pass_status_50: formData.is_must_pass_status_50 === "1",
-      mas_carpool_uid: formData.mas_carpool_uid || "",
+      carpool_type: formData.form?.carpool_type || "",
+      carpool_authorized_depts: formData.form?.carpool_authorized_depts || [],
+      carpool_contact_number: formData.form?.carpool_contact_number || "",
+      carpool_contact_place: formData.form?.carpool_contact_place || "",
+      carpool_name: formData.form?.carpool_name || "",
+      ref_carpool_choose_car_id: formData.form?.ref_carpool_choose_car_id,
+      ref_carpool_choose_driver_id: formData.form?.ref_carpool_choose_driver_id,
+      remark: formData.form?.remark || "",
+      is_must_pass_status_30: formData.form?.is_must_pass_status_30 === "1",
+      is_must_pass_status_40: formData.form?.is_must_pass_status_40 === "1",
+      is_must_pass_status_50: formData.form?.is_must_pass_status_50 === "1",
     },
   });
+
+  useEffect(() => {
+    if (formData.form?.carpool_type) {
+      setGroup(
+        groupOptions.find((item) => item.value === formData.form?.carpool_type)
+      );
+    }
+  }, [formData.form?.carpool_type]);
 
   useEffect(() => {
     const fetchCarFunc = async () => {
@@ -240,21 +247,10 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
           status: "error",
         });
       }
-    } else if (formData.mas_carpool_uid && !id) {
-      router.push("/carpool-management/form/process-two");
     } else {
-      try {
-        const response = await postCarpoolCreate(dataToApi);
-        if (response.request.status === 201) {
-          updateFormData({
-            ...data,
-            mas_carpool_uid: await response.data.mas_carpool_uid,
-          });
-          router.push("/carpool-management/form/process-two");
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      updateFormData({ form: dataToApi });
+      localStorage.setItem("carpoolProcessOne", "Done");
+      router.push("/carpool-management/form/process-two");
     }
   };
 
@@ -373,23 +369,43 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                         {group.value === "03" &&
                           "หน่วยงานที่ใช้บริการกลุ่มยานพาหนะนี้ได้"}
                       </label>
-                      <CustomMultiSelect
-                        w="w-full"
-                        options={departments.map((item) => ({
-                          value: item.dept_sap,
-                          label: item.dept_short,
-                          subLabel: item.dept_full,
-                        }))}
-                        value={departmentSelected}
-                        {...register("carpool_authorized_depts", {
-                          required:
-                            group.value === "02" || group.value === "03",
-                        })}
-                        onChange={(e) => {
-                          setDepartmentSelected(e as CustomSelectOption[]);
-                          setValue("carpool_authorized_depts", e);
-                        }}
-                      />
+                      {group.value === "02" && (
+                        <CustomSearchSelect
+                          w="w-full"
+                          options={departments.map((item) => ({
+                            value: item.dept_sap,
+                            label: item.dept_short,
+                            subLabel: item.dept_full,
+                          }))}
+                          value={departmentSelected[0]}
+                          {...register("carpool_authorized_depts", {
+                            required: group.value === "02",
+                          })}
+                          onChange={(e) => {
+                            setDepartmentSelected([e]);
+                            setValue("carpool_authorized_depts", [e]);
+                          }}
+                          enableSearch
+                        />
+                      )}
+                      {group.value === "03" && (
+                        <CustomMultiSelect
+                          w="w-full"
+                          options={departments.map((item) => ({
+                            value: item.dept_sap,
+                            label: item.dept_short,
+                            subLabel: item.dept_full,
+                          }))}
+                          value={departmentSelected}
+                          {...register("carpool_authorized_depts", {
+                            required: group.value === "03",
+                          })}
+                          onChange={(e) => {
+                            setDepartmentSelected(e as CustomSelectOption[]);
+                            setValue("carpool_authorized_depts", e);
+                          }}
+                        />
+                      )}
                       <div>
                         {errors.carpool_authorized_depts && (
                           <FormHelper

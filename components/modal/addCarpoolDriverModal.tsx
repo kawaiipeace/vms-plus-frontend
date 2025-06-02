@@ -29,12 +29,11 @@ const AddCarpoolDriverModal = forwardRef<
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
-  const { formData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
 
   const [search, setSearch] = useState<string>("");
   const [drivers, setDrivers] = useState<CarpoolDriver[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
-  // const [total, setTotal] = useState<number>(0);
   const [params, setParams] = useState({
     name: "",
   });
@@ -43,6 +42,13 @@ const AddCarpoolDriverModal = forwardRef<
     openModal: () => modalRef.current?.showModal(),
     closeModal: () => modalRef.current?.close(),
   }));
+
+  const driverNoneIdLength = drivers.filter(
+    (driver) =>
+      !(formData.carpool_drivers || []).some(
+        (v) => v.mas_driver_uid === driver.mas_driver_uid
+      )
+  ).length;
 
   const fetchCarpoolDriverFunc = async () => {
     try {
@@ -54,30 +60,6 @@ const AddCarpoolDriverModal = forwardRef<
       console.error("Error fetching status data:", error);
     }
   };
-
-  // const handleScroll = () => {
-  //   const el = scrollContentRef.current;
-  //   if (el) {
-  //     const { scrollTop, offsetHeight, scrollHeight } = el;
-  //     if (scrollTop + offsetHeight >= scrollHeight - 20) {
-  //       setParams({ ...params, page: params.page + 1 });
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const currentRef = scrollContentRef.current;
-  //   if (currentRef) {
-  //     currentRef.addEventListener("scroll", handleScroll);
-  //   }
-
-  //   return () => {
-  //     if (currentRef) {
-  //       currentRef.removeEventListener("scroll", handleScroll);
-  //     }
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   useEffect(() => {
     if (params.name) {
@@ -96,11 +78,22 @@ const AddCarpoolDriverModal = forwardRef<
     if (CBRef.current) {
       if (checked.length === 0) {
         CBRef.current.indeterminate = false;
-      } else if (checked.length > 0 && checked.length !== drivers.length) {
-        CBRef.current.indeterminate = true;
-      } else if (checked.length === drivers.length) {
-        CBRef.current.indeterminate = false;
-        CBRef.current.checked = true;
+      } else if (checked.length > 0) {
+        if (id) {
+          if (checked.length === drivers.length) {
+            CBRef.current.indeterminate = false;
+            CBRef.current.checked = true;
+          } else {
+            CBRef.current.indeterminate = true;
+          }
+        } else {
+          if (checked.length !== driverNoneIdLength) {
+            CBRef.current.indeterminate = true;
+          } else {
+            CBRef.current.indeterminate = false;
+            CBRef.current.checked = true;
+          }
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,13 +106,41 @@ const AddCarpoolDriverModal = forwardRef<
 
   const handleConfirm = async () => {
     try {
-      const data = checked.map((item) => ({
-        mas_carpool_uid: id || formData.mas_carpool_uid,
-        mas_driver_uid: item,
-      }));
-      const response = await postCarpoolDriverCreate(data);
-      if (response.request.status === 201) {
-        setRefetch(true);
+      if (id) {
+        const data = checked.map((item) => ({
+          mas_carpool_uid: id || "",
+          mas_driver_uid: item,
+        }));
+        const response = await postCarpoolDriverCreate(data);
+        if (response.request.status === 201) {
+          setRefetch(true);
+          modalRef.current?.close();
+        }
+      } else {
+        const data = checked.map((item) => {
+          const driver = drivers.find((e) => e.mas_driver_uid === item);
+          return {
+            mas_driver_uid: item,
+            driver_name: driver?.driver_name || "",
+            driver_nickname: driver?.driver_nickname || "",
+            driver_dept_sap_short_name_hire: driver?.driver_dept_sap || "",
+            driver_contact_number: driver?.driver_contact_number || "",
+            ref_driver_status_code: driver?.work_type.toString() || "",
+            driver_license_end_date:
+              driver?.driver_license?.driver_license_end_date || "",
+            approved_job_driver_end_date: driver?.contract_end_date || "",
+            driver_average_satisfaction_score:
+              driver?.driver_average_satisfaction_score || "",
+            driver_status_name:
+              driver?.driver_status?.ref_driver_status_desc || "",
+            driver_image: driver?.driver_image || "",
+          };
+        });
+        updateFormData({
+          ...formData,
+          carpool_drivers: [...data, ...(formData.carpool_drivers || [])],
+        });
+        setChecked([]);
         modalRef.current?.close();
       }
     } catch (error) {

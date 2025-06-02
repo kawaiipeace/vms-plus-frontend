@@ -37,7 +37,7 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
   const [inputValue, setInputValue] = useState("");
   const [toast, setToast] = useState<ToastProps | undefined>();
 
-  const { formData, updateFormData } = useFormContext();
+  const { updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -54,7 +54,7 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
         if (remove) {
           const response = await deleteCarpool({
             carpool_name: inputValue,
-            mas_carpool_uid: id || formData.mas_carpool_uid,
+            mas_carpool_uid: id,
           });
           if (response.request.status === 200) {
             modalRef.current?.close();

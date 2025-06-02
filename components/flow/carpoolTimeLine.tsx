@@ -268,23 +268,23 @@ export default function CarpoolTimeLine() {
         />
         <button
           onClick={handleOpenVehicleFilterModal}
-          className="btn btn-secondary btn-filtersmodal flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
         >
           <i className="material-symbols-outlined text-lg">filter_list</i>
           <span className="text-base font-semibold">
             ตัวกรอง{" "}
-            <span className="badge badge-brand badge-outline rounded-[50%]">
+            {/* <span className="badge badge-brand badge-outline rounded-[50%]">
               {vehicleParams.is_active?.split(",").filter((e) => e !== "")
                 .length +
                 vehicleParams.ref_vehicle_status_code
                   ?.split(",")
                   .filter((e) => e !== "").length || 0}
-            </span>
+            </span> */}
           </span>
         </button>
         <button
           onClick={toggleDropdown}
-          className="btn btn-secondary btn-filtersmodal flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
         >
           <i className="material-symbols-outlined text-lg">view_column</i>
         </button>
@@ -313,12 +313,12 @@ export default function CarpoolTimeLine() {
       <div className="flex gap-4">
         <button
           onClick={handleOpenDriverFilterModal}
-          className="btn btn-secondary btn-filtersmodal flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
         >
           <i className="material-symbols-outlined text-lg">filter_list</i>
           <span className="text-base font-semibold">
             ตัวกรอง{" "}
-            <span className="badge badge-brand badge-outline rounded-[50%]">
+            {/* <span className="badge badge-brand badge-outline rounded-[50%]">
               {driverParams.is_active?.split(",").filter((e) => e !== "")
                 .length +
                 driverParams.work_type?.split(",").filter((e) => e !== "")
@@ -326,7 +326,7 @@ export default function CarpoolTimeLine() {
                 driverParams.ref_driver_status_code
                   ?.split(",")
                   .filter((e) => e !== "").length || 0}
-            </span>
+            </span> */}
           </span>
         </button>
       </div>
