@@ -13,6 +13,7 @@ import {
     VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 // import CustomSelect from "../customSelect";
 import CustomSelectOnSearch from "../customSelectOnSearch";
+import CustomSearchSelect from "../customSelectSerch";
 
 type FilterProps = {
     flag: string;
@@ -115,19 +116,20 @@ const ModalBody = ({
                 <div className="col-span-12">
                     <div className="form-group">
                         <label className="form-label">ประเภทยานพาหนะ</label>
-                        <CustomSelectOnSearch
-                            w="md:w-full"
+                        <CustomSearchSelect
+                            w='w-full'
+                            enableSearch
                             options={vehicleTypes}
                             value={vehicleTypeOptions}
-                            enableSearchOnApi={true}
                             onChange={(selectedValue: CustomData) => {
-                                if(selectedValue.label === "") {
+                                if (selectedValue.label === "") {
                                     selectedValue = { label: "ทั้งหมด", value: "" };
                                 }
 
                                 handleChange("vehicleType", selectedValue.value);
                                 setVehicleTypeOptions(selectedValue);
                             }}
+                            classNamePlaceholder="flex-1 text-start"
                         />
                     </div>
                 </div>
@@ -281,7 +283,6 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
     const [vehicleType, setVehicleType] = useState<VehicleTypeApiCustomData[]>([]);
 
     const handleSubmitFilter = () => {
-        console.log("submit filter", params);
         onSubmitFilter?.(params);
         dialogRef.current?.close();
     };
