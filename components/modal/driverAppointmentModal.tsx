@@ -50,6 +50,14 @@ const DriverAppointmentModal = forwardRef<
     setOpenModal(false);
   };
 
+
+  const [selectedDate, setSelectedDate] = useState<string>(
+    convertToBuddhistDateTime(formData?.pickupDatetime || "").date || ""
+  );
+  const [selectedTime, setSelectedTime] = useState<string>(
+    convertToBuddhistDateTime(formData?.pickupDatetime || "").time || ""
+  );
+
   const {
     register,
     handleSubmit,
@@ -60,14 +68,17 @@ const DriverAppointmentModal = forwardRef<
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      pickupDate: convertToBuddhistDateTime(formData?.pickupDatetime || "").date || "",
-      pickupTime: convertToBuddhistDateTime(formData?.pickupDatetime || "").time || "",
+      pickupDate: selectedDate,
+      pickupTime: selectedTime,
       pickupPlace: formData.pickupPlace
     }
   });
 
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  useEffect(() => {
+    setValue("pickupDate", selectedDate, { shouldValidate: true });
+    setValue("pickupTime", selectedTime, { shouldValidate: true });
+  }, [selectedDate, selectedTime, setValue]);
+  
   const [driver, setDriver] = useState<DriverType>();
   const [params] = useState({
     name: "",

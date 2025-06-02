@@ -49,7 +49,7 @@ export default function CarDetailCard2({ vehicle, reqId }: Props) {
               <div className="supporting-text-group">
                 <div className="supporting-text">{vehicle?.CarType || "-"}</div>
                 <div className="supporting-text">
-                  {vehicle?.vehicle_owner_dept_sap || "-"}
+                  {vehicle?.vehicle_department?.vehicle_owner_dept_short || "-"}
                 </div>
               </div>
               <div className="md:hidden flex">
@@ -63,7 +63,7 @@ export default function CarDetailCard2({ vehicle, reqId }: Props) {
             </div>
 
             <div className="card-item-group md:!grid !hidden">
-              {vehicle?.is_has_fleet_card === 1 && (
+              {vehicle?.vehicle_department?.fleet_card_no && (
                 <div className="card-item col-span-2">
                   <i className="material-symbols-outlined">credit_card</i>
                   <span className="card-item-text">บัตรเติมน้ำมัน</span>

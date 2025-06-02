@@ -52,6 +52,7 @@ const AdminVehiclePickModal = forwardRef<
   useImperativeHandle(ref, () => ({
     openModal: () => {
       hasReset.current = false;
+      fetchVehicleCarTypesData();
       modalRef.current?.showModal();
     },
     closeModal: () => modalRef.current?.close(),
@@ -156,10 +157,10 @@ const AdminVehiclePickModal = forwardRef<
     fetchVehicleData();
   }, [params]);
 
-  useEffect(() => {
+
     const fetchVehicleCarTypesData = async () => {
       try {
-        const response = await fetchVehicleCarTypes();
+        const response = await fetchVehicleCarTypes("");
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
@@ -187,8 +188,8 @@ const AdminVehiclePickModal = forwardRef<
       }
     };
 
-    fetchVehicleCarTypesData();
-  }, []);
+
+
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 

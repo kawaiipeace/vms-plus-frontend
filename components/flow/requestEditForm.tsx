@@ -211,8 +211,8 @@ Props) {
             </div>
 
             <JourneyDetailCard
-              startDate={convertToBuddhistDateTime(updatedFormData.startDate || "").date}
-              endDate={convertToBuddhistDateTime(updatedFormData.endDate || "").date}
+              startDate={updatedFormData.startDate}
+              endDate={updatedFormData.endDate}
               timeStart={updatedFormData.timeStart}
               timeEnd={updatedFormData.timeEnd}
               workPlace={updatedFormData.workPlace}

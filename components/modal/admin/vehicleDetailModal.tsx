@@ -66,7 +66,6 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
 
       try {
         const response = await adminUpdateVehicle(payload);
-        console.log("resddd---", response);
         if (response) {
           modalRef.current?.close();
         }
@@ -74,6 +73,23 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
         console.error("Network error:", error);
       }
     };
+
+    const stationImageMap: Record<string, string> = {
+      ptt: "/assets/img/gas/1.png",
+      bcp: "/assets/img/gas/2.png",
+      shell: "/assets/img/gas/3.png",
+      pt: "/assets/img/gas/5.png",
+      caltex: "/assets/img/gas/4.png",
+    };
+
+    const stationNames =
+      vehicleDetail?.vehicle_department?.fleet_card_oil_stations
+        ?.split(",")
+        .map((s) => s.trim().toLowerCase()) || [];
+
+    const stationImages = stationNames
+      .map((name) => stationImageMap[name])
+      .filter(Boolean); // Remove undefined if a station name isn't mapped
 
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -123,14 +139,15 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
                       {vehicleDetail?.vehicle_model_name?.trim()}
                     </div>
                     <div className="modal-inner-subtitle">
-                      {vehicleDetail?.vehicle_license_plate?.trim()}
+                      {vehicleDetail?.vehicle_license_plate?.trim()}{" "}
+                      {vehicleDetail?.vehicle_license_plate_province_full}
                     </div>
                     <div className="supporting-text-group">
                       <div className="supporting-text">
                         {vehicleDetail?.CarType?.trim()}
                       </div>
                       <div className="supporting-text">
-                        {vehicleDetail?.vehicle_owner_dept_sap?.trim()}
+                        {vehicleDetail?.vehicle_department?.vehicle_owner_dept_short.trim()}
                       </div>
                     </div>
                   </div>
@@ -149,15 +166,9 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
                     <CarCardItem
                       icon="credit_card"
                       title="บัตรเติมน้ำมัน"
-                      images={[
-                        "/assets/img/ptt.png",
-                        "/assets/img/gas_3.svg",
-                        "/assets/img/gas_2.svg",
-                      ]}
+                      images={stationImages.length > 0 ? stationImages : []}
                       value={`${
-                        vehicleDetail?.is_has_fleet_card
-                          ? vehicleDetail?.vehicle_department?.fleet_card_no
-                          : "ไม่มี"
+                        vehicleDetail?.vehicle_department?.fleet_card_no ?? "-"
                       }`}
                     />
                     <CarCardItem
@@ -226,12 +237,6 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
                               <div className="supporting-text">
                                 {
                                   vehicleDetail?.vehicle_department
-                                    ?.vehicle_user?.dept_sap
-                                }
-                              </div>
-                              <div className="supporting-text">
-                                {
-                                  vehicleDetail?.vehicle_department
                                     ?.vehicle_user?.dept_sap_short
                                 }
                               </div>
@@ -240,42 +245,37 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
                         </div>
                         <div className="form-card-right align-self-center">
                           <div className="flex flex-wrap gap-4">
-                            {vehicleDetail?.vehicle_department?.vehicle_user
-                              ?.tel_mobile && (
-                              <div className="col-span-12 md:col-span-6">
-                                <div className="form-group form-plaintext">
-                                  <i className="material-symbols-outlined">
-                                    smartphone
-                                  </i>
-                                  <div className="form-plaintext-group">
-                                    <div className="form-text text-nowrap">
-                                      {
-                                        vehicleDetail?.vehicle_department
-                                          ?.vehicle_user?.tel_mobile
-                                      }
-                                    </div>
+                            <div className="col-span-12 md:col-span-6">
+                              <div className="form-group form-plaintext">
+                                <i className="material-symbols-outlined">
+                                  smartphone
+                                </i>
+                                <div className="form-plaintext-group">
+                                  <div className="form-text text-nowrap">
+                                    {
+                                      vehicleDetail?.vehicle_department
+                                        ?.vehicle_user?.tel_mobile
+                                    }
                                   </div>
                                 </div>
                               </div>
-                            )}
-                            {vehicleDetail?.vehicle_department?.vehicle_user
-                              ?.tel_internal && (
-                              <div className="col-span-12 md:col-span-6">
-                                <div className="form-group form-plaintext">
-                                  <i className="material-symbols-outlined">
-                                    call
-                                  </i>
-                                  <div className="form-plaintext-group">
-                                    <div className="form-text text-nowra">
-                                      {
-                                        vehicleDetail?.vehicle_department
-                                          ?.vehicle_user?.tel_internal
-                                      }
-                                    </div>
+                            </div>
+
+                            <div className="col-span-12 md:col-span-6">
+                              <div className="form-group form-plaintext">
+                                <i className="material-symbols-outlined">
+                                  call
+                                </i>
+                                <div className="form-plaintext-group">
+                                  <div className="form-text text-nowra">
+                                    {
+                                      vehicleDetail?.vehicle_department
+                                        ?.vehicle_user?.tel_internal
+                                    }
                                   </div>
                                 </div>
                               </div>
-                            )}
+                            </div>
                           </div>
                         </div>
                       </div>

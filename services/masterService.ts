@@ -100,9 +100,18 @@ export const uploadFile = async (file: File) => {
   }
 };
 
-export const fetchVehicleCarTypes = async () => {
+export const fetchVehicleCarTypes = async (params: any) => {
   try {
-    const response = await axiosInstance.get("vehicle/types");
+    const response = await axiosInstance.get("vehicle/types", { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchVehicleDepartmentTypes = async (params: any) => {
+  try {
+    const response = await axiosInstance.get("vehicle/departments", { params });
     return response;
   } catch (error) {
     throw error;
@@ -125,6 +134,22 @@ export const fetchDrivers = async (params: {
 }) => {
   try {
     const response = await axiosInstance.get("driver/search", { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchSearchDrivers = async (params: {
+  name?: string;
+  page?: number;
+  limit?: number;
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+}) => {
+  try {
+    const response = await axiosInstance.get("driver/search-booking", { params });
     return response;
   } catch (error) {
     throw error;
@@ -215,6 +240,27 @@ export const fetchVehicles = async (params: {
 }) => {
   try {
     const response = await axiosInstance.get("vehicle/search", { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchSearchVehicles = async (params: {
+  search?: string;
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+  vehicle_owner_dept?: string;
+  car_type?: string;
+  category_code?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const response = await axiosInstance.get("vehicle/search-booking", {
+      params,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -338,7 +384,7 @@ export const fetchSatisfactionSurveyQuestions = async () => {
   }
 };
 
-export const fetchUserConfirmerLic = async (search?:string) => {
+export const fetchUserConfirmerLic = async (search?: string) => {
   try {
     const response = await axiosInstance.get(
       "mas/user-confirmer-license-users?search=" + search
@@ -349,13 +395,12 @@ export const fetchUserConfirmerLic = async (search?:string) => {
   }
 };
 
-
 export const fetchUserApprovalLic = async (search?: string) => {
   try {
     const response = await axiosInstance.get(
       "mas/user-approval-license-users?emp_id=" + search
     );
-    console.log('mainres',response);
+    console.log("mainres", response);
     return response;
   } catch (error) {
     throw error;
@@ -364,9 +409,7 @@ export const fetchUserApprovalLic = async (search?: string) => {
 
 export const fetchNotify = async () => {
   try {
-    const response = await axiosInstance.get(
-      "notification"
-    );
+    const response = await axiosInstance.get("notification");
 
     return response;
   } catch (error) {
