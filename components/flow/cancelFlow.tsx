@@ -1,7 +1,7 @@
 import { RequestListType } from "@/app/types/request-list-type";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
-import { requests } from "@/services/bookingUser";
+import { fetchRequests } from "@/services/bookingAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useRef, useState } from "react";
 import FilterModal from "../modal/filterModal";
@@ -19,12 +19,14 @@ export default function CancelFlow() {
   const [filterDate, setFilterDate] = useState<string>("");
   const [params, setParams] = useState({
     search: "",
-    vehicle_owner_dept: "",
+    vehicle_owner_dept_sap: "",
     ref_request_status_code: "90",
     startdate: "",
     enddate: "",
     car_type: "",
     category_code: "",
+    order_by: "request_no",
+    order_dir: "desc",
     page: 1,
     limit: 10,
   });
@@ -87,12 +89,14 @@ export default function CancelFlow() {
   const handleClearAllFilters = () => {
     setParams({
       search: "",
-      vehicle_owner_dept: "",
+      vehicle_owner_dept_sap: "",
       ref_request_status_code: "90",
       startdate: "",
       enddate: "",
       car_type: "",
       category_code: "",
+      order_by: "request_no",
+      order_dir: "desc",
       page: 1,
       limit: 10,
     });
@@ -111,9 +115,9 @@ export default function CancelFlow() {
   };
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    const fetchRequestData = async () => {
       try {
-        const response = await requests(params);
+        const response = await fetchRequests(params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -130,7 +134,7 @@ export default function CancelFlow() {
       }
     };
 
-    fetchRequests();
+    fetchRequestData();
   }, [params]);
 
   return (

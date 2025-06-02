@@ -78,7 +78,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
           timeStart: convertToBuddhistDateTime(requestData?.start_datetime || "").time || "",
           timeEnd: convertToBuddhistDateTime(requestData?.end_datetime || "").time || "",
           workPlace: requestData?.work_place || "",
-          purpose: requestData?.objective || "",
+          purpose: requestData?.work_description || "",
           remark: requestData?.remark || "",
         });
         setSelectedTripType(String(requestData?.trip_type || "0"));
@@ -91,7 +91,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       const payload = {
         end_datetime: convertToISO(data.endDate, data.timeEnd),
         number_of_passengers: passengerCount,
-        objective: data.purpose,
+        work_description: data.purpose,
         reserved_time_type: "1",
         start_datetime: convertToISO(data.startDate, data.timeStart),
         trip_type: parseInt(selectedTripType),

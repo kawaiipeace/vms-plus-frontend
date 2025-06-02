@@ -16,6 +16,7 @@ export default function ApproveVehicleForAdminTabs() {
         const fetchMenuFunc = async () => {
           try {
             const response = await fetchMenus();
+            console.log('menu',response);
             const result = response.data;
             setStatusData(result);
           } catch (error) {
@@ -27,7 +28,7 @@ export default function ApproveVehicleForAdminTabs() {
   
         const getTabContent = (code: string) => {
           switch (code) {
-            case "30,31": 
+            case "30,31,40": 
             return <AdminApproveFlow />;
           case "50,51": 
             return <AdminKeyHandOverFlow />;

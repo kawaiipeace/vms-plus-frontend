@@ -30,7 +30,10 @@ interface RequestDetailFormProps {
   editable?: boolean;
 }
 
-export default function RequestDetailForm({ requestId, editable }: RequestDetailFormProps) {
+export default function RequestDetailForm({
+  requestId,
+  editable,
+}: RequestDetailFormProps) {
   const editDriverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -67,7 +70,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestDetail(requestId);
-      console.log("data---", response.data);
+      console.log("reqDetail---", response.data);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -75,6 +78,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
   };
 
   useEffect(() => {
+    console.log("tttt");
     fetchRequestDetailfunc();
   }, [requestId]);
 
@@ -85,10 +89,16 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
   return (
     <>
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
-        <AlertCustom title="คำขอใช้ถูกตีกลับ" desc={`เหตุผล: ${requestData?.rejected_request_reason}`} />
+        <AlertCustom
+          title="คำขอใช้ถูกตีกลับ"
+          desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
+        />
       )}
       {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
-        <AlertCustom title="คำขอใช้ถูกยกเลิกแล้ว" desc={`เหตุผล: ${requestData?.canceled_request_reason}`} />
+        <AlertCustom
+          title="คำขอใช้ถูกยกเลิกแล้ว"
+          desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
+        />
       )}
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
         <div className="w-full row-start-2 md:col-start-1">
@@ -104,12 +114,18 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                 </button>
               )}
             </div>
-            <VehicleUserInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} displayPhone={true} />
+            <VehicleUserInfoCard
+              id={requestData?.vehicle_user_emp_id || ""}
+              requestData={requestData}
+              displayPhone={true}
+            />
           </div>
 
           <div className="form-section">
             <div className="form-section-header">
-              <div className="form-section-header-title">รายละเอียดการเดินทาง</div>
+              <div className="form-section-header-title">
+                รายละเอียดการเดินทาง
+              </div>
               {editable && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
@@ -121,12 +137,21 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
             </div>
 
             <JourneyDetailCard
-              startDate={convertToBuddhistDateTime(requestData?.start_datetime || "").date}
-              endDate={convertToBuddhistDateTime(requestData?.end_datetime || "").date}
-              timeStart={convertToBuddhistDateTime(requestData?.start_datetime || "").time}
-              timeEnd={convertToBuddhistDateTime(requestData?.end_datetime || "").time}
+              startDate={
+                requestData?.start_datetime || ""
+              }
+              endDate={
+                requestData?.end_datetime || ""
+              }
+              timeStart={
+                convertToBuddhistDateTime(requestData?.start_datetime || "")
+                  .time
+              }
+              timeEnd={
+                convertToBuddhistDateTime(requestData?.end_datetime || "").time
+              }
               workPlace={requestData?.work_place}
-              purpose={requestData?.objective}
+              purpose={requestData?.work_description}
               remark={requestData?.remark}
               tripType={requestData?.trip_type}
               numberOfPassenger={requestData?.number_of_passengers}
@@ -135,11 +160,15 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
 
           <div className="form-section">
             <div className="form-section-header">
-              <div className="form-section-header-title">การนัดหมายพนักงานขับรถ</div>
+              <div className="form-section-header-title">
+                การนัดหมายพนักงานขับรถ
+              </div>
               {editable && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                  onClick={() => editDriverAppointmentModalRef.current?.openModal()}
+                  onClick={() =>
+                    editDriverAppointmentModalRef.current?.openModal()
+                  }
                 >
                   แก้ไข
                 </button>
@@ -165,7 +194,10 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
               )}
             </div>
 
-            <ReferenceCard refNum={requestData?.doc_no} file={requestData?.doc_file} />
+            <ReferenceCard
+              refNum={requestData?.doc_no}
+              file={requestData?.doc_file}
+            />
           </div>
 
           <div className="form-section">
@@ -182,7 +214,16 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                 </button>
               )}
             </div>
-            {requestData?.ref_cost_type_code && <DisburstmentCard refCostTypeCode={requestData?.ref_cost_type_code} />}
+            {requestData?.ref_cost_type_code && (
+              <DisburstmentCard
+                refCostTypeCode={requestData?.ref_cost_type_code}
+                costCenter={requestData?.cost_center}
+                activityNo={requestData?.activity_no || ""}
+                wbsNo={requestData?.wbs_number}
+                networkNo={requestData?.network_no}
+                pmOrderNo={requestData?.pm_order_no}
+              />
+            )}
           </div>
         </div>
 
@@ -190,16 +231,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              approverInfo={{
-                confirmed_request_desk_phone: requestData?.confirmed_request_desk_phone || "",
-                confirmed_request_dept_name_full: requestData?.confirmed_request_dept_name_full || "",
-                confirmed_request_dept_name_short: requestData?.confirmed_request_dept_name_short || "",
-                confirmed_request_dept_sap: requestData?.confirmed_request_dept_sap || "",
-                confirmed_request_emp_id: requestData?.confirmed_request_emp_id || "",
-                confirmed_request_emp_name: requestData?.confirmed_request_emp_name || "",
-                confirmed_request_mobile_phone: requestData?.confirmed_request_mobile_phone || "",
-                confirmed_request_position: requestData?.confirmed_request_position || "",
-              }}
+              progressRequestStatusEmp={requestData?.progress_request_status_emp}
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -212,7 +244,9 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                   <ChooseVehicleCard
                     reqId={requestData?.trn_request_uid}
                     vehicleType={requestData?.request_vehicle_type}
-                    typeName={requestData?.request_vehicle_type?.ref_vehicle_type_name}
+                    typeName={
+                      requestData?.request_vehicle_type?.ref_vehicle_type_name
+                    }
                     chooseVehicle={editable && true}
                   />
                 )}
@@ -231,15 +265,21 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                       <div className="card-content">
                         <div className="card-content-top card-content-top-inline">
                           <div className="card-content-top-left">
-                            <div className="card-title">ระบบเลือกยานพาหนะให้อัตโนมัติ</div>
+                            <div className="card-title">
+                              ระบบเลือกยานพาหนะให้อัตโนมัติ
+                            </div>
                             <div className="supporting-text-group">
-                              <div className="supporting-text">สายงานดิจิทัล</div>
+                              <div className="supporting-text">
+                                สายงานดิจิทัล
+                              </div>
                             </div>
                           </div>
                           {editable && (
                             <button
                               className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() => vehiclePickModalRef.current?.openModal()}
+                              onClick={() =>
+                                vehiclePickModalRef.current?.openModal()
+                              }
                             >
                               เลือกประเภทยานพาหนะ
                             </button>
@@ -248,8 +288,12 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
 
                         <div className="card-item-group d-flex">
                           <div className="card-item col-span-2">
-                            <i className="material-symbols-outlined">directions_car</i>
-                            <span className="card-item-text">{/* {requestData.requestedVehicleTypeName} */}</span>
+                            <i className="material-symbols-outlined">
+                              directions_car
+                            </i>
+                            <span className="card-item-text">
+                              {/* {requestData.requestedVehicleTypeName} */}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -258,12 +302,14 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                 )}
 
                 {requestData?.vehicle &&
-                  (!requestData?.is_admin_choose_vehicle || requestData?.is_admin_choose_vehicle === "0") && (
+                  (!requestData?.is_admin_choose_vehicle ||
+                    requestData?.is_admin_choose_vehicle === "0") && (
                     <CarDetailCard
                       reqId={requestData?.trn_request_uid}
                       vehicle={requestData?.vehicle}
+                      requestData={requestData}
                       seeDetail={true}
-                      selectVehicle={true}
+                      selectVehicle={requestData?.ref_request_status_code === "30" ? true : false}
                     />
                   )}
 
@@ -271,6 +317,7 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                   <ChooseDriverCard
                     reqId={requestData?.trn_request_uid}
                     number={requestData?.number_of_available_drivers}
+                    onChooseDriver={handleModalUpdate}
                     chooseDriver={editable && true}
                   />
                 )}
@@ -282,8 +329,12 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                       driver_emp_id={requestData?.driver_emp_id}
                       driver_emp_name={requestData?.driver_emp_name}
                       driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
-                      driver_internal_contact_number={requestData?.driver_internal_contact_number}
-                      driver_mobile_contact_number={requestData?.driver_mobile_contact_number}
+                      driver_internal_contact_number={
+                        requestData?.driver_internal_contact_number
+                      }
+                      driver_mobile_contact_number={
+                        requestData?.driver_mobile_contact_number
+                      }
                       driver_image_url={requestData?.driver_image_url}
                       seeDetail={true}
                     />
@@ -296,7 +347,8 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
                         driverDetail={requestData?.driver}
                         showPhone={true}
                         seeDetail={true}
-                        selectDriver={true}
+                        selectDriver={    requestData?.ref_request_status_code === "30" ? true : false}
+                        onUpdate={handleModalUpdate}
                       />
                     </div>
                   )
@@ -331,7 +383,12 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
         ref={vehicleUserModalRef}
         onUpdate={handleModalUpdate}
       />
-      <ReferenceModal ref={referenceModalRef} requestData={requestData} role="admin" onUpdate={handleModalUpdate} />
+      <ReferenceModal
+        ref={referenceModalRef}
+        requestData={requestData}
+        role="admin"
+        onUpdate={handleModalUpdate}
+      />
       <DisbursementModal
         ref={disbursementModalRef}
         requestData={requestData}
@@ -348,7 +405,10 @@ export default function RequestDetailForm({ requestId, editable }: RequestDetail
       />
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <div className="form-action">
-          <button className="btn btn-primary" onClick={() => sendbackRequestModalRef.current?.openModal()}>
+          <button
+            className="btn btn-primary"
+            onClick={() => sendbackRequestModalRef.current?.openModal()}
+          >
             ส่งคำขออีกครั้ง
           </button>
         </div>

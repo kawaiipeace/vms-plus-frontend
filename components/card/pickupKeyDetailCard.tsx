@@ -37,7 +37,7 @@ export default function PickupKeyDetailCard({
               <div className="form-group form-plaintext">
                 <i className="material-symbols-outlined">pin_drop</i>
                 <div className="form-plaintext-group">
-                  <div className="form-label">สถานที่นัดหมาย</div>
+                  <div className="form-label">สถานที่</div>
                   <div className="form-text">{receiveKeyPlace}</div>
                 </div>
               </div>

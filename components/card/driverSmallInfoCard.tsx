@@ -15,6 +15,7 @@ interface DriverSmallInfoCardProps {
   selectDriver?: boolean;
   reqId?: string;
   noBack?: boolean;
+  onUpdate?: () => void;
 }
 
 export default function DriverSmallInfoCard({
@@ -26,6 +27,7 @@ export default function DriverSmallInfoCard({
   selectDriver,
   reqId,
   noBack,
+  onUpdate
 }: DriverSmallInfoCardProps) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
@@ -196,6 +198,7 @@ export default function DriverSmallInfoCard({
         ref={adminDriverPickModalRef}
         reqId={reqId}
         onClickDetail={seeDriverDetail}
+        onUpdate={onUpdate}
       />
 
       {noBack && (
@@ -211,6 +214,7 @@ export default function DriverSmallInfoCard({
           ref={driverInfoModalRef}
           id={driverDetail?.mas_driver_uid}
           pickable={true}
+          onPick={onUpdate}
           onBack={() => adminDriverPickModalRef.current?.openModal()}
         />
       )}

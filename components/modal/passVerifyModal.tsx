@@ -1,6 +1,6 @@
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { adminApproveRequest } from "@/services/bookingAdmin";
-import { fetchVehicleUsers } from "@/services/masterService";
+import { fetchFinalApprovalUsers, fetchVehicleUsers } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,12 @@ const PassVerifyModal = forwardRef<
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      if(id){
+        fetchRequests(id);
+      }
+      modalRef.current?.showModal()
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
@@ -46,14 +51,15 @@ const PassVerifyModal = forwardRef<
 
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchRequests = async () => {
+
+    const fetchRequests = async (id: string) => {
       try {
-        const response = await fetchVehicleUsers("");
+        const response = await fetchFinalApprovalUsers(id);
+        console.log('finalapprover',response);
         if (response.status === 200) {
-          const vehicleUserData: VehicleUserType[] = response.data;
+          const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
-          const driverOptionsArray = vehicleUserData.map((user) => ({
+          const driverOptionsArray = vehicleUserData.map((user:any) => ({
             value: user.emp_id,
             label: `${user.full_name} (${user.dept_sap})`,
           }));
@@ -63,10 +69,12 @@ const PassVerifyModal = forwardRef<
           if (driverOptionsArray.length > 0) {
             setSelectedVehicleUserOption(driverOptionsArray[0]);
             const defaultUser = vehicleUserData.find(
-              (user) => user.emp_id === driverOptionsArray[0].value
+              (user:any) => user.emp_id === driverOptionsArray[0].value
             );
+  
             if (defaultUser) {
-              setSelectedUserDept(defaultUser.dept_sap_short);
+              const text = defaultUser.posi_text+"/"+defaultUser.dept_sap_short;
+              setSelectedUserDept(text);
             }
           }
         }
@@ -74,8 +82,8 @@ const PassVerifyModal = forwardRef<
         console.error("Error fetching requests:", error);
       }
     };
-    fetchRequests();
-  }, []);
+  
+
 
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
@@ -87,7 +95,7 @@ const PassVerifyModal = forwardRef<
     );
 
     if (empData) {
-      setSelectedUserDept(empData.dept_sap_short || "");
+      setSelectedUserDept(empData.posi_text+"/"+empData.dept_sap_short || "");
     }
   };
 

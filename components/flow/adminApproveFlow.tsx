@@ -20,7 +20,7 @@ export default function AdminApproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
-    ref_request_status_code: "",
+    ref_request_status_code: "30,31,40",
     startdate: "",
     enddate: "",
     car_type: "",
@@ -56,22 +56,24 @@ export default function AdminApproveFlow() {
     }));
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
-    "30": { iconName: "schedule", status: "info" },
-    "31": { iconName: "reply", status: "warning" },
-    "40": { iconName: "check", status: "success" },
-    "41": { iconName: "check", status: "success" },
-    "50": { iconName: "vpn_key", status: "info" },
-    "51": { iconName: "vpn_key", status: "info" },
-    "60": { iconName: "directions_car", status: "info" },
-    "70": { iconName: "build", status: "warning" },
-    "71": { iconName: "build", status: "warning" },
-    "80": { iconName: "done_all", status: "success" },
-    "90": { iconName: "delete", status: "default" },
-  };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "30": { iconName: "schedule", status: "info" },
+      "31": { iconName: "reply", status: "warning" },
+      "40": { iconName: "check", status: "success" },
+      "41": { iconName: "check", status: "success" },
+      "50": { iconName: "vpn_key", status: "info" },
+      "51": { iconName: "vpn_key", status: "info" },
+      "60": { iconName: "directions_car", status: "info" },
+      "70": { iconName: "build", status: "warning" },
+      "71": { iconName: "build", status: "warning" },
+      "80": { iconName: "done_all", status: "success" },
+      "90": { iconName: "delete", status: "default" },
+    };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -93,7 +95,9 @@ export default function AdminApproveFlow() {
   }) => {
     console.log("department", department);
     const mappedNames = selectedStatuses.map(
-      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
+      (code) =>
+        summary.find((item) => item.ref_request_status_code === code)
+          ?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
@@ -109,8 +113,12 @@ export default function AdminApproveFlow() {
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
       vehicle_owner_dept_sap: department || "",
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate:
+        selectedStartDate &&
+        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate:
+        selectedEndDate &&
+        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
@@ -132,13 +140,19 @@ export default function AdminApproveFlow() {
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
+      setFilterNames((prevFilterNames) =>
+        prevFilterNames.filter((name) => name !== filterValue)
+      );
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
-          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
-          return name !== filterValue;
-        });
+        const updatedStatuses = prevParams.ref_request_status_code
+          .split(",")
+          .filter((code) => {
+            const name = summary.find(
+              (item) => item.ref_request_status_code === code
+            )?.ref_request_status_name;
+            return name !== filterValue;
+          });
 
         setFilterNum(updatedStatuses.length);
 
@@ -185,6 +199,7 @@ export default function AdminApproveFlow() {
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
+          console.log('requestDataAdmin',requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -219,10 +234,20 @@ export default function AdminApproveFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -240,10 +265,20 @@ export default function AdminApproveFlow() {
             if (!config || item.count === 0) return null;
 
             return (
-              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
                   title={item.ref_request_status_name}
                   number={item.count}
                   onClick={() => {
@@ -255,7 +290,10 @@ export default function AdminApproveFlow() {
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
 
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
@@ -302,18 +340,25 @@ export default function AdminApproveFlow() {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {filterNum}
+              </span>
             </div>
           </button>
-
         </div>
       </div>
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
+          <span
+            key={index}
+            className="badge badge-brand badge-outline rounded-sm mr-2"
+          >
             {name}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("status", name)}
+            >
               close_small
             </i>
           </span>
@@ -321,7 +366,10 @@ export default function AdminApproveFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("date", filterDate)}
+            >
               close_small
             </i>
           </span>
@@ -342,19 +390,19 @@ export default function AdminApproveFlow() {
         </>
       )}
 
-      {dataRequest !== null && filterDate.length <= 0 && (
-        <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-          button="ล้างตัวกรอง"
-          displayBtn={true}
-          btnType="secondary"
-          useModal={handleClearAllFilters}
-        />
-      )}
-
-      {dataRequest === null && (
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
+        )
+      ) : (
         <ZeroRecord
           imgSrc="/assets/img/graphic/empty.svg"
           title="ไม่มีคำขอใช้ยานพาหนะ"
@@ -368,7 +416,39 @@ export default function AdminApproveFlow() {
           button={""}
         />
       )}
-      <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
+
+      {/* {dataRequest !== null && filterDate.length <= 0 && (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
+      )} */}
+
+      {/* {dataRequest === null && (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ยานพาหนะ"
+          desc={
+            <>
+              เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล<br></br>
+              รายการคำขอจะแสดงที่นี่
+            </>
+          }
+          displayBtn={false}
+          button={""}
+        />
+      )} */}
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        department={true}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </>
   );
 }

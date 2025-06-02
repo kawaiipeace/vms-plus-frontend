@@ -7,9 +7,10 @@ interface Props {
   chooseDriver?: boolean;
   number?: number;
   reqId?: string;
+  onChooseDriver?: () => void;
 }
 
-export default function ChooseDriverCard({ chooseDriver, number, reqId }: Props) {
+export default function ChooseDriverCard({ chooseDriver, number, reqId, onChooseDriver }: Props) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -73,6 +74,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId }: Props)
         ref={adminDriverPickModalRef}
         reqId={reqId}
         onClickDetail={seeDriverDetail}
+        onUpdate={onChooseDriver}
       />
 
       <DriverInfoModal
