@@ -4,7 +4,7 @@ import DatePicker, { DatePickerRef } from "@/components/datePicker";
 import { driverStatusRef, listDriverDepartment } from "@/services/driversManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import CustomSelectOnSearch from "@/components/customSelectOnSearch";
+import CustomSearchSelect from "@/components/customSelectSerch";
 
 interface Props {
   onSubmitFilter: (filter: {
@@ -15,6 +15,7 @@ interface Props {
     selectedEndDate: string;
     driverDepartmentOptions: { value: string; label: string | React.ReactNode };
   }) => void;
+  handleCountFilter?: () => void;
 }
 
 interface CustomSelectOption {
@@ -193,7 +194,9 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
               {/* <form method="dialog"> */}
               <button
                 className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
-                onClick={handleCloseModal}
+                onClick={() => {
+                  handleCloseModal();
+                }}
               >
                 <i className="material-symbols-outlined">close</i>
               </button>
@@ -209,11 +212,11 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                   </div>
                   <div className="col-span-1">
                     <div className="form-group">
-                      <CustomSelectOnSearch
+                      <CustomSearchSelect
                         w="md:w-full"
                         options={driverDepartmentList}
                         value={driverDepartmentOptions}
-                        enableSearchOnApi={true}
+                        enableSearch
                         onChange={handleDriverDepartmentChange}
                       />
                     </div>
@@ -388,7 +391,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() =>
+                  onClick={() => {
                     onSubmitFilter({
                       selectedStatuses,
                       selectedDriverStatus,
@@ -396,8 +399,9 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                       selectedStartDate,
                       selectedEndDate,
                       driverDepartmentOptions,
-                    })
-                  }
+                    });
+                    // if (handleCountFilter) handleCountFilter();
+                  }}
                 >
                   ตกลง
                 </button>
