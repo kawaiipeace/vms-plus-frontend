@@ -9,7 +9,7 @@ import TravelInfoTab from "../travelInfoTab";
 import ReturnCarTab from "@/components/admin/returnCarTab";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { fetchRequestKeyDetail } from "@/services/masterService";
+import { fetchRequestAdminKeyDetail, fetchRequestKeyDetail } from "@/services/masterService";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import AdminRecordFuelTab from "@/components/admin/tabs/adminRecordFuelTab";
 
@@ -52,7 +52,7 @@ export default function RequestDetailTabs({
 
       const fetchRequestDetailfunc = async () => {
         try {
-          const response = await fetchRequestKeyDetail(requestId);
+          const response = await fetchRequestAdminKeyDetail(requestId);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -174,7 +174,7 @@ export default function RequestDetailTabs({
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist z-[40] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
+      <div className="flex border-b tablist z-[] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
         {tabs.map((tab, index) => (
           <button
             key={index}

@@ -20,9 +20,10 @@ import { convertToThaiDate } from "@/utils/driver-management";
 import { shortenFilename } from "@/utils/shortenFilename";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 
 const schema = yup
   .object()
@@ -84,7 +85,7 @@ export default function RequestForm() {
   const router = useRouter();
   const { profile } = useProfile();
   const [fileName, setFileName] = useState("อัพโหลดเอกสารแนบ");
-  const [selectedTripType, setSelectedTripType] = useState("1");
+  const [selectedTripType, setSelectedTripType] = useState("0");
   const { formData, updateFormData } = useFormContext();
   const [loadingDrivers, setLoadingDrivers] = useState(false);
   const [loadingCostCenter, setLoadingCostCenter] = useState(false);
@@ -116,6 +117,18 @@ export default function RequestForm() {
   const [costCenterDatas, setCostCenterDatas] = useState<costCenter[]>([]);
   const [fileError, setFileError] = useState("");
   const [approverData, setApproverData] = useState<ApproverUserType>();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Add a handler to remove the uploaded file
+  const handleRemoveFile = () => {
+    setFileName("อัพโหลดเอกสารแนบ");
+    setValue("attachmentFile", "");
+    setFileError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -183,8 +196,14 @@ export default function RequestForm() {
     }
   }, [driverOptions, selectedVehicleUserOption]);
 
-  useEffect(() => {
 
+  useEffect(() => {
+    if (!formData.timeStart) {
+      setValue("timeStart", "08:00");
+    }
+    if (!formData.timeEnd) {
+      setValue("timeEnd", "16:00");
+    }
     if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
       if (formData.vehicleUserEmpId) {
         setSelectedVehicleUserOption({
@@ -202,18 +221,16 @@ export default function RequestForm() {
           });
           setValue("telInternal", defaultVehicleUser.tel_internal);
           setValue("telMobile", defaultVehicleUser.tel_mobile);
-          setValue("deptSapShort", defaultVehicleUser.dept_sap_short);
+          setValue(
+            "deptSapShort",
+            defaultVehicleUser.posi_text +
+              "/" +
+              defaultVehicleUser.dept_sap_short
+          );
           setValue("deptSap", defaultVehicleUser.dept_sap);
           setValue("userImageUrl", defaultVehicleUser.image_url);
         }
       }
-    }
-
-    if(!formData.timeStart){
-      setValue('timeStart', "08:00");
-    }
-    if(!formData.timeEnd){
-      setValue('timeEnd', "16:00");
     }
 
     const fetchApprover = async () => {
@@ -221,7 +238,6 @@ export default function RequestForm() {
         const response = await fetchUserApproverUsers("");
         if (response.status === 200) {
           const data = response.data[0];
-          console.log("approver", data);
           setApproverData(data);
         }
       } catch (error) {
@@ -251,6 +267,7 @@ export default function RequestForm() {
       setValue("userImageUrl", empData.image_url);
     }
   };
+
   const handleCostTypeChange = async (selectedOption: CustomSelectOption) => {
     setSelectedCostTypeOption(
       selectedOption as { value: string; label: string }
@@ -332,10 +349,12 @@ export default function RequestForm() {
     },
   });
 
+  // Replace your existing watches and add:
   const startDate = watch("startDate");
   const endDate = watch("endDate");
+  const isSameDay = startDate === endDate;
   const isOvernightDisabled = startDate === endDate;
-
+  const [minTime, setMinTime] = useState("8:00");
   // ADD: Require cost center for type 2
   const isCostCenterRequired =
     selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
@@ -421,9 +440,10 @@ export default function RequestForm() {
       setLoadingDrivers(false);
     }
   };
+ 
 
   const handleCostCenterSearch = async (search: string) => {
-    if (search.trim().length > 3) {
+    if (search.trim().length < 3) {
       setLoadingCostCenter(true);
       try {
         const response = await fetchCostCenter(search);
@@ -529,7 +549,7 @@ export default function RequestForm() {
                       </Tooltip>
                     </label>
 
-                    <CustomSelect
+                    <CustomSelectOnSearch
                       iconName="person"
                       w="w-full"
                       options={driverOptions}
@@ -656,6 +676,7 @@ export default function RequestForm() {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
+                        // minDate={startDate}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -666,16 +687,20 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่ออกเดินทาง</label>
                     <div className="input-group">
-                    <div className="input-group-prepend">
+                      <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                          schedule
-                          </i>
+                          <i className="material-symbols-outlined">schedule</i>
                         </span>
                       </div>
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
-                        onChange={(timeStr) => setValue("timeStart", timeStr)}
+                        defaultValue={
+                          formData.timeEnd ? formData.timeEnd : "8:00"
+                        }
+                        onChange={(dateStr) => {
+                          setValue("timeStart", dateStr);
+                          setMinTime(dateStr);
+                        }}
                       />
                     </div>
                   </div>
@@ -695,8 +720,9 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-                        defaultValue={formData.endDate ? convertToThaiDate(formData.endDate) : "08:00"}
+                        defaultValue={convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => setValue("endDate", dateStr)}
+                        minDate={startDate}
                       />
                     </div>
                   </div>
@@ -706,17 +732,18 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เวลาที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
-                    <div className="input-group-prepend">
+                      <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">
-                          schedule
-                          </i>
+                          <i className="material-symbols-outlined">schedule</i>
                         </span>
                       </div>
                       <TimePicker
-                        defaultValue={formData.timeEnd}
+                        defaultValue={
+                          formData.timeEnd ? formData.timeEnd : "16:00"
+                        }
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
+                        minTime={ isSameDay ? minTime : undefined}
                       />
                     </div>
                   </div>
@@ -743,7 +770,7 @@ export default function RequestForm() {
                       <RadioButton
                         name="tripType"
                         label="ไป-กลับ"
-                        value="1"
+                        value="0"
                         selectedValue={selectedTripType}
                         setSelectedValue={setSelectedTripType}
                       />
@@ -751,7 +778,7 @@ export default function RequestForm() {
                       <RadioButton
                         name="tripType"
                         label="ค้างแรม"
-                        value="2"
+                        value="1"
                         selectedValue={selectedTripType}
                         disabled={isOvernightDisabled}
                         setSelectedValue={setSelectedTripType}
@@ -846,24 +873,42 @@ export default function RequestForm() {
                         fileError && "is-invalid"
                       }`}
                     >
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">
+                      <div className="flex items-center gap-2 w-full justify-between">
+                        {/* File input inside label for click-to-upload */}
+                        <label className="flex items-center gap-2 cursor-pointer mb-0">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="material-symbols-outlined">
+                                attach_file
+                              </i>
+                            </span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="file-input hidden"
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
+                          />
+                          <div className="input-uploadfile-label w-full">
+                            {fileName}
+                          </div>
+                        </label>
+                        {/* Remove button OUTSIDE the label */}
+                        {fileName !== "อัพโหลดเอกสารแนบ" && (
+                          <button
+                            type="button"
+                            onClick={handleRemoveFile}
+                            className="ml-2 text-gray-400 hover:text-gray-500"
+                            aria-label="Remove file"
+                            tabIndex={0}
+                          >
                             <i className="material-symbols-outlined">
-                              attach_file
+                              close_small
                             </i>
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="application/pdf"
-                          className="file-input hidden"
-                          onChange={handleFileChange}
-                        />
-                        <div className="input-uploadfile-label w-full">
-                          {fileName}
-                        </div>
-                      </label>
+                          </button>
+                        )}
+                      </div>
                     </div>
                     {fileError && <FormHelper text={fileError} />}
                   </div>
@@ -910,6 +955,7 @@ export default function RequestForm() {
                       w="w-full"
                       options={costTypeOptions}
                       value={selectedCostTypeOption}
+                      position="top"
                       onChange={handleCostTypeChange}
                     />
                   </div>
@@ -945,7 +991,7 @@ export default function RequestForm() {
                   <div className="md:col-span-4 col-span-12">
                     <div className="form-group">
                       <label className="form-label">ศูนย์ต้นทุน</label>
-                      <CustomSelect
+                      <CustomSelectOnSearch
                         iconName="business_center"
                         w="w-full"
                         options={costCenterOptions}

@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import FilterDriverModal from "../annual-driver-license/filterDriverModal";
 import DriverLicApproverListTable from "../table/driver-lic-approver-list-table";
 import PaginationControls from "../table/pagination-control";
+import { fetchFinalApproverRequests } from "@/services/bookingApprover";
 
 dayjs.extend(buddhistEra);
 
@@ -34,7 +35,12 @@ interface ActiveFilter {
   displayName: string;
 }
 
-export default function DriverLicApproveFlow() {
+
+interface Props {
+  licType: string;
+}
+
+export default function DriverLicApproveFlow({ licType }: Props) {
   const [params, setParams] = useState({
     search: "",
     ref_request_annual_driver_status_code: "",
@@ -110,7 +116,13 @@ export default function DriverLicApproveFlow() {
           annual_yyyy: params.annual_yyyy ? (parseInt(params.annual_yyyy) - 543).toString() : "",
         };
 
-        const response = await fetchDriverLicRequests(apiParams);
+        let response;
+        if (licType === "ตรวจสอบ") {
+          response = await fetchDriverLicRequests(params);
+        } else {
+          response = await fetchFinalApproverRequests(params);
+        }
+
 
         if (response.status === 200) {
           setDataRequest(response.data.requests);
@@ -347,7 +359,7 @@ export default function DriverLicApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <DriverLicApproverListTable defaultData={dataRequest} pagination={pagination} />
+            <DriverLicApproverListTable defaultData={dataRequest} pagination={pagination} licType={licType} />
           </div>
           <PaginationControls
             pagination={pagination}

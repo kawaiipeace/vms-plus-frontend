@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomSelect, { CustomSelectOption } from "../customSelect";
+import { CustomSelectOption } from "../customSelect";
 import {
   getCarpoolApprover,
   getCarpoolApproverDetails,
@@ -17,6 +17,8 @@ import { CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
+import CustomSearchSelect from "../customSelectSerch";
+import FormHelper from "../formHelper";
 
 interface Props {
   id?: string;
@@ -44,8 +46,9 @@ const AddCarpoolApproverModal = forwardRef<
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [validPhone, setValidPhone] = useState<boolean>(false);
 
-  const { formData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -69,31 +72,57 @@ const AddCarpoolApproverModal = forwardRef<
   useEffect(() => {
     const fetchCarpoolApproverDetailsFunc = async () => {
       if (editId) {
-        try {
-          const response = await getCarpoolApproverDetails(editId);
-          const result = response.data;
+        if (id) {
+          try {
+            const response = await getCarpoolApproverDetails(editId);
+            const result = response.data;
+            setSelectedApprover({
+              value: result.approver_emp_no,
+              label:
+                result.approver_emp_name + " (" + result.approver_emp_no + ")",
+            });
+            setDeptSapShort(result.approver_dept_sap_short);
+            setInternalContactNumber(result.internal_contact_number);
+            setMobileContactNumber(result.mobile_contact_number);
+          } catch (error) {
+            console.error("Error fetching status data:", error);
+          }
+        } else {
+          const approve = (formData.carpool_approvers || []).find(
+            (item) => item.approver_emp_no === editId
+          );
           setSelectedApprover({
-            value: result.approver_emp_no,
+            value: approve?.approver_emp_no || "",
             label:
-              result.approver_emp_name + " (" + result.approver_emp_no + ")",
+              approve?.approver_emp_name +
+              " (" +
+              approve?.approver_emp_no +
+              ")",
           });
-          setDeptSapShort(result.approver_dept_sap_short);
-          setInternalContactNumber(result.internal_contact_number);
-          setMobileContactNumber(result.mobile_contact_number);
-        } catch (error) {
-          console.error("Error fetching status data:", error);
+          setDeptSapShort(approve?.approver_dept_sap_short);
+          setInternalContactNumber(approve?.internal_contact_number);
+          setMobileContactNumber(approve?.mobile_contact_number);
         }
       }
     };
 
     fetchCarpoolApproverDetailsFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (editId) {
-      try {
+      approverEdit(editId);
+    } else {
+      approverCreate();
+    }
+  };
+
+  const approverEdit = async (editId: string) => {
+    try {
+      if (id) {
         const response = await putCarpoolApproverUpdate(editId, {
-          mas_carpool_uid: id || formData.mas_carpool_uid,
+          mas_carpool_uid: id,
           approver_emp_no: selectedApprover?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -115,23 +144,57 @@ const AddCarpoolApproverModal = forwardRef<
             status: "success",
           });
         }
-      } catch (error: any) {
-        console.log(error);
+      } else {
+        const carpool_approvers = (formData.carpool_approvers || []).map((e) =>
+          e.approver_emp_no === editId
+            ? {
+                ...e,
+                approver_emp_no: selectedApprover?.value as string,
+                internal_contact_number: internal_contact_number as string,
+                mobile_contact_number: mobile_contact_number as string,
+              }
+            : e
+        );
+        updateFormData({
+          ...formData,
+          carpool_approvers,
+        });
+        setSelectedApprover(undefined);
+        setDeptSapShort("");
+        setInternalContactNumber("");
+        setMobileContactNumber("");
+        modalRef.current?.close();
         setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
-          ),
-          status: "error",
+          title: "แก้ไขข้อมูลผู้อนุมัติสำเร็จ",
+          desc:
+            "ข้อมูลการติดต่อของผู้อนุมัติ " +
+            carpool_approvers.find(
+              (item) => item.approver_emp_no === selectedApprover?.value
+            )?.approver_emp_name +
+            " ได้รับการแก้ไขเรียบร้อยแล้ว",
+          status: "success",
         });
       }
-    } else {
-      try {
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
+    }
+  };
+
+  const approverCreate = async () => {
+    try {
+      if (id) {
         const response = await postCarpoolApproverCreate({
-          mas_carpool_uid: id || formData.mas_carpool_uid,
+          mas_carpool_uid: id,
           approver_emp_no: selectedApprover?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -144,19 +207,46 @@ const AddCarpoolApproverModal = forwardRef<
           setMobileContactNumber("");
           setRefetch(true);
         }
-      } catch (error: any) {
-        console.log(error);
-        setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
-          ),
-          status: "error",
+      } else {
+        const approve = approver.find(
+          (e) => e.emp_id === selectedApprover?.value
+        );
+        const old = (formData.carpool_approvers || []).filter(
+          (e) => e.approver_emp_no !== selectedApprover?.value
+        );
+        updateFormData({
+          ...formData,
+          carpool_approvers: [
+            ...old,
+            {
+              approver_emp_name: approve?.full_name || "",
+              approver_dept_sap_short: approve?.dept_sap_short || "",
+              is_main_approver: old.length === 0 ? "1" : "0",
+              image_url: approve?.image_url || "",
+              approver_emp_no: selectedApprover?.value as string,
+              internal_contact_number: internal_contact_number as string,
+              mobile_contact_number: mobile_contact_number as string,
+            },
+          ],
         });
+        modalRef.current?.close();
+        setSelectedApprover(undefined);
+        setDeptSapShort("");
+        setInternalContactNumber("");
+        setMobileContactNumber("");
       }
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
     }
   };
 
@@ -168,6 +258,7 @@ const AddCarpoolApproverModal = forwardRef<
     const mobile = approve?.tel_mobile;
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
+    if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
     setDeptSapShort(approve?.dept_sap_short);
   };
 
@@ -197,7 +288,7 @@ const AddCarpoolApproverModal = forwardRef<
                 <div className="col-span-2">
                   <div className="form-group">
                     <label className="form-label">ผู้อนุมัติ</label>
-                    <CustomSelect
+                    <CustomSearchSelect
                       iconName="person"
                       w="w-full"
                       options={approver.map((item) => ({
@@ -206,6 +297,8 @@ const AddCarpoolApproverModal = forwardRef<
                       }))}
                       value={selectedApprover}
                       onChange={selectApprover}
+                      enableSearch
+                      classNamePlaceholder="flex-1 text-start"
                     />
                   </div>
                 </div>
@@ -270,9 +363,19 @@ const AddCarpoolApproverModal = forwardRef<
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
                         value={mobile_contact_number}
-                        onChange={(e) => setMobileContactNumber(e.target.value)}
+                        onChange={(e) => {
+                          setMobileContactNumber(e.target.value);
+                          if (e.target.value) {
+                            setValidPhone(!/^\d{10}$/.test(e.target.value));
+                          } else {
+                            setValidPhone(false);
+                          }
+                        }}
                       />
                     </div>
+                    {validPhone && (
+                      <FormHelper text={"กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง"} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -287,6 +390,7 @@ const AddCarpoolApproverModal = forwardRef<
               type="button"
               className="btn btn-primary col-span-1"
               onClick={handleConfirm}
+              disabled={validPhone}
             >
               {editId ? "บันทึก" : "เพิ่ม"}
             </button>

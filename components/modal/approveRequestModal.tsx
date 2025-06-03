@@ -84,14 +84,14 @@ const ApproveRequestModal = forwardRef<
               onSuccess
             }
             router.push(
-              `${basePath}?approvelic-req=success&request-id=${requestId}`
+              `${basePath}?licenseType=ตรวจสอบ&approvelic-req=success&request-id=${requestId}`
             );
           }else  if (role === "licFinalAdmin") {
             if(onSuccess) {
               onSuccess
             }
             router.push(
-              `${basePath}?approvelicfinal-req=success&request-id=${requestId}`
+              `${basePath}?licenseType=อนุมัติ&approvelicfinal-req=success&request-id=${requestId}`
             );
           }else {
           
@@ -126,7 +126,7 @@ const ApproveRequestModal = forwardRef<
 
           <div className="modal-body overflow-y-auto text-center">
             <Image
-              src="/assets/img/graphic/confirm_request.svg"
+              src="/assets/img/graphic/confirm_approval.svg"
               className="w-full confirm-img"
               width={100}
               height={100}

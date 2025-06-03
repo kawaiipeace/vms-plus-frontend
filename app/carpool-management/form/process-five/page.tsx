@@ -60,13 +60,6 @@ export default function CarpoolProcessFive() {
   }, [refetch]);
 
   useEffect(() => {
-    if (!id) {
-      if (formData.mas_carpool_uid) fetchCarpoolDriverSearchFunc();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]);
-
-  useEffect(() => {
     if (id) {
       fetchCarpoolDriverSearchFunc();
     }
@@ -75,13 +68,10 @@ export default function CarpoolProcessFive() {
 
   const fetchCarpoolDriverSearchFunc = async (newPagination?: any) => {
     try {
-      const response = await getCarpoolDriverSearch(
-        id || formData.mas_carpool_uid,
-        {
-          ...pagination,
-          ...newPagination,
-        }
-      );
+      const response = await getCarpoolDriverSearch(id || "", {
+        ...pagination,
+        ...newPagination,
+      });
       const result = response.data;
       setData(result.drivers);
       setRefetch(false);
@@ -92,20 +82,35 @@ export default function CarpoolProcessFive() {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchCarpoolDriverSearchFunc({
-      ...pagination,
-      page: newPage,
-    });
+    if (id) {
+      fetchCarpoolDriverSearchFunc({
+        ...pagination,
+        page: newPage,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        page: newPage,
+      });
+    }
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    fetchCarpoolDriverSearchFunc({
-      ...pagination,
-      limit,
-      page: 1,
-    });
+    if (id) {
+      fetchCarpoolDriverSearchFunc({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    }
   };
 
   const handleActive = async () => {
@@ -128,6 +133,11 @@ export default function CarpoolProcessFive() {
       console.log(error);
     }
   };
+
+  const start = (pagination.page - 1) * pagination.limit;
+  const dataTable = id
+    ? data
+    : (formData.carpool_drivers || []).slice(start, start + pagination.limit);
 
   return (
     <div>
@@ -181,8 +191,8 @@ export default function CarpoolProcessFive() {
                     <span
                       className={
                         active === "1"
-                          ? "text-[#98A2B3]"
-                          : "text-icon-error cursor-pointer"
+                          ? "text-[#98A2B3] font-bold"
+                          : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
                         active === "1"
@@ -222,7 +232,7 @@ export default function CarpoolProcessFive() {
               <ProcessCreateCarpool step={5} />
             )}
 
-            {data.length > 0 && (
+            {dataTable.length > 0 && (
               <>
                 <div className="flex items-center justify-between">
                   <div className="page-section-header border-0 !pb-0">
@@ -230,7 +240,10 @@ export default function CarpoolProcessFive() {
                       <div className="page-title">
                         <span className="page-title-label">พนักงานขับรถ</span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          {pagination.total} คัน
+                          {id
+                            ? pagination.total
+                            : (formData.carpool_drivers || []).length}{" "}
+                          คน
                         </span>
                       </div>
                     </div>
@@ -250,7 +263,7 @@ export default function CarpoolProcessFive() {
                 </div>
 
                 <CarpoolDriverTable
-                  defaultData={data}
+                  defaultData={dataTable}
                   pagination={pagination}
                   setRefetch={setRefetch}
                 />
@@ -259,8 +272,15 @@ export default function CarpoolProcessFive() {
                   pagination={{
                     limit: pagination.limit,
                     page: pagination.page,
-                    totalPages: pagination.totalPages,
-                    total: pagination.total,
+                    totalPages: id
+                      ? pagination.totalPages
+                      : Math.ceil(
+                          (formData.carpool_drivers || []).length /
+                            pagination.limit
+                        ),
+                    total: id
+                      ? pagination.total
+                      : (formData.carpool_drivers || []).length,
                   }}
                   onPageChange={handlePageChange}
                   onPageSizeChange={handlePageSizeChange}
@@ -268,7 +288,7 @@ export default function CarpoolProcessFive() {
               </>
             )}
 
-            {data.length === 0 && (
+            {dataTable.length === 0 && (
               <div className="zerorecord">
                 <div className="emptystate">
                   <Image
@@ -320,8 +340,7 @@ export default function CarpoolProcessFive() {
               title={"ยืนยันสร้างกลุ่มยานพาหนะ"}
               desc={
                 "คุณหรือผู้ดูแลยานพาหนะประจำกลุ่มสามารถตั้งค่ากลุ่มและจัดการข้อมูลได้ภายหลังคุณต้องการสร้างกลุ่ม " +
-                name +
-                " ใช่หรือไม่"
+                  formData?.form?.carpool_name || name + " ใช่หรือไม่"
               }
               confirmText={"สร้างกลุ่ม"}
             />
@@ -345,7 +364,7 @@ export default function CarpoolProcessFive() {
               remove={!!id}
             />
 
-            {data.length > 0 && !id && (
+            {dataTable.length > 0 && !id && (
               <div className="form-action">
                 <button
                   onClick={() => addCarpoolConfirmModalRef.current?.openModal()}

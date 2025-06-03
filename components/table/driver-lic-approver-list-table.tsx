@@ -23,11 +23,13 @@ interface PaginationType {
 interface Props {
   defaultData: DriverLicListType[];
   pagination: PaginationType;
+  licType: string;
 }
 
 export default function DriverLicApproverListTable({
   defaultData,
   pagination,
+  licType,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
@@ -64,7 +66,9 @@ export default function DriverLicApproverListTable({
         <div className="text-left" data-name="ผู้ขออนุมัติ">
           <div className="flex flex-col">
             <div>{row.original.created_request_emp_name}</div>
-            <div className="text-color-secondary text-xs">{row.original.created_request_dept_sap_name_short}</div>
+            <div className="text-color-secondary text-xs">
+              {row.original.created_request_dept_sap_name_short}
+            </div>
           </div>
         </div>
       ),
@@ -99,14 +103,16 @@ export default function DriverLicApproverListTable({
         ).date;
         return (
           <div className="text-left" data-name="วันที่สร้างคำขอ">
-          {startDateTime}
+            {startDateTime}
           </div>
         );
       },
     },
     {
       accessorKey: "driver_license_expire_date",
-      header: () => <div className="text-center">วันที่สิ้นอายุใบอนุญาตขับขี่</div>,
+      header: () => (
+        <div className="text-center">วันที่สิ้นอายุใบอนุญาตขับขี่</div>
+      ),
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
@@ -114,7 +120,7 @@ export default function DriverLicApproverListTable({
         );
         return (
           <div className="text-left" data-name="วันที่สิ้นอายุใบอนุญาตขับขี่">
-                 {startDateTime.date}
+            {startDateTime.date}
           </div>
         );
       },
@@ -161,7 +167,7 @@ export default function DriverLicApproverListTable({
         const statusValue = row.original.ref_driver_license_type_name;
         return (
           <div className="text-left dataTable-action">
-            {statusValue == "รออนุมัติ" ? 
+            {statusValue == "รออนุมัติ" ? (
               <button
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="รออนุมัติ"
@@ -174,21 +180,22 @@ export default function DriverLicApproverListTable({
               >
                 <i className="material-symbols-outlined">stylus</i>
               </button>
-              :
+            ) : (
               <button
-              className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-              data-tip="ดูรายละเอียดคำขอ"
-              onClick={() =>
-                router.push(
-                  "/administrator/driver-license-confirmer/" +
-                    row.original.trn_request_annual_driver_uid
-                )
-              }
-            >
-              <i className="material-symbols-outlined">quick_reference_all</i>
-            </button>
-            } 
-
+                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                data-tip="ดูรายละเอียดคำขอ"
+                onClick={() =>
+                  router.push(
+                    licType === "ตรวจสอบ"
+                      ? "/administrator/driver-license-confirmer/" +  row.original.trn_request_annual_driver_uid
+                      : "/administrator/driver-license-approver/" +
+                          row.original.trn_request_annual_driver_uid
+                  )
+                }
+              >
+                <i className="material-symbols-outlined">quick_reference_all</i>
+              </button>
+            )}
           </div>
         );
       },

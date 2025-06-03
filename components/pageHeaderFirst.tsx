@@ -27,10 +27,23 @@ export default function PageHeaderFirst({ data }: Props) {
 
   const handleCopyRequestNo = async (text?: string) => {
     if (!text) return;
+
     try {
-      await navigator.clipboard.writeText(text);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed"; // prevent scroll
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // hide tooltip after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Copy failed:", err);
     }
@@ -82,7 +95,8 @@ export default function PageHeaderFirst({ data }: Props) {
           </div>
 
           {data?.ref_request_status_name &&
-            (data?.ref_request_status_name === "อนุมัติ" || data?.ref_request_status_name === "อนุมัติแล้ว" ? (
+            (data?.ref_request_status_name === "อนุมัติ" ||
+            data?.ref_request_status_name === "อนุมัติแล้ว" ? (
               <span className="badge badge-pill-outline badge-success">
                 {data?.ref_request_status_name}
               </span>
@@ -97,7 +111,8 @@ export default function PageHeaderFirst({ data }: Props) {
             ))}
         </div>
 
-        {data?.can_cancel_request && (
+        {(data?.can_cancel_request && data?.ref_request_status_code === "20") && (
+          
           <button
             className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
             onClick={() => cancelRequestModalRef.current?.openModal()}
@@ -108,22 +123,25 @@ export default function PageHeaderFirst({ data }: Props) {
         <button className="btn btn-secondary" onClick={() => window.print()}>
           <i className="material-symbols-outlined">print</i>พิมพ์
         </button>
+        {data?.ref_request_status_code === "20" && (
+          <>
+            <button
+              className="btn btn-secondary"
+              onClick={() => fileBackRequestModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">reply</i>
+              ตีกลับให้แก้ไข
+            </button>
 
-        <button
-          className="btn btn-secondary"
-          onClick={() => fileBackRequestModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">reply</i>
-          ตีกลับให้แก้ไข
-        </button>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => approveRequestModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">check</i>
-          อนุมัติคำขอ
-        </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => approveRequestModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">check</i>
+              อนุมัติคำขอ
+            </button>
+          </>
+        )}
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid}

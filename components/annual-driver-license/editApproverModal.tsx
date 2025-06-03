@@ -42,6 +42,7 @@ const EditApproverModal = forwardRef<
   useImperativeHandle(ref, () => ({
     openModal: () => {
       modalRef.current?.showModal();
+      fetchVehicleUserData();
     },
     closeModal: () => modalRef.current?.close(),
   }));
@@ -66,8 +67,6 @@ const EditApproverModal = forwardRef<
     }
   };
 
-  useEffect(() => {
-    console.log('resquset=======>',requestData);
     const fetchVehicleUserData = async () => {
       setIsLoading(true);
       try {
@@ -99,7 +98,7 @@ const EditApproverModal = forwardRef<
             if (defaultApprover) {
               setSelectedVehicleUserOption(defaultApprover);
               setValue("name", defaultApprover.full_name || defaultApprover.label || "");
-              setValue("position", defaultApprover.posi_text || "");
+              setValue("position", defaultApprover.posi_text +"/"+ defaultApprover.dept_sap_short || "");
             }
           }
         }
@@ -109,8 +108,8 @@ const EditApproverModal = forwardRef<
         setIsLoading(false);
       }
     };
-    fetchVehicleUserData();
-  }, [requestData]);
+  
+
 
   const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;

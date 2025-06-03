@@ -14,6 +14,8 @@ import { getVehicleStatus } from "@/services/carpoolManagement";
 type Props = {
   flag: string;
   onSubmitFilter?: (params: any) => void;
+  vehicleParams: any;
+  setVehicleParams: (p: any) => void;
 };
 
 export type VehicleFilterModalRef = {
@@ -45,7 +47,7 @@ const VEHICLE_ACTIVE = [
 ];
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
-  <div className="flex justify-between items-center bg-white p-6 border-b border-gray-300">
+  <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
     <div className="flex gap-4 items-center">
       <i className="material-symbols-outlined text-gray-500">filter_list</i>
       <div className="flex flex-col">
@@ -206,7 +208,7 @@ const ModalFooter = ({
 };
 
 const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
-  ({ onSubmitFilter }, ref) => {
+  ({ onSubmitFilter, vehicleParams, setVehicleParams }, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -222,8 +224,30 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
     const [params, setParams] = useState<VehicleParams>({
       vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
       ref_vehicle_status_code: [],
-      is_active: VEHICLE_ACTIVE.map((e) => e.id),
+      is_active: [],
     });
+
+    useEffect(() => {
+      if (vehicleParams.ref_vehicle_status_code === "") {
+        setParams({
+          ...params,
+          vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
+        });
+      }
+      if (vehicleParams.is_active === "") {
+        setParams({
+          ...params,
+          is_active: [],
+        });
+      }
+      if (vehicleParams.ref_vehicle_status_code === "") {
+        setParams({
+          ...params,
+          ref_vehicle_status_code: [],
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [vehicleParams]);
 
     const handleSubmitFilter = () => {
       onSubmitFilter?.({
@@ -238,10 +262,14 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
     const handleClearFilter = () => {
       setParams({
         vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
-        ref_vehicle_status_code: vehicleStatus.map((e) =>
-          e.ref_vehicle_status_code.toString()
-        ),
-        is_active: VEHICLE_ACTIVE.map((e) => e.id),
+        ref_vehicle_status_code: [],
+        is_active: [],
+      });
+      setVehicleParams({
+        ...vehicleParams,
+        vehicel_car_type_detail: "",
+        ref_vehicle_status_code: "",
+        is_active: "",
       });
     };
 
@@ -254,12 +282,6 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
 
         setVehicleType(fetchVehicleType.options);
         setVehicleStatus(fetchVehicleStatus);
-        setParams({
-          ...params,
-          ref_vehicle_status_code: fetchVehicleStatus.map((e: any) =>
-            e.ref_vehicle_status_code.toString()
-          ),
-        });
       };
 
       fetchData();

@@ -88,6 +88,8 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
     setShowInfoToast(true);
   };
 
+  console.log("requestData", requestData);
+
   return (
     <>
       {(status == "returnFail" && requestData?.ref_request_status_code === "71") ||

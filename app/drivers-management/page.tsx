@@ -37,9 +37,7 @@ function RequestListContent() {
           title="สร้างข้อมูลพนักงานขับรถสำเร็จ"
           desc={
             <>
-              สร้างข้อมูลพนักงานขับรถ{" "}
-              <span className="font-semibold">{driverCreateName}</span>{" "}
-              เรียบร้อยแล้ว
+              สร้างข้อมูลพนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> เรียบร้อยแล้ว
             </>
           }
           status="success"
@@ -52,8 +50,7 @@ function RequestListContent() {
           title="ลบพนักงานขับรถสำเร็จ"
           desc={
             <>
-              พนักงานขับรถ{" "}
-              <span className="font-semibold">{driverCreateName}</span> <br />
+              พนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> <br />
               ถูกลบจากระบบเรียบร้อยแล้ว
             </>
           }
@@ -176,11 +173,7 @@ const DriverManagementPage = () => {
     <>
       <div className="main-container">
         <SideBar menuName="ข้อมูลพนักงานขับรถ" />
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -192,7 +185,7 @@ const DriverManagementPage = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>ข้อมูลพนักงานขับรถ</a>
+                    <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>
                   </li>
                 </ul>
               </div>

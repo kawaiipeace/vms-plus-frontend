@@ -137,13 +137,17 @@ export default function DrivingRequestProgress({
                           {progress_name}
                         </div>
                         <div className="progress-step-text">
-                          {" "}
-                          {convertToBuddhistDateTime(
-                            progress_datetime|| ""
-                          ).date + " " +
-                            convertToBuddhistDateTime(
-                              progress_datetime|| ""
-                            ).time}{" "}
+                          {progress_datetime !== "0001-01-01T00:00:00Z" && (
+                            <>
+                              {convertToBuddhistDateTime(
+                                progress_datetime || ""
+                              ).date +
+                                " " +
+                                convertToBuddhistDateTime(
+                                  progress_datetime || ""
+                                ).time}
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -175,32 +179,29 @@ export default function DrivingRequestProgress({
                 </div>
                 <div className="form-card-right align-self-center">
                   <div className="flex gap-3 flex-wrap">
-                    {confirmedRequest.confirmed_request_mobile_number && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              {confirmedRequest.confirmed_request_mobile_number}
-                            </div>
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">smartphone</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-text text-nowrap">
+                            {confirmedRequest.confirmed_request_mobile_number ||
+                              "-"}
                           </div>
                         </div>
                       </div>
-                    )}
-                    {confirmedRequest.confirmed_request_phone_number && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              {confirmedRequest.confirmed_request_phone_number}
-                            </div>
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">call</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-text text-nowrap">
+                            {confirmedRequest.confirmed_request_phone_number ||
+                              "-"}
                           </div>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -34,38 +34,33 @@ export default function ProcessFour() {
   const nextStep = async () => {
     if (formData) {
       const mappedData = {
-        approved_request_dept_sap: formData.approvedRequestDeptSap,
-        approved_request_dept_sap_full: formData.approvedRequestDeptSapFull,
-        approved_request_dept_sap_short: formData.approvedRequestDeptSapShort,
-        approved_request_emp_id: formData.approvedRequestEmpId,
-        approved_request_emp_name: formData.approvedRequestEmpName,
-        attached_document: formData.attachmentFile || "",
-        car_user_internal_contact_number: formData.telInternal || "1234567890",
+        confirmed_request_emp_id: formData.approvedRequestEmpId,
+        doc_file: formData.attachmentFile || "",
+        car_user_internal_contact_number: formData.telInternal || "",
         car_user_mobile_contact_number: formData.telMobile || "",
         cost_no: formData.referenceNumber || "",
-        driver_emp_dept_sap: formData.driverDeptSap || "DPT001",
-        driver_emp_id: formData.driverEmpID || "700001",
-        driver_emp_name: formData.driverEmpName || "John Doe",
+        driver_emp_dept_sap: formData.driverDeptSap || "",
+        driver_emp_id: formData.driverEmpID || "",
+        driver_emp_name: formData.driverEmpName || "",
         driver_internal_contact_number:
-          formData.driverInternalContact || "1234567890",
+          formData.driverInternalContact || "",
         driver_mobile_contact_number:
-          formData.driverMobileContact || "1234567890",
+          formData.driverMobileContact || "",
         end_datetime: convertToISO(
           String(formData.endDate),
           String(formData.timeEnd)
         ),
         is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
         is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
-        mas_carpool_driver_uid: formData.masCarpoolDriverUid || "",
         mas_vehicle_uid: formData.vehicleSelect || "",
         number_of_passengers: formData.numberOfPassenger || 0,
         objective: formData.purpose || "",
-        pickup_datetime: formData.pickupDatetime || "",
+        pickup_datetime: formData.pickupDatetime || null,
         pickup_place: formData.pickupPlace || "",
-        ref_cost_type_code: parseInt(formData.refCostTypeCode || "") || 101,
-        reference_number: formData.referenceNumber || "",
+        ref_cost_type_code: parseInt(formData.refCostTypeCode || ""),
+        doc_no: formData.referenceNumber || "",
         remark: formData.remark || "",
-        requested_vehicle_type_id: 1,
+        requested_vehicle_type: formData.vehicleType || "",
         reserved_time_type: "1",
         start_datetime: convertToISO(
           String(formData.startDate),
@@ -81,12 +76,17 @@ export default function ProcessFour() {
         wbs_no: formData.wbsNumber || "",
         activity_no: formData.activityNo || "",
         cost_center: formData.costCenter || "",
+        mas_carpool_driver_uid: formData.masCarpoolDriverUid || null,
+        mas_carpool_uid: formData.masCarpoolUid || null
       };
+
+      console.log('formdata',mappedData);
 
       try {
         const response = await createRequest(mappedData);
         if (response.data) {
           localStorage.removeItem("formData");
+          console.log('ttt=====>requ',response.data);
           router.push(
             "request-list?create-req=success&request-id=" +
               response.data.trn_request_uid
@@ -158,6 +158,7 @@ export default function ProcessFour() {
                 การกดปุ่ม “สร้างคำขอ” จะถือว่าท่านอ่านและตกลงยอมรับ
                 <a
                   onClick={() => termAndConditionModalRef.current?.openModal()}
+                  href="#"
                   className="text-info text-underline"
                 >
                   เงื่อนไข หลักเกณฑ์ และระเบียบการใช้ยานพาหนะ

@@ -5,15 +5,7 @@ import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
-const DriverEmployeeContractCard = ({
-  driverInfo,
-  driverVendorsList,
-}: {
-  driverInfo: DriverInfoType;
-  driverVendorsList?: any[];
-}) => {
-  const vendor = driverVendorsList?.find((vendor) => vendor.mas_vendor_code === driverInfo?.mas_vendor_code);
-
+const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => {
   return (
     <>
       <div className="form-card">
@@ -38,7 +30,7 @@ const DriverEmployeeContractCard = ({
                 <i className="material-symbols-outlined">apartment</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">บริษัทผู้รับจ้าง</h5>
-                  <p>{vendor?.mas_vendor_name}</p>
+                  <p>{driverInfo?.vender_name}</p>
                 </div>
               </div>
               <div className="flex col-span-1">

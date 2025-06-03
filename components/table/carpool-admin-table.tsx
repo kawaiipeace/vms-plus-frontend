@@ -17,6 +17,8 @@ import {
 import AddCarpoolAdminModal from "../modal/addCarpoolAdminModal";
 import ToastCustom from "../toastCustom";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 
 interface PaginationType {
   limit: number;
@@ -42,6 +44,7 @@ export default function CarpoolAdminTable({
   pagination,
   setRefetch,
 }: Props) {
+  const id = useSearchParams().get("id");
   const [toast, setToast] = useState<ToastProps | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -53,6 +56,8 @@ export default function CarpoolAdminTable({
     pageSize: pagination.limit,
   });
 
+  const { formData, updateFormData } = useFormContext();
+
   const addCarpoolAdminModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -62,62 +67,95 @@ export default function CarpoolAdminTable({
     closeModal: () => void;
   } | null>(null);
 
-  const handleMainAdmin = async (id: string) => {
-    try {
-      const response = await putCarpoolMainAdminUpdate(id);
-      if (response.request.status === 200) {
-        setRefetch(true);
+  const handleMainAdmin = async (_id: string) => {
+    if (id) {
+      try {
+        const response = await putCarpoolMainAdminUpdate(_id);
+        if (response.request.status === 200) {
+          setRefetch(true);
+          setToast({
+            title: "กำหนดผู้รับผิดชอบหลักสำเร็จ",
+            desc:
+              "กำหนดให้ " +
+              defaultData.find((item) => item.mas_carpool_admin_uid === _id)
+                ?.admin_emp_name +
+              " เป็นผู้รับผิดชอบหลักของกลุ่มเรียบร้อยแล้ว",
+            status: "success",
+          });
+        }
+      } catch (error) {
+        console.error(error);
         setToast({
-          title: "กำหนดผู้รับผิดชอบหลักสำเร็จ",
-          desc:
-            "กำหนดให้ " +
-            defaultData.find((item) => item.mas_carpool_admin_uid === id)
-              ?.admin_emp_name +
-            " เป็นผู้รับผิดชอบหลักของกลุ่มเรียบร้อยแล้ว",
-          status: "success",
+          title: "Error",
+          desc: <>{error}</>,
+          status: "error",
         });
       }
-    } catch (error) {
-      console.log(error);
-      setToast({
-        title: "Error",
-        desc: <>{error}</>,
-        status: "error",
+    } else {
+      updateFormData({
+        ...formData,
+        carpool_admins: formData.carpool_admins?.map((e) => {
+          if (e.admin_emp_no === _id) {
+            return { ...e, is_main_admin: "1" };
+          } else {
+            return { ...e, is_main_admin: "0" };
+          }
+        }),
       });
     }
   };
 
   const handleDelete = async () => {
     if (deleteId) {
-      try {
-        const response = await deleteCarpoolAdmin(deleteId);
-        if (response.request.status === 200) {
-          setDeleteId(undefined);
-          setRefetch(true);
+      if (id) {
+        try {
+          const response = await deleteCarpoolAdmin(deleteId);
+          if (response.request.status === 200) {
+            setDeleteId(undefined);
+            setRefetch(true);
+            setToast({
+              title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
+              desc:
+                "ผู้ดูแลยานพาหนะ " +
+                defaultData.find(
+                  (item) => item.mas_carpool_admin_uid === deleteId
+                )?.admin_emp_name +
+                " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+              status: "success",
+            });
+            cancelCreateModalRef.current?.closeModal();
+          }
+        } catch (error: any) {
+          console.error(error);
           setToast({
-            title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
-            desc:
-              "ผู้ดูแลยานพาหนะ " +
-              defaultData.find(
-                (item) => item.mas_carpool_admin_uid === deleteId
-              )?.admin_emp_name +
-              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
-            status: "success",
+            title: "Error",
+            desc: (
+              <div>
+                <div>{error.response.data.error}</div>
+                <div>{error.response.data.message}</div>
+              </div>
+            ),
+            status: "error",
           });
-          cancelCreateModalRef.current?.closeModal();
         }
-      } catch (error: any) {
-        console.log(error);
-        setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
+      } else {
+        updateFormData({
+          ...formData,
+          carpool_admins: formData.carpool_admins.filter(
+            (item) => item.admin_emp_no !== deleteId
           ),
-          status: "error",
         });
+        setDeleteId(undefined);
+        setToast({
+          title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
+          desc:
+            "ผู้ดูแลยานพาหนะ " +
+            defaultData.find((item) => item.admin_emp_no === deleteId)
+              ?.admin_emp_name +
+            " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+          status: "success",
+        });
+        cancelCreateModalRef.current?.closeModal();
       }
     }
   };
@@ -193,7 +231,11 @@ export default function CarpoolAdminTable({
               data-tip="แก้ไข"
               onClick={() => {
                 addCarpoolAdminModalRef.current?.openModal();
-                setEditId(row.original.mas_carpool_admin_uid);
+                setEditId(
+                  id
+                    ? row.original.mas_carpool_admin_uid
+                    : row.original.admin_emp_no
+                );
               }}
             >
               <i className="material-symbols-outlined">stylus</i>
@@ -203,7 +245,11 @@ export default function CarpoolAdminTable({
               data-tip="กำหนดเป็นผู้รับผิดชอบหลัก"
               disabled={row.original.is_main_admin === "1"}
               onClick={() =>
-                handleMainAdmin(row.original.mas_carpool_admin_uid)
+                handleMainAdmin(
+                  id
+                    ? row.original.mas_carpool_admin_uid
+                    : row.original.admin_emp_no
+                )
               }
             >
               <i className="material-symbols-outlined">social_leaderboard</i>
@@ -214,7 +260,11 @@ export default function CarpoolAdminTable({
               disabled={row.original.is_main_admin === "1"}
               onClick={() => {
                 cancelCreateModalRef.current?.openModal();
-                setDeleteId(row.original.mas_carpool_admin_uid);
+                setDeleteId(
+                  id
+                    ? row.original.mas_carpool_admin_uid
+                    : row.original.admin_emp_no
+                );
               }}
             >
               <i className="material-symbols-outlined">delete</i>
@@ -266,8 +316,10 @@ export default function CarpoolAdminTable({
         title={"ยืนยันยกเลิกผู้ดูแลยานพาหนะ"}
         desc={
           "คุณต้องการยกเลิกผู้ดูแลยานพาหนะ " +
-          defaultData.find((item) => item.mas_carpool_admin_uid === deleteId)
-            ?.admin_emp_name +
+          defaultData.find((item) => {
+            const uid = id ? item.mas_carpool_admin_uid : item.admin_emp_no;
+            return uid === deleteId;
+          })?.admin_emp_name +
           " ใช่หรือไม่?"
         }
         confirmText={"ยกเลิกผู้ดูแลยานพาหนะ"}

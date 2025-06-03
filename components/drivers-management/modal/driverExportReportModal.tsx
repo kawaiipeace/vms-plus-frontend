@@ -1,11 +1,12 @@
-import DatePicker from "@/components/datePicker";
+// import DatePicker from "@/components/datePicker";
+import DatePicker from "@/components/drivers-management/datePicker";
 import FormHelper from "@/components/formHelper";
 import { downloadReport } from "@/services/driversManagement";
 import Image from "next/image";
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import * as Yup from "yup";
 
-import { convertToThaiDate } from "@/utils/driver-management";
+import { convertToThaiDate, convertToISO8601 } from "@/utils/driver-management";
 
 interface DriverExportReportModalProps {
   selectedRow: { [key: string]: string };
@@ -64,8 +65,8 @@ const DriverExportReportModal = forwardRef<
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
+      console.log("Form data before validation:", formData);
       validationSchema.validateSync(formData, { abortEarly: false });
       const selectedRowValues: string[] = [];
       Object.keys(selectedRow).forEach((key) => {
@@ -123,21 +124,19 @@ const DriverExportReportModal = forwardRef<
   };
 
   const handleChangeReportStartDate = (dateStr: string) => {
-    const dateStrISO = convertDDMMYYYYToISO(dateStr);
-    // console.log("StartDate", dateStrISO);
+    // const dateStrISO = convertToISO8601(dateStr);
     setFormData((prevData) => ({
       ...prevData,
-      driverReportStartDate: dateStrISO,
+      driverReportStartDate: dateStr,
     }));
     // setDisableStartDate(dateStr);
   };
 
   const handleChangeReportEndDate = (dateStr: string) => {
-    const dateStrISO = convertDDMMYYYYToISO(dateStr);
-    // console.log("EndDate", dateStrISO);
+    // const dateStrISO = convertToISO8601(dateStr);
     setFormData((prevData) => ({
       ...prevData,
-      driverReportEndDate: dateStrISO,
+      driverReportEndDate: dateStr,
     }));
     // setDisableEndDate(dateStr);
   };

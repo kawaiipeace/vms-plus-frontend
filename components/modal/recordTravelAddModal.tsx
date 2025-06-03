@@ -102,7 +102,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
           detail: "",
         });
       }
-    }, [dataItem, status]);
+    }, [dataItem, status, openModal]);
 
     const handleSubmit = () => {
       const { startDate, startTime, endDate, endTime, startLocation, endLocation, startMile, endMile, detail } =
@@ -124,7 +124,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
             console.log("dataid", dataItem?.trn_trip_detail_uid);
             if (status) {
               const res =
-                role === "user"
+                role === "recordTravel" || role === "user"
                   ? await UserUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload)
                   : role === "admin"
                   ? await adminUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload)
@@ -134,7 +134,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                 handleCloseModal();
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                role === "user"
+                role === "recordTravel" || role === "user"
                   ? router.push(
                       pathName +
                         `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
@@ -149,32 +149,32 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                         `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
                     );
               }
-            }
-
-            const res =
-              role === "user"
-                ? await UserCreateTravelDetail(payload)
-                : role === "admin"
-                ? await adminCreateTravelDetail(payload)
-                : await driverCreateTravelDetail(payload);
-            const data = res.data;
-            if (data) {
-              handleCloseModal();
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              role === "user"
-                ? router.push(
-                    pathName +
-                      `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  )
-                : role === "admin"
-                ? router.push(
-                    pathName +
-                      `?activeTab=ข้อมูลการเดินทาง&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  )
-                : router.push(
-                    pathName +
-                      `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  );
+            } else {
+              const res =
+                role === "recordTravel" || role === "user"
+                  ? await UserCreateTravelDetail(payload)
+                  : role === "admin"
+                  ? await adminCreateTravelDetail(payload)
+                  : await driverCreateTravelDetail(payload);
+              const data = res.data;
+              if (data) {
+                handleCloseModal();
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                role === "recordTravel" || role === "user"
+                  ? router.push(
+                      pathName +
+                        `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                    )
+                  : role === "admin"
+                  ? router.push(
+                      pathName +
+                        `?activeTab=ข้อมูลการเดินทาง&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                    )
+                  : router.push(
+                      pathName +
+                        `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
+                    );
+              }
             }
           } catch (error) {
             console.error("Error submitting form:", error);
@@ -362,7 +362,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                               type="text"
                               className="form-control"
                               value={value?.endLocation}
-                              placeholder="ระบุเลขไมล์ปลายทาง"
+                              placeholder="ระบุสถานที่ปลายทาง"
                               onChange={(e) => {
                                 setValue((val) => ({
                                   ...val,
@@ -377,7 +377,8 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                         <div>
                           <div className="form-group">
                             <label className="form-label">
-                              รายละเอียด<span className="font-light">(ถ้ามี)</span>
+                              รายละเอียด
+                              <span className="font-light">(ถ้ามี)</span>
                             </label>
                             <div className="input-group">
                               <input

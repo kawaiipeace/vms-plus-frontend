@@ -122,7 +122,7 @@ export default function VehicleTimeLine() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center">
                 <SearchInput
                     defaultValue={params.search}
-                    placeholder="เลขทะเบียน, ยี่ห้อ"
+                    placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
                     onSearch={(value) => debouncedSetParams(value)}
                 />
 
@@ -153,15 +153,15 @@ export default function VehicleTimeLine() {
                 /> 
                 <button
                     onClick={handleOpenFilterModal}
-                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block"
                 >
-                    <i className="material-symbols-outlined text-lg">filter_list</i>
-                    <span className="text-base font-semibold">ตัวกรอง</span>
+                    <i className="material-symbols-outlined">filter_list</i>
+                    <span className="text-base font-bold">ตัวกรอง</span>
                 </button>
 
                 <button
                     onClick={toggleDropdown}
-                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+                    className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
                 >
                     <i className="material-symbols-outlined text-lg">view_column</i>
                 </button>

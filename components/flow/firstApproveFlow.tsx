@@ -46,10 +46,6 @@ export default function FirstApproveFlow() {
     closeModal: () => void;
   } | null>(null);
 
-  const filterSortModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -158,6 +154,7 @@ export default function FirstApproveFlow() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
+        
         const response = await firstApproverRequests(params);
         console.log("param", params);
         if (response.status === 200) {
@@ -269,15 +266,6 @@ export default function FirstApproveFlow() {
             </div>
           </button>
 
-          <button
-            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px]"
-            onClick={() => filterSortModalRef.current?.openModal()}
-          >
-            <div className="flex items-center gap-1">
-              <i className="material-symbols-outlined">filter_list</i>
-              เรียงลำดับ
-            </div>
-          </button>
         </div>
       </div>
 

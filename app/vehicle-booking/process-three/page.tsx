@@ -1,6 +1,7 @@
 "use client";
 import DriverCard from "@/components/card/driverCard";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 import EmptyDriver from "@/components/emptyDriver";
 import Header from "@/components/header";
 import LicensePlateStat from "@/components/licensePlateStat";
@@ -9,10 +10,16 @@ import ProcessRequestCar from "@/components/processRequestCar";
 import RadioButton from "@/components/radioButton";
 import SideBar from "@/components/sideBar";
 import Tooltip from "@/components/tooltips";
+import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
-import { fetchDrivers, fetchUserDrivers } from "@/services/masterService";
+import {
+  fetchDrivers,
+  fetchSearchDrivers,
+  fetchUserDrivers,
+} from "@/services/masterService";
 import { yupResolver } from "@hookform/resolvers/yup";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -32,6 +39,7 @@ interface VehicleUser {
     driver_license_no: string;
     driver_license_expire_date: string;
   };
+  posi_text: string;
 }
 
 const schema = yup.object().shape({
@@ -58,6 +66,7 @@ export default function ProcessThree() {
   const [requestAnnual, setRequestAnnual] = useState("");
   const [licenseExpDate, setLicenseExpDate] = useState("");
   const [selectedDriverType, setSelectedDriverType] = useState("พนักงาน กฟภ.");
+  const [loadingDrivers, setLoadingDrivers] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
   const { formData, updateFormData } = useFormContext();
   const [driverOptions, setDriverOptions] = useState<
@@ -65,6 +74,7 @@ export default function ProcessThree() {
   >([]);
   const [selectedVehiclePoolId, setSelectedVehiclePoolId] =
     useState<string>("");
+  const { profile } = useProfile();
 
   const driverAppointmentRef = useRef<{
     openModal: () => void;
@@ -83,9 +93,10 @@ export default function ProcessThree() {
     page: 1,
     limit: 10,
   });
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-    driverOptions[0]
-  );
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
 
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
@@ -106,17 +117,22 @@ export default function ProcessThree() {
   };
 
   useEffect(() => {
+    if (formData.masCarpoolDriverUid) {
+      setSelectedVehiclePoolId(formData.masCarpoolDriverUid);
+    }
     const processOneStatus = localStorage.getItem("processTwo");
     if (processOneStatus !== "Done") {
       router.push("process-two");
     }
     setLoading(false);
-    if (formData.isPeaEmployeeDriver === "1") {
-      setSelectedDriverType("พนักงาน กฟภ.");
-    } else {
-      setSelectedDriverType("พนักงานขับรถ");
+    if (formData.isPeaEmployeeDriver) {
+      if (formData.isPeaEmployeeDriver === "1") {
+        setSelectedDriverType("พนักงาน กฟภ.");
+      } else {
+        setSelectedDriverType("พนักงานขับรถ");
+      }
     }
-  }, []);
+  }, [formData]);
 
   useEffect(() => {
     if (formData.isAdminChooseDriver) {
@@ -125,7 +141,6 @@ export default function ProcessThree() {
   }, [formData.isAdminChooseDriver]);
 
   useEffect(() => {
-    console.log("appointValid changed:", appointValid);
     if (appointValid) {
     }
   }, [appointValid]);
@@ -158,35 +173,14 @@ export default function ProcessThree() {
   };
 
   useEffect(() => {
-    const fetchVehicleUserData = async () => {
-      try {
-        const response = await fetchUserDrivers("");
-        if (response.status === 200) {
-          const vehicleUserData = response.data;
-          console.log("vehicleuser======>", vehicleUserData);
-          setVehicleUserDatas(vehicleUserData);
-          const driverOptionsArray = [
-            ...vehicleUserData.map(
-              (user: {
-                emp_id: string;
-                full_name: string;
-              }) => ({
-                value: user.emp_id,
-                label: `${user.full_name} (${user.emp_id})`,
-              })
-            ),
-          ];
-
-          setDriverOptions(driverOptionsArray);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-
     const fetchDriverData = async () => {
       try {
-        const response = await fetchDrivers(params);
+        const response = await fetchSearchDrivers({
+          ...params,
+          emp_id: profile?.emp_id,
+          start_date: `${formData.startDate} ${formData.timeStart}`,
+          end_date: `${formData.endDate} ${formData.timeEnd}`,
+        });
         if (response.status === 200) {
           setDrivers(response.data.drivers);
           setFilteredDrivers(response.data.drivers);
@@ -195,16 +189,26 @@ export default function ProcessThree() {
         console.error("Error fetching requests:", error);
       }
     };
+
     fetchDriverData();
-    fetchVehicleUserData();
   }, []);
 
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
-    setSelectedVehicleUserOption(
-      selectedOption as { value: string; label: string }
-    );
+    setValue("driverInternalContact", "");
+    setValue("driverMobileContact", "");
+    setValue("driverEmpID", "");
+    setValue("driverEmpName", "");
+    setValue("driverDeptSap", "");
+
+    if (selectedOption.value === "") {
+      setSelectedVehicleUserOption(null);
+    } else {
+      setSelectedVehicleUserOption(
+        selectedOption as { value: string; label: string }
+      );
+    }
 
     const empData = vehicleUserDatas.find(
       (user: { emp_id: string }) => user.emp_id === selectedOption.value
@@ -215,7 +219,10 @@ export default function ProcessThree() {
       setValue("driverMobileContact", empData.tel_mobile);
       setValue("driverEmpID", empData.emp_id);
       setValue("driverEmpName", empData.full_name);
-      setValue("driverDeptSap", empData.dept_sap);
+      setValue(
+        "driverDeptSap",
+        empData.posi_text + "/" + empData.dept_sap_short
+      );
       setValue("isPeaEmployeeDriver", "1");
       setDriverLicenseNo(empData.annual_driver.driver_license_no);
       setAnnualYear(empData.annual_driver.annual_yyyy);
@@ -227,33 +234,73 @@ export default function ProcessThree() {
         driverMobileContact: empData.tel_mobile,
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
-        driverDeptSap: empData.dept_sap,
+        driverDeptSap: empData.dept_sap_short,
         isPeaEmployeeDriver: "1",
       });
     }
   };
 
   useEffect(() => {
-    const selectedDriverOption = {
-      value: formData.driverEmpID,
-      label: `${formData.driverEmpName} (${formData.driverDeptSap})`,
-    };
-    // setSelectedVehicleUserOption(selectedDriverOption);
-
-    const empData = vehicleUserDatas.find(
-      (user: { emp_id: string }) => user.emp_id === selectedDriverOption.value
-    );
-
-    console.log('empdata',empData);
-
-    if (empData) {
-      setValue("isPeaEmployeeDriver", "1");
-      setDriverLicenseNo(empData.annual_driver.driver_license_no);
-      setAnnualYear(empData.annual_driver.annual_yyyy);
-      setRequestAnnual(empData.annual_driver.request_annual_driver_no);
-      setLicenseExpDate(empData.annual_driver.driver_license_expire_date);
+    if (!formData.isPeaEmployeeDriver) {
+      setSelectedDriverType("พนักงาน กฟภ.");
     }
-  }, [vehicleUserDatas, formData]);
+
+    const fetchDefaultData = async () => {
+      try {
+        const response = await fetchUserDrivers(
+          formData?.driverEmpID ? formData?.driverEmpID : profile?.emp_id
+        );
+        if (response) {
+          const vehicleUserData = response.data;
+
+          console.log("vehicledata", vehicleUserData);
+          const driverOptionsArray = vehicleUserData.map(
+            (user: {
+              emp_id: string;
+              full_name: string;
+              dept_sap: string;
+            }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          );
+          setDriverOptions(driverOptionsArray);
+
+          const selectedDriverOption = {
+            value: vehicleUserData[0]?.emp_id,
+            label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
+          };
+
+          if (vehicleUserData) {
+            setValue("isPeaEmployeeDriver", "1");
+            setDriverLicenseNo(
+              vehicleUserData[0]?.annual_driver?.driver_license_no
+            );
+            setAnnualYear(vehicleUserData[0]?.annual_driver?.annual_yyyy);
+            setRequestAnnual(
+              vehicleUserData[0]?.annual_driver?.request_annual_driver_no
+            );
+            setLicenseExpDate(
+              vehicleUserData[0]?.annual_driver?.driver_license_expire_date
+            );
+            setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
+            setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
+            setValue("driverEmpID", vehicleUserData[0]?.emp_id);
+            setValue("driverEmpName", vehicleUserData[0]?.full_name);
+            setValue("driverDeptSap", vehicleUserData[0]?.dept_sap_short);
+            console.log("test", vehicleUserData[0]?.emp_id);
+          }
+
+          setSelectedVehicleUserOption(selectedDriverOption);
+        }
+      } catch (error) {
+        console.error("Error resetting options:", error);
+      }
+    };
+    fetchDefaultData();
+
+    // setSelectedVehicleUserOption(selectedDriverOption);
+  }, [vehicleUserDatas, formData, profile]);
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
@@ -276,6 +323,39 @@ export default function ProcessThree() {
       driverMobileContact: formData.driverMobileContact || "",
     },
   });
+
+  const handleDriverSearch = async (search: string) => {
+    // Debounce handled by parent component or elsewhere
+    if (search.trim().length < 3) {
+      setLoadingDrivers(true);
+      try {
+        const response = await fetchUserDrivers(search);
+        if (response) {
+          const vehicleUserData = response.data;
+
+          const driverOptionsArray = vehicleUserData.map(
+            (user: {
+              emp_id: string;
+              full_name: string;
+              dept_sap: string;
+            }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          );
+          setDriverOptions(driverOptionsArray);
+        } else {
+          setDriverOptions([]);
+        }
+      } catch (error) {
+        setDriverOptions([]);
+        console.error("Error resetting options:", error);
+      } finally {
+        setLoadingDrivers(false);
+      }
+      return;
+    }
+  };
 
   return (
     <div>
@@ -385,12 +465,15 @@ export default function ProcessThree() {
                           </Tooltip>
                         </label>
 
-                        <CustomSelect
+                        <CustomSelectOnSearch
                           iconName="person"
                           w="w-full"
                           options={driverOptions}
                           value={selectedVehicleUserOption}
                           onChange={handleVehicleUserChange}
+                          onSearchInputChange={handleDriverSearch}
+                          loading={loadingDrivers}
+                          enableSearchOnApi={true}
                         />
                       </div>
                     </div>
@@ -463,12 +546,14 @@ export default function ProcessThree() {
                             />
                           ))}
 
-                        {driverLicenseNo === "" &&
-                           <LicensePlateStat
-                           status={false}
-                           title="ไม่มีใบขับขี่"
-                         />
-                          }
+                        {driverLicenseNo === "" && (
+                          <LicensePlateStat
+                            status={false}
+                            title={`ไม่มีใบอนุญาตทำหน้าที่ขับรถยนต์ประจำปี ${
+                              dayjs().year() + 543
+                            }`}
+                          />
+                        )}
 
                         {driverLicenseNo &&
                           requestAnnual &&
@@ -529,7 +614,7 @@ export default function ProcessThree() {
                         </div>
 
                         {filteredDrivers.length > 0 ? (
-                          <div className="grid grid-cols-4 gap-5 w-full">
+                          <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
                             {filteredDrivers.map(
                               (driver: any, index: number) => (
                                 <DriverCard
@@ -540,14 +625,18 @@ export default function ProcessThree() {
                                     "/assets/img/sample-driver.png"
                                   }
                                   name={driver.driver_name || ""}
-                                  company={driver.driver_dept_sap || ""}
+                                  nickname={driver.driver_nickname || ""}
+                                  company={driver?.vendor_name || ""}
                                   rating={
                                     driver.driver_average_satisfaction_score ||
                                     0
                                   }
                                   age={driver.age || "-"}
                                   onVehicleSelect={handleVehicleSelection}
-                                  isSelected={selectedVehiclePoolId === driver.mas_driver_uid}
+                                  isSelected={
+                                    selectedVehiclePoolId ===
+                                    driver.mas_driver_uid
+                                  }
                                 />
                               )
                             )}

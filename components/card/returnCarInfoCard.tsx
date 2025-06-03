@@ -3,8 +3,6 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { dataClean } from "../modal/returnCarAddModal";
 
 export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
-  console.log("ReturnCarInfoCard data >>>> ", data);
-
   const date = data?.returned_vehicle_datetime ? convertToBuddhistDateTime(data?.returned_vehicle_datetime) : undefined;
 
   return (
@@ -66,7 +64,7 @@ export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
             <div className="form-group form-plaintext">
               <i className="material-symbols-outlined">local_car_wash</i>
               <div className="form-plaintext-group">
-                <div className="form-label">ความสะดาก</div>
+                <div className="form-label">ความสะอาด</div>
                 <div className="form-text">
                   {dataClean.find((e) => Number(e.id) === data?.returned_cleanliness_level)?.name}
                 </div>

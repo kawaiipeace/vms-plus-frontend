@@ -92,6 +92,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         },
 
         defaultDate: defaultValue ? parseDate(convertToGregorian(defaultValue)) : undefined,
+        minDate: minDate,
         // minDate: minDate ? parseDate(convertToGregorian(minDate)) : undefined,
         // maxDate: maxDate ? parseDate(convertToGregorian(maxDate)) : undefined,
 

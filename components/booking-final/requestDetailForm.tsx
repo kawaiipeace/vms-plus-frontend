@@ -118,13 +118,8 @@ export default function RequestDetailForm({
             </div>
 
             <JourneyDetailCard
-              startDate={
-                convertToBuddhistDateTime(requestData?.start_datetime || "")
-                  .date
-              }
-              endDate={
-                convertToBuddhistDateTime(requestData?.end_datetime || "").date
-              }
+              startDate={requestData?.start_datetime || ""}
+              endDate={requestData?.end_datetime || ""}
               timeStart={
                 convertToBuddhistDateTime(requestData?.start_datetime || "")
                   .time
@@ -133,7 +128,7 @@ export default function RequestDetailForm({
                 convertToBuddhistDateTime(requestData?.end_datetime || "").time
               }
               workPlace={requestData?.work_place}
-              purpose={requestData?.objective}
+              purpose={requestData?.work_description}
               remark={requestData?.remark}
               tripType={requestData?.trip_type}
               numberOfPassenger={requestData?.number_of_passengers}
@@ -159,8 +154,8 @@ export default function RequestDetailForm({
             </div>
 
             <ReferenceCard
-              refNum={requestData?.reference_number}
-              file={requestData?.attached_document}
+              refNum={requestData?.doc_no}
+              file={requestData?.doc_file}
             />
           </div>
 
@@ -185,7 +180,9 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              approverId={`${requestData?.approved_request_emp_id}`}
+              progressRequestStatusEmp={
+                requestData?.progress_request_status_emp
+              }
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -281,6 +278,11 @@ export default function RequestDetailForm({
                   )
                 )}
                 <div className="mt-5">
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">
+                      การนัดหมายรับกุญแจ
+                    </div>
+                  </div>
                   <PickupKeyDetailCard
                     receiveKeyPlace={requestData?.received_key_place}
                     receiveKeyStart={requestData?.received_key_start_datetime}

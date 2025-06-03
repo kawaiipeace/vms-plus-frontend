@@ -27,24 +27,29 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
 );
 
 const ReportCard = ({ imageSrc, title, description, count, onClick }: RepoCardProps) => (
-  <div className="flex items-center justify-between bg-white border border-gray-300 rounded-lg p-4">
+  <div className="card card-body p-4">
+    <div className="w-full flex rounded-2xl items-stretch">
       <Image src={imageSrc} width={100} height={100} alt="" />
-      <div className="flex flex-col gap-2">
-        <span>{title}</span>
-        <span>{description}</span>
-        <span>{count} คัน</span>
+      <div className="text-left">
+        <h5 className="text-[#344054] font-semibold pl-4">{title}</h5>
+        <p className="text-[#667085] font-semibold text-sm pl-4">{description}</p>
+        <p className="text-[#667085] text-sm pl-4">{count} คัน</p>
       </div>
-      <button
-        className="material-symbols-outlined text-brand-900 disabled:text-gray-400"
-        onClick={onClick}
-        aria-label="Download">
-        download
-      </button>
+      <div className="ml-auto">
+        <button
+          type="submit"
+          className="material-symbols-outlined text-brand-900 disabled:text-gray-400"
+          onClick={onClick}
+          aria-label="Download">
+          download
+        </button>
+      </div>
     </div>
+  </div>
 );
 
 const CheckboxWithLabel = ({ id, name, label }: { id: string; name: string; label: string }) => (
-  <div className="flex items-center justify-between bg-white p-4">
+  <div className="flex items-center gap-2">
     <input
       type="checkbox"
       className="checkbox checkbox-primary accent-brand-900 h-6 w-6 rounded-sm"

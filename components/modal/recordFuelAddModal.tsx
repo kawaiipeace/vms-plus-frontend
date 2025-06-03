@@ -5,6 +5,7 @@ import ImagePreview from "@/components/imagePreview";
 import ImageUpload from "@/components/imageUpload";
 import RadioButton from "@/components/radioButton";
 import { RecordFuelTabProps } from "@/data/requestData";
+import { adminCreateFuelDetail, adminUpdateAddFuelDetail } from "@/services/adminService";
 import { fetchFuelType, fetchOilStationBrandType, fetchPaymentTypeCode } from "@/services/masterService";
 import { driverCreateAddFuelDetail, driverUpdateAddFuelDetail } from "@/services/vehicleInUseDriver";
 import { UserCreateAddFuelDetail, UserUpdateAddFuelDetail } from "@/services/vehicleInUseUser";
@@ -12,10 +13,10 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import { getOilBrandImage } from "@/utils/getOilBrandImage";
 import useSwipeDown from "@/utils/swipeDown";
-import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import CustomSelect, { CustomSelectOption } from "../customSelect";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 import Tooltip from "../tooltips";
 
 interface Props {
@@ -106,6 +107,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
         const ref_oil_station_brand_id = oilStationBrandData.find(
           (item) => item.ref_oil_station_brand_id === dataItem.ref_oil_station_brand_id
         );
+        const imageSrc = getOilBrandImage(ref_oil_station_brand_id?.ref_oil_station_brand_name_th || "");
 
         setImages(dataItem.receipt_img ? [{ file_url: dataItem.receipt_img }] : []);
         setSelectedTravelType(dataItem.ref_payment_type_code?.toString() || "");
@@ -119,19 +121,8 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
           },
           ref_oil_station_brand_id: {
             value: dataItem.ref_oil_station_brand_id?.toString() || "",
-            label: (
-              <div className="flex items-center gap-1">
-                {ref_oil_station_brand_id?.ref_oil_station_brand_img && (
-                  <Image
-                    src={ref_oil_station_brand_id?.ref_oil_station_brand_img}
-                    alt={"oil-image-" + dataItem.ref_oil_station_brand_id}
-                    width={24}
-                    height={24}
-                  />
-                )}
-                <span className="ml-2">{ref_oil_station_brand_id?.ref_oil_station_brand_name_th || ""}</span>
-              </div>
-            ),
+            label: ref_oil_station_brand_id?.ref_oil_station_brand_name_th || "",
+            imageUrl: imageSrc,
           },
           sum_liter: dataItem.sum_liter?.toString() || "",
           sum_price: dataItem.sum_price?.toString() || "",
@@ -246,17 +237,19 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
 
           if (status) {
             const res =
-              role === "user" || role === "admin"
+              role === "recordFuel"
                 ? await UserUpdateAddFuelDetail(dataItem?.trn_add_fuel_uid || "", payload)
                 : role === "driver"
                 ? await driverUpdateAddFuelDetail(dataItem?.trn_add_fuel_uid || "", payload)
+                : role === "admin"
+                ? await adminUpdateAddFuelDetail(dataItem?.trn_add_fuel_uid || "", payload)
                 : { data: {} };
             const data = res.data;
             if (data) {
               handleCloseModal();
 
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              role === "user"
+              role === "recordFuel"
                 ? router.push(
                     pathName +
                       `?activeTab=${activeTab}&update-fuel-req=success&tax_invoice_no=${data.data?.tax_invoice_no}`
@@ -268,35 +261,43 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                 : "";
             }
             return;
-          }
+          } else {
+            const res =
+              role === "user"
+                ? await UserCreateAddFuelDetail(payload)
+                : role === "driver"
+                ? await driverCreateAddFuelDetail(payload)
+                : role === "admin"
+                ? await adminCreateFuelDetail(payload)
+                : await UserCreateAddFuelDetail(payload);
+            const data = res.data;
+            if (data) {
+              handleCloseModal();
 
-          const res =
-            role === "user"
-              ? await UserCreateAddFuelDetail(payload)
-              : role === "driver"
-              ? await driverCreateAddFuelDetail(payload)
-              : await UserCreateAddFuelDetail(payload);
-          const data = res.data;
-          if (data) {
-            handleCloseModal();
-
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            role === "user"
-              ? router.push(
-                  pathName +
-                    `?activeTab=${activeTab}&create-fuel-req=success&tax_invoice_no=${data.data?.tax_invoice_no}`
-                )
-              : role === "driver"
-              ? router.push(pathName + "?progressType=" + progressType + "&create-fuel-req=success")
-              : role === "admin"
-              ? router.push(pathName + "?progressType=" + progressType + "&create-fuel-req=success")
-              : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              role === "recordFuel"
+                ? router.push(
+                    pathName +
+                      `?activeTab=${activeTab}&create-fuel-req=success&tax_invoice_no=${data.data?.tax_invoice_no}`
+                  )
+                : role === "driver"
+                ? router.push(pathName + "?progressType=" + progressType + "&create-fuel-req=success")
+                : role === "admin"
+                ? router.push(
+                    pathName +
+                      "?progressType=" +
+                      progressType +
+                      "&create-fuel-req=success" +
+                      "&tax_invoice_no=success" +
+                      data.data?.tax_invoice_no
+                  )
+                : router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
+            }
           }
         } catch (error) {
           console.error("Error submitting form:", error);
         }
       };
-
       submitForm();
     };
 
@@ -331,7 +332,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">สถานีบริการน้ำมัน</label>
-                          <CustomSelect
+                          <CustomSelectOnSearch
                             w="w-full"
                             options={oilOptions}
                             value={valueForm.ref_oil_station_brand_id}
@@ -397,7 +398,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                               </div>
                               <DatePicker
                                 placeholder="ระบุวันที่"
-                                defaultValue={convertToBuddhistDateTime(valueForm.tax_invoice_date).date}
+                                defaultValue={valueForm.tax_invoice_date}
                                 onChange={(date) =>
                                   setValueForm((val) => ({
                                     ...val,
@@ -487,8 +488,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                             />
                           </div>
                           <p className="text-sm text-left mt-3">
-                            รวมภาษี {(Number(valueForm.sum_price) + Number(valueForm.sum_price) * (7 / 107)).toFixed(2)}{" "}
-                            บาท (7%)
+                            รวมภาษี {(Number(valueForm.sum_price) * (7 / 107)).toFixed(2)} บาท (7%)
                           </p>
                         </div>
                       </div>

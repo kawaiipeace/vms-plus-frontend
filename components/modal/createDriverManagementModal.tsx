@@ -23,7 +23,7 @@ const CreateDriverManagementModal = forwardRef<
     <dialog ref={modalRef} className="modal">
       <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col">
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-          <div className="modal-title">เพิ่มข้อมูลนัดหมายพนักงานขับรถ</div>
+          <div className="modal-title">สร้างข้อมูลพนักงานขับรถ</div>
           <form method="dialog">
             <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
               <i className="material-symbols-outlined">close</i>
@@ -57,7 +57,7 @@ const CreateDriverManagementModal = forwardRef<
               <Image src="/assets/img/graphic/csv_import.svg" width={120} height={120} alt="csv" />
             </div>
             <div className="text-left px-5">
-              <h6 className="font-bold text-lg">สร้างข้อมูลพนักงานขับรถ</h6>
+              <h6 className="font-bold text-lg">สร้างจำนวนมาก</h6>
               <p>อัปโหลดไฟล์ .CSV</p>
             </div>
             <div className="ml-auto">

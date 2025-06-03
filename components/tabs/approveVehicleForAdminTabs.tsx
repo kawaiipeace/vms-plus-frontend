@@ -3,10 +3,11 @@ import { fetchMenus } from "@/services/bookingAdmin";
 import { summaryType } from "@/app/types/request-list-type";
 import AdminApproveFlow from "@/components/flow/adminApproveFlow";
 import AdminKeyHandOverFlow from "@/components/flow/adminHandOverFlow";
-import CancelFlow from "@/components/flow/cancelFlow";
 import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
 import AdminVehicleInsFlow from "../flow/adminVehicleInsFlow";
 import SuccessFlow from "../flow/successFlow";
+import CancelAdminFlow from "../flow/cancelAdminFlow";
+import SuccessAdminFlow from "../flow/successAdminFlow";
 
 export default function ApproveVehicleForAdminTabs() {
 
@@ -16,8 +17,8 @@ export default function ApproveVehicleForAdminTabs() {
         const fetchMenuFunc = async () => {
           try {
             const response = await fetchMenus();
+            console.log('menu',response);
             const result = response.data;
-            console.log('adminressult',result);
             setStatusData(result);
           } catch (error) {
             console.error("Error fetching status data:", error);
@@ -28,7 +29,7 @@ export default function ApproveVehicleForAdminTabs() {
   
         const getTabContent = (code: string) => {
           switch (code) {
-            case "30,31": 
+            case "30,31,40": 
             return <AdminApproveFlow />;
           case "50,51": 
             return <AdminKeyHandOverFlow />;
@@ -37,9 +38,9 @@ export default function ApproveVehicleForAdminTabs() {
             case "70,71": // คืนยานพาหนะ
             return <AdminVehicleInsFlow />;
             case "80": // เสร็จสิ้น
-              return <SuccessFlow />; // Replace with your component
+              return <SuccessAdminFlow />; // Replace with your component
             case "90": // ยกเลิก
-              return <CancelFlow />;
+              return <CancelAdminFlow />;
             default:
               return <div></div>;
           }

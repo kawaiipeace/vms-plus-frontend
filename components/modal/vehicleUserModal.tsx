@@ -13,6 +13,7 @@ import { updateVehicleUser } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminUpdateVehicleUser } from "@/services/bookingAdmin";
+import { FormDataType } from "@/app/types/form-data-type";
 
 interface VehicleUserModalProps {
   process: string;
@@ -25,7 +26,7 @@ interface VehicleUserModalProps {
 const schema = yup.object().shape({
   name: yup.string(),
   position: yup.string(),
-  internalPhone: yup.string().optional(),
+  internalPhone: yup.string().required("กรุณากรอกเบอร์ภายใน"),
   mobilePhone: yup
     .string()
     .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
@@ -49,6 +50,29 @@ const VehicleUserModal = forwardRef<
     closeModal: () => modalRef.current?.close(),
   }));
 
+  const getDefaultValues = (
+    requestData?: RequestDetailType,
+    formData?: FormDataType
+  ) => {
+    if (requestData) {
+      return {
+        name: requestData.vehicle_user_emp_name || "",
+        position: requestData.vehicle_user_position+"/"+requestData?.vehicle_user_dept_name_short || "",
+        internalPhone: requestData.car_user_internal_contact_number || "",
+        mobilePhone: requestData.car_user_mobile_contact_number || "",
+      };
+    }else{
+      return {
+        name: formData?.vehicleUserEmpName || "",
+        position: formData?.deptSapShort || "",
+        internalPhone: formData?.telInternal || "",
+        mobilePhone: formData?.telMobile || "",
+      };
+    }
+   
+  };
+
+  // Usage in useForm:
   const {
     control,
     handleSubmit,
@@ -57,20 +81,15 @@ const VehicleUserModal = forwardRef<
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
-    defaultValues: {
-      name: formData.vehicleUserEmpName || "",
-      position: formData.deptSapShort || "",
-      internalPhone: formData.telInternal || "",
-      mobilePhone: formData.telMobile || "",
-    },
+    defaultValues: getDefaultValues(requestData, formData),
   });
 
   useEffect(() => {
     if (requestData) {
       reset({
         name: requestData.vehicle_user_emp_name,
-        position: requestData.vehicle_user_dept_sap,
-        internalPhone: requestData.car_user_mobile_contact_number,
+        position: requestData.vehicle_user_position+"/"+requestData?.vehicle_user_dept_name_short,
+        internalPhone: requestData.car_user_internal_contact_number,
         mobilePhone: requestData.car_user_mobile_contact_number,
       });
       hasReset.current = true;
@@ -81,9 +100,10 @@ const VehicleUserModal = forwardRef<
   const onSubmit = async (data: any) => {
     if (requestData) {
       const payload = {
-        car_user_internal_contact_number: data.internalPhon,
+        car_user_internal_contact_number: data.internalPhone,
         car_user_mobile_contact_number: data.mobilePhone,
         trn_request_uid: requestData?.trn_request_uid,
+        vehicle_user_emp_id: requestData?.vehicle_user_emp_id
       };
       try {
         const response =

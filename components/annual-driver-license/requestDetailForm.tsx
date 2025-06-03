@@ -4,18 +4,21 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import VehicleUserInfoCard from "@/components/annual-driver-license/vehicleUserInfoCard";
-import { fetchRequestDetail } from "@/services/driver";
+import { fetchFinalRequestDetail, fetchRequestDetail } from "@/services/driver";
 import DrivingRequestProgress from "./drivingRequestProgress";
 import EditApproverModal from "./editApproverModal";
 import DriverPeaInfoCard from "../card/driverPeaInfoCard";
 import ToastCustom from "../toastCustom";
+import EditFinalApproverModal from "./editFinalApproverModal";
 
 interface RequestDetailFormProps {
   requestId: string;
+  licType: string;
 }
 
 export default function RequestDetailForm({
   requestId,
+  licType
 }: RequestDetailFormProps) {
   const editFinalApproverModalRef = useRef<{
     openModal: () => void;
@@ -27,7 +30,13 @@ export default function RequestDetailForm({
 
   const fetchRequestDetailfunc = async () => {
     try {
-      const response = await fetchRequestDetail(requestId);
+      let response;
+      if (licType === "ตรวจสอบ") {
+        response = await fetchRequestDetail(requestId);
+      } else {
+        response = await fetchFinalRequestDetail(requestId);
+      }
+
       console.log("res", response.data);
       setRequestData(response.data);
     } catch (error) {
@@ -36,6 +45,7 @@ export default function RequestDetailForm({
   };
 
   const handleModalUpdate = () => {
+    console.log("tstsuccess");
     setToastStatus("success");
     fetchRequestDetailfunc();
   };
@@ -52,7 +62,8 @@ export default function RequestDetailForm({
 
   return (
     <>
-      {(requestData?.ref_request_annual_driver_status_code === "11" || requestData?.ref_request_annual_driver_status_code === "21" ) && (
+      {(requestData?.ref_request_annual_driver_status_code === "11" ||
+        requestData?.ref_request_annual_driver_status_code === "21") && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
           desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
@@ -64,7 +75,8 @@ export default function RequestDetailForm({
           title="แก้ไขผู้อนุมัติให้ทำหน้าที่ขับรถยนต์สำเร็จ"
           desc={
             <>
-              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี {requestId}
+              คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
+              {requestData?.request_annual_driver_no}
               <br />
               แก้ไขเรียบร้อยแล้ว
             </>
@@ -353,9 +365,10 @@ export default function RequestDetailForm({
 
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
-            {(requestData?.ref_request_annual_driver_status_code === "10" || requestData?.ref_request_annual_driver_status_code === "11") && (
+            {(requestData?.ref_request_annual_driver_status_code === "10" ||
+              requestData?.ref_request_annual_driver_status_code === "11") && (
               <DrivingRequestProgress
-                progressSteps={requestData?.progress_request_history}
+                progressSteps={requestData?.progress_request_status}
                 title="ผู้ตรวจสอบ"
                 confirmedRequest={{
                   confirmed_request_datetime:
@@ -386,9 +399,10 @@ export default function RequestDetailForm({
               />
             )}
 
-            {(requestData?.ref_request_annual_driver_status_code === "20" || requestData?.ref_request_annual_driver_status_code === "30") && (
+            {(requestData?.ref_request_annual_driver_status_code === "20" ||
+              requestData?.ref_request_annual_driver_status_code === "30") && (
               <DrivingRequestProgress
-                progressSteps={requestData?.progress_request_history}
+                progressSteps={requestData?.progress_request_status}
                 title="ผู้อนุมัติ"
                 confirmedRequest={{
                   confirmed_request_datetime:
@@ -453,11 +467,11 @@ export default function RequestDetailForm({
         </div>
       </div>
 
-      <EditApproverModal
+      <EditFinalApproverModal
         ref={editFinalApproverModalRef}
         requestData={requestData}
         title={"แก้ไขผู้อนุมัติให้ทำหน้าที่ขับรถยนต์"}
-        onUpdate={handleModalUpdate}
+        onSubmitForm={handleModalUpdate}
       />
     </>
   );

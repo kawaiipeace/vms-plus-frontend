@@ -38,6 +38,14 @@ export default function CarpoolManagementTable({
     pageSize: pagination.limit,
   });
 
+  useEffect(() => {
+    setPagination({
+      ...paginationState,
+      pageSize: pagination.limit,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   const columns: ColumnDef<Carpool>[] = [
     {
       accessorKey: "carpool_name",
