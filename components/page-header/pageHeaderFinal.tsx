@@ -27,30 +27,29 @@ export default function PageHeaderFinal({ data, editable }: Props) {
 
   const [copied, setCopied] = useState(false);
 
-const handleCopyRequestNo = async (text?: string) => {
-  if (!text) return;
+  const handleCopyRequestNo = async (text?: string) => {
+    if (!text) return;
 
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-    } else {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed"; // prevent scroll
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed"; // prevent scroll
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Copy failed:", err);
     }
-
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  } catch (err) {
-    console.error("Copy failed:", err);
-  }
-};
-
+  };
 
   return (
     <div className="page-header w-full">
@@ -128,14 +127,16 @@ const handleCopyRequestNo = async (text?: string) => {
               className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
               tabIndex={0}
             >
-              <Link
-                className="dropdown-item"
-                href="#"
-                onClick={() => fileBackRequestModalRef.current?.openModal()}
-              >
-                <i className="material-symbols-outlined">reply</i>
-                ตีกลับให้แก้ไข
-              </Link>
+              {data?.ref_request_status_code === "40" && (
+                <Link
+                  className="dropdown-item"
+                  href="#"
+                  onClick={() => fileBackRequestModalRef.current?.openModal()}
+                >
+                  <i className="material-symbols-outlined">reply</i>
+                  ตีกลับให้แก้ไข
+                </Link>
+              )}
               <Link
                 className="dropdown-item"
                 href="#"
@@ -146,6 +147,7 @@ const handleCopyRequestNo = async (text?: string) => {
               </Link>
 
               <div className="divider py-0 my-0"></div>
+
               <Link
                 className="dropdown-item"
                 href="#"
@@ -172,24 +174,27 @@ const handleCopyRequestNo = async (text?: string) => {
             >
               <i className="material-symbols-outlined">print</i>พิมพ์
             </button>{" "}
-            <button
-              className="btn btn-secondary"
-              onClick={() => fileBackRequestModalRef.current?.openModal()}
-            >
-              <i className="material-symbols-outlined">reply</i>
-              ตีกลับให้แก้ไข
-            </button>
+            {data?.ref_request_status_code === "40" && (
+              <button
+                className="btn btn-secondary"
+                onClick={() => fileBackRequestModalRef.current?.openModal()}
+              >
+                <i className="material-symbols-outlined">reply</i>
+                ตีกลับให้แก้ไข
+              </button>
+            )}
           </div>
         </div>
-
-        <button
-          className="btn btn-primary"
-          disabled={editable ? false : true}
-          onClick={() => approveRequestModalRef.current?.openModal()}
-        >
-          <i className="material-symbols-outlined">check</i>
-          อนุมัติคำขอ
-        </button>
+        {data?.ref_request_status_code === "40" && (
+          <button
+            className="btn btn-primary"
+            disabled={editable ? false : true}
+            onClick={() => approveRequestModalRef.current?.openModal()}
+          >
+            <i className="material-symbols-outlined">check</i>
+            อนุมัติคำขอ
+          </button>
+        )}
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid || ""}

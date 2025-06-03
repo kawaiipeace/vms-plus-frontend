@@ -52,7 +52,7 @@ interface ReturnCarAddStep2ModalProps {
   onSubmit?: () => void;
   onBack?: () => void;
   edit?: boolean;
-  onTrackStatus?: (id:string) => void;
+  onTrackStatus?: (id: string) => void;
 }
 
 const RequestDrivingStepTwoModal = forwardRef<
@@ -205,10 +205,11 @@ const RequestDrivingStepTwoModal = forwardRef<
         let response;
         let responseType;
         if (editable) {
-          const id = driverData?.license_status !== "อนุมัติแล้ว" 
-            ? driverData?.trn_request_annual_driver_uid 
-            : driverData?.next_trn_request_annual_driver_uid;
-          
+          const id =
+            driverData?.license_status !== "อนุมัติแล้ว"
+              ? driverData?.trn_request_annual_driver_uid
+              : driverData?.next_trn_request_annual_driver_uid;
+
           response = await resendLicenseAnnual(id || "", basePayload);
           responseType = "resend";
         } else {
@@ -218,10 +219,14 @@ const RequestDrivingStepTwoModal = forwardRef<
 
         if (response) {
           showToast({
-            title: responseType === "create" ? "สร้างคำขอสำเร็จ" : "แก้ไขสำเร็จ",
+            title:
+              responseType === "create" ? "สร้างคำขอสำเร็จ" : "แก้ไขสำเร็จ",
             desc: (
               <>
-                {responseType === "create" ? "สร้างคำขออนุมัติ" : "ตีกลับคำขออนุมัติ"}ทำหน้าที่ขับรถยนต์ประจำปี <br />
+                {responseType === "create"
+                  ? "สร้างคำขออนุมัติ"
+                  : "ตีกลับคำขออนุมัติ"}
+                ทำหน้าที่ขับรถยนต์ประจำปี <br />
                 เลขที่ {response?.data?.result?.request_annual_driver_no}{" "}
                 เรียบร้อยแล้ว <br />
                 {responseType === "create" && (
@@ -230,14 +235,15 @@ const RequestDrivingStepTwoModal = forwardRef<
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if(onTrackStatus){
-                        onTrackStatus(response?.data?.result?.trn_request_annual_driver_uid);
+                      if (onTrackStatus) {
+                        onTrackStatus(
+                          response?.data?.result?.trn_request_annual_driver_uid
+                        );
                       }
                     }}
                   >
                     ติดตามสถานะ
                   </button>
-                  
                 )}
               </>
             ),
@@ -257,7 +263,7 @@ const RequestDrivingStepTwoModal = forwardRef<
       <>
         <dialog ref={modalRef} className={`modal modal-middle`}>
           <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
-            <form>
+            <form className="flex flex-col h-full">
               <div className="bottom-sheet" {...swipeDownHandlers}>
                 <div className="bottom-sheet-icon"></div>
               </div>
@@ -274,14 +280,15 @@ const RequestDrivingStepTwoModal = forwardRef<
                     keyboard_arrow_left
                   </i>{" "}
                   ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                  {(driverData?.license_status !== "ไม่มี" && requestData?.license_status !== "ตีกลับ") &&
-                    <>
-                      {driverData?.license_status === "มีผลปีถัดไป" &&
-                        dayjs().year() + 543}
-                      {driverData?.next_license_status !== "" &&
-                        dayjs().year() + 544}
-                    </>
-                  }
+                  {driverData?.license_status !== "ไม่มี" &&
+                    requestData?.license_status !== "ตีกลับ" && (
+                      <>
+                        {driverData?.license_status === "มีผลปีถัดไป" &&
+                          dayjs().year() + 543}
+                        {driverData?.next_license_status !== "" &&
+                          dayjs().year() + 544}
+                      </>
+                    )}
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
@@ -295,7 +302,11 @@ const RequestDrivingStepTwoModal = forwardRef<
                 </button>
               </div>
 
-              <div className={`modal-body overflow-y-auto text-left !bg-white`}>
+              {/* Modal body scrollable and flex-grow */}
+              <div
+                className="modal-body overflow-y-auto text-left !bg-white flex-1"
+                style={{ maxHeight: "65vh" }}
+              >
                 {isLoading ? (
                   <div className="flex justify-center items-center h-32">
                     <span className="loading loading-spinner loading-lg"></span>
@@ -371,7 +382,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                     </div>
                     <div className="text-left mt-5">
                       การกดปุ่ม "ขออนุมัติ" จะถือว่าท่านรับรองว่ามีคุณสมบัติถูกต้อง
-                      <br></br>
+                      <br />
                       <a
                         href="/assets/อนุมัติให้พนักงานขับขี่รถยนต์ กฟภ. โดยใช้.pdf"
                         target="_blank"
@@ -385,8 +396,10 @@ const RequestDrivingStepTwoModal = forwardRef<
                   </>
                 )}
               </div>
-              <div className="modal-action flex w-full flex-wrap gap-5 mt-3">
-                <div className="">
+
+              {/* Modal actions fixed at the bottom */}
+              <div className="modal-action flex w-full flex-wrap gap-5 mt-3 sticky bottom-0 bg-white z-20 pt-3">
+                <div>
                   <button
                     type="button"
                     className="btn btn-secondary w-full"
@@ -395,7 +408,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                     ไม่ใช่ตอนนี้
                   </button>
                 </div>
-                <div className="">
+                <div>
                   <button
                     type="button"
                     className="btn bg-[#A80689] hover:bg-[#A80689] border-[#A80689] text-white w-full"

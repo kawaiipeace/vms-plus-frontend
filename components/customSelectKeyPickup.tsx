@@ -99,7 +99,7 @@ export default function CustomSelectKeyPickup({ w, options, iconName, value, onC
                 <div className="">
                   {option.full_name}
                   <div className="supporting-text-group">
-                    <div className="supporting-text">{option.dept_sap}</div>
+                    <div className="supporting-text">{option.emp_id}</div>
                     <div className="supporting-text"> {option.dept_sap_short}</div>
                   </div>
                 </div>

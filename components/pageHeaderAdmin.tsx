@@ -145,6 +145,7 @@ const handleCopyRequestNo = async (text?: string) => {
               className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
               tabIndex={0}
             >
+                  {data?.ref_request_status_code === "30" &&
               <Link
                 className="dropdown-item"
                 href="#"
@@ -153,6 +154,7 @@ const handleCopyRequestNo = async (text?: string) => {
                 <i className="material-symbols-outlined">reply</i>
                 ตีกลับให้แก้ไข
               </Link>
+}
               <Link
                 className="dropdown-item"
                 href="#"
@@ -163,6 +165,7 @@ const handleCopyRequestNo = async (text?: string) => {
               </Link>
 
               <div className="divider py-0 my-0"></div>
+            
               <Link
                 className="dropdown-item"
                 href="#"
@@ -171,24 +174,28 @@ const handleCopyRequestNo = async (text?: string) => {
                 <i className="material-symbols-outlined">delete</i>
                 ยกเลิกคำขอ
               </Link>
+
             </ul>
           </div>
         </div>
-
+  
         <div className="md:block hidden">
           <div className="flex gap-3">
+      
             <button
               className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
               onClick={() => cancelRequestModalRef.current?.openModal()}
             >
               ยกเลิกคำขอ
             </button>
+
             <button
               className="btn btn-secondary"
               onClick={() => window.print()}
             >
               <i className="material-symbols-outlined">print</i>พิมพ์
             </button>{" "}
+            {data?.ref_request_status_code === "30" &&
             <button
               className="btn btn-secondary"
               onClick={() => fileBackRequestModalRef.current?.openModal()}
@@ -196,9 +203,10 @@ const handleCopyRequestNo = async (text?: string) => {
               <i className="material-symbols-outlined">reply</i>
               ตีกลับให้แก้ไข
             </button>
+          }
           </div>
         </div>
-
+        {data?.ref_request_status_code === "30" &&
         <button
           className="btn btn-primary"
           disabled={editable ? false : true}
@@ -207,6 +215,7 @@ const handleCopyRequestNo = async (text?: string) => {
           <i className="material-symbols-outlined">check</i>
           ผ่านการตรวจสอบ
         </button>
+}
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid || ""}

@@ -2,6 +2,7 @@ import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { SatisfactionSurveyQuestions } from "@/components/modal/reviewCarDriveModal";
 import { ProgressRequestType } from "./progress-request-status";
+import { ProgressRequestStatusEmp } from "./driver-lic-list-type";
 
 export type RequestDetailType = Partial<{
   trn_request_uid: string;
@@ -63,6 +64,7 @@ export type RequestDetailType = Partial<{
     ref_request_status_desc: string;
   };
   progress_request_status: ProgressRequestType[];
+  progress_request_status_emp: ProgressRequestStatusEmp;
   ref_request_status_name: string;
   rejected_request_reason: string;
   canceled_request_reason: string;
@@ -136,7 +138,10 @@ export type RequestDetailType = Partial<{
   pm_order_no?: string;
   work_description?: string;
   doc_no?: string;
-  doc_file?:string;
+  doc_file?: string;
+  vehicle_user_position?: string;
+  vehicle_user_dept_name_short?: string;
+  vehicle_user_image_url?: string;
 }>;
 
 export interface satisfactionSurveyAnswers {

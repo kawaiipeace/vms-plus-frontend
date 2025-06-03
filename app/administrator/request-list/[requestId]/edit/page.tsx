@@ -23,7 +23,6 @@ export default function RequestDetail() {
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await fetchRequestDetail(request_id);
-       
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);

@@ -67,11 +67,10 @@ export default function KeyPickUpDetailForm({
 
             <JourneyDetailCard
               startDate={
-                convertToBuddhistDateTime(requestData?.start_datetime || "")
-                  .date
+                requestData?.start_datetime || ""
               }
               endDate={
-                convertToBuddhistDateTime(requestData?.end_datetime || "").date
+                requestData?.end_datetime || ""
               }
               timeStart={
                 convertToBuddhistDateTime(requestData?.start_datetime || "")

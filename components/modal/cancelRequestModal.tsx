@@ -1,5 +1,5 @@
 import { useToast } from "@/contexts/toast-context";
-import { adminDeleteTravelDetail } from "@/services/adminService";
+import { adminDeleteFuelDetail, adminDeleteTravelDetail } from "@/services/adminService";
 import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
@@ -87,6 +87,7 @@ const CancelRequestModal = forwardRef<
     }));
 
     useEffect(() => {
+      console.log('role',role);
       schema
         .validate({ input: inputValue })
         .then(() => setIsValid(true))
@@ -121,6 +122,8 @@ const CancelRequestModal = forwardRef<
               ? await UserDeleteTravelDetail(tripId || "")
               : role === "adminRecordTravel"
               ? await adminDeleteTravelDetail(tripId || "")
+              : role === "adminFuel"
+              ? await adminDeleteFuelDetail(fuelId || "")
               : role === "userLic"
               ? await updateUserLicAnnualCancel(payloadLic || "")
               : role === "licAdmin"
@@ -136,6 +139,7 @@ const CancelRequestModal = forwardRef<
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
+            console.log('role==>',role);
             modalRef.current?.close();
 
             if (role === "firstApprover") {
@@ -179,6 +183,10 @@ const CancelRequestModal = forwardRef<
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
               );
+            } else if (role === "adminFuel") {
+              router.push(
+                `/administrator/vehicle-in-use/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
+              );
             } else if (role === "userLic") {
               showToast({
                 title: "ยกเลิกคำขอสำเร็จ",
@@ -198,7 +206,7 @@ const CancelRequestModal = forwardRef<
               }
             } else if (role === "adminRecordTravel") {
               router.push(
-                `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
+                `/administrator/vehicle-in-use/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
               );
             } else if (role === "driver") {
               router.push(

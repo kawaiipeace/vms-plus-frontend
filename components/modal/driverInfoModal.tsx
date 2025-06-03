@@ -14,13 +14,14 @@ import { DriverType } from "@/app/types/driver-user-type";
 interface Props {
   id?: string;
   pickable?: boolean;
+  onPick?: () => void;
   onBack?: () => void;
 }
 
 const DriverInfoModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ id, pickable, onBack }, ref) => {
+>(({ id, pickable, onPick, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [vehicleUserData, setVehicleUserData] = useState<DriverType>();
 
@@ -216,12 +217,15 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-text">
-                            {
+                          {vehicleUserData?.contract_end_date !==
+                            "0001-01-01T00:00:00Z" ? 
+                            
                               convertToBuddhistDateTime(
                                 vehicleUserData?.driver_license
                                   ?.driver_license_end_date
                               ).date
-                            }
+                            
+                            : "-" }
                           </div>
                         </div>
                       </div>
@@ -260,7 +264,7 @@ const DriverInfoModal = forwardRef<
                           <div className="form-label">มีผลถึงวันที่</div>
                           <div className="form-text">
                             {vehicleUserData?.contract_end_date !==
-                              "0001-01-01T00:00:00Z" ? (
+                            "0001-01-01T00:00:00Z" ? (
                               <>
                                 {
                                   convertToBuddhistDateTime(
@@ -268,7 +272,9 @@ const DriverInfoModal = forwardRef<
                                   ).date
                                 }
                               </>
-                            ) : "-"}
+                            ) : (
+                              "-"
+                            )}
                           </div>
                         </div>
                       </div>

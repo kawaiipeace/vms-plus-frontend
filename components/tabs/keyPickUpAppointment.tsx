@@ -59,10 +59,7 @@ const KeyPickUpAppointment = ({ requestId }: Props) => {
               <div className="form-section-header-title">ข้อมูลยานพาหนะ</div>
             </div>
 
-            <VehicleDetailCard
-                       requestData={requestData}
-                     />
-         
+            <VehicleDetailCard requestData={requestData} />
           </div>
         </div>
 
@@ -71,13 +68,19 @@ const KeyPickUpAppointment = ({ requestId }: Props) => {
             <div className="form-section-header">
               <div className="form-section-header-title">พนักงานขับรถ</div>
             </div>
-            <DriverUserAppointmentCard id={requestData?.driver?.mas_driver_uid || ""} requestData={requestData} />
+            <DriverUserAppointmentCard
+              id={requestData?.driver?.mas_driver_uid || ""}
+              requestData={requestData}
+            />
           </div>
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ดูแลยานพาหนะ</div>
             </div>
-            <DriverPassengerPeaInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+            <DriverPassengerPeaInfoCard
+              id={requestData?.vehicle_user_emp_id || ""}
+              requestData={requestData}
+            />
           </div>
         </div>
       </div>

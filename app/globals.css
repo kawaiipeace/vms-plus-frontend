@@ -1747,7 +1747,6 @@ img {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 10 !important;
 }
 
 .light-mode .sidebar {
@@ -3814,6 +3813,14 @@ img {
   color: #cecfd2;
 }
 
+.modal .modal-open{
+  z-index: 9999 !important;
+}
+
+.flatpickr-calendar {
+  z-index: 99999 !important;
+}
+
 .modal .card-item-group {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -3925,6 +3932,8 @@ img {
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: 0px;
+  display: flex;
+  align-items: center;
 }
 
 .light-mode .modal .modal-section .media .media-body .media-text {
@@ -3994,6 +4003,8 @@ img {
     font-weight: 600;
     line-height: 1.5;
     letter-spacing: 0px;
+    display: flex;
+    align-items: center;
   }
 
   .modal .modal-header .btn.close {

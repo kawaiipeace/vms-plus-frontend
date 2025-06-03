@@ -24,7 +24,6 @@ export default function RequestDetail() {
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await fetchRequestDetail(request_id);
-          console.log("reffdsfs", response.data);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);

@@ -137,7 +137,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
       {
         label: "การรับยานพาหนะ",
-        content: <ReceiveCarVehicleInUseTab requestId={requestId} displayOn="vehicle-in-use" />,
+        content: <ReceiveCarVehicleInUseTab requestId={requestId} role="user" displayOn="vehicle-in-use" />,
         constent: "",
         badge: "",
       },
@@ -145,7 +145,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ข้อมูลการเดินทาง",
         content: (
           <>
-            <RecordTravelTab requestId={requestId} data={requestData} />
+            <RecordTravelTab requestId={requestId} data={requestData} role="recordTravel" />
           </>
         ),
         constent: "",
@@ -155,7 +155,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การเติมเชื้อเพลิง",
         content: (
           <>
-            <RecordFuelTab requestId={requestId} role="user" requestData={requestData} />
+            <RecordFuelTab requestId={requestId} role="recordFuel" requestData={requestData} />
           </>
         ),
         constent: "",

@@ -3,15 +3,17 @@ import VehicleDetailModel from "@/components/modal/vehicleDetailModal";
 import Image from "next/image";
 import { useRef } from "react";
 import AdminVehiclePickModal from "../modal/adminVehiclePickModal";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface CarDetailCardProps {
   vehicle?: VehicleDetailType;
+  requestData?: RequestDetailType;
   seeDetail?: boolean;
   selectVehicle?: boolean;
   reqId?: string;
 }
 
-export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId }: CarDetailCardProps) {
+export default function CarDetailCard({ vehicle, seeDetail, selectVehicle,requestData, reqId }: CarDetailCardProps) {
   const vehicleDetailModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -101,7 +103,7 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId
           </div>
         )}
       </div>
-      <AdminVehiclePickModal reqId={reqId} ref={adminVehiclePickModalRef} />
+      <AdminVehiclePickModal reqId={reqId} requestData={requestData} ref={adminVehiclePickModalRef} />
       <VehicleDetailModel ref={vehicleDetailModalRef} vehicleId={vehicle?.mas_vehicle_uid || ""} status="detail" />
     </div>
   );

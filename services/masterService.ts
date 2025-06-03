@@ -12,6 +12,18 @@ export const fetchVehicleUsers = async (search?: string) => {
   }
 };
 
+export const fetchFinalApprovalUsers = async (trn_request_uid: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "mas/user-final-approval-users?trn_request_uid=" + trn_request_uid
+    );
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchReceivedKeyUsers = async (id: string, search?: string) => {
   try {
     const response = await axiosInstance.get(
@@ -100,7 +112,11 @@ export const uploadFile = async (file: File) => {
   }
 };
 
-export const fetchVehicleCarTypes = async (params: any) => {
+export const fetchVehicleCarTypes = async (params: {
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+})=> {
   try {
     const response = await axiosInstance.get("vehicle/types", { params });
     return response;
@@ -279,6 +295,15 @@ export const fetchVehicleDetail = async (id: string) => {
 export const fetchRequestKeyDetail = async (id: string) => {
   try {
     const response = await axiosInstance.get("received-key-user/request/" + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchRequestAdminKeyDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get("received-key-admin/request/" + id);
     return response;
   } catch (error) {
     throw error;

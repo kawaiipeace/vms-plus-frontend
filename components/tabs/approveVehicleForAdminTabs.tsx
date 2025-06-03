@@ -3,10 +3,10 @@ import { fetchMenus } from "@/services/bookingAdmin";
 import { summaryType } from "@/app/types/request-list-type";
 import AdminApproveFlow from "@/components/flow/adminApproveFlow";
 import AdminKeyHandOverFlow from "@/components/flow/adminHandOverFlow";
-import CancelFlow from "@/components/flow/cancelFlow";
 import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
 import AdminVehicleInsFlow from "../flow/adminVehicleInsFlow";
 import SuccessFlow from "../flow/successFlow";
+import CancelAdminFlow from "../flow/cancelAdminFlow";
 
 export default function ApproveVehicleForAdminTabs() {
 
@@ -16,6 +16,7 @@ export default function ApproveVehicleForAdminTabs() {
         const fetchMenuFunc = async () => {
           try {
             const response = await fetchMenus();
+            console.log('menu',response);
             const result = response.data;
             setStatusData(result);
           } catch (error) {
@@ -27,7 +28,7 @@ export default function ApproveVehicleForAdminTabs() {
   
         const getTabContent = (code: string) => {
           switch (code) {
-            case "30,31": 
+            case "30,31,40": 
             return <AdminApproveFlow />;
           case "50,51": 
             return <AdminKeyHandOverFlow />;
@@ -38,7 +39,7 @@ export default function ApproveVehicleForAdminTabs() {
             case "80": // เสร็จสิ้น
               return <SuccessFlow />; // Replace with your component
             case "90": // ยกเลิก
-              return <CancelFlow />;
+              return <CancelAdminFlow />;
             default:
               return <div></div>;
           }

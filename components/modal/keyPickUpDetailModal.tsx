@@ -2,13 +2,23 @@ import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import DatePicker from "@/components/datePicker";
 import RadioButton from "@/components/radioButton";
 import TimePicker from "@/components/timePicker";
-import { fetchVehicleKeyType, updateReceivedKeyConfirmed } from "@/services/masterService";
+import {
+  fetchVehicleKeyType,
+  updateReceivedKeyConfirmed,
+} from "@/services/masterService";
 import { requestReceivedKeyDriver } from "@/services/vehicleInUseDriver";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 // Props for the KeyPickupDetailModal component
 interface KeyPickUpDetailProps {
@@ -18,6 +28,7 @@ interface KeyPickUpDetailProps {
   name: string;
   deptSap: string;
   deptSapShort: string;
+  keyStartTime?: string;
   phone: string;
   vehicle?: VehicleDetailType;
   onEdit?: () => void;
@@ -31,13 +42,31 @@ export interface KeyPickupDetailModalRef {
   closeModal: () => void;
 }
 
-const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetailProps>((props, ref) => {
-  const { id, imgSrc, name, deptSap, deptSapShort, phone, reqId, onEdit, onSubmit, vehicle, role } = props;
+const KeyPickupDetailModal = forwardRef<
+  KeyPickupDetailModalRef,
+  KeyPickUpDetailProps
+>((props, ref) => {
+  const {
+    id,
+    imgSrc,
+    name,
+    deptSap,
+    deptSapShort,
+    phone,
+    keyStartTime,
+    reqId,
+    onEdit,
+    onSubmit,
+    vehicle,
+    role,
+  } = props;
 
   const router = useRouter();
   const modalRef = useRef<HTMLDialogElement>(null);
   const [vehicleKeyTypeData, setVehicleKeyTypeData] = useState<any>([]);
-  const [selectedAttach, setSelectedAttach] = useState<string>("กุญแจหลัก และบัตรเติมน้ำมัน");
+  const [selectedAttach, setSelectedAttach] = useState<string>(
+    "กุญแจหลัก และบัตรเติมน้ำมัน"
+  );
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
 
@@ -77,12 +106,17 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
     }
   }, [modalRef]);
 
+  useEffect(() => {
+    setSelectedDate(convertToBuddhistDateTime(keyStartTime || "").date);
+  }, [keyStartTime]);
+
   const submit = async () => {
+    console.log(selectedDate);
+    console.log(selectedTime);
+    console.log(selectedAttach);
     if (selectedDate && selectedTime && selectedAttach) {
       try {
-        if (onSubmit) {
-          onSubmit();
-        }
+       
 
         const dateTime = convertToISO(selectedDate, selectedTime);
         const payload = {
@@ -103,8 +137,12 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
 
           if (response.status === 200) {
             router.push(
-              "/vehicle-booking/request-list?received-key=success&license-plate=" + vehicle?.vehicle_license_plate
+              "/vehicle-booking/request-list?received-key=success&license-plate=" +
+                vehicle?.vehicle_license_plate
             );
+            if (onSubmit) {
+              onSubmit();
+            }
           }
         }
       } catch (error) {
@@ -176,7 +214,10 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                           <div className="form-label">{name}</div>
                           <div className="supporting-text-group">
                             <div className="supporting-text">{deptSap}</div>
-                            <div className="supporting-text"> {deptSapShort}</div>
+                            <div className="supporting-text">
+                              {" "}
+                              {deptSapShort}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -200,7 +241,9 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                         <div className="input-group">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">calendar_month</i>
+                              <i className="material-symbols-outlined">
+                                calendar_month
+                              </i>
                             </span>
                           </div>
                           <DatePicker
@@ -208,6 +251,7 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                             onChange={(date) => {
                               setSelectedDate(date);
                             }}
+                            defaultValue={convertToBuddhistDateTime(keyStartTime || "").date}
                           />
                         </div>
                       </div>
@@ -220,10 +264,16 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
                         <div className="input-group">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
-                              <i className="material-symbols-outlined">schedule</i>
+                              <i className="material-symbols-outlined">
+                                schedule
+                              </i>
                             </span>
                           </div>
-                          <TimePicker placeholder="ระบุเวลา" onChange={(time) => setSelectedTime(time)} />
+                          <TimePicker
+                            placeholder="ระบุเวลา"
+                            onChange={(time) => setSelectedTime(time)}
+                            defaultValue={convertToBuddhistDateTime(keyStartTime || "").time}
+                          />
                         </div>
                       </div>
                     </div>
@@ -268,7 +318,10 @@ const KeyPickupDetailModal = forwardRef<KeyPickupDetailModalRef, KeyPickUpDetail
             {/* Actions */}
             <div className="modal-action sticky bottom-0 gap-3 mt-0">
               <form method="dialog" className="w-[50%] md:w-auto">
-                <button className="btn btn-secondary w-full" onClick={handleCloseModal}>
+                <button
+                  className="btn btn-secondary w-full"
+                  onClick={handleCloseModal}
+                >
                   ไม่ใช่ตอนนี้
                 </button>
               </form>

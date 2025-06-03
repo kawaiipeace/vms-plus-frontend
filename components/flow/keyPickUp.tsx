@@ -57,6 +57,7 @@ export default function KeyPickUp({
       setPickupDatePassed(today > pickup);
       setRequestData(response.data);
       setVehicleKeyTypeData(responseKeyType.data);
+      console.log("dataReq", response);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
     }
@@ -122,17 +123,11 @@ export default function KeyPickUp({
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ดูแลยานพาหนะ</div>
             </div>
-            {requestData?.is_pea_employee_driver === "1" ? (
-              <DriverPassengerPeaInfoCard
-                id={requestData?.vehicle_user_emp_id || ""}
-                requestData={requestData}
-              />
-            ) : (
-              <DriverPassengerInfoCard
-                id={requestData?.mas_carpool_driver_uid || ""}
-                requestData={requestData}
-              />
-            )}
+
+            <DriverPassengerPeaInfoCard
+              id={requestData?.vehicle_user_emp_id || ""}
+              requestData={requestData}
+            />
           </div>
         </div>
 
@@ -160,10 +155,15 @@ export default function KeyPickUp({
       />
       <KeyPickupDetailModal
         ref={keyPickupDetailModalRef}
-        id={requestData?.received_key_emp_id || ""}
+        id={requestData?.received_key_emp_id || "-"}
         name={requestData?.received_key_emp_name || "-"}
-        deptSap={requestData?.received_key_dept_sap || "-"}
+        deptSap={
+          requestData?.received_key_emp_id +
+            "/" +
+            requestData?.received_key_dept_sap_short || "-"
+        }
         phone={requestData?.received_key_mobile_contact_number || "-"}
+        keyStartTime={requestData?.received_key_start_datetime}
         vehicle={requestData?.vehicle}
         onEdit={() => {
           keyPickUpEditModalRef.current?.openModal();

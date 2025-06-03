@@ -21,7 +21,7 @@ export default function AdminVehicleInsFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
-    ref_request_status_code: "",
+    ref_request_status_code: "70,71",
     startdate: "",
     enddate: "",
     car_type: "",
@@ -49,7 +49,6 @@ export default function AdminVehicleInsFlow() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -87,7 +86,7 @@ export default function AdminVehicleInsFlow() {
     selectedEndDate: string;
     department?: string;
   }) => {
-    console.log('department',department);
+    console.log("department", department);
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -117,13 +116,13 @@ export default function AdminVehicleInsFlow() {
   };
 
   const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    if(filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด"){
+    if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
       setParams((prevParams) => ({
         ...prevParams,
         order_by: "start_datetime",
         order_dir: "desc",
       }));
-    }else{
+    } else {
       setParams((prevParams) => ({
         ...prevParams,
         order_by: "request_no",
@@ -278,15 +277,17 @@ export default function AdminVehicleInsFlow() {
                     setParams((prevParams) => ({
                       ...prevParams,
                       ref_request_status_code: item.ref_request_status_code,
-                      page: 1, 
+                      page: 1,
                     }));
-          
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
-          
+
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
                   }}
                 />
@@ -336,7 +337,6 @@ export default function AdminVehicleInsFlow() {
               </span>
             </div>
           </button>
-
         </div>
       </div>
 
@@ -368,10 +368,13 @@ export default function AdminVehicleInsFlow() {
         )}
       </div>
 
-      {dataRequest?.length > 0 ? (
+      {dataRequest?.length > 0 && (
         <>
           <div className="mt-2">
-            <AdminVehicleInsTable defaultData={dataRequest} pagination={pagination}  />
+            <AdminVehicleInsTable
+              defaultData={dataRequest}
+              pagination={pagination}
+            />
           </div>
 
           <PaginationControls
@@ -380,10 +383,16 @@ export default function AdminVehicleInsFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-      ) : (
-        filterNum > 0 ||
-        filterDate ||
-        (filterDate?.length <= 0 && (
+      )}
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        department={true}
+        onSubmitFilter={handleFilterSubmit}
+      />
+
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"
@@ -393,16 +402,21 @@ export default function AdminVehicleInsFlow() {
             btnType="secondary"
             useModal={handleClearAllFilters}
           />
-        ))
+        )
+      ) : (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ยานพาหนะ"
+          desc={
+            <>
+              เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล<br></br>
+              รายการคำขอจะแสดงที่นี่
+            </>
+          }
+          displayBtn={false}
+          button={""}
+        />
       )}
-      <FilterModal
-        ref={filterModalRef}
-        statusData={summary}
-        department={true}
-        onSubmitFilter={handleFilterSubmit}
-      />
-
-     
     </>
   );
 }
