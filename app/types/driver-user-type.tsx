@@ -7,11 +7,14 @@ export interface DriverType {
   driver_dept_sap: string;
   contract_no: string;
   driver_identification_no: string;
+  driver_total_satisfaction_review: number;
   contract_end_date: string;
   driver_contact_number: string;
   driver_average_satisfaction_score: number;
   driver_satisfaction_score_count: number;
+  driver_dept_sap_short: string;
   driver_birthdate: string;
+  vendor_name: string;
   age: string;
   driver_license: {
     driver_license_no: string;

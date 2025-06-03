@@ -1,9 +1,15 @@
 import { useFormContext } from "@/contexts/carpoolFormContext";
-import { updateSendback } from "@/services/bookingUser";
+import { postCarpoolCreate } from "@/services/carpoolManagement";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id: string;
@@ -12,14 +18,21 @@ interface Props {
   confirmText: string;
 }
 
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
+
 const ConfirmCreateCarpoolModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ id, title, desc, confirmText }, ref) => {
+>(({ title, desc, confirmText }, ref) => {
   // Destructure `process` from props
   const modalRef = useRef<HTMLDialogElement>(null);
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
-  const { updateFormData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -28,10 +41,38 @@ const ConfirmCreateCarpoolModal = forwardRef<
 
   const router = useRouter();
 
-  const handleConfirm = () => {
-    router.push("/carpool-management");
-    updateFormData({});
-    modalRef.current?.close();
+  const handleConfirm = async () => {
+    try {
+      const response = await postCarpoolCreate({
+        ...formData.form,
+        carpool_admins: formData.carpool_admins,
+        carpool_approvers: formData.carpool_approvers,
+        carpool_vehicles: formData.carpool_vehicles,
+        carpool_drivers: formData.carpool_drivers,
+      });
+      if (response.request.status === 201) {
+        router.push("/carpool-management");
+        updateFormData({});
+        localStorage.removeItem("carpoolProcessOne");
+        localStorage.removeItem("carpoolProcessTwo");
+        localStorage.removeItem("carpoolProcessThree");
+        localStorage.removeItem("carpoolProcessFour");
+        modalRef.current?.close();
+      }
+    } catch (error: any) {
+      console.error(error);
+      modalRef.current?.close();
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
+    }
   };
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -74,6 +115,15 @@ const ConfirmCreateCarpoolModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });

@@ -69,7 +69,7 @@ export default function LogListTable({ defaultData, pagination }: Props) {
     },
     {
       accessorKey: "debt_sap",
-      header: () => <div className="text-center">ตำแหน่่ง/สังกัด</div>,
+      header: () => <div className="text-center">ตำแหน่ง/สังกัด</div>,
       enableSorting: false,
       cell: ({ row }) => <div className="text-left">{row.original.action_by_position +"/"+ row.original.action_by_department}</div>,
     },

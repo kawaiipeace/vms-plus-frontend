@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    /* -webkit-text-fill-color: #000 !important; */
+    transition: background-color 5000s ease-in-out 0s !important;
+  }
+  
+  /* Alternative approach that sometimes works better */
+  input:-webkit-autofill {
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+  }
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast; /* Chrome */
+  image-rendering: crisp-edges; /* Standard */
+}
+
 
 .avatar {
   overflow: hidden;
@@ -36,6 +58,10 @@
 
 .dark-mode .title-progress {
   color: black !important;
+}
+
+.dark-mode .text-object-search{
+  color: #f5f5f6;
 }
 
 .dark-mode .title-progress-header {
@@ -1721,7 +1747,6 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 10 !important;
 }
 
 .light-mode .sidebar {
@@ -2332,6 +2357,33 @@
 
   .dark-mode .dataTable tbody tr td+td {
     border-color: #333741;
+  }
+
+  .no-mobile-card {
+    display: table !important;
+  }
+
+  .no-mobile-card thead {
+    display: table-header-group !important;
+  }
+
+  .no-mobile-card tbody {
+    display: table-row-group !important;
+  }
+
+  .no-mobile-card tbody tr {
+    display: table-row !important;
+    border: none !important;
+  }
+
+  .no-mobile-card tbody tr td {
+    /* display: table-cell !important; */
+    border-top: none !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .no-mobile-card tbody tr td [data-name]::before {
+    content: none !important;
   }
 }
 
@@ -3761,6 +3813,14 @@
   color: #cecfd2;
 }
 
+.modal .modal-open{
+  z-index: 9999 !important;
+}
+
+.flatpickr-calendar {
+  z-index: 99999 !important;
+}
+
 .modal .card-item-group {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -3872,6 +3932,8 @@
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: 0px;
+  display: flex;
+  align-items: center;
 }
 
 .light-mode .modal .modal-section .media .media-body .media-text {
@@ -3941,6 +4003,8 @@
     font-weight: 600;
     line-height: 1.5;
     letter-spacing: 0px;
+    display: flex;
+    align-items: center;
   }
 
   .modal .modal-header .btn.close {
@@ -3965,11 +4029,24 @@
     border-radius: 0.25rem;
   }
 
+input:-webkit-autofill {
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+
   .light-mode .bottom-sheet .bottom-sheet-icon {
     background-color: #eaecf0;
   }
 
   .dark-mode .bottom-sheet .bottom-sheet-icon {
+    background-color: #cecfd2;
+  }
+
+  .light-mode .modal-body{
+    background-color: white;
+  }
+
+  .dark-mode .modal-body{
     background-color: #cecfd2;
   }
 

@@ -27,7 +27,7 @@ export default function ReferenceCard({ refNum, file }: RefProps) {
               <i className="material-symbols-outlined">attach_file</i>
               <div className="form-plaintext-group">
                 <div className="form-label">เอกสารแนบ</div>
-                <Link href={file ? file : "#"} className="form-text text-info">
+                <Link href={file ? file : "#"} target="__blank" className="form-text text-info">
                   {shortenFilename(file || "")}
                 </Link>
               </div>

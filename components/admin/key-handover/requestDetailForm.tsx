@@ -94,8 +94,8 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
             </div>
 
             <JourneyDetailCard
-              startDate={convertToBuddhistDateTime(requestData?.start_datetime || "").date}
-              endDate={convertToBuddhistDateTime(requestData?.end_datetime || "").date}
+              startDate={requestData?.start_datetime || ""}
+              endDate={requestData?.end_datetime || ""}
               timeStart={convertToBuddhistDateTime(requestData?.start_datetime || "").time}
               timeEnd={convertToBuddhistDateTime(requestData?.end_datetime || "").time}
               workPlace={requestData?.work_place}
@@ -122,7 +122,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
             </div>
 
-            <ReferenceCard refNum={requestData?.reference_number} file={requestData?.attached_document} />
+            <ReferenceCard refNum={requestData?.doc_no} file={requestData?.doc_file} />
           </div>
 
           <div className="form-section">

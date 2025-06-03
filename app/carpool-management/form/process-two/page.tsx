@@ -56,13 +56,6 @@ export default function CarpoolProcessTwo() {
   }, [refetch]);
 
   useEffect(() => {
-    if (!id) {
-      if (formData.mas_carpool_uid) fetchCarpoolAdminSearchFunc();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]);
-
-  useEffect(() => {
     if (id) {
       fetchCarpoolAdminSearchFunc();
     }
@@ -73,13 +66,10 @@ export default function CarpoolProcessTwo() {
     newPagination?: PaginationType
   ) => {
     try {
-      const response = await getCarpoolAdminSearch(
-        id || formData.mas_carpool_uid,
-        {
-          ...pagination,
-          ...newPagination,
-        }
-      );
+      const response = await getCarpoolAdminSearch(id || "", {
+        ...pagination,
+        ...newPagination,
+      });
       const result = response.data;
       setData(result.admins);
       setPagination(result.pagination);
@@ -90,21 +80,35 @@ export default function CarpoolProcessTwo() {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchCarpoolAdminSearchFunc({
-      ...pagination,
-      page: newPage,
-    });
+    if (id) {
+      fetchCarpoolAdminSearchFunc({
+        ...pagination,
+        page: newPage,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        page: newPage,
+      });
+    }
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    console.log("limit: ", limit, "-- newLimit: ", newLimit);
-    fetchCarpoolAdminSearchFunc({
-      ...pagination,
-      limit,
-      page: 1,
-    });
+    if (id) {
+      fetchCarpoolAdminSearchFunc({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    }
   };
 
   const handleActive = async () => {
@@ -124,9 +128,14 @@ export default function CarpoolProcessTwo() {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
+  const start = (pagination.page - 1) * pagination.limit;
+  const dataTable = id
+    ? data
+    : (formData.carpool_admins || []).slice(start, start + pagination.limit);
 
   return (
     <div>
@@ -180,8 +189,8 @@ export default function CarpoolProcessTwo() {
                     <span
                       className={
                         active === "1"
-                          ? "text-[#98A2B3]"
-                          : "text-icon-error cursor-pointer"
+                          ? "text-[#98A2B3] font-bold"
+                          : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
                         active === "1"
@@ -220,7 +229,7 @@ export default function CarpoolProcessTwo() {
               <ProcessCreateCarpool step={2} />
             )}
 
-            {data.length > 0 && (
+            {dataTable.length > 0 && (
               <>
                 <div className="flex items-center justify-between">
                   <div className="page-section-header border-0 !pb-0">
@@ -230,7 +239,10 @@ export default function CarpoolProcessTwo() {
                           ผู้ดูแลยานพาหนะ
                         </span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          {pagination.total} คน
+                          {id
+                            ? pagination.total
+                            : (formData.carpool_admins || []).length}{" "}
+                          คน
                         </span>
                       </div>
                     </div>
@@ -250,17 +262,23 @@ export default function CarpoolProcessTwo() {
                 </div>
 
                 <CarpoolAdminTable
-                  defaultData={data}
+                  defaultData={dataTable}
                   pagination={pagination}
                   setRefetch={setRefetch}
                 />
-
                 <PaginationControls
                   pagination={{
                     limit: pagination.limit,
                     page: pagination.page,
-                    totalPages: pagination.totalPages,
-                    total: pagination.total,
+                    totalPages: id
+                      ? pagination.totalPages
+                      : Math.ceil(
+                          (formData.carpool_admins || []).length /
+                            pagination.limit
+                        ),
+                    total: id
+                      ? pagination.total
+                      : (formData.carpool_admins || []).length,
                   }}
                   onPageChange={handlePageChange}
                   onPageSizeChange={handlePageSizeChange}
@@ -268,7 +286,7 @@ export default function CarpoolProcessTwo() {
               </>
             )}
 
-            {data.length === 0 && (
+            {dataTable.length === 0 && (
               <ZeroRecord
                 imgSrc="/assets/img/carpool/add-admin.png"
                 title="เพิ่มผู้ดูแลยานพาหนะ"
@@ -312,12 +330,13 @@ export default function CarpoolProcessTwo() {
               remove={!!id}
             />
 
-            {data.length > 0 && !id && (
+            {dataTable.length > 0 && !id && (
               <div className="form-action">
                 <button
-                  onClick={() =>
-                    router.push("/carpool-management/form/process-three")
-                  }
+                  onClick={() => {
+                    localStorage.setItem("carpoolProcessTwo", "Done");
+                    router.push("/carpool-management/form/process-three");
+                  }}
                   className="btn btn-primary"
                 >
                   ต่อไป

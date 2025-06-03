@@ -1,23 +1,25 @@
+import ThemeToggle from "@/components/themeToggle";
+import { CarpoolProvider } from "@/contexts/carpoolFormContext";
+import { ProfileProvider } from "@/contexts/profileContext";
+import { RequestDetailProvider } from "@/contexts/requestDetailContext";
+import { FormProvider } from "@/contexts/requestFormContext";
+import { SidebarProvider } from "@/contexts/sidebarContext";
+import { ToastProvider } from "@/contexts/toast-context";
 import type { Metadata } from "next";
 import Head from "next/head";
-import "./globals.css";
+import Script from "next/script";
+import { Suspense } from "react";
 import "../public/assets/css/ibmplexsansthai.css";
 import "../public/assets/css/ibmplexsansthailooped.css";
 import "../public/assets/css/ibmthaifonts.css";
 import "../public/assets/css/material-symbols.css";
-import ThemeToggle from "@/components/themeToggle";
-import { SidebarProvider } from "@/contexts/sidebarContext";
-import { FormProvider } from "@/contexts/requestFormContext";
-import { ProfileProvider } from "@/contexts/profileContext";
-import Script from "next/script";
-import { RequestDetailProvider } from "@/contexts/requestDetailContext";
-import { CarpoolProvider } from "@/contexts/carpoolFormContext";
-import { ToastProvider } from "@/contexts/toast-context";
-import { Suspense } from "react";
+import "./globals.css";
+import RootLayoutClient from "./layout-client";
 
 export const metadata: Metadata = {
-  title: "Car Pool",
-  description: "Car Pool",
+  title: "VMS Plus",
+  description: "VMS Plus",
+  manifest: '/web.manifest',
 };
 
 export default function RootLayout({
@@ -37,9 +39,9 @@ export default function RootLayout({
           src="/env/env-config.js"
           strategy="beforeInteractive"
         />
-        <link rel="manifest" href="/manifest.json" />
+        {/* <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#317EFB" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" /> */}
       </head>
 
       <Head>
@@ -47,20 +49,21 @@ export default function RootLayout({
       </Head>
 
       <body className="light-mode">
-        <ProfileProvider>
-          <SidebarProvider>
-            <RequestDetailProvider>
-              <FormProvider>
-                <ToastProvider>
-                  <CarpoolProvider>
-                    {" "}
-                    <Suspense>{children}</Suspense>
-                  </CarpoolProvider>
-                </ToastProvider>
-              </FormProvider>
-            </RequestDetailProvider>
-          </SidebarProvider>
-        </ProfileProvider>
+        <RootLayoutClient>
+          <ProfileProvider>
+            <SidebarProvider>
+              <RequestDetailProvider>
+                <FormProvider>
+                  <ToastProvider>
+                    <CarpoolProvider>
+                      <Suspense>{children}</Suspense>
+                    </CarpoolProvider>
+                  </ToastProvider>
+                </FormProvider>
+              </RequestDetailProvider>
+            </SidebarProvider>
+          </ProfileProvider>
+        </RootLayoutClient>
       </body>
     </html>
   );

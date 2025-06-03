@@ -17,6 +17,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import VehicleDetailCarpoolModel from "../modal/vehicleDetailCarpoolModal";
 import ToastCustom from "../toastCustom";
+import { useFormContext } from "@/contexts/carpoolFormContext";
 
 interface PaginationType {
   limit: number;
@@ -63,36 +64,65 @@ export default function CarpoolVehicleTable({
     pageSize: pagination.limit,
   });
 
+  const { formData, updateFormData } = useFormContext();
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination]);
+
   const handleDelete = async () => {
     if (deleteId) {
-      try {
-        const response = await deleteCarpoolVehicle(deleteId);
-        if (response.request.status === 200) {
-          setDeleteId(undefined);
-          setRefetch(true);
-          cancelCreateModalRef.current?.closeModal();
+      if (id) {
+        try {
+          const response = await deleteCarpoolVehicle(deleteId);
+          if (response.request.status === 200) {
+            setDeleteId(undefined);
+            setRefetch(true);
+            cancelCreateModalRef.current?.closeModal();
+            setToast({
+              title: "ลบยานพาหนะสำเร็จ",
+              desc:
+                "พาหนะเลขทะเบียน " +
+                defaultData.find(
+                  (item) => item.mas_carpool_vehicle_uid === deleteId
+                )?.vehicle_license_plate +
+                " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+              status: "success",
+            });
+          }
+        } catch (error: any) {
+          console.log(error);
           setToast({
-            title: "ลบยานพาหนะสำเร็จ",
-            desc:
-              "พาหนะเลขทะเบียน " +
-              defaultData.find(
-                (item) => item.mas_carpool_vehicle_uid === deleteId
-              )?.vehicle_license_plate +
-              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
-            status: "success",
+            title: "Error",
+            desc: (
+              <div>
+                <div>{error.response.data.error}</div>
+                <div>{error.response.data.message}</div>
+              </div>
+            ),
+            status: "error",
           });
         }
-      } catch (error: any) {
-        console.log(error);
-        setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
+      } else {
+        updateFormData({
+          ...formData,
+          carpool_vehicles: formData.carpool_vehicles?.filter(
+            (item) => item.mas_vehicle_uid !== deleteId
           ),
-          status: "error",
+        });
+        setDeleteId(undefined);
+        cancelCreateModalRef.current?.closeModal();
+        setToast({
+          title: "ลบยานพาหนะสำเร็จ",
+          desc:
+            "พาหนะเลขทะเบียน " +
+            defaultData.find((item) => item.mas_vehicle_uid === deleteId)
+              ?.vehicle_license_plate +
+            " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+          status: "success",
         });
       }
     }
@@ -246,7 +276,7 @@ export default function CarpoolVehicleTable({
               data-tip="ลบ"
               onClick={() => {
                 cancelCreateModalRef.current?.openModal();
-                setDeleteId(row.original.mas_carpool_vehicle_uid);
+                setDeleteId(row.original.mas_vehicle_uid);
               }}
             >
               <i className="material-symbols-outlined">delete</i>
@@ -474,11 +504,17 @@ export default function CarpoolVehicleTable({
         title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
         desc={
           "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
-            ?.vehicle_license_plate +
+          defaultData.find((item) =>
+            id
+              ? item.mas_carpool_vehicle_uid === deleteId
+              : item.mas_vehicle_uid === deleteId
+          )?.vehicle_license_plate +
           " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_vehicle_uid === deleteId)
-            ?.vehicle_owner_dept_short +
+          defaultData.find((item) =>
+            id
+              ? item.mas_carpool_vehicle_uid === deleteId
+              : item.mas_vehicle_uid === deleteId
+          )?.vehicle_owner_dept_short +
           " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
         }
         confirmText={"นำยานพาหนะออก"}

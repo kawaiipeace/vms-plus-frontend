@@ -16,11 +16,13 @@ import CustomSelectApprover, {
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import { fetchUserApprovalLic } from "@/services/masterService";
+import { updateAnnualApprover } from "@/services/driver";
 
 interface EditApproverModalProps {
   title: string;
   requestData?: RequestAnnualDriver;
   onUpdate?: (data: VehicleUserType) => void;
+  onSubmitForm?: () => void;
   onBack?: () => void;
 }
 
@@ -29,10 +31,10 @@ const schema = yup.object().shape({
   position: yup.string(),
 });
 
-const EditApproverModal = forwardRef<
+const EditFinalApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditApproverModalProps
->(({ title, requestData, onUpdate, onBack }, ref) => {
+>(({ title, requestData, onSubmitForm, onUpdate, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [driverOptions, setDriverOptions] = useState<CustomSelectOption[]>([]);
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
@@ -42,6 +44,7 @@ const EditApproverModal = forwardRef<
   useImperativeHandle(ref, () => ({
     openModal: () => {
       modalRef.current?.showModal();
+      fetchVehicleUserData();
     },
     closeModal: () => modalRef.current?.close(),
   }));
@@ -55,7 +58,9 @@ const EditApproverModal = forwardRef<
     },
   });
 
-  const handleVehicleUserChange = (selectedOption: CustomSelectOption | null) => {
+  const handleVehicleUserChange = (
+    selectedOption: CustomSelectOption | null
+  ) => {
     setSelectedVehicleUserOption(selectedOption);
     if (selectedOption) {
       setValue("position", selectedOption.posi_text || "");
@@ -66,56 +71,62 @@ const EditApproverModal = forwardRef<
     }
   };
 
-  useEffect(() => {
-    const fetchVehicleUserData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetchUserApprovalLic("");
-    
-        if (response) {
-          console.log('userapprovelist',response);
-          const vehicleUserData: VehicleUserType[] = response.data;
-          const driverOptionsArray = vehicleUserData.map(
-            (user: VehicleUserType) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.dept_sap_short})`,
-              posi_text: user.posi_text,
-              dept_sap: user.dept_sap,
-              dept_sap_short: user.dept_sap_short,
-              full_name: user.full_name,
-              image_url: user.image_url,
-              tel_mobile: user.tel_mobile,
-              tel_internal: user.tel_internal,
-            })
+  const fetchVehicleUserData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchUserApprovalLic(
+        requestData?.created_request_emp_id
+      );
+
+      if (response) {
+        console.log("userapprovelist", response);
+        const vehicleUserData: VehicleUserType[] = response.data;
+        const driverOptionsArray = vehicleUserData.map(
+          (user: VehicleUserType) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.dept_sap_short})`,
+            posi_text: user.posi_text,
+            dept_sap: user.dept_sap,
+            dept_sap_short: user.dept_sap_short,
+            full_name: user.full_name,
+            image_url: user.image_url,
+            tel_mobile: user.tel_mobile,
+            tel_internal: user.tel_internal,
+          })
+        );
+
+        setDriverOptions(driverOptionsArray);
+
+        // Set default approver if requestData has approved_request_emp_id
+        if (requestData?.approved_request_emp_id) {
+          const defaultApprover = driverOptionsArray.find(
+            (opt) => opt.value === requestData.approved_request_emp_id
           );
 
-          setDriverOptions(driverOptionsArray);
-          
-          // Set default approver if requestData has approved_request_emp_id
-          if (requestData?.approved_request_emp_id) {
-            const defaultApprover = driverOptionsArray.find(
-              opt => opt.value === requestData.approved_request_emp_id
+          if (defaultApprover) {
+            setSelectedVehicleUserOption(defaultApprover);
+            setValue(
+              "name",
+              defaultApprover.full_name || defaultApprover.label || ""
             );
-            
-            if (defaultApprover) {
-              setSelectedVehicleUserOption(defaultApprover);
-              setValue("name", defaultApprover.full_name || defaultApprover.label || "");
-              setValue("position", defaultApprover.posi_text || "");
-            }
+            setValue(
+              "position",
+              defaultApprover.posi_text +
+                "/" +
+                defaultApprover.dept_sap_short || ""
+            );
           }
         }
-      } catch (error) {
-        console.error("Error fetching approvers:", error);
-      } finally {
-        setIsLoading(false);
       }
-    };
-    fetchVehicleUserData();
-  }, [requestData]);
+    } catch (error) {
+      console.error("Error fetching approvers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;
-
 
     try {
       if (onUpdate) {
@@ -128,9 +139,23 @@ const EditApproverModal = forwardRef<
           tel_mobile: selectedVehicleUserOption.tel_mobile || "",
           tel_internal: selectedVehicleUserOption.tel_internal || "",
         });
-        if(onBack) onBack();
+
+        if (onBack) onBack();
       }
-  
+
+      if (onSubmitForm) {
+        const payload = {
+          approved_request_emp_id: selectedVehicleUserOption?.value,
+          trn_request_annual_driver_uid:
+            requestData?.trn_request_annual_driver_uid,
+        };
+
+        const response = await updateAnnualApprover(payload);
+        if (response) {
+          modalRef.current?.close();
+          if (onSubmitForm) onSubmitForm();
+        }
+      }
     } catch (error) {
       console.error("Network error:", error);
       alert("Failed to update approver due to network error.");
@@ -214,8 +239,8 @@ const EditApproverModal = forwardRef<
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
-          <button 
-            className="btn btn-primary" 
+          <button
+            className="btn btn-primary"
             onClick={handleSubmit(onSubmit)}
             disabled={isLoading || !selectedVehicleUserOption}
           >
@@ -234,6 +259,6 @@ const EditApproverModal = forwardRef<
   );
 });
 
-EditApproverModal.displayName = "EditApproverModal";
+EditFinalApproverModal.displayName = "EditFinalApproverModal";
 
-export default EditApproverModal;
+export default EditFinalApproverModal;

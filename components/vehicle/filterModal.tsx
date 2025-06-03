@@ -1,8 +1,19 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import VehicleStatus from "./status";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
-import { CustomData, FuelTypeApiCustomData, FuelTypeApiResponse, VehicleDepartmentApiResponse, VehicleDepartmentCustomData, VehicleInputParams, VehicleStatusProps, VehicleTypeApiCustomData, VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
-import CustomSelect from "../customSelect";
+import { 
+    CustomData, 
+    FuelTypeApiCustomData, 
+    FuelTypeApiResponse, 
+    VehicleDepartmentApiResponse, 
+    VehicleDepartmentCustomData, 
+    VehicleInputParams, 
+    VehicleStatusProps, 
+    VehicleTypeApiCustomData, 
+    VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
+// import CustomSelect from "../customSelect";
+import CustomSelectOnSearch from "../customSelectOnSearch";
+import CustomSearchSelect from "../customSelectSerch";
 
 type FilterProps = {
     flag: string;
@@ -66,7 +77,20 @@ const ModalBody = ({
 
     useEffect(() => {
         setFormData(params);
-    }, [params]);
+    
+        const isAllEmpty =
+            params.vehicleType === '' &&
+            params.fuelType === '' &&
+            params.vehicleDepartment === '';
+    
+        if (isAllEmpty) {
+            const defaultOption = { label: "ทั้งหมด", value: "" };
+    
+            setVehicleTypeOptions(defaultOption);
+            setFuelTypeOptions(defaultOption);
+            setVehicleDepartmentOptions(defaultOption);
+        }
+    }, [params]);    
 
     useEffect(() => {
         setParams(formData);
@@ -91,16 +115,21 @@ const ModalBody = ({
             <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-12">
                     <div className="form-group">
-                        <label className="form-label">ปรเภทะยานพาหนะ</label>
-                        <CustomSelect
-                            w="md:w-full"
+                        <label className="form-label">ประเภทยานพาหนะ</label>
+                        <CustomSearchSelect
+                            w='w-full'
+                            enableSearch
                             options={vehicleTypes}
                             value={vehicleTypeOptions}
-                            enableSearchOnApi={true}
                             onChange={(selectedValue: CustomData) => {
+                                if (selectedValue.label === "") {
+                                    selectedValue = { label: "ทั้งหมด", value: "" };
+                                }
+
                                 handleChange("vehicleType", selectedValue.value);
                                 setVehicleTypeOptions(selectedValue);
                             }}
+                            classNamePlaceholder="flex-1 text-start"
                         />
                     </div>
                 </div>
@@ -109,12 +138,16 @@ const ModalBody = ({
                     <div className="col-span-12">
                         <div className="form-group">
                             <span className="form-label">ประเภทเชื้อเพลิง</span>
-                            <CustomSelect
+                            <CustomSelectOnSearch
                                 w="md:w-full"
                                 options={fuelTypes}
                                 value={fuelTypeOptions}
                                 enableSearchOnApi={true}
                                 onChange={(selectedValue) => {
+                                    if(selectedValue.label === "") {
+                                        selectedValue = { label: "ทั้งหมด", value: "" };
+                                    }
+
                                     handleChange("fuelType", selectedValue.value);
                                     setFuelTypeOptions(selectedValue);
                                 }}
@@ -126,12 +159,16 @@ const ModalBody = ({
                 <div className="col-span-12">
                     <div className="form-group">
                         <span className="form-label">สังกัดยานพาหนะ</span>
-                        <CustomSelect
+                        <CustomSelectOnSearch
                             w="md:w-full"
                             options={vehicleDepartments}
                             value={vehicleDepartmentOptions}
                             enableSearchOnApi={true}
                             onChange={(selectedValue) => {
+                                if(selectedValue.label === "") {
+                                    selectedValue = { label: "ทั้งหมด", value: "" };
+                                }
+
                                 handleChange("vehicleDepartment", selectedValue.value);
                                 setVehicleDepartmentOptions(selectedValue);
                             }}
@@ -246,7 +283,6 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
     const [vehicleType, setVehicleType] = useState<VehicleTypeApiCustomData[]>([]);
 
     const handleSubmitFilter = () => {
-        console.log("submit filter", params);
         onSubmitFilter?.(params);
         dialogRef.current?.close();
     };

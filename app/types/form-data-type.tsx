@@ -9,10 +9,14 @@ export interface FormDataType {
   workPlace?: string;
   purpose?: string;
   attachmentFile?: string;
+  doc_no?: string;
+  doc_file?: string;
   costNo?: string;
   costOrigin?: string;
   costCenter?: string;
   wbsNumber?: string;
+  vehicleType?: string;
+  masCarpoolUid?: string;
   networkNo?: string;
   activityNo?: string;
   pmOrderNo?: string;
@@ -54,6 +58,6 @@ export interface FormDataType {
 }
 
 export interface UpdateDriverType {
-  mas_carpool_driver_uid : string;
-  trn_request_uid : string;
+  mas_carpool_driver_uid: string;
+  trn_request_uid: string;
 }

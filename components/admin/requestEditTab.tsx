@@ -94,7 +94,7 @@ export default function RequestEditTabs({ requestId }: Props) {
 
   return (
     <div className="w-full">
-   <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
+   <div className="flex border-b tablist !z-[1] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
         {tabs.map((tab, index) => (
           <button
             key={index}

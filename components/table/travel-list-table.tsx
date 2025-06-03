@@ -213,6 +213,7 @@ export default function TravelListTable({ defaultData, pagination, editRecordTra
                 " จะถูกลบออกจากระบบ "
               }
               confirmText="ลบข้อมูล"
+              role="adminRecordTravel"
               cancleFor="adminRecordTravel"
               ref={cancelRequestModalRef}
             />

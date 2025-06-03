@@ -33,16 +33,30 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
 
   const [copied, setCopied] = useState(false);
 
-  const handleCopyRequestNo = async (text?: string) => {
-    if (!text) return;
-    try {
+const handleCopyRequestNo = async (text?: string) => {
+  if (!text) return;
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // hide tooltip after 2 seconds
-    } catch (err) {
-      console.error("Copy failed:", err);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed"; // prevent scroll
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
     }
-  };
+
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (err) {
+    console.error("Copy failed:", err);
+  }
+};
+
 
   const [pickupData, setPickupData] = useState<{
     place: string;
@@ -56,7 +70,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
   };
 
   return (
-    <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
+    <div className="page-header w-full sticky top-[64px] z-[2] bg-white pt-5 pb-3 !mb-0">
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
@@ -131,6 +145,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               className="dropdown-menu dropdown-content absolute top-auto bottom-full z-[9999] max-w-[200px] w-[200px]"
               tabIndex={0}
             >
+                  {data?.ref_request_status_code === "30" &&
               <Link
                 className="dropdown-item"
                 href="#"
@@ -139,6 +154,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
                 <i className="material-symbols-outlined">reply</i>
                 ตีกลับให้แก้ไข
               </Link>
+}
               <Link
                 className="dropdown-item"
                 href="#"
@@ -149,6 +165,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               </Link>
 
               <div className="divider py-0 my-0"></div>
+            
               <Link
                 className="dropdown-item"
                 href="#"
@@ -157,24 +174,28 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
                 <i className="material-symbols-outlined">delete</i>
                 ยกเลิกคำขอ
               </Link>
+
             </ul>
           </div>
         </div>
-
+  
         <div className="md:block hidden">
           <div className="flex gap-3">
+      
             <button
               className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
               onClick={() => cancelRequestModalRef.current?.openModal()}
             >
               ยกเลิกคำขอ
             </button>
+
             <button
               className="btn btn-secondary"
               onClick={() => window.print()}
             >
               <i className="material-symbols-outlined">print</i>พิมพ์
             </button>{" "}
+            {data?.ref_request_status_code === "30" &&
             <button
               className="btn btn-secondary"
               onClick={() => fileBackRequestModalRef.current?.openModal()}
@@ -182,9 +203,10 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
               <i className="material-symbols-outlined">reply</i>
               ตีกลับให้แก้ไข
             </button>
+          }
           </div>
         </div>
-
+        {data?.ref_request_status_code === "30" &&
         <button
           className="btn btn-primary"
           disabled={editable ? false : true}
@@ -193,6 +215,7 @@ export default function PageHeaderAdmin({ data, editable }: Props) {
           <i className="material-symbols-outlined">check</i>
           ผ่านการตรวจสอบ
         </button>
+}
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid || ""}

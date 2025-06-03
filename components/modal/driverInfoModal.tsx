@@ -6,9 +6,7 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
-import {
-  fetchDriverDetail,
-} from "@/services/masterService";
+import { fetchDriverDetail } from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import { DriverType } from "@/app/types/driver-user-type";
@@ -16,38 +14,39 @@ import { DriverType } from "@/app/types/driver-user-type";
 interface Props {
   id?: string;
   pickable?: boolean;
+  onPick?: () => void;
   onBack?: () => void;
 }
 
 const DriverInfoModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ id, pickable, onBack } , ref) => {
+>(({ id, pickable, onPick, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [vehicleUserData, setVehicleUserData] = useState<DriverType>();
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      if (id) {
+        fetchVehicleUserData(id);
+      }
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
-  useEffect(() => {
-    if (id) {
-      const fetchVehicleUserData = async () => {
-        try {
-          const response = await fetchDriverDetail(id);
-          console.log("driver---", response.data);
-          if (response.status === 200) {
-            const res = response.data;
-            setVehicleUserData(res);
-          }
-        } catch (error) {
-          console.error("Error fetching requests:", error);
-        }
-      };
-      fetchVehicleUserData();
+  const fetchVehicleUserData = async (id: string) => {
+    try {
+      const response = await fetchDriverDetail(id);
+      console.log("driver---", response.data);
+      if (response.status === 200) {
+        const res = response.data;
+        setVehicleUserData(res);
+      }
+    } catch (error) {
+      console.error("Error fetching requests:", error);
     }
-  }, [id]);
+  };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
@@ -58,8 +57,10 @@ const DriverInfoModal = forwardRef<
           <div className="bottom-sheet-icon"></div>
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-         
-          <div className="modal-title flex items-center gap-4"> { pickable &&   <i
+          <div className="modal-title flex items-center gap-4">
+            {" "}
+            {pickable && (
+              <i
                 className="material-symbols-outlined cursor-pointer"
                 onClick={() => {
                   modalRef.current?.close();
@@ -69,15 +70,18 @@ const DriverInfoModal = forwardRef<
                 }}
               >
                 keyboard_arrow_left
-              </i>}  ข้อมูลผู้ขับขี่</div>
-
-            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary" onClick={()=> modalRef.current?.close}>
+              </i>
+            )}{" "}
+            ข้อมูลผู้ขับขี่
+          </div>
+          <form method="dialog">
+            <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
               <i className="material-symbols-outlined">close</i>
             </button>
-
+          </form>
         </div>
         {!vehicleUserData ? (
-         <></>
+          <></>
         ) : (
           <div className="modal-body overflow-y-auto">
             <div className="form-section" style={{ marginTop: 0 }}>
@@ -96,14 +100,15 @@ const DriverInfoModal = forwardRef<
                     />
                     <div className="form-plaintext-group align-self-center">
                       <div className="form-label">
-                        {vehicleUserData?.driver_name || "-"}
+                        {vehicleUserData?.driver_name || "-"} (
+                        {vehicleUserData?.driver_nickname || "-"})
                       </div>
                       <div className="supporting-text-group">
                         <div className="supporting-text">
                           {vehicleUserData?.driver_id || "-"}
                         </div>
                         <div className="supporting-text">
-                          {vehicleUserData?.driver_dept_sap || "-"}
+                          {vehicleUserData?.driver_dept_sap_short || "-"}
                         </div>
                       </div>
                     </div>
@@ -133,7 +138,14 @@ const DriverInfoModal = forwardRef<
                             <i className="material-symbols-outlined">star</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {vehicleUserData?.driver_contact_number || "-"}
+                                {
+                                  vehicleUserData?.driver_average_satisfaction_score
+                                }{" "}
+                                (
+                                {
+                                  vehicleUserData?.driver_total_satisfaction_review
+                                }
+                                )
                               </div>
                             </div>
                           </div>
@@ -148,7 +160,7 @@ const DriverInfoModal = forwardRef<
                             <i className="material-symbols-outlined">person</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {vehicleUserData?.driver_contact_number || "-"}
+                                {vehicleUserData?.age || "-"}
                               </div>
                             </div>
                           </div>
@@ -163,7 +175,7 @@ const DriverInfoModal = forwardRef<
                             <i className="material-symbols-outlined">hotel</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {vehicleUserData?.driver_contact_number || "-"}
+                                {vehicleUserData?.work_type_name || "-"}
                               </div>
                             </div>
                           </div>
@@ -205,12 +217,15 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-text">
-                            {
+                          {vehicleUserData?.contract_end_date !==
+                            "0001-01-01T00:00:00Z" ? 
+                            
                               convertToBuddhistDateTime(
                                 vehicleUserData?.driver_license
                                   ?.driver_license_end_date
                               ).date
-                            }
+                            
+                            : "-" }
                           </div>
                         </div>
                       </div>
@@ -248,11 +263,18 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">มีผลถึงวันที่</div>
                           <div className="form-text">
-                            {
-                              convertToBuddhistDateTime(
-                                vehicleUserData?.contract_end_date
-                              ).date
-                            }
+                            {vehicleUserData?.contract_end_date !==
+                            "0001-01-01T00:00:00Z" ? (
+                              <>
+                                {
+                                  convertToBuddhistDateTime(
+                                    vehicleUserData?.contract_end_date
+                                  ).date
+                                }
+                              </>
+                            ) : (
+                              "-"
+                            )}
                           </div>
                         </div>
                       </div>
@@ -262,7 +284,7 @@ const DriverInfoModal = forwardRef<
               </div>
             </div>
 
-            <div className="form-section">
+            {/* <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">ใบรับรองการอบรม</div>
               </div>
@@ -290,23 +312,18 @@ const DriverInfoModal = forwardRef<
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         )}
 
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
-         
-          {pickable ?
-          <button
-            className="btn btn-primary"
-          >
-            เลือก
-          </button>
-          : 
-          <form method="dialog">
-          <button className="btn btn-secondary">ปิด</button>
-        </form>
-           }
+          {pickable ? (
+            <button className="btn btn-primary">เลือก</button>
+          ) : (
+            <form method="dialog">
+              <button className="btn btn-secondary">ปิด</button>
+            </form>
+          )}
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

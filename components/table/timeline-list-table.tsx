@@ -47,30 +47,35 @@ const useGenerateDates = (params: { start_date: string; end_date: string }) => {
 
 const TripTimelineItem = ({
   item,
-  statusColors,
   onClick,
+  durationDays,
 }: {
   item: any;
-  statusColors: { bg?: string; text?: string };
   onClick: () => void;
-}) => (
-  <button
-    key={item.tripDetailId}
-    onClick={onClick}
-    className={`${statusColors.bg} !h-auto !rounded-lg justify-start !cursor-pointer w-[calc((100%*${item.schedule_range})+(8px*2)+(1px*2))]`}
-  >
-    <div className={`flex items-center gap-1 text-sm font-semibold ${statusColors.text} py-[2px] px-[4px]`}>
-      <div className={`${statusColors.text} flex flex-col`}>
-        <i className="material-symbols-outlined !text-base !leading-4">directions_car</i>
-        <i className="material-symbols-outlined !text-base !leading-4">person</i>
+  durationDays: number;
+}) => {
+  const statusColors = statusColorMap[item.status as keyof typeof statusColorMap] || {};
+
+  return (
+    <button
+      key={item.tripDetailId}
+      onClick={onClick}
+      className={`${statusColors.bg} !h-auto !rounded-lg justify-start !cursor-pointer`}
+      style={{ width: `${200 * durationDays}px` }}
+    >
+      <div className={`flex items-center gap-1 text-sm font-semibold ${statusColors.text} py-[2px] px-[4px]`}>
+        <div className={`${statusColors.text} flex flex-col`}>
+          <i className="material-symbols-outlined !text-base !leading-4">directions_car</i>
+          <i className="material-symbols-outlined !text-base !leading-4">person</i>
+        </div>
+        <div className="flex flex-col justify-start items-start">
+          <span className="text-sm font-semibold">{item.destinationPlace}</span>
+          <span className="text-black font-normal text-sm">{item.startTime}</span>
+        </div>
       </div>
-      <div className="flex flex-col justify-start items-start">
-        <span className="text-sm font-semibold">{item.destinationPlace}</span>
-        <span className="text-black font-normal text-sm">{item.startTime}</span>
-      </div>
-    </div>
-  </button>
-);
+    </button>
+  );
+};
 
 const useColumns = (
   columnHelper: ReturnType<typeof createColumnHelper<VehicleTimelineListTableData>>,
@@ -113,27 +118,31 @@ const useColumns = (
       selectedOption === "all"
         ? [
           columnHelper.accessor("vehicleType", {
-            header: "ประเภทยานพาหนะ",
-            cell: (info) => <div className="text-base">{info.getValue()}</div>,
+            header: () => (
+              <div>
+                <span>ประเภทยานพาหนะ</span>
+              </div>
+            ),
+            cell: (info) => info.getValue(),
             enableSorting: false,
             meta: {
-              className: "hidden sm:table-cell sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px] border-b border-gray-500",
-            },
+              className: "hidden sm:table-cell sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px] border-b border-gray-500"
+            }
           }),
           columnHelper.accessor("vehicleDepartment", {
             header: "สังกัดยานพาหนะ",
             cell: (info) => <div className="text-base">{info.getValue()}</div>,
             enableSorting: false,
             meta: {
-              className: "hidden sm:table-cell sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px] border-b border-gray-500",
+              className: "sm:table-cell hidden sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px] border-b border-gray-500",
             },
           }),
           columnHelper.accessor("distance", {
             header: `ระยะทาง ${lastMonth}`,
-            cell: (info) => <div className="text-base">{info.getValue()}</div>,
+            cell: (info) => <div className="text-base">{parseInt(info.getValue()).toLocaleString()}</div>,
             enableSorting: true,
             meta: {
-              className: `hidden sm:table-cell sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line border-b border-gray-500 ${selectedOption === "all" && "border-r"
+              className: `sm:table-cell hidden sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line border-b border-gray-500 ${selectedOption === "all" && "border-r"
                 }`,
             },
           }),
@@ -144,7 +153,6 @@ const useColumns = (
       columnHelper.accessor(
         (row) => ({
           timeline: row.timeline,
-          status: row.vehicleStatus,
         }),
         {
           id: key,
@@ -160,10 +168,9 @@ const useColumns = (
             );
           },
           cell: (info) => {
-            const { timeline, status } = info.getValue();
-            const dayTimeline = timeline[`day_${day}`];
+            const { timeline } = info.getValue();
+            const dayTimeline = timeline[key];
             const holidayClass = holiday ? "text-white bg-gray-100" : "";
-            const statusColors = statusColorMap[status as keyof typeof statusColorMap] || {};
 
             const handleClickOpenDetailModal = () => {
               setTripDetails(dayTimeline);
@@ -173,14 +180,19 @@ const useColumns = (
 
             return (
               <div className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${holidayClass}`}>
-                {dayTimeline?.map((item: any) => (
-                  <TripTimelineItem
-                    key={item.tripDetailId}
-                    item={item}
-                    statusColors={statusColors}
-                    onClick={handleClickOpenDetailModal}
-                  />
-                ))}
+                {dayTimeline?.map((item: any) => {
+                  const isTripStartToday = dayjs(item.startDate).format('YYYY/MM/DD') === date;
+                  if (!isTripStartToday) return null;
+
+                  return (
+                    <TripTimelineItem 
+                      key={item.tripDetailId}
+                      item={item}
+                      onClick={handleClickOpenDetailModal}
+                      durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), 'day') + 1}
+                    />
+                  );
+                })}
               </div>
             );
           },
@@ -205,12 +217,13 @@ export default function RequestListTable({
   const [dateSelected, setDateSelected] = useState<string | null>(null);
 
   const vehicleTimelineDetailRef = useRef<VehicleTimelineRef>(null);
-  
+
   // Generate dates based on the provided params
   const dates = useGenerateDates(params);
 
   // Transform the API data to table data format
   const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest, dates]);
+  console.log('dataTransform', dataTransform)
 
   const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
@@ -239,12 +252,12 @@ export default function RequestListTable({
   }, []);
 
   return (
-    <div className="w-full overflow-x-auto py-4 pt-0 dataTable-bookingtimeline">
+    <div className="w-full overflow-x-auto py-4 pt-0">
       {!isLoading && <DataTable table={table} />}
       <VehicleTimeLineDetailModal
         ref={vehicleTimelineDetailRef}
         detailRequest={tripDetails}
-        currentDate={dateSelected}
+        currentDate={dateSelected ?? ''}
       />
     </div>
   );

@@ -12,9 +12,9 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 
 interface Payload {
-  reference_number: string;
+  doc_no: string;
   trn_request_uid: string;
-  attached_document?: any;
+  doc_file?: any;
 }
 
 interface RefProps {
@@ -49,7 +49,7 @@ const ReferenceModal = forwardRef<
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      referenceNumber: formData.referenceNumber || "",
+      referenceNumber: formData.doc_no || "",
     },
   });
 
@@ -63,11 +63,11 @@ const ReferenceModal = forwardRef<
   useEffect(() => {
     if (requestData) {
       reset({
-        referenceNumber: requestData?.reference_number || "",
+        referenceNumber: requestData?.doc_no || "",
       });
-      if (requestData?.attached_document) {
-        setFileName(shortenFilename(requestData.attached_document));
-        setFileValue(requestData.attached_document);
+      if (requestData?.doc_file) {
+        setFileName(shortenFilename(requestData.doc_file));
+        setFileValue(requestData.doc_file);
       }
       hasReset.current = true;
     }
@@ -93,12 +93,12 @@ const ReferenceModal = forwardRef<
   const onSubmit = async (data: any) => {
     if (requestData) {
       const payload: Payload = {
-        reference_number: data.referenceNumber,
+        doc_no: data.referenceNumber,
         trn_request_uid: requestData?.trn_request_uid || "",
       };
 
       if (fileValue) {
-        payload.attached_document = fileValue;
+        payload.doc_file = fileValue;
       }
 
       try {
@@ -118,14 +118,14 @@ const ReferenceModal = forwardRef<
       if (onUpdate) {
         onUpdate({
           ...data,
-          referenceNumber: data.referenceNumber,
-          attachmentFile: fileValue,
+          doc_no: data.referenceNumber,
+          doc_file: fileValue,
         });
       }
 
       updateFormData({
-        referenceNumber: data.referenceNumber,
-        attachmentFile: fileValue,
+        doc_no: data.referenceNumber,
+        doc_file: fileValue,
       });
 
       modalRef.current?.close();
@@ -142,7 +142,7 @@ const ReferenceModal = forwardRef<
         </div>
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title">
-            เลขที่หนังสืออ้างอิง<span className="form-optional">(ถ้ามี)</span>
+            แก้ไขหนังสืออ้างอิง
           </div>
           <form method="dialog">
             <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">

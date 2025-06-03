@@ -133,6 +133,8 @@ function RequestListContent() {
 
 export default function ApproveRequest() {
   const { isPinned } = useSidebar();
+  const searchParams = useSearchParams();
+  const licType = searchParams.get("licenseType");
 
   return (
     <div>
@@ -164,7 +166,7 @@ export default function ApproveRequest() {
               </div>
             </div>
 
-            <ApproveVehicleTabs />
+            <ApproveVehicleTabs licType={licType || ""} />
           </div>
         </div>
       </div>

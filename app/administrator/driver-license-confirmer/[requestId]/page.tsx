@@ -45,7 +45,7 @@ export default function RequestDetail() {
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeaderFirst data={requestData} />}
-            <RequestDetailForm requestId={request_id} />
+            <RequestDetailForm licType="ตรวจสอบ" requestId={request_id} />
           </div>
         </div>
       </div>

@@ -157,11 +157,10 @@ const DriverForm = () => {
     driverOperationType: Yup.string().required("กรุณาเลือกประเภทการปฏิบัติงาน"),
     driverUseByOther: Yup.string().required("กรุณาเลือกหน่วยงานอื่นสามารถขอใช้งานได้"),
     driverLicenseType: Yup.string().required("กรุณาเลือกประเภทใบขับขี่"),
-    driverLicenseNo: Yup.string()
-      .required("กรุณาระบุเลขที่ใบขับขี่")
-      .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
-      .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
-      .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
+    driverLicenseNo: Yup.string().required("กรุณาระบุเลขที่ใบขับขี่"),
+    // .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    // .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+    // .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
     driverLicenseStartDate: Yup.string().required("กรุณาเลือกวันที่ออกใบขับขี่"),
     driverLicenseEndDate: Yup.string().required("กรุณาเลือกวันที่หมดอายุใบขับขี่"),
     driverLicensePDF: Yup.string().required("กรุณาอัพโหลดใบขับขี่"),
@@ -213,26 +212,26 @@ const DriverForm = () => {
       }
     };
 
-    const fetchDriverVendors = async () => {
-      try {
-        const response = await listDriverVendors();
-        const driverDepartmentData = response.data.map((item: { mas_vendor_code: string; mas_vendor_name: string }) => {
-          return {
-            value: item.mas_vendor_code,
-            label: item.mas_vendor_name,
-          };
-        });
-        // console.log(driverDepartmentData);
-        setDriverVendorsList(driverDepartmentData);
-      } catch (error) {
-        console.error("Error fetching driver department data:", error);
-      }
-    };
+    // const fetchDriverVendors = async () => {
+    //   try {
+    //     const response = await listDriverVendors();
+    //     const driverDepartmentData = response.data.map((item: { mas_vendor_code: string; mas_vendor_name: string }) => {
+    //       return {
+    //         value: item.mas_vendor_code,
+    //         label: item.mas_vendor_name,
+    //       };
+    //     });
+    //     // console.log(driverDepartmentData);
+    //     setDriverVendorsList(driverDepartmentData);
+    //   } catch (error) {
+    //     console.error("Error fetching driver department data:", error);
+    //   }
+    // };
 
     fetchUseByOtherRadio();
     fetchDriverLicense();
     fetchDriverDepartment();
-    fetchDriverVendors();
+    // fetchDriverVendors();
   }, []);
 
   useEffect(() => {
@@ -284,7 +283,7 @@ const DriverForm = () => {
         driver_name: formData.driverName,
         driver_nickname: formData.driverNickname,
         is_replacement: formData.driverOperationType,
-        mas_vendor_code: formData.driverContractorCompany,
+        vendor_name: formData.driverContractorCompany,
         ref_other_use_code: useByOther,
         work_type: Number(formData.driverOverNightStay),
       };
@@ -639,7 +638,7 @@ const DriverForm = () => {
               <div>
                 <div className="form-group">
                   <label className="form-label">บริษัทผู้รับจ้าง</label>
-                  <CustomSelect
+                  {/* <CustomSelect
                     w="w-full"
                     options={driverVendorsList}
                     value={
@@ -648,6 +647,14 @@ const DriverForm = () => {
                     onChange={(selected) =>
                       setFormData((prev) => ({ ...prev, driverContractorCompany: selected.value }))
                     }
+                  /> */}
+                  <input
+                    type="text"
+                    name="driverContractorCompany"
+                    className="form-control"
+                    placeholder="บริษัทผู้รับจ้าง"
+                    value={formData.driverContractorCompany}
+                    onChange={handleInputChange}
                   />
                   {formErrors.driverContractorCompany && (
                     <FormHelper text={String(formErrors.driverContractorCompany)} />
@@ -798,7 +805,7 @@ const DriverForm = () => {
                       placeholder="ระบุเลขที่ใบขับขี่"
                       value={formData.driverLicenseNo}
                       onChange={handleInputChange}
-                      maxLength={8}
+                      // maxLength={8}
                     />
                   </div>
                   {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}
