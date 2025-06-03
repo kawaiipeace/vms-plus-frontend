@@ -209,7 +209,7 @@ const handleCopyRequestNo = async (text?: string) => {
         {data?.ref_request_status_code === "30" &&
         <button
           className="btn btn-primary"
-          disabled={editable ? false : true}
+          // disabled={editable ? false : true}
           onClick={() => keyPickupModalRef.current?.openModal()}
         >
           <i className="material-symbols-outlined">check</i>
