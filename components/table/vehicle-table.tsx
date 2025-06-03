@@ -1,4 +1,4 @@
-import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataTable } from "./dataTable";
@@ -27,6 +27,7 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
 
     // State to hold the data
     const [reqData, setReqData] = useState<VehicleManagementApiResponse[]>(data);
+    const [sorting, setSorting] = useState<SortingState>([]);
 
     useEffect(() => {
         setReqData(data);
@@ -138,19 +139,24 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
                 />
             )
         }),
-        columnHelper.accessor(row => ({
-            license: row.vehicle_license_plate,
-            brand: row.vehicle_brand_name,
-            model: row.vehicle_model_name,
-        }), {
+        columnHelper.accessor('vehicle_license_plate', {
             header: 'เลขทะเบียน / ยี่ห้อ / รุ่น',
-            cell: info => (
-                <div className="flex flex-col">
-                        <div className="text-base">{info.getValue().license}</div>
-                        <div className="text-sm text-gray-500">{`${info.getValue().brand} / ${info.getValue().model}`}</div>
-                </div>
-            ),
             enableSorting: true,
+            sortingFn: (rowA, rowB) => {
+                const a = rowA.original.vehicle_license_plate || '';
+                const b = rowB.original.vehicle_license_plate || '';
+                return a.localeCompare(b, 'th', { numeric: true });
+            },
+            cell: info => {
+                const row = info.row.original;
+
+                return (
+                    <div className="flex flex-col">
+                        <div className="text-base">{row.vehicle_license_plate}</div>
+                        <div className="text-sm text-gray-500">{`${row.vehicle_brand_name} / ${row.vehicle_model_name}`}</div>
+                    </div>
+                );
+            },
         }),
         columnHelper.accessor('ref_vehicle_type_name', {
             header: 'ประเภทยานพาหนะ',
@@ -179,7 +185,7 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
         }),
         columnHelper.accessor('vehicle_mileage', {
             header: 'เลขไมล์ล่าสุด',
-            cell: info => info.getValue(),
+            cell: info => info.getValue().toLocaleString(),
             enableSorting: true,
         }),
         columnHelper.accessor('age', {
@@ -215,7 +221,10 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
     const table = useReactTable({
         data: reqData,
         columns,
+        state: { sorting },
         getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
     });
 
     return (

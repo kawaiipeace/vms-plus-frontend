@@ -2,7 +2,12 @@ import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import DatePicker from "../datePicker";
@@ -17,7 +22,11 @@ interface Props {
   place?: string;
   start_datetime?: string;
   end_datetime?: string;
-  onPickupConfirmed?: (data: { place: string; datetime: string; endtime: string }) => void;
+  onPickupConfirmed?: (data: {
+    place: string;
+    datetime: string;
+    endtime: string;
+  }) => void;
 }
 
 const schema = yup.object().shape({
@@ -29,8 +38,23 @@ const schema = yup.object().shape({
   pickupEndTime: yup.string().required("กรุณาเลือกเวลานัดหมาย"),
 });
 
-const KeyPickupModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
-  ({ title, role, desc, confirmText, place, start_datetime, end_datetime, onPickupConfirmed }, ref) => {
+const KeyPickupModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(
+  (
+    {
+      title,
+      role,
+      desc,
+      confirmText,
+      place,
+      start_datetime,
+      end_datetime,
+      onPickupConfirmed,
+    },
+    ref
+  ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
 
     const [openModal, setOpenModal] = useState(false);
@@ -104,110 +128,152 @@ const KeyPickupModal = forwardRef<{ openModal: () => void; closeModal: () => voi
     return (
       <>
         {openModal && (
-          <div className={`modal modal-middle modal-open`}>
+          <div className={`modal modal-open modal-middle !z-[15]`}>
+            
             <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
               <div className="bottom-sheet" {...swipeDownHandlers}>
                 <div className="bottom-sheet-icon"></div>
               </div>
-              <div className="modal-scroll-wrapper overflow-y-auto">
-                <div className="modal-body text-center  !p-0">
-                  <form onSubmit={handleSubmit(onSubmitForm)} method="dialog" className="w-full">
-                    <Image
-                      src="/assets/img/graphic/confirm_key.svg"
-                      className="w-full confirm-img"
-                      width={100}
-                      height={100}
-                      alt=""
-                    />
-                    <div className="confirm-title text-xl font-medium px-5">{title}</div>
-                    <div className="confirm-text text-base">{desc}</div>
-                    <div className="confirm-form mt-4 px-5">
-                      <div className="form-group">
-                        <div className="grid grid-cols-12 gap-4">
-                          <div className="col-span-12 md:col-span-6">
-                            <div className="form-group">
-                              <label className="form-label">สถานที่รับกุญแจ</label>
-                              <div className="input-group">
-                                <div className="input-group-prepend select-none">
-                                  <span className="input-group-text">
-                                    <i className="material-symbols-outlined">location_on</i>
-                                  </span>
-                                </div>
-                                <input
-                                  type="text"
-                                  className="form-control select-none"
-                                  placeholder="ระบุสถานที่นัดหมาย"
-                                  {...register("pickupPlace")}
-                                />
-                              </div>
-                              {errors.pickupPlace && <FormHelper text={String(errors.pickupPlace.message)} />}
-                            </div>
-                          </div>
 
-                          <div className="col-span-12 md:col-span-6">
-                            <div className="form-group">
-                              <label className="form-label">วันที่นัดรับกุญแจ</label>
-                              <div className="input-group">
-                                <div className="input-group-prepend">
-                                  <span className="input-group-text">
-                                    <i className="material-symbols-outlined">calendar_month</i>
-                                  </span>
-                                </div>
-                                <DatePicker placeholder="ระบุวันที่นัดรับกุญแจ" onChange={handleDateChange} />
+              <div className="modal-body text-center  !p-0">
+                <form
+                  onSubmit={handleSubmit(onSubmitForm)}
+                  method="dialog"
+                  className="w-full"
+                >
+                  <Image
+                    src="/assets/img/graphic/confirm_key.svg"
+                    className="w-full confirm-img"
+                    width={100}
+                    height={100}
+                    alt=""
+                  />
+                  <div className="confirm-title text-xl font-medium px-5">
+                    {title}
+                  </div>
+                  <div className="confirm-text text-base">{desc}</div>
+                  <div className="confirm-form mt-4 px-5">
+                    <div className="form-group">
+                      <div className="grid grid-cols-12 gap-4">
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">
+                              สถานที่รับกุญแจ
+                            </label>
+                            <div className="input-group">
+                              <div className="input-group-prepend select-none">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    location_on
+                                  </i>
+                                </span>
                               </div>
-                              {errors.pickupDate && <FormHelper text={String(errors.pickupDate.message)} />}
+                              <input
+                                type="text"
+                                className="form-control select-none"
+                                placeholder="ระบุสถานที่นัดหมาย"
+                                {...register("pickupPlace")}
+                              />
                             </div>
+                            {errors.pickupPlace && (
+                              <FormHelper
+                                text={String(errors.pickupPlace.message)}
+                              />
+                            )}
                           </div>
+                        </div>
 
-                          <div className="col-span-12 md:col-span-6">
-                            <div className="form-group">
-                              <label className="form-label">เวลาเริ่มต้น</label>
-                              <div className="input-group">
-                                <div className="input-group-prepend">
-                                  <span className="input-group-text">
-                                    <i className="material-symbols-outlined">schedule</i>
-                                  </span>
-                                </div>
-                                <TimePicker onChange={handleTimeChange} placeholder="ระบุเวลาเริ่มต้น" />
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">
+                              วันที่นัดรับกุญแจ
+                            </label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    calendar_month
+                                  </i>
+                                </span>
                               </div>
-                              {errors.pickupTime && <FormHelper text="กรุณาเลือกเวลาเริ่มต้น" />}
+                              <DatePicker
+                                placeholder="ระบุวันที่นัดรับกุญแจ"
+                                onChange={handleDateChange}
+                              />
                             </div>
+                            {errors.pickupDate && (
+                              <FormHelper
+                                text={String(errors.pickupDate.message)}
+                              />
+                            )}
                           </div>
+                        </div>
 
-                          <div className="col-span-12 md:col-span-6">
-                            <div className="form-group">
-                              <label className="form-label">เวลาสิ้นสุด</label>
-                              <div className="input-group">
-                                <div className="input-group-prepend">
-                                  <span className="input-group-text">
-                                    <i className="material-symbols-outlined">schedule</i>
-                                  </span>
-                                </div>
-                                <TimePicker onChange={handleEndTimeChange} placeholder="ระบุเวลาสิ้นสุด" />
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">เวลาเริ่มต้น</label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    schedule
+                                  </i>
+                                </span>
                               </div>
-                              {errors.pickupEndTime && <FormHelper text="กรุณาเลือกเวลาสิ้นสุด" />}
+                              <TimePicker
+                                onChange={handleTimeChange}
+                                placeholder="ระบุเวลาเริ่มต้น"
+                              />
                             </div>
+                            {errors.pickupTime && (
+                              <FormHelper text="กรุณาเลือกเวลาเริ่มต้น" />
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group">
+                            <label className="form-label">เวลาสิ้นสุด</label>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">
+                                    schedule
+                                  </i>
+                                </span>
+                              </div>
+                              <TimePicker
+                                onChange={handleEndTimeChange}
+                                placeholder="ระบุเวลาสิ้นสุด"
+                              />
+                            </div>
+                            {errors.pickupEndTime && (
+                              <FormHelper text="กรุณาเลือกเวลาสิ้นสุด" />
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="modal-action sticky bottom-0 gap-3 mt-0">
-                      <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
-                        ยกเลิก
-                      </button>
-                      <button type="submit" className="btn btn-primary col-span-1">
-                        {confirmText}
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                  <div className="modal-action sticky bottom-0 gap-3 mt-0">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleCloseModal}
+                    >
+                      ยกเลิก
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary col-span-1"
+                    >
+                      {confirmText}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
-
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
           </div>
         )}
       </>

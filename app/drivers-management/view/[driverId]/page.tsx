@@ -116,7 +116,7 @@ const DriverViewProfilePage = () => {
   const [updateType, setUpdateType] = useState<string>("");
   const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
   const [driverStatusDesc, setDriverStatusDesc] = useState<string>("");
-  const [driverVendorsList, setDriverVendorsList] = useState([]);
+  // const [driverVendorsList, setDriverVendorsList] = useState([]);
   const [vehicleUserData, setVehicleUserData] = useState<DriverMasType>();
 
   const driverActiveModalRef = useRef<{
@@ -184,14 +184,14 @@ const DriverViewProfilePage = () => {
       }
     };
 
-    const fetchDriverVendors = async () => {
-      try {
-        const response = await listDriverVendors();
-        setDriverVendorsList(response.data);
-      } catch (error) {
-        console.error("Error fetching driver department data:", error);
-      }
-    };
+    // const fetchDriverVendors = async () => {
+    //   try {
+    //     const response = await listDriverVendors();
+    //     setDriverVendorsList(response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching driver department data:", error);
+    //   }
+    // };
 
     const fetchVehicleUserData = async () => {
       try {
@@ -207,7 +207,7 @@ const DriverViewProfilePage = () => {
 
     fetchDriverInfo();
     fetchDriverStatus();
-    fetchDriverVendors();
+    // fetchDriverVendors();
     fetchVehicleUserData();
     setDriverUpdated(false);
     router.replace(`/drivers-management/view/${driverId}?active=${isActive}`);
@@ -260,7 +260,7 @@ const DriverViewProfilePage = () => {
                     </a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
-                    <a>ข้อมูลพนักงานขับรถ</a>
+                    <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>{driverInfo?.driver_name}</a>
@@ -405,9 +405,7 @@ const DriverViewProfilePage = () => {
                       แก้ไข
                     </button>
                   </div>
-                  {driverInfo && (
-                    <DriverEmployeeContractCard driverInfo={driverInfo} driverVendorsList={driverVendorsList} />
-                  )}
+                  {driverInfo && <DriverEmployeeContractCard driverInfo={driverInfo} />}
                 </div>
                 <div className="form-section">
                   <div className="form-section-header">

@@ -85,7 +85,11 @@ const UploadCSVModal = forwardRef<{ openModal: () => void; closeModal: () => voi
                   <UploadFileCSV onFileChange={(file) => handleFileChange(file)} />
                 ) : (
                   <UploadFilePreview
-                    file={{ file_name: formData.file.name, file_size: formData.file.size.toString() }}
+                    file={{
+                      file_name: formData.file.name,
+                      file_size: formData.file.size.toString(),
+                      file: formData.file.file,
+                    }}
                     onDeleteFile={() => setFormData({ file: null })}
                   />
                 )}

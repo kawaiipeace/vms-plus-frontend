@@ -78,7 +78,7 @@ export default function CustomSelect({ w, options, iconName, value, onChange }: 
                   buttonRef.current?.focus(); // Keep focus on the div
                 }}
               >
-                <p className="flex">
+                <p className="flex text-left">
                   {option.label}
                   {value?.value === option.value && <span className="material-symbols-outlined ml-auto">check</span>}
                 </p>

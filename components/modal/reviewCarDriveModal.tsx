@@ -11,9 +11,9 @@ interface Props {
 }
 
 export interface SatisfactionSurveyQuestions {
-  mas_satisfaction_survey_questions_code: string;
-  mas_satisfaction_survey_questions_title: string;
-  mas_satisfaction_survey_questions_desc: string;
+  mas_satisfaction_survey_questions_uid: string;
+  question_title: string;
+  questions_description: string;
 }
 
 const iconList = ["verified_user", "sentiment_satisfied", "apparel", "road", "directions", "local_car_wash"];
@@ -36,6 +36,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       try {
         // Ensure parsedData is an object before accessing vehicleSelect
         const response = await fetchRequestKeyDetail(id || "");
+        console.log("response", response);
 
         setRequestData(response.data);
       } catch (error) {
@@ -50,9 +51,12 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
 
           setSatisfactionSurveyQuestions(response.data);
           const newRatting = response.data.map((item: SatisfactionSurveyQuestions) => {
+            const findValue = requestData?.satisfaction_survey_answers?.find(
+              (e) => e.mas_satisfaction_survey_questions_uid === item.mas_satisfaction_survey_questions_uid
+            );
             return {
-              mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code,
-              survey_answer: 5,
+              mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_uid,
+              survey_answer: findValue?.survey_answer === 0 ? findValue?.survey_answer : 5,
             };
           });
           setRatting(newRatting);
@@ -60,15 +64,16 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
           console.error("Error fetching vehicle details:", error);
         }
       },
-      [] // Add requestId to the dependency array,
+      [id] // Add requestId to the dependency array,
     );
 
     useEffect(() => {
       fetchSatisfactionSurveyQuestionsFunc();
+
       if (id) {
         fetchRequestDetailfunc();
       }
-    }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc, id]);
+    }, [id]);
 
     useEffect(() => {
       if (displayOn === "admin" || displayOn === "view") {
@@ -80,7 +85,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       if (displayOn === "view") {
         const rattingData = requestData?.satisfaction_survey_answers?.map((item: satisfactionSurveyAnswers) => {
           return {
-            mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code.toString(),
+            mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_uid,
             survey_answer: item.survey_answer,
           };
         });
@@ -113,11 +118,13 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
         const payLoad = ratting?.map(
           (item: { mas_satisfaction_survey_questions_code: string; survey_answer: number }) => {
             return {
-              mas_satisfaction_survey_questions_code: Number(item.mas_satisfaction_survey_questions_code),
+              mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code,
               survey_answer: item.survey_answer,
             };
           }
         );
+        console.log(payLoad);
+
         const response = await UserUpdateSatisfactionSurvey(id || "", payLoad);
         if (response.status === 200) {
           setReviewSubmit(true);
@@ -153,20 +160,20 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
                 </div>
               </div>
               {satisfactionSurveyQuestions.map((item, index) => {
-                const name = `rating-${item.mas_satisfaction_survey_questions_code}`;
+                const name = `rating-${item.mas_satisfaction_survey_questions_uid}`;
                 const onChange = (value: string) => {
-                  onChangeRatting(value, item.mas_satisfaction_survey_questions_code);
+                  onChangeRatting(value, item.mas_satisfaction_survey_questions_uid);
                 };
                 const findValue = ratting?.find(
                   (r: { mas_satisfaction_survey_questions_code: string; survey_answer: number }) =>
-                    r.mas_satisfaction_survey_questions_code === item.mas_satisfaction_survey_questions_code
+                    r.mas_satisfaction_survey_questions_code === item.mas_satisfaction_survey_questions_uid
                 );
                 return (
                   <Rating
                     key={index}
                     name={name}
-                    title={item.mas_satisfaction_survey_questions_title}
-                    description={item.mas_satisfaction_survey_questions_desc}
+                    title={item.question_title}
+                    description={item.questions_description}
                     icon={iconList[index]}
                     onChange={onChange}
                     value={findValue?.survey_answer || 5}

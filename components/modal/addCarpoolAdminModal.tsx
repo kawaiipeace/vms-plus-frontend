@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomSelect, { CustomSelectOption } from "../customSelect";
+import { CustomSelectOption } from "../customSelect";
 import {
   getCarpoolAdmin,
   getCarpoolAdminDetails,
@@ -17,6 +17,8 @@ import { CarpoolAdmin } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
+import CustomSearchSelect from "../customSelectSerch";
+import FormHelper from "../formHelper";
 
 interface Props {
   id?: string;
@@ -43,8 +45,9 @@ const AddCarpoolAdminModal = forwardRef<
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [validPhone, setValidPhone] = useState<boolean>(false);
 
-  const { formData } = useFormContext();
+  const { formData, updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -68,30 +71,52 @@ const AddCarpoolAdminModal = forwardRef<
   useEffect(() => {
     const fetchCarpoolAdminDetailsFunc = async () => {
       if (editId) {
-        try {
-          const response = await getCarpoolAdminDetails(editId);
-          const result = response.data;
+        if (id) {
+          try {
+            const response = await getCarpoolAdminDetails(editId);
+            const result = response.data;
+            setAdminSelected({
+              value: result.admin_emp_no,
+              label: result.admin_emp_name + " (" + result.admin_emp_no + ")",
+            });
+            setDeptSapShort(result.admin_dept_sap_short);
+            setInternalContactNumber(result.internal_contact_number);
+            setMobileContactNumber(result.mobile_contact_number);
+          } catch (error) {
+            console.error("Error fetching status data:", error);
+          }
+        } else {
+          const admin = (formData.carpool_admins || []).find(
+            (item) => item.admin_emp_no === editId
+          );
           setAdminSelected({
-            value: result.admin_emp_no,
-            label: result.admin_emp_name + " (" + result.admin_emp_no + ")",
+            value: admin?.admin_emp_no || "",
+            label: admin?.admin_emp_name + " (" + admin?.admin_emp_no + ")",
           });
-          setDeptSapShort(result.admin_dept_sap_short);
-          setInternalContactNumber(result.internal_contact_number);
-          setMobileContactNumber(result.mobile_contact_number);
-        } catch (error) {
-          console.error("Error fetching status data:", error);
+          setDeptSapShort(admin?.admin_dept_sap_short);
+          setInternalContactNumber(admin?.internal_contact_number);
+          setMobileContactNumber(admin?.mobile_contact_number);
         }
       }
     };
 
     fetchCarpoolAdminDetailsFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (editId) {
-      try {
+      adminEdit(editId);
+    } else {
+      adminCreate();
+    }
+  };
+
+  const adminEdit = async (editId: string) => {
+    try {
+      if (id) {
         const response = await putCarpoolAdminUpdate(editId, {
-          mas_carpool_uid: id || formData.mas_carpool_uid,
+          mas_carpool_uid: id,
           admin_emp_no: adminSelected?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -113,23 +138,57 @@ const AddCarpoolAdminModal = forwardRef<
             status: "success",
           });
         }
-      } catch (error: any) {
-        console.log(error);
+      } else {
+        const carpool_admins = (formData.carpool_admins || []).map((e) =>
+          e.admin_emp_no === editId
+            ? {
+                ...e,
+                admin_emp_no: adminSelected?.value as string,
+                internal_contact_number: internal_contact_number as string,
+                mobile_contact_number: mobile_contact_number as string,
+              }
+            : e
+        );
+        updateFormData({
+          ...formData,
+          carpool_admins,
+        });
+        setAdminSelected(undefined);
+        setDeptSapShort("");
+        setInternalContactNumber("");
+        setMobileContactNumber("");
+        modalRef.current?.close();
         setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
-          ),
-          status: "error",
+          title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
+          desc:
+            "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
+            carpool_admins.find(
+              (item) => item.admin_emp_no === adminSelected?.value
+            )?.admin_emp_name +
+            " ได้รับการแก้ไขเรียบร้อยแล้ว",
+          status: "success",
         });
       }
-    } else {
-      try {
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
+    }
+  };
+
+  const adminCreate = async () => {
+    try {
+      if (id) {
         const response = await postCarpoolAdminCreate({
-          mas_carpool_uid: id || formData.mas_carpool_uid,
+          mas_carpool_uid: id,
           admin_emp_no: adminSelected?.value as string,
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
@@ -142,19 +201,44 @@ const AddCarpoolAdminModal = forwardRef<
           setMobileContactNumber("");
           modalRef.current?.close();
         }
-      } catch (error: any) {
-        console.log(error);
-        setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
-          ),
-          status: "error",
+      } else {
+        const admin = admins.find((e) => e.emp_id === adminSelected?.value);
+        const old = (formData.carpool_admins || []).filter(
+          (e) => e.admin_emp_no !== adminSelected?.value
+        );
+        updateFormData({
+          ...formData,
+          carpool_admins: [
+            ...old,
+            {
+              admin_emp_name: admin?.full_name || "",
+              admin_dept_sap_short: admin?.dept_sap_short || "",
+              is_main_admin: old.length === 0 ? "1" : "0",
+              image_url: admin?.image_url || "",
+              admin_emp_no: adminSelected?.value as string,
+              internal_contact_number: internal_contact_number as string,
+              mobile_contact_number: mobile_contact_number as string,
+            },
+          ],
         });
+        setAdminSelected(undefined);
+        setDeptSapShort("");
+        setInternalContactNumber("");
+        setMobileContactNumber("");
+        modalRef.current?.close();
       }
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
     }
   };
 
@@ -166,6 +250,7 @@ const AddCarpoolAdminModal = forwardRef<
     const mobile = admin?.tel_mobile;
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
+    if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
     setDeptSapShort(admin?.dept_sap_short);
   };
 
@@ -194,8 +279,8 @@ const AddCarpoolAdminModal = forwardRef<
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <div className="form-group">
-                    <label className="form-label">ผู้ใช้ยานพาหนะ</label>
-                    <CustomSelect
+                    <label className="form-label">ผู้ดูแลยานพาหนะ</label>
+                    <CustomSearchSelect
                       iconName="person"
                       w="w-full"
                       options={admins.map((item) => ({
@@ -204,6 +289,8 @@ const AddCarpoolAdminModal = forwardRef<
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}
+                      enableSearch
+                      classNamePlaceholder="flex-1 text-start"
                     />
                   </div>
                 </div>
@@ -268,9 +355,19 @@ const AddCarpoolAdminModal = forwardRef<
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
                         value={mobile_contact_number}
-                        onChange={(e) => setMobileContactNumber(e.target.value)}
+                        onChange={(e) => {
+                          setMobileContactNumber(e.target.value);
+                          if (e.target.value) {
+                            setValidPhone(!/^\d{10}$/.test(e.target.value));
+                          } else {
+                            setValidPhone(false);
+                          }
+                        }}
                       />
                     </div>
+                    {validPhone && (
+                      <FormHelper text={"กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง"} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -285,6 +382,7 @@ const AddCarpoolAdminModal = forwardRef<
               type="button"
               className="btn btn-primary col-span-1"
               onClick={handleConfirm}
+              disabled={validPhone}
             >
               {editId ? "บันทึก" : "เพิ่ม"}
             </button>

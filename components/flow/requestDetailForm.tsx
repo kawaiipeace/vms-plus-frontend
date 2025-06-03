@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import {
   AppointmentDriverCard,
@@ -108,7 +109,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-              {editable && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => vehicleUserModalRef.current?.openModal()}
@@ -129,7 +130,7 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-              {editable && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => journeyDetailModalRef.current?.openModal()}
@@ -140,13 +141,8 @@ export default function RequestDetailForm({
             </div>
 
             <JourneyDetailCard
-              startDate={
-                convertToBuddhistDateTime(requestData?.start_datetime || "")
-                  .date
-              }
-              endDate={
-                convertToBuddhistDateTime(requestData?.end_datetime || "").date
-              }
+              startDate={requestData?.start_datetime}
+              endDate={requestData?.end_datetime}
               timeStart={
                 convertToBuddhistDateTime(requestData?.start_datetime || "")
                   .time
@@ -155,7 +151,7 @@ export default function RequestDetailForm({
                 convertToBuddhistDateTime(requestData?.end_datetime || "").time
               }
               workPlace={requestData?.work_place}
-              purpose={requestData?.objective}
+              purpose={requestData?.work_description}
               remark={requestData?.remark}
               tripType={requestData?.trip_type}
               numberOfPassenger={requestData?.number_of_passengers}
@@ -167,7 +163,7 @@ export default function RequestDetailForm({
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
-              {editable && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() =>
@@ -188,7 +184,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
-              {editable && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                   onClick={() => referenceModalRef.current?.openModal()}
@@ -199,15 +195,15 @@ export default function RequestDetailForm({
             </div>
 
             <ReferenceCard
-              refNum={requestData?.reference_number}
-              file={requestData?.attached_document}
+              refNum={requestData?.doc_no}
+              file={requestData?.doc_file}
             />
           </div>
 
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
-              {editable && (
+              {editable && requestData?.ref_request_status_code !== "50" && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
                   data-toggle="modal"
@@ -219,14 +215,14 @@ export default function RequestDetailForm({
               )}
             </div>
             {requestData?.ref_cost_type_code && (
-               <DisburstmentCard
-               refCostTypeCode={requestData?.ref_cost_type_code}
-               costCenter={requestData?.cost_center}
-               activityNo={requestData?.activity_no}
-               wbsNo={requestData?.wbs_number}
-               networkNo={requestData?.network_no}
-               pmOrderNo={requestData?.pm_order_no}
-             />
+              <DisburstmentCard
+                refCostTypeCode={requestData?.ref_cost_type_code}
+                costCenter={requestData?.cost_center}
+                activityNo={requestData?.activity_no}
+                wbsNo={requestData?.wbs_number}
+                networkNo={requestData?.network_no}
+                pmOrderNo={requestData?.pm_order_no}
+              />
             )}
           </div>
         </div>
@@ -235,7 +231,7 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              approverId={`${requestData?.approved_request_emp_id}`}
+              progressRequestStatusEmp={requestData?.progress_request_status_emp}
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -268,16 +264,17 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {editable && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
+                          {editable &&
+                            requestData?.ref_request_status_code !== "50" && (
+                              <button
+                                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                                onClick={() =>
+                                  vehiclePickModalRef.current?.openModal()
+                                }
+                              >
+                                เลือกประเภทยานพาหนะ
+                              </button>
+                            )}
                         </div>
 
                         <div className="card-item-group d-flex">
@@ -321,16 +318,17 @@ export default function RequestDetailForm({
                               </div>
                             </div>
                           </div>
-                          {editable && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
+                          {editable &&
+                            requestData?.ref_request_status_code !== "50" && (
+                              <button
+                                className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                                onClick={() =>
+                                  vehiclePickModalRef.current?.openModal()
+                                }
+                              >
+                                เลือกประเภทยานพาหนะ
+                              </button>
+                            )}
                         </div>
 
                         <div className="card-item-group d-flex">

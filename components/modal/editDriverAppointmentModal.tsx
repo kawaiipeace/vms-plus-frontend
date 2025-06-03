@@ -7,9 +7,16 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import FormHelper from "../formHelper";
 
 interface EditDriverAppointmentModalProps {
   requestData?: RequestDetailType;
@@ -19,7 +26,7 @@ interface EditDriverAppointmentModalProps {
 
 const schema = yup.object().shape({
   pickupDatetime: yup.string(),
-  pickupPlace: yup.string(),
+  pickupPlace: yup.string().required("กรุณาระบุสถานที่นัดหมาย"),
 });
 
 const EditDriverAppointmentModal = forwardRef<
@@ -40,7 +47,13 @@ const EditDriverAppointmentModal = forwardRef<
 
   const { formData, updateFormData } = useFormContext();
 
-  const { handleSubmit, reset, control, setValue } = useForm({
+  const {
+    handleSubmit,
+    reset,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
@@ -50,7 +63,9 @@ const EditDriverAppointmentModal = forwardRef<
   });
 
   const [selectedTime, setSelectedTime] = useState<string>(
-    formData?.pickupDatetime ? formData.pickupDatetime.split("T")[1].slice(0, 5) : ""
+    formData?.pickupDatetime
+      ? formData.pickupDatetime.split("T")[1].slice(0, 5)
+      : ""
   );
   const [selectedDate, setSelectedDate] = useState<string>(
     formData?.pickupDatetime ? formData.pickupDatetime.split("T")[0] : ""
@@ -62,7 +77,9 @@ const EditDriverAppointmentModal = forwardRef<
         pickupDatetime: requestData?.pickup_datetime || "",
         pickupPlace: requestData?.pickup_place || "",
       });
-      const datetime = convertToBuddhistDateTime(requestData?.pickup_datetime || "");
+      const datetime = convertToBuddhistDateTime(
+        requestData?.pickup_datetime || ""
+      );
       setSelectedDate(datetime.date);
       setSelectedTime(datetime.time);
       hasReset.current = true;
@@ -98,7 +115,10 @@ const EditDriverAppointmentModal = forwardRef<
         trn_request_uid: requestData?.trn_request_uid,
       };
       try {
-        const response = role === "admin" ? await adminUpdatePickup(payload) : await updatePickup(payload);
+        const response =
+          role === "admin"
+            ? await adminUpdatePickup(payload)
+            : await updatePickup(payload);
 
         if (response) {
           if (onUpdate) onUpdate(response.data);
@@ -155,9 +175,18 @@ const EditDriverAppointmentModal = forwardRef<
                     <Controller
                       name="pickupPlace"
                       control={control}
-                      render={({ field }) => <input type="text" className="form-control border-0" {...field} />}
+                      render={({ field }) => (
+                        <input
+                          type="text"
+                          className="form-control border-0"
+                          {...field}
+                        />
+                      )}
                     />
                   </div>
+                  {errors.pickupPlace && (
+                    <FormHelper text={String(errors.pickupPlace.message)} />
+                  )}
                 </div>
               </div>
 
@@ -167,7 +196,9 @@ const EditDriverAppointmentModal = forwardRef<
                   <div className="input-group is-readonly">
                     <div className="input-group-prepend">
                       <span className="input-group-text">
-                        <i className="material-symbols-outlined">calendar_month</i>
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
                       </span>
                     </div>
 
@@ -190,18 +221,29 @@ const EditDriverAppointmentModal = forwardRef<
                         <i className="material-symbols-outlined">schedule</i>
                       </span>
                     </div>
-                    <TimePicker defaultValue={selectedTime} onChange={handleTimeChange} />
+                    <TimePicker
+                      defaultValue={selectedTime}
+                      onChange={handleTimeChange}
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="modal-action sticky bottom-0 gap-3 mt-0 w-full">
-              <button type="button" className="btn btn-secondary" onClick={() => modalRef.current?.close()}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => modalRef.current?.close()}
+              >
                 ยกเลิก
               </button>
 
-              <button type="submit" className="btn btn-primary" onClick={handleSubmit(onSubmit)}>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={handleSubmit(onSubmit)}
+              >
                 ยืนยัน
               </button>
             </div>

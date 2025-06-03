@@ -1,4 +1,43 @@
 export interface CarpoolForm {
+  form: {
+    carpool_authorized_depts: {
+      dept_sap: string;
+    }[];
+    carpool_contact_number: string;
+    carpool_contact_place: string;
+    carpool_name: string;
+    ref_carpool_choose_car_id: number;
+    ref_carpool_choose_driver_id: number;
+    remark?: string;
+    is_must_pass_status_30: string;
+    is_must_pass_status_40: string;
+    is_must_pass_status_50: string;
+    mas_carpool_uid: string;
+    carpool_type: string;
+  };
+  carpool_admins: {
+    admin_emp_no: string;
+    admin_emp_name: string;
+    admin_dept_sap_short: string;
+    is_main_admin: string;
+    image_url: string;
+    internal_contact_number?: string;
+    mobile_contact_number?: string;
+  }[];
+  carpool_approvers?: {
+    approver_emp_no: string;
+    approver_emp_name: string;
+    approver_dept_sap_short: string;
+    is_main_approver: string;
+    image_url: string;
+    internal_contact_number?: string;
+    mobile_contact_number?: string;
+  }[];
+  carpool_vehicles?: { mas_vehicle_uid: string }[];
+  carpool_drivers?: { mas_driver_uid: string }[];
+}
+
+export interface CarpoolFormToApi {
   carpool_authorized_depts: {
     dept_sap: string;
   }[];
@@ -13,6 +52,26 @@ export interface CarpoolForm {
   is_must_pass_status_50: string;
   mas_carpool_uid: string;
   carpool_type: string;
+  carpool_admins: {
+    admin_emp_no: string;
+    admin_emp_name: string;
+    admin_dept_sap_short: string;
+    is_main_admin: string;
+    image_url: string;
+    internal_contact_number?: string;
+    mobile_contact_number?: string;
+  }[];
+  carpool_approvers?: {
+    approver_emp_no: string;
+    approver_emp_name: string;
+    approver_dept_sap_short: string;
+    is_main_approver: string;
+    image_url: string;
+    internal_contact_number?: string;
+    mobile_contact_number?: string;
+  }[];
+  carpool_vehicles?: { mas_vehicle_uid: string }[];
+  carpool_drivers?: { mas_driver_uid: string }[];
 }
 
 export type CarpoolParams = Partial<{
@@ -97,6 +156,13 @@ export interface CarpoolVehicle {
   vehicle_img: string;
   seat: number;
   is_admin_choose_driver: boolean;
+  fuel_type_name: string;
+  vehicle_owner_dept_short: string;
+  fleet_card_no: string;
+  is_tax_credit: string;
+  vehicle_mileage: string;
+  age: string;
+  ref_vehicle_status_name: string;
 }
 
 export interface CarpoolDriverParams {
@@ -120,6 +186,12 @@ export interface CarpoolDriver {
   driver_birthdate: string;
   driver_dept_sap: string;
   is_active: string;
+  work_type: number;
+  driver_license: {
+    driver_license_end_date: string;
+  };
+  contract_end_date: string;
+  driver_status: { ref_driver_status_desc: string };
 }
 
 export interface CarpoolDepartment {

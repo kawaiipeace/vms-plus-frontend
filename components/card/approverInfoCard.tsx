@@ -54,12 +54,12 @@ export default function ApproverInfoCard({
                 <i className="material-symbols-outlined">smartphone</i>
                 <span className="card-item-text">{approverData?.tel_mobile}</span>
               </div>
-              {approverData?.tel_internal && (
+            
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">call</i>
                   <span className="card-item-text">{approverData?.tel_internal}</span>
                 </div>
-              )}
+              
             </div>
           </div>
         </div>

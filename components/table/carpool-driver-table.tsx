@@ -21,6 +21,8 @@ import {
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
 import DriverInfoCarpoolModal from "../modal/driverInfoCarpoolModal";
 import ToastCustom from "../toastCustom";
+import { useFormContext } from "@/contexts/carpoolFormContext";
+import Image from "next/image";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -70,36 +72,65 @@ export default function CarpoolDriverTable({
     pageSize: pagination.limit,
   });
 
+  const { formData, updateFormData } = useFormContext();
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination]);
+
   const handleDelete = async () => {
     if (deleteId) {
-      try {
-        const response = await deleteCarpoolDriver(deleteId);
-        if (response.request.status === 200) {
-          setDeleteId(undefined);
-          setRefetch(true);
-          cancelCreateModalRef.current?.closeModal();
+      if (id) {
+        try {
+          const response = await deleteCarpoolDriver(deleteId);
+          if (response.request.status === 200) {
+            setDeleteId(undefined);
+            setRefetch(true);
+            cancelCreateModalRef.current?.closeModal();
+            setToast({
+              title: "ลบพนักงานขับรถสำเร็จ",
+              desc:
+                "พนักงานขับรถ " +
+                defaultData.find(
+                  (item) => item.mas_carpool_driver_uid === deleteId
+                )?.driver_name +
+                " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+              status: "success",
+            });
+          }
+        } catch (error: any) {
+          console.error(error);
           setToast({
-            title: "ลบพนักงานขับรถสำเร็จ",
-            desc:
-              "พนักงานขับรถ " +
-              defaultData.find(
-                (item) => item.mas_carpool_driver_uid === deleteId
-              )?.driver_name +
-              " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
-            status: "success",
+            title: "Error",
+            desc: (
+              <div>
+                <div>{error.response.data.error}</div>
+                <div>{error.response.data.message}</div>
+              </div>
+            ),
+            status: "error",
           });
         }
-      } catch (error: any) {
-        console.log(error);
-        setToast({
-          title: "Error",
-          desc: (
-            <div>
-              <div>{error.response.data.error}</div>
-              <div>{error.response.data.message}</div>
-            </div>
+      } else {
+        updateFormData({
+          ...formData,
+          carpool_drivers: formData.carpool_drivers?.filter(
+            (item) => item.mas_driver_uid !== deleteId
           ),
-          status: "error",
+        });
+        setDeleteId(undefined);
+        cancelCreateModalRef.current?.closeModal();
+        setToast({
+          title: "ลบพนักงานขับรถสำเร็จ",
+          desc:
+            "พนักงานขับรถ " +
+            defaultData.find((item) => item.mas_driver_uid === deleteId)
+              ?.driver_name +
+            " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+          status: "success",
         });
       }
     }
@@ -115,7 +146,7 @@ export default function CarpoolDriverTable({
         setRefetch(true);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -125,11 +156,22 @@ export default function CarpoolDriverTable({
       header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-left font-semibold" data-name="ชื่อ - นามสกุล">
-          {row.original.driver_name}{" "}
-          {row.original.driver_nickname
-            ? `(${row.original.driver_nickname})`
-            : ""}
+        <div
+          className="flex items-center gap-2 text-left font-semibold"
+          data-name="ชื่อ - นามสกุล"
+        >
+          <Image
+            src={row.original.driver_image || "/assets/img/avatar.svg"}
+            width={36}
+            height={36}
+            alt="Profile Avatar"
+          ></Image>
+          <div>
+            {row.original.driver_name}{" "}
+            {row.original.driver_nickname
+              ? `(${row.original.driver_nickname})`
+              : ""}
+          </div>
         </div>
       ),
     },
@@ -172,21 +214,19 @@ export default function CarpoolDriverTable({
       },
     },
     {
-      accessorKey: "approved_job_driver_end_date",
+      accessorKey: "driver_license_end_date",
       header: () => <div className="text-center">วันที่หมดอายุใบขับขี่</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="วันที่หมดอายุใบขับขี่">
-            {dayjs(row.original.approved_job_driver_end_date).format(
-              "DD/MM/BBBB"
-            )}
+            {dayjs(row.original.driver_license_end_date).format("DD/MM/BBBB")}
           </div>
         );
       },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "approved_job_driver_end_date",
       header: () => <div className="text-center">วันที่สิ้นสุดปฏิบัติงาน</div>,
       enableSorting: true,
       cell: ({ row }) => {
@@ -206,7 +246,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score}
+            {row.original.driver_average_satisfaction_score || 0}
           </div>
         );
       },
@@ -235,7 +275,7 @@ export default function CarpoolDriverTable({
               data-tip="ลบ"
               onClick={() => {
                 cancelCreateModalRef.current?.openModal();
-                setDeleteId(row.original.mas_carpool_driver_uid);
+                setDeleteId(row.original.mas_driver_uid);
               }}
             >
               <i className="material-symbols-outlined">delete</i>
@@ -252,11 +292,22 @@ export default function CarpoolDriverTable({
       header: () => <div className="text-center">ชื่อ - นามสกุล</div>,
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-left font-semibold" data-name="ชื่อ - นามสกุล">
-          {row.original.driver_name}{" "}
-          {row.original.driver_nickname
-            ? `(${row.original.driver_nickname})`
-            : ""}
+        <div
+          className="flex items-center gap-2 text-left font-semibold"
+          data-name="ชื่อ - นามสกุล"
+        >
+          <Image
+            src={row.original.driver_image || "/assets/img/avatar.svg"}
+            width={36}
+            height={36}
+            alt="Profile Avatar"
+          ></Image>
+          <div>
+            {row.original.driver_name}{" "}
+            {row.original.driver_nickname
+              ? `(${row.original.driver_nickname})`
+              : ""}
+          </div>
         </div>
       ),
     },
@@ -299,21 +350,19 @@ export default function CarpoolDriverTable({
       },
     },
     {
-      accessorKey: "approved_job_driver_end_date",
+      accessorKey: "driver_license_end_date",
       header: () => <div className="text-center">วันที่หมดอายุใบขับขี่</div>,
       enableSorting: true,
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="วันที่หมดอายุใบขับขี่">
-            {dayjs(row.original.approved_job_driver_end_date).format(
-              "DD/MM/BBBB"
-            )}
+            {dayjs(row.original.driver_license_end_date).format("DD/MM/BBBB")}
           </div>
         );
       },
     },
     {
-      accessorKey: "number_of_vehicles",
+      accessorKey: "approved_job_driver_end_date",
       header: () => <div className="text-center">วันที่สิ้นสุดปฏิบัติงาน</div>,
       enableSorting: true,
       cell: ({ row }) => {
@@ -333,7 +382,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score}
+            {row.original.driver_average_satisfaction_score || 0}
           </div>
         );
       },
@@ -441,17 +490,24 @@ export default function CarpoolDriverTable({
       <ConfirmCancelCreateCarpoolModal
         id={""}
         ref={cancelCreateModalRef}
-        title={"ยืนยันนำยานพาหนะออกจากกลุ่ม?"}
+        title={"ยืนยันนำพนักงานขับรถออกจากกลุ่ม?"}
         desc={
-          "คุณต้องการนำยานพาหนะเลขทะเบียน " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_license_plate +
-          " สังกัด " +
-          defaultData.find((item) => item.mas_carpool_approver_uid === deleteId)
-            ?.vehicle_owner_dept_short +
+          "คุณต้องการนำพนักงานขับรถ " +
+          defaultData.find((item) =>
+            id
+              ? item.mas_carpool_driver_uid === deleteId
+              : item.mas_driver_uid === deleteId
+          )?.driver_name +
+          "(" +
+          defaultData.find((item) =>
+            id
+              ? item.mas_carpool_driver_uid === deleteId
+              : item.mas_driver_uid === deleteId
+          )?.driver_nickname +
+          ")" +
           " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
         }
-        confirmText={"นำยานพาหนะออก"}
+        confirmText={"นำพนักงานขับรถออก"}
         onConfirm={handleDelete}
       />
 

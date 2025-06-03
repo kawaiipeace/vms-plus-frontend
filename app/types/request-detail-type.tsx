@@ -1,6 +1,7 @@
 import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { SatisfactionSurveyQuestions } from "@/components/modal/reviewCarDriveModal";
+import { ProgressRequestStatusEmp } from "./driver-lic-list-type";
 import { ProgressRequestType } from "./progress-request-status";
 
 export type RequestDetailType = Partial<{
@@ -63,12 +64,21 @@ export type RequestDetailType = Partial<{
     ref_request_status_desc: string;
   };
   progress_request_status: ProgressRequestType[];
+  progress_request_status_emp: ProgressRequestStatusEmp;
   ref_request_status_name: string;
   rejected_request_reason: string;
   canceled_request_reason: string;
   received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;
   received_key_dept_sap_full: string;
+  confirmed_request_desk_phone: string;
+  confirmed_request_dept_name_full: string;
+  confirmed_request_dept_name_short: string;
+  confirmed_request_dept_sap: string;
+  confirmed_request_emp_id: string;
+  confirmed_request_emp_name: string;
+  confirmed_request_mobile_phone: string;
+  confirmed_request_position: string;
   received_key_dept_sap_short: string;
   received_key_image_url: string;
   received_key_emp_id: string;
@@ -126,10 +136,16 @@ export type RequestDetailType = Partial<{
   activity_no?: string;
   network_no?: string;
   pm_order_no?: string;
+  work_description?: string;
+  doc_no?: string;
+  doc_file?: string;
+  vehicle_user_position?: string;
+  vehicle_user_dept_name_short?: string;
+  vehicle_user_image_url?: string;
 }>;
 
 export interface satisfactionSurveyAnswers {
-  mas_satisfaction_survey_questions_code: number;
+  mas_satisfaction_survey_questions_uid: string;
   survey_answer: number;
   satisfaction_survey_questions: SatisfactionSurveyQuestions;
 }

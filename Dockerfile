@@ -29,7 +29,6 @@ COPY --chown=65532:65532 --from=builder /app/.next ./.next
 COPY --chown=65532:65532 --from=builder /app/node_modules ./node_modules
 COPY --chown=65532:65532 --from=builder /app/package.json ./package.json
 COPY --chown=65532:65532 --from=builder /app/entrypoint.sh /app/entrypoint.sh
-COPY --chown=65532:65532 --from=builder /app/next.config.ts /app/next.config.ts
 
 # Ensure the entrypoint script is executable
 RUN chmod +x /app/entrypoint.sh

@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import ToastCustom from "../toastCustom";
+import { setTimeout } from "timers";
 
 interface Props {
   id: string;
@@ -36,7 +37,7 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
   const [inputValue, setInputValue] = useState("");
   const [toast, setToast] = useState<ToastProps | undefined>();
 
-  const { formData, updateFormData } = useFormContext();
+  const { updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -53,9 +54,18 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
         if (remove) {
           const response = await deleteCarpool({
             carpool_name: inputValue,
-            mas_carpool_uid: id || formData.mas_carpool_uid,
+            mas_carpool_uid: id,
           });
           if (response.request.status === 200) {
+            modalRef.current?.close();
+            setToast({
+              title: "ลบกลุ่มยานพาหนะสำเร็จ",
+              desc: "กลุ่มยานพาหนะ " + inputValue + " ถูกลบจากระบบแล้ว",
+              status: "success",
+            });
+            setTimeout(() => {
+              router.push("/carpool-management");
+            }, 1000);
           }
         } else {
           updateFormData({});
@@ -64,10 +74,11 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
         }
       } catch (error) {
         console.log(error);
+        modalRef.current?.close();
         setToast({
           title: "ลบหน่วยงานไม่สำเร็จ",
           desc: "การลบหน่วยงานที่สามารถใช้บริการกลุ่มยานพาหนะนี้ จำเป็นต้องลบยานพาหนะ, พนักงานขับรถ, ผู้ดูแลยานพาหนะ และผู้อนุมัติที่สังกัดหน่วยงานนั้น ออกจากกลุ่มก่อน",
-          status: "success",
+          status: "error",
         });
       }
     }
@@ -117,6 +128,7 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
                 type="button"
                 className="btn btn-primary !bg-icon-error col-span-1"
                 onClick={handleConfirm}
+                disabled={remove && !inputValue}
               >
                 {confirmText}
               </button>

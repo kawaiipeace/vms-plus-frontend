@@ -19,6 +19,7 @@ import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
 import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 interface Props {
   approverCard?: boolean;
   keyPickUpCard?: boolean;
@@ -396,11 +397,17 @@ Props) {
 
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
+                   <div className="form-section-header">
+              <div className="form-section-header-title">ผู้ขับขี่</div>
+            </div>
                 <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
               </div>
             ) : (
               !updatedFormData?.isAdminChooseDriver && (
                 <div className="mt-5">
+                   <div className="form-section-header">
+              <div className="form-section-header-title">ผู้ขับขี่</div>
+            </div>
                   <DriverSmallInfoCard
                     showPhone={true}
                     id={updatedFormData?.masCarpoolDriverUid}

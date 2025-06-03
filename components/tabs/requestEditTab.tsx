@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import RequestDetailForm from "@/components/flow/requestDetailForm";
 import LogListTable from "@/components/table/log-list-table";

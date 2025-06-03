@@ -60,13 +60,6 @@ export default function CarpoolProcessFour() {
   }, [refetch]);
 
   useEffect(() => {
-    if (!id) {
-      if (formData.mas_carpool_uid) fetchCarpoolVehicleSearchFunc();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]);
-
-  useEffect(() => {
     if (id) {
       fetchCarpoolVehicleSearchFunc();
     }
@@ -75,13 +68,10 @@ export default function CarpoolProcessFour() {
 
   const fetchCarpoolVehicleSearchFunc = async (newPagination?: any) => {
     try {
-      const response = await getCarpoolVehicleSearch(
-        id || formData.mas_carpool_uid,
-        {
-          ...pagination,
-          ...newPagination,
-        }
-      );
+      const response = await getCarpoolVehicleSearch(id || "", {
+        ...pagination,
+        ...newPagination,
+      });
       const result = response.data;
       setData(result.vehicles);
       setRefetch(false);
@@ -92,20 +82,35 @@ export default function CarpoolProcessFour() {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchCarpoolVehicleSearchFunc({
-      ...pagination,
-      page: newPage,
-    });
+    if (id) {
+      fetchCarpoolVehicleSearchFunc({
+        ...pagination,
+        page: newPage,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        page: newPage,
+      });
+    }
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
-    fetchCarpoolVehicleSearchFunc({
-      ...pagination,
-      limit,
-      page: 1,
-    });
+    if (id) {
+      fetchCarpoolVehicleSearchFunc({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    } else {
+      setPagination({
+        ...pagination,
+        limit,
+        page: 1,
+      });
+    }
   };
 
   const handleActive = async () => {
@@ -125,9 +130,14 @@ export default function CarpoolProcessFour() {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
+  const start = (pagination.page - 1) * pagination.limit;
+  const dataTable = id
+    ? data
+    : (formData.carpool_vehicles || []).slice(start, start + pagination.limit);
 
   return (
     <div>
@@ -181,8 +191,8 @@ export default function CarpoolProcessFour() {
                     <span
                       className={
                         active === "1"
-                          ? "text-[#98A2B3]"
-                          : "text-icon-error cursor-pointer"
+                          ? "text-[#98A2B3] font-bold"
+                          : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
                         active === "1"
@@ -221,7 +231,7 @@ export default function CarpoolProcessFour() {
               <ProcessCreateCarpool step={4} />
             )}
 
-            {data.length > 0 && (
+            {dataTable.length > 0 && (
               <>
                 <div className="flex items-center justify-between">
                   <div className="page-section-header border-0 !pb-0">
@@ -229,7 +239,10 @@ export default function CarpoolProcessFour() {
                       <div className="page-title">
                         <span className="page-title-label">ยานพาหนะ</span>
                         <span className="badge badge-outline badge-gray !rounded">
-                          {pagination.total} คัน
+                          {id
+                            ? pagination.total
+                            : (formData.carpool_vehicles || []).length}{" "}
+                          คัน
                         </span>
                       </div>
                     </div>
@@ -249,7 +262,7 @@ export default function CarpoolProcessFour() {
                 </div>
 
                 <CarpoolVehicleTable
-                  defaultData={data}
+                  defaultData={dataTable}
                   pagination={pagination}
                   setRefetch={setRefetch}
                 />
@@ -258,8 +271,15 @@ export default function CarpoolProcessFour() {
                   pagination={{
                     limit: pagination.limit,
                     page: pagination.page,
-                    totalPages: pagination.totalPages,
-                    total: pagination.total,
+                    totalPages: id
+                      ? pagination.totalPages
+                      : Math.ceil(
+                          (formData.carpool_vehicles || []).length /
+                            pagination.limit
+                        ),
+                    total: id
+                      ? pagination.total
+                      : (formData.carpool_vehicles || []).length,
                   }}
                   onPageChange={handlePageChange}
                   onPageSizeChange={handlePageSizeChange}
@@ -267,7 +287,7 @@ export default function CarpoolProcessFour() {
               </>
             )}
 
-            {data.length === 0 && (
+            {dataTable.length === 0 && (
               <div className="zerorecord">
                 <div className="emptystate">
                   <Image
@@ -344,12 +364,13 @@ export default function CarpoolProcessFour() {
               remove={!!id}
             />
 
-            {data.length > 0 && !id && (
+            {dataTable.length > 0 && !id && (
               <div className="form-action">
                 <button
-                  onClick={() =>
-                    router.push("/carpool-management/form/process-five")
-                  }
+                  onClick={() => {
+                    localStorage.setItem("carpoolProcessFour", "Done");
+                    router.push("/carpool-management/form/process-five");
+                  }}
                   className="btn btn-primary"
                 >
                   ต่อไป

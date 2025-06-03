@@ -1,3 +1,4 @@
+"use client";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import NumberInput from "@/components/numberInput";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -11,6 +12,8 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import RadioButton from "../radioButton";
+import FormHelper from "../formHelper";
+import { convertToThaiDate } from "@/utils/driver-management";
 
 interface Props {
   requestData?: RequestDetailType;
@@ -23,8 +26,8 @@ const schema = yup.object().shape({
   endDate: yup.string(),
   timeStart: yup.string(),
   timeEnd: yup.string(),
-  workPlace: yup.string().required(),
-  purpose: yup.string().required(),
+  workPlace: yup.string().required("กรุณาระบุสถานที่ปฏิบัติงาน"),
+  purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
   remark: yup.string().optional(),
   tripType: yup.number(),
   numberOfPassenger: yup.number(),
@@ -57,8 +60,8 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       mode: "onChange",
       resolver: yupResolver(schema),
       defaultValues: {
-        startDate: formData.startDate || "",
-        endDate: formData.endDate || "",
+        startDate: convertToThaiDate(formData.startDate || ""),
+        endDate: convertToThaiDate(formData.endDate || ""),
         timeStart: formData.timeStart || "",
         timeEnd: formData.timeEnd || "",
         workPlace: formData.workPlace || "",
@@ -70,12 +73,12 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
     useEffect(() => {
       if (requestData) {
         reset({
-          startDate: convertToBuddhistDateTime(requestData?.start_datetime || "").date || "",
-          endDate: convertToBuddhistDateTime(requestData?.end_datetime || "").date || "",
+          startDate: convertToThaiDate(requestData?.start_datetime || "") || "",
+          endDate: convertToThaiDate(requestData?.end_datetime || "") || "",
           timeStart: convertToBuddhistDateTime(requestData?.start_datetime || "").time || "",
           timeEnd: convertToBuddhistDateTime(requestData?.end_datetime || "").time || "",
           workPlace: requestData?.work_place || "",
-          purpose: requestData?.objective || "",
+          purpose: requestData?.work_description || "",
           remark: requestData?.remark || "",
         });
         setSelectedTripType(String(requestData?.trip_type || "0"));
@@ -88,7 +91,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       const payload = {
         end_datetime: convertToISO(data.endDate, data.timeEnd),
         number_of_passengers: passengerCount,
-        objective: data.purpose,
+        work_description: data.purpose,
         reserved_time_type: "1",
         start_datetime: convertToISO(data.startDate, data.timeStart),
         trip_type: parseInt(selectedTripType),
@@ -112,10 +115,10 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       } else {
         // fallback to form state update only
         const updatedata = {
-          startDate: data.startDate,
-          endDate: data.endDate,
-          timeStart: data.timeStart,
-          timeEnd: data.timeEnd,
+          // startDate: data.startDate,
+          // endDate: data.endDate,
+          // timeStart: data.timeStart,
+          // timeEnd: data.timeEnd,
           workPlace: data.workPlace,
           purpose: data.purpose,
           remark: data.remark,
@@ -224,7 +227,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       <RadioButton
                         name="tripType"
                         label="ไป-กลับ"
-                        value="1"
+                        value="0"
                         selectedValue={selectedTripType}
                         setSelectedValue={setSelectedTripType}
                       />
@@ -233,7 +236,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
                       <RadioButton
                         name="tripType"
                         label="ค้างแรม"
-                        value="0"
+                        value="1"
                         selectedValue={selectedTripType}
                         setSelectedValue={setSelectedTripType}
                       />
@@ -245,26 +248,40 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">สถานที่ปฏิบัติงาน</label>
-                  <div className="input-group">
+                  <div
+                  className={`input-group ${
+                    errors.workPlace && "is-invalid"
+                  }`}
+                >
                     <Controller
                       name="workPlace"
                       control={control}
                       render={({ field }) => <input type="text" className="form-control border-0" {...field} />}
                     />
                   </div>
+                  {errors.workPlace && (
+                  <FormHelper text={String(errors.workPlace.message)} />
+                )}
                 </div>
               </div>
 
               <div className="col-span-12">
                 <div className="form-group">
                   <label className="form-label">วัตถุประสงค์</label>
-                  <div className="input-group">
+                  <div
+                  className={`input-group ${
+                    errors.purpose && "is-invalid"
+                  }`}
+                >
                     <Controller
                       name="purpose"
                       control={control}
                       render={({ field }) => <input type="text" className="form-control border-0" {...field} />}
                     />
                   </div>
+                  {errors.purpose && (
+                  <FormHelper text={String(errors.purpose.message)} />
+                )}
                 </div>
               </div>
 

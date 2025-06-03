@@ -1,21 +1,21 @@
-import { ApproverUserType } from "@/app/types/approve-user-type";
+import { ProgressRequestStatusEmp } from "@/app/types/driver-lic-list-type";
 import { ProgressRequestType } from "@/app/types/progress-request-status";
-import { fetchUserApproverUsers } from "@/services/masterService";
 import { useEffect, useState } from "react";
 
 interface Props {
-  approverId?: string;
+  title?:string;
   progressSteps?: ProgressRequestType[];
+  progressRequestStatusEmp?: ProgressRequestStatusEmp
 }
 
-export default function ApproveProgress({ approverId, progressSteps }: Props) {
-  const [approverData, setApproverData] = useState<ApproverUserType>();
+export default function ApproveProgress({ progressSteps, progressRequestStatusEmp }: Props) {
   const [currentStep, setCurrentStep] = useState("");
   const [nextPendingStep, setNextPendingStep] = useState("");
   const doneSteps =
     progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
   const [isApproverOpen, setIsApproverOpen] = useState(false);
   useEffect(() => {
+
     if (progressSteps) {
       const currentStep = progressSteps?.find(
         (step) => step.progress_icon === "1" || step.progress_icon === "2"
@@ -26,17 +26,9 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
       setCurrentStep(currentStep?.progress_name || "");
       setNextPendingStep(nextPendingStep?.progress_name || "");
     }
-    const fetchApprover = async () => {
-      try {
-        const response = await fetchUserApproverUsers(approverId);
-        setApproverData(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
+  
 
-    fetchApprover();
-  }, [approverId, progressSteps]);
+  }, [progressSteps]);
 
   return (
     <div className="card card-approvalprogress">
@@ -139,83 +131,74 @@ export default function ApproveProgress({ approverId, progressSteps }: Props) {
           </>
         )}
 
-        {/* Approver Info */}
-        {approverId !== "" && (
-          <div className="form-section">
-            <div className="form-section-header">
-              <div className="form-section-header-title hidden md:block">
-                ผู้อนุมัติต้นสังกัด
-              </div>
-              <div className="block md:hidden w-full">
-                <button
-                  className="flex w-full p-0 h-auto w-100"
-                  type="button"
-                  onClick={() => setIsApproverOpen((prev) => !prev)}
-                >
-                  ผู้อนุมัติต้นสังกัด
-                  <i className="material-symbols-outlined ml-auto">
-                    {isApproverOpen
-                      ? "keyboard_arrow_up"
-                      : "keyboard_arrow_down"}
-                  </i>
-                </button>
-              </div>
-            </div>
-
-            <div
-              className={`w-full form-card md:block transition-all duration-500 ease-in-out overflow-hidden ${
-                isApproverOpen
-                  ? "max-h-[1000px] opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-              id="collapseApproverDetail"
-            >
-              <div className="form-card-body form-card-inline">
-                <div className="form-group form-plaintext form-users">
-                  <div className="form-plaintext-group align-self-center">
-                    <div className="form-label">{approverData?.full_name}</div>
-                    <div className="supporting-text-group">
-                      <div className="supporting-text">
-                        {approverData?.dept_sap_short}
+{progressRequestStatusEmp && (
+                <div className="form-section mt-4">
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">
+                      {progressRequestStatusEmp?.action_role}
+                    </div>
+                  </div>
+                  <div className="form-card">
+                    <div className="form-card-body form-card-inline">
+                      <div className="form-group form-plaintext form-users">
+                        <div className="form-plaintext-group align-self-center">
+                          <div className="form-label">
+                            {progressRequestStatusEmp?.emp_name}
+                          </div>
+                          <div className="supporting-text-group">
+                            <div className="supporting-text">
+                              {
+                                progressRequestStatusEmp
+                                  ?.dept_sap_short
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-card-right align-self-center">
+                        <div className="flex gap-3 flex-wrap">
+                       
+                            <div className="col-span-12 md:col-span-6">
+                              <div className="form-group form-plaintext">
+                                <i className="material-symbols-outlined">
+                                  smartphone
+                                </i>
+                                <div className="form-plaintext-group">
+                                  <div className="form-text text-nowrap">
+                                    {
+                                      progressRequestStatusEmp
+                                        ?.mobile_number
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                   
+                       
+                            <div className="col-span-12 md:col-span-6">
+                              <div className="form-group form-plaintext">
+                                <i className="material-symbols-outlined">
+                                  call
+                                </i>
+                                <div className="form-plaintext-group">
+                                  <div className="form-text text-nowrap">
+                                    {
+                                      progressRequestStatusEmp
+                                        ?.phone_number
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                       
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="form-card-right align-self-center">
-                  <div className="flex gap-3 flex-wrap">
-                    {approverData?.tel_mobile && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">
-                            smartphone
-                          </i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowrap">
-                              {approverData?.tel_mobile}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {approverData?.tel_internal && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowra">
-                              {approverData?.tel_internal}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+              )}
       </div>
+    
     </div>
   );
 }

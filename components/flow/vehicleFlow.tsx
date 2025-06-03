@@ -135,22 +135,24 @@ export default function VehicleFlow() {
             <div className="flex gap-4">
                 <button
                     onClick={handleOpenFilterModal}
-                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block "
                 >
                     <i className="material-symbols-outlined">filter_list</i>
                     <span className="text-sm font-bold">ตัวกรอง</span>
                 </button>
                 <button
-                    className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition disabled:bg-gray-100"
+                    className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex gap-2 justify-center items-center"
                     onClick={handleOpenReportModal}
                     disabled={!selectedRows.length}>
                     <i className="material-symbols-outlined">download</i>
                     <span className="text-sm font-bold">รายงาน</span>
-                    <span className="border border-gray-300 w-6 h-6 rounded-full">{selectedRows.length}</span>
+                    <span className="border border-gray-300 p-1 rounded-full">{selectedRows.length}</span>
                 </button>
-                <button className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-primary-default text-gray-700 shadow-sm transition">
-                    <i className="material-symbols-outlined text-white">add</i>
-                    <span className="text-sm font-bold text-white">สร้างข้อมูล</span>
+                <button 
+                    className="btn btn-primary h-[40px] min-h-[40px] text-white hidden md:block"
+                    disabled={true}>
+                    <i className="material-symbols-outlined">add</i>
+                    <span className="text-sm font-bold">สร้างข้อมูล</span>
                 </button>
             </div>
         </div>

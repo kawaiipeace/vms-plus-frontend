@@ -43,10 +43,10 @@ export default function DriverUserAppointmentCard({ requestData, isDriver = true
             alt=""
           />
           <div className="form-plaintext-group align-self-center">
-            <div className="form-label">{name}</div>
+            <div className="form-label">{name} ({requestData?.driver?.driver_nickname})</div>
             <div className="supporting-text-group">
-              <div className="supporting-text">{id}</div>
-              <div className="supporting-text">{deptSap}</div>
+              {/* <div className="supporting-text">{id}</div> */}
+              <div className="supporting-text">{requestData?.driver?.vendor_name}</div>
             </div>
           </div>
         </div>

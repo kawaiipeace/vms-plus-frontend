@@ -66,7 +66,13 @@ const AdminDriverPickModal = forwardRef<{ openModal: () => void; closeModal: () 
       };
 
       try {
-        await adminUpdateDriver(payload);
+        const res = await adminUpdateDriver(payload);
+        if(res){
+          if(onUpdate){
+            onUpdate(id);
+          }
+         
+        }
         // if(response){
         //   modalRef.current?.close();
         // }

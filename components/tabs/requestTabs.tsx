@@ -1,7 +1,6 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import ArpproveFlow from "@/components/approveFlow";
 import CancelFlow from "@/components/flow/cancelFlow";
-import ZeroRecord from "@/components/zeroRecord";
 import { fetchMenus, requests } from "@/services/bookingUser";
 import { useEffect, useState } from "react";
 import SuccessFlow from "../flow/successFlow";
@@ -32,7 +31,6 @@ export default function RequestTabs() {
       try {
         const response = await fetchMenus();
         const result = response.data;
-        console.log("tabs", result);
         setStatusData(result);
       } catch (error) {
         console.error("Error fetching status data:", error);

@@ -5,7 +5,6 @@ import RecordFuelAddModal from "@/components/modal/recordFuelAddModal";
 import ToastCustom from "@/components/toastCustom";
 import { RecordFuelTabProps } from "@/data/requestData";
 import { fetchDriverAddFuelDetails } from "@/services/vehicleInUseDriver";
-import { fetchUserAddFuelDetails } from "@/services/vehicleInUseUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { ColumnDef, CellContext } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
@@ -20,6 +19,7 @@ import {
 import ExampleFuelStringImageModal from "@/components/modal/exampleFuelImageModal";
 import ZeroRecord from "@/components/zeroRecord";
 import TableRecordFuelComponent from "@/components/tableRecordFuel";
+import { fetchAdminAddFuelDetails } from "@/services/adminService";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -110,7 +110,7 @@ const AdminRecordFuelTab = ({
         if (role === "driver") {
           response = await fetchDriverAddFuelDetails(requestId || "", params);
         } else {
-          response = await fetchUserAddFuelDetails(requestId || "", params);
+          response = await fetchAdminAddFuelDetails(requestId || "", params);
         }
 
         setRequestData(response?.data);
@@ -383,8 +383,8 @@ const AdminRecordFuelTab = ({
           desc={`ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ ${editData?.tax_invoice_no} จะโดนลบออกจาก ระบบ`}
           confirmText="ลบข้อมูล"
           ref={cancelRequestModalRef}
-          cancleFor="recordFuel"
-          role={role || "recordFuel"}
+          cancleFor="adminFuel"
+          role={role || "adminFuel"}
           id={requestId || ""}
           fuelId={editData?.trn_add_fuel_uid || ""}
           tax_invoice_no={editData?.tax_invoice_no || ""}

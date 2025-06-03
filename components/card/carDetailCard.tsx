@@ -3,15 +3,17 @@ import VehicleDetailModel from "@/components/modal/vehicleDetailModal";
 import Image from "next/image";
 import { useRef } from "react";
 import AdminVehiclePickModal from "../modal/adminVehiclePickModal";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface CarDetailCardProps {
   vehicle?: VehicleDetailType;
+  requestData?: RequestDetailType;
   seeDetail?: boolean;
   selectVehicle?: boolean;
   reqId?: string;
 }
 
-export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId }: CarDetailCardProps) {
+export default function CarDetailCard({ vehicle, seeDetail, selectVehicle,requestData, reqId }: CarDetailCardProps) {
   const vehicleDetailModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -32,8 +34,8 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId
           <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
             <Image
               src={(vehicle?.vehicle_imgs && vehicle?.vehicle_imgs[0]) || "/assets/img/sample-car.jpeg"}
-              width={100}
-              height={100}
+              width={400}
+              height={200}
               className="object-cover w-full h-full"
               alt="vehicle image"
             />
@@ -43,15 +45,15 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId
               <div className="card-title">
                 {vehicle?.vehicle_brand_name} {vehicle?.vehicle_model_name}
               </div>
-              <div className="card-subtitle">{vehicle?.vehicle_license_plate}</div>
+              <div className="card-subtitle">{vehicle?.vehicle_license_plate} {vehicle?.vehicle_license_plate_province_full}</div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{vehicle?.CarType}</div>
-                <div className="supporting-text">{vehicle?.vehicle_owner_dept_sap}</div>
+                <div className="supporting-text">{vehicle?.vehicle_department?.vehicle_owner_dept_short}</div>
               </div>
             </div>
 
             <div className="card-item-group grid">
-              {vehicle?.is_has_fleet_card === 1 && (
+              {vehicle?.vehicle_department?.fleet_card_no && (
                 <div className="card-item col-span-2">
                   <i className="material-symbols-outlined">credit_card</i>
                   <span className="card-item-text">บัตรเติมน้ำมัน</span>
@@ -101,7 +103,7 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle, reqId
           </div>
         )}
       </div>
-      <AdminVehiclePickModal reqId={reqId} ref={adminVehiclePickModalRef} />
+      <AdminVehiclePickModal reqId={reqId} requestData={requestData} ref={adminVehiclePickModalRef} />
       <VehicleDetailModel ref={vehicleDetailModalRef} vehicleId={vehicle?.mas_vehicle_uid || ""} status="detail" />
     </div>
   );

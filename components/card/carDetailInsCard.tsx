@@ -29,7 +29,7 @@ export default function CarDetailInsCard({ requestData }: CarDetailCardProps) {
               <div className="card-subtitle">{requestData?.vehicle?.vehicle_license_plate}</div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{requestData?.vehicle?.CarType}</div>
-                <div className="supporting-text">{requestData?.vehicle?.vehicle_owner_dept_sap}</div>
+                <div className="supporting-text">{requestData?.vehicle?.vehicle_department?.vehicle_owner_dept_short}</div>
               </div>
             </div>
 

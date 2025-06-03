@@ -67,12 +67,56 @@ export const fetchTravelDetailTrips = async (id: string,search?: string) => {
 
 export const adminDeleteTravelDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.delete("vehicle-in-use/delete-travel-detail/" + id);
+    const response = await axiosInstance.delete("vehicle-in-use-admin/delete-travel-detail/" + id);
     return response;
   } catch (error) {
     throw error;
   }
 };
+
+export const adminDeleteFuelDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete("vehicle-in-use-admin/delete-add-fuel/" + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const adminAddFuelDetails = async (id: string, params: { search?: string }) => {
+  try {
+    const response = await axiosInstance.get(`vehicle-in-use-admin/add-fuel-details/` + id, { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminUpdateAddFuelDetail = async (id: string, data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-in-use-admin/update-add-fuel/" + id, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchAdminAddFuelDetails = async (
+  id: string,
+  params: { search?: string }
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `vehicle-in-use-admin/add-fuel-details/` + id,
+      { params }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const fetchVehicleInsRequests = async (params: {
   search?: string;
@@ -105,6 +149,16 @@ export const adminCreateTravelDetail = async (data: any) => {
   }
 };
 
+export const adminCreateFuelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("vehicle-in-use-admin/create-add-fuel", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 export const adminUpdateTravelDetail = async (id: string, data: any) => {
   try {
@@ -118,6 +172,15 @@ export const adminUpdateTravelDetail = async (id: string, data: any) => {
 export const adminUpdateImageDetail = async (data: any) => {
   try {
     const response = await axiosInstance.put("vehicle-in-use-admin/update-received-vehicle-images", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminUpdateReturnImageDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.put("vehicle-inspection-admin/update-returned-vehicle-images", data);
     return response;
   } catch (error) {
     throw error;

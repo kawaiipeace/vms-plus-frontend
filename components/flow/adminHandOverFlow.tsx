@@ -311,23 +311,37 @@ export default function AdminKeyHandOverFlow() {
         )}
       </div>
 
-      {dataRequest === null ? (
-        <ZeroRecord
-          imgSrc="/assets/img/graphic/empty.svg"
-          title="ไม่มีคำขอใช้ยานพาหนะ"
-          desc={
-            <>
-              เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติ<br></br>
-              รายการคำขอที่รอให้กุญแจจะแสดงที่นี่
-            </>
-          }
-          displayBtn={false}
-          button={""}
-        />
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
+        )
       ) : (
+        <ZeroRecord
+        imgSrc="/assets/img/graphic/empty.svg"
+        title="ไม่มีคำขอใช้ยานพาหนะ"
+        desc={
+          <>
+            เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติ<br></br>
+            รายการคำขอที่รอให้กุญแจจะแสดงที่นี่
+          </>
+        }
+        displayBtn={false}
+        button={""}
+      />
+      )}
+
+    
         <>
-          {" "}
-          {dataRequest?.length > 0 ? (
+
+          {dataRequest?.length > 0 && (
             <>
               <div className="mt-2">
                 <AdminKeyHandOverListTable defaultData={dataRequest} pagination={pagination} onUpdate={onUpdate} />
@@ -339,19 +353,9 @@ export default function AdminKeyHandOverFlow() {
                 onPageSizeChange={handlePageSizeChange}
               />
             </>
-          ) : (
-            <ZeroRecord
-              imgSrc="/assets/img/empty/search_not_found.png"
-              title="ไม่พบข้อมูล"
-              desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกคsรั้ง</>}
-              button="ล้างตัวกรอง"
-              displayBtn={true}
-              btnType="secondary"
-              useModal={handleClearAllFilters}
-            />
-          )}
+          ) }
         </>
-      )}
+
       <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
     </>
   );

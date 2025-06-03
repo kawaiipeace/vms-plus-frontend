@@ -28,15 +28,21 @@ const AddCarpoolVehicleModal = forwardRef<
   const modalRef = useRef<HTMLDialogElement>(null);
   const CBRef = useRef<HTMLInputElement>(null);
   const scrollContentRef = useRef<HTMLDivElement>(null);
-  const { formData } = useFormContext();
 
-  // const [search, setSearch] = useState<string>("");
+  const { formData, updateFormData } = useFormContext();
+
   const [vehicles, setVehicles] = useState<CarpoolVehicle[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
-  // const [total, setTotal] = useState<number>(0);
   const [params, setParams] = useState({
     search: "",
   });
+
+  const VehicleNoneIdLength = vehicles.filter(
+    (vehicle) =>
+      !(formData.carpool_vehicles || []).some(
+        (v) => v.mas_vehicle_uid === vehicle.mas_vehicle_uid
+      )
+  ).length;
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -48,58 +54,31 @@ const AddCarpoolVehicleModal = forwardRef<
       const response = await getCarpoolVehicle(params);
       const result = response.data;
       setVehicles(result.vehicles);
-      // setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
   };
 
-  // const handleScroll = () => {
-  //   const el = scrollContentRef.current;
-  //   if (el) {
-  //     const { scrollTop, offsetHeight, scrollHeight } = el;
-  //     if (scrollTop + offsetHeight >= scrollHeight - 20) {
-  //       setParams({ ...params, page: params.page + 1 });
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const currentRef = scrollContentRef.current;
-  //   if (currentRef) {
-  //     currentRef.addEventListener("scroll", handleScroll);
-  //   }
-
-  //   return () => {
-  //     if (currentRef) {
-  //       currentRef.removeEventListener("scroll", handleScroll);
-  //     }
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  // useEffect(() => {
-  //   if (params.search) {
-  //     if (params.search && !search) {
-  //       setVehicles([]);
-  //       } else if (params.search !== search) {
-  //         setParams({ ...params, page: 1 });
-  //     } else if (!params.search && search) {
-  //       setSearch("");
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [params.search]);
-
   useEffect(() => {
     if (CBRef.current) {
       if (checked.length === 0) {
         CBRef.current.indeterminate = false;
-      } else if (checked.length > 0 && checked.length !== vehicles.length) {
-        CBRef.current.indeterminate = true;
-      } else if (checked.length === vehicles.length) {
-        CBRef.current.indeterminate = false;
-        CBRef.current.checked = true;
+      } else if (checked.length > 0) {
+        if (id) {
+          if (checked.length === vehicles.length) {
+            CBRef.current.indeterminate = false;
+            CBRef.current.checked = true;
+          } else {
+            CBRef.current.indeterminate = true;
+          }
+        } else {
+          if (checked.length !== VehicleNoneIdLength) {
+            CBRef.current.indeterminate = true;
+          } else {
+            CBRef.current.indeterminate = false;
+            CBRef.current.checked = true;
+          }
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,13 +91,39 @@ const AddCarpoolVehicleModal = forwardRef<
 
   const handleConfirm = async () => {
     try {
-      const data = checked.map((item) => ({
-        mas_carpool_uid: id || formData.mas_carpool_uid,
-        mas_vehicle_uid: item,
-      }));
-      const response = await postCarpoolVehicleCreate(data);
-      if (response.request.status === 201) {
-        setRefetch(true);
+      if (id) {
+        const data = checked.map((item) => ({
+          mas_carpool_uid: id || "",
+          mas_vehicle_uid: item,
+        }));
+        const response = await postCarpoolVehicleCreate(data);
+        if (response.request.status === 201) {
+          setRefetch(true);
+          modalRef.current?.close();
+        }
+      } else {
+        const data = checked.map((item) => {
+          const vehicle = vehicles.find((e) => e.mas_vehicle_uid === item);
+          return {
+            mas_vehicle_uid: item,
+            vehicle_license_plate: vehicle?.vehicle_license_plate || "",
+            vehicle_brand_name: vehicle?.vehicle_brand_name || "",
+            vehicle_model_name: vehicle?.vehicle_model_name || "",
+            ref_vehicle_type_name: vehicle?.car_type || "",
+            fuel_type_name: vehicle?.fuel_type_name || "",
+            vehicle_owner_dept_short: vehicle?.vehicle_owner_dept_short || "",
+            fleet_card_no: vehicle?.fleet_card_no || "",
+            is_tax_credit: vehicle?.is_tax_credit || "",
+            vehicle_mileage: vehicle?.vehicle_mileage || "",
+            age: vehicle?.age || "",
+            ref_vehicle_status_name: vehicle?.ref_vehicle_status_name || "",
+          };
+        });
+        updateFormData({
+          ...formData,
+          carpool_vehicles: [...data, ...(formData.carpool_vehicles || [])],
+        });
+        setChecked([]);
         modalRef.current?.close();
       }
     } catch (error) {
@@ -182,7 +187,7 @@ const AddCarpoolVehicleModal = forwardRef<
                   <div>
                     รายชื่อยานพาหนะ{" "}
                     <span className="badge badge-outline badge-gray !rounded">
-                      {vehicles.length} คัน
+                      {id ? vehicles.length : VehicleNoneIdLength} คัน
                     </span>
                   </div>
                   <div className="custom-group">
@@ -191,52 +196,79 @@ const AddCarpoolVehicleModal = forwardRef<
                         type="checkbox"
                         id="my-checkbox"
                         ref={CBRef}
-                        defaultChecked={checked.length === vehicles.length}
-                        checked={checked.length === vehicles.length}
-                        onChange={() =>
-                          setChecked(
-                            checked.length === vehicles.length
-                              ? []
-                              : vehicles.map((item) => item.mas_vehicle_uid)
-                          )
+                        defaultChecked={
+                          id
+                            ? checked.length === vehicles.length
+                            : checked.length === VehicleNoneIdLength
                         }
+                        checked={
+                          id
+                            ? checked.length === vehicles.length
+                            : checked.length === VehicleNoneIdLength
+                        }
+                        onChange={() => {
+                          setChecked(
+                            checked.length === vehicles.length ||
+                              checked.length === VehicleNoneIdLength
+                              ? []
+                              : id
+                              ? vehicles.map((item) => item.mas_vehicle_uid)
+                              : vehicles
+                                  .map((item) => item.mas_vehicle_uid)
+                                  .filter(
+                                    (item) =>
+                                      !(formData.carpool_vehicles || []).some(
+                                        (v) => v.mas_vehicle_uid === item
+                                      )
+                                  )
+                          );
+                        }}
                         className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                       />
                     </div>
                   </div>
                 </div>
                 <div className="h-80 overflow-y-auto" ref={scrollContentRef}>
-                  {vehicles.map((vehicle) => (
-                    <div
-                      key={vehicle.mas_vehicle_uid}
-                      className="flex justify-between items-center px-4 py-2 border-b border-[#EAECF0]"
-                    >
-                      <div className="text-start">
-                        <div className="text-brand-900">
-                          {vehicle.vehicle_license_plate}
+                  {vehicles
+                    .filter(
+                      (vehicle) =>
+                        !(formData.carpool_vehicles || []).some(
+                          (v) => v.mas_vehicle_uid === vehicle.mas_vehicle_uid
+                        )
+                    )
+                    .map((vehicle) => (
+                      <div
+                        key={vehicle.mas_vehicle_uid}
+                        className="flex justify-between items-center px-4 py-2 border-b border-[#EAECF0]"
+                      >
+                        <div className="text-start">
+                          <div className="text-brand-900">
+                            {vehicle.vehicle_license_plate}
+                          </div>
+                          <div className="text-xs">
+                            {vehicle.vehicle_brand_name}{" "}
+                            {vehicle.vehicle_model_name}{" "}
+                          </div>
                         </div>
-                        <div className="text-xs">
-                          {vehicle.vehicle_brand_name}{" "}
-                          {vehicle.vehicle_model_name}{" "}
+                        <div className="custom-group">
+                          <div className="custom-control custom-checkbox custom-control-inline !gap-2">
+                            <input
+                              type="checkbox"
+                              checked={checked.includes(
+                                vehicle.mas_vehicle_uid
+                              )}
+                              defaultChecked={checked.includes(
+                                vehicle.mas_vehicle_uid
+                              )}
+                              onChange={() =>
+                                handleCheck(vehicle.mas_vehicle_uid)
+                              }
+                              className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="custom-group">
-                        <div className="custom-control custom-checkbox custom-control-inline !gap-2">
-                          <input
-                            type="checkbox"
-                            checked={checked.includes(vehicle.mas_vehicle_uid)}
-                            defaultChecked={checked.includes(
-                              vehicle.mas_vehicle_uid
-                            )}
-                            onChange={() =>
-                              handleCheck(vehicle.mas_vehicle_uid)
-                            }
-                            className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </form>
@@ -267,6 +299,6 @@ const AddCarpoolVehicleModal = forwardRef<
   );
 });
 
-AddCarpoolVehicleModal.displayName = "AddCarpoolAdminModal";
+AddCarpoolVehicleModal.displayName = "AddCarpoolVehicleModal";
 
 export default AddCarpoolVehicleModal;

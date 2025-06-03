@@ -105,11 +105,16 @@ export default function ProcessRequestCar({ step }: { step: number }) {
           </div>
         </div>
         <div
-          className={`progress-step ${
+          className={`progress-step cursor-pointer ${
             step == 4 ? "active" : step > 4 ? "done" : ""
           }`}
+          onClick={() => {
+            if (localStorage.getItem("processThree") === "Done") {
+              router.push('/vehicle-booking/process-four');
+            }
+          }}
         >
-          <span className="progress-step-no">04</span>
+          <span className="progress-step-no">4</span>
           <div className="progress-step-content">
             <div className="progress-step-title">ยืนยันการสร้างคำขอ</div>
             {/* <!-- <div className="progress-step-text">Supporting text</div> --> */}

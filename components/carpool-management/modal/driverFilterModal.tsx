@@ -11,6 +11,8 @@ import { getDriverStatus } from "@/services/carpoolManagement";
 type Props = {
   flag: string;
   onSubmitFilter?: (params: any) => void;
+  driverParams: any;
+  setDriverParams: (p: any) => void;
 };
 
 export type DriverFilterModalRef = {
@@ -56,7 +58,7 @@ const DRIVER_ACTIVE = [
 ];
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
-  <div className="flex justify-between items-center bg-white p-6 border-b border-gray-300">
+  <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
     <div className="flex gap-4 items-center">
       <i className="material-symbols-outlined text-gray-500">filter_list</i>
       <div className="flex flex-col">
@@ -216,7 +218,7 @@ const ModalFooter = ({
 };
 
 const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
-  ({ onSubmitFilter }, ref) => {
+  ({ onSubmitFilter, driverParams, setDriverParams }, ref) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -228,9 +230,31 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
 
     const [params, setParams] = useState<DriverParams>({
       ref_driver_status_code: [],
-      is_active: DRIVER_ACTIVE.map((e) => e.id),
-      work_type: DRIVER_TYPE.map((e) => e.id),
+      is_active: [],
+      work_type: [],
     });
+
+    useEffect(() => {
+      if (driverParams.ref_driver_status_code === "") {
+        setParams({
+          ...params,
+          ref_driver_status_code: [],
+        });
+      }
+      if (driverParams.is_active === "") {
+        setParams({
+          ...params,
+          is_active: [],
+        });
+      }
+      if (driverParams.work_type === "") {
+        setParams({
+          ...params,
+          work_type: [],
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [driverParams]);
 
     const handleSubmitFilter = () => {
       onSubmitFilter?.({
@@ -244,11 +268,15 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
 
     const handleClearFilter = () => {
       setParams({
-        ref_driver_status_code: driverStatus.map((e) =>
-          e.ref_driver_status_code.toString()
-        ),
-        is_active: DRIVER_ACTIVE.map((e) => e.id),
-        work_type: DRIVER_TYPE.map((e) => e.id),
+        ref_driver_status_code: [],
+        is_active: [],
+        work_type: [],
+      });
+      setDriverParams({
+        ...driverParams,
+        ref_driver_status_code: "",
+        is_active: "",
+        work_type: "",
       });
     };
 
@@ -257,12 +285,6 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
         const [fetchDriverStatus] = await Promise.all([getDriverStatus()]);
 
         setDriverStatus(fetchDriverStatus);
-        setParams({
-          ...params,
-          ref_driver_status_code: fetchDriverStatus.map((e: any) =>
-            e.ref_driver_status_code.toString()
-          ),
-        });
       };
 
       fetchData();

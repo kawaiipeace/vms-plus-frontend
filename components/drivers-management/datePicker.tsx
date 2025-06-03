@@ -119,8 +119,12 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
 
           updateCalendarYear(instance);
         },
-        onMonthChange: (_, __, instance) => updateCalendarYear(instance),
-        onYearChange: (_, __, instance) => updateCalendarYear(instance),
+        onMonthChange: (_, __, instance) => {
+          setTimeout(() => updateCalendarYear(instance), 0);
+        },
+        onYearChange: (_, __, instance) => {
+          setTimeout(() => updateCalendarYear(instance), 0);
+        },
         onOpen: () => {
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "hidden";

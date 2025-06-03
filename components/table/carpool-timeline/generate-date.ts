@@ -6,10 +6,7 @@ import "dayjs/locale/th";
 
 dayjs.locale("th");
 
-export function transformVehicleApiToTableData(
-  rawData: any,
-  dates: any[]
-): VehicleTimelineTransformData[] {
+export function transformVehicleApiToTableData(rawData: any, dates: any[]): VehicleTimelineTransformData[] {
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
@@ -32,10 +29,8 @@ export function transformVehicleApiToTableData(
       status = req.time_line_status;
 
       carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
-      carUserDetail.userContactNumber =
-        req.car_user_mobile_contact_number || "0912345678";
-      carUserDetail.userContactInternalNumber =
-        req.car_user_internal_contact_number || "1234";
+      carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
+      carUserDetail.userContactInternalNumber = req.car_user_internal_contact_number || "1234";
 
       driverDetail.driverName = req.driver.driver_name;
       driverDetail.licensePlate = vehicle.vehicle_license_plate;
@@ -77,39 +72,31 @@ export function transformVehicleApiToTableData(
 
 export async function generateDateObjects(startDate: string, endDate: string) {
   try {
-    const response = await getHoliday({
-      start_date: startDate,
-      end_date: endDate,
-    });
-
+    // Handle Holiday API call
+    const response = await getHoliday({ start_date: startDate, end_date: endDate });
     const holidayMap = new Map(
-      response.map((item: any) => [
-        dayjs(item.mas_holidays_date).format("D_M_YYYY"),
-        item.mas_holidays_detail,
-      ])
+      response.map((item: any) => [dayjs(item.mas_holidays_date).format("YYYY/MM/DD"), item.mas_holidays_detail])
     );
 
-    const start = dayjs(startDate);
+    const dates = [];
+    let start = dayjs(startDate);
     const end = dayjs(endDate);
 
-    const dates = [];
-    let current = start;
-
-    while (current.isBefore(end) || current.isSame(end)) {
-      const formattedDate = current.format("D_M_YYYY");
-
-      dates.push({
-        key: `day_${formattedDate}`,
+    while (start.isBefore(end) || start.isSame(end)) {
+      const formattedDate = start.format("YYYY/MM/DD");
+      const date = {
+        key: `day_${start.date()}_${start.month() + 1}_${start.year()}`,
         date: formattedDate,
-        day: current.date(),
-        month: current.format("MMM"),
-        fullMonth: current.format("MMMM"),
-        fullYear: (current.year() + 543).toString(),
-        weekday: current.format("ddd"),
+        day: start.date(),
+        fullMonth: start.format("MMMM"),
+        month: start.format("MMM"),
+        fullYear: (start.year() + 543).toString(),
+        weekday: start.format("ddd"),
         holiday: holidayMap.get(formattedDate) ?? null,
-      });
+      };
+      dates.push(date);
 
-      current = current.add(1, "day");
+      start = start.add(1, "day");
     }
 
     return dates;
@@ -119,10 +106,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
   }
 }
 
-export function transformDriverApiToTableData(
-  rawData: any,
-  dates: any[]
-): DriverTimelineTransformData[] {
+export function transformDriverApiToTableData(rawData: any, dates: any[]): DriverTimelineTransformData[] {
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
@@ -135,20 +119,18 @@ export function transformDriverApiToTableData(
 
   return drivers.map((driver) => {
     const timeline = createEmptyTimeline();
-    let status = "";
+    let latestStatus = "";
     let carUserDetail: Record<string, string> = {};
     let driverDetail: Record<string, string> = {};
 
     driver.driver_trn_requests?.forEach((req: any) => {
       if (req.trip_details.length === 0) return;
 
-      status = req.time_line_status;
+      latestStatus = req.time_line_status;
 
       carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
-      carUserDetail.userContactNumber =
-        req.car_user_mobile_contact_number || "0912345678";
-      carUserDetail.userContactInternalNumber =
-        req.car_user_internal_contact_number || "1234";
+      carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
+      carUserDetail.userContactInternalNumber = req.car_user_internal_contact_number || "1234";
 
       driverDetail.driverName = driver.driver_name;
       driverDetail.licensePlate = "";
@@ -156,20 +138,41 @@ export function transformDriverApiToTableData(
       req.trip_details?.forEach((trip: any) => {
         const start = dayjs(trip.trip_start_datetime);
         const end = dayjs(trip.trip_end_datetime);
-        const dayStart = start.date();
-        const dayEnd = end.date();
-        const duration = Math.max(dayEnd - dayStart + 1, 1);
-        const destinationPlace = trip.trip_destination_place;
+        const duration = Math.max(end.diff(start, "day") + 1, 1);
 
-        timeline[`day_${start.format("D_M_YYYY")}`]?.push({
-          tripDetailId: trip.trn_trip_detail_uid,
-          destinationPlace: destinationPlace,
-          startTime: start.format("HH:mm"),
-          duration: duration.toString(),
-          status: status,
-          carUserDetail: carUserDetail,
-          driverDetail: driverDetail,
-        });
+        for (let i = 0; i < duration; i++) {
+          const currentDateKey = `${start.add(i, "day").date()}_${start.month() + 1}_${start.year()}`;
+          if (!timeline[`day_${currentDateKey}`]) continue;
+
+          timeline[`day_${currentDateKey}`].push({
+            tripDetailId: trip.trn_trip_detail_uid,
+            startDate: start,
+            endDate: end,
+            destinationPlace: trip.trip_destination_place,
+            startTime: start.format("HH:mm"),
+            endTime: end.format("HH:mm"),
+            duration: duration.toString(),
+            status: latestStatus,
+            carUserDetail,
+            driverDetail,
+          });
+        }
+        // const start = dayjs(trip.trip_start_datetime);
+        // const end = dayjs(trip.trip_end_datetime);
+        // const dayStart = start.date();
+        // const dayEnd = end.date();
+        // const duration = Math.max(dayEnd - dayStart + 1, 1);
+        // const destinationPlace = trip.trip_destination_place;
+
+        // timeline[`day_${start.format("D_M_YYYY")}`]?.push({
+        //   tripDetailId: trip.trn_trip_detail_uid,
+        //   destinationPlace: destinationPlace,
+        //   startTime: start.format("HH:mm"),
+        //   duration: duration.toString(),
+        //   status: status,
+        //   carUserDetail: carUserDetail,
+        //   driverDetail: driverDetail,
+        // });
       });
     });
 
@@ -182,7 +185,7 @@ export function transformDriverApiToTableData(
       workLastMonth: driver.work_last_month,
       workThisMonth: driver.work_this_month,
       timeline: timeline,
-      status,
+      status: latestStatus,
     };
 
     return result;

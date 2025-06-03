@@ -83,14 +83,14 @@ export default function DriverPeaInfoCard({
             </div>
 
             <div className="card-item-group w-full !grid-cols-1 md:!grid-cols-2">
-              {driver?.tel_mobile && (
+            
                 <div className="card-item">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                    <span className="supporting-text">{driver?.tel_mobile}</span>
+                    <span className="supporting-text">{driver?.tel_mobile ?? "-"}</span>
                   </span>
                 </div>
-              )}
+             
               {driver?.tel_internal && (
                 <div className="card-item">
                   <i className="material-symbols-outlined">call</i>
