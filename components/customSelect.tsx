@@ -42,10 +42,7 @@ export default function CustomSelect({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setHighlightedIndex(-1);
       }
@@ -60,13 +57,9 @@ export default function CustomSelect({
       setHighlightedIndex(0);
     } else if (isOpen) {
       if (e.key === "ArrowDown") {
-        setHighlightedIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : 0
-        );
+        setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : 0));
       } else if (e.key === "ArrowUp") {
-        setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredOptions.length - 1
-        );
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : filteredOptions.length - 1));
       } else if (e.key === "Enter" && highlightedIndex >= 0) {
         const selected = filteredOptions[highlightedIndex];
         onChange(selected);
@@ -81,12 +74,7 @@ export default function CustomSelect({
     if (!!option?.imageUrl && isInputOil) {
       return (
         <div className="flex items-center gap-1">
-          <img
-            src={option.imageUrl}
-            alt={"oil-image-" + option.imageUrl}
-            width={24}
-            height={24}
-          />
+          <img src={option.imageUrl} alt={"oil-image-" + option.imageUrl} width={24} height={24} />
           <span>{option.label}</span>
         </div>
       );
@@ -101,16 +89,12 @@ export default function CustomSelect({
   };
 
   // Calculate dropdown position class
-  const dropdownPositionClass =
-    position === "top" ? "bottom-full mb-1" : "top-full mt-1";
+  const dropdownPositionClass = position === "top" ? "bottom-full mb-1" : "top-full mt-1";
+
+  console.log("value", value);
 
   return (
-    <div
-      ref={dropdownRef}
-      className="relative custom-select"
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-    >
+    <div ref={dropdownRef} className="relative custom-select" onKeyDown={handleKeyDown} tabIndex={0}>
       <div
         className={`border ${w} max-${w} border-gray-300 rounded-lg px-2 h-[40px] flex items-center text-primary-grayText overflow-hidden focus-within:border-primary-default focus-within:shadow-customPurple ${
           isOpen ? "shadow-customPurple border-primary-default" : ""
@@ -126,24 +110,15 @@ export default function CustomSelect({
         )}
         {isInputOil ? (
           !value?.value ? (
-            <div className="flex items-center gap-1 flex-1 text-md">
-              {placeholder}
-            </div>
+            <div className="flex items-center gap-1 flex-1 text-md">{placeholder}</div>
           ) : (
             <div className="flex items-center gap-1 flex-1 text-md">
-              <img
-                src={value?.imageUrl}
-                alt={"oil-image-" + value?.imageUrl}
-                width={24}
-                height={24}
-              />
+              <img src={value?.imageUrl} alt={"oil-image-" + value?.imageUrl} width={24} height={24} />
               <span>{value?.label}</span>
             </div>
           )
         ) : (
-          <div className="flex-1 text-md truncate text-object-search">
-            {value?.label || placeholder}
-          </div>
+          <div className="flex-1 text-md truncate text-object-search">{value?.label || placeholder}</div>
         )}
         <div className="flex-shrink-0 w-8 text-right cursor-pointer">
           <i className="material-symbols-outlined">keyboard_arrow_down</i>
@@ -172,11 +147,7 @@ export default function CustomSelect({
                 }}
               >
                 {renderDropdownOption(option)}
-                {value?.value === option.value && (
-                  <span className="material-symbols-outlined ml-auto">
-                    check
-                  </span>
-                )}
+                {value?.value === option.value && <span className="material-symbols-outlined ml-auto">check</span>}
               </li>
             ))
           ) : (

@@ -28,6 +28,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const active = searchParams.get("activeTab");
   const returnedData = searchParams.get("edit-data-returned-tabs");
   const returnedImage = searchParams.get("edit-image-returned-tabs");
+  const returnedCar = searchParams.get("returned-tabs");
 
   const [requestUid] = useState(requestId);
   const [loading, setLoading] = useState(true);
@@ -103,13 +104,12 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     if (requestId) {
       fetchRequestDetailfunc();
     }
-  }, [requestId]);
+  }, [requestId, returnedCar, returnedData, returnedImage]);
 
   const createQueryString = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("activeTab", value);
-
       return params.toString();
     },
     [searchParams]
@@ -145,7 +145,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ข้อมูลการเดินทาง",
         content: (
           <>
-            <RecordTravelTab requestId={requestId} data={requestData} role="recordTravel" />
+            <RecordTravelTab requestId={requestId} data={requestData} role="userRecordTravel" />
           </>
         ),
         constent: "",

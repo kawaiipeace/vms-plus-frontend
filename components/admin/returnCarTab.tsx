@@ -67,7 +67,7 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
   } | null>(null);
 
   const isReturnFail = ["71"].includes(requestData?.ref_request_status_code || "");
-  const isEnableReturn = ["60"].includes(requestData?.ref_request_status_code || "")
+  const isEnableReturn = ["60"].includes(requestData?.ref_request_status_code || "");
   const [showToast, setShowToast] = useState(false);
   const [showInfoToast, setShowInfoToast] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,6 +88,8 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
     returnCarInfoEditModalRef.current?.closeModal();
     setShowInfoToast(true);
   };
+
+  console.log("requestData", requestData);
 
   return (
     <>
@@ -378,7 +380,7 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
             </div>
           )}
 
-{isEnableReturn && (
+          {isEnableReturn && (
             <div className="w-full md:col-span-2">
               <button
                 className="btn btn-primary w-full"

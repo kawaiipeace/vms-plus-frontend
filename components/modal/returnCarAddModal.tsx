@@ -80,7 +80,6 @@ const ReturnCarAddModal = forwardRef<{ openModal: () => void; closeModal: () => 
       try {
         // Ensure parsedData is an object before accessing vehicleSelect
         const response = await fetchRequestKeyDetail(id || "");
-        console.log("data---", response.data);
         setRequestData(response.data);
       } catch (error) {
         console.error("Error fetching vehicle details:", error);

@@ -3,8 +3,6 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { dataClean } from "../modal/returnCarAddModal";
 
 export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
-  console.log("ReturnCarInfoCard data >>>> ", data);
-
   const date = data?.returned_vehicle_datetime ? convertToBuddhistDateTime(data?.returned_vehicle_datetime) : undefined;
 
   return (
