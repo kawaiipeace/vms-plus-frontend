@@ -41,8 +41,6 @@ const KeyPickUpEditModal = forwardRef<
   Props // Props type
 >(({ onBack, onSubmit, onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [selectedUserType, setSelectedUserType] =
-    useState<string>("พนักงาน กฟภ.");
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
@@ -117,6 +115,17 @@ const KeyPickUpEditModal = forwardRef<
   const phone = requestData?.driver?.driver_contact_number || "";
   const imgSrc = requestData?.driver?.driver_image || "/assets/img/avatar.svg";
 
+  const selectedUserType = watch("selectedUserType");
+
+  useEffect(() => {
+    if (selectedUserType === "บุคคลภายนอก") {
+      setValue("telOutsideMobile", "");
+      setValue("remarkOutside", "");
+      setValue("name", "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserType]);
+
   const fetchRequests = async () => {
     try {
       const response = await fetchReceivedKeyUsers(
@@ -144,7 +153,7 @@ const KeyPickUpEditModal = forwardRef<
           const defaultUser = vehicleUserData.find(
             (user) => user.emp_id === requestData?.received_key_emp_id
           );
-          console.log("userdata", defaultUser);
+
           if (defaultUser) {
             setSelectedUserDept(
               defaultUser.posi_text + "/" + defaultUser.dept_sap_short
@@ -176,11 +185,6 @@ const KeyPickUpEditModal = forwardRef<
     }
   };
 
-  useEffect(() => {
-    // setSelectedUserType(watch("selectedUserType") || "");
-    console.log('tt',selectedUserType);
-  }, [selectedUserType]);
-
   const submit = async (data: any) => {
     let payload;
 
@@ -210,9 +214,6 @@ const KeyPickUpEditModal = forwardRef<
         trn_request_uid: reqId || "",
       };
     }
-
-    console.log("payload", payload);
-    console.log("selectedUserType", selectedUserType);
 
     try {
       let res;
@@ -292,21 +293,27 @@ const KeyPickUpEditModal = forwardRef<
                     label="พนักงานขับรถ"
                     value="พนักงานขับรถ"
                     selectedValue={selectedUserType}
-                    setSelectedValue={setSelectedUserType}
+                    setSelectedValue={(value) =>
+                      setValue("selectedUserType", value)
+                    }
                   />
                   <RadioButton
                     name="userType"
                     label="พนักงาน กฟภ."
                     value="พนักงาน กฟภ."
                     selectedValue={selectedUserType}
-                    setSelectedValue={setSelectedUserType}
+                    setSelectedValue={(value) =>
+                      setValue("selectedUserType", value)
+                    }
                   />
                   <RadioButton
                     name="userType"
                     label="บุคคลภายนอก"
                     value="บุคคลภายนอก"
                     selectedValue={selectedUserType}
-                    setSelectedValue={setSelectedUserType}
+                    setSelectedValue={(value) =>
+                      setValue("selectedUserType", value)
+                    }
                   />
                 </div>
                 {/* <!-- <span className="form-helper">Helper</span> --> */}
