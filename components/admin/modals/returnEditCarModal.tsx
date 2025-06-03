@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 import { ImagePreviewType } from "@/app/types/image-preview-type";
-import { adminUpdateImageDetail } from "@/services/adminService";
+import { adminUpdateImageDetail, adminUpdateReturnImageDetail } from "@/services/adminService";
 
 interface Props {
   status?: string;
@@ -76,7 +76,7 @@ const ReturnEditCarModal = forwardRef<
 
         let response;
         if (useBy === "admin") {
-          response = await adminUpdateImageDetail(payload);
+          response = await adminUpdateReturnImageDetail(payload);
           if (response) {
             console.log("res", response.data);
             modalRef.current?.close();
