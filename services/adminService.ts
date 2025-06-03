@@ -74,7 +74,17 @@ export const adminDeleteTravelDetail = async (id: string) => {
   }
 };
 
-export const fetchAdminAddFuelDetails = async (id: string, params: { search?: string }) => {
+export const adminDeleteFuelDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.delete("vehicle-in-use-admin/delete-add-fuel/" + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const adminAddFuelDetails = async (id: string, params: { search?: string }) => {
   try {
     const response = await axiosInstance.get(`vehicle-in-use-admin/add-fuel-details/` + id, { params });
     return response;
@@ -86,6 +96,21 @@ export const fetchAdminAddFuelDetails = async (id: string, params: { search?: st
 export const adminUpdateAddFuelDetail = async (id: string, data: any) => {
   try {
     const response = await axiosInstance.put("vehicle-in-use-admin/update-add-fuel/" + id, data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchAdminAddFuelDetails = async (
+  id: string,
+  params: { search?: string }
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `vehicle-in-use-admin/add-fuel-details/` + id,
+      { params }
+    );
     return response;
   } catch (error) {
     throw error;
@@ -123,6 +148,16 @@ export const adminCreateTravelDetail = async (data: any) => {
     throw error;
   }
 };
+
+export const adminCreateFuelDetail = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("vehicle-in-use-admin/create-add-fuel", data);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 export const adminUpdateTravelDetail = async (id: string, data: any) => {

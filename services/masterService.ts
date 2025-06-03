@@ -301,6 +301,15 @@ export const fetchRequestKeyDetail = async (id: string) => {
   }
 };
 
+export const fetchRequestAdminKeyDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get("received-key-admin/request/" + id);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const cancelKeyPickup = async (data: any) => {
   try {
     const response = await axiosInstance.put(

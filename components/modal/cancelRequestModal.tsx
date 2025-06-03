@@ -1,5 +1,5 @@
 import { useToast } from "@/contexts/toast-context";
-import { adminDeleteTravelDetail } from "@/services/adminService";
+import { adminDeleteFuelDetail, adminDeleteTravelDetail } from "@/services/adminService";
 import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
@@ -122,6 +122,8 @@ const CancelRequestModal = forwardRef<
               ? await UserDeleteTravelDetail(tripId || "")
               : role === "adminRecordTravel"
               ? await adminDeleteTravelDetail(tripId || "")
+              : role === "adminFuel"
+              ? await adminDeleteFuelDetail(fuelId || "")
               : role === "userLic"
               ? await updateUserLicAnnualCancel(payloadLic || "")
               : role === "licAdmin"
@@ -180,6 +182,10 @@ const CancelRequestModal = forwardRef<
             } else if (role === "recordFuel") {
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
+              );
+            } else if (role === "adminFuel") {
+              router.push(
+                `/administrator/vehicle-in-use/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
               );
             } else if (role === "userLic") {
               showToast({
