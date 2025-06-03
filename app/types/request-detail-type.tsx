@@ -1,8 +1,8 @@
 import { DriverType } from "@/app/types/driver-user-type";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { SatisfactionSurveyQuestions } from "@/components/modal/reviewCarDriveModal";
-import { ProgressRequestType } from "./progress-request-status";
 import { ProgressRequestStatusEmp } from "./driver-lic-list-type";
+import { ProgressRequestType } from "./progress-request-status";
 
 export type RequestDetailType = Partial<{
   trn_request_uid: string;
@@ -145,7 +145,7 @@ export type RequestDetailType = Partial<{
 }>;
 
 export interface satisfactionSurveyAnswers {
-  mas_satisfaction_survey_questions_code: number;
+  mas_satisfaction_survey_questions_uid: string;
   survey_answer: number;
   satisfaction_survey_questions: SatisfactionSurveyQuestions;
 }

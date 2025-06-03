@@ -91,8 +91,6 @@ export default function CustomSelect({
   // Calculate dropdown position class
   const dropdownPositionClass = position === "top" ? "bottom-full mb-1" : "top-full mt-1";
 
-  console.log("value", value);
-
   return (
     <div ref={dropdownRef} className="relative custom-select" onKeyDown={handleKeyDown} tabIndex={0}>
       <div

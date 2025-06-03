@@ -36,6 +36,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       try {
         // Ensure parsedData is an object before accessing vehicleSelect
         const response = await fetchRequestKeyDetail(id || "");
+        console.log("response", response);
 
         setRequestData(response.data);
       } catch (error) {
@@ -50,9 +51,12 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
 
           setSatisfactionSurveyQuestions(response.data);
           const newRatting = response.data.map((item: SatisfactionSurveyQuestions) => {
+            const findValue = requestData?.satisfaction_survey_answers?.find(
+              (e) => e.mas_satisfaction_survey_questions_uid === item.mas_satisfaction_survey_questions_uid
+            );
             return {
               mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_uid,
-              survey_answer: 5,
+              survey_answer: findValue?.survey_answer === 0 ? findValue?.survey_answer : 5,
             };
           });
           setRatting(newRatting);
@@ -81,7 +85,7 @@ const ReviewCarDriveModal = forwardRef<{ openModal: () => void; closeModal: () =
       if (displayOn === "view") {
         const rattingData = requestData?.satisfaction_survey_answers?.map((item: satisfactionSurveyAnswers) => {
           return {
-            mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_code.toString(),
+            mas_satisfaction_survey_questions_code: item.mas_satisfaction_survey_questions_uid,
             survey_answer: item.survey_answer,
           };
         });
