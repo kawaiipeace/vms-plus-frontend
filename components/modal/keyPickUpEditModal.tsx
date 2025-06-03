@@ -9,10 +9,20 @@ import {
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import Link from "next/link";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { updateKeyAdminPickupDriver, updateKeyAdminPickupOutsider, updateKeyAdminPickupPea } from "@/services/keyAdmin";
+import {
+  updateKeyAdminPickupDriver,
+  updateKeyAdminPickupOutsider,
+  updateKeyAdminPickupPea,
+} from "@/services/keyAdmin";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -31,91 +41,145 @@ const KeyPickUpEditModal = forwardRef<
   Props // Props type
 >(({ onBack, onSubmit, onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [selectedUserType, setSelectedUserType] = useState<string>("พนักงาน กฟภ.");
+  const [selectedUserType, setSelectedUserType] =
+    useState<string>("พนักงาน กฟภ.");
 
   useImperativeHandle(ref, () => ({
-    openModal: () => modalRef.current?.showModal(),
+    openModal: () => {
+      if (requestData?.trn_request_uid) {
+        fetchRequests();
+      }
+      modalRef.current?.showModal();
+    },
     closeModal: () => modalRef.current?.close(),
   }));
 
   const schema = yup.object().shape({
     telInternal: yup.string().optional(),
-    name: yup.string().optional(),
+    selectedUserType: yup.string().optional(),
+    name: yup.string().when("selectedUserType", {
+      is: "บุคคลภายนอก",
+      then: (schema) => schema.required("กรุณากรอกชื่อ-นามสกุล"),
+      otherwise: (schema) => schema.optional(),
+    }),
     remark: yup.string().optional(),
-    telMobile: yup
-      .string()
-      .when("selectedUserType", (selectedUserType: any, schema) =>
-        typeof selectedUserType === "string" && selectedUserType !== "พนักงานขับรถ"
-          ? schema.matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง").required("กรุณากรอกเบอร์โทรศัพท์")
-          : schema.optional()
-      ),
+    remarkOutside: yup.string().optional(),
+    telMobile: yup.string().when("selectedUserType", {
+      is: "พนักงาน กฟภ.",
+      then: (schema) =>
+        schema
+          .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
+          .required("กรุณากรอกเบอร์โทรศัพท์"),
+      otherwise: (schema) => schema.optional(),
+    }),
+    telOutsideMobile: yup.string().when("selectedUserType", {
+      is: "บุคคลภายนอก",
+      then: (schema) =>
+        schema
+          .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
+          .required("กรุณากรอกเบอร์โทรศัพท์"),
+      otherwise: (schema) => schema.optional(),
+    }),
   });
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
       telInternal: "",
+      telOutsideMobile: "",
+      remarkOutside: "",
       name: "",
       remark: "",
       telMobile: "",
+      selectedUserType: "พนักงาน กฟภ.",
     },
   });
 
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>([]);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
+    []
+  );
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<VehicleUserType | null>(null);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
+    useState<VehicleUserType | null>(null);
   const [selectedUserDept, setSelectedUserDept] = useState("");
   const [driverOptions, setDriverOptions] = useState<VehicleUserType[]>([]);
 
   const reqId = requestData?.trn_request_uid || "";
-  const name = requestData?.driver_emp_name || "";
-  const deptSap = requestData?.driver_emp_dept_sap || "";
-  const phone = requestData?.driver_mobile_contact_number || "";
-  const imgSrc = requestData?.driver_image_url || "/assets/img/avatar.svg";
+  const name = requestData?.driver?.driver_name || "";
+  const deptSap = requestData?.driver?.driver_dept_sap_short || "";
+  const phone = requestData?.driver?.driver_contact_number || "";
+  const imgSrc = requestData?.driver?.driver_image || "/assets/img/avatar.svg";
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetchReceivedKeyUsers(requestData?.trn_request_uid || "", "");
-        if (response.status === 200) {
-          const vehicleUserData: VehicleUserType[] = response.data;
-          setVehicleUserDatas(vehicleUserData);
+  const fetchRequests = async () => {
+    try {
+      const response = await fetchReceivedKeyUsers(
+        requestData?.trn_request_uid || "",
+        ""
+      );
+      if (response.status === 200) {
+        const vehicleUserData: VehicleUserType[] = response.data;
+        setVehicleUserDatas(vehicleUserData);
 
-          setDriverOptions(vehicleUserData);
+        setDriverOptions(vehicleUserData);
 
-          // Optional: Set default selected user
-          if (vehicleUserData.length > 0) {
-            setSelectedVehicleUserOption(vehicleUserData[0]);
-            const defaultUser = vehicleUserData.find((user) => user.emp_id === vehicleUserData[0].emp_id);
-            if (defaultUser) {
-              setSelectedUserDept(defaultUser.dept_sap_short);
-            }
+        // Optional: Set default selected user
+        if (vehicleUserData.length > 0) {
+          setSelectedVehicleUserOption({
+            emp_id: requestData?.received_key_emp_id || "",
+            full_name: requestData?.received_key_emp_name || "",
+            dept_sap: "",
+            tel_internal: "",
+            tel_mobile: "",
+            dept_sap_short: "",
+            posi_text: "",
+            image_url: "",
+          });
+          const defaultUser = vehicleUserData.find(
+            (user) => user.emp_id === requestData?.received_key_emp_id
+          );
+          console.log("userdata", defaultUser);
+          if (defaultUser) {
+            setSelectedUserDept(
+              defaultUser.posi_text + "/" + defaultUser.dept_sap_short
+            );
+            setValue("telInternal", defaultUser.tel_internal);
+            setValue("telMobile", defaultUser.tel_mobile);
           }
         }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
       }
-    };
-    if (requestData?.trn_request_uid) {
-      fetchRequests();
+    } catch (error) {
+      console.error("Error fetching requests:", error);
     }
-  }, [requestData]);
+  };
 
   const handleVehicleUserChange = async (selectedOption: VehicleUserType) => {
     setSelectedVehicleUserOption(selectedOption);
     console.log("test", selectedOption);
 
-    const empData = vehicleUserDatas.find((user) => user.emp_id === selectedOption.emp_id);
+    const empData = vehicleUserDatas.find(
+      (user) => user.emp_id === selectedOption.emp_id
+    );
 
     if (empData) {
-      setSelectedUserDept(empData.dept_sap_short || "");
+      setSelectedUserDept(
+        empData.posi_text + "/" + empData.dept_sap_short || ""
+      );
+      setValue("telInternal", empData.tel_internal);
+      setValue("telMobile", empData.tel_mobile);
     }
   };
+
+  useEffect(() => {
+    // setSelectedUserType(watch("selectedUserType") || "");
+    console.log('tt',selectedUserType);
+  }, [selectedUserType]);
 
   const submit = async (data: any) => {
     let payload;
@@ -137,7 +201,7 @@ const KeyPickUpEditModal = forwardRef<
       // Handle payload for outsider
       payload = {
         outsider_name: data.name || "", // Get from form data
-        received_key_mobile_contact_number: data.telMobile || "", // Get from form data
+        received_key_mobile_contact_number: data.telOutsideMobile || "", // Get from form data
         received_key_remark: data.remark || "", // Get from form data
         trn_request_uid: reqId || "",
       };
@@ -222,7 +286,7 @@ const KeyPickUpEditModal = forwardRef<
           <div className="modal-body overflow-y-auto">
             <div className="form-section">
               <div className="form-group">
-                <div className="custom-group flex gap-2">
+                <div className="custom-group flex md:flex-row flex-col !gap-0 space-y-0 space-x-2">
                   <RadioButton
                     name="userType"
                     label="พนักงานขับรถ"
@@ -271,10 +335,18 @@ const KeyPickUpEditModal = forwardRef<
                     <div className="input-group is-readonly">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">business_center</i>
+                          <i className="material-symbols-outlined">
+                            business_center
+                          </i>
                         </span>
                       </div>
-                      <input type="text" className="form-control" placeholder="" value={selectedUserDept} readOnly />
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder=""
+                        value={selectedUserDept}
+                        readOnly
+                      />
                     </div>
                   </div>
                 </div>
@@ -299,10 +371,16 @@ const KeyPickUpEditModal = forwardRef<
                 <div className="col-span-6 md:col-span-6">
                   <div className="form-group">
                     <label className="form-label">เบอร์โทรศัพท์</label>
-                    <div className={`input-group ${errors.telMobile && "is-invalid"}`}>
+                    <div
+                      className={`input-group ${
+                        errors.telMobile && "is-invalid"
+                      }`}
+                    >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">smartphone</i>
+                          <i className="material-symbols-outlined">
+                            smartphone
+                          </i>
                         </span>
                       </div>
                       <input
@@ -312,7 +390,9 @@ const KeyPickUpEditModal = forwardRef<
                         placeholder="ระบุเบอร์โทรศัพท์"
                       />
                     </div>
-                    {errors.telMobile && <FormHelper text={String(errors.telMobile.message)} />}
+                    {errors.telMobile && (
+                      <FormHelper text={String(errors.telMobile.message)} />
+                    )}
                   </div>
                 </div>
 
@@ -327,7 +407,12 @@ const KeyPickUpEditModal = forwardRef<
                           <i className="material-symbols-outlined">sms</i>
                         </span>
                       </div>
-                      <input type="text" className="form-control" {...register("remark")} placeholder="ระบุหมายเหตุ" />
+                      <input
+                        type="text"
+                        className="form-control"
+                        {...register("remark")}
+                        placeholder="ระบุหมายเหตุ"
+                      />
                     </div>
                   </div>
                 </div>
@@ -337,28 +422,49 @@ const KeyPickUpEditModal = forwardRef<
                 <div className="col-span-12">
                   <div className="form-group">
                     <label className="form-label">ชื่อ - นามสกุล</label>
-
-                    <input type="text" className="form-control" {...register("name")} placeholder="ระบุชื่อ-นามสกุล" />
+                    <div
+                      className={`input-group ${errors.name && "is-invalid"}`}
+                    >
+                      <input
+                        type="text"
+                        className="form-control"
+                        {...register("name")}
+                        placeholder="ระบุชื่อ-นามสกุล"
+                      />
+                    </div>
+                    {errors.name && (
+                      <FormHelper text={String(errors.name.message)} />
+                    )}
                   </div>
                 </div>
 
                 <div className="col-span-12 md:col-span-12">
                   <div className="form-group">
                     <label className="form-label">เบอร์โทรศัพท์</label>
-                    <div className={`input-group ${errors.telMobile && "is-invalid"}`}>
+                    <div
+                      className={`input-group ${
+                        errors.telOutsideMobile && "is-invalid"
+                      }`}
+                    >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
-                          <i className="material-symbols-outlined">smartphone</i>
+                          <i className="material-symbols-outlined">
+                            smartphone
+                          </i>
                         </span>
                       </div>
                       <input
                         type="text"
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
-                        {...register("telMobile")}
+                        {...register("telOutsideMobile")}
                       />
                     </div>
-                    {errors.telMobile && <FormHelper text={String(errors.telMobile.message)} />}
+                    {errors.telOutsideMobile && (
+                      <FormHelper
+                        text={String(errors.telOutsideMobile.message)}
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -373,7 +479,12 @@ const KeyPickUpEditModal = forwardRef<
                           <i className="material-symbols-outlined">sms</i>
                         </span>
                       </div>
-                      <input type="text" className="form-control" {...register("remark")} placeholder="ระบุหมายเหตุ" />
+                      <input
+                        type="text"
+                        className="form-control"
+                        {...register("remarkOutside")}
+                        placeholder="ระบุหมายเหตุ"
+                      />
                     </div>
                   </div>
                 </div>
@@ -383,11 +494,21 @@ const KeyPickUpEditModal = forwardRef<
                 <div className="form-card w-full mt-5">
                   <div className="form-card-body">
                     <div className="form-group form-plaintext form-users">
-                      <Image src={imgSrc} className="avatar avatar-md" width={100} height={100} alt="" />
+                      <Image
+                        src={imgSrc}
+                        className="avatar avatar-md"
+                        width={100}
+                        height={100}
+                        alt=""
+                      />
                       <div className="form-plaintext-group align-self-center">
-                        <div className="form-label">{name}</div>
+                        <div className="form-label">
+                          {name} ({requestData?.driver?.driver_nickname}){" "}
+                        </div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">{deptSap}</div>
+                          <div className="supporting-text">
+                            {requestData?.driver?.vendor_name}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -395,9 +516,13 @@ const KeyPickUpEditModal = forwardRef<
                       <div className="flex flex-wrap gap-4">
                         <div className="col-span-12 md:col-span-6">
                           <div className="form-group form-plaintext">
-                            <i className="material-symbols-outlined">smartphone</i>
+                            <i className="material-symbols-outlined">
+                              smartphone
+                            </i>
                             <div className="form-plaintext-group">
-                              <div className="form-text text-nowrap">{phone}</div>
+                              <div className="form-text text-nowrap">
+                                {phone}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -410,7 +535,11 @@ const KeyPickUpEditModal = forwardRef<
           </div>
           <div className="modal-action sticky bottom-0 gap-3 mt-0">
             <div className="w-[50%] md:w-auto">
-              <button className="btn btn-secondary w-full" type="button" onClick={() => modalRef.current?.close()}>
+              <button
+                className="btn btn-secondary w-full"
+                type="button"
+                onClick={() => modalRef.current?.close()}
+              >
                 ไม่ใช่ตอนนี้
               </button>
             </div>

@@ -18,6 +18,7 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState }
 import CustomSelect, { CustomSelectOption } from "../customSelect";
 import Tooltip from "../tooltips";
 import CustomSelectOnSearch from "../customSelectOnSearch";
+import { adminUpdateAddFuelDetail } from "@/services/adminService";
 
 interface Props {
   status?: boolean;
@@ -247,17 +248,19 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
 
           if (status) {
             const res =
-              role === "user" || role === "admin"
+              (role === "recordFuel")
                 ? await UserUpdateAddFuelDetail(dataItem?.trn_add_fuel_uid || "", payload)
                 : role === "driver"
                 ? await driverUpdateAddFuelDetail(dataItem?.trn_add_fuel_uid || "", payload)
+                : role === "admin"
+                ? await adminUpdateAddFuelDetail(dataItem?.trn_add_fuel_uid || "", payload)
                 : { data: {} };
             const data = res.data;
             if (data) {
               handleCloseModal();
 
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              role === "user"
+              role === "recordFuel"
                 ? router.push(
                     pathName +
                       `?activeTab=${activeTab}&update-fuel-req=success&tax_invoice_no=${data.data?.tax_invoice_no}`
@@ -398,7 +401,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                               </div>
                               <DatePicker
                                 placeholder="ระบุวันที่"
-                                defaultValue={convertToBuddhistDateTime(valueForm.tax_invoice_date).date}
+                                defaultValue={(valueForm.tax_invoice_date)}
                                 onChange={(date) =>
                                   setValueForm((val) => ({
                                     ...val,
@@ -488,7 +491,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                             />
                           </div>
                           <p className="text-sm text-left mt-3">
-                            รวมภาษี {(Number(valueForm.sum_price) + Number(valueForm.sum_price) * (7 / 107)).toFixed(2)}{" "}
+                            รวมภาษี { (Number(valueForm.sum_price) * (7 / 107)).toFixed(2)}{" "}
                             บาท (7%)
                           </p>
                         </div>

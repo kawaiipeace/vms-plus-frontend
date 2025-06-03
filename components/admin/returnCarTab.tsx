@@ -66,7 +66,8 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
     closeModal: () => void;
   } | null>(null);
 
-  const isReturnFail = ["เดินทาง", "ตีกลับยานพาหนะ"].includes(requestData?.ref_request_status_name || "");
+  const isReturnFail = ["71"].includes(requestData?.ref_request_status_code || "");
+  const isEnableReturn = ["60"].includes(requestData?.ref_request_status_code || "")
   const [showToast, setShowToast] = useState(false);
   const [showInfoToast, setShowInfoToast] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -374,6 +375,19 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+{isEnableReturn && (
+            <div className="w-full md:col-span-2">
+              <button
+                className="btn btn-primary w-full"
+                onClick={() => {
+                  returnCarAddModalRef.current?.openModal();
+                }}
+              >
+                คืนยานพาหนะ
+              </button>
             </div>
           )}
 

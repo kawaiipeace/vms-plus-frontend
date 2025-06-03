@@ -324,14 +324,14 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                   type="text"
                   id="myInputTextField"
                   className="form-control dt-search-input"
-                  placeholder="ค้นหาสถานที่"
+                  placeholder="ค้นหาเลขที่ใบเสร็จ"
                   onChange={(e) => setParams({ ...params, search: e.target.value })}
                 />
               </div>
 
               {role === "admin" && (
                 <button
-                  className="btn btn-secondary ml-auto"
+                  className="btn btn-primary ml-auto"
                   onClick={() => {
                     setEditData(undefined);
                     recordFuelAddModalRef.current?.openModal();
@@ -344,7 +344,7 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
 
               {isAddAndEdit && (
                 <button
-                  className="btn btn-secondary ml-auto"
+                  className="btn btn-primary ml-auto"
                   onClick={() => {
                     recordFuelAddModalRef.current?.openModal();
                     setEditData(undefined);

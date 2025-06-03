@@ -3932,6 +3932,8 @@ img {
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: 0px;
+  display: flex;
+  align-items: center;
 }
 
 .light-mode .modal .modal-section .media .media-body .media-text {
@@ -4001,6 +4003,8 @@ img {
     font-weight: 600;
     line-height: 1.5;
     letter-spacing: 0px;
+    display: flex;
+    align-items: center;
   }
 
   .modal .modal-header .btn.close {

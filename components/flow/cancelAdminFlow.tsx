@@ -1,12 +1,12 @@
 import { RequestListType } from "@/app/types/request-list-type";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
+import { fetchRequests } from "@/services/bookingAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useRef, useState } from "react";
 import FilterModal from "../modal/filterModal";
 import PaginationControls from "../table/pagination-control";
 import ListFlow from "./listFlow";
-import { requests } from "@/services/bookingUser";
 
 interface PaginationType {
   limit: number;
@@ -15,7 +15,7 @@ interface PaginationType {
   totalPages: number;
 }
 
-export default function CancelFlow() {
+export default function CancelAdminFlow() {
   const [filterDate, setFilterDate] = useState<string>("");
   const [params, setParams] = useState({
     search: "",
@@ -117,7 +117,7 @@ export default function CancelFlow() {
   useEffect(() => {
     const fetchRequestData = async () => {
       try {
-        const response = await requests(params);
+        const response = await fetchRequests(params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           console.log('request',requestList);

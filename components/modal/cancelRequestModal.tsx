@@ -87,6 +87,7 @@ const CancelRequestModal = forwardRef<
     }));
 
     useEffect(() => {
+      console.log('role',role);
       schema
         .validate({ input: inputValue })
         .then(() => setIsValid(true))
@@ -136,6 +137,7 @@ const CancelRequestModal = forwardRef<
               : await cancelRequest(payload);
           const data = res.data;
           if (data) {
+            console.log('role==>',role);
             modalRef.current?.close();
 
             if (role === "firstApprover") {
@@ -198,7 +200,7 @@ const CancelRequestModal = forwardRef<
               }
             } else if (role === "adminRecordTravel") {
               router.push(
-                `/administrator/request-list/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
+                `/administrator/vehicle-in-use/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
               );
             } else if (role === "driver") {
               router.push(

@@ -345,7 +345,7 @@ const RecordTravelTab = ({ requestId, role = "user", data }: RecordTravelPageTab
 
               {isAddAndEdit && (
                 <button
-                  className="btn btn-secondary ml-auto"
+                  className="btn btn-primary ml-auto"
                   onClick={() => {
                     setEditData(undefined);
                     recordTravelAddModalRef.current?.openModal();
