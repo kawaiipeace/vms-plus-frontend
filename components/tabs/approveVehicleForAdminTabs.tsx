@@ -7,6 +7,7 @@ import AdminVehiclePickupFlow from "../flow/adminVehiclePickupFlow";
 import AdminVehicleInsFlow from "../flow/adminVehicleInsFlow";
 import SuccessFlow from "../flow/successFlow";
 import CancelAdminFlow from "../flow/cancelAdminFlow";
+import SuccessAdminFlow from "../flow/successAdminFlow";
 
 export default function ApproveVehicleForAdminTabs() {
 
@@ -37,7 +38,7 @@ export default function ApproveVehicleForAdminTabs() {
             case "70,71": // คืนยานพาหนะ
             return <AdminVehicleInsFlow />;
             case "80": // เสร็จสิ้น
-              return <SuccessFlow />; // Replace with your component
+              return <SuccessAdminFlow />; // Replace with your component
             case "90": // ยกเลิก
               return <CancelAdminFlow />;
             default:

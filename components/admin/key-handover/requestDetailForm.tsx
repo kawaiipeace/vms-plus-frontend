@@ -94,8 +94,8 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
             </div>
 
             <JourneyDetailCard
-              startDate={convertToBuddhistDateTime(requestData?.start_datetime || "").date}
-              endDate={convertToBuddhistDateTime(requestData?.end_datetime || "").date}
+              startDate={requestData?.start_datetime || ""}
+              endDate={requestData?.end_datetime || ""}
               timeStart={convertToBuddhistDateTime(requestData?.start_datetime || "").time}
               timeEnd={convertToBuddhistDateTime(requestData?.end_datetime || "").time}
               workPlace={requestData?.work_place}

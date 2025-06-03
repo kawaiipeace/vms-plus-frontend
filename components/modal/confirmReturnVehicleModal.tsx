@@ -12,11 +12,12 @@ import {
 } from "react";
 import DatePicker, { DatePickerRef } from "../datePicker";
 import TimePicker from "../timePicker";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface Props {
   id?: string;
   fleet_card_no?: string;
-  key?: string;
+  data?: RequestDetailType;
 }
 
 const ConfirmReturnVehicleModal = forwardRef<
@@ -25,7 +26,7 @@ const ConfirmReturnVehicleModal = forwardRef<
     closeModal: () => void;
   },
   Props
->(({ id, key }, ref) => {
+>(({ id, data, fleet_card_no }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const [openModal, setOpenModal] = useState(false);
@@ -65,12 +66,13 @@ const ConfirmReturnVehicleModal = forwardRef<
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
   useEffect(() => {
+    console.log('ke--===>',data);
     const today = new Date();
     const localDate = `${today.getFullYear()}-${String(
       today.getMonth() + 1
     ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     datePickerRef.current?.setValue(localDate);
-  }, []);
+  }, [data]);
 
   const handleConfirm = () => {
     const acceptVehicle = async () => {
@@ -135,12 +137,14 @@ const ConfirmReturnVehicleModal = forwardRef<
                     <div className="card-item-group !border-0 !rounded-md shadow-none outline-0">
                       <div className="card-item">
                         <i className="material-symbols-outlined">key</i>
-                        <span className="card-item-text">{key}</span>
+                        <span className="card-item-text">{""}</span>
                       </div>
 
                       <div className="card-item">
                         <i className="material-symbols-outlined">credit_card</i>
-                        <span className="card-item-text">บัตรเติมน้ำมัน</span>
+                        <span className="card-item-text">
+                          {fleet_card_no && "บัตรเติมน้ำมัน"}
+                        </span>
                       </div>
                     </div>
                   </div>
