@@ -124,7 +124,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
             console.log("dataid", dataItem?.trn_trip_detail_uid);
             if (status) {
               const res =
-                role === "recordTravel" || role === "user"
+                role === "userRecordTravel" || role === "user"
                   ? await UserUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload)
                   : role === "admin"
                   ? await adminUpdateTravelDetail(dataItem?.trn_trip_detail_uid || "", payload)
@@ -134,7 +134,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
                 handleCloseModal();
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                role === "recordTravel" || role === "user"
+                role === "userRecordTravel" || role === "user"
                   ? router.push(
                       pathName +
                         `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
@@ -151,7 +151,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
               }
             } else {
               const res =
-                role === "recordTravel" || role === "user"
+                role === "userRecordTravel" || role === "user"
                   ? await UserCreateTravelDetail(payload)
                   : role === "admin"
                   ? await adminCreateTravelDetail(payload)
@@ -160,7 +160,7 @@ const RecordTravelAddModal = forwardRef<{ openModal: () => void; closeModal: () 
               if (data) {
                 handleCloseModal();
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                role === "recordTravel" || role === "user"
+                role === "userRecordTravel" || role === "user"
                   ? router.push(
                       pathName +
                         `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
