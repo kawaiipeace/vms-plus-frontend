@@ -108,16 +108,15 @@ const KeyPickupDetailModal = forwardRef<
 
   useEffect(() => {
     setSelectedDate(convertToBuddhistDateTime(keyStartTime || "").date);
+    setSelectedTime(convertToBuddhistDateTime(keyStartTime || "").time);
   }, [keyStartTime]);
 
   const submit = async () => {
-    console.log(selectedDate);
-    console.log(selectedTime);
-    console.log(selectedAttach);
+    console.log("selectedDate: ", selectedDate);
+    console.log("selectedTime: ", selectedTime);
+    console.log("selectedAttach: ", selectedAttach);
     if (selectedDate && selectedTime && selectedAttach) {
       try {
-       
-
         const dateTime = convertToISO(selectedDate, selectedTime);
         const payload = {
           received_key_datetime: dateTime,
@@ -251,7 +250,9 @@ const KeyPickupDetailModal = forwardRef<
                             onChange={(date) => {
                               setSelectedDate(date);
                             }}
-                            defaultValue={convertToBuddhistDateTime(keyStartTime || "").date}
+                            defaultValue={
+                              convertToBuddhistDateTime(keyStartTime || "").date
+                            }
                           />
                         </div>
                       </div>
@@ -272,7 +273,9 @@ const KeyPickupDetailModal = forwardRef<
                           <TimePicker
                             placeholder="ระบุเวลา"
                             onChange={(time) => setSelectedTime(time)}
-                            defaultValue={convertToBuddhistDateTime(keyStartTime || "").time}
+                            defaultValue={
+                              convertToBuddhistDateTime(keyStartTime || "").time
+                            }
                           />
                         </div>
                       </div>
