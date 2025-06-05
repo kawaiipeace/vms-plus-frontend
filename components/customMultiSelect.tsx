@@ -12,6 +12,9 @@ interface SelectProps {
   iconName?: string;
   value?: CustomSelectOption[];
   onChange: (selected: CustomSelectOption[]) => void;
+  setSearch?: (value: string) => void;
+  enableSearchApi?: boolean;
+  placeholder?: string;
 }
 
 export default function CustomMultiSelect({
@@ -20,12 +23,17 @@ export default function CustomMultiSelect({
   iconName,
   value = [],
   onChange,
+  setSearch,
+  enableSearchApi = false,
+  placeholder = "กรุณาเลือก",
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [length, setLength] = useState(value.length || 0);
   const [action, setAction] = useState("add");
+  const [searchValue, setSearchValue] = useState("");
 
   // Close dropdown when clicking outside
   const handleClickOutside = (event: MouseEvent) => {
@@ -47,6 +55,21 @@ export default function CustomMultiSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (searchValue.trim() !== "" && searchValue.trim().length >= 3) {
+      setSearch?.(searchValue);
+    } else {
+      setSearch?.("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue]);
+
   return (
     <div ref={dropdownRef} className={`relative custom-select`}>
       {/* Button that shows selected option */}
@@ -65,6 +88,7 @@ export default function CustomMultiSelect({
             } else {
               setLength(length - 1);
             }
+            setAction("add");
           }
         }}
       >
@@ -95,7 +119,20 @@ export default function CustomMultiSelect({
                   </div>
                 </div>
               ))
-            : "กรุณาเลือก"}
+            : ""}
+          {isOpen && enableSearchApi ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="border-none focus-visible:outline-none"
+            />
+          ) : value?.length ? (
+            ""
+          ) : (
+            placeholder
+          )}
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">
@@ -106,7 +143,8 @@ export default function CustomMultiSelect({
       {/* Dropdown List */}
       {isOpen && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg">
-          {options.length > 0 ? (
+          {options.length > 0 &&
+          (enableSearchApi ? searchValue.trim().length >= 3 : true) ? (
             options.map((option) => (
               <li
                 key={option.value}
@@ -124,7 +162,10 @@ export default function CustomMultiSelect({
                   }
                   setLength(value.length);
                   setAction("add");
+                  setSearchValue("");
+                  if (enableSearchApi) setIsOpen(false);
                   buttonRef.current?.focus(); // Keep focus on the div
+                  inputRef.current?.focus(); // Keep focus on the input
                 }}
               >
                 {option.subLabel ? (
