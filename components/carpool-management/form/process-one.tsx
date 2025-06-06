@@ -7,7 +7,7 @@ import {
 } from "@/app/types/carpool-management-type";
 import CustomMultiSelect from "@/components/customMultiSelect";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
-import CustomSearchSelect from "@/components/customSelectSerch";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
 import ToastCustom from "@/components/toastCustom";
@@ -79,6 +79,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     CustomSelectOption[]
   >([]);
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [dLoading, setDLoading] = useState(false);
 
   const { formData, updateFormData } = useFormContext();
 
@@ -141,16 +142,6 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
 
   useEffect(() => {
     if (group?.value) {
-      const fetchDepartmentFunc = async () => {
-        try {
-          const response = await getCarpoolDepartmentByType(group?.value);
-          const result = response.data;
-          setDepartments(result);
-        } catch (error) {
-          console.error("Error fetching status data:", error);
-        }
-      };
-
       fetchDepartmentFunc();
     }
   }, [group]);
@@ -207,6 +198,21 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carpool]);
+
+  const fetchDepartmentFunc = async (search?: string) => {
+    try {
+      const response = await getCarpoolDepartmentByType(
+        group?.value || "",
+        search || ""
+      );
+      const result = response.data;
+      setDepartments(result);
+      setDLoading(false);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+      setDLoading(false);
+    }
+  };
 
   const onSubmit = async (data: any) => {
     const carpool_authorized_depts = data.carpool_authorized_depts?.map(
@@ -352,6 +358,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                     onChange={(e) => {
                       setGroup(e);
                       setValue("carpool_type", e.value);
+                      setDepartmentSelected([]);
                     }}
                   />
                   <div>
@@ -370,22 +377,24 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           "หน่วยงานที่ใช้บริการกลุ่มยานพาหนะนี้ได้"}
                       </label>
                       {group.value === "02" && (
-                        <CustomSearchSelect
+                        <CustomSelectOnSearch
                           w="w-full"
                           options={departments.map((item) => ({
                             value: item.dept_sap,
                             label: item.dept_short,
-                            subLabel: item.dept_full,
+                            desc: item.dept_full,
                           }))}
                           value={departmentSelected[0]}
-                          {...register("carpool_authorized_depts", {
-                            required: group.value === "02",
-                          })}
                           onChange={(e) => {
                             setDepartmentSelected([e]);
                             setValue("carpool_authorized_depts", [e]);
                           }}
-                          enableSearch
+                          onSearchInputChange={(value) => {
+                            fetchDepartmentFunc(value);
+                            setDLoading(true);
+                          }}
+                          loading={dLoading}
+                          enableSearchOnApi={true}
                         />
                       )}
                       {group.value === "03" && (
@@ -403,6 +412,11 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           onChange={(e) => {
                             setDepartmentSelected(e as CustomSelectOption[]);
                             setValue("carpool_authorized_depts", e);
+                          }}
+                          enableSearchApi
+                          setSearch={(value) => {
+                            fetchDepartmentFunc(value);
+                            setDLoading(true);
                           }}
                         />
                       )}

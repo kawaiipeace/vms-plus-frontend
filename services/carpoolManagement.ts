@@ -105,10 +105,13 @@ export const getCarpoolDepartment = async () => {
   }
 };
 
-export const getCarpoolDepartmentByType = async (type: string) => {
+export const getCarpoolDepartmentByType = async (
+  type: string,
+  search: string
+) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/mas-department/" + type
+      "carpool-management/mas-department/" + type + "?search=" + search
     );
 
     return response;
