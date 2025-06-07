@@ -202,7 +202,7 @@ const RequestDrivingStepOneModal = forwardRef<
     if (requestData?.next_license_status !== "") {
       return (dayjs().year() + 544).toString();
     }
-    
+
     if (requestData?.license_status === "มีผลปีถัดไป") {
       return (dayjs().year() + 543).toString();
     }
@@ -212,8 +212,16 @@ const RequestDrivingStepOneModal = forwardRef<
   // Build default values object for react-hook-form
   const buildDefaultValues = () => ({
     driverLicenseType: getDefaultCostType(costTypeOptions),
-    year: (requestData?.license_status === "อนุมัติแล้ว" && requestData?.next_license_status_code === "00" ?  (dayjs().year() + 544).toString() :  (dayjs().year() + 543).toString()),
-    licenseNumber: requestData ? (requestData?.next_license_status_code === "00" ? "" : requestData?.driver_license?.driver_license_no) : "",
+    year:
+      requestData?.license_status === "อนุมัติแล้ว" &&
+      requestData?.next_license_status_code === "00"
+        ? (dayjs().year() + 544).toString()
+        : (dayjs().year() + 543).toString(),
+    licenseNumber: requestData
+      ? requestData?.next_license_status_code === "00"
+        ? ""
+        : requestData?.driver_license?.driver_license_no
+      : "",
     licenseExpiryDate: requestData
       ? convertToBuddhistDateTime(
           requestData?.driver_license?.driver_license_expire_date
@@ -276,7 +284,7 @@ const RequestDrivingStepOneModal = forwardRef<
 
   useEffect(() => {
     setDefaultValues(buildDefaultValues());
-    console.log('defaultyear',defaultValues);
+    console.log("defaultyear", defaultValues);
     reset(buildDefaultValues());
   }, [
     JSON.stringify(costTypeOptions),
@@ -411,22 +419,22 @@ const RequestDrivingStepOneModal = forwardRef<
     <>
       {openModal && (
         <div className={`modal modal-open modal-middle`}>
-          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col">
             <div className="bottom-sheet" {...swipeDownHandlers}>
               <div className="bottom-sheet-icon"></div>
             </div>
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title items-center flex">
-                <i
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    if (onBack) {
+                {onBack && (
+                  <i
+                    className="material-symbols-outlined cursor-pointer"
+                    onClick={() => {
                       onBack();
-                    }
-                  }}
-                >
-                  keyboard_arrow_left
-                </i>{" "}
+                    }}
+                  >
+                    keyboard_arrow_left
+                  </i>
+                )}
                 ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
                 {requestData?.license_status !== "ไม่มี" &&
                   requestData?.license_status !== "" &&
@@ -752,7 +760,7 @@ const RequestDrivingStepOneModal = forwardRef<
                                     placeholder={"ระบุวันที่"}
                                     onChange={field.onChange}
                                     defaultValue={field.value}
-                                    minDate={watch('trainingDate')}
+                                    minDate={watch("trainingDate")}
                                   />
                                 )}
                               />

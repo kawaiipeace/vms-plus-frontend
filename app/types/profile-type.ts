@@ -1,5 +1,6 @@
 export interface Profile {
   emp_id: string;
+  annual_yyyy: string;
   first_name: string;
   last_name: string;
   internal_number: string;

@@ -20,6 +20,7 @@ import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 interface EditApproverModalProps {
   title: string;
   requestData?: RequestAnnualDriver;
+  approvers?: VehicleUserType;
   onUpdate?: (data: VehicleUserType) => void;
   onBack?: () => void;
 }
@@ -32,7 +33,7 @@ const schema = yup.object().shape({
 const EditApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditApproverModalProps
->(({ title, requestData, onUpdate, onBack }, ref) => {
+>(({ title, requestData, approvers, onUpdate, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [driverOptions, setDriverOptions] = useState<CustomSelectOption[]>([]);
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
@@ -56,7 +57,9 @@ const EditApproverModal = forwardRef<
     },
   });
 
-  const handleVehicleUserChange = (selectedOption: CustomSelectOption | null) => {
+  const handleVehicleUserChange = (
+    selectedOption: CustomSelectOption | null
+  ) => {
     setSelectedVehicleUserOption(selectedOption);
     if (selectedOption) {
       setValue("position", selectedOption.posi_text || "");
@@ -67,53 +70,59 @@ const EditApproverModal = forwardRef<
     }
   };
 
-    const fetchVehicleUserData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetchUserConfirmerLic("");
-        if (response.status === 200) {
-          const vehicleUserData: VehicleUserType[] = response.data;
-          const driverOptionsArray = vehicleUserData.map(
-            (user: VehicleUserType) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.dept_sap_short})`,
-              posi_text: user.posi_text,
-              dept_sap: user.dept_sap,
-              dept_sap_short: user.dept_sap_short,
-              full_name: user.full_name,
-              image_url: user.image_url,
-              tel_mobile: user.tel_mobile,
-              tel_internal: user.tel_internal,
-            })
-          );
+  const fetchVehicleUserData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchUserConfirmerLic("");
+      if (response.status === 200) {
+        const vehicleUserData: VehicleUserType[] = response.data;
+        const driverOptionsArray = vehicleUserData.map(
+          (user: VehicleUserType) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.dept_sap_short})`,
+            posi_text: user.posi_text,
+            dept_sap: user.dept_sap,
+            dept_sap_short: user.dept_sap_short,
+            full_name: user.full_name,
+            image_url: user.image_url,
+            tel_mobile: user.tel_mobile,
+            tel_internal: user.tel_internal,
+          })
+        );
 
-          setDriverOptions(driverOptionsArray);
-          
-          // Set default approver if requestData has confirmed_request_emp_id
-          if (requestData?.confirmed_request_emp_id) {
-            const defaultApprover = driverOptionsArray.find(
-              opt => opt.value === requestData.confirmed_request_emp_id
+        setDriverOptions(driverOptionsArray);
+
+        // Set default approver if requestData has confirmed_request_emp_id
+        if (requestData?.confirmed_request_emp_id || approvers?.emp_id) {
+          const defaultApprover = driverOptionsArray.find(
+            (opt) => opt.value === (requestData?.confirmed_request_emp_id || approvers?.emp_id)
+          );
+        
+          if (defaultApprover) {
+            setSelectedVehicleUserOption(defaultApprover);
+            setValue(
+              "name",
+              defaultApprover.full_name || defaultApprover.label || ""
             );
-            console.log('default',defaultApprover);
-            if (defaultApprover) {
-              setSelectedVehicleUserOption(defaultApprover);
-              setValue("name", defaultApprover.full_name || defaultApprover.label || "");
-              setValue("position", defaultApprover.posi_text +"/"+ defaultApprover.dept_sap_short || "");
-            }
+            setValue(
+              "position",
+              defaultApprover.posi_text +
+                "/" +
+                defaultApprover.dept_sap_short || ""
+            );
           }
         }
-      } catch (error) {
-        console.error("Error fetching approvers:", error);
-      } finally {
-        setIsLoading(false);
       }
-    };
-  
-
+    } catch (error) {
+      console.error("Error fetching approvers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;
-    console.log('selected',selectedVehicleUserOption)
+    console.log("selected", selectedVehicleUserOption);
     try {
       if (onUpdate) {
         onUpdate({
@@ -125,9 +134,8 @@ const EditApproverModal = forwardRef<
           tel_mobile: selectedVehicleUserOption.tel_mobile || "",
           tel_internal: selectedVehicleUserOption.tel_internal || "",
         });
-        if(onBack) onBack();
+        if (onBack) onBack();
       }
-     
     } catch (error) {
       console.error("Network error:", error);
       alert("Failed to update approver due to network error.");
@@ -211,8 +219,8 @@ const EditApproverModal = forwardRef<
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
-          <button 
-            className="btn btn-primary" 
+          <button
+            className="btn btn-primary"
             onClick={handleSubmit(onSubmit)}
             disabled={isLoading || !selectedVehicleUserOption}
           >

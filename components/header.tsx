@@ -20,6 +20,7 @@ import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import RequestDrivingStepTwoModal from "./annual-driver-license/requestDrivingStepTwoModal";
 import { UploadFileType } from "@/app/types/upload-type";
 import NotificationDropdown from "./notificationDropdown";
+import DriverLicenseUpModal from "./annual-driver-license/driverLicenseUpModal";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -42,7 +43,7 @@ export default function Header() {
   const [valueFormStep1, setValueFormStep1] = useState<ValueFormStep1>();
   const [isEditable, setIsEditable] = useState(false);
   const [pendingOpenModal, setPendingOpenModal] = useState<
-    null | "driver" | "request" | "detail"
+    null | "driver" | "requestnoback" | "request" | "detail" | "driverUp"
   >(null);
   const [licRequestDetail, setLicRequestDetail] =
     useState<RequestAnnualDriver>();
@@ -54,6 +55,16 @@ export default function Header() {
   } | null>(null);
 
   const RequestDrivingStepOneModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const driverLicenseUpModalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  const RequestDrivingStepOneModalNoBackRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -90,11 +101,21 @@ export default function Header() {
       driverLicenseModalRef.current?.openModal();
       setPendingOpenModal(null);
     }
+        if (pendingOpenModal === "driverUp" && driverUser) {
+      driverLicenseUpModalRef.current?.openModal();
+      setPendingOpenModal(null);
+    }
     if (pendingOpenModal === "request" && driverUser) {
       console.log(licRequestDetail);
       RequestDrivingStepOneModalRef.current?.openModal();
       setPendingOpenModal(null);
     }
+    if (pendingOpenModal === "requestnoback" && driverUser) {
+      console.log(licRequestDetail);
+      RequestDrivingStepOneModalNoBackRef.current?.openModal();
+      setPendingOpenModal(null);
+    }
+    
     if (
       pendingOpenModal === "detail" &&
       driverUser?.trn_request_annual_driver_uid
@@ -119,7 +140,6 @@ export default function Header() {
   };
 
   const handleOneSubmit = (data: ValueFormStep1) => {
-    console.log("data===");
     setValueFormStep1(data);
     RequestDrivingStepTwoModalRef.current?.openModal();
   };
@@ -128,11 +148,23 @@ export default function Header() {
     await getDriverUserCard();
     setPendingOpenModal("driver");
   };
+  
+    const   handleOpenDriverLicenseUpModal = async () => {
+    await getDriverUserCard();
+    setPendingOpenModal("driverUp");
+  };
+
 
   const handleOpenRequestDrivingModal = async () => {
     await getDriverUserCard();
     setPendingOpenModal("request");
   };
+
+  const handleOpenRequestNoBackDrivingModal = async () => {
+    await getDriverUserCard();
+    setPendingOpenModal("requestnoback");
+  };
+  
 
   const handleOpenRequestCreateReturnDrivingModal = async () => {
     await getDriverUserCard();
@@ -347,6 +379,21 @@ export default function Header() {
                             {profile.license_status}
                           </div>
                         </>
+                      ) : profile?.license_status === "รออนุมัติ" ? (
+                        <>
+                          <a
+                            className="nav-link toggle-mode gap-1 flex items-center"
+                            onClick={handleOpenRequestDetailDrivingModal}
+                          >
+                            <i className="material-symbols-outlined">id_card</i>
+                            <span className="nav-link-label">
+                              ขอทำหน้าที่ขับรถยนต์
+                            </span>
+                          </a>
+                          <div className="badge badge-gray">
+                            {profile.license_status}
+                          </div>
+                        </>
                       ) : profile?.license_status === "ตีกลับ" ? (
                         <>
                           <a
@@ -362,27 +409,27 @@ export default function Header() {
                             {profile.license_status}
                           </div>
                         </>
-                      ) : profile?.license_status === "ยกเลิก" ? (
+                      ) : profile?.license_status ===
+                        "ใบอนุญาตทำหน้าที่ขับรถยนต์" ? (
                         <>
                           <a
                             className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenRequestDrivingModal}
+                            onClick={handleOpenDriverLicenseUpModal}
                           >
                             <i className="material-symbols-outlined">id_card</i>
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
                           </a>
-                          <div className="badge bg-brand-900 text-white">
-                            ไม่มี
-                          </div>
                         </>
                       ) : (
                         profile?.license_status === "ไม่มี" && (
                           <>
                             <a
                               className="nav-link toggle-mode gap-1 flex items-center"
-                              onClick={() => handleOpenRequestDrivingModal()}
+                              onClick={() =>
+                                handleOpenRequestNoBackDrivingModal()
+                              }
                             >
                               <i className="material-symbols-outlined">
                                 id_card
@@ -441,6 +488,10 @@ export default function Header() {
           handleOpenRequestDrivingModal();
         }}
       />
+      <DriverLicenseUpModal
+        ref={driverLicenseUpModalRef}
+        profile={profile || null}
+      />
 
       <RequestStatusLicDetailModal
         ref={RequestStatusLicDetailModaRef}
@@ -463,6 +514,13 @@ export default function Header() {
         }}
       />
 
+      <RequestDrivingStepOneModal
+        ref={RequestDrivingStepOneModalNoBackRef}
+        licRequestDetail={licRequestDetail}
+        requestData={driverUser}
+        stepOneSubmit={handleOneSubmit}
+      />
+
       <RequestDrivingStepTwoModal
         openStep1={() => RequestDrivingStepTwoModalRef.current?.openModal()}
         ref={RequestDrivingStepTwoModalRef}
@@ -473,7 +531,7 @@ export default function Header() {
         onTrackStatus={handleOpenRequestDetailIDDrivingModal}
         onBack={() => {
           RequestDrivingStepTwoModalRef.current?.closeModal();
-          RequestDrivingStepOneModalRef.current?.openModal();
+          RequestDrivingStepOneModalNoBackRef.current?.openModal();
         }}
       />
     </>

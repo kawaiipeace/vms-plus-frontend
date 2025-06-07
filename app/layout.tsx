@@ -50,19 +50,21 @@ export default function RootLayout({
 
       <body className="light-mode">
         <RootLayoutClient>
+                  <ToastProvider>
           <ProfileProvider>
             <SidebarProvider>
               <RequestDetailProvider>
                 <FormProvider>
-                  <ToastProvider>
+          
                     <CarpoolProvider>
                       <Suspense>{children}</Suspense>
                     </CarpoolProvider>
-                  </ToastProvider>
+               
                 </FormProvider>
               </RequestDetailProvider>
             </SidebarProvider>
           </ProfileProvider>
+             </ToastProvider>
         </RootLayoutClient>
       </body>
     </html>
