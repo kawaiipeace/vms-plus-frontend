@@ -252,7 +252,7 @@ export default function ProcessThree() {
         );
         if (response) {
           const vehicleUserData = response.data;
-
+setVehicleUserDatas(vehicleUserData);
           console.log("vehicledata", vehicleUserData);
           const driverOptionsArray = vehicleUserData.map(
             (user: {
@@ -300,7 +300,7 @@ export default function ProcessThree() {
     fetchDefaultData();
 
     // setSelectedVehicleUserOption(selectedDriverOption);
-  }, [vehicleUserDatas, formData, profile]);
+  }, [formData, profile]);
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
@@ -324,38 +324,40 @@ export default function ProcessThree() {
     },
   });
 
-  const handleDriverSearch = async (search: string) => {
-    // Debounce handled by parent component or elsewhere
-    if (search.trim().length < 3) {
-      setLoadingDrivers(true);
-      try {
-        const response = await fetchUserDrivers(search);
-        if (response) {
-          const vehicleUserData = response.data;
+const handleDriverSearch = async (search: string) => {
+  const trimmed = search.trim();
 
-          const driverOptionsArray = vehicleUserData.map(
-            (user: {
-              emp_id: string;
-              full_name: string;
-              dept_sap: string;
-            }) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.emp_id})`,
-            })
-          );
-          setDriverOptions(driverOptionsArray);
-        } else {
-          setDriverOptions([]);
-        }
-      } catch (error) {
-        setDriverOptions([]);
-        console.error("Error resetting options:", error);
-      } finally {
-        setLoadingDrivers(false);
-      }
-      return;
+  if (trimmed.length < 3) {
+    setDriverOptions([]);
+    setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
+    setLoadingDrivers(false);
+    return;
+  }
+
+  setLoadingDrivers(true);
+  try {
+    const response = await fetchUserDrivers(trimmed);
+    if (response && Array.isArray(response.data)) {
+      const vehicleUserData = response.data;
+      setVehicleUserDatas(vehicleUserData); // <-- Update here!
+      setDriverOptions(
+        vehicleUserData.map((user: { emp_id: string; full_name: string }) => ({
+          value: user.emp_id,
+          label: `${user.full_name} (${user.emp_id})`,
+        }))
+      );
+    } else {
+      setDriverOptions([]);
+      setVehicleUserDatas([]);
     }
-  };
+  } catch (error) {
+    setDriverOptions([]);
+    setVehicleUserDatas([]);
+    console.error("Error in handleDriverSearch:", error);
+  } finally {
+    setLoadingDrivers(false);
+  }
+};
 
   return (
     <div>
