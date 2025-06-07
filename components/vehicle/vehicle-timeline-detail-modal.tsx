@@ -49,7 +49,7 @@ const VehicleTimeLineDetailModal = forwardRef<
           {/* Image Section */}
           <div className="flex items-start justify-center">
             <Image
-              src={imgPath.get(status) ?? "/assets/img/vehicle/check_car_complete.png"}
+              src={imgPath.get(status) ?? "/assets/img/vehicle/check_car_complete.svg"}
               width={150}
               height={150}
               alt="check_car_complete"
