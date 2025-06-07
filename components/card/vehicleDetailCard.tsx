@@ -50,7 +50,7 @@ export default function VehicleDetailCard({ requestData }: Props) {
                   : "-"}
               </div>
               <div className="card-subtitle">
-                {requestData?.vehicle?.vehicle_license_plate || "-"}  {requestData?.vehicle?.vehicle_license_plate_province_full || "-"}
+                {requestData?.vehicle?.vehicle_license_plate || "-"}  {requestData?.vehicle?.vehicle_license_plate_province_short || "-"}
               </div>
               <div className="supporting-text-group">
                 <div className="supporting-text">

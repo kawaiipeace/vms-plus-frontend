@@ -12,4 +12,5 @@ export interface Profile {
   position: string;
   image_url: string;
   roles: string[];
+  is_level_m5: string;
 }

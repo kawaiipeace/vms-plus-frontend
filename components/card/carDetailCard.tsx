@@ -45,7 +45,7 @@ export default function CarDetailCard({ vehicle, seeDetail, selectVehicle,reques
               <div className="card-title">
                 {vehicle?.vehicle_brand_name} {vehicle?.vehicle_model_name}
               </div>
-              <div className="card-subtitle">{vehicle?.vehicle_license_plate} {vehicle?.vehicle_license_plate_province_full}</div>
+              <div className="card-subtitle">{vehicle?.vehicle_license_plate} {vehicle?.vehicle_license_plate_province_short}</div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{vehicle?.CarType}</div>
                 <div className="supporting-text">{vehicle?.vehicle_department?.vehicle_owner_dept_short}</div>

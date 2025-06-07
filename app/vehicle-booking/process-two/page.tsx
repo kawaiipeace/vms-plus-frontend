@@ -36,6 +36,7 @@ interface Vehicle {
   vehicle_owner_dept_sap: string;
   vehicle_img: string;
   vehicle_license_plate_province_full: string;
+  vehicle_license_plate_province_short: string;
   seat: number;
   vehicle_owner_dept_short: string;
   is_admin_choose_driver?: boolean;
@@ -434,7 +435,7 @@ export default function ProcessTwo() {
                               carType={vehicle.car_type}
                               deptSap={vehicle.vehicle_owner_dept_short}
                               province={
-                                vehicle.vehicle_license_plate_province_full
+                                vehicle.vehicle_license_plate_province_short
                               }
                               seat={vehicle.seat}
                               onSelect={() =>

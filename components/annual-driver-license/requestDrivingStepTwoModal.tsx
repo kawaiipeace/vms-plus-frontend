@@ -26,6 +26,7 @@ import ApproverInfoCard from "./ApproverInfoCard";
 import EditApproverModal from "./editApproverModal";
 import EditFinalApproverModal from "./editFinalApproverModal";
 import Link from "next/link";
+import { useProfile } from "@/contexts/profileContext";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -85,6 +86,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     const [approvers, setApprovers] = useState<VehicleUserType>();
     const [finalApprovers, setFinalApprovers] = useState<VehicleUserType>();
     const [isLoading, setIsLoading] = useState(false);
+    const { profile } = useProfile();
 
     const { showToast } = useToast();
 
@@ -317,7 +319,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                       Step 2: ผู้อนุมัติ
                     </p>
 
-                    {approvers?.emp_id !== finalApprovers?.emp_id && (
+                    {profile?.is_level_m5 !== "0" && (
                       <div className="form-section">
                         <div className="form-section-header">
                           <div className="form-section-header-title">
