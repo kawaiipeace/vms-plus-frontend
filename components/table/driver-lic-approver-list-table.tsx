@@ -67,7 +67,7 @@ export default function DriverLicApproverListTable({
           <div className="flex flex-col">
             <div>{row.original.created_request_emp_name}</div>
             <div className="text-color-secondary text-xs">
-              {row.original.created_request_dept_sap_name_short}
+              {row.original.created_request_emp_position + " " + row.original.created_request_dept_sap_name_short}
             </div>
           </div>
         </div>
@@ -133,11 +133,11 @@ export default function DriverLicApproverListTable({
         const value = getValue() as string;
         return (
           <div className="w-[80px] text-center" data-name="สถานะคำขอ">
-            {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
+            {value === "เกินวันที่นัดหมาย" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับคำขอ" ? (
+            ) : value === "ตีกลับ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 ตีกลับคำขอ
               </span>

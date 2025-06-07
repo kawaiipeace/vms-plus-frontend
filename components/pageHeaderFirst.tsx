@@ -60,7 +60,7 @@ export default function PageHeaderFirst({ data }: Props) {
           </li>
           <li className="breadcrumb-item">
             <Link href="/administrator/booking-approver">
-              อนุมัติขอคำใช้และใบอนุญาต
+              อนุมัติคำขอใช้และใบอนุญาต
             </Link>
           </li>
           <li className="breadcrumb-item active" aria-current="page">

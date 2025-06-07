@@ -98,16 +98,16 @@ const FileBackRequestModal = forwardRef<
             );
           } else if (role === "licAdmin") {
             if(onSuccess) {
-              onSuccess
+              onSuccess()
             }
    
             router.push(
-              "/administrator/booking-approver?sendbacklic-req=success&request-id=" +
+              "/administrator/booking-approver?licenseType=ตรวจสอบ&sendbacklic-req=success&request-id=" +
                 data.result?.request_annual_driver_no
             );
           } else if (role === "licFinalAdmin") {
             router.push(
-              "/administrator/booking-approver?sendbackfinallic-req=success&request-id=" +
+              "/administrator/booking-approver?licenseType=อนุมัติ&sendbackfinallic-req=success&request-id=" +
               data.result?.request_annual_driver_no
             );
           }else if (role === "final") {

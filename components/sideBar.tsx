@@ -16,22 +16,13 @@ export default function SideBar({ menuName }: SidebarProps) {
   const { isPinned, setIsPinned } = useSidebar();
   const { profile } = useProfile();
 
-  const devRoles = [
-    "vehicle-user", // Basic user
-    // "level1-approval", // First level approver
-    // "admin-approval",  // Admin approver
-    // "admin-dept-approval", // Department admin
-    // "final-approval",  // Final approver
-    "driver", // Driver
-    // "admin-super"      // Super admin
-  ];
 
   const roles = profile?.roles;
 
   useEffect(() => {
     if (menuName) {
       setActiveItem(menuName);
-      if (["คำขอใช้ยานพาหนะ", "อนุมัติขอคำใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
+      if (["คำขอใช้ยานพาหนะ", "อนุมัติคำขอใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
         setOpenMenus(["collapseLink2"]);
       } else if (["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)) {
         setOpenMenus(["collapseLink3"]);
@@ -158,7 +149,7 @@ export default function SideBar({ menuName }: SidebarProps) {
 
   const getActiveMainMenu = (id: string) => {
     if (menuName) {
-      if (["คำขอใช้ยานพาหนะ", "อนุมัติขอคำใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
+      if (["คำขอใช้ยานพาหนะ", "อนุมัติคำขอใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
         return "collapseLink2" === id;
       } else if (["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)) {
         return "collapseLink3" === id;

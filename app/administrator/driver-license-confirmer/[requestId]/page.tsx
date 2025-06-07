@@ -35,7 +35,7 @@ export default function RequestDetail() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
+        <SideBar menuName="อนุมัติคำขอใช้และใบอนุญาต" />
 
         <div
           className={`main-content ${

@@ -75,6 +75,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
     "10": { iconName: "schedule", status: "info" },
     "11": { iconName: "reply", status: "warning" },
     "20": { iconName: "schedule", status: "info" },
+    "21": { iconName: "reply", status: "warning" },
     "30": { iconName: "check", status: "success" },
     "90": { iconName: "delete", status: "default" },
   };
@@ -126,8 +127,10 @@ export default function DriverLicApproveFlow({ licType }: Props) {
 
         if (response.status === 200) {
           setDataRequest(response.data.requests);
+          console.log("Fetched requests:", response.data.requests);
 
           setSummary(response.data.summary);
+               console.log("Fetched summary:", response.data.summary);
           setPagination(response.data.pagination);
         }
       } catch (error) {

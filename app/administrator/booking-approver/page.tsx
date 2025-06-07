@@ -139,7 +139,7 @@ export default function ApproveRequest() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
+        <SideBar menuName="อนุมัติคำขอใช้และใบอนุญาต" />
 
         <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
@@ -153,7 +153,7 @@ export default function ApproveRequest() {
                     </a>
                   </li>
                   <li className="breadcrumb-item active">
-                    <a>อนุมัติขอคำใช้และใบอนุญาต</a>
+                    <a>อนุมัติคำขอใช้และใบอนุญาต</a>
                   </li>
                 </ul>
               </div>

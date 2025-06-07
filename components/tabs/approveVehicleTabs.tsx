@@ -31,6 +31,8 @@ export default function ApproveVehicleTabs({ licType }: Props) {
           response = await fetchConfirmerMenus();
         }
 
+        console.log('menu response', response.data);
+
         const result = response.data;
         setStatusData(result);
 

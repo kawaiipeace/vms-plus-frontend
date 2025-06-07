@@ -20,6 +20,7 @@ export default function VehicleUserInfoCard({
   created_request_phone_number,
   created_request_mobile_number,
   created_request_image_url,
+  created_request_emp_position
 }: Props) {
   return (
     <div className="form-card">
@@ -37,13 +38,13 @@ export default function VehicleUserInfoCard({
             <div className="supporting-text-group">
               <div className="supporting-text">{created_request_emp_id}</div>
               <div className="supporting-text">
-                {created_request_dept_sap_name_short}
+                {created_request_emp_position + " " +created_request_dept_sap_name_short}
               </div>
             </div>
           </div>
         </div>
     
-        <div className="form-card-right align-self-center">
+        <div className="form-card-right align-self-center !w-[30%]">
           <div className="flex flex-wrap gap-4">
             <div className="col-span-12 md:col-span-6">
               <div className="form-group form-plaintext">
