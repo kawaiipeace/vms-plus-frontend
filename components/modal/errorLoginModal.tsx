@@ -9,7 +9,7 @@ interface Props {
 const ErrorLoginModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props // Props type
->(({ onCloseModal, message = "ไม่สามารถเข้าใช้ระบบงานได้ กรุณาติดต่อผู้ดูแลระบบ" }, ref) => {
+>(({ onCloseModal, message = "คุณไม่มีสิทธิเข้าใช้งานระบบ กรุณาติดต่อผู้ดูแลหากต้องการเข้าใช้งาน" }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({

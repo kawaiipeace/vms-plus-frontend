@@ -186,9 +186,10 @@ export default function RequestForm() {
     fetchCostTypeRequest();
   }, []);
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-    driverOptions[0]
-  );
+   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
 
   useEffect(() => {
     if (driverOptions.length > 0 && !selectedVehicleUserOption) {
@@ -211,6 +212,7 @@ export default function RequestForm() {
           label: `${formData.vehicleUserEmpName} (${formData.vehicleUserEmpId})`,
         });
       } else {
+        console.log("profile===>", profile);
         const defaultVehicleUser = vehicleUserDatas.find(
           (user) => user.emp_id === profile.emp_id
         );
@@ -255,9 +257,18 @@ export default function RequestForm() {
       selectedOption as { value: string; label: string }
     );
 
+      // If cleared (value is empty), reset related fields
+  if (!selectedOption.value) {
+    setValue("telInternal", "");
+    setValue("telMobile", "");
+    setValue("deptSapShort", "");
+    return;
+  }
+   console.log("selectedOption===>", vehicleUserDatas);
     const empData = vehicleUserDatas.find(
-      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+      (user: { emp_id: string }) => String(user.emp_id) === String(selectedOption.value)
     );
+ console.log("empData===>", empData);
 
     if (empData) {
       setValue("telInternal", empData.tel_internal);
@@ -304,7 +315,7 @@ export default function RequestForm() {
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url || "");
-      setFileName(shortenFilename(response.file_url) || "อัพโหลดเอกสารแนบ");
+      // setFileName(shortenFilename(response.file_url) || "อัพโหลดเอกสารแนบ");
     } catch (error: unknown) {
       if (typeof error === "object" && error !== null && "response" in error) {
         const axiosError = error as {
@@ -385,62 +396,48 @@ export default function RequestForm() {
     }
   }, [formData, costTypeDatas]);
 
-  const handleDriverSearch = async (search: string) => {
-    // Debounce handled by parent component or elsewhere
-    if (search.trim().length < 3) {
-      setLoadingDrivers(true);
-      try {
-        const response = await fetchVehicleUsers("");
-        if (response.status === 200) {
-          const vehicleUserData = response.data;
-          const driverOptionsArray = vehicleUserData.map(
-            (user: {
-              emp_id: string;
-              full_name: string;
-              dept_sap: string;
-            }) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.emp_id})`,
-            })
-          );
-          setDriverOptions(driverOptionsArray);
-        } else {
-          setDriverOptions([]);
-        }
-      } catch (error) {
-        setDriverOptions([]);
-        console.error("Error resetting options:", error);
-      } finally {
-        setLoadingDrivers(false);
-      }
-      return;
+  useEffect(() => {
+  if (costTypeDatas.length > 0 && selectedCostTypeOption.label === "") {
+    const defaultData = costTypeDatas.find(
+      (cost) =>
+        cost.ref_cost_type_code === (formData.refCostTypeCode || "1")
+    );
+    if (defaultData) {
+      setSelectedCostTypeOption({
+        value: defaultData.ref_cost_type_code,
+        label: defaultData.ref_cost_type_name,
+      });
+      setValue("costCenter", defaultData.cost_center);
     }
+  }
+}, [costTypeDatas, formData.refCostTypeCode]);
 
-    setLoadingDrivers(true);
-    try {
-      const response = await fetchVehicleUsers(search);
-      if (response.status === 200) {
-        const vehicleUserData = response.data;
-        const driverOptionsArray = vehicleUserData.map(
-          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-            value: user.emp_id,
-            label: `${user.full_name} (${user.emp_id})`,
-          })
-        );
-        setDriverOptions(driverOptionsArray);
-      } else {
-        setDriverOptions([]);
-      }
-    } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        setDriverOptions([]);
-        console.error("Search failed:", error);
-      }
-    } finally {
-      setLoadingDrivers(false);
+const handleDriverSearch = async (search: string) => {
+  setLoadingDrivers(true);
+  try {
+    const response = await fetchVehicleUsers(search);
+    if (response.status === 200) {
+      const vehicleUserData = response.data;
+      setVehicleUserDatas(vehicleUserData); // <-- Always update here!
+      const driverOptionsArray = vehicleUserData.map(
+        (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+          value: user.emp_id,
+          label: `${user.full_name} (${user.emp_id})`,
+        })
+      );
+      setDriverOptions(driverOptionsArray);
+    } else {
+      setDriverOptions([]);
+      setVehicleUserDatas([]);
     }
-  };
- 
+  } catch (error) {
+    setDriverOptions([]);
+    setVehicleUserDatas([]);
+    console.error("Search failed:", error);
+  } finally {
+    setLoadingDrivers(false);
+  }
+};
 
   const handleCostCenterSearch = async (search: string) => {
     if (search.trim().length < 3) {
@@ -496,8 +493,8 @@ export default function RequestForm() {
   };
 
   const onSubmit = (data: any) => {
-    data.vehicleUserEmpId = selectedVehicleUserOption.value;
-    const result = selectedVehicleUserOption.label.split("(")[0].trim();
+    data.vehicleUserEmpId = selectedVehicleUserOption?.value;
+    const result = selectedVehicleUserOption?.label.split("(")[0].trim();
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;
     data.numberOfPassenger = passengerCount;
@@ -661,7 +658,7 @@ export default function RequestForm() {
               </div>
 
               <div className="grid w-full flex-wrap gap-5 grid-cols-12">
-                <div className="col-span-6 md:col-span-3">
+                <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">วันที่เริ่มต้นเดินทาง</label>
                     <div className="input-group">
@@ -676,7 +673,7 @@ export default function RequestForm() {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
-                        // minDate={startDate}
+                     minDate={new Date().toISOString().split("T")[0]}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -706,7 +703,7 @@ export default function RequestForm() {
                   </div>
                 </div>
 
-                <div className="col-span-6 md:col-span-3">
+                <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">

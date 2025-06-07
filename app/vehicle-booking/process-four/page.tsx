@@ -42,10 +42,8 @@ export default function ProcessFour() {
         driver_emp_dept_sap: formData.driverDeptSap || "",
         driver_emp_id: formData.driverEmpID || "",
         driver_emp_name: formData.driverEmpName || "",
-        driver_internal_contact_number:
-          formData.driverInternalContact || "",
-        driver_mobile_contact_number:
-          formData.driverMobileContact || "",
+        driver_internal_contact_number: formData.driverInternalContact || "",
+        driver_mobile_contact_number: formData.driverMobileContact || "",
         end_datetime: convertToISO(
           String(formData.endDate),
           String(formData.timeEnd)
@@ -77,16 +75,19 @@ export default function ProcessFour() {
         activity_no: formData.activityNo || "",
         cost_center: formData.costCenter || "",
         mas_carpool_driver_uid: formData.masCarpoolDriverUid || null,
-        mas_carpool_uid: formData.masCarpoolUid || null
+        mas_carpool_uid: formData.masCarpoolUid || null,
       };
 
-      console.log('formdata',mappedData);
+      console.log("formdata", mappedData);
 
       try {
         const response = await createRequest(mappedData);
         if (response.data) {
           localStorage.removeItem("formData");
-          console.log('ttt=====>requ',response.data);
+          localStorage.removeItem("processOne");
+          localStorage.removeItem("processTwo");
+          localStorage.removeItem("processThree");
+          console.log("ttt=====>requ", response.data);
           router.push(
             "request-list?create-req=success&request-id=" +
               response.data.trn_request_uid

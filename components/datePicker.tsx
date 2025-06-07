@@ -52,6 +52,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         allowInput: true,
         altFormat: "d/m/Y",
         dateFormat: "Y-m-d",
+        disableMobile: true,
         static: window.innerWidth <= 768,
         positionElement: inputRef.current,
         parseDate: (datestr: string, format: string) => {
