@@ -361,8 +361,8 @@ const DriverLicenseDetailModal = forwardRef<
                             "/assets/img/ex_driver_license.png"
                           }
                           className="w-full"
-                          width={100}
-                          height={100}
+                          width={400}
+                          height={200}
                           alt=""
                         />
                         <button

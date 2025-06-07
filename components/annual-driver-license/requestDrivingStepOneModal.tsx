@@ -24,6 +24,7 @@ import * as yup from "yup";
 import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
 import ImageUpload from "../imageUpload";
+import { convertToThaiDate } from "@/utils/driver-management";
 
 export interface ValueFormStep1 {
   driverLicenseType: any;
@@ -217,18 +218,13 @@ const RequestDrivingStepOneModal = forwardRef<
       requestData?.next_license_status_code === "00"
         ? (dayjs().year() + 544).toString()
         : (dayjs().year() + 543).toString(),
-    licenseNumber: requestData
-      ? requestData?.next_license_status_code === "00"
-        ? ""
-        : requestData?.driver_license?.driver_license_no
-      : "",
-    licenseExpiryDate: requestData
-      ? convertToBuddhistDateTime(
-          requestData?.driver_license?.driver_license_expire_date
-        ).date
-      : convertToBuddhistDateTime(
+    licenseNumber: licRequestDetail ? licRequestDetail?.driver_license_no : "",
+    licenseExpiryDate:
+      (licRequestDetail &&
+        convertToThaiDate(
           licRequestDetail?.driver_license_expire_date || ""
-        ).date || "",
+        )) ||
+      "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
@@ -294,7 +290,8 @@ const RequestDrivingStepOneModal = forwardRef<
   ]);
 
   useEffect(() => {
-    console.log("reqstepone", requestData);
+    console.log("reqData====>", requestData);
+    console.log("requestLicdata====>", licRequestDetail);
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -401,7 +398,7 @@ const RequestDrivingStepOneModal = forwardRef<
   };
 
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
-
+  const currentBuddhistYear = dayjs().year() + 543;
   const onSubmit = (formData: ValueFormStep1) => {
     const expiry =
       isISODate(formData.licenseExpiryDate) &&
@@ -435,16 +432,19 @@ const RequestDrivingStepOneModal = forwardRef<
                     keyboard_arrow_left
                   </i>
                 )}
-                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                {requestData?.license_status !== "ไม่มี" &&
-                  requestData?.license_status !== "" &&
-                  requestData?.license_status !== "ตีกลับ" && (
-                    <>
-                      {requestData?.license_status === "มีผลปีถัดไป" &&
-                        `${dayjs().year() + 543}`}{" "}
-                      {requestData?.next_license_status !== "" &&
-                        `${dayjs().year() + 544}`}
-                    </>
+                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+                {requestData?.license_status === "อนุมัติแล้ว" &&
+                  requestData &&
+                  requestData.next_annual_yyyy !== currentBuddhistYear &&
+                  requestData.next_annual_yyyy !== 0 && (
+                    <div className="ml-1">
+                      {" " + requestData.next_annual_yyyy}
+                    </div>
+                  )}
+                {requestData &&
+                  requestData.annual_yyyy !== currentBuddhistYear &&
+                  requestData.annual_yyyy !== 0 && (
+                    <div className="ml-1">{" " + requestData.annual_yyyy}</div>
                   )}
               </div>
               <form method="dialog">

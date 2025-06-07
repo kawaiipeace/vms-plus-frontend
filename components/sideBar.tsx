@@ -149,7 +149,7 @@ export default function SideBar({ menuName }: SidebarProps) {
 
   const getActiveMainMenu = (id: string) => {
     if (menuName) {
-      if (["คำขอใช้ยานพาหนะ", "อนุมัติคำขอใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
+      if (["คำขอใช้ยานพาหนะ", "อนุมัติคำขอใช้และใบอนุญาต","อนุมัติคำขอใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
         return "collapseLink2" === id;
       } else if (["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)) {
         return "collapseLink3" === id;

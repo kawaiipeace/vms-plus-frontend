@@ -14,7 +14,6 @@ import {
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
 import {
   forwardRef,
   useEffect,
@@ -25,9 +24,7 @@ import {
 import ApproverInfoCard from "./ApproverInfoCard";
 import EditApproverModal from "./editApproverModal";
 import EditFinalApproverModal from "./editFinalApproverModal";
-import Link from "next/link";
 import { useProfile } from "@/contexts/profileContext";
-import { on } from "events";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -88,6 +85,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     const [finalApprovers, setFinalApprovers] = useState<VehicleUserType>();
     const [isLoading, setIsLoading] = useState(false);
     const { profile } = useProfile();
+    const currentBuddhistYear = dayjs().year() + 543;
 
     const { showToast } = useToast();
 
@@ -124,6 +122,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     };
 
     useEffect(() => {
+      console.log("Request Data:", valueFormStep1);
       if (requestData) {
         setApprovers({
           emp_id: requestData?.confirmed_request_emp_id || "",
@@ -288,15 +287,26 @@ const RequestDrivingStepTwoModal = forwardRef<
                     </i>
                   )}
                   ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                  {driverData?.license_status !== "ไม่มี" &&
-                    requestData?.license_status !== "ตีกลับ" && (
-                      <>
-                        {driverData?.license_status === "มีผลปีถัดไป" &&
-                          dayjs().year() + 543}
-                        {driverData?.next_license_status !== "" &&
-                          dayjs().year() + 544}
-                      </>
-                    )}
+                     {driverData?.license_status === "อนุมัติแล้ว" &&
+                  driverData &&
+                  driverData.next_annual_yyyy !== currentBuddhistYear && (
+                    <div className="ml-1">
+                      {" "}
+                      {" " + driverData?.next_annual_yyyy || ""}
+                    </div>
+                  )}
+                  {((driverData &&
+                    driverData.annual_yyyy !== currentBuddhistYear &&
+                    driverData.annual_yyyy !== 0) ||
+                    (!driverData &&
+                      requestData?.annual_yyyy !== currentBuddhistYear &&
+                      requestData?.annual_yyyy !== 0)) && (
+                    <div>
+                      {driverData
+                        ? driverData.annual_yyyy
+                        : requestData?.annual_yyyy}
+                    </div>
+                  )}
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"

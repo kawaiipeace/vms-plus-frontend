@@ -14,6 +14,8 @@ import React, {
 import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import DriverLicenseDetailModal from "../driverLicenseDetailModal";
 import AlertCustom from "@/components/alertCustom";
+import { fetchProfile } from "@/services/authService";
+import { useProfile } from "@/contexts/profileContext";
 
 interface Props {
   requestData?: RequestAnnualDriver;
@@ -44,6 +46,7 @@ const RequestStatusLicDetailModal = forwardRef<
 
   const [currentStep, setCurrentStep] = useState("");
   const [nextPendingStep, setNextPendingStep] = useState("");
+    const { setProfile } = useProfile();
   const progressSteps = requestData?.progress_request_status;
   const doneSteps =
     progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
@@ -290,11 +293,13 @@ const RequestStatusLicDetailModal = forwardRef<
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0 justify-between">
-          {requestData?.ref_request_annual_driver_status_code !== "11" &&
-          requestData?.ref_request_annual_driver_status_code !== "21" ? (
+          {requestData?.ref_request_annual_driver_status_code !== "90" ? (
             <button
               className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-              onClick={() => cancelRequestModalRef.current?.openModal()}
+              onClick={() => {
+                modalRef.current?.close(); // Close the main modal
+                cancelRequestModalRef.current?.openModal();
+              }}
             >
               ยกเลิกคำขอ
             </button>
@@ -351,7 +356,18 @@ const RequestStatusLicDetailModal = forwardRef<
         desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
         role="userLic"
         confirmText="ยกเลิกคำขอ"
-        onBack={() => modalRef.current?.close()}
+        onBack={() => {
+          const refreshProfile = async () => {
+            try {
+              const response = await fetchProfile();
+              setProfile(response.data);
+            } catch (error) {
+              console.error("Failed to refresh profile:", error);
+            }
+          };
+          refreshProfile();
+          modalRef.current?.close(); // Close the cancel modal
+        }}
       />
     </dialog>
   );

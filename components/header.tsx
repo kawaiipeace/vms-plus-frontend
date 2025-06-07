@@ -141,6 +141,7 @@ export default function Header() {
 
   const handleOneSubmit = (data: ValueFormStep1) => {
     setValueFormStep1(data);
+    console.log("handleOneSubmit", data);
     RequestDrivingStepTwoModalRef.current?.openModal();
   };
 
@@ -423,7 +424,7 @@ export default function Header() {
                           </a>
                         </>
                       ) : (
-                        profile?.license_status === "ไม่มี" && (
+                        (profile?.license_status === "ไม่มี" || profile?.license_status === "ยกเลิก") && (
                           <>
                             <a
                               className="nav-link toggle-mode gap-1 flex items-center"
@@ -499,7 +500,7 @@ export default function Header() {
         driverData={driverUser}
         onStepOne={() => {
           setIsEditable(true);
-          RequestDrivingStepOneModalRef.current?.openModal();
+          RequestDrivingStepOneModalNoBackRef.current?.openModal();
         }}
       />
 

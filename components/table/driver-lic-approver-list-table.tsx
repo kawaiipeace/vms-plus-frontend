@@ -137,9 +137,9 @@ export default function DriverLicApproverListTable({
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับ" ? (
+            ) : value === "ตีกลับคำขอ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
-                ตีกลับคำขอ
+                  {value as React.ReactNode}
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray whitespace-nowrap">

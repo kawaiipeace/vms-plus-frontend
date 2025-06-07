@@ -139,7 +139,7 @@ export default function CustomSelectOnSearch({
       return (
         <div className="flex items-center gap-1">
           <img src={option.imageUrl} alt={"oil-image-" + option.imageUrl} width={24} height={24} />
-          <span>{option.label}</span>
+          <span className="text-black">{option.label}</span>
         </div>
       );
     }
@@ -176,13 +176,13 @@ export default function CustomSelectOnSearch({
           ) : (
             <div className="flex items-center gap-1 flex-1 bg-transparent border-0 px-0 py-0 h-full text-md">
               <img src={value?.imageUrl} alt={"oil-image-" + value?.imageUrl} width={24} height={24} />
-              <span>{value?.label}</span>
+              <span className="text-black">{value?.label}</span>
             </div>
           )
         ) : enableSearchOnApi ? (
           <input
             ref={inputRef}
-            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md"
+            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md text-black"
             value={inputText}
             placeholder={placeholder}
             disabled={disabled}

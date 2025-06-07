@@ -1,5 +1,8 @@
 import { useToast } from "@/contexts/toast-context";
-import { adminDeleteFuelDetail, adminDeleteTravelDetail } from "@/services/adminService";
+import {
+  adminDeleteFuelDetail,
+  adminDeleteTravelDetail,
+} from "@/services/adminService";
 import { adminCancelRequest } from "@/services/bookingAdmin";
 import { firstApprovercancelRequest } from "@/services/bookingApprover";
 import { finalCancelRequest } from "@/services/bookingFinal";
@@ -11,12 +14,24 @@ import {
 } from "@/services/driver";
 import { keyCancelRequest } from "@/services/keyAdmin";
 import { cancelKeyPickup } from "@/services/masterService";
-import { driverDeleteAddFuelDetail, driverDeleteTravelDetail } from "@/services/vehicleInUseDriver";
-import { UserDeleteAddFuelDetail, UserDeleteTravelDetail } from "@/services/vehicleInUseUser";
+import {
+  driverDeleteAddFuelDetail,
+  driverDeleteTravelDetail,
+} from "@/services/vehicleInUseDriver";
+import {
+  UserDeleteAddFuelDetail,
+  UserDeleteTravelDetail,
+} from "@/services/vehicleInUseUser";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import * as yup from "yup";
 
 interface Props {
@@ -36,7 +51,10 @@ interface Props {
   onSuccess?: () => void;
 }
 
-const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(
+const CancelRequestModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(
   (
     {
       id,
@@ -131,18 +149,33 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
                   data.result?.request_no
               );
             } else if (role === "admin") {
-              router.push("/administrator/request-list?cancel-req=success&request-id=" + data.result?.request_no);
+              router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
             } else if (role === "final") {
-              router.push("/administrator/booking-final?cancel-req=success&request-id=" + data.result?.request_no);
+              router.push(
+                "/administrator/booking-final?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
             } else if (role === "key") {
-              router.push("/vehicle-in-use/user?cancel-req=success&request-id=" + data.result?.request_no);
+              router.push(
+                "/vehicle-in-use/user?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
             } else if (role === "adminKey") {
-              router.push("/administrator/request-list?cancel-req=success&request-id=" + data.result?.request_no);
+              router.push(
+                "/administrator/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
             } else if (role === "licAdmin" || role === "licFinalAdmin") {
               if (onSuccess) {
                 onSuccess;
               }
-              router.push("/administrator/booking-approver?cancel-req=success&request-id=" + data.result?.request_no);
+              router.push(
+                "/administrator/booking-approver?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
             } else if (role === "userRecordTravel") {
               router.push(
                 `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง&delete-travel-req=success&date-time=${datetime}`
@@ -156,21 +189,20 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
                 `/administrator/vehicle-in-use/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
               );
             } else if (role === "userLic") {
+              console.log("userLic cancel request success");
+              modalRef.current?.close();
               showToast({
                 title: "ยกเลิกคำขอสำเร็จ",
                 desc: (
                   <>
                     คำขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
                     <br />
-                    เลขที่ {data?.result?.request_annual_driver_no} ถูกยกเลิกเรียบร้อยแล้ว
+                    เลขที่ {data?.result?.request_annual_driver_no}{" "}
+                    ถูกยกเลิกเรียบร้อยแล้ว
                   </>
                 ),
                 status: "success",
               });
-              modalRef.current?.close(); // Close the cancel modal first
-              if (onBack) {
-                onBack();
-              }
             } else if (role === "adminRecordTravel") {
               router.push(
                 `/administrator/vehicle-in-use/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`
@@ -181,10 +213,15 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
                   id +
                   "?progressType=" +
                   progressType +
-                  (cancleFor === "recordTravel" ? "&delete-travel-req=success" : "&delete-fuel-req=success")
+                  (cancleFor === "recordTravel"
+                    ? "&delete-travel-req=success"
+                    : "&delete-fuel-req=success")
               );
             } else {
-              router.push("/vehicle-booking/request-list?cancel-req=success&request-id=" + data.result?.request_no);
+              router.push(
+                "/vehicle-booking/request-list?cancel-req=success&request-id=" +
+                  data.result?.request_no
+              );
             }
           }
         } catch (error) {
@@ -218,24 +255,29 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
             <div className="confirm-title text-xl font-medium">{title}</div>
             <div className="confirm-text text-base">{desc}</div>
 
-            {cancleFor !== "userRecordTravel" && cancleFor !== "adminRecordTravel" && cancleFor !== "recordFuel" && (
-              <div className="confirm-form mt-4">
-                <div className="form-group">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder={placeholder}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                    />
+            {cancleFor !== "userRecordTravel" &&
+              cancleFor !== "adminRecordTravel" &&
+              cancleFor !== "recordFuel" && (
+                <div className="confirm-form mt-4">
+                  <div className="form-group">
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder={placeholder}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <div className="modal-actions mt-5 flex justify-between gap-3">
-              <button className="btn btn-secondary flex-1" onClick={() => modalRef.current?.close()}>
+              <button
+                className="btn btn-secondary flex-1"
+                onClick={() => modalRef.current?.close()}
+              >
                 ไม่ใช่ตอนนี้
               </button>
 
