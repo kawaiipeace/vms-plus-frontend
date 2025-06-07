@@ -241,7 +241,7 @@ export default function AdminApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div
@@ -272,7 +272,7 @@ export default function AdminApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div

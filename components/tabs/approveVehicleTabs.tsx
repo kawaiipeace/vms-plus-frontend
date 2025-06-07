@@ -4,7 +4,6 @@ import FirstApproveFlow from "@/components/flow/firstApproveFlow";
 import { fetchConfirmerMenus, fetchFinalApproverMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
 import DriverLicApproveFlow from "../flow/driverLicApproveFlow";
-import { fetchMenus } from "@/services/bookingAdmin";
 
 interface Props {
   licType?: string;
@@ -20,7 +19,7 @@ export default function ApproveVehicleTabs({ licType }: Props) {
   );
 
   useEffect(() => {
-    console.log('lictype',licType);
+
     const fetchMenuFunc = async () => {
       try {
         let response;

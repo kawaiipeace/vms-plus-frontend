@@ -1,4 +1,5 @@
 import axiosInstance from "@/utils/axiosInstance";
+import qs from 'qs';
 
 export const fetchVehicleUsers = async (search?: string) => {
   try {
@@ -116,9 +117,14 @@ export const fetchVehicleCarTypes = async (params: {
   emp_id?: string;
   start_date?: string;
   end_date?: string;
-})=> {
+}) => {
   try {
-    const response = await axiosInstance.get("vehicle/types", { params });
+    const response = await axiosInstance.get("vehicle/types", {
+      params,
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { encode: true, arrayFormat: 'brackets' });
+      }
+    });
     return response;
   } catch (error) {
     throw error;
@@ -127,7 +133,12 @@ export const fetchVehicleCarTypes = async (params: {
 
 export const fetchVehicleDepartmentTypes = async (params: any) => {
   try {
-    const response = await axiosInstance.get("vehicle/departments", { params });
+    const response = await axiosInstance.get("vehicle/departments", {
+      params,
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { encode: true, arrayFormat: 'brackets' });
+      }
+    });
     return response;
   } catch (error) {
     throw error;

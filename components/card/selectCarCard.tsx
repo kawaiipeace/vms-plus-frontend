@@ -77,13 +77,13 @@ export default function SelectCarCard({
         </div>
         <div className="grid grid-cols-6 gap-3">
           <button
-            className="btn btn-secondary col-span-4"
+            className="btn btn-secondary col-span-3"
             onClick={() => vehicleDetailModalRef.current?.openModal()}
           >
             ดูรายละเอียด
           </button>
           <button
-            className={`btn btn-primary col-span-2`}
+            className={`btn btn-primary col-span-3`}
             onClick={() => onSelect(vehicleId)}
           >
             เลือก

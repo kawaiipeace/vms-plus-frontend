@@ -84,9 +84,6 @@ const TermAndConditionModal = forwardRef((_, ref) => {
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0">
           <form method="dialog">
-            <button className="btn btn-secondary">ยกเลิก</button>
-          </form>
-          <form method="dialog">
             <button className="btn btn-primary">ยืนยัน</button>
           </form>
         </div>

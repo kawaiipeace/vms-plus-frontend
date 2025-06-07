@@ -271,7 +271,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_annual_driver_status_code];
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
             return (
               <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
@@ -291,7 +291,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_annual_driver_status_code];
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
             return (
               <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox

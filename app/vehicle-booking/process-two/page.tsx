@@ -3,7 +3,6 @@ import AutoCarCard from "@/components/card/autoCarCard";
 import SelectCarCard from "@/components/card/selectCarCard";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
 import Header from "@/components/header";
-import Pagination from "@/components/pagination";
 import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
 import ZeroRecord from "@/components/zeroRecord";
@@ -141,12 +140,10 @@ export default function ProcessTwo() {
     }
 
     updateFormData(updatedData);
-  };
-
-  const NextProcess = () => {
     localStorage.setItem("processTwo", "Done");
     router.push("process-three");
   };
+
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setParams((prev) => ({ ...prev, search: e.target.value }));
@@ -191,7 +188,7 @@ export default function ProcessTwo() {
             ...(response.data.vehicles || []),
           ];
           setVehicleCards(allCards);
-          console.log('vehicles',allCards);
+          console.log("vehicles", allCards);
           setPaginationData(response.data.pagination);
         }
       } catch (error) {
@@ -217,7 +214,7 @@ export default function ProcessTwo() {
       };
 
       try {
-        const response = await fetchVehicleCarTypes( vehicleParams );
+        const response = await fetchVehicleCarTypes(vehicleParams);
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
@@ -256,7 +253,7 @@ export default function ProcessTwo() {
         end_date: `${formData.endDate} ${formData.timeEnd}`,
       };
       try {
-        const response = await fetchVehicleDepartmentTypes( vehicleParams );
+        const response = await fetchVehicleDepartmentTypes(vehicleParams);
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
@@ -554,7 +551,7 @@ export default function ProcessTwo() {
             </div>
           </div>
 
-          <div className="form-action">
+          {/* <div className="form-action">
             <button
               onClick={() => NextProcess()}
               className="btn btn-primary"
@@ -565,7 +562,7 @@ export default function ProcessTwo() {
                 arrow_right_alt
               </i>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
