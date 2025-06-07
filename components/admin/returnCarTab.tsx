@@ -23,9 +23,10 @@ interface ReturnCarTabProps {
   useBy?: string;
   displayOn?: string;
   requestData?: RequestDetailType;
+  reloadRequestData?: () => void; // <-- add this
 }
 
-const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabProps) => {
+const ReturnCarTab = ({ status, displayOn, requestData, useBy, reloadRequestData }: ReturnCarTabProps) => {
   const returnCarAddModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -78,10 +79,13 @@ const ReturnCarTab = ({ status, displayOn, requestData, useBy }: ReturnCarTabPro
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async () => {
-    returnEditCarModalRef.current?.closeModal();
-    setShowToast(true);
-  };
+const handleSubmit = async () => {
+  returnEditCarModalRef.current?.closeModal();
+  setShowToast(true);
+  if (reloadRequestData) {
+    await reloadRequestData(); // <-- reload data
+  }
+};
 
   const handleInfoSubmit = async () => {
     returnCarInfoEditModalRef.current?.closeModal();

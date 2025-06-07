@@ -5,7 +5,6 @@ import { summaryType } from "@/app/types/request-list-type";
 import dayjs from "dayjs";
 import RequestStatusBox from "@/components/requestStatusBox";
 import PaginationControls from "@/components/table/pagination-control";
-import FilterSortModal from "@/components/modal/filterSortModal";
 import AdminVehicleInsTable from "@/components/table/admin-vehicle-ins-table";
 import { fetchVehicleInsRequests } from "@/services/adminService";
 import { VehicleInsType } from "@/data/vehicleInsData";
@@ -44,6 +43,7 @@ export default function AdminVehicleInsFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+  const [loading, setLoading] = useState(true); 
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -206,6 +206,8 @@ export default function AdminVehicleInsFlow() {
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false); // <-- End loading after fetch
       }
     };
 
@@ -216,9 +218,18 @@ export default function AdminVehicleInsFlow() {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]); // This will log whenever dataRequest changes
 
+    
+  if (loading) {
+    return (
+       <div className="mt-0 pt-0">
+      </div>
+    );
+  }
+
+
   return (
     <>
-      <div className="md:hidden block">
+      <div className="md:hidden block transition-opacity duration-500">
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
@@ -249,7 +260,7 @@ export default function AdminVehicleInsFlow() {
         </div>
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:block transition-opacity duration-500">
         <div className="flex gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
