@@ -16,7 +16,7 @@ import "dayjs/locale/th";
 import { useSearchParams } from "next/navigation";
 import {
   deleteCarpoolDriver,
-  putCarpoolSetVehicleActive,
+  putCarpoolSetDriverActive,
 } from "@/services/carpoolManagement";
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
 import DriverInfoCarpoolModal from "../modal/driverInfoCarpoolModal";
@@ -139,7 +139,7 @@ export default function CarpoolDriverTable({
 
   const handleActive = async (id: string, active: string) => {
     try {
-      const response = await putCarpoolSetVehicleActive(
+      const response = await putCarpoolSetDriverActive(
         id as string,
         active === "1" ? "0" : "1"
       );
@@ -411,8 +411,9 @@ export default function CarpoolDriverTable({
               <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                 <input
                   type="checkbox"
+                  defaultChecked={row.original.is_active === "1" ? true : false}
                   checked={row.original.is_active === "1" ? true : false}
-                  onClick={() =>
+                  onChange={() =>
                     handleActive(
                       row.original.mas_carpool_driver_uid,
                       row.original.is_active
