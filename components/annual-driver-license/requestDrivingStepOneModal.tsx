@@ -47,6 +47,7 @@ interface ReturnCarAddModalProps {
   edit?: boolean;
   progress?: string;
   licRequestDetail?: RequestAnnualDriver;
+  formValues?: ValueFormStep1;
   stepOneSubmit?: (data: ValueFormStep1) => void;
   onBack?: () => void;
 }
@@ -489,7 +490,7 @@ const RequestDrivingStepOneModal = forwardRef<
                         />
                       </div>
                     </div>
-                    {requestData?.next_license_status_code === "ไม่มี" && (
+                    {requestData?.trn_request_annual_driver_uid === "" && (
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">ประจำปี</label>
@@ -579,7 +580,7 @@ const RequestDrivingStepOneModal = forwardRef<
                               <DatePicker
                                 placeholder={"ระบุวันที่"}
                                 onChange={field.onChange}
-                                defaultValue={field.value}
+                                defaultValue={convertToBuddhistDateTime(field.value).date}
                               />
                             )}
                           />
