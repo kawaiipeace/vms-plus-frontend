@@ -189,8 +189,6 @@ const CancelRequestModal = forwardRef<
                 `/administrator/vehicle-in-use/${id}?activeTab=การเติมเชื้อเพลิง&delete-fuel-req=success&tax_invoice_no=${tax_invoice_no}`
               );
             } else if (role === "userLic") {
-              console.log("userLic cancel request success");
-              modalRef.current?.close();
               showToast({
                 title: "ยกเลิกคำขอสำเร็จ",
                 desc: (
@@ -203,6 +201,9 @@ const CancelRequestModal = forwardRef<
                 ),
                 status: "success",
               });
+              if (onBack) {
+                onBack();
+              }
             } else if (role === "adminRecordTravel") {
               router.push(
                 `/administrator/vehicle-in-use/${id}?activeTab=เดินทาง&delete-travel-req=success&date-time=${datetime}`

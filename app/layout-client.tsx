@@ -1,8 +1,9 @@
 'use client';
-
 import { store } from '@/lib/store';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
+import ClearToastOnRouteChange from '@/components/clearToastOnRouteChange';
+import { ToastProvider } from '@/contexts/toast-context';
 
 export default function RootLayoutClient({
   children,
@@ -25,5 +26,13 @@ export default function RootLayoutClient({
     }
   }, []);
 
-  return <Provider store={store}>{children}</Provider>;
+  return (
+    <Provider store={store}>
+      <ToastProvider>
+        <ClearToastOnRouteChange>
+          {children}
+        </ClearToastOnRouteChange>
+      </ToastProvider>
+    </Provider>
+  );
 }
