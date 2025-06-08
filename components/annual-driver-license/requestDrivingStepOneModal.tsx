@@ -48,7 +48,6 @@ interface ReturnCarAddModalProps {
   edit?: boolean;
   progress?: string;
   licRequestDetail?: RequestAnnualDriver;
-  formValues?: ValueFormStep1;
   stepOneSubmit?: (data: ValueFormStep1) => void;
   onBack?: () => void;
 }
@@ -199,15 +198,14 @@ const RequestDrivingStepOneModal = forwardRef<
         ? (dayjs().year() + 544).toString()
         : (dayjs().year() + 543).toString(),
     licenseNumber: licRequestDetail ? licRequestDetail?.driver_license_no : "",
-    licenseExpiryDate: licRequestDetail
-      ? convertToThaiDate(licRequestDetail?.driver_license_expire_date)
-      : "",
-    // licenseExpiryDate:
-    //   (licRequestDetail &&
-    //     convertToBuddhistDateTime(
-    //       licRequestDetail?.driver_license_expire_date || ""
-    //     ).date) ||
-    //   "",
+    // licenseExpiryDate: licRequestDetail
+    //   ? convertToThaiDate(licRequestDetail?.driver_license_expire_date)
+    //   : "",
+    licenseExpiryDate:
+      licRequestDetail ?
+        convertToBuddhistDateTime(
+          licRequestDetail?.driver_license_expire_date || ""
+        ).date : "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
