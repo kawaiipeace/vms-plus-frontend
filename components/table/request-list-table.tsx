@@ -221,6 +221,16 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
                 </button>
               ))}
 
+                  {statusValue === "คืนยานพาหนะไม่สำเร็จ" && (
+                <button
+                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
+                  data-tip="ดูรายละเอียดคำขอ"
+                  onClick={() => router.push("/vehicle-in-use/user/" + row.original.trn_request_uid)}
+                >
+                  <i className="material-symbols-outlined">quick_reference_all</i>
+                </button>
+              )}
+
             {statusValue == "รอรับกุญแจ" && (
               <>
                 <button

@@ -52,7 +52,7 @@ export default function ProcessFour() {
         is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
         mas_vehicle_uid: formData.vehicleSelect || "",
         number_of_passengers: formData.numberOfPassenger || 0,
-        objective: formData.purpose || "",
+        work_description: formData.purpose || "",
         pickup_datetime: formData.pickupDatetime || null,
         pickup_place: formData.pickupPlace || "",
         ref_cost_type_code: parseInt(formData.refCostTypeCode || ""),
