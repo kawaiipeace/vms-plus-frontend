@@ -1,6 +1,6 @@
 "use client";
 import DriverCard from "@/components/card/driverCard";
-import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
+import { CustomSelectOption } from "@/components/customSelect";
 import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 import EmptyDriver from "@/components/emptyDriver";
 import Header from "@/components/header";
@@ -14,7 +14,6 @@ import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
 import {
-  fetchDrivers,
   fetchSearchDrivers,
   fetchUserDrivers,
 } from "@/services/masterService";
@@ -631,7 +630,7 @@ const handleDriverSearch = async (search: string) => {
                                   company={driver?.vendor_name || ""}
                                   rating={
                                     driver.driver_average_satisfaction_score ||
-                                    0
+                                    "ยังไม่มีการให้คะแนน"
                                   }
                                   age={driver.age || "-"}
                                   onVehicleSelect={handleVehicleSelection}
