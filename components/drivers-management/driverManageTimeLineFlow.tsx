@@ -106,7 +106,7 @@ export default function VehicleTimeLine() {
         <div className="page-title">
           <span className="page-title-label">ปฏิทินการจอง</span>
           <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-            {pagination.total ?? 0} คัน
+            {pagination.total ?? 0} คน
           </span>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function VehicleTimeLine() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         <SearchInput
           defaultValue={params.search}
-          placeholder="เลขทะเบียน, ยี่ห้อ"
+          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
           onSearch={(value) => debouncedSetParams(value)}
         />
 

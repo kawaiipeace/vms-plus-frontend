@@ -18,10 +18,10 @@ interface RequestListTableProps {
 }
 
 const statusColorMap = {
-  รออนุมัติ: { bg: "bg-[#FEDF89] border border-[#B54708]", text: "text-[#B54708]" },
-  "ไป - กลับ": { bg: "bg-[#FED8F6] border border-[#A80689]", text: "text-[#A80689]" },
-  ค้างแรม: { bg: "bg-[#C7D7FE] border border-[#3538CD]", text: "text-[#3538CD]" },
-  เสร็จสิ้น: { bg: "bg-[#ABEFC6] border border-[#067647]", text: "text-[#067647]" },
+  รออนุมัติ: { bg: "border-orange-300 bg-orange-100 border", text: "text-orange-700" },
+  "ไป - กลับ": { bg: "border-red-300 bg-red-100 border", text: "text-red-700" },
+  ค้างแรม: { bg: "border-blue-300 bg-blue-100 border", text: "text-blue-700" },
+  เสร็จสิ้น: { bg: "border-green-300 bg-green-100 border", text: "text-green-700" },
 } as const;
 
 const useGenerateDates = (params: { start_date: string; end_date: string }) => {

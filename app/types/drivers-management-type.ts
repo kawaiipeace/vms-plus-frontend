@@ -48,7 +48,7 @@ export interface DriverInfoType {
   work_type?: number;
   contract_no?: string;
   driver_dept_sap_short_name_hire?: string;
-  vender_name?: string;
+  vendor_name?: string;
   driver_dept_sap_short_name_work?: string;
   approved_job_driver_start_date?: string;
   approved_job_driver_end_date?: string;

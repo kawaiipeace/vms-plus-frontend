@@ -114,7 +114,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driverContractNo: driverInfo.contract_no || "",
           driverEmployingAgency: initialEmployingAgency?.value || "",
           driverDepartment: initialDepartment?.value || "",
-          driverContractorCompany: driverInfo.vender_name || "",
+          driverContractorCompany: driverInfo.vendor_name || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
           driverOperationType: driverInfo.is_replacement || "0",
           driverReplacementEmployee: "",
