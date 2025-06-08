@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation"; // <-- Import this if using Next.js 13+
 import FirstApproveFlow from "@/components/flow/firstApproveFlow";
-import { fetchConfirmerMenus, fetchFinalApproverMenus } from "@/services/bookingApprover";
+import { fetchConfirmerMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
-import DriverLicApproveFlow from "../flow/driverLicApproveFlow";
+import DriverLicConfirmerFlow from "@/components/flow/driverLicConfirmerFlow";
 
-interface Props {
-  licType?: string;
-}
 
-export default function ApproveVehicleTabs({ licType }: Props) {
+export default function ApproveVehicleConfirmerTabs() {
   const [statusData, setStatusData] = useState<summaryType[]>([]);
   const [activeTab, setActiveTab] = useState(0);
   const searchParams = useSearchParams(); // <-- Get query params
@@ -22,14 +19,7 @@ export default function ApproveVehicleTabs({ licType }: Props) {
 
     const fetchMenuFunc = async () => {
       try {
-        let response;
-        if(licType === "ตรวจสอบ"){
-          response = await fetchConfirmerMenus();
-        }else if(licType === "อนุมัติ"){
-          response = await fetchFinalApproverMenus();
-        }else{
-          response = await fetchConfirmerMenus();
-        }
+        const response = await fetchConfirmerMenus();
 
         console.log('menu response', response.data);
 
@@ -56,7 +46,7 @@ export default function ApproveVehicleTabs({ licType }: Props) {
       case "20,21,30":
         return <FirstApproveFlow />;
       case "00":
-        return <DriverLicApproveFlow licType={licType || ""} />;
+        return <DriverLicConfirmerFlow />;
       case "90":
         return <div></div>;
       default:

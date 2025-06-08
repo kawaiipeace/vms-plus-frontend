@@ -25,6 +25,7 @@ import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
 import ImageUpload from "../imageUpload";
 import { convertToThaiDate } from "@/utils/driver-management";
+import { isISODateString } from "@/utils/isIsoDateString";
 
 export interface ValueFormStep1 {
   driverLicenseType: any;
@@ -180,35 +181,13 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         vehicleTypeArr.find(
           (type) =>
-            type.value ===
+            String(type.value) ===
             licRequestDetail.driver_certificate_type_code.toString()
         ) || null
       );
     }
-    if (requestData?.driver_certificate?.driver_certificate_type_code) {
-      return (
-        vehicleTypeArr.find(
-          (type) =>
-            type.value ===
-            requestData?.driver_certificate.driver_certificate_type_code.toString()
-        ) || null
-      );
-    }
+
     return null;
-  };
-
-  const getDefaultYear = () => {
-    if (licRequestDetail?.annual_yyyy) {
-      return licRequestDetail.annual_yyyy.toString();
-    }
-    if (requestData?.next_license_status !== "") {
-      return (dayjs().year() + 544).toString();
-    }
-
-    if (requestData?.license_status === "มีผลปีถัดไป") {
-      return (dayjs().year() + 543).toString();
-    }
-    return (dayjs().year() + 543).toString();
   };
 
   // Build default values object for react-hook-form
@@ -220,12 +199,15 @@ const RequestDrivingStepOneModal = forwardRef<
         ? (dayjs().year() + 544).toString()
         : (dayjs().year() + 543).toString(),
     licenseNumber: licRequestDetail ? licRequestDetail?.driver_license_no : "",
-    licenseExpiryDate:
-      (licRequestDetail &&
-        convertToThaiDate(
-          licRequestDetail?.driver_license_expire_date || ""
-        )) ||
-      "",
+    licenseExpiryDate: licRequestDetail
+      ? convertToThaiDate(licRequestDetail?.driver_license_expire_date)
+      : "",
+    // licenseExpiryDate:
+    //   (licRequestDetail &&
+    //     convertToBuddhistDateTime(
+    //       licRequestDetail?.driver_license_expire_date || ""
+    //     ).date) ||
+    //   "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
@@ -406,7 +388,19 @@ const RequestDrivingStepOneModal = forwardRef<
       (formData.licenseExpiryDate = convertToBuddhistDateTime(
         formData.licenseExpiryDate
       ).date);
-    console.log("formdata", formData);
+
+    const trainingDateSubmit =
+      isISODate(formData.trainingDate) &&
+      (formData.trainingDate = convertToBuddhistDateTime(
+        formData.trainingDate
+      ).date);
+
+    const trainingEndDateSubmit =
+      isISODate(formData.trainingEndDate) &&
+      (formData.trainingEndDate = convertToBuddhistDateTime(
+        formData.trainingEndDate
+      ).date);
+    console.log("formdata==>", formData);
     if (stepOneSubmit) {
       stepOneSubmit(formData);
     }
@@ -580,7 +574,7 @@ const RequestDrivingStepOneModal = forwardRef<
                               <DatePicker
                                 placeholder={"ระบุวันที่"}
                                 onChange={field.onChange}
-                                defaultValue={convertToBuddhistDateTime(field.value).date}
+                                defaultValue={field.value}
                               />
                             )}
                           />
@@ -729,7 +723,10 @@ const RequestDrivingStepOneModal = forwardRef<
                                   <DatePicker
                                     placeholder={"ระบุวันที่"}
                                     onChange={field.onChange}
-                                    defaultValue={field.value}
+                                    defaultValue={
+                                      convertToBuddhistDateTime(field.value)
+                                        .date
+                                    }
                                   />
                                 )}
                               />
@@ -760,8 +757,11 @@ const RequestDrivingStepOneModal = forwardRef<
                                   <DatePicker
                                     placeholder={"ระบุวันที่"}
                                     onChange={field.onChange}
-                                    defaultValue={field.value}
                                     minDate={watch("trainingDate")}
+                                    defaultValue={
+                                      convertToBuddhistDateTime(field.value)
+                                        .date
+                                    }
                                   />
                                 )}
                               />

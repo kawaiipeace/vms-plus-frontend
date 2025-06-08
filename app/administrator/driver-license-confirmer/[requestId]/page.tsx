@@ -41,7 +41,7 @@ export default function RequestDetail() {
           className={`main-content ${
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
           }`}
-        >
+      >
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeaderFirst data={requestData} />}

@@ -399,7 +399,8 @@ export default function RequestDetailForm({
             )}
 
             {(requestData?.ref_request_annual_driver_status_code === "20" ||
-              requestData?.ref_request_annual_driver_status_code === "30") && (
+              requestData?.ref_request_annual_driver_status_code === "30" ||
+              requestData?.ref_request_annual_driver_status_code === "21") && (
               <DrivingRequestProgress
                 progressSteps={requestData?.progress_request_status}
                 title="ผู้อนุมัติ"

@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
-import ApproveVehicleTabs from "@/components/tabs/approveVehicleTabs";
+import ApproveVehicleConfirmerTabs from "@/components/tabs/approveVehicleConfirmerTabs";
 import ToastCustom from "@/components/toastCustom";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useSearchParams } from "next/navigation";
@@ -133,8 +133,6 @@ function RequestListContent() {
 
 export default function ApproveRequest() {
   const { isPinned } = useSidebar();
-  const searchParams = useSearchParams();
-  const licType = searchParams.get("licenseType");
 
   return (
     <div>
@@ -166,7 +164,7 @@ export default function ApproveRequest() {
               </div>
             </div>
 
-            <ApproveVehicleTabs licType={licType || ""} />
+            <ApproveVehicleConfirmerTabs />
           </div>
         </div>
       </div>
