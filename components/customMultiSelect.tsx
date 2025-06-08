@@ -141,10 +141,13 @@ export default function CustomMultiSelect({
       </div>
 
       {/* Dropdown List */}
-      {isOpen && (
+      {(enableSearchApi
+        ? searchValue.trim().length >= 3
+          ? isOpen
+          : false
+        : isOpen) && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg">
-          {options.length > 0 &&
-          (enableSearchApi ? searchValue.trim().length >= 3 : true) ? (
+          {options.length > 0 ? (
             options.map((option) => (
               <li
                 key={option.value}
