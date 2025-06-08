@@ -60,9 +60,10 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           if (datestr.includes("-")) {
             return new Date(datestr);
           }
-          const [d, m, y] = datestr.split("/").map(Number);
-          const gYear = y > 2500 ? y - 543 : y;
-          return new Date(gYear, m - 1, d);
+          const [d, m, y] = datestr.split("/").map(s => s.trim());
+          let yearNum = Number(y);
+          if (yearNum > 2500) yearNum -= 543;
+          return new Date(yearNum, Number(m) - 1, Number(d));
         },
         formatDate: (date, _format, _locale) => {
           // Always display Buddhist year
@@ -79,21 +80,25 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           if (!selected) return;
           const localDate = dayjs(selected).format("YYYY-MM-DD");
           onChange?.(localDate);
-          setTimeout(() => updateCalendarYear(instance), 1); // Patch the year display after change
+          requestAnimationFrame(() => updateCalendarYear(instance));
         },
         onReady: (_dates, dateStr, instance) => {
           patchBuddhistInput(instance, dateStr);
-          setTimeout(() => updateCalendarYear(instance), 1);
+          requestAnimationFrame(() => updateCalendarYear(instance));
         },
         onMonthChange: (_dates, _dateStr, instance) => {
-          setTimeout(() => updateCalendarYear(instance), 1);
+          requestAnimationFrame(() => updateCalendarYear(instance));
         },
         onYearChange: (_dates, _dateStr, instance) => {
-          setTimeout(() => updateCalendarYear(instance), 1);
+          requestAnimationFrame(() => updateCalendarYear(instance));
         },
-        onOpen: () => {
+        onValueUpdate: (_dates, _dateStr, instance) => {
+          requestAnimationFrame(() => updateCalendarYear(instance));
+        },
+        onOpen: (_dates, _dateStr, instance) => {
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "hidden";
+          requestAnimationFrame(() => updateCalendarYear(instance));
         },
         onClose: () => {
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
@@ -118,10 +123,10 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         let y: number;
         if (el instanceof HTMLInputElement) {
           y = parseInt(el.value, 10);
-          if (y < 2500 || y < 1000) el.value = (y + 543).toString();
+          if (y && y < 2500) el.value = (y + 543).toString();
         } else {
           y = parseInt(el.textContent || "0", 10);
-          if (y < 2500 || y < 1000) el.textContent = (y + 543).toString();
+          if (y && y < 2500) el.textContent = (y + 543).toString();
         }
       });
     };
@@ -145,10 +150,26 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       return `${d}/${m}/${gregorian}`;
     };
 
+    // Smoother, forgiving parseDate function
     const parseDate = (dmy: string): Date | undefined => {
-      const [d, m, y] = dmy.split("/").map(Number);
-      if (!d || !m || !y) return undefined;
-      return new Date(y, m - 1, d);
+      if (!dmy) return undefined;
+      const parts = dmy.split("/").map(part => part.trim());
+      if (parts.length !== 3) return undefined;
+      let [d, m, y] = parts;
+      d = d.padStart(2, "0");
+      m = m.padStart(2, "0");
+      let year = Number(y);
+      // Handle Buddhist year
+      if (year < 1000) year += 543;
+      // Handle 2-digit years (optional: adjust logic as needed)
+      if (y.length === 2) {
+        year = Number(y) > 50 ? 1900 + Number(y) : 2000 + Number(y);
+      }
+      const day = Number(d);
+      const month = Number(m);
+      if (!day || !month || !year) return undefined;
+      const date = new Date(year, month - 1, day);
+      return isNaN(date.getTime()) ? undefined : date;
     };
 
     return (

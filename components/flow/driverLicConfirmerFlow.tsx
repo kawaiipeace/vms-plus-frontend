@@ -11,9 +11,8 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import { useEffect, useRef, useState } from "react";
 import FilterDriverModal from "../annual-driver-license/filterDriverModal";
-import DriverLicApproverListTable from "../table/driver-lic-approver-list-table";
 import PaginationControls from "../table/pagination-control";
-import { fetchFinalApproverRequests } from "@/services/bookingApprover";
+import DriverLicConfirmerListTable from "../table/driver-lic-confirmer-list-table";
 
 dayjs.extend(buddhistEra);
 
@@ -35,9 +34,7 @@ interface ActiveFilter {
   displayName: string;
 }
 
-
-
-export default function DriverLicApproveFlow() {
+export default function DriverLicConfirmerFlow() {
   const [params, setParams] = useState({
     search: "",
     ref_request_annual_driver_status_code: "",
@@ -114,7 +111,7 @@ export default function DriverLicApproveFlow() {
           annual_yyyy: params.annual_yyyy ? (parseInt(params.annual_yyyy) - 543).toString() : "",
         };
 
-        const response = await fetchFinalApproverRequests(params);
+        const response = await fetchDriverLicRequests(params);
 
 
 
@@ -355,7 +352,7 @@ export default function DriverLicApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <DriverLicApproverListTable defaultData={dataRequest} pagination={pagination} />
+            <DriverLicConfirmerListTable defaultData={dataRequest} pagination={pagination} />
           </div>
           <PaginationControls
             pagination={pagination}

@@ -16,20 +16,31 @@ export default function SideBar({ menuName }: SidebarProps) {
   const { isPinned, setIsPinned } = useSidebar();
   const { profile } = useProfile();
 
-
   const roles = profile?.roles;
 
   useEffect(() => {
     if (menuName) {
       setActiveItem(menuName);
-      if (["คำขอใช้ยานพาหนะ", "อนุมัติคำขอใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
+      if (
+        [
+          "คำขอใช้ยานพาหนะ",
+          "อนุมัติคำขอใช้และใบอนุญาต",
+          "งานพนักงานขับรถ",
+        ].includes(menuName)
+      ) {
         setOpenMenus(["collapseLink2"]);
-      } else if (["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)) {
+      } else if (
+        ["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)
+      ) {
         setOpenMenus(["collapseLink3"]);
       } else if (
-        ["ผู้ดูแลยานพาหนะ", "ข้อมูลพนักงานขับรถ", "ข้อมูลยานพาหนะ", "กลุ่มยานพาหนะ", "ข้อมูล Fleet card"].includes(
-          menuName
-        )
+        [
+          "ผู้ดูแลยานพาหนะ",
+          "ข้อมูลพนักงานขับรถ",
+          "ข้อมูลยานพาหนะ",
+          "กลุ่มยานพาหนะ",
+          "ข้อมูล Fleet card",
+        ].includes(menuName)
       ) {
         setOpenMenus(["collapseLink4"]);
       }
@@ -43,7 +54,11 @@ export default function SideBar({ menuName }: SidebarProps) {
   }, [isPinned, profile]);
 
   const toggleMenu = (menuId: string) => {
-    setOpenMenus((prev) => (prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]));
+    setOpenMenus((prev) =>
+      prev.includes(menuId)
+        ? prev.filter((id) => id !== menuId)
+        : [...prev, menuId]
+    );
   };
 
   // Filter menu items based on roles
@@ -69,10 +84,10 @@ export default function SideBar({ menuName }: SidebarProps) {
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
-          link: "/administrator/booking-approver?licenseType=ตรวจสอบ",
+          link: "/administrator/booking-confirmer",
           roles: [
+            // "level1-approval",
             "level1-approval",
-            // "license-approval",
             // "admin-approval",
             // "admin-dept",
             // "admin-super",
@@ -80,15 +95,16 @@ export default function SideBar({ menuName }: SidebarProps) {
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
-          link: "/administrator/booking-approver?licenseType=อนุมัติ",
+          link: "/administrator/booking-approver",
           roles: [
-            // "level1-approval",
             "license-approval",
+            // "license-approval",
             // "admin-approval",
             // "admin-dept",
             // "admin-super",
           ],
         },
+
         {
           title: "งานพนักงานขับรถ",
           link: "/vehicle-in-use/driver",
@@ -126,17 +142,17 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ข้อมูลพนักงานขับรถ",
           link: "/drivers-management",
-          roles: ["admin-super","admin-region","admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-dept"],
         },
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-super","admin-region","admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-dept"],
         },
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super","admin-region","admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-dept"],
         },
         // {
         //   title: "ข้อมูล Fleet card",
@@ -149,14 +165,27 @@ export default function SideBar({ menuName }: SidebarProps) {
 
   const getActiveMainMenu = (id: string) => {
     if (menuName) {
-      if (["คำขอใช้ยานพาหนะ", "อนุมัติคำขอใช้และใบอนุญาต","อนุมัติคำขอใช้และใบอนุญาต", "งานพนักงานขับรถ"].includes(menuName)) {
+      if (
+        [
+          "คำขอใช้ยานพาหนะ",
+          "อนุมัติคำขอใช้และใบอนุญาต",
+          "อนุมัติคำขอใช้และใบอนุญาต",
+          "งานพนักงานขับรถ",
+        ].includes(menuName)
+      ) {
         return "collapseLink2" === id;
-      } else if (["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)) {
+      } else if (
+        ["ตรวจสอบและจัดการคำขอ", "อนุมัติใช้ยานพาหนะ"].includes(menuName)
+      ) {
         return "collapseLink3" === id;
       } else if (
-        ["ผู้ดูแลยานพาหนะ", "ข้อมูลพนักงานขับรถ", "ข้อมูลยานพาหนะ", "กลุ่มยานพาหนะ", "ข้อมูล Fleet card"].includes(
-          menuName
-        )
+        [
+          "ผู้ดูแลยานพาหนะ",
+          "ข้อมูลพนักงานขับรถ",
+          "ข้อมูลยานพาหนะ",
+          "กลุ่มยานพาหนะ",
+          "ข้อมูล Fleet card",
+        ].includes(menuName)
       ) {
         return "collapseLink4" === id;
       }
@@ -166,13 +195,19 @@ export default function SideBar({ menuName }: SidebarProps) {
   return (
     <div
       className={`sidebar !z-[10] transition-all duration-300 ease-in-out bg-white shadow-lg fixed h-full ${
-        isExpanded || isPinned ? "w-[280px] min-w-[280px] max-w-[280px]" : "w-[80px]"
+        isExpanded || isPinned
+          ? "w-[280px] min-w-[280px] max-w-[280px]"
+          : "w-[80px]"
       }`}
       onMouseEnter={() => !isPinned && setIsExpanded(true)}
       onMouseLeave={() => !isPinned && setIsExpanded(false)}
     >
       {/* Sidebar Top */}
-      <div className={`flex items-center justify-between p-4 ${isExpanded && "sidebar-top"}`}>
+      <div
+        className={`flex items-center justify-between p-4 ${
+          isExpanded && "sidebar-top"
+        }`}
+      >
         {isExpanded ? (
           <Link href="/" className="sidebar-brand">
             <Image
@@ -200,7 +235,9 @@ export default function SideBar({ menuName }: SidebarProps) {
             className="btn btn-iternary rounded-md w-[40px] h-[40px] min-h-[40px]"
             onClick={() => setIsPinned(!isPinned)}
           >
-            <i className="material-symbols-outlined">{isPinned ? "keyboard_tab_rtl" : "keyboard_tab"}</i>
+            <i className="material-symbols-outlined">
+              {isPinned ? "keyboard_tab_rtl" : "keyboard_tab"}
+            </i>
           </button>
         )}
       </div>
@@ -209,7 +246,12 @@ export default function SideBar({ menuName }: SidebarProps) {
       <div className="custom-scrollbar">
         <ul className="nav flex-col">
           <li className="nav-item">
-            <Link href="/" className={`nav-link flex items-center ${activeItem === "home" ? "active" : ""}`}>
+            <Link
+              href="/"
+              className={`nav-link flex items-center ${
+                activeItem === "home" ? "active" : ""
+              }`}
+            >
               <i className="material-symbols-outlined">home</i>
               <span
                 className={`nav-link-label transition-all duration-300 ${
@@ -227,18 +269,23 @@ export default function SideBar({ menuName }: SidebarProps) {
             const active = getActiveMainMenu(menu.id);
 
             return (
-              <li className={`nav-item  ${!isExpanded && "h-[40px] w-[40px]"}`} key={menu.id}>
+              <li
+                className={`nav-item  ${!isExpanded && "h-[40px] w-[40px]"}`}
+                key={menu.id}
+              >
                 <button
                   onClick={() => toggleMenu(menu.id)}
-                  className={`nav-link flex items-center justify-between ${!isExpanded && "h-[40px] w-[40px]"} ${
-                    active ? "active" : ""
-                  }`}
+                  className={`nav-link flex items-center justify-between ${
+                    !isExpanded && "h-[40px] w-[40px]"
+                  } ${active ? "active" : ""}`}
                 >
                   <div className="flex items-center">
                     <i className="material-symbols-outlined">{menu.icon}</i>
                     <span
                       className={`nav-link-label text-left transition-all duration-300 ${
-                        isExpanded || isPinned ? "opacity-100 ml-2" : "opacity-0 w-0"
+                        isExpanded || isPinned
+                          ? "opacity-100 ml-2"
+                          : "opacity-0 w-0"
                       }`}
                     >
                       {menu.label}
@@ -247,7 +294,9 @@ export default function SideBar({ menuName }: SidebarProps) {
                   {isExpanded && (
                     <i className="ico-toggle">
                       <span className="material-symbols-outlined">
-                        {openMenus.includes(menu.id) ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+                        {openMenus.includes(menu.id)
+                          ? "keyboard_arrow_up"
+                          : "keyboard_arrow_down"}
                       </span>
                     </i>
                   )}
@@ -255,7 +304,9 @@ export default function SideBar({ menuName }: SidebarProps) {
                 {isExpanded && (
                   <div
                     className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                      openMenus.includes(menu.id) ? "max-h-[500px] block" : "hidden"
+                      openMenus.includes(menu.id)
+                        ? "max-h-[500px] block"
+                        : "hidden"
                     }`}
                   >
                     <ul className="nav flex-col text-left">
@@ -263,7 +314,9 @@ export default function SideBar({ menuName }: SidebarProps) {
                         <li className="nav-item text-left" key={index}>
                           <Link
                             href={item.link}
-                            className={`nav-link flex items-center ${activeItem === item.title ? "active" : ""}`}
+                            className={`nav-link flex items-center ${
+                              activeItem === item.title ? "active" : ""
+                            }`}
                           >
                             <span
                               className={`nav-link-label text-left transition-all duration-300 ${

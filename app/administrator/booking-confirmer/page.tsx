@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
-import ApproveVehicleApproverTabs from "@/components/tabs/approveVehicleApproverTabs";
+import ApproveVehicleConfirmerTabs from "@/components/tabs/approveVehicleConfirmerTabs";
 import ToastCustom from "@/components/toastCustom";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { Suspense } from "react";
 function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
-  const sendbackLicReq = searchParams.get("sendbackfinallic-req");
+  const sendbackLicReq = searchParams.get("sendbacklic-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
   const approveLicReq = searchParams.get("approvelic-req");
@@ -164,7 +164,7 @@ export default function ApproveRequest() {
               </div>
             </div>
 
-            <ApproveVehicleApproverTabs  />
+            <ApproveVehicleConfirmerTabs />
           </div>
         </div>
       </div>

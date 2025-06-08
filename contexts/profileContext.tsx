@@ -23,6 +23,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const { hideToast } = useToast();
   const router = useRouter();
   // const { clearToast } = useToast();
 
@@ -55,7 +56,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    // clearToast(); 
+    hideToast();  
     setProfile(null);
     setIsAuthenticated(false);
     router.push("/");

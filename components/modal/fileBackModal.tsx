@@ -102,12 +102,12 @@ const FileBackRequestModal = forwardRef<
             }
    
             router.push(
-              "/administrator/booking-approver?licenseType=ตรวจสอบ&sendbacklic-req=success&request-id=" +
+              "/administrator/booking-confirmer?activeTab=คำขออนุมัติทำหน้าที่ขับรถยนต์&sendbacklic-req=success&request-id=" +
                 data.result?.request_annual_driver_no
             );
           } else if (role === "licFinalAdmin") {
             router.push(
-              "/administrator/booking-approver?licenseType=อนุมัติ&sendbackfinallic-req=success&request-id=" +
+              "/administrator/booking-approver?sendbackfinallic-req=success&request-id=" +
               data.result?.request_annual_driver_no
             );
           }else if (role === "final") {

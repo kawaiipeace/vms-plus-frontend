@@ -25,7 +25,7 @@ interface Props {
   pagination: PaginationType;
 }
 
-export default function DriverLicApproverListTable({
+export default function DriverLicConfirmerListTable({
   defaultData,
   pagination,
 }: Props) {
@@ -183,7 +183,7 @@ export default function DriverLicApproverListTable({
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
-                  router.push("/administrator/driver-license-approver/" + row.original.trn_request_annual_driver_uid)
+                  router.push("/administrator/driver-license-confirmer/" +  row.original.trn_request_annual_driver_uid)
                 }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>

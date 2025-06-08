@@ -4,7 +4,6 @@ import { ProfileProvider } from "@/contexts/profileContext";
 import { RequestDetailProvider } from "@/contexts/requestDetailContext";
 import { FormProvider } from "@/contexts/requestFormContext";
 import { SidebarProvider } from "@/contexts/sidebarContext";
-import { ToastProvider } from "@/contexts/toast-context";
 import type { Metadata } from "next";
 import Head from "next/head";
 import Script from "next/script";
@@ -19,7 +18,7 @@ import RootLayoutClient from "./layout-client";
 export const metadata: Metadata = {
   title: "VMS Plus",
   description: "VMS Plus",
-  manifest: '/web.manifest',
+  manifest: "/web.manifest",
 };
 
 export default function RootLayout({
@@ -39,9 +38,6 @@ export default function RootLayout({
           src="/env/env-config.js"
           strategy="beforeInteractive"
         />
-        {/* <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#317EFB" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" /> */}
       </head>
 
       <Head>
@@ -54,11 +50,9 @@ export default function RootLayout({
             <SidebarProvider>
               <RequestDetailProvider>
                 <FormProvider>
-                  <ToastProvider>
-                    <CarpoolProvider>
-                      <Suspense>{children}</Suspense>
-                    </CarpoolProvider>
-                  </ToastProvider>
+                  <CarpoolProvider>
+                    <Suspense>{children}</Suspense>
+                  </CarpoolProvider>
                 </FormProvider>
               </RequestDetailProvider>
             </SidebarProvider>

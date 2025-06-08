@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
+import RequestDetailTabs from "@/components/booking-approver/requestDetailTab";
 import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
-import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
-import { fetchRequestDetail } from "@/services/driver";
-import RequestDetailForm from "@/components/annual-driver-license/requestDetailForm";
-import PageHeaderFirst from "@/components/annual-driver-license/pageHeaderFirst";
+import { RequestDetailType } from "@/app/types/request-detail-type";
+import { firstApproverRequestDetail } from "@/services/bookingApprover";
+import PageHeaderFirst from "@/components/pageHeaderFirst";
 
 
 export default function RequestDetail() {
@@ -15,13 +15,13 @@ export default function RequestDetail() {
 
   const params = useParams();
   const request_id = String(params.requestId);
-  const [requestData, setRequestData] = useState<RequestAnnualDriver>();
+  const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
         try {
-          const response = await fetchRequestDetail(request_id);
+          const response = await firstApproverRequestDetail(request_id);
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -41,11 +41,11 @@ export default function RequestDetail() {
           className={`main-content ${
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
           }`}
-      >
+        >
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeaderFirst data={requestData} />}
-            <RequestDetailForm licType="ตรวจสอบ" requestId={request_id} />
+            <RequestDetailTabs requestId={request_id} />
           </div>
         </div>
       </div>
