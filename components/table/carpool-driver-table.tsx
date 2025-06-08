@@ -23,6 +23,7 @@ import DriverInfoCarpoolModal from "../modal/driverInfoCarpoolModal";
 import ToastCustom from "../toastCustom";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import Image from "next/image";
+import BadgeStatus from "../carpool-management/modal/status";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -258,7 +259,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="สถานะ">
-            {row.original.driver_status_name}
+            <BadgeStatus status={row.original.driver_status_name} />
           </div>
         );
       },
@@ -394,7 +395,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="สถานะ">
-            {row.original.driver_status_name}
+            <BadgeStatus status={row.original.driver_status_name} />
           </div>
         );
       },
