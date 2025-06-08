@@ -15,6 +15,7 @@ export type RequestDetailType = Partial<{
   car_user_mobile_contact_number: string;
   car_user_internal_contact_number: string;
   vehicle_license_plate: string;
+  received_key_position: string;
   approved_request_emp_id: string;
   approved_request_emp_name: string;
   approved_request_dept_sap: string;
@@ -26,7 +27,6 @@ export type RequestDetailType = Partial<{
   date_range: string;
   trip_type: number;
   work_place: string;
-  objective: string;
   remark: string;
   number_of_passengers: number;
   number_of_available_drivers: number;

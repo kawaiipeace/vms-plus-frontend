@@ -175,19 +175,25 @@ export default function Header() {
     setPendingOpenModal("request");
   };
 
-  useEffect(() => {
-    if (toast.show) {
-      const refreshProfile = async () => {
-        try {
-          const response = await fetchProfile();
-          setProfile(response.data);
-        } catch (error) {
-          console.error("Failed to refresh profile:", error);
+ useEffect(() => {
+  if (toast.show) {
+    const refreshProfileAndLicDetail = async () => {
+      try {
+        const response = await fetchProfile();
+        setProfile(response.data);
+        if (driverUser?.trn_request_annual_driver_uid) {
+          const licDetail = await fetchRequestLicStatusDetail(driverUser.trn_request_annual_driver_uid);
+          if (licDetail) {
+            setLicRequestDetail(licDetail.data);
+          }
         }
-      };
-      refreshProfile();
-    }
-  }, [toast.show, setProfile]);
+      } catch (error) {
+        console.error("Failed to refresh profile or license detail:", error);
+      }
+    };
+    refreshProfileAndLicDetail();
+  }
+}, [toast.show, setProfile, driverUser]);
 
   const handleOpenRequestDetailDrivingModal = async () => {
     try {

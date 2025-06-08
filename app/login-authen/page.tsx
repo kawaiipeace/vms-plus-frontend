@@ -59,7 +59,7 @@ export default function LoginAuthen() {
   }, [timeLeft]);
 
   const requestOTPAgain = async () => {
-    console.log('ttt');
+    console.log("ttt");
     // if (timerText === "ขอรหัสใหม่อีกครั้ง") return;
     if (!phone || phone === null || timeLeft > 0) return;
 
@@ -102,7 +102,19 @@ export default function LoginAuthen() {
         // Fetch and set profile before redirecting
         const profileResponse = await fetchProfile();
         setProfile(profileResponse.data);
-        router.push("/vehicle-booking/request-list");
+        console.log("Fetched Profile:", profileResponse.data);
+        console.log("Profile Roles:", profileResponse.data.roles);
+        console.log(
+          "Profile Data:",
+          profileResponse.data.roles?.includes("driver")
+        );
+        if (profileResponse.data.roles?.includes("driver") === true) {
+          console.log("Redirecting to driver page after login");
+          router.replace("/vehicle-in-use/driver");
+        } else {
+             console.log("Redirecting to request list page");
+          router.push("/vehicle-booking/request-list");
+        }
       }
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message

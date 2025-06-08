@@ -247,7 +247,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         <ul className="nav flex-col">
           <li className="nav-item">
             <Link
-              href="/"
+              href={`${profile?.roles?.includes("driver") ? "/vehicle-in-use/driver" : "/"}`}
               className={`nav-link flex items-center ${
                 activeItem === "home" ? "active" : ""
               }`}

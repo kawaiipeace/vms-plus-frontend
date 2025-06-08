@@ -99,7 +99,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
               timeStart={convertToBuddhistDateTime(requestData?.start_datetime || "").time}
               timeEnd={convertToBuddhistDateTime(requestData?.end_datetime || "").time}
               workPlace={requestData?.work_place}
-              purpose={requestData?.objective}
+              purpose={requestData?.work_description}
               remark={requestData?.remark}
               tripType={requestData?.trip_type}
               numberOfPassenger={requestData?.number_of_passengers}
