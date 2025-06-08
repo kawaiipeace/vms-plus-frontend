@@ -12,7 +12,7 @@ interface DriverProgressTabProps {
 }
 
 const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
-  const [pagination, setPagination] = useState<PaginationType>({
+  const [pagination] = useState<PaginationType>({
     limit: 100,
     page: 1,
     total: 0,
@@ -79,7 +79,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
 
                     return (
                       <React.Fragment key={item.request_no}>
-                        {item.ref_request_status_code === "51" && (
+                        {item.ref_request_status_code === "60" && (
                           <Link href={link + "?progressType=บันทึกการเดินทาง"}>
                             <MobileDriverCard
                               cardType="recordTravel"
@@ -91,7 +91,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                             />
                           </Link>
                         )}
-                        {item.ref_request_status_code === "60" && (
+                        {item.ref_request_status_code === "51" && (
                           <Link href={link + "?progressType=รอรับยานพาหนะ"}>
                             <MobileDriverCard
                               cardType="waitCar"
