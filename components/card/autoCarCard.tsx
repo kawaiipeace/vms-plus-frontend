@@ -57,7 +57,7 @@ console.log('tttttitle',title);
           </button>
         </div>
       </div>
-      <VehiclePickModel process="add" selectType={title} ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
+      <VehiclePickModel process="add" selectType={title} desc={desc} ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
     </div>
   );
 }

@@ -63,6 +63,7 @@ interface FormData {
   isSystemChooseVehicle?: string;
   isAdminChooseDriver?: boolean;
   vehicleSelect?: string;
+  carpoolName?: string;
 }
 
 export default function ProcessTwo() {
@@ -140,11 +141,20 @@ export default function ProcessTwo() {
       }
     }
 
+    // Add carpool name if a carpool is selected
+    const selectedCarpool = vehicleCards.find(
+      (card) =>
+        "mas_carpool_uid" in card &&
+        String(card.mas_carpool_uid) === String(value)
+    ) as Carpool | undefined;
+    if (selectedCarpool) {
+      updatedData.carpoolName = selectedCarpool.carpool_name;
+    }
+
     updateFormData(updatedData);
     localStorage.setItem("processTwo", "Done");
     router.push("process-three");
   };
-
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setParams((prev) => ({ ...prev, search: e.target.value }));
@@ -405,13 +415,18 @@ export default function ProcessTwo() {
                                   .type_of_choose_car
                               }
                               desc={carpool.carpool_name}
-                              onSelect={() =>
+                              onSelect={() => {
+                                // Set carpoolName in formData when selecting an AutoCarCard
+                                updateFormData({
+                                  carpoolName: carpool.carpool_name,
+                                  masCarpoolUid: carpool.mas_carpool_uid
+                                });
                                 handleVehicleSelect(
                                   carpool.ref_carpool_choose_car_id === 3
                                     ? "ระบบเลือกยานพาหนะให้อัตโนมัติ"
                                     : "ผู้ดูแลยานพาหนะเลือกให้"
-                                )
-                              }
+                                );
+                              }}
                               isSelected={
                                 selectedVehicle === carpool.mas_carpool_uid ||
                                 formData.vehicleSelect ===

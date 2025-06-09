@@ -13,6 +13,8 @@ export type RequestDetailType = Partial<{
   vehicle_user_dept_sap_short: string;
   vehicle_user_dept_sap_full: string;
   car_user_mobile_contact_number: string;
+  requested_vehicle_type: string;
+  carpool_name: string;
   car_user_internal_contact_number: string;
   vehicle_license_plate: string;
   received_key_position: string;

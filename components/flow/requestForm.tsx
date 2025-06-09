@@ -40,6 +40,7 @@ const schema = yup
     startDate: yup.string(),
     endDate: yup.string(),
     refCostTypeCode: yup.string(),
+    vehicleUserEmpPosition: yup.string(),
     timeStart: yup.string(),
     timeEnd: yup.string(),
     attachmentFile: yup.string(),
@@ -186,7 +187,7 @@ export default function RequestForm() {
     fetchCostTypeRequest();
   }, []);
 
-   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
     value: string;
     label: string;
   } | null>(null);
@@ -196,7 +197,6 @@ export default function RequestForm() {
       setSelectedVehicleUserOption(driverOptions[0]);
     }
   }, [driverOptions, selectedVehicleUserOption]);
-
 
   useEffect(() => {
     if (!formData.timeStart) {
@@ -214,8 +214,9 @@ export default function RequestForm() {
       } else {
         console.log("profile===>", profile);
         const defaultVehicleUser = vehicleUserDatas.find(
-          (user) => user.emp_id === profile.emp_id
+          (user) => String(user.emp_id) === String(profile.emp_id)
         );
+        console.log("defaultVehicleUser===>", defaultVehicleUser);
         if (defaultVehicleUser) {
           setSelectedVehicleUserOption({
             value: defaultVehicleUser.emp_id,
@@ -231,6 +232,10 @@ export default function RequestForm() {
           );
           setValue("deptSap", defaultVehicleUser.dept_sap);
           setValue("userImageUrl", defaultVehicleUser.image_url);
+          setValue(
+            "vehicleUserEmpPosition",
+            defaultVehicleUser.posi_text || ""
+          );
         }
       }
     }
@@ -257,18 +262,20 @@ export default function RequestForm() {
       selectedOption as { value: string; label: string }
     );
 
-      // If cleared (value is empty), reset related fields
-  if (!selectedOption.value) {
-    setValue("telInternal", "");
-    setValue("telMobile", "");
-    setValue("deptSapShort", "");
-    return;
-  }
-   console.log("selectedOption===>", vehicleUserDatas);
+    // If cleared (value is empty), reset related fields
+    if (!selectedOption.value) {
+      setValue("telInternal", "");
+      setValue("telMobile", "");
+      setValue("deptSapShort", "");
+      setValue("vehicleUserEmpPosition", "");
+      return;
+    }
+    console.log("selectedOption===>", vehicleUserDatas);
     const empData = vehicleUserDatas.find(
-      (user: { emp_id: string }) => String(user.emp_id) === String(selectedOption.value)
+      (user: { emp_id: string }) =>
+        String(user.emp_id) === String(selectedOption.value)
     );
- console.log("empData===>", empData);
+    console.log("empData===>", empData);
 
     if (empData) {
       setValue("telInternal", empData.tel_internal);
@@ -276,6 +283,7 @@ export default function RequestForm() {
       setValue("deptSapShort", empData.dept_sap_short);
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
+      setValue("vehicleUserEmpPosition", empData.posi_text || "");
     }
   };
 
@@ -397,47 +405,47 @@ export default function RequestForm() {
   }, [formData, costTypeDatas]);
 
   useEffect(() => {
-  if (costTypeDatas.length > 0 && selectedCostTypeOption.label === "") {
-    const defaultData = costTypeDatas.find(
-      (cost) =>
-        cost.ref_cost_type_code === (formData.refCostTypeCode || "1")
-    );
-    if (defaultData) {
-      setSelectedCostTypeOption({
-        value: defaultData.ref_cost_type_code,
-        label: defaultData.ref_cost_type_name,
-      });
-      setValue("costCenter", defaultData.cost_center);
-    }
-  }
-}, [costTypeDatas, formData.refCostTypeCode]);
-
-const handleDriverSearch = async (search: string) => {
-  setLoadingDrivers(true);
-  try {
-    const response = await fetchVehicleUsers(search);
-    if (response.status === 200) {
-      const vehicleUserData = response.data;
-      setVehicleUserDatas(vehicleUserData); // <-- Always update here!
-      const driverOptionsArray = vehicleUserData.map(
-        (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-          value: user.emp_id,
-          label: `${user.full_name} (${user.emp_id})`,
-        })
+    if (costTypeDatas.length > 0 && selectedCostTypeOption.label === "") {
+      const defaultData = costTypeDatas.find(
+        (cost) => cost.ref_cost_type_code === (formData.refCostTypeCode || "1")
       );
-      setDriverOptions(driverOptionsArray);
-    } else {
+      if (defaultData) {
+        setSelectedCostTypeOption({
+          value: defaultData.ref_cost_type_code,
+          label: defaultData.ref_cost_type_name,
+        });
+        setValue("costCenter", defaultData.cost_center);
+      }
+    }
+  }, [costTypeDatas, formData.refCostTypeCode]);
+
+  const handleDriverSearch = async (search: string) => {
+    setLoadingDrivers(true);
+    try {
+      const response = await fetchVehicleUsers(search);
+
+      if (response.status === 200) {
+        const vehicleUserData = response.data;
+        setVehicleUserDatas(vehicleUserData); // <-- Always update here!
+        const driverOptionsArray = vehicleUserData.map(
+          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            value: user.emp_id,
+            label: `${user.full_name} (${user.emp_id})`,
+          })
+        );
+        setDriverOptions(driverOptionsArray);
+      } else {
+        setDriverOptions([]);
+        setVehicleUserDatas([]);
+      }
+    } catch (error) {
       setDriverOptions([]);
       setVehicleUserDatas([]);
+      console.error("Search failed:", error);
+    } finally {
+      setLoadingDrivers(false);
     }
-  } catch (error) {
-    setDriverOptions([]);
-    setVehicleUserDatas([]);
-    console.error("Search failed:", error);
-  } finally {
-    setLoadingDrivers(false);
-  }
-};
+  };
 
   const handleCostCenterSearch = async (search: string) => {
     if (search.trim().length < 3) {
@@ -495,6 +503,7 @@ const handleDriverSearch = async (search: string) => {
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
+
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;
     data.numberOfPassenger = passengerCount;
@@ -511,6 +520,8 @@ const handleDriverSearch = async (search: string) => {
     } else {
       data.costCenter = data.costCenter;
     }
+    data.vehicleUserEmpPosition = watch("vehicleUserEmpPosition") || "";
+
     localStorage.setItem("processOne", "Done");
     updateFormData(data);
     router.push("process-two");
@@ -633,6 +644,7 @@ const handleDriverSearch = async (search: string) => {
                       </div>
                       <input
                         type="text"
+                        maxLength={10}
                         className="form-control"
                         {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
@@ -673,7 +685,7 @@ const handleDriverSearch = async (search: string) => {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
-                     minDate={new Date().toISOString().split("T")[0]}
+                        minDate={new Date().toISOString().split("T")[0]}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -740,7 +752,7 @@ const handleDriverSearch = async (search: string) => {
                         }
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
-                        minTime={ isSameDay ? minTime : undefined}
+                        minTime={isSameDay ? minTime : undefined}
                       />
                     </div>
                   </div>

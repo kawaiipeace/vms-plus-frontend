@@ -45,7 +45,7 @@ export default function SelectCarCard({
       )}
 
       <div className="card-body">
-        <div className="card-img-top h-[15vh]">
+        <div className="card-img-top h-[165px]">
           <Image
             src={imgSrc}
             width={100}
