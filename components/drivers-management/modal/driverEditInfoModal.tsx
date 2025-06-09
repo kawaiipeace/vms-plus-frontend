@@ -1,9 +1,10 @@
-import DatePicker from "@/components/drivers-management/datePicker";
+import DatePicker from "@/components/datePicker";
 import CustomSelect, { CustomSelectOption } from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as Yup from "yup";
+import CustomSearchSelect from "@/components/customSelectSerch";
 
 import {
   driverReplacementLists,
@@ -43,6 +44,14 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     >([]);
     // const [driverVendorsList, setDriverVendorsList] = useState<{ value: string; label: string }[]>([]);
     const [disableStartDate, setDisableStartDate] = useState<string>();
+    const [driverDepartmentOptions, setDriverDepartmentOptions] = useState<CustomSelectOption>({
+      value: "",
+      label: "ทั้งหมด",
+    });
+    const [driverDepartmentOptions2, setDriverDepartmentOptions2] = useState<CustomSelectOption>({
+      value: "",
+      label: "ทั้งหมด",
+    });
     const [formData, setFormData] = useState({
       driverContractStartDate: "",
       driverContractEndDate: "",
@@ -107,6 +116,17 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         const initialDepartment = driverDepartmentList.find(
           (option) => option.label === driverInfo.driver_dept_sap_short_name_work
         );
+
+        setDriverDepartmentOptions({
+          value: initialDepartment?.value || "",
+          label: initialDepartment?.label || "ทั้งหมด",
+        });
+        setDriverDepartmentOptions2({
+          value: initialEmployingAgency?.value || "",
+          label: initialEmployingAgency?.label || "ทั้งหมด",
+        });
+
+        console.log(initialDepartment, initialEmployingAgency);
 
         setFormData({
           driverContractStartDate: driverInfo.approved_job_driver_start_date || "",
@@ -209,15 +229,17 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         console.log("Submitting form with params:", params);
 
         // Submit form data
-        const response = await driverUpdateContractDetails({ params });
-        if (response.status === 200) {
-          handleCloseModal();
-          onUpdateDriver(true);
-          setUpdateType("basicInfo");
-        } else {
-          console.error("Error submitting form", response);
+        try {
+          const response = await driverUpdateContractDetails({ params });
+          if (response.status === 200) {
+            handleCloseModal();
+            onUpdateDriver(true);
+            setUpdateType("basicInfo");
+          }
+          console.log("Form submitted successfully", params);
+        } catch (error) {
+          console.error("Error submitting form", error);
         }
-        console.log("Form submitted successfully", params);
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors: { [key: string]: string } = {};
@@ -274,6 +296,27 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       // setDisableEndDate(dateStr);
     };
 
+    const handleDriverDepartmentChange = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
+      // console.log(selectedOption);
+      setFormData((prevData) => ({
+        ...prevData,
+        driverEmployingAgency: selectedOption.value,
+      }));
+      setDriverDepartmentOptions(selectedOption as { value: string; label: string });
+    };
+
+    const handleDriverDepartmentChange2 = async (selectedOption: {
+      value: string;
+      label: string | React.ReactNode;
+    }) => {
+      // console.log(selectedOption);
+      setFormData((prevData) => ({
+        ...prevData,
+        driverDepartment: selectedOption.value,
+      }));
+      setDriverDepartmentOptions2(selectedOption as { value: string; label: string });
+    };
+
     return (
       <>
         {openModal && (
@@ -315,7 +358,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           <div className="w-full">
                             <div className="form-group">
                               <label className="label form-label">หน่วยงานผู้ว่าจ้าง</label>
-                              <CustomSelect
+                              {/* <CustomSelect
                                 w="w-full"
                                 options={driverDepartmentList}
                                 value={
@@ -326,6 +369,13 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 onChange={(selected) => {
                                   setFormData((prev) => ({ ...prev, driverEmployingAgency: selected.value }));
                                 }}
+                              /> */}
+                              <CustomSearchSelect
+                                w="md:w-full"
+                                options={driverDepartmentList}
+                                value={driverDepartmentOptions}
+                                enableSearch
+                                onChange={handleDriverDepartmentChange}
                               />
                               {formErrors.driverEmployingAgency && (
                                 <FormHelper text={String(formErrors.driverEmployingAgency)} />
@@ -365,7 +415,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           <div className="w-full">
                             <div className="form-group">
                               <label className="label form-label">หน่วยงานที่สังกัด</label>
-                              <CustomSelect
+                              {/* <CustomSelect
                                 w="w-full"
                                 options={driverDepartmentList}
                                 value={
@@ -375,6 +425,13 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 onChange={(selected) => {
                                   setFormData((prev) => ({ ...prev, driverDepartment: selected.value }));
                                 }}
+                              /> */}
+                              <CustomSearchSelect
+                                w="md:w-full"
+                                options={driverDepartmentList}
+                                value={driverDepartmentOptions2}
+                                enableSearch
+                                onChange={handleDriverDepartmentChange2}
                               />
                               {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
                             </div>
@@ -421,7 +478,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                   onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
                                   // minDate={disableStartDate || undefined}
                                   minDate={disableStartDate ? disableStartDate : undefined}
-                                  disabled={disableStartDate ? false : true}
+                                  // disabled={disableStartDate ? false : true}
                                 />
                               </div>
                               {formErrors.driverContractEndDate && (

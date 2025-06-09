@@ -118,7 +118,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
           if (response.status === 200) {
             onValidateDelete?.();
             modalRef.current?.close();
-            router.push("/drivers-management?delete=success&driverName=" + formData_1.driver_name);
+            router.push("/drivers-management?activeTab=1&delete=success&driverName=" + formData_1.driver_name);
           } else {
             console.error("Error deleting driver:", response.data);
           }

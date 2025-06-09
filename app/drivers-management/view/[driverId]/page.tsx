@@ -273,8 +273,14 @@ const DriverViewProfilePage = () => {
                   <span className="page-title-label">{driverInfo?.driver_name}</span>
                   <div className="flex items-center">
                     <i className="material-symbols-outlined text-[#A80689] !text-3xl">star</i>
-                    <span className="px-2">{vehicleUserData?.driver_average_satisfaction_score}</span>
-                    <span>({vehicleUserData?.driver_satisfaction_score_count})</span>
+                    {vehicleUserData?.driver_average_satisfaction_score === 0 ? (
+                      "ยังไม่มีการให้คะแนน"
+                    ) : (
+                      <>
+                        <span className="px-2">{vehicleUserData?.driver_average_satisfaction_score}</span>
+                        <span>({vehicleUserData?.driver_satisfaction_score_count})</span>
+                      </>
+                    )}
                   </div>
                   {driverInfo?.driver_status?.ref_driver_status_desc === "ปฏิบัติงานปกติ" ? (
                     <div className="badge badge-pill-outline badge-success whitespace-nowrap">

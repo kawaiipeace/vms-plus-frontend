@@ -1,4 +1,4 @@
-import DatePicker from "@/components/drivers-management/datePicker";
+import DatePicker from "@/components/datePicker";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import UploadFilePreview from "@/components/drivers-management/uploadFilePreview";
 import FormHelper from "@/components/formHelper";
@@ -14,7 +14,7 @@ import {
   DriverCreate,
   listDriverDepartment,
   listDriverLicense,
-  listDriverVendors,
+  // listDriverVendors,
   listUseByOtherRadio,
 } from "@/services/driversManagement";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
@@ -66,7 +66,7 @@ const DriverForm = () => {
   const [useByotherRadio, setUseByotherRadio] = useState<UseByOtherRadioItem[]>([]);
   const [driverLicenseList, setDriverLicenseList] = useState<CustomSelectOption[]>([]);
   const [driverDepartmentList, setDriverDepartmentList] = useState<CustomSelectOption[]>([]);
-  const [driverVendorsList, setDriverVendorsList] = useState<CustomSelectOption[]>([]);
+  // const [driverVendorsList, setDriverVendorsList] = useState<CustomSelectOption[]>([]);
   const [overNightStay, setOverNightStay] = useState<string>("1");
   const [operationType, setOperationType] = useState<string>("1");
   const [useByOther, setUseByOther] = useState<string>("0");
@@ -720,7 +720,7 @@ const DriverForm = () => {
                     onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
                     minDate={disableStartDate ? disableStartDate : undefined}
                     // minDate="27/05/2025"
-                    disabled={disableStartDate ? false : true}
+                    // disabled={disableStartDate ? false : true}
                   />
                 </div>
                 {formErrors.driverContractEndDate && <FormHelper text={String(formErrors.driverContractEndDate)} />}
@@ -852,7 +852,7 @@ const DriverForm = () => {
                       defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
                       onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
                       minDate={disableDriverStartDate ? disableDriverStartDate : undefined}
-                      disabled={disableDriverStartDate ? false : true}
+                      // disabled={disableDriverStartDate ? false : true}
                     />
                   </div>
                   {formErrors.driverLicenseEndDate && <FormHelper text={String(formErrors.driverLicenseEndDate)} />}
@@ -875,8 +875,10 @@ const DriverForm = () => {
                 <div className="form-group">
                   <label className="form-label">
                     รูปใบขับขี่
-                    <br />
-                    &nbsp;
+                    <div className="2xl:hidden xl:block hidden">
+                      <br />
+                      &nbsp;
+                    </div>
                   </label>
                   <UploadFilePDF onImageChange={handleFileChange} />
                   <div className="flex flex-col gap-3 mt-3">

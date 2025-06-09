@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect } from "react";
 import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
@@ -18,11 +18,22 @@ import dayjs from "dayjs";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
-function RequestListContent() {
+interface RequestListContentProps {
+  setTabActive: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const RequestListContent: React.FC<RequestListContentProps> = ({ setTabActive }) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create");
   const deleteReq = searchParams.get("delete");
   const driverCreateName = searchParams.get("driverName");
+  const activeTab = searchParams.get("activeTab");
+
+  useEffect(() => {
+    if (activeTab) {
+      setTabActive(Number(activeTab));
+    }
+  }, [activeTab, setTabActive]);
   // const cancelReq = searchParams.get("cancel-req");
   // const requestId = searchParams.get("request-id");
   // const receivedKey = searchParams.get("received-key");
@@ -83,7 +94,7 @@ function RequestListContent() {
       )} */}
     </>
   );
-}
+};
 
 const DriverManagementPage = () => {
   const [params, setParams] = useState<DriversManagementParams>({});
@@ -224,7 +235,7 @@ const DriverManagementPage = () => {
         </div>
       </div>
       <Suspense fallback={<div></div>}>
-        <RequestListContent />
+        <RequestListContent setTabActive={setActiveTab} />
       </Suspense>
     </>
   );
