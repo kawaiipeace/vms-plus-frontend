@@ -19,7 +19,7 @@ import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
 import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+
 interface Props {
   approverCard?: boolean;
   keyPickUpCard?: boolean;
@@ -87,6 +87,7 @@ Props) {
 
     if (storedDataString) {
       const parsedData = JSON.parse(storedDataString); // Parse the string
+      console.log("Parsed Data:", parsedData); // Debugging line
       setUpdatedFormData(parsedData);
       if (
         parsedData.isAdminChooseVehicle !== "1" &&
@@ -159,7 +160,7 @@ Props) {
                         {updatedFormData.vehicleUserEmpId}
                       </div>
                       <div className="supporting-text">
-                        {updatedFormData.deptSapShort}
+                        { updatedFormData.vehicleUserEmpPosition + " " + updatedFormData.deptSapShort}
                       </div>
                     </div>
                   </div>
@@ -312,7 +313,7 @@ Props) {
                           ผู้ดูแลเลือกยานพาหนะให้
                         </div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">สายงานดิจิทัล</div>
+                          <div className="supporting-text">{updatedFormData.carpoolName}</div>
                         </div>
                       </div>
 
@@ -357,7 +358,7 @@ Props) {
                           ระบบเลือกยานพาหนะให้อัตโนมัติ
                         </div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">สายงานดิจิทัล</div>
+                        <div className="supporting-text">{updatedFormData.carpoolName}</div>
                         </div>
                       </div>
 
@@ -446,6 +447,8 @@ Props) {
       <VehiclePickModel
         ref={vehiclePickModalRef}
         process="edit"
+        selectType={updatedFormData.isAdminChooseVehicle ? "ผู้ดูแลเลือกยานพาหนะให้" : "ระบบเลือกยานพาหนะให้อัตโนมัติ"}
+        desc={updatedFormData.carpoolName}
         onUpdate={handleModalUpdate}
       />
       <JourneyDetailModal

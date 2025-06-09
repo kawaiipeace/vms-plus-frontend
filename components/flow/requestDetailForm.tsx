@@ -260,7 +260,7 @@ export default function RequestDetailForm({
                             </div>
                             <div className="supporting-text-group">
                               <div className="supporting-text">
-                                สายงานดิจิทัล
+                                {requestData?.carpool_name || ""}
                               </div>
                             </div>
                           </div>
@@ -284,8 +284,7 @@ export default function RequestDetailForm({
                             </i>
                             <span className="card-item-text">
                               {
-                                requestData?.request_vehicle_type
-                                  ?.ref_vehicle_type_name
+                                requestData?.requested_vehicle_type
                               }
                             </span>
                           </div>

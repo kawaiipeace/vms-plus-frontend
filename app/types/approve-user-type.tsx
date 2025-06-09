@@ -7,4 +7,5 @@ export interface ApproverUserType {
     dept_sap_short: string;
     image_url: string;
     dept_sap_full: string;
+    posi_text: string;
   }
