@@ -198,7 +198,7 @@ export default function RequestListTable({ dataRequest, params, selectedOption, 
 
   // Transform the API data to table data format
   const dataTransform = useMemo(() => transformDriverApiToTableData(dataRequest, dates), [dataRequest, dates]);
-  console.log("dataTransform", dataTransform);
+  // console.log("dataTransform", dataTransform);
 
   const columnHelper = createColumnHelper<DriverTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();

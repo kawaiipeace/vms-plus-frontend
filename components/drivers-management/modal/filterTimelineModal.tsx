@@ -52,6 +52,10 @@ export interface VehicleStatusProps {
     ref_request_status_name: string;
     ref_request_status_code: string;
   }[];
+  timelineStatus: {
+    ref_request_status_name: string;
+    ref_request_status_code: string;
+  }[];
 }
 
 export interface VehicleInputParams {
@@ -61,6 +65,7 @@ export interface VehicleInputParams {
   taxVehicle: string[];
   vehicleStatus: string[];
   driverWorkType: string[];
+  timelineStatus: string[];
 }
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
@@ -88,6 +93,7 @@ const ModalBody = ({
   driverStatus,
   statusDriver,
   driverWorkType,
+  timelineStatus,
 }: VehicleStatusProps) => {
   const [formData, setFormData] = useState<VehicleInputParams>(params);
 
@@ -189,6 +195,33 @@ const ModalBody = ({
             ))}
           </div>
         </div>
+
+        <div className="mb-4">
+          <span className="text-base font-semibold">สถานะการปฏิบัติงาน</span>
+          <div className="flex flex-col gap-2 mt-2">
+            {timelineStatus.map((status, index) => (
+              <div className="form-group" key={index}>
+                <div className="custom-group">
+                  <div className="custom-control custom-checkbox custom-control-inline">
+                    <input
+                      type="checkbox"
+                      // defaultChecked
+                      id={`option4-${index}`}
+                      checked={formData.timelineStatus.includes(status.ref_request_status_code)}
+                      onChange={() => handleCheckboxToggle("timelineStatus", status.ref_request_status_code)}
+                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                    />
+                    <label className="custom-control-label" htmlFor={`option4-${index}`}>
+                      <div className="custom-control-label-group">
+                        <BadgeStatus status={status.ref_request_status_name} />
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -239,6 +272,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     taxVehicle: [],
     vehicleStatus: [],
     driverWorkType: [],
+    timelineStatus: [],
   });
   const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
   const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
@@ -257,6 +291,12 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     { ref_request_status_name: "ได้", ref_request_status_code: "1" },
     { ref_request_status_name: "ไม่ได้", ref_request_status_code: "2" },
   ];
+  const timelineStatus = [
+    { ref_request_status_name: "รออนุมัติ", ref_request_status_code: "1" },
+    { ref_request_status_name: "ไป - กลับ", ref_request_status_code: "2" },
+    { ref_request_status_name: "ค้างแรม", ref_request_status_code: "3" },
+    { ref_request_status_name: "เสร็จสิ้น", ref_request_status_code: "4" },
+  ];
 
   const handleSubmitFilter = () => {
     console.log("submit filter", params);
@@ -273,6 +313,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
       taxVehicle: [],
       vehicleStatus: [],
       driverWorkType: [],
+      timelineStatus: [],
     });
   };
   const handleCancelFilter = () => {
@@ -327,6 +368,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
             driverStatus={driverStatus}
             statusDriver={statusDriver}
             driverWorkType={driverWorkType}
+            timelineStatus={timelineStatus}
           />
         </div>
 

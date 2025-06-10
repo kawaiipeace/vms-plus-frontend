@@ -9,6 +9,7 @@ import UploadFilePDF from "@/components/uploadFilePDF";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
+import CustomSearchSelect from "@/components/customSelectSerch";
 
 import {
   DriverCreate,
@@ -74,6 +75,14 @@ const DriverForm = () => {
   const [profileImage, setProfileImage] = useState<UploadFileType>();
   const [filePDF, setFilePDF] = useState<UploadFileType2>();
   const [filePDF2, setFilePDF2] = useState<UploadFileType2[]>([]);
+  const [driverDepartmentOptions, setDriverDepartmentOptions] = useState<CustomSelectOption>({
+    value: "",
+    label: "ทั้งหมด",
+  });
+  const [driverDepartmentOptions2, setDriverDepartmentOptions2] = useState<CustomSelectOption>({
+    value: "",
+    label: "ทั้งหมด",
+  });
   const [formData, setFormData] = useState({
     driverImage: profileImage?.file_url || "",
     driverName: "",
@@ -234,9 +243,9 @@ const DriverForm = () => {
     // fetchDriverVendors();
   }, []);
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log(formData);
+  // }, [formData]);
 
   useEffect(() => {
     const updatedFiles = filePDF2.map((file, index) => ({
@@ -440,6 +449,24 @@ const DriverForm = () => {
     setFilePDF2((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  const handleDriverDepartmentChange = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
+    // console.log(selectedOption);
+    setFormData((prevData) => ({
+      ...prevData,
+      driverEmployingAgency: selectedOption.value,
+    }));
+    setDriverDepartmentOptions(selectedOption as { value: string; label: string });
+  };
+
+  const handleDriverDepartmentChange2 = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
+    // console.log(selectedOption);
+    setFormData((prevData) => ({
+      ...prevData,
+      driverDepartment: selectedOption.value,
+    }));
+    setDriverDepartmentOptions2(selectedOption as { value: string; label: string });
+  };
+
   return (
     <>
       <form className="form" onSubmit={handleSubmit}>
@@ -622,13 +649,20 @@ const DriverForm = () => {
                 <div className="form-group">
                   <label className="form-label">หน่วยงานผู้ว่าจ้าง</label>
                   {/* {formData.driverEmployingAgency} */}
-                  <CustomSelect
+                  {/* <CustomSelect
                     w="w-full"
                     options={driverDepartmentList}
                     value={
                       driverDepartmentList.find((option) => option.value === formData.driverEmployingAgency) || null
                     }
                     onChange={(selected) => setFormData((prev) => ({ ...prev, driverEmployingAgency: selected.value }))}
+                  /> */}
+                  <CustomSearchSelect
+                    w="md:w-full"
+                    options={driverDepartmentList}
+                    value={driverDepartmentOptions}
+                    enableSearch
+                    onChange={handleDriverDepartmentChange}
                   />
                   {formErrors.driverEmployingAgency && <FormHelper text={String(formErrors.driverEmployingAgency)} />}
                 </div>
@@ -666,11 +700,18 @@ const DriverForm = () => {
               <div>
                 <div className="form-group">
                   <label className="form-label">หน่วยงานที่สังกัด</label>
-                  <CustomSelect
+                  {/* <CustomSelect
                     w="w-full"
                     options={driverDepartmentList}
                     value={driverDepartmentList.find((option) => option.value === formData.driverDepartment) || null}
                     onChange={(selected) => setFormData((prev) => ({ ...prev, driverDepartment: selected.value }))}
+                  /> */}
+                  <CustomSearchSelect
+                    w="md:w-full"
+                    options={driverDepartmentList}
+                    value={driverDepartmentOptions2}
+                    enableSearch
+                    onChange={handleDriverDepartmentChange2}
                   />
                   {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
                 </div>

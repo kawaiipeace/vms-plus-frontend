@@ -34,6 +34,7 @@ export default function VehicleTimeLine() {
     end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
     work_type: "",
     ref_driver_status_code: "",
+    ref_timeline_status_id: "",
     is_active: "",
     page: pagination.page,
     limit: pagination.limit,
@@ -44,6 +45,7 @@ export default function VehicleTimeLine() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // console.log("Fetching vehicle timeline data with params:", params);
         const response = await getDriverTimeline(params);
         setDataRequest(response.data.drivers);
         setLastMonth(response.data.last_month);
@@ -80,10 +82,18 @@ export default function VehicleTimeLine() {
   };
 
   const handleFilterSubmit = (filterParams: any) => {
+    const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
+    const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
+    const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
+    const timelineStatus = filterParams.timelineStatus.map((item: any) => item).join(",");
     setParams((prev) => ({
       ...prev,
-      vehicel_car_type_detail: filterParams.vehicleType,
-      vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+      // vehicel_car_type_detail: filterParams.vehicleType,
+      // vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+      is_active: isActive,
+      work_type: workType,
+      ref_driver_status_code: driverStatus,
+      ref_timeline_status_id: timelineStatus,
     }));
   };
 
@@ -94,6 +104,7 @@ export default function VehicleTimeLine() {
       end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
       work_type: "",
       ref_driver_status_code: "",
+      ref_timeline_status_id: "",
       is_active: "",
       page: 1,
       limit: 10,
@@ -123,57 +134,58 @@ export default function VehicleTimeLine() {
     []
   );
 
-  const Actions = () => (
-    <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
-        <SearchInput
-          defaultValue={params.search}
-          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-          onSearch={(value) => debouncedSetParams(value)}
-        />
+  // const Actions = () => (
+  //   <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+  //     <div className="flex flex-col gap-4 md:flex-row md:items-center">
+  //       <SearchInput
+  //         ref={searchInputRef}
+  //         defaultValue={params.search}
+  //         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+  //         onSearch={(value) => debouncedSetParams(value)}
+  //       />
 
-        <div className="flex flex-wrap items-center gap-2">
-          <VehicleStatus status="รออนุมัติ" />
-          <VehicleStatus status="ไป - กลับ" />
-          <VehicleStatus status="ค้างแรม" />
-          <VehicleStatus status="เสร็จสิ้น" />
-        </div>
-      </div>
+  //       <div className="flex flex-wrap items-center gap-2">
+  //         <VehicleStatus status="รออนุมัติ" />
+  //         <VehicleStatus status="ไป - กลับ" />
+  //         <VehicleStatus status="ค้างแรม" />
+  //         <VehicleStatus status="เสร็จสิ้น" />
+  //       </div>
+  //     </div>
 
-      <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-        <DateRangePicker
-          date={selectedRange}
-          onChange={(range) => {
-            setParams((prev) => ({
-              ...prev,
-              start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
-              end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-            }));
+  //     <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+  //       <DateRangePicker
+  //         date={selectedRange}
+  //         onChange={(range) => {
+  //           setParams((prev) => ({
+  //             ...prev,
+  //             start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+  //             end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+  //           }));
 
-            if (range?.from && range?.to) {
-              setSelectedRange({ from: range.from, to: range.to });
-            } else {
-              setSelectedRange(undefined);
-            }
-          }}
-        />
-        <button
-          onClick={handleOpenFilterModal}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
-        >
-          <i className="material-symbols-outlined text-lg">filter_list</i>
-          <span className="text-base font-semibold">ตัวกรอง</span>
-        </button>
+  //           if (range?.from && range?.to) {
+  //             setSelectedRange({ from: range.from, to: range.to });
+  //           } else {
+  //             setSelectedRange(undefined);
+  //           }
+  //         }}
+  //       />
+  //       <button
+  //         onClick={handleOpenFilterModal}
+  //         className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+  //       >
+  //         <i className="material-symbols-outlined text-lg">filter_list</i>
+  //         <span className="text-base font-semibold">ตัวกรอง</span>
+  //       </button>
 
-        <button
-          onClick={toggleDropdown}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
-        >
-          <i className="material-symbols-outlined text-lg">view_column</i>
-        </button>
-      </div>
-    </div>
-  );
+  //       <button
+  //         onClick={toggleDropdown}
+  //         className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+  //       >
+  //         <i className="material-symbols-outlined text-lg">view_column</i>
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
 
   const RenderTableOrNoData = () => {
     const dropdownRef = useRef(null);
@@ -249,7 +261,56 @@ export default function VehicleTimeLine() {
   return (
     <div className="px-4 sm:px6 lg:px8 py6">
       <Header />
-      <Actions />
+      <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <SearchInput
+            defaultValue={params.search}
+            placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+            onSearch={(value) => debouncedSetParams(value)}
+          />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <VehicleStatus status="รออนุมัติ" />
+            <VehicleStatus status="ไป - กลับ" />
+            <VehicleStatus status="ค้างแรม" />
+            <VehicleStatus status="เสร็จสิ้น" />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+          <DateRangePicker
+            date={selectedRange}
+            onChange={(range) => {
+              setParams((prev) => ({
+                ...prev,
+                start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+                end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+              }));
+
+              if (range?.from && range?.to) {
+                setSelectedRange({ from: range.from, to: range.to });
+              } else {
+                setSelectedRange(undefined);
+              }
+            }}
+          />
+          <button
+            onClick={handleOpenFilterModal}
+            className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          >
+            <i className="material-symbols-outlined text-lg">filter_list</i>
+            <span className="text-base font-semibold">ตัวกรอง</span>
+          </button>
+
+          <button
+            onClick={toggleDropdown}
+            className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
+          >
+            <i className="material-symbols-outlined text-lg">view_column</i>
+          </button>
+        </div>
+      </div>
+      {/* <Actions /> */}
       <RenderTableOrNoData />
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
     </div>

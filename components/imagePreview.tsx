@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 import React from "react";
 
 interface ImagePreviewProps {
@@ -8,20 +8,26 @@ interface ImagePreviewProps {
 
 const ImagePreview: React.FC<ImagePreviewProps> = ({ image, onDelete }) => {
   return (
-    <div className="relative w-full h-[124px] aspect-square overflow-hidden rounded-lg">
+    <div className="relative w-full overflow-hidden rounded-lg">
       <div
-        className="flex items-center justify-center p-3 rounded-full bg-gray-100 w-[40px] h-[40px] absolute top-3 right-3 cursor-pointer"
+        className="flex items-center justify-center p-3 rounded-full bg-gray-100 w-[40px] h-[40px] absolute top-3 right-3 cursor-pointer z-10"
         onClick={onDelete}
       >
         <i className="material-symbols-outlined">delete</i>
       </div>
-      <Image
-        className="object-cover object-center w-full h-full"
-        src={typeof image === "string" ? image : URL.createObjectURL(image)}
-        alt="Preview"
-        width={300}
-        height={300}
-      />
+      <div className="relative w-full h-[300px] flex items-center justify-center">
+        {/* <Image
+          className="max-w-full max-h-full object-contain"
+          src={typeof image === "string" ? image : URL.createObjectURL(image)}
+          alt="Preview"
+          fill
+        /> */}
+        <img
+          className="max-w-full max-h-full object-contain"
+          src={typeof image === "string" ? image : URL.createObjectURL(image)}
+          alt="Preview"
+        />
+      </div>
     </div>
   );
 };

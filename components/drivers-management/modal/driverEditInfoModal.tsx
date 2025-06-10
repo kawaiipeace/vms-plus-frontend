@@ -126,7 +126,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           label: initialEmployingAgency?.label || "ทั้งหมด",
         });
 
-        console.log(initialDepartment, initialEmployingAgency);
+        // console.log(initialDepartment, initialEmployingAgency);
 
         setFormData({
           driverContractStartDate: driverInfo.approved_job_driver_start_date || "",
