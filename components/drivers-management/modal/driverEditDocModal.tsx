@@ -174,7 +174,7 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
                     <div className="mb-3">
                       <UploadFilePDF onImageChange={handleFileChange} />
                     </div>
-                    {formData.driverLicense && (
+                    {formData.driverLicense?.file_url && (
                       <UploadFilePreview file={formData.driverLicense} onDeleteFile={() => setFilePDF(undefined)} />
                     )}
                     {formErrors?.driverLicense && <FormHelper text={String(formErrors?.driverLicense)} />}
