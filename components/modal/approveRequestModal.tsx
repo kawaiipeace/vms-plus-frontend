@@ -67,7 +67,7 @@ const ApproveRequestModal = forwardRef<
           let basePath;
           switch (role) {
             case "firstApprover":
-              basePath = "/administrator/booking-approver";
+              basePath = "/administrator/booking-confirmer";
               break;
             case "licAdmin":
               basePath = "/administrator/booking-confirmer"; // Adjust this path as needed

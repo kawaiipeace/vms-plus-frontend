@@ -233,7 +233,7 @@ const AdminDriverPickModal = forwardRef<{ openModal: () => void; closeModal: () 
                               workDays={driver.work_days}
                               workCount={driver.work_count}
                               company={driver.driver_dept_sap || ""}
-                              rating={driver.driver_average_satisfaction_score || 0}
+                              rating={driver.driver_average_satisfaction_score || "ยังไม่มีการให้คะแนน"}
                               age={driver.age || "-"}
                               seeDetail={true}
                               isSelected={selectedDriverId === driver.mas_driver_uid}

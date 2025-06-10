@@ -145,7 +145,7 @@ const CancelRequestModal = forwardRef<
 
             if (role === "firstApprover") {
               router.push(
-                "/administrator/booking-approver?cancel-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=" +
+                "/administrator/booking-confirmer?cancel-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=" +
                   data.result?.request_no
               );
             } else if (role === "admin") {
@@ -170,7 +170,7 @@ const CancelRequestModal = forwardRef<
               );
             } else if (role === "licAdmin" || role === "licFinalAdmin") {
               if (onSuccess) {
-                onSuccess;
+                onSuccess();
               }
               router.push(
                 "/administrator/booking-approver?cancel-req=success&request-id=" +

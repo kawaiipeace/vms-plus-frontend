@@ -247,6 +247,7 @@ export default function RequestDetailForm({
                     typeName={
                       requestData?.request_vehicle_type?.ref_vehicle_type_name
                     }
+                    carpoolName={requestData?.carpool_name}
                     chooseVehicle={editable && true}
                   />
                 )}
@@ -270,7 +271,7 @@ export default function RequestDetailForm({
                             </div>
                             <div className="supporting-text-group">
                               <div className="supporting-text">
-                                สายงานดิจิทัล
+                                {requestData?.carpool_name || ""}
                               </div>
                             </div>
                           </div>
@@ -324,6 +325,9 @@ export default function RequestDetailForm({
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5 w-full overflow-hidden">
+                      <div className="form-section-header">
+                      <div className="form-section-header-title">ผู้ขับขี่</div>
+                    </div>
                     <DriverPeaInfoCard
                       role="admin"
                       driver_emp_id={requestData?.driver_emp_id}
@@ -342,9 +346,13 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
+                        <div className="form-section-header">
+                      <div className="form-section-header-title">ผู้ขับขี่</div>
+                    </div>
                       <DriverSmallInfoCard
                         reqId={requestData?.trn_request_uid}
                         driverDetail={requestData?.driver}
+                        noBack={true}
                         showPhone={true}
                         seeDetail={true}
                         selectDriver={    requestData?.ref_request_status_code === "30" ? true : false}
@@ -367,6 +375,8 @@ export default function RequestDetailForm({
       <VehiclePickModel
         process="edit"
         ref={vehiclePickModalRef}
+        selectType={requestData?.is_admin_choose_vehicle === "1" ? "Admin เลือกยานพาหนะให้" : "ระบบเลือกยานพาหนะให้"}
+        desc={requestData?.carpool_name}
         requestData={requestData}
         onUpdate={handleModalUpdate}
       />

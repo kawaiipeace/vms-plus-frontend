@@ -26,6 +26,7 @@ interface VehiclePickModelProps {
   selectType?: string;
   desc?: string;
   requestData?: RequestDetailType;
+  masCarpoolUid?: string;
   process: string;
   onSelect?: (vehicle: string) => void;
   onUpdate?: (data: any) => void;
@@ -41,7 +42,7 @@ interface VehicleCat {
 const VehiclePickModel = forwardRef<
   { openModal: () => void; closeModal: () => void },
   VehiclePickModelProps
->(({ process, onSelect, onUpdate, requestData, desc, selectType }, ref) => {
+>(({ process, onSelect, onUpdate, requestData, desc, selectType, masCarpoolUid }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { profile } = useProfile();
   const hasReset = useRef(false);
@@ -72,8 +73,17 @@ const VehiclePickModel = forwardRef<
 
   const vehicleParams = {
     emp_id: profile?.emp_id,
-    start_date: `${formData.startDate} ${formData.timeStart}`,
-    end_date: `${formData.endDate} ${formData.timeEnd}`,
+   start_date: formData?.startDate && formData?.timeStart
+    ? `${formData.startDate} ${formData.timeStart}`
+    : requestData?.start_datetime
+    ? `${requestData.start_datetime}`
+    : "",
+  end_date: formData?.endDate && formData?.timeEnd
+    ? `${formData.endDate} ${formData.timeEnd}`
+    : requestData?.end_datetime
+    ? `${requestData.end_datetime}`
+    : "",
+    mas_carpool_uid: masCarpoolUid || "",
   };
 
   const fetchVehicleCarTypesData = async () => {
@@ -263,7 +273,7 @@ const VehiclePickModel = forwardRef<
               if (requestData) {
                 const payload = {
                   trn_request_uid: requestData.trn_request_uid,
-                  requested_vehicle_type_id: Number(selectedCarTypeId),
+                  requested_vehicle_type: selectedCarTypeName,
                 };
 
                 try {

@@ -15,7 +15,10 @@ export type RequestListType = Partial<{
   vehicle_dept_name: string;
   vehicle_carpool_name: string;
   vehicle_user_emp_id: string;
+  vehicle_user_dept_name_short: string;
+  vehicle_user_position: string;
   vehicle_user_emp_name: string;
+  vendor_name: string;
   work_place: string;
   driver_dept_name: string;
   is_admin_choose_driver: number;

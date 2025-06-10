@@ -1,6 +1,5 @@
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -108,7 +107,7 @@ const DriverInfoModal = forwardRef<
                           {vehicleUserData?.driver_id || "-"}
                         </div>
                         <div className="supporting-text">
-                          {vehicleUserData?.driver_dept_sap_short || "-"}
+                          {vehicleUserData?.vendor_name || "-"}
                         </div>
                       </div>
                     </div>
@@ -138,14 +137,20 @@ const DriverInfoModal = forwardRef<
                             <i className="material-symbols-outlined">star</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {
-                                  vehicleUserData?.driver_average_satisfaction_score
-                                }{" "}
-                                (
-                                {
-                                  vehicleUserData?.driver_total_satisfaction_review
-                                }
-                                )
+                                {vehicleUserData?.driver_average_satisfaction_score ? (
+                                  <>
+                                    {
+                                      vehicleUserData.driver_average_satisfaction_score
+                                    }
+                                    (
+                                    {
+                                      vehicleUserData.driver_total_satisfaction_review
+                                    }
+                                    )
+                                  </>
+                                ) : (
+                                  "ยังไม่มีการให้คะแนน"
+                                )}
                               </div>
                             </div>
                           </div>
@@ -217,15 +222,13 @@ const DriverInfoModal = forwardRef<
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
                           <div className="form-text">
-                          {vehicleUserData?.contract_end_date !==
-                            "0001-01-01T00:00:00Z" ? 
-                            
-                              convertToBuddhistDateTime(
-                                vehicleUserData?.driver_license
-                                  ?.driver_license_end_date
-                              ).date
-                            
-                            : "-" }
+                            {vehicleUserData?.contract_end_date !==
+                            "0001-01-01T00:00:00Z"
+                              ? convertToBuddhistDateTime(
+                                  vehicleUserData?.driver_license
+                                    ?.driver_license_end_date
+                                ).date
+                              : "-"}
                           </div>
                         </div>
                       </div>

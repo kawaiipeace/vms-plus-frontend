@@ -100,17 +100,25 @@ export default function RequestListTable({ defaultData, pagination, role }: Prop
       header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex flex-col">
-          <div>{row.original.vehicle_user_emp_name}</div>
-          <div>{row.original.vehicle_user_dept_sap_short}</div>
-        </div>
+      <div className="flex flex-col">
+            <div>{row.original.vehicle_user_emp_name} ({row.original.vehicle_user_emp_id})</div>
+             <div className="text-color-secondary text-xs">
+              {row.original.vehicle_user_position + " " + row.original.vehicle_user_dept_name_short}
+            </div>
+          </div>
       ),
     },
     {
       accessorKey: "vehicle_license_plate",
       header: () => <div className="text-left">ยานพาหนะ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
+      cell: ({ row }) => (
+         <div className="flex flex-col">
+            <div className="text-left">
+              {row.original.vehicle_license_plate + " " +row.original.vehicle_license_plate_province_short}
+            </div>
+          </div>
+      ),
     },
     {
       accessorKey: "work_place",

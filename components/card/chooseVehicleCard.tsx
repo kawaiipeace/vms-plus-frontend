@@ -9,11 +9,13 @@ interface Props {
   typeName?: string;
   reqId?: string;
   vehicleType?: RequestVehicleType;
+  carpoolName?: string;
 }
 
 export default function ChooseVehicleCard({
   reqId,
   chooseType,
+  carpoolName,
   chooseVehicle,
   typeName,
   vehicleType
@@ -40,7 +42,7 @@ export default function ChooseVehicleCard({
             <div className="card-content-top-left">
               <div className="card-title">ผู้ดูแลเลือกยานพาหนะให้</div>
               <div className="supporting-text-group">
-                <div className="supporting-text">สายงานดิจิทัล</div>
+                <div className="supporting-text">{carpoolName}</div>
               </div>
             </div>
           </div>

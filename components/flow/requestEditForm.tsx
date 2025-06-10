@@ -58,10 +58,6 @@ Props) {
     closeModal: () => void;
   } | null>(null);
 
-  const approveRequestModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
 
@@ -446,6 +442,7 @@ Props) {
       />
       <VehiclePickModel
         ref={vehiclePickModalRef}
+        masCarpoolUid={updatedFormData.masCarpoolUid}
         process="edit"
         selectType={updatedFormData.isAdminChooseVehicle ? "ผู้ดูแลเลือกยานพาหนะให้" : "ระบบเลือกยานพาหนะให้อัตโนมัติ"}
         desc={updatedFormData.carpoolName}

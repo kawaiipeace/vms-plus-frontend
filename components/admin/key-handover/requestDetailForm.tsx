@@ -144,6 +144,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
                 {requestData?.is_admin_choose_vehicle === "1" && (
                   <ChooseVehicleCard
                     reqId={requestData?.trn_request_uid}
+                    carpoolName={requestData?.carpool_name}
                     vehicleType={requestData?.request_vehicle_type}
                     typeName={requestData?.request_vehicle_type?.ref_vehicle_type_name}
                   />

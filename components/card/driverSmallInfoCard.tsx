@@ -5,6 +5,7 @@ import { fetchDriverDetail } from "@/services/masterService";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import AdminDriverPickModal from "../modal/adminDriverPickModal";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
@@ -15,6 +16,8 @@ interface DriverSmallInfoCardProps {
   selectDriver?: boolean;
   reqId?: string;
   noBack?: boolean;
+  pickupPlace?: string;
+  pickupDatetime?: string;
   onUpdate?: () => void;
 }
 
@@ -27,7 +30,9 @@ export default function DriverSmallInfoCard({
   selectDriver,
   reqId,
   noBack,
-  onUpdate
+  pickupPlace,
+  pickupDatetime,
+  onUpdate,
 }: DriverSmallInfoCardProps) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
@@ -116,7 +121,8 @@ export default function DriverSmallInfoCard({
                   <div className="card-item">
                     <i className="material-symbols-outlined">star</i>
                     <span className="card-item-text">
-                      {driver.driver_average_satisfaction_score}
+                      {driver.driver_average_satisfaction_score ||
+                        "ยังไม่มีการให้คะแนน"}
                     </span>
                   </div>
                   <div className="card-item">
@@ -134,9 +140,9 @@ export default function DriverSmallInfoCard({
               <button
                 className={`btn btn-secondary flex-1`}
                 onClick={
-                  userKeyPickup
-                    ? () => userKeyPickUpModalRef.current?.openModal()
-                    : () => driverInfoModalRef.current?.openModal()
+                  // userKeyPickup
+                  //   ? () => userKeyPickUpModalRef.current?.openModal()
+                  () => driverInfoModalRef.current?.openModal()
                 }
               >
                 ดูรายละเอียด
@@ -170,7 +176,7 @@ export default function DriverSmallInfoCard({
                         <i className="material-symbols-outlined">id_card</i>
                         <div className="form-plaintext-group">
                           <div className="form-label">สถานที่นัดหมาย</div>
-                          <div className="form-text">49005622</div>
+                         <div className="form-text">{pickupPlace}</div>
                         </div>
                       </div>
                     </div>
@@ -182,7 +188,7 @@ export default function DriverSmallInfoCard({
                         </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่และเวลา</div>
-                          <div className="form-text">01/01/2567</div>
+                          <div className="form-text">{convertToBuddhistDateTime(pickupDatetime || "").date + convertToBuddhistDateTime(pickupDatetime || "").time}</div>
                         </div>
                       </div>
                     </div>
@@ -219,7 +225,7 @@ export default function DriverSmallInfoCard({
         />
       )}
 
-      {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />}
+      {/* {userKeyPickup && <UserKeyPickUpModal ref={userKeyPickUpModalRef} />} */}
     </div>
   );
 }

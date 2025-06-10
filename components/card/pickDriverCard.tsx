@@ -28,7 +28,7 @@ export default function PickDriverCard({
   reqId: string;
   imgSrc: string;
   name: string;
-  rating: number;
+  rating: number | string; // rating can be a number or a string
   age: string;
   company: string;
   nickName?: string;

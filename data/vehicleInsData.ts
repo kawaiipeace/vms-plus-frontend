@@ -11,6 +11,8 @@ export type VehicleInsType = {
     work_place: string;
     start_datetime: string;
     end_datetime: string;
+    vehicle_user_position: string;
+    vehicle_user_dept_name_short: string;
     ref_request_status_code: string;
     ref_request_status_name: string;
     is_have_sub_request: string;

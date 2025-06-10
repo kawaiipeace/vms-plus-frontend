@@ -1,7 +1,6 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import AlertCustom from "@/components/alertCustom";
 import ApproveProgress from "@/components/approveProgress";
-import AppointmentDriverCard from "@/components/card/appointmentDriverCard";
 import CarDetailCard from "@/components/card/carDetailCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
 import DisburstmentCard from "@/components/card/disburstmentCard";
@@ -50,11 +49,6 @@ export default function RequestDetailForm({
     closeModal: () => void;
   } | null>(null);
   const approverModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-
-  const approveRequestModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
@@ -153,7 +147,9 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              progressRequestStatusEmp={requestData?.progress_request_status_emp}
+              progressRequestStatusEmp={
+                requestData?.progress_request_status_emp
+              }
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -182,7 +178,7 @@ export default function RequestDetailForm({
                             </div>
                             <div className="supporting-text-group">
                               <div className="supporting-text">
-                                สายงานดิจิทัล
+                                {requestData?.carpool_name || ""}
                               </div>
                             </div>
                           </div>
@@ -194,10 +190,7 @@ export default function RequestDetailForm({
                               directions_car
                             </i>
                             <span className="card-item-text">
-                              {
-                                requestData?.request_vehicle_type
-                                  ?.ref_vehicle_type_name
-                              }
+                              {requestData?.requested_vehicle_type}
                             </span>
                           </div>
                         </div>
@@ -252,7 +245,10 @@ export default function RequestDetailForm({
                 {requestData?.vehicle &&
                   (!requestData?.is_admin_choose_vehicle ||
                     requestData?.is_admin_choose_vehicle === "0") && (
-                    <CarDetailCard vehicle={requestData?.vehicle} seeDetail={true} />
+                    <CarDetailCard
+                      vehicle={requestData?.vehicle}
+                      seeDetail={true}
+                    />
                   )}
 
                 {requestData?.is_admin_choose_driver &&
@@ -296,36 +292,24 @@ export default function RequestDetailForm({
                         id={requestData?.driver.driver_id}
                         seeDetail={true}
                         noBack={true}
+                        pickupPlace={requestData?.pickup_place}
+                        pickupDatetime={requestData?.pickup_datetime}
+                        userKeyPickup={true}
                       />
                     </div>
                   )
                 )}
 
-                {(requestData?.ref_request_status_code == "90" ||
-                  requestData?.ref_request_status_code == "31" ||
-                  requestData?.ref_request_status_code == "21" ||
-                  requestData?.ref_request_status_code == "30") && (
-                  <div className="form-section">
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">
-                        การนัดหมายพนักงานขับรถ
-                      </div>
+                {Number(requestData?.ref_request_status_code) >= 40 &&
+                  Number(requestData?.ref_request_status_code) < 90 && (
+                    <div className="mt-5">
+                      <PickupKeyCard
+                        receiveKeyPlace={requestData?.pickup_place}
+                        receiveKeyStart={requestData?.pickup_datetime}
+                        receiveKeyEnd={requestData?.pickup_datetime}
+                      />
                     </div>
-
-                    <AppointmentDriverCard
-                      pickupPlace={requestData?.pickup_place}
-                      pickupDatetime={requestData?.pickup_datetime}
-                    />
-                  </div>
-                )}
-
-                <div className="mt-5">
-                  <PickupKeyCard
-                    receiveKeyPlace={requestData?.pickup_place}
-                    receiveKeyStart={requestData?.pickup_datetime}
-                    receiveKeyEnd={requestData?.pickup_datetime}
-                  />
-                </div>
+                  )}
               </div>
             </div>
           </div>

@@ -75,7 +75,7 @@ export default function RequestDetailForm({
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await requestDetail(requestId);
-      console.log("data---", response.data);
+      console.log("data1====>", response.data);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -231,7 +231,9 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              progressRequestStatusEmp={requestData?.progress_request_status_emp}
+              progressRequestStatusEmp={
+                requestData?.progress_request_status_emp
+              }
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -283,9 +285,7 @@ export default function RequestDetailForm({
                               directions_car
                             </i>
                             <span className="card-item-text">
-                              {
-                                requestData?.requested_vehicle_type
-                              }
+                              {requestData?.requested_vehicle_type}
                             </span>
                           </div>
                         </div>
@@ -405,6 +405,13 @@ export default function RequestDetailForm({
       <VehiclePickModel
         process="edit"
         ref={vehiclePickModalRef}
+        masCarpoolUid={requestData?.mas_carpool_uid}
+        selectType={
+          requestData?.is_admin_choose_vehicle === "1"
+            ? "Admin เลือกยานพาหนะให้"
+            : "ระบบเลือกยานพาหนะให้"
+        }
+        desc={requestData?.carpool_name}
         requestData={requestData}
         onUpdate={handleModalUpdate}
       />

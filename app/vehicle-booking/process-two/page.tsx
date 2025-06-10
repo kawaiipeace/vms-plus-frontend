@@ -405,6 +405,7 @@ export default function ProcessTwo() {
                           return (
                             <AutoCarCard
                               key={carpool.mas_carpool_uid}
+                              masCarpoolUid={carpool.mas_carpool_uid}
                               imgSrc={
                                 carpool.ref_carpool_choose_car_id === 3
                                   ? "/assets/img/system-selected.png"

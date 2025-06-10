@@ -24,7 +24,7 @@ export default function VehicleUserInfoCard({ id, requestData, displayPhone }: P
             <div className="form-label">{requestData?.vehicle_user_emp_name || "-"}</div>
             <div className="supporting-text-group">
               <div className="supporting-text">{requestData?.vehicle_user_emp_id || "-"}</div>
-              <div className="supporting-text">{requestData?.vehicle_user_dept_name_short || "-"}</div>
+              <div className="supporting-text">{requestData?.vehicle_user_position + " " +requestData?.vehicle_user_dept_name_short || "-"}</div>
             </div>
           </div>
         </div>
