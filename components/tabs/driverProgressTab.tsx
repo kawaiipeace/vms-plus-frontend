@@ -106,23 +106,6 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                       </React.Fragment>
                     );
                   })}
-                  {/* <Link href="/vehicle-in-use/driver/97852739-cdb5-46c4-a280-78894fb432fd">
-                  <MobileDriverCard
-                    cardType="recordTravel"
-                    carRegis="5กก 1234 กรุงเทพมหานคร"
-                    location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
-                    date="01/01/2567 - 07/01/2567"
-                    title="บันทึกการเดินทาง"
-                    noteText="กรุณาบันทึกเลขไมล์และการเติมเชื้อเพลิง"
-                  />
-                </Link>
-                <MobileDriverCard
-                  cardType="waitCar"
-                  carRegis="5กก 1234 กรุงเทพมหานคร"
-                  location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
-                  date="01/01/2567 - 07/01/2567"
-                  title="รอรับยานพาหนะ"
-                /> */}
                 </div>
               </div>
             )}
@@ -175,22 +158,6 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                       </React.Fragment>
                     );
                   })}
-                  {/* <MobileDriverCard
-                  cardType="waitVerify"
-                  carRegis="5กก 1234 กรุงเทพมหานคร"
-                  location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
-                  date="01/01/2567 - 07/01/2567"
-                  title="รอตรวจสอบ"
-                  noteText="รอผู้ดูแลยานพาหนะตรวจสอบและปิดงาน"
-                />
-                <MobileDriverCard
-                  cardType="returnFail"
-                  carRegis="5กก 1234 กรุงเทพมหานคร"
-                  location="การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด..."
-                  date="01/01/2567 - 07/01/2567"
-                  title="คืนยานพาหนะไม่สำเร็จ"
-                  noteText="กรุณาเติมเชื้อเพลิงและดูแลความสะอาด ก่อนคืนยานพาหนะ"
-                /> */}
                 </div>
               </div>
             )}

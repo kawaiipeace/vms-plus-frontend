@@ -23,8 +23,10 @@ interface DriverDetailContentProps {
   progressType: string;
 }
 
-const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) => {
-  const returnCarAddComplete = true;
+const DriverDetailContent = ({
+  data,
+  progressType,
+}: DriverDetailContentProps) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const keyPickupDetailModalRef = useRef<{
@@ -63,27 +65,38 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
 
   return (
     <div>
-      {progressType !== "การรับยานพาหนะ" && progressType !== "การคืนยานพาหนะ" && (
-        <div className="card card-body p-0 !border-0 !rounded-none">
-          <div className="flex items-center -mx-4 px-4">
-            <p>{data?.request_no || "-"}</p>
-            <Link
-              className="ml-auto"
-              href={
-                progressType === "คืนยานพาหนะไม่สำเร็จ"
-                  ? "/vehicle-in-use/driver/edit/" + data?.trn_request_uid + "?progressType=" + progressType
-                  : "/vehicle-in-use/driver/request-list/" + data?.trn_request_uid + "?progressType=" + progressType
-              }
-            >
-              <button className="btn bg-transparent border-0 shadow-none text-[#A80689] p-1">
-                รายละเอียด <i className="material-symbols-outlined">keyboard_arrow_right</i>
-              </button>
-            </Link>
+      {progressType !== "การรับยานพาหนะ" &&
+        progressType !== "การคืนยานพาหนะ" && (
+          <div className="card card-body p-0 !border-0 !rounded-none">
+            <div className="flex items-center -mx-4 px-4">
+              <p>{data?.request_no || "-"}</p>
+              <Link
+                className="ml-auto"
+                href={
+                  progressType === "คืนยานพาหนะไม่สำเร็จ"
+                    ? "/vehicle-in-use/driver/edit/" +
+                      data?.trn_request_uid +
+                      "?progressType=" +
+                      progressType
+                    : "/vehicle-in-use/driver/request-list/" +
+                      data?.trn_request_uid +
+                      "?progressType=" +
+                      progressType
+                }
+              >
+                <button className="btn bg-transparent border-0 shadow-none text-[#A80689] p-1">
+                  รายละเอียด{" "}
+                  <i className="material-symbols-outlined">
+                    keyboard_arrow_right
+                  </i>
+                </button>
+              </Link>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {(data?.can_cancel_request === false || data?.ref_request_status_code === "90") && (
+      {(data?.can_cancel_request === false ||
+        data?.ref_request_status_code === "90") && (
         <AlertCustom title="งานถูกยกเลิกแล้ว" desc="ยกเลิกเมื่อ 25/12/2566" />
       )}
 
@@ -94,21 +107,29 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
               <div className="form-section-header">
                 <div className="form-section-header-title">
                   <p>การรับกุญแจ</p>
-                  <p className="text-sm text-gray-500 font-normal">กรุณาไปรับกุญแจตามสถานที่ ในวันและเวลาที่กำหนด</p>
+                  <p className="text-sm text-gray-500 font-normal">
+                    กรุณาไปรับกุญแจตามสถานที่ ในวันและเวลาที่กำหนด
+                  </p>
                 </div>
               </div>
               <DriverWaitKeyCard
                 received_key_place={data?.received_key_place || "-"}
                 received_key_datetime={data?.received_key_datetime || ""}
-                received_key_start_datetime={data?.received_key_start_datetime || ""}
-                received_key_end_datetime={data?.received_key_end_datetime || ""}
+                received_key_start_datetime={
+                  data?.received_key_start_datetime || ""
+                }
+                received_key_end_datetime={
+                  data?.received_key_end_datetime || ""
+                }
               />
             </div>
             <div className="form-section">
               <div className="form-section-header">
                 <div className="form-section-header-title">
                   <p>การรับผู้โดยสาร</p>
-                  <p className="text-sm text-gray-500 font-normal">กรุณาไปรับผู้โดยสารตามวัน เวลา และสถานที่ดังนี้</p>
+                  <p className="text-sm text-gray-500 font-normal">
+                    กรุณาไปรับผู้โดยสารตามวัน เวลา และสถานที่ดังนี้
+                  </p>
                 </div>
               </div>
               <DriverPickUpPassengerCard
@@ -126,7 +147,9 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
               <UserInfoCard
                 displayOn="driver"
                 displayBtnMore={true}
-                vehicleUserData={data?.vehicle?.vehicle_department?.vehicle_user}
+                vehicleUserData={
+                  data?.vehicle?.vehicle_department?.vehicle_user
+                }
               />
             </div>
           </div>
@@ -176,9 +199,13 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
                     <div className="grid grid-cols-12">
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">local_parking</i>
+                          <i className="material-symbols-outlined">
+                            local_parking
+                          </i>
                           <div className="form-plaintext-group">
-                            <div className="form-text">{data?.pickup_place || "-"}</div>
+                            <div className="form-text">
+                              {data?.pickup_place || "-"}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -190,7 +217,9 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
                 <div className="form-section-header">
                   <div className="form-section-header-title">
                     <p>การรับผู้โดยสาร</p>
-                    <p className="text-sm text-gray-500 font-normal">กรุณาไปรับผู้โดยสารตามวัน เวลา และสถานที่ดังนี้</p>
+                    <p className="text-sm text-gray-500 font-normal">
+                      กรุณาไปรับผู้โดยสารตามวัน เวลา และสถานที่ดังนี้
+                    </p>
                   </div>
                 </div>
                 <DriverPickUpPassengerCard
@@ -205,7 +234,10 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
                     <p>ผู้โดยสาร</p>
                   </div>
                 </div>
-                <DriverPassengerInfoCard id={data?.trn_request_uid} requestData={data} />
+                <DriverPassengerInfoCard
+                  id={data?.trn_request_uid}
+                  requestData={data}
+                />
               </div>
             </div>
           </div>
@@ -218,7 +250,12 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
               รับยานพาหนะ
             </button>
           </div>
-          <ReceiveCarVehicleModal role="driver" status="" requestData={data} ref={receiveCarVehicleModalRef} />
+          <ReceiveCarVehicleModal
+            role="driver"
+            status=""
+            requestData={data}
+            ref={receiveCarVehicleModalRef}
+          />
         </>
       )}
 
@@ -229,32 +266,54 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
         progressType === "ภารกิจสำเร็จ") && (
         <>
           <div className="w-full">
-            <div className="grid grid-cols-4 gap-4 my-4">
+            <div className="grid grid-cols-2 gap-4 my-4">
               <Link
                 href={
                   progressType === "ภารกิจสำเร็จ"
-                    ? "/vehicle-in-use/driver/" + data?.trn_request_uid + "?progressType=การรับยานพาหนะ"
-                    : "/vehicle-in-use/driver/edit/" + data?.trn_request_uid + "?progressType=การรับยานพาหนะ"
+                    ? "/vehicle-in-use/driver/" +
+                      data?.trn_request_uid +
+                      "?progressType=การรับยานพาหนะ"
+                    : "/vehicle-in-use/driver/edit/" +
+                      data?.trn_request_uid +
+                      "?progressType=การรับยานพาหนะ"
                 }
               >
-                <RequestStatusBox iconName="directions_car" status="info" title="รับยานพาหนะ" />
+                <RequestStatusBox
+                  iconName="directions_car"
+                  status="info"
+                  title="รับยานพาหนะ"
+                />
               </Link>
-              {returnCarAddComplete ? (
+              {progressType === "คืนยานพาหนะไม่สำเร็จ" ||
+              progressType === "บันทึกการเดินทาง" ? (
+                <div
+                  onClick={() => returnCarAddModalRef.current?.openModal()}
+                  className="cursor-pointer"
+                >
+                  <RequestStatusBox
+                    iconName="reply"
+                    status="warning"
+                    title="คืนยานพาหนะ"
+                  />
+                </div>
+              ) : (
                 <Link
                   href={
                     progressType === "ภารกิจสำเร็จ"
-                      ? "/vehicle-in-use/driver/" + data?.trn_request_uid + "?progressType=การคืนยานพาหนะ"
-                      : progressType === "คืนยานพาหนะไม่สำเร็จ"
-                      ? "/vehicle-in-use/driver/edit/" + data?.trn_request_uid + "?progressType=คืนยานพาหนะไม่สำเร็จ"
-                      : "/vehicle-in-use/driver/edit/" + data?.trn_request_uid + "?progressType=การคืนยานพาหนะ"
+                      ? "/vehicle-in-use/driver/" +
+                        data?.trn_request_uid +
+                        "?progressType=การคืนยานพาหนะ"
+                      : "/vehicle-in-use/driver/edit/" +
+                        data?.trn_request_uid +
+                        "?progressType=การคืนยานพาหนะ"
                   }
                 >
-                  <RequestStatusBox iconName="reply" status="warning" title="คืนยานพาหนะ" />
+                  <RequestStatusBox
+                    iconName="reply"
+                    status="warning"
+                    title="คืนยานพาหนะ"
+                  />
                 </Link>
-              ) : (
-                <div onClick={() => returnCarAddModalRef.current?.openModal()} className="cursor-pointer">
-                  <RequestStatusBox iconName="reply" status="warning" title="คืนยานพาหนะ" />
-                </div>
               )}
             </div>
             {progressType === "คืนยานพาหนะไม่สำเร็จ" && (
@@ -276,7 +335,11 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
                 >
                   <div className="flex gap-2 items-center">
                     {tab.label}
-                    {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
+                    {tab.badge && (
+                      <span className="badge badge-brand badge-pill-outline">
+                        4
+                      </span>
+                    )}{" "}
                   </div>
                 </button>
               ))}
@@ -296,8 +359,16 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
             </div>
 
             <DriverReceiveCarInfoCard
-              date={data?.accepted_vehicle_datetime ? dayjs(data?.accepted_vehicle_datetime).format("DD/MM/YYYY") : "-"}
-              time={data?.accepted_vehicle_datetime ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm") : "-"}
+              date={
+                data?.accepted_vehicle_datetime
+                  ? dayjs(data?.accepted_vehicle_datetime).format("DD/MM/YYYY")
+                  : "-"
+              }
+              time={
+                data?.accepted_vehicle_datetime
+                  ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                  : "-"
+              }
               mile_end={data?.mile_end?.toString() || "-"}
               fuel_end={data?.fuel_end?.toString() || "-"}
               remark={data?.remark || "-"}
@@ -311,7 +382,13 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
               </div>
             </div>
 
-            <ImagesCarCard images={data?.vehicle_images_received?.map((image) => image.vehicle_img_file || "") || []} />
+            <ImagesCarCard
+              images={
+                data?.vehicle_images_received?.map(
+                  (image) => image.vehicle_img_file || ""
+                ) || []
+              }
+            />
           </div>
         </>
       )}
@@ -335,11 +412,21 @@ const DriverDetailContent = ({ data, progressType }: DriverDetailContentProps) =
               </div>
             </div>
 
-            <ImagesCarCard images={data?.vehicle_images_returned?.map((image) => image.vehicle_img_file || "") || []} />
+            <ImagesCarCard
+              images={
+                data?.vehicle_images_returned?.map(
+                  (image) => image.vehicle_img_file || ""
+                ) || []
+              }
+            />
           </div>
         </>
       )}
-      <ReturnCarAddModal useBy="driver" progress={progressType} ref={returnCarAddModalRef} />
+      <ReturnCarAddModal
+        useBy="driver"
+        progress={progressType}
+        ref={returnCarAddModalRef}
+      />
     </div>
   );
 };
