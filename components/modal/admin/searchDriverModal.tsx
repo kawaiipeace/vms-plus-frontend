@@ -68,6 +68,7 @@ const SearchDriverModal = forwardRef(
       const fetchDriverData = async () => {
         try {
           const response = await fetchOtherDeptDrivers(params);
+          console.log("driverout",response);
           if (response.status === 200) {
             const vehicleUserData = response.data.drivers;
             const driverOptionsArray = [
@@ -75,11 +76,11 @@ const SearchDriverModal = forwardRef(
                 (user: {
                   mas_driver_uid: string;
                   driver_name: string;
-                  driver_dept_sap: string;
+                  driver_nickname: string;
                   status: string;
                 }) => ({
                   value: user.mas_driver_uid,
-                  label: `${user.driver_name} (${user.driver_dept_sap})`,
+                  label: `${user.driver_name} (${user.driver_nickname})`,
                   activeStatus: status,
                 })
               ),

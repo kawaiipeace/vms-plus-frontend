@@ -21,7 +21,6 @@ import {
 import AlertCustom from "@/components/alertCustom";
 import { fetchRequestDetail } from "@/services/bookingAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ChooseVehicleCard from "../card/chooseVehicleCard";
 
@@ -78,7 +77,6 @@ export default function RequestDetailForm({
   };
 
   useEffect(() => {
-    console.log("tttt");
     fetchRequestDetailfunc();
   }, [requestId]);
 
@@ -137,12 +135,8 @@ export default function RequestDetailForm({
             </div>
 
             <JourneyDetailCard
-              startDate={
-                requestData?.start_datetime || ""
-              }
-              endDate={
-                requestData?.end_datetime || ""
-              }
+              startDate={requestData?.start_datetime || ""}
+              endDate={requestData?.end_datetime || ""}
               timeStart={
                 convertToBuddhistDateTime(requestData?.start_datetime || "")
                   .time
@@ -231,7 +225,9 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              progressRequestStatusEmp={requestData?.progress_request_status_emp}
+              progressRequestStatusEmp={
+                requestData?.progress_request_status_emp
+              }
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -240,92 +236,47 @@ export default function RequestDetailForm({
                   <div className="form-section-header-title">ยานพาหนะ</div>
                 </div>
 
-                {requestData?.is_admin_choose_vehicle === "1" && (
+                {requestData?.can_choose_vehicle === true && (
                   <ChooseVehicleCard
                     reqId={requestData?.trn_request_uid}
                     vehicleType={requestData?.request_vehicle_type}
-                    typeName={
-                      requestData?.request_vehicle_type?.ref_vehicle_type_name
-                    }
+                    typeName={requestData?.requested_vehicle_type}
+                    requestData={requestData}
                     carpoolName={requestData?.carpool_name}
-                    chooseVehicle={editable && true}
+                    chooseVehicle={requestData?.can_choose_vehicle === true}
+                    onUpdate={handleModalUpdate}
                   />
-                )}
-                {requestData?.is_system_choose_vehicle === "1" && (
-                  <div className="card card-section-inline mt-5 mb-5">
-                    <div className="card-body card-body-inline">
-                      <div className="img img-square img-avatar flex-grow-1 align-self-start">
-                        <Image
-                          src="/assets/img/system-selected.png"
-                          className="rounded-md"
-                          width={100}
-                          height={100}
-                          alt=""
-                        />
-                      </div>
-                      <div className="card-content">
-                        <div className="card-content-top card-content-top-inline">
-                          <div className="card-content-top-left">
-                            <div className="card-title">
-                              ระบบเลือกยานพาหนะให้อัตโนมัติ
-                            </div>
-                            <div className="supporting-text-group">
-                              <div className="supporting-text">
-                                {requestData?.carpool_name || ""}
-                              </div>
-                            </div>
-                          </div>
-                          {editable && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={() =>
-                                vehiclePickModalRef.current?.openModal()
-                              }
-                            >
-                              เลือกประเภทยานพาหนะ
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="card-item-group d-flex">
-                          <div className="card-item col-span-2">
-                            <i className="material-symbols-outlined">
-                              directions_car
-                            </i>
-                            <span className="card-item-text">
-                              {/* {requestData.requestedVehicleTypeName} */}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 )}
 
                 {requestData?.vehicle &&
-                  (!requestData?.is_admin_choose_vehicle ||
-                    requestData?.is_admin_choose_vehicle === "0") && (
+                  requestData?.can_choose_vehicle === false && (
                     <CarDetailCard
                       reqId={requestData?.trn_request_uid}
                       vehicle={requestData?.vehicle}
                       requestData={requestData}
                       seeDetail={true}
-                      selectVehicle={requestData?.ref_request_status_code === "30" ? true : false}
+                      selectVehicle={
+                        requestData?.ref_request_status_code === "30"
+                          ? true
+                          : false
+                      }
+                      onUpdate={handleModalUpdate}
                     />
                   )}
 
-                {requestData?.is_admin_choose_driver && (
+                {requestData?.can_choose_driver === true && (
                   <ChooseDriverCard
                     reqId={requestData?.trn_request_uid}
+                    requestData={requestData}
                     number={requestData?.number_of_available_drivers}
                     onChooseDriver={handleModalUpdate}
-                    chooseDriver={editable && true}
+                    chooseDriver={requestData?.can_choose_driver === true}
                   />
                 )}
 
                 {requestData?.is_pea_employee_driver === "1" ? (
                   <div className="mt-5 w-full overflow-hidden">
-                      <div className="form-section-header">
+                    <div className="form-section-header">
                       <div className="form-section-header-title">ผู้ขับขี่</div>
                     </div>
                     <DriverPeaInfoCard
@@ -346,16 +297,22 @@ export default function RequestDetailForm({
                 ) : (
                   requestData?.driver && (
                     <div className="mt-5">
-                        <div className="form-section-header">
-                      <div className="form-section-header-title">ผู้ขับขี่</div>
-                    </div>
+                      <div className="form-section-header">
+                        <div className="form-section-header-title">
+                          ผู้ขับขี่
+                        </div>
+                      </div>
                       <DriverSmallInfoCard
                         reqId={requestData?.trn_request_uid}
                         driverDetail={requestData?.driver}
                         noBack={true}
                         showPhone={true}
                         seeDetail={true}
-                        selectDriver={    requestData?.ref_request_status_code === "30" ? true : false}
+                        selectDriver={
+                          requestData?.ref_request_status_code === "30"
+                            ? true
+                            : false
+                        }
                         onUpdate={handleModalUpdate}
                       />
                     </div>
@@ -375,7 +332,11 @@ export default function RequestDetailForm({
       <VehiclePickModel
         process="edit"
         ref={vehiclePickModalRef}
-        selectType={requestData?.is_admin_choose_vehicle === "1" ? "Admin เลือกยานพาหนะให้" : "ระบบเลือกยานพาหนะให้"}
+        selectType={
+          requestData?.is_admin_choose_vehicle === "1"
+            ? "Admin เลือกยานพาหนะให้"
+            : "ระบบเลือกยานพาหนะให้"
+        }
         desc={requestData?.carpool_name}
         requestData={requestData}
         onUpdate={handleModalUpdate}

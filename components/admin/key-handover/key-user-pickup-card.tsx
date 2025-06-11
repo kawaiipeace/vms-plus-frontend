@@ -37,7 +37,7 @@ export default function KeyUserPickupCard({ requestData }: Props) {
                     </div>
                   </div>
                 </div>
-                { requestData?.received_key_internal_contact_number && 
+            
                 <div className="col-span-12 md:col-span-6">
                   <div className="form-group form-plaintext">
                     <i className="material-symbols-outlined">call</i>
@@ -48,7 +48,7 @@ export default function KeyUserPickupCard({ requestData }: Props) {
                     </div>
                   </div>
                 </div>
-                }
+               
               </div>
             </div>
           </div>

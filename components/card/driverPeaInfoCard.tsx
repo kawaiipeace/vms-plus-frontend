@@ -91,12 +91,12 @@ export default function DriverPeaInfoCard({
                   </span>
                 </div>
              
-              {driver?.tel_internal && (
+          
                 <div className="card-item">
                   <i className="material-symbols-outlined">call</i>
                   <span className="card-item-text">{driver?.tel_internal}</span>
                 </div>
-              )}
+           
             </div>
           </div>
         </div>

@@ -274,6 +274,22 @@ export const fetchVehicles = async (params: {
   }
 };
 
+export const fetchSearchVehicleCarpools = async (params: {
+  search?: string;
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+  mas_carpool_uid?: string;
+  car_type?: string;
+}) => {
+  try {
+    const response = await axiosInstance.get("vehicle/search-booking-carpool", { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchSearchVehicles = async (params: {
   search?: string;
   emp_id?: string;

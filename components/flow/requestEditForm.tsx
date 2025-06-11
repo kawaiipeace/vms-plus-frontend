@@ -174,7 +174,7 @@ Props) {
                       </div>
                     </div>
 
-                    {updatedFormData.telInternal && (
+                
                       <div className="col-span-12 md:col-span-6">
                         <div className="form-group form-plaintext">
                           <i className="material-symbols-outlined">call</i>
@@ -186,7 +186,7 @@ Props) {
                           </div>
                         </div>
                       </div>
-                    )}
+                 
                   </div>
                 </div>
               </div>

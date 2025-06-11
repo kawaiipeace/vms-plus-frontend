@@ -9,6 +9,8 @@ export default function SelectCarCard({
   carType,
   deptSap,
   seat,
+  lastMonthMile,
+  monthMile,
   vehicleId,
   onSelect,
   onClickSeeDetail,
@@ -20,6 +22,8 @@ export default function SelectCarCard({
   carType?: string;
   deptSap?: string;
   seat?: number;
+  lastMonthMile?: number;
+  monthMile?: number;
   vehicleId: string;
   onSelect: (vehicleTitle: string) => void;
   onClickSeeDetail?: (id: string) => void;
@@ -60,20 +64,19 @@ export default function SelectCarCard({
             <div className="card-subtitle">{subTitle}</div>
             <div className="card-supporting-text-group">
               <div className="card-supporting-text">{carType}</div>
-              <div className="card-supporting-text">{deptSap}</div>
             </div>
           </div>
 
-          <div className="card-item-group">
+          <div className="card-item-group !flex justify-around">
             <div className="card-item">
-              <i className="material-symbols-outlined">credit_card</i>
-              <span className="card-item-text">บัตรเติมน้ำมัน</span>
+              <i className="material-symbols-outlined">road</i>
+              <span className="card-item-text">{lastMonthMile}</span>
             </div>
             <div className="card-item">
               <i className="material-symbols-outlined">
-                airline_seat_recline_extra
+                swap_driving_apps_wheel
               </i>
-              <span className="card-item-text">{seat} ที่นั่ง</span>
+              <span className="card-item-text">{monthMile}</span>
             </div>
           </div>
         </div>
