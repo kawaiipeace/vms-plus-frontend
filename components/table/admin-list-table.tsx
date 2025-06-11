@@ -153,7 +153,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
               <div>
                 <div className="text-left">{row.original.driver_name}</div>
                 <div className="text-color-secondary text-xs">
-                  {row.original.vendor_name}
+                  {row.original.driver_dept_name}
                 </div>
               </div>
             </div>
