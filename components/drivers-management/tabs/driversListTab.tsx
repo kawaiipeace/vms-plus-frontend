@@ -299,6 +299,7 @@ const DriversListTab = () => {
               id="myInputTextField"
               className="form-control dt-search-input"
               placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+              value={params.search}
               onChange={(e) => handleSearch(e.target.value)}
             />
           </div>

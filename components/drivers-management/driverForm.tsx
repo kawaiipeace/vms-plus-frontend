@@ -210,11 +210,11 @@ const DriverForm = () => {
             return {
               value: item.dept_sap,
               label: item.dept_short,
-              labelDetail: item.dept_full,
+              desc: item.dept_full,
             };
           }
         );
-        // console.log(driverDepartmentData);
+        console.log(driverDepartmentData);
         setDriverDepartmentList(driverDepartmentData);
       } catch (error) {
         console.error("Error fetching driver department data:", error);
@@ -662,6 +662,7 @@ const DriverForm = () => {
                     options={driverDepartmentList}
                     value={driverDepartmentOptions}
                     enableSearch
+                    showDescriptions
                     onChange={handleDriverDepartmentChange}
                   />
                   {formErrors.driverEmployingAgency && <FormHelper text={String(formErrors.driverEmployingAgency)} />}
@@ -711,6 +712,7 @@ const DriverForm = () => {
                     options={driverDepartmentList}
                     value={driverDepartmentOptions2}
                     enableSearch
+                    showDescriptions
                     onChange={handleDriverDepartmentChange2}
                   />
                   {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}

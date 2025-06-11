@@ -170,7 +170,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
               return {
                 value: item.dept_sap,
                 label: item.dept_short,
-                // labelDetail: item.dept_full,
+                desc: item.dept_full,
               };
             }
           );
@@ -375,6 +375,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 options={driverDepartmentList}
                                 value={driverDepartmentOptions}
                                 enableSearch
+                                showDescriptions
                                 onChange={handleDriverDepartmentChange}
                               />
                               {formErrors.driverEmployingAgency && (
@@ -431,6 +432,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 options={driverDepartmentList}
                                 value={driverDepartmentOptions2}
                                 enableSearch
+                                showDescriptions
                                 onChange={handleDriverDepartmentChange2}
                               />
                               {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
