@@ -21,6 +21,8 @@ type UseColumnsProps = {
     dates: DateColumnData[];
     selectedOption: string;
     lastMonth: string;
+    startDate: string;
+    endDate: string;
     handleOpenDetailModal: () => void;
     setTripDetails: (dayTimeline: any[]) => void;
     setDateSelected: (date: string) => void;
@@ -36,6 +38,8 @@ export const useColumns = ({
     handleOpenDetailModal,
     setTripDetails,
     setDateSelected,
+    startDate,
+    endDate,
 }: UseColumnsProps) =>
     useMemo(() => {
         const baseColumns = [
@@ -159,9 +163,10 @@ export const useColumns = ({
                                         key={item.tripDetailId}
                                         item={item}
                                         onClick={() => handleClickOpenDetailModal([item])}
-                                        durationDays={
-                                            dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1
-                                        }
+                                        startDate={item.startDate}
+                                        endDate={item.endDate}
+                                        timelineStartDate={startDate}
+                                        timelineEndDate={endDate}
                                     />
                                 ))}
                                 {hiddenCount > 0 && (

@@ -25,6 +25,8 @@ type UseColumnsProps = {
   handleOpenDetailModal: () => void;
   setTripDetails: (dayTimeline: any[]) => void;
   setDateSelected: (date: string) => void;
+  startDate: string;
+  endDate: string;
 };
 
 const formatDate = (input: string | Date) => dayjs(input).format("YYYY/MM/DD");
@@ -37,6 +39,8 @@ export const useColumns = ({
   handleOpenDetailModal,
   setTripDetails,
   setDateSelected,
+  startDate,
+  endDate,
 }: UseColumnsProps) =>
   useMemo(() => {
     const baseColumns = [
@@ -128,7 +132,10 @@ export const useColumns = ({
                   key={item.tripDetailId}
                   item={item}
                   onClick={() => handleClickOpenDetailModal([item])}
-                  durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1}
+                  startDate={new Date(item.startDate)}
+                  endDate={new Date(item.endDate)}
+                  timelineStartDate={startDate}
+                  timelineEndDate={endDate}
                 />
               ))}
               {hiddenCount > 0 && (

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataTable } from "./dataTable";
 import VehicleTaxCredit from "../vehicle-management/taxCredit.tsx";
-import VehicleStatus from "../vehicle-management/status";
+import VehicleStatus from "../vehicle-management/vehicle-status-with-icon";
 import { updateVehicleStatus } from "@/services/vehicleService";
 import { VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 

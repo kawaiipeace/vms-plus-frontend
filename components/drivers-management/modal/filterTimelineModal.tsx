@@ -4,10 +4,10 @@ import {
   VehicleTypeApiResponse,
 } from "@/app/types/vehicle-management/vehicle-list-type";
 import BadgeStatus from "@/components/carpool-management/modal/status";
+import VehicleStatus from "@/components/vehicle-management/vehicle-status-without-icon";
 import { driverStatusRef } from "@/services/driversManagement";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import VehicleStatus from "@/components/vehicle-management/status";
 
 type Props = {
   flag: string;
