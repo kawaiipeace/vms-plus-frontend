@@ -37,6 +37,8 @@ export default function RequestListTable({ dataRequest, params, selectedOption, 
     handleOpenDetailModal,
     setTripDetails,
     setDateSelected,
+    startDate: params.start_date,
+    endDate: params.end_date,
   });
 
   const table = useReactTable({

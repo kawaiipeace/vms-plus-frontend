@@ -3,10 +3,10 @@ import clsx from "clsx";
 
 interface VehicleStatusProps {
     status: string;
-    icon?: boolean;
+    isActive?: boolean;
 }
 
-export default function VehicleStatus({ status, icon }: Readonly<VehicleStatusProps>) {
+export default function VehicleStatus({ status, isActive }: Readonly<VehicleStatusProps>) {
     const className = STATUS_CLASS_MAP[status];
 
     return (
@@ -18,16 +18,9 @@ export default function VehicleStatus({ status, icon }: Readonly<VehicleStatusPr
                 className
             )}
         >
-            {icon && (
-                <i
-                    className={`
-              material-symbols-outlined text-base leading-none
-              ${icon ? 'visible' : 'invisible'}
-            `}
-                >
+            <i className={`material-symbols-outlined text-base leading-none ${isActive ? 'visible' : 'invisible'}`}>
                     check
                 </i>
-            )}
             <span>{status}</span>
         </div>
     );

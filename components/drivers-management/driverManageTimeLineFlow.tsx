@@ -3,15 +3,15 @@ import FilterModal, { FilterModalRef } from "@/components/drivers-management/mod
 import { getDriverTimeline } from "@/services/driversManagement";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
-import VehicleStatus from "../vehicle-management/status";
-import PaginationControls from "../table/pagination-control";
-import VehicleNoData from "../vehicle-management/noData";
+import VehicleStatus from "@/components/vehicle-management/vehicle-status-with-icon";
+import PaginationControls from "@/components/table/pagination-control";
+import VehicleNoData from "@/components/vehicle-management/noData";
 import { DateRange } from "react-day-picker";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import DateRangePicker from "../vehicle-management/input/dateRangeInput";
 import RequestListTable from "../table/driver-timeline/request-list-table";
-import SearchInput from "../vehicle-management/input/search";
 import { debounce } from "lodash";
+import SearchInput from "../vehicle-management/input/search";
 
 export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -140,7 +140,7 @@ export default function VehicleTimeLine() {
         <div className="flex flex-wrap items-center gap-2">
           {["รออนุมัติ", "ไป - กลับ", "ค้างแรม", "เสร็จสิ้น"].map((status: string) => {
             const isActive = filterParams[status as keyof typeof filterParams];
-            return <VehicleStatus key={status} status={status} icon={isActive} />;
+            return <VehicleStatus key={status} status={status} />;
           })}
         </div>
       </div>
