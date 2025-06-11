@@ -2,39 +2,72 @@ import { useMemo } from "react";
 import dayjs from "dayjs";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { createColumnHelper } from "@tanstack/react-table";
+import clsx from "clsx";
 import TripTimelineItem from "./trip-timeline-item";
+import '../vehicle-timeline/calendar-view.css';
 
-export const useColumns = (
-    columnHelper: ReturnType<typeof createColumnHelper<VehicleTimelineListTableData>>,
-    dates: any[],
-    selectedOption: string,
-    lastMonth: string,
-    handleOpenDetailModal: () => void,
-    setTripDetails: (dayTimeline: any[]) => void,
-    setDateSelected: (date: any) => void
-) =>
+type DateColumnData = {
+    key: string;
+    date: string;
+    day: string;
+    month: string;
+    holiday: boolean;
+    fullMonth: string;
+    fullYear: string;
+};
+
+type UseColumnsProps = {
+    columnHelper: ReturnType<typeof createColumnHelper<VehicleTimelineListTableData>>;
+    dates: DateColumnData[];
+    selectedOption: string;
+    lastMonth: string;
+    handleOpenDetailModal: () => void;
+    setTripDetails: (dayTimeline: any[]) => void;
+    setDateSelected: (date: string) => void;
+};
+
+const formatDate = (input: string | Date) => dayjs(input).format("YYYY/MM/DD");
+
+export const useColumns = ({
+    columnHelper,
+    dates,
+    selectedOption,
+    lastMonth,
+    handleOpenDetailModal,
+    setTripDetails,
+    setDateSelected,
+}: UseColumnsProps) =>
     useMemo(() => {
         const baseColumns = [
             columnHelper.accessor(
                 (row) => ({
                     license: row.vehicleLicensePlate,
+                    provinceShort: row.vehicleLicensePlateProvinceShort,
                     brandModel: row.vehicleBrandModel,
                     brandName: row.vehicleBrandName,
                 }),
                 {
                     id: "licensePlate",
-                    header: "เลขทะเบียน / ยี่ห้อ / รุ่น",
-                    cell: (info) => (
-                        <div className="flex flex-col items-start">
-                            <span className="text-base font-semibold">{info.getValue().license}</span>
-                            <span className="text-base text-gray-600">
-                                {info.getValue().brandModel} {info.getValue().brandName}
-                            </span>
-                        </div>
-                    ),
+                    header: () => <span className="w-full">เลขทะเบียน / ยี่ห้อ / รุ่น</span>,
+                    cell: (info) => {
+                        const { license, brandModel, brandName, provinceShort } = info.getValue();
+                        return (
+                            <div className="flex flex-col text-start">
+                                <span className="text-base font-semibold">{license} {provinceShort}</span>
+                                <span className="text-base text-gray-600">
+                                    {brandModel} {brandName}
+                                </span>
+                            </div>
+                        );
+                    },
                     enableSorting: false,
                     meta: {
-                        className: `sticky left-0 z-0 bg-white min-w-[180px] max-w-[180px] border-b border-gray-500 ${selectedOption !== "all" && "border-r"}`,
+                        className: clsx(
+                            "sticky left-0 z-0 bg-white",
+                            "min-w-[180px] max-w-[180px] w-[180px]",
+                            selectedOption !== "all" && "border-r",
+                            "darkModeBg"
+                        ),
                     },
                 }
             ),
@@ -43,84 +76,114 @@ export const useColumns = (
         const additionalColumns = selectedOption === "all"
             ? [
                 columnHelper.accessor("vehicleType", {
-                    header: () => <span>ประเภทยานพาหนะ</span>,
-                    cell: (info) => info.getValue(),
+                    header: () => <span className="w-full">ประเภทยานพาหนะ</span>,
+                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
                     enableSorting: false,
                     meta: {
-                        className: "hidden sm:table-cell sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px] border-b border-gray-500"
-                    }
+                        className: clsx(
+                            "hidden sm:table-cell sticky left-[180px] z-0 bg-white",
+                            "min-w-[155px] max-w-[155px] w-[155px]",
+                            "darkModeBg"
+                        ),
+                    },
                 }),
                 columnHelper.accessor("vehicleDepartment", {
-                    header: "สังกัดยานพาหนะ",
-                    cell: (info) => <div className="text-base">{info.getValue()}</div>,
+                    header:() => <span className="w-full">สังกัดยานพาหนะ</span>,
+                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
                     enableSorting: false,
                     meta: {
-                        className: "sm:table-cell hidden sticky left-[335px] z-0 bg-white min-w-[170px] max-w-[170px] border-b border-gray-500",
+                        className: clsx(
+                            "hidden sm:table-cell sticky left-[335px] z-0 bg-white",
+                            "min-w-[170px] max-w-[170px] w-[170px]",
+                            "darkModeBg"
+                        ),
                     },
                 }),
                 columnHelper.accessor("distance", {
-                    header: `ระยะทาง ${lastMonth}`,
-                    cell: (info) => <div className="text-base">{parseInt(info.getValue()).toLocaleString()}</div>,
+                    header: () => <span className="w-full">{`ระยะทาง ${lastMonth}`}</span>,
+                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
                     enableSorting: true,
                     meta: {
-                        className: `sm:table-cell hidden sticky left-[505px] z-0 bg-white min-w-[150px] max-w-[150px] fixed-column-line border-b border-gray-500 ${selectedOption === "all" && "border-r"}`,
+                        className: clsx(
+                            "hidden sm:table-cell sticky left-[505px] z-0 bg-white",
+                            "min-w-[150px] max-w-[150px] w-[150px]",
+                            "darkModeBg",
+                            selectedOption === "all" && "border-r"
+                        ),
                     },
                 }),
             ]
             : [];
 
-        const dateColumns = dates.map(({ key, date, day, month, holiday, fullMonth, fullYear }) =>
-            columnHelper.accessor((row) => ({ timeline: row.timeline }), {
-                id: key,
-                header: () => {
-                    const isToday = dayjs().format("YYYY-MM-DD") === date.toString();
-                    return (
-                        <div className="flex flex-col items-center text-sm">
-                            <span className={`font-semibold ${isToday ? "text-white bg-brand-900 rounded-full p-1" : ""}`}>{day}</span>
-                            <span className="font-normal">{month}</span>
-                        </div>
-                    );
-                },
-                cell: (info) => {
-                    const { timeline } = info.getValue();
-                    const trips = timeline[key] || [];
-                    const todayTrips = trips.filter((item: any) => dayjs(item.startDate).format("YYYY/MM/DD") === date);
-                    const visibleTrips = todayTrips.slice(0, 2);
-                    const hiddenCount = todayTrips.length - visibleTrips.length;
-
-                    if (!todayTrips.length) return null;
-
-                    const handleClickOpenDetailModal = (items: any[]) => {
-                        setTripDetails(items);
-                        setDateSelected(`${day} ${fullMonth} ${fullYear}`);
-                        handleOpenDetailModal();
-                    };
-
-                    return (
-                        <div className={`flex flex-col min-h-[140px] gap-1 px-1 ${holiday ? "text-white bg-gray-100" : ""}`}>
-                            {visibleTrips.map((item: any) => (
-                                <TripTimelineItem
-                                    key={item.tripDetailId}
-                                    item={item}
-                                    onClick={() => handleClickOpenDetailModal([item])}
-                                    durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1}
-                                />
-                            ))}
-                            {hiddenCount > 0 && (
-                                <button
-                                    onClick={() => handleClickOpenDetailModal(todayTrips)}
-                                    className="rounded-lg border border-gray-300 text-sm text-gray-700 py-1 px-2 bg-white hover:bg-gray-100"
+        const dateColumns = dates.map(
+            ({ key, date, day, month, holiday }) =>
+                columnHelper.accessor((row) => ({ timeline: row.timeline }), {
+                    id: `day-${key}`,
+                    header: () => {
+                        const isToday = formatDate(new Date()) === date;
+                        return (
+                            <div className="flex flex-col text-sm w-full border-t-0 items-center">
+                                <span
+                                    className={clsx(
+                                        "font-semibold flex items-center justify-center w-8 h-8",
+                                        isToday ? "text-white bg-brand-900 rounded-full" : ""
+                                    )}
                                 >
-                                    +{hiddenCount} เพิ่มเติม
-                                </button>
-                            )}
-                        </div>
-                    );
-                },
-                meta: {
-                    className: "day min-w-[200px] max-w-[200px] !border-t-0 today",
-                },
-            })
+                                    {day}
+                                </span>
+                                <span className="font-normal">{month}</span>
+                            </div>
+                        );
+                    },
+                    cell: (info) => {
+                        const { timeline } = info.getValue();
+                        const trips = timeline?.[key] || [];
+                        const todayTrips = trips.filter(
+                            (item: any) => formatDate(item.startDate) === date
+                        );
+                        const visibleTrips = todayTrips.slice(0, 2);
+                        const hiddenCount = todayTrips.length - visibleTrips.length;
+
+                        if (!todayTrips.length) return null;
+
+                        const handleClickOpenDetailModal = (items: any[]) => {
+                            setTripDetails(items);
+                            setDateSelected(date);
+                            handleOpenDetailModal();
+                        };
+
+                        return (
+                            <div className="h-[130px]">
+                                {visibleTrips.map((item: any, index: number) => (
+                                    <TripTimelineItem
+                                        key={item.tripDetailId}
+                                        item={item}
+                                        onClick={() => handleClickOpenDetailModal([item])}
+                                        durationDays={
+                                            dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1
+                                        }
+                                    />
+                                ))}
+                                {hiddenCount > 0 && (
+                                    <button
+                                        onClick={() => handleClickOpenDetailModal(todayTrips)}
+                                        className="rounded-lg border border-gray-300 text-sm text-gray-700 py-1 px-2 bg-white hover:bg-gray-100 text-center mt-1"
+                                        style={{ width: `${200}px` }}
+                                    >
+                                        +{hiddenCount} เพิ่มเติม
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    },
+                    meta: {
+                        className: clsx(
+                            "day !border-t-0 today",
+                            "min-w-[150px] max-w-[150px] w-[150px]",
+                            holiday && "bg-gray-200 darkModeHoliday",
+                        ),
+                    },
+                })
         );
 
         return [...baseColumns, ...additionalColumns, ...dateColumns];

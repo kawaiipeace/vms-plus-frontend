@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
 import { fetchVehicles } from "@/services/vehicleService";
-import VehicleNoData from "../vehicle/noData";
-import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
-import ReportModal, { ReportModalRef } from "../vehicle/vehicleReportModal";
+import VehicleNoData from "../vehicle-management/noData";
+import FilterModal, { FilterModalRef } from "../vehicle-management/filterModal";
+import ReportModal, { ReportModalRef } from "../vehicle-management/vehicleReportModal";
 import VehicleTable from "../table/vehicle-table";
 import { PaginationType, VehicleInputParams, VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
+import SearchInput from "../vehicle-management/input/search";
+import { debounce } from "lodash";
 
 export default function VehicleFlow() {
     const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
@@ -112,26 +114,8 @@ export default function VehicleFlow() {
         </div>
     );
 
-    const renderActions = () => (
+    const Actions = () => (
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
-            <div className="block">
-                <div className="input-group input-group-search hidden">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text search-ico-info">
-                            <i className="material-symbols-outlined">search</i>
-                        </span>
-                    </div>
-                    <input
-                        type="text"
-                        id="search1"
-                        className="form-control dt-search-input"
-                        placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-                        value={params.search}
-                        onChange={(e) => setParams({ ...params, search: e.target.value })}
-                    />
-                </div>
-            </div>
-
             <div className="flex gap-4">
                 <button
                     onClick={handleOpenFilterModal}
@@ -149,8 +133,8 @@ export default function VehicleFlow() {
                     <span className="border border-gray-300 p-1 rounded-full">{selectedRows.length}</span>
                 </button>
                 <button 
-                    className="btn btn-primary h-[40px] min-h-[40px] text-white hidden md:block"
-                    disabled={true}>
+                    disabled={true}
+                    className="btn btn-primary h-[40px] min-h-[40px] text-white hidden md:block">
                     <i className="material-symbols-outlined">add</i>
                     <span className="text-sm font-bold">สร้างข้อมูล</span>
                 </button>
@@ -197,10 +181,27 @@ export default function VehicleFlow() {
         return null;
     };
 
+    const debouncedSetParams = useMemo(
+        () =>
+            debounce((value: string) => {
+                if (value.length > 2 || value.length === 0) {
+                    setParams((prev) => ({ ...prev, search: value }));
+                }
+            }, 500),
+        []
+    );
+
     return (
         <div>
             {renderHeader()}
-            {renderActions()}
+            <div className="flex justify-between items-center mb-4">
+                <SearchInput
+                    defaultValue={params.search}
+                    placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+                    onSearch={(value) => debouncedSetParams(value)}
+                />
+                <Actions />
+            </div>
             {renderTableOrNoData()}
 
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TABLE_LIST" />

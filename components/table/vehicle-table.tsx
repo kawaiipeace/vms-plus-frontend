@@ -2,8 +2,8 @@ import { createColumnHelper, getCoreRowModel, getSortedRowModel, SortingState, u
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataTable } from "./dataTable";
-import VehicleTaxCredit from "../vehicle/taxCredit.tsx";
-import VehicleStatus from "../vehicle/status";
+import VehicleTaxCredit from "../vehicle-management/taxCredit.tsx";
+import VehicleStatus from "../vehicle-management/status";
 import { updateVehicleStatus } from "@/services/vehicleService";
 import { VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 
@@ -151,8 +151,8 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
                 const row = info.row.original;
 
                 return (
-                    <div className="flex flex-col">
-                        <div className="text-base">{row.vehicle_license_plate}</div>
+                    <div className="flex flex-col text-left">
+                        <div className="text-base">{row.vehicle_license_plate} {row.vehicle_license_plate_province_short}</div>
                         <div className="text-sm text-gray-500">{`${row.vehicle_brand_name} / ${row.vehicle_model_name}`}</div>
                     </div>
                 );
@@ -208,11 +208,16 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
         columnHelper.display({
             id: 'action',
             cell: () => (
-                <>
-                    <button data-tip="ดูรายละเอียด" className="tooltip">
-                        <i className="material-symbols-outlined text-lg cursor-pointer text-gray-600">quick_reference_all</i>
-                    </button>
-                </>
+                <button
+                    data-tip="ดูรายละเอียด"
+                    disabled={true}
+                    className="tooltip disabled:cursor-not-allowed disabled:text-gray-300"
+                    aria-label="ดูรายละเอียด"
+                >
+                    <i className="material-symbols-outlined text-lg">
+                        quick_reference_all
+                    </i>
+                </button>
             )
         })
     ], [reqData]);

@@ -2,6 +2,7 @@ export interface VehicleTimelineListTableData {
     vehicleBrandModel: string;
     vehicleBrandName: string;
     vehicleLicensePlate: string;
+    vehicleLicensePlateProvinceShort: string;
     vehicleType: string;
     vehicleDepartment: string;
     distance: string;
@@ -32,6 +33,7 @@ export interface VehicleTimelineDetails {
 
 export interface VehicleTimelineTransformData {
     vehicleLicensePlate: string;
+    vehicleLicensePlateProvinceShort: string;
     vehicleBrandModel: string;
     vehicleBrandName: string;
     vehicleType: string;

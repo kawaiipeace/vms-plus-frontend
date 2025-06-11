@@ -11,7 +11,7 @@ import {
 } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "../vehicle/vehicle-timeline-detail-modal";
+import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "../vehicle-management/vehicle-timeline-detail-modal";
 
 interface RequestListTableProps {
   readonly dataRequest: any[];

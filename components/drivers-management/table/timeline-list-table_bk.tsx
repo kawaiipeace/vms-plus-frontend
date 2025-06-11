@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 import VehicleTimeLineDetailModal, {
   VehicleTimelineRef,
-} from "../../vehicle/vehicle-timeline-detail-modal";
+} from "../../vehicle-management/vehicle-timeline-detail-modal";
 import dayjs from "dayjs";
 import { DriverTimelineListTableData } from "@/app/types/carpool-management-type";
 import { DataTable } from "@/components/table/time-table";

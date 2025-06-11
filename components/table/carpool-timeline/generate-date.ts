@@ -57,6 +57,7 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
 
     const result = {
       vehicleLicensePlate: vehicle.vehicle_license_plate,
+      vehicleLicensePlateProvinceShort: vehicle.vehicle_license_plate_province_short,
       vehicleBrandModel: vehicle.vehicle_model_name,
       vehicleBrandName: vehicle.vehicle_brand_name,
       vehicleType: vehicle.vehicle_car_type_detail,

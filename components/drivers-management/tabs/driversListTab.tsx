@@ -17,7 +17,7 @@ import { DriverInfoType } from "@/app/types/drivers-management-type";
 import { RequestListType } from "@/app/types/request-list-type";
 import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
 import DriverDeleteModal from "../modal/driverDeleteModal";
-import VehicleNoData from "@/components/vehicle/noData";
+import VehicleNoData from "@/components/vehicle-management/noData";
 
 interface PaginationType {
   limit: number;
