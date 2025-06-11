@@ -7,6 +7,7 @@ import BadgeStatus from "@/components/carpool-management/modal/status";
 import { driverStatusRef } from "@/services/driversManagement";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import VehicleStatus from "@/components/vehicle-management/status";
 
 type Props = {
   flag: string;
@@ -65,8 +66,15 @@ export interface VehicleInputParams {
   taxVehicle: string[];
   vehicleStatus: string[];
   driverWorkType: string[];
-  timelineStatus: string[];
+  vehicleBookingStatus: string[];
 }
+
+const VEHICLE_BOOKING_STATUS = [
+  { id: "1", name: "รออนุมัติ" },
+  { id: "2", name: "ไป - กลับ" },
+  { id: "3", name: "ค้างแรม" },
+  { id: "4", name: "เสร็จสิ้น" },
+];
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
   <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
@@ -93,7 +101,6 @@ const ModalBody = ({
   driverStatus,
   statusDriver,
   driverWorkType,
-  timelineStatus,
 }: VehicleStatusProps) => {
   const [formData, setFormData] = useState<VehicleInputParams>(params);
 
@@ -173,53 +180,42 @@ const ModalBody = ({
           <span className="text-base font-semibold">สถานะการปฏิบัติงาน</span>
           <div className="flex flex-col gap-2 mt-2">
             {driverStatus.map((status, index) => (
-              <div className="form-group" key={index}>
-                <div className="custom-group">
-                  <div className="custom-control custom-checkbox custom-control-inline">
-                    <input
-                      type="checkbox"
-                      // defaultChecked
-                      id={`option3-${index}`}
-                      checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
-                      onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}
-                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                    />
-                    <label className="custom-control-label" htmlFor={`option3-${index}`}>
-                      <div className="custom-control-label-group">
-                        <BadgeStatus status={status.ref_driver_status_desc} />
-                      </div>
-                    </label>
-                  </div>
-                </div>
+              <div key={index} className="flex items-center gap-2">
+                <label htmlFor={`option3-${index}`} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    // defaultChecked
+                    id={`option3-${index}`}
+                    checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
+                    onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}
+                    className="checkbox checkbox-primary h-5 w-5"
+                  />
+                  <BadgeStatus status={status.ref_driver_status_desc} />
+                </label>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="mb-4">
-          <span className="text-base font-semibold">สถานะการปฏิบัติงาน</span>
-          <div className="flex flex-col gap-2 mt-2">
-            {timelineStatus.map((status, index) => (
-              <div className="form-group" key={index}>
-                <div className="custom-group">
-                  <div className="custom-control custom-checkbox custom-control-inline">
+        <div className="col-span-12">
+          <div className="form-group">
+            <span>สถานะ</span>
+            <div className="flex flex-col gap-2 mt-2">
+              {VEHICLE_BOOKING_STATUS.map((status, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      // defaultChecked
-                      id={`option4-${index}`}
-                      checked={formData.timelineStatus.includes(status.ref_request_status_code)}
-                      onChange={() => handleCheckboxToggle("timelineStatus", status.ref_request_status_code)}
-                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                      id={`status-${index}`}
+                      className="checkbox checkbox-primary h-5 w-5"
+                      checked={formData.vehicleBookingStatus.includes(status.id)}
+                      onChange={() => handleCheckboxToggle("vehicleBookingStatus", status.id)}
                     />
-                    <label className="custom-control-label" htmlFor={`option4-${index}`}>
-                      <div className="custom-control-label-group">
-                        <BadgeStatus status={status.ref_request_status_name} />
-                      </div>
-                    </label>
-                  </div>
+                    <VehicleStatus status={status.name} />
+                  </label>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -272,7 +268,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     taxVehicle: [],
     vehicleStatus: [],
     driverWorkType: [],
-    timelineStatus: [],
+    vehicleBookingStatus: [],
   });
   const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
   const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
@@ -313,7 +309,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
       taxVehicle: [],
       vehicleStatus: [],
       driverWorkType: [],
-      timelineStatus: [],
+      vehicleBookingStatus: [],
     });
   };
   const handleCancelFilter = () => {

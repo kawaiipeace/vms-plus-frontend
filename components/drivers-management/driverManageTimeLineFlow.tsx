@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import RequestListTable from "@/components/drivers-management/table/timeline-list-table";
 import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
 import { getDriverTimeline } from "@/services/driversManagement";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
-import VehicleStatus from "@/components/vehicle-management/status";
-import SearchInput from "@/components/vehicle-management/input/search";
-import PaginationControls from "@/components/table/pagination-control";
-import VehicleNoData from "@/components/vehicle-management/noData";
+import VehicleStatus from "../vehicle-management/status";
+import PaginationControls from "../table/pagination-control";
+import VehicleNoData from "../vehicle-management/noData";
 import { DateRange } from "react-day-picker";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
+import DateRangePicker from "../vehicle-management/input/dateRangeInput";
+import RequestListTable from "../table/driver-timeline/request-list-table";
+import SearchInput from "../vehicle-management/input/search";
 import { debounce } from "lodash";
-import DateRangePicker from "@/components/vehicle-management/input/dateRangeInput";
 
 export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -39,7 +39,12 @@ export default function VehicleTimeLine() {
     page: pagination.page,
     limit: pagination.limit,
   });
-
+  const [filterParams, setFilterParams] = useState({
+    รออนุมัติ: false,
+    "ไป - กลับ": false,
+    ค้างแรม: false,
+    เสร็จสิ้น: false,
+  });
   const filterModalRef = useRef<FilterModalRef>(null);
 
   useEffect(() => {
@@ -82,18 +87,23 @@ export default function VehicleTimeLine() {
   };
 
   const handleFilterSubmit = (filterParams: any) => {
+    const filterMap = {
+      รออนุมัติ: filterParams.vehicleBookingStatus.includes("1"),
+      "ไป - กลับ": filterParams.vehicleBookingStatus.includes("2"),
+      ค้างแรม: filterParams.vehicleBookingStatus.includes("3"),
+      เสร็จสิ้น: filterParams.vehicleBookingStatus.includes("4"),
+    };
     const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
     const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
     const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
-    const timelineStatus = filterParams.timelineStatus.map((item: any) => item).join(",");
+
+    setFilterParams(filterMap);
     setParams((prev) => ({
       ...prev,
-      // vehicel_car_type_detail: filterParams.vehicleType,
-      // vehicle_owner_dept_sap: filterParams.vehicleDepartment,
       is_active: isActive,
       work_type: workType,
       ref_driver_status_code: driverStatus,
-      ref_timeline_status_id: timelineStatus,
+      ref_timeline_status_id: filterParams.vehicleBookingStatus.join(","),
     }));
   };
 
@@ -124,68 +134,47 @@ export default function VehicleTimeLine() {
     </div>
   );
 
-  const debouncedSetParams = useMemo(
-    () =>
-      debounce((value: string) => {
-        if (value.length > 2 || value.length === 0) {
-          setParams((prev) => ({ ...prev, search: value }));
-        }
-      }, 500),
-    []
+  const Actions = () => (
+    <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex gap-4 md:flex-row md:items-center">
+        <div className="flex flex-wrap items-center gap-2">
+          {["รออนุมัติ", "ไป - กลับ", "ค้างแรม", "เสร็จสิ้น"].map((status: string) => {
+            const isActive = filterParams[status as keyof typeof filterParams];
+            return <VehicleStatus key={status} status={status} icon={isActive} />;
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+        <DateRangePicker
+          date={selectedRange}
+          onChange={(range) => {
+            setParams((prev) => ({
+              ...prev,
+              start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+              end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+            }));
+
+            setSelectedRange(range || undefined);
+          }}
+        />
+        <button
+          onClick={handleOpenFilterModal}
+          className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block"
+        >
+          <i className="material-symbols-outlined">filter_list</i>
+          <span className="text-base font-bold">ตัวกรอง</span>
+        </button>
+
+        <button
+          onClick={toggleDropdown}
+          className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
+        >
+          <i className="material-symbols-outlined text-lg">view_column</i>
+        </button>
+      </div>
+    </div>
   );
-
-  // const Actions = () => (
-  //   <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-  //     <div className="flex flex-col gap-4 md:flex-row md:items-center">
-  //       <SearchInput
-  //         ref={searchInputRef}
-  //         defaultValue={params.search}
-  //         placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-  //         onSearch={(value) => debouncedSetParams(value)}
-  //       />
-
-  //       <div className="flex flex-wrap items-center gap-2">
-  //         <VehicleStatus status="รออนุมัติ" />
-  //         <VehicleStatus status="ไป - กลับ" />
-  //         <VehicleStatus status="ค้างแรม" />
-  //         <VehicleStatus status="เสร็จสิ้น" />
-  //       </div>
-  //     </div>
-
-  //     <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-  //       <DateRangePicker
-  //         date={selectedRange}
-  //         onChange={(range) => {
-  //           setParams((prev) => ({
-  //             ...prev,
-  //             start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
-  //             end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-  //           }));
-
-  //           if (range?.from && range?.to) {
-  //             setSelectedRange({ from: range.from, to: range.to });
-  //           } else {
-  //             setSelectedRange(undefined);
-  //           }
-  //         }}
-  //       />
-  //       <button
-  //         onClick={handleOpenFilterModal}
-  //         className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
-  //       >
-  //         <i className="material-symbols-outlined text-lg">filter_list</i>
-  //         <span className="text-base font-semibold">ตัวกรอง</span>
-  //       </button>
-
-  //       <button
-  //         onClick={toggleDropdown}
-  //         className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
-  //       >
-  //         <i className="material-symbols-outlined text-lg">view_column</i>
-  //       </button>
-  //     </div>
-  //   </div>
-  // );
 
   const RenderTableOrNoData = () => {
     const dropdownRef = useRef(null);
@@ -203,32 +192,7 @@ export default function VehicleTimeLine() {
     return (
       <div className="relative">
         {showDropdown && (
-          <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
-            <button
-              onClick={() => handleSelect("all")}
-              className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-              role="menuitem"
-            >
-              {selectedOption === "all" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
-              ) : (
-                <span className="w-4 mr-2" />
-              )}
-              แสดงทุกคอลัมน์
-            </button>
-            <button
-              onClick={() => handleSelect("first")}
-              className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-              role="menuitem"
-            >
-              {selectedOption === "first" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
-              ) : (
-                <span className="w-4 mr-2" />
-              )}
-              แสดงเฉพาะคอลัมน์แรก
-            </button>
-          </div>
+          <DropdownMenu dropdownRef={dropdownRef} selectedOption={selectedOption} handleSelect={handleSelect} />
         )}
 
         {dataRequest.length !== 0 ? (
@@ -258,61 +222,50 @@ export default function VehicleTimeLine() {
     );
   };
 
+  const debouncedSetParams = useMemo(
+    () =>
+      debounce((value: string) => {
+        if (value.length > 2 || value.length === 0) {
+          setParams((prev) => ({ ...prev, search: value }));
+        }
+      }, 500),
+    []
+  );
+
   return (
     <div className="px-4 sm:px6 lg:px8 py6">
       <Header />
-      <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
-          <SearchInput
-            defaultValue={params.search}
-            placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-            onSearch={(value) => debouncedSetParams(value)}
-          />
-
-          <div className="flex flex-wrap items-center gap-2">
-            <VehicleStatus status="รออนุมัติ" />
-            <VehicleStatus status="ไป - กลับ" />
-            <VehicleStatus status="ค้างแรม" />
-            <VehicleStatus status="เสร็จสิ้น" />
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-          <DateRangePicker
-            date={selectedRange}
-            onChange={(range) => {
-              setParams((prev) => ({
-                ...prev,
-                start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
-                end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-              }));
-
-              if (range?.from && range?.to) {
-                setSelectedRange({ from: range.from, to: range.to });
-              } else {
-                setSelectedRange(undefined);
-              }
-            }}
-          />
-          <button
-            onClick={handleOpenFilterModal}
-            className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
-          >
-            <i className="material-symbols-outlined text-lg">filter_list</i>
-            <span className="text-base font-semibold">ตัวกรอง</span>
-          </button>
-
-          <button
-            onClick={toggleDropdown}
-            className="flex items-center gap-1 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 transition"
-          >
-            <i className="material-symbols-outlined text-lg">view_column</i>
-          </button>
-        </div>
+      <div className="flex justify-between items-center mb-4">
+        {/* <div>search: {params.search}</div> */}
+        <SearchInput
+          defaultValue={params.search}
+          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+          onSearch={(value) => debouncedSetParams(value)}
+        />
+        <Actions />
       </div>
-      {/* <Actions /> */}
       <RenderTableOrNoData />
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
     </div>
   );
 }
+
+const DropdownMenu = ({ dropdownRef, selectedOption, handleSelect }: any) => (
+  <div ref={dropdownRef} className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
+    {["all", "first"].map((option) => (
+      <button
+        key={option}
+        onClick={() => handleSelect(option)}
+        className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+        role="menuitem"
+      >
+        {selectedOption === option ? (
+          <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
+        ) : (
+          <span className="w-4 mr-2" />
+        )}
+        {option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก"}
+      </button>
+    ))}
+  </div>
+);
