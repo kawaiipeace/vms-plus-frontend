@@ -7,7 +7,7 @@ import {
 import { DataTable } from "../time-table";
 import VehicleTimeLineDetailModal, {
   VehicleTimelineRef,
-} from "../../vehicle/vehicle-timeline-detail-modal";
+} from "../../vehicle-management/vehicle-timeline-detail-modal";
 import dayjs from "dayjs";
 import {
   generateDateObjects,

@@ -4,14 +4,14 @@ import FilterModal, { FilterModalRef } from "@/components/drivers-management/mod
 import { getDriverTimeline } from "@/services/driversManagement";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
-import VehicleStatus from "@/components/vehicle/status";
-import SearchInput from "@/components/vehicle/input/search";
+import VehicleStatus from "@/components/vehicle-management/status";
+import SearchInput from "@/components/vehicle-management/input/search";
 import PaginationControls from "@/components/table/pagination-control";
-import VehicleNoData from "@/components/vehicle/noData";
+import VehicleNoData from "@/components/vehicle-management/noData";
 import { DateRange } from "react-day-picker";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import { debounce } from "lodash";
-import DateRangePicker from "@/components/vehicle/input/dateRangeInput";
+import DateRangePicker from "@/components/vehicle-management/input/dateRangeInput";
 
 export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);

@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import FilterModal, { FilterModalRef } from "../vehicle/filterModal";
+import FilterModal, { FilterModalRef } from "../vehicle-management/filterModal";
 import { getVehicleTimeline } from "@/services/vehicleService";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
-import VehicleStatus from "../vehicle/status";
-import SearchInput from "../vehicle/input/search";
+import VehicleStatus from "../vehicle-management/status";
 import PaginationControls from "../table/pagination-control";
-import VehicleNoData from "../vehicle/noData";
+import VehicleNoData from "../vehicle-management/noData";
 import { DateRange } from "react-day-picker";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
-import { debounce } from "lodash";
-import DateRangePicker from "../vehicle/input/dateRangeInput";
+import DateRangePicker from "../vehicle-management/input/dateRangeInput";
 import RequestListTable from "../table/vehicle-timeline/request-list-table";
+import SearchInput from "../vehicle-management/input/search";
+import { debounce } from "lodash";
 
 export default function VehicleTimeLine() {
     const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -35,7 +35,12 @@ export default function VehicleTimeLine() {
         page: pagination.page,
         limit: pagination.limit,
     });
-
+    const [filterParams, setFilterParams] = useState({
+        'รออนุมัติ': false,
+        'ไป - กลับ': false,
+        'ค้างแรม': false,
+        'เสร็จสิ้น': false,
+    });
     const filterModalRef = useRef<FilterModalRef>(null);
 
     useEffect(() => {
@@ -77,10 +82,19 @@ export default function VehicleTimeLine() {
     };
 
     const handleFilterSubmit = (filterParams: any) => {
+        const filterMap = {
+            'รออนุมัติ': filterParams.vehicleBookingStatus.includes('1'),
+            'ไป - กลับ': filterParams.vehicleBookingStatus.includes('2'),
+            'ค้างแรม': filterParams.vehicleBookingStatus.includes('3'),
+            'เสร็จสิ้น': filterParams.vehicleBookingStatus.includes('4'),
+        };
+
+        setFilterParams(filterMap);
         setParams((prev) => ({
             ...prev,
-            vehicel_car_type_detail: filterParams.vehicleType,
+            vehicle_car_type_detail: filterParams.vehicleType,
             vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+            ref_timeline_status_id: filterParams.vehicleBookingStatus.join(',')
         }));
     };
 
@@ -98,7 +112,7 @@ export default function VehicleTimeLine() {
         <div className="page-section-header border-0 mt-5">
             <div className="page-header-left">
                 <div className="page-title">
-                    <span className="page-title-label">ปฏิทินการจอง</span>
+                    <span className="page-title-label">ยานพาหนะ</span>
                     <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
                         {pagination.total ?? 0} คัน
                     </span>
@@ -107,30 +121,16 @@ export default function VehicleTimeLine() {
         </div>
     );
 
-    const debouncedSetParams = useMemo(
-        () =>
-            debounce((value: string) => {
-                if (value.length > 2 || value.length === 0) {
-                    setParams((prev) => ({ ...prev, search: value }));
-                }
-            }, 500),
-        []
-    );
-
     const Actions = () => (
-        <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                <SearchInput
-                    defaultValue={params.search}
-                    placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-                    onSearch={(value) => debouncedSetParams(value)}
-                />
-
+        <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex gap-4 md:flex-row md:items-center">
                 <div className="flex flex-wrap items-center gap-2">
-                    <VehicleStatus status="รออนุมัติ" />
-                    <VehicleStatus status="ไป - กลับ" />
-                    <VehicleStatus status="ค้างแรม" />
-                    <VehicleStatus status="เสร็จสิ้น" />
+                    {["รออนุมัติ", "ไป - กลับ", "ค้างแรม", "เสร็จสิ้น"].map((status: string) => {
+                        const isActive = filterParams[status as keyof typeof filterParams];
+                        return (
+                            <VehicleStatus key={status} status={status} icon={isActive}/>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -144,13 +144,9 @@ export default function VehicleTimeLine() {
                             end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
                         }));
 
-                        if (range?.from && range?.to) {
-                            setSelectedRange({ from: range.from, to: range.to });
-                        } else {
-                            setSelectedRange(undefined);
-                        }
+                        setSelectedRange(range || undefined);
                     }}
-                /> 
+                />
                 <button
                     onClick={handleOpenFilterModal}
                     className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block"
@@ -185,32 +181,11 @@ export default function VehicleTimeLine() {
         return (
             <div className="relative">
                 {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
-                        <button
-                            onClick={() => handleSelect("all")}
-                            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-                            role="menuitem"
-                        >
-                            {selectedOption === "all" ? (
-                                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
-                            ) : (
-                                <span className="w-4 mr-2" />
-                            )}
-                            แสดงทุกคอลัมน์
-                        </button>
-                        <button
-                            onClick={() => handleSelect("first")}
-                            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-                            role="menuitem"
-                        >
-                            {selectedOption === "first" ? (
-                                <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
-                            ) : (
-                                <span className="w-4 mr-2" />
-                            )}
-                            แสดงเฉพาะคอลัมน์แรก
-                        </button>
-                    </div>
+                    <DropdownMenu
+                        dropdownRef={dropdownRef}
+                        selectedOption={selectedOption}
+                        handleSelect={handleSelect}
+                    />
                 )}
 
                 {dataRequest.length !== 0 ? (
@@ -219,7 +194,8 @@ export default function VehicleTimeLine() {
                             dataRequest={dataRequest}
                             params={params}
                             selectedOption={selectedOption}
-                            lastMonth={lastMonth} />
+                            lastMonth={lastMonth}
+                        />
                         <PaginationControls
                             pagination={pagination}
                             onPageChange={handlePageChange}
@@ -239,12 +215,52 @@ export default function VehicleTimeLine() {
         );
     };
 
+    const debouncedSetParams = useMemo(
+        () =>
+            debounce((value: string) => {
+                if (value.length > 2 || value.length === 0) {
+                    setParams((prev) => ({ ...prev, search: value }));
+                }
+            }, 500),
+        []
+    );
+
     return (
         <div className="px-4 sm:px6 lg:px8 py6">
             <Header />
-            <Actions />
+            <div className="flex justify-between items-center mb-4">
+                <SearchInput
+                    defaultValue={params.search}
+                    placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+                    onSearch={(value) => debouncedSetParams(value)}
+                />
+                <Actions />
+            </div>
             <RenderTableOrNoData />
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
         </div>
     );
 }
+
+const DropdownMenu = ({ dropdownRef, selectedOption, handleSelect }: any) => (
+    <div
+        ref={dropdownRef}
+        className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50"
+    >
+        {["all", "first"].map((option) => (
+            <button
+                key={option}
+                onClick={() => handleSelect(option)}
+                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                role="menuitem"
+            >
+                {selectedOption === option ? (
+                    <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
+                ) : (
+                    <span className="w-4 mr-2" />
+                )}
+                {option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก"}
+            </button>
+        ))}
+    </div>
+);

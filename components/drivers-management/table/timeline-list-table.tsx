@@ -4,7 +4,7 @@ import { DataTable } from "@/components/table/time-table";
 import { generateDateObjects, transformDriverApiToTableData } from "@/components/table/carpool-timeline/generate-date";
 // import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle/vehicle-timeline-detail-modal";
+import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle-management/vehicle-timeline-detail-modal";
 import { DriverTimelineListTableData } from "@/app/types/carpool-management-type";
 
 interface RequestListTableProps {

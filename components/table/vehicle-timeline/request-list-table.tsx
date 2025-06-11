@@ -4,7 +4,7 @@ import { transformApiToTableData } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import useGenerateDates from "./useGenerateDates";
 import { useColumns } from "./columns";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle/vehicle-timeline-detail-modal";
+import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle-management/vehicle-timeline-detail-modal";
 import { DataTable } from "../time-table";
 
 interface RequestListTableProps {
@@ -30,7 +30,7 @@ export default function RequestListTable({
   const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();
 
-  const columns = useColumns(
+  const columns = useColumns({
     columnHelper,
     dates,
     selectedOption,
@@ -38,7 +38,7 @@ export default function RequestListTable({
     handleOpenDetailModal,
     setTripDetails,
     setDateSelected
-  );
+  });
 
   const table = useReactTable({
     data: dataTransform,

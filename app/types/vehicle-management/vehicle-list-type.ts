@@ -25,6 +25,7 @@ export interface VehicleManagementApiResponse {
   vehicle_carpool_name: string;
   vehicle_get_date: string;
   vehicle_license_plate: string;
+  vehicle_license_plate_province_short: string;
   vehicle_mileage: number;
   vehicle_model_name: string;
   vehicle_owner_dept_short: string;
@@ -90,6 +91,7 @@ export interface VehicleInputParams {
   vehicleDepartment: string;
   taxVehicle: string[];
   vehicleStatus: string[];
+  vehicleBookingStatus: string[];
 }
 
 export interface VehicleStatusProps {
