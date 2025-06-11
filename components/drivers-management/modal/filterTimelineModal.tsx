@@ -10,6 +10,7 @@ import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/ve
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 type Props = {
+  defaultVehicleBookingStatus?: string[];
   flag: string;
   onSubmitFilter?: (params: VehicleInputParams) => void;
 };
@@ -38,6 +39,7 @@ interface DriverStatus {
 }
 
 export interface VehicleStatusProps {
+  defaultBookingStatus: string[];
   vehicleDepartments: VehicleDepartmentApiResponse[];
   fuelTypes: FuelTypeApiResponse[];
   vehicleTypes: VehicleTypeApiResponse[];
@@ -101,6 +103,7 @@ const ModalBody = ({
   driverStatus,
   statusDriver,
   driverWorkType,
+  defaultBookingStatus,
 }: VehicleStatusProps) => {
   const [formData, setFormData] = useState<VehicleInputParams>(params);
 
@@ -112,6 +115,15 @@ const ModalBody = ({
     setParams(formData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
+
+  useEffect(() => {
+    if (defaultBookingStatus.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        vehicleBookingStatus: defaultBookingStatus,
+      }));
+    }
+  }, [defaultBookingStatus]);
 
   const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
     setFormData((prev) => {
@@ -252,7 +264,7 @@ const ModalFooter = ({
   );
 };
 
-const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag }, ref) => {
+const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag, defaultVehicleBookingStatus }, ref) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
 
@@ -268,7 +280,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     taxVehicle: [],
     vehicleStatus: [],
     driverWorkType: [],
-    vehicleBookingStatus: [],
+    vehicleBookingStatus: defaultVehicleBookingStatus ?? [],
   });
   const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
   const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
@@ -365,6 +377,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
             statusDriver={statusDriver}
             driverWorkType={driverWorkType}
             timelineStatus={timelineStatus}
+            defaultBookingStatus={defaultVehicleBookingStatus ?? []}
           />
         </div>
 

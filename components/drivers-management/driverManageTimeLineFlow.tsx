@@ -1,19 +1,44 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
 import { getDriverTimeline } from "@/services/driversManagement";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
-import VehicleStatus from "@/components/vehicle-management/vehicle-status-with-icon";
-import PaginationControls from "@/components/table/pagination-control";
-import VehicleNoData from "@/components/vehicle-management/noData";
+import VehicleStatus from "../vehicle-management/vehicle-status-with-icon";
+import PaginationControls from "../table/pagination-control";
+import VehicleNoData from "../vehicle-management/noData";
 import { DateRange } from "react-day-picker";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import DateRangePicker from "../vehicle-management/input/dateRangeInput";
-import RequestListTable from "../table/driver-timeline/request-list-table";
-import { debounce } from "lodash";
+import RequestListTable from "@/components/table/driver-timeline/request-list-table";
 import SearchInput from "../vehicle-management/input/search";
+import { TripStatus } from "@/utils/vehicle-constant";
+import { debounce } from "lodash";
 
 export default function VehicleTimeLine() {
+  // Setting Initial
+  const statusOptions = [
+    { value: "1", status: TripStatus["Pending"] },
+    { value: "2", status: TripStatus["RoundTrip"] },
+    { value: "3", status: TripStatus["Overnight"] },
+    { value: "4", status: TripStatus["Completed"] },
+  ];
+
+  // Function
+
+  // Manage Filter Params
+  const [filterParams, setFilterParams] = useState<string[]>([]);
+
+  useEffect(() => {
+    setParams((prev) => ({
+      ...prev,
+      ref_timeline_status_id: filterParams.join(","),
+    }));
+  }, [filterParams]);
+
+  const toggleFilter = (value: string) => {
+    setFilterParams((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
+  };
+
   const [dataRequest, setDataRequest] = useState<any[]>([]);
   const [lastMonth, setLastMonth] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -28,7 +53,8 @@ export default function VehicleTimeLine() {
     total: 0,
     totalPages: 0,
   });
-  const [params, setParams] = useState({
+
+  const initialParams = {
     search: "",
     start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
     end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
@@ -38,13 +64,11 @@ export default function VehicleTimeLine() {
     is_active: "",
     page: pagination.page,
     limit: pagination.limit,
-  });
-  const [filterParams, setFilterParams] = useState({
-    รออนุมัติ: false,
-    "ไป - กลับ": false,
-    ค้างแรม: false,
-    เสร็จสิ้น: false,
-  });
+  };
+
+  const [params, setParams] = useState(initialParams);
+
+  // Filter Modal Ref
   const filterModalRef = useRef<FilterModalRef>(null);
 
   useEffect(() => {
@@ -87,38 +111,11 @@ export default function VehicleTimeLine() {
   };
 
   const handleFilterSubmit = (filterParams: any) => {
-    const filterMap = {
-      รออนุมัติ: filterParams.vehicleBookingStatus.includes("1"),
-      "ไป - กลับ": filterParams.vehicleBookingStatus.includes("2"),
-      ค้างแรม: filterParams.vehicleBookingStatus.includes("3"),
-      เสร็จสิ้น: filterParams.vehicleBookingStatus.includes("4"),
-    };
-    const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
-    const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
-    const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
-
-    setFilterParams(filterMap);
-    setParams((prev) => ({
-      ...prev,
-      is_active: isActive,
-      work_type: workType,
-      ref_driver_status_code: driverStatus,
-      ref_timeline_status_id: filterParams.vehicleBookingStatus.join(","),
-    }));
+    setFilterParams(() => [...filterParams.vehicleBookingStatus]);
   };
 
   const handleClearAllFilters = () => {
-    setParams({
-      search: "",
-      start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
-      end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
-      work_type: "",
-      ref_driver_status_code: "",
-      ref_timeline_status_id: "",
-      is_active: "",
-      page: 1,
-      limit: 10,
-    });
+    setParams(initialParams);
   };
 
   const Header = () => (
@@ -138,10 +135,13 @@ export default function VehicleTimeLine() {
     <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex gap-4 md:flex-row md:items-center">
         <div className="flex flex-wrap items-center gap-2">
-          {["รออนุมัติ", "ไป - กลับ", "ค้างแรม", "เสร็จสิ้น"].map((status: string) => {
-            const isActive = filterParams[status as keyof typeof filterParams];
-            return <VehicleStatus key={status} status={status} />;
-          })}
+          <div className="flex flex-wrap items-center gap-2">
+            {statusOptions.map(({ value, status }) => (
+              <button key={value} onClick={() => toggleFilter(value)}>
+                <VehicleStatus status={status} isActive={filterParams.includes(value)} />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -236,7 +236,6 @@ export default function VehicleTimeLine() {
     <div className="px-4 sm:px6 lg:px8 py6">
       <Header />
       <div className="flex justify-between items-center mb-4">
-        {/* <div>search: {params.search}</div> */}
         <SearchInput
           defaultValue={params.search}
           placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
@@ -245,7 +244,12 @@ export default function VehicleTimeLine() {
         <Actions />
       </div>
       <RenderTableOrNoData />
-      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
+      <FilterModal
+        ref={filterModalRef}
+        onSubmitFilter={handleFilterSubmit}
+        defaultVehicleBookingStatus={filterParams}
+        flag="TIMELINE"
+      />
     </div>
   );
 }
