@@ -75,11 +75,19 @@ export default function CarpoolApproverTable({
           setRefetch(true);
           setToast({
             title: "กำหนดผู้อนุมัติหลักสำเร็จ",
-            desc:
-              "กำหนดให้ " +
-              defaultData.find((item) => item.mas_carpool_approver_uid === _id)
-                ?.approver_emp_name +
-              " เป็นผู้อนุมัติหลักของกลุ่มเรียบร้อยแล้ว",
+            desc: (
+              <>
+                กำหนดให้{" "}
+                <span className="font-bold">
+                  {
+                    defaultData.find(
+                      (item) => item.mas_carpool_approver_uid === _id
+                    )?.approver_emp_name
+                  }
+                </span>{" "}
+                เป็นผู้อนุมัติหลักของกลุ่มเรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
@@ -112,12 +120,19 @@ export default function CarpoolApproverTable({
             cancelCreateModalRef.current?.closeModal();
             setToast({
               title: "ลบผู้อนุมัติสำเร็จ",
-              desc:
-                "ผู้อนุมัติ " +
-                defaultData.find(
-                  (item) => item.mas_carpool_approver_uid === deleteId
-                )?.approver_emp_name +
-                " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+              desc: (
+                <>
+                  ผู้อนุมัติ{" "}
+                  <span className="font-bold">
+                    {
+                      defaultData.find(
+                        (item) => item.mas_carpool_approver_uid === deleteId
+                      )?.approver_emp_name
+                    }
+                  </span>{" "}
+                  ถูกลบออกจากกลุ่มเรียบร้อยแล้ว
+                </>
+              ),
               status: "success",
             });
           }
@@ -144,11 +159,18 @@ export default function CarpoolApproverTable({
         setDeleteId(undefined);
         setToast({
           title: "ลบผู้อนุมัติสำเร็จ",
-          desc:
-            "ผู้อนุมัติ " +
-            defaultData.find((item) => item.approver_emp_no === deleteId)
-              ?.approver_emp_name +
-            " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+          desc: (
+            <>
+              ผู้อนุมัติ{" "}
+              <span className="font-bold">
+                {
+                  defaultData.find((item) => item.approver_emp_no === deleteId)
+                    ?.approver_emp_name
+                }
+              </span>{" "}
+              ถูกลบออกจากกลุ่มเรียบร้อยแล้ว
+            </>
+          ),
           status: "success",
         });
         cancelCreateModalRef.current?.closeModal();
@@ -311,14 +333,20 @@ export default function CarpoolApproverTable({
         ref={cancelCreateModalRef}
         title={"ยืนยันยกเลิกผู้อนุมัติ?"}
         desc={
-          "คุณต้องการยกเลิกผู้อนุมัติ " +
-          defaultData.find((item) => {
-            const uid = id
-              ? item.mas_carpool_approver_uid
-              : item.approver_emp_no;
-            return uid === deleteId;
-          })?.approver_emp_name +
-          " ใช่หรือไม่?"
+          <>
+            คุณต้องการยกเลิกผู้อนุมัติ{" "}
+            <span className="font-bold">
+              {
+                defaultData.find((item) => {
+                  const uid = id
+                    ? item.mas_carpool_approver_uid
+                    : item.approver_emp_no;
+                  return uid === deleteId;
+                })?.approver_emp_name
+              }
+            </span>{" "}
+            ใช่หรือไม่?
+          </>
         }
         confirmText={"ยกเลิกผู้อนุมัติ"}
         onConfirm={handleDelete}

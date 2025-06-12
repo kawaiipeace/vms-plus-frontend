@@ -121,6 +121,7 @@ const AddCarpoolAdminModal = forwardRef<
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
         });
+
         if (response.request.status === 200) {
           setRefetch(true);
           setAdminSelected(undefined);
@@ -130,11 +131,18 @@ const AddCarpoolAdminModal = forwardRef<
           modalRef.current?.close();
           setToast({
             title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
-            desc:
-              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
-              admins.find((item) => item.emp_id === adminSelected?.value)
-                ?.full_name +
-              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            desc: (
+              <>
+                ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ{" "}
+                <span className="font-bold">
+                  {
+                    admins.find((item) => item.emp_id === adminSelected?.value)
+                      ?.full_name
+                  }
+                </span>{" "}
+                ได้รับการแก้ไขเรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
@@ -160,12 +168,19 @@ const AddCarpoolAdminModal = forwardRef<
         modalRef.current?.close();
         setToast({
           title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
-          desc:
-            "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
-            carpool_admins.find(
-              (item) => item.admin_emp_no === adminSelected?.value
-            )?.admin_emp_name +
-            " ได้รับการแก้ไขเรียบร้อยแล้ว",
+          desc: (
+            <>
+              ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ{" "}
+              <span className="font-bold">
+                {
+                  carpool_admins.find(
+                    (item) => item.admin_emp_no === adminSelected?.value
+                  )?.admin_emp_name
+                }
+              </span>{" "}
+              ได้รับการแก้ไขเรียบร้อยแล้ว
+            </>
+          ),
           status: "success",
         });
       }
@@ -200,6 +215,22 @@ const AddCarpoolAdminModal = forwardRef<
           setInternalContactNumber("");
           setMobileContactNumber("");
           modalRef.current?.close();
+          setToast({
+            title: "เพิ่มผู้ดูแลยานพาหนะสำเร็จ",
+            desc: (
+              <>
+                เพิ่มผู้ดูแลยานพาหนะ{" "}
+                <span className="font-bold">
+                  {
+                    admins.find((item) => item.emp_id === adminSelected?.value)
+                      ?.full_name
+                  }
+                </span>{" "}
+                เรียบร้อยแล้ว
+              </>
+            ),
+            status: "success",
+          });
         }
       } else {
         const admin = admins.find((e) => e.emp_id === adminSelected?.value);
@@ -226,6 +257,22 @@ const AddCarpoolAdminModal = forwardRef<
         setInternalContactNumber("");
         setMobileContactNumber("");
         modalRef.current?.close();
+        setToast({
+          title: "เพิ่มผู้ดูแลยานพาหนะสำเร็จ",
+          desc: (
+            <>
+              เพิ่มผู้ดูแลยานพาหนะ{" "}
+              <span className="font-bold">
+                {
+                  admins.find((item) => item.emp_id === adminSelected?.value)
+                    ?.full_name
+                }
+              </span>{" "}
+              เรียบร้อยแล้ว
+            </>
+          ),
+          status: "success",
+        });
       }
     } catch (error: any) {
       console.error(error);

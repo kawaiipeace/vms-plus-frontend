@@ -13,16 +13,25 @@ import {
 import { CarpoolVehicle } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id: string;
+  data: any[];
   setRefetch: (value: boolean) => void;
+  setLastDeleted: (value: boolean) => void;
+}
+
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
 }
 
 const AddCarpoolVehicleModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ setRefetch }, ref) => {
+>(({ setRefetch, setLastDeleted }, ref) => {
   // Destructure `process` from props
   const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -37,6 +46,7 @@ const AddCarpoolVehicleModal = forwardRef<
   const [params, setParams] = useState({
     search: "",
   });
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   const VehicleNoneIdLength = vehicles.filter(
     (vehicle) =>
@@ -114,8 +124,25 @@ const AddCarpoolVehicleModal = forwardRef<
         }));
         const response = await postCarpoolVehicleCreate(data);
         if (response.request.status === 201) {
+          setLastDeleted(false);
           setRefetch(true);
           modalRef.current?.close();
+          setToast({
+            title: "เพิ่มยานพาหนะสำเร็จ",
+            desc: (
+              <>
+                เพิ่มยานพาหนะเลขทะเบียน{" "}
+                <span className="font-bold">
+                  {vehicles
+                    .filter((e) => checked.includes(e.mas_vehicle_uid))
+                    .map((e) => e.vehicle_license_plate)
+                    .join(", ")}
+                </span>{" "}
+                ในกลุ่มเรียบร้อยแล้ว
+              </>
+            ),
+            status: "success",
+          });
         }
       } else {
         const data = checked.map((item) => {
@@ -141,9 +168,32 @@ const AddCarpoolVehicleModal = forwardRef<
         });
         setChecked([]);
         modalRef.current?.close();
+        setToast({
+          title: "เพิ่มยานพาหนะสำเร็จ",
+          desc: (
+            <>
+              เพิ่มยานพาหนะเลขทะเบียน{" "}
+              <span className="font-bold">
+                {data.map((e) => e.vehicle_license_plate).join(", ")}
+              </span>{" "}
+              ในกลุ่มเรียบร้อยแล้ว
+            </>
+          ),
+          status: "success",
+        });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
     }
   };
 
@@ -306,6 +356,15 @@ const AddCarpoolVehicleModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });

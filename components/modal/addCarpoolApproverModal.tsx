@@ -46,6 +46,7 @@ const AddCarpoolApproverModal = forwardRef<
     useState<string>();
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [editName, setEditName] = useState<string | undefined>(undefined);
   const [validPhone, setValidPhone] = useState<boolean>(false);
 
   const { formData, updateFormData } = useFormContext();
@@ -71,6 +72,7 @@ const AddCarpoolApproverModal = forwardRef<
               label:
                 result.approver_emp_name + " (" + result.approver_emp_no + ")",
             });
+            setEditName(result.approver_emp_name);
             setDeptSapShort(result.approver_dept_sap_short);
             setInternalContactNumber(result.internal_contact_number);
             setMobileContactNumber(result.mobile_contact_number);
@@ -130,17 +132,25 @@ const AddCarpoolApproverModal = forwardRef<
         if (response.request.status === 200) {
           setRefetch(true);
           setSelectedApprover(undefined);
+          setEditName(undefined);
           setDeptSapShort("");
           setInternalContactNumber("");
           setMobileContactNumber("");
           modalRef.current?.close();
           setToast({
             title: "แก้ไขข้อมูลผู้อนุมัติสำเร็จ",
-            desc:
-              "ข้อมูลการติดต่อของผู้อนุมัติ " +
-              approver.find((item) => item.emp_id === selectedApprover?.value)
-                ?.full_name +
-              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            desc: (
+              <>
+                ข้อมูลการติดต่อของผู้อนุมัติ{" "}
+                <span className="font-bold">
+                  {editName ||
+                    approver.find(
+                      (item) => item.emp_id === selectedApprover?.value
+                    )?.full_name}
+                </span>{" "}
+                ได้รับการแก้ไขเรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
@@ -160,18 +170,25 @@ const AddCarpoolApproverModal = forwardRef<
           carpool_approvers,
         });
         setSelectedApprover(undefined);
+        setEditName(undefined);
         setDeptSapShort("");
         setInternalContactNumber("");
         setMobileContactNumber("");
         modalRef.current?.close();
         setToast({
           title: "แก้ไขข้อมูลผู้อนุมัติสำเร็จ",
-          desc:
-            "ข้อมูลการติดต่อของผู้อนุมัติ " +
-            carpool_approvers.find(
-              (item) => item.approver_emp_no === selectedApprover?.value
-            )?.approver_emp_name +
-            " ได้รับการแก้ไขเรียบร้อยแล้ว",
+          desc: (
+            <>
+              ข้อมูลการติดต่อของผู้อนุมัติ{" "}
+              <span className="font-bold">
+                {editName ||
+                  carpool_approvers.find(
+                    (item) => item.approver_emp_no === selectedApprover?.value
+                  )?.approver_emp_name}
+              </span>{" "}
+              ได้รับการแก้ไขเรียบร้อยแล้ว
+            </>
+          ),
           status: "success",
         });
       }
@@ -206,6 +223,23 @@ const AddCarpoolApproverModal = forwardRef<
           setInternalContactNumber("");
           setMobileContactNumber("");
           setRefetch(true);
+          setToast({
+            title: "เพิ่มผู้อนุมัติสำเร็จ",
+            desc: (
+              <>
+                เพิ่มผู้อนุมัติ{" "}
+                <span className="font-bold">
+                  {
+                    approver.find(
+                      (item) => item.emp_id === selectedApprover?.value
+                    )?.full_name
+                  }
+                </span>{" "}
+                เรียบร้อยแล้ว
+              </>
+            ),
+            status: "success",
+          });
         }
       } else {
         const approve = approver.find(
@@ -234,6 +268,23 @@ const AddCarpoolApproverModal = forwardRef<
         setDeptSapShort("");
         setInternalContactNumber("");
         setMobileContactNumber("");
+        setToast({
+          title: "แก้ไขข้อมูลผู้อนุมัติสำเร็จ",
+          desc: (
+            <>
+              เพิ่มผู้อนุมัติ{" "}
+              <span className="font-bold">
+                {
+                  approver.find(
+                    (item) => item.emp_id === selectedApprover?.value
+                  )?.full_name
+                }
+              </span>{" "}
+              เรียบร้อยแล้ว
+            </>
+          ),
+          status: "success",
+        });
       }
     } catch (error: any) {
       console.error(error);

@@ -6,7 +6,10 @@ import "dayjs/locale/th";
 
 dayjs.locale("th");
 
-export function transformVehicleApiToTableData(rawData: any, dates: any[]): VehicleTimelineTransformData[] {
+export function transformVehicleApiToTableData(
+  rawData: any,
+  dates: any[]
+): VehicleTimelineTransformData[] {
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
@@ -20,8 +23,8 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
   return vehicles.map((vehicle) => {
     const timeline = createEmptyTimeline();
     let status = "";
-    let carUserDetail: Record<string, string> = {};
-    let driverDetail: Record<string, string> = {};
+    const carUserDetail: Record<string, string> = {};
+    const driverDetail: Record<string, string> = {};
 
     vehicle.vehicle_trn_requests?.forEach((req: any) => {
       if (req.trip_details.length === 0) return;
@@ -29,8 +32,10 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
       status = req.time_line_status;
 
       carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
-      carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
-      carUserDetail.userContactInternalNumber = req.car_user_internal_contact_number || "1234";
+      carUserDetail.userContactNumber =
+        req.car_user_mobile_contact_number || "0912345678";
+      carUserDetail.userContactInternalNumber =
+        req.car_user_internal_contact_number || "1234";
 
       driverDetail.driverName = req.driver.driver_name;
       driverDetail.licensePlate = vehicle.vehicle_license_plate;
@@ -57,7 +62,8 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
 
     const result = {
       vehicleLicensePlate: vehicle.vehicle_license_plate,
-      vehicleLicensePlateProvinceShort: vehicle.vehicle_license_plate_province_short,
+      vehicleLicensePlateProvinceShort:
+        vehicle.vehicle_license_plate_province_short,
       vehicleBrandModel: vehicle.vehicle_model_name,
       vehicleBrandName: vehicle.vehicle_brand_name,
       vehicleType: vehicle.vehicle_car_type_detail,
@@ -75,9 +81,15 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
 export async function generateDateObjects(startDate: string, endDate: string) {
   try {
     // Handle Holiday API call
-    const response = await getHoliday({ start_date: startDate, end_date: endDate });
+    const response = await getHoliday({
+      start_date: startDate,
+      end_date: endDate,
+    });
     const holidayMap = new Map(
-      response.map((item: any) => [dayjs(item.mas_holidays_date).format("YYYY/MM/DD"), item.mas_holidays_detail])
+      response.map((item: any) => [
+        dayjs(item.mas_holidays_date).format("YYYY/MM/DD"),
+        item.mas_holidays_detail,
+      ])
     );
 
     const dates = [];
@@ -108,7 +120,10 @@ export async function generateDateObjects(startDate: string, endDate: string) {
   }
 }
 
-export function transformDriverApiToTableData(rawData: any, dates: any[]): DriverTimelineTransformData[] {
+export function transformDriverApiToTableData(
+  rawData: any,
+  dates: any[]
+): DriverTimelineTransformData[] {
   const createEmptyTimeline = () => {
     const timeline: Record<string, any[]> = {};
     for (let i = 1; i <= dates.length; i++) {
@@ -135,7 +150,8 @@ export function transformDriverApiToTableData(rawData: any, dates: any[]): Drive
         userDeptShortName: req.vehicle_user_dept_name_short ?? "ฝ่ายขนส่ง",
         userPosition: req.vehicle_user_position ?? "พนักงานขับรถ",
         userContactNumber: req.car_user_mobile_contact_number ?? "0912345678",
-        userContactInternalNumber: req.car_user_internal_contact_number ?? "1234",
+        userContactInternalNumber:
+          req.car_user_internal_contact_number ?? "1234",
       };
       // carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
       // carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
@@ -144,7 +160,8 @@ export function transformDriverApiToTableData(rawData: any, dates: any[]): Drive
       driverDetail = {
         driverName: driver?.driver_name ?? "",
         licensePlate: req.vehicle_license_plate ?? "",
-        licensePlateProvinceShort: req.vehicle_license_plate_province_short ?? "",
+        licensePlateProvinceShort:
+          req.vehicle_license_plate_province_short ?? "",
       };
       // driverDetail.driverName = driver.driver_name;
       // driverDetail.licensePlate = "";
@@ -155,7 +172,9 @@ export function transformDriverApiToTableData(rawData: any, dates: any[]): Drive
         const duration = Math.max(end.diff(start, "day") + 1, 1);
 
         for (let i = 0; i < duration; i++) {
-          const currentDateKey = `${start.add(i, "day").date()}_${start.month() + 1}_${start.year()}`;
+          const currentDateKey = `${start.add(i, "day").date()}_${
+            start.month() + 1
+          }_${start.year()}`;
           if (!timeline[`day_${currentDateKey}`]) continue;
 
           timeline[`day_${currentDateKey}`].push({

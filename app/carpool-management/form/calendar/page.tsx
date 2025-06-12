@@ -28,7 +28,7 @@ export default function CarpoolCalendar() {
     try {
       const response = await putCarpoolSetActive(
         id as string,
-        active === "1" ? "0" : "1"
+        active === "เปิด" ? "0" : "1"
       );
       if (response.request.status === 200) {
         router.push(
@@ -37,7 +37,7 @@ export default function CarpoolCalendar() {
             "&name=" +
             name +
             "&active=" +
-            (active === "1" ? "0" : "1")
+            (active === "เปิด" ? "ปิด" : "เปิด")
         );
       }
     } catch (error) {
@@ -81,15 +81,20 @@ export default function CarpoolCalendar() {
                       {id ? name : "สร้างกลุ่มยานพาหนะ"}
                     </span>
                     {id &&
-                      (active === "1" ? (
+                      (active === "เปิด" ? (
                         <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
                           <div className="w-[6px] h-[6px] rounded-full bg-success" />
                           <span>เปิด</span>
                         </div>
-                      ) : (
+                      ) : active === "ปิด" ? (
                         <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
                           <div className="w-[6px] h-[6px] rounded-full bg-icon-error" />
                           <span>ปิด</span>
+                        </div>
+                      ) : (
+                        <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
+                          <div className="w-[6px] h-[6px] rounded-full bg-[#667085]" />
+                          <span>ไม่พร้อมใช้งาน</span>
                         </div>
                       ))}
                   </div>

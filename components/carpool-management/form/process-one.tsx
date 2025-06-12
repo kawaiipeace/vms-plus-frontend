@@ -84,8 +84,6 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
 
   const { formData, updateFormData } = useFormContext();
 
-  console.log("departmentSelected: ", departmentSelected);
-
   const {
     register,
     handleSubmit,
@@ -117,6 +115,12 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
       );
     }
   }, [formData.form?.carpool_type]);
+
+  useEffect(() => {
+    if (formData.form?.carpool_authorized_depts) {
+      setDepartmentSelected(formData.form.carpool_authorized_depts as any);
+    }
+  }, [formData.form?.carpool_authorized_depts]);
 
   useEffect(() => {
     const fetchCarFunc = async () => {
@@ -239,12 +243,17 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
         if (response.request.status === 200) {
           setToast({
             title: "บันทึกการตั้งค่าสำเร็จ",
-            desc: "บันทึกการตั้งค่ากลุ่มยานพาหนะ " + name + " เรียบร้อยแล้ว",
+            desc: (
+              <>
+                บันทึกการตั้งค่ากลุ่มยานพาหนะ{" "}
+                <span className="font-bold">{name}</span> เรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
       } catch (error: any) {
-        console.log(error);
+        console.error(error);
         setToast({
           title: "Error",
           desc: (
@@ -257,7 +266,12 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
         });
       }
     } else {
-      updateFormData({ form: dataToApi });
+      updateFormData({
+        form: {
+          ...dataToApi,
+          carpool_authorized_depts: data.carpool_authorized_depts,
+        },
+      });
       localStorage.setItem("carpoolProcessOne", "Done");
       router.push("/carpool-management/form/process-two");
     }

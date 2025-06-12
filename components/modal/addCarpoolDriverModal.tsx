@@ -14,10 +14,17 @@ import { CarpoolDriver } from "@/app/types/carpool-management-type";
 import dayjs from "dayjs";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   id: string;
   setRefetch: (value: boolean) => void;
+}
+
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
 }
 
 const AddCarpoolDriverModal = forwardRef<
@@ -38,6 +45,7 @@ const AddCarpoolDriverModal = forwardRef<
   const [params, setParams] = useState({
     name: "",
   });
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -56,7 +64,6 @@ const AddCarpoolDriverModal = forwardRef<
       const response = await getCarpoolDriver(params);
       const result = response.data;
       setDrivers(result.drivers);
-      // setTotal(result.pagination.total);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
@@ -66,8 +73,6 @@ const AddCarpoolDriverModal = forwardRef<
     if (params.name) {
       if (params.name && !search) {
         setDrivers([]);
-        // } else if (params.name !== search) {
-        //   setParams({ ...params, page: 1 });
       } else if (!params.name && search) {
         setSearch("");
       }
@@ -131,6 +136,22 @@ const AddCarpoolDriverModal = forwardRef<
         if (response.request.status === 201) {
           setRefetch(true);
           modalRef.current?.close();
+          setToast({
+            title: "เพิ่มพนักงานขับรถสำเร็จ",
+            desc: (
+              <>
+                เพิ่มพนักงานขับรถ{" "}
+                <span className="font-bold">
+                  {drivers
+                    .filter((e) => checked.includes(e.mas_driver_uid))
+                    .map((e) => e.driver_name)
+                    .join(", ")}
+                </span>{" "}
+                ในกลุ่มเรียบร้อยแล้ว
+              </>
+            ),
+            status: "success",
+          });
         }
       } else {
         const data = checked.map((item) => {
@@ -158,9 +179,32 @@ const AddCarpoolDriverModal = forwardRef<
         });
         setChecked([]);
         modalRef.current?.close();
+        setToast({
+          title: "เพิ่มพนักงานขับรถสำเร็จ",
+          desc: (
+            <>
+              เพิ่มพนักงานขับรถ{" "}
+              <span className="font-bold">
+                {data.map((e) => e.driver_name).join(", ")}
+              </span>{" "}
+              ในกลุ่มเรียบร้อยแล้ว
+            </>
+          ),
+          status: "success",
+        });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
     }
   };
 
@@ -306,6 +350,15 @@ const AddCarpoolDriverModal = forwardRef<
           <button>close</button>
         </form>
       </dialog>
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </>
   );
 });
