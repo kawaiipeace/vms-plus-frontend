@@ -41,7 +41,7 @@ export default function PickDriverCard({
   isSelected?: boolean;
   onVehicleSelect: (id: string) => void;
   onClickSeeDetail: (id: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
   
 }) {
 
