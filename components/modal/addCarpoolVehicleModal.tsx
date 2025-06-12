@@ -33,6 +33,7 @@ const AddCarpoolVehicleModal = forwardRef<
 
   const [vehicles, setVehicles] = useState<CarpoolVehicle[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
+  const [paramsSearch, setParamsSearch] = useState<string>("");
   const [params, setParams] = useState({
     search: "",
   });
@@ -88,6 +89,21 @@ const AddCarpoolVehicleModal = forwardRef<
     fetchCarpoolVehicleFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
+
+  useEffect(() => {
+    if (paramsSearch.trim().length >= 3) {
+      setParams({
+        search: paramsSearch,
+      });
+    } else {
+      if (params.search !== "") {
+        setParams({
+          search: "",
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsSearch]);
 
   const handleConfirm = async () => {
     try {
@@ -172,13 +188,8 @@ const AddCarpoolVehicleModal = forwardRef<
                   id="myInputTextField"
                   className="form-control dt-search-input !w-60"
                   placeholder="เลขทะเบียน, สังกัดยานพาหนะ"
-                  value={params.search}
-                  onChange={(e) =>
-                    setParams((prevParams) => ({
-                      ...prevParams,
-                      search: e.target.value,
-                    }))
-                  }
+                  value={paramsSearch}
+                  onChange={(e) => setParamsSearch(e.target.value)}
                 />
               </div>
 

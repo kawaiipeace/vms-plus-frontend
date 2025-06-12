@@ -78,6 +78,7 @@ export default function CarpoolProcessFour() {
       setPagination(result.pagination);
     } catch (error) {
       console.error("Error fetching status data:", error);
+      setData([]);
     }
   };
 

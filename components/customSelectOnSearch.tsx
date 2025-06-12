@@ -97,7 +97,10 @@ export default function CustomSelectOnSearch({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setHighlightedIndex(-1);
       }
@@ -119,9 +122,13 @@ export default function CustomSelectOnSearch({
       setHighlightedIndex(0);
     } else if (isOpen) {
       if (e.key === "ArrowDown") {
-        setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : 0));
+        setHighlightedIndex((prev) =>
+          prev < filteredOptions.length - 1 ? prev + 1 : 0
+        );
       } else if (e.key === "ArrowUp") {
-        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : filteredOptions.length - 1));
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredOptions.length - 1
+        );
       } else if (e.key === "Enter" && highlightedIndex >= 0) {
         const selected = filteredOptions[highlightedIndex];
         onChange(selected);
@@ -138,12 +145,17 @@ export default function CustomSelectOnSearch({
     if (!!option?.imageUrl && isInputOil) {
       return (
         <div className="flex items-center gap-1">
-          <img src={option.imageUrl} alt={"oil-image-" + option.imageUrl} width={24} height={24} />
+          <img
+            src={option.imageUrl}
+            alt={"oil-image-" + option.imageUrl}
+            width={24}
+            height={24}
+          />
           <span className="text-black">{option.label}</span>
         </div>
       );
     }
-    if (!showDescriptions || !option.desc || !isInputOil) return <div>{option.label}</div>;
+    if (!showDescriptions) return <div>{option.label}</div>;
     return (
       <div className="flex flex-col">
         <div className="font-medium">{option.label}</div>
@@ -175,7 +187,12 @@ export default function CustomSelectOnSearch({
             </div>
           ) : (
             <div className="flex items-center gap-1 flex-1 bg-transparent border-0 px-0 py-0 h-full text-md">
-              <img src={value?.imageUrl} alt={"oil-image-" + value?.imageUrl} width={24} height={24} />
+              <img
+                src={value?.imageUrl}
+                alt={"oil-image-" + value?.imageUrl}
+                width={24}
+                height={24}
+              />
               <span className="text-black">{value?.label}</span>
             </div>
           )
@@ -205,7 +222,11 @@ export default function CustomSelectOnSearch({
             disabled={true}
             readOnly
             tabIndex={-1}
-            style={{ pointerEvents: "none", background: "transparent", color: "#333" }}
+            style={{
+              pointerEvents: "none",
+              background: "transparent",
+              color: "#333",
+            }}
           />
         )}
 
@@ -258,7 +279,11 @@ export default function CustomSelectOnSearch({
                 }}
               >
                 {renderDropdownOption(option)}
-                {value?.value === option.value && <span className="material-symbols-outlined ml-auto">check</span>}
+                {value?.value === option.value && (
+                  <span className="material-symbols-outlined ml-auto">
+                    check
+                  </span>
+                )}
               </li>
             ))
           ) : (

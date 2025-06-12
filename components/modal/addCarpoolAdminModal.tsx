@@ -17,8 +17,8 @@ import { CarpoolAdmin } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
-import CustomSearchSelect from "../customSelectSerch";
 import FormHelper from "../formHelper";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   id?: string;
@@ -55,16 +55,6 @@ const AddCarpoolAdminModal = forwardRef<
   }));
 
   useEffect(() => {
-    const fetchCarpoolAdminFunc = async () => {
-      try {
-        const response = await getCarpoolAdmin();
-        const result = response.data;
-        setAdmins(result);
-      } catch (error) {
-        console.error("Error fetching status data:", error);
-      }
-    };
-
     fetchCarpoolAdminFunc();
   }, []);
 
@@ -103,6 +93,16 @@ const AddCarpoolAdminModal = forwardRef<
     fetchCarpoolAdminDetailsFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
+
+  const fetchCarpoolAdminFunc = async (search?: string) => {
+    try {
+      const response = await getCarpoolAdmin(search);
+      const result = response.data;
+      setAdmins(result);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
 
   const handleConfirm = () => {
     if (editId) {
@@ -280,7 +280,7 @@ const AddCarpoolAdminModal = forwardRef<
                 <div className="col-span-2">
                   <div className="form-group">
                     <label className="form-label">ผู้ดูแลยานพาหนะ</label>
-                    <CustomSearchSelect
+                    <CustomSelectOnSearch
                       iconName="person"
                       w="w-full"
                       options={admins.map((item) => ({
@@ -289,8 +289,10 @@ const AddCarpoolAdminModal = forwardRef<
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}
-                      enableSearch
-                      classNamePlaceholder="flex-1 text-start"
+                      enableSearchOnApi
+                      onSearchInputChange={(value) =>
+                        fetchCarpoolAdminFunc(value)
+                      }
                     />
                   </div>
                 </div>
