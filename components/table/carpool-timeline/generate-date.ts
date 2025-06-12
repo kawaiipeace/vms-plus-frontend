@@ -62,6 +62,7 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
       vehicleBrandName: vehicle.vehicle_brand_name,
       vehicleType: vehicle.vehicle_car_type_detail,
       vehicleDepartment: vehicle.vehicle_dept_name,
+      vehicleCarpoolName: vehicle.vehicle_carpool_name,
       distance: vehicle.vehicle_mileage,
       vehicleStatus: status,
       timeline: timeline,
