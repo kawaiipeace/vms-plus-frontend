@@ -80,8 +80,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ยานพาหนะ">
-          {row.original.can_choose_vehicle === true &&
-          row.original.vehicle_department_dept_sap_short === "" ? (
+          {row.original.can_choose_vehicle === true ? (
             <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-auto bg-white">
               <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
               <span className="text-color-secondary">รอเลือก</span>
@@ -124,8 +123,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ขับขี่">
-          {row.original.can_choose_driver === true &&
-          row.original.vehicle_department_dept_sap_short === "" ? (
+          {row.original.can_choose_driver === true ? (
             <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-[5rem] bg-white">
               <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
               <span className="text-color-secondary">รอเลือก</span>
@@ -252,22 +250,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
-      
-
-            {(statusValue == "ตีกลับ" || statusValue == "อนุมัติแล้ว") && (
-              <button
-                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
-                data-tip="ดูรายละเอียดคำขอ"
-                onClick={() =>
-                  router.push(
-                    "/administrator/request-list/" +
-                      row.original.trn_request_uid
-                  )
-                }
-              >
-                <i className="material-symbols-outlined">quick_reference_all</i>
-              </button>
-            )}
+  
 
             {statusValue == "ยกเลิกคำขอ" && (
               <button
@@ -324,9 +307,8 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
 
               const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
-              console.log("row clicked", { status, uid }); 
               if (status === "รออนุมัติ") {
-                router.push(`/administrator/request-list/${uid}/edit`);
+                router.push(`/administrator/request-list/${uid}`);
               } else {
                 router.push(`/administrator/request-list/${uid}`);
               }

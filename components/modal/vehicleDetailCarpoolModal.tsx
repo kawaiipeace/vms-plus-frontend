@@ -201,8 +201,7 @@ const VehicleDetailCarpoolModel = forwardRef<
                     </div>
                     <div className="form-card-right align-self-center">
                       <div className="flex flex-wrap gap-4">
-                        {vehicleDetail?.vehicle_department?.vehicle_user
-                          ?.tel_mobile && (
+                        
                           <div className="col-span-12 md:col-span-6">
                             <div className="form-group form-plaintext">
                               <i className="material-symbols-outlined">
@@ -218,9 +217,8 @@ const VehicleDetailCarpoolModel = forwardRef<
                               </div>
                             </div>
                           </div>
-                        )}
-                        {vehicleDetail?.vehicle_department?.vehicle_user
-                          ?.tel_internal && (
+                       
+                     
                           <div className="col-span-12 md:col-span-6">
                             <div className="form-group form-plaintext">
                               <i className="material-symbols-outlined">call</i>
@@ -234,7 +232,7 @@ const VehicleDetailCarpoolModel = forwardRef<
                               </div>
                             </div>
                           </div>
-                        )}
+                      
                       </div>
                     </div>
                   </div>

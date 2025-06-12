@@ -251,8 +251,7 @@ export default function RequestDetailForm({
                     />
                   )}
 
-                {requestData?.is_admin_choose_driver &&
-                  requestData?.is_admin_choose_driver === "1" && (
+                {requestData?.can_choose_driver && (
                     <ChooseDriverCard
                       number={requestData?.number_of_available_drivers}
                     />
@@ -290,6 +289,7 @@ export default function RequestDetailForm({
                       <DriverSmallInfoCard
                         driverDetail={requestData?.driver}
                         id={requestData?.driver.driver_id}
+                        requestData={requestData}
                         seeDetail={true}
                         noBack={true}
                         pickupPlace={requestData?.pickup_place}

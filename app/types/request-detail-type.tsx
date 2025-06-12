@@ -11,6 +11,8 @@ export type RequestDetailType = Partial<{
   vehicle_user_dept_sap: string;
   vehicle_user_emp_id: string;
   vehicle_user_dept_sap_short: string;
+  can_choose_vehicle: boolean;
+  can_choose_driver: boolean;
   mas_carpool_uid: string;
   vehicle_user_dept_sap_full: string;
   car_user_mobile_contact_number: string;

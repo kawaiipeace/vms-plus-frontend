@@ -21,6 +21,7 @@ interface Carpool {
   mas_carpool_uid: string;
   carpool_name: string;
   ref_carpool_choose_car_id: number;
+  is_admin_choose_driver?: boolean;
   ref_carpool_choose_car: {
     ref_carpool_choose_car_id: number;
     type_of_choose_car: string;
@@ -44,12 +45,6 @@ interface Vehicle {
 
 type VehicleCard = Carpool | Vehicle;
 
-interface ApiResponse {
-  carpools: Carpool[];
-  vehicles: Vehicle[];
-  pagination: PaginationInterface;
-}
-
 interface PaginationInterface {
   limit: number;
   page: number;
@@ -64,6 +59,7 @@ interface FormData {
   isAdminChooseDriver?: boolean;
   vehicleSelect?: string;
   carpoolName?: string;
+  masCarpoolUid?: string;
 }
 
 export default function ProcessTwo() {
@@ -135,11 +131,33 @@ export default function ProcessTwo() {
         (card) => "mas_vehicle_uid" in card && card.mas_vehicle_uid === value
       ) as Vehicle | undefined;
 
-      if (selectedVehicleObj?.is_admin_choose_driver !== undefined) {
-        updatedData.isAdminChooseDriver =
-          selectedVehicleObj.is_admin_choose_driver;
-      }
+      updatedData.isAdminChooseDriver =
+        selectedVehicleObj?.is_admin_choose_driver;
     }
+
+    updateFormData(updatedData);
+
+    if (updatedData?.isAdminChooseDriver === true) {
+      router.push("process-four");
+    }
+
+    localStorage.setItem("processTwo", "Done");
+    router.push("process-three");
+  };
+
+  const handleCarpoolSelect = (value: string) => {
+    setSelectedVehicle(value);
+    const updatedData: Partial<FormData> = {};
+
+    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
+      updatedData.isAdminChooseVehicle = "1";
+      updatedData.isSystemChooseVehicle = "0";
+    } else if (value === "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
+      updatedData.isSystemChooseVehicle = "1";
+      updatedData.isAdminChooseVehicle = "0";
+    }
+
+    console.log("vehiclecard", vehicleCards);
 
     // Add carpool name if a carpool is selected
     const selectedCarpool = vehicleCards.find(
@@ -149,9 +167,16 @@ export default function ProcessTwo() {
     ) as Carpool | undefined;
     if (selectedCarpool) {
       updatedData.carpoolName = selectedCarpool.carpool_name;
+      updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
+      updatedData.masCarpoolUid = "";
     }
 
     updateFormData(updatedData);
+
+    if (selectedCarpool?.is_admin_choose_driver === true) {
+      router.push("process-four");
+    }
+
     localStorage.setItem("processTwo", "Done");
     router.push("process-three");
   };
@@ -420,13 +445,9 @@ export default function ProcessTwo() {
                                 // Set carpoolName in formData when selecting an AutoCarCard
                                 updateFormData({
                                   carpoolName: carpool.carpool_name,
-                                  masCarpoolUid: carpool.mas_carpool_uid
+                                  masCarpoolUid: carpool.mas_carpool_uid,
                                 });
-                                handleVehicleSelect(
-                                  carpool.ref_carpool_choose_car_id === 3
-                                    ? "ระบบเลือกยานพาหนะให้อัตโนมัติ"
-                                    : "ผู้ดูแลยานพาหนะเลือกให้"
-                                );
+                                handleCarpoolSelect(carpool.mas_carpool_uid);
                               }}
                               isSelected={
                                 selectedVehicle === carpool.mas_carpool_uid ||

@@ -351,33 +351,14 @@ export default function RequestDetailForm({
                     <CarDetailCard vehicle={requestData?.vehicle} />
                   )}
 
-                {requestData?.is_admin_choose_driver && (
+                {requestData?.can_choose_driver === true && (
                   <ChooseDriverCard
                     number={requestData?.number_of_available_drivers}
+                    requestData={requestData}
                   />
                 )}
-
-                {requestData?.is_pea_employee_driver === "1" ? (
-                  <div className="mt-5">
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">ผู้ขับขี่</div>
-                    </div>
-
-                    <DriverPeaInfoCard
-                      driver_emp_id={requestData?.driver_emp_id}
-                      driver_emp_name={requestData?.driver_emp_name}
-                      driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
-                      driver_internal_contact_number={
-                        requestData?.driver_internal_contact_number
-                      }
-                      driver_mobile_contact_number={
-                        requestData?.driver_mobile_contact_number
-                      }
-                      driver_image_url={requestData?.driver_image_url}
-                    />
-                  </div>
-                ) : (
-                  requestData?.driver && (
+                {requestData?.can_choose_driver === false &&
+                  (requestData?.is_pea_employee_driver === "1" ? (
                     <div className="mt-5">
                       <div className="form-section-header">
                         <div className="form-section-header-title">
@@ -385,13 +366,35 @@ export default function RequestDetailForm({
                         </div>
                       </div>
 
-                      <DriverSmallInfoCard
-                        driverDetail={requestData?.driver}
-                        showPhone={true}
+                      <DriverPeaInfoCard
+                        driver_emp_id={requestData?.driver_emp_id}
+                        driver_emp_name={requestData?.driver_emp_name}
+                        driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
+                        driver_internal_contact_number={
+                          requestData?.driver_internal_contact_number
+                        }
+                        driver_mobile_contact_number={
+                          requestData?.driver_mobile_contact_number
+                        }
+                        driver_image_url={requestData?.driver_image_url}
                       />
                     </div>
-                  )
-                )}
+                  ) : (
+                    requestData?.driver && (
+                      <div className="mt-5">
+                        <div className="form-section-header">
+                          <div className="form-section-header-title">
+                            ผู้ขับขี่
+                          </div>
+                        </div>
+
+                        <DriverSmallInfoCard
+                          driverDetail={requestData?.driver}
+                          showPhone={true}
+                        />
+                      </div>
+                    )
+                  ))}
               </div>
             </div>
           </div>

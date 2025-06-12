@@ -19,6 +19,7 @@ import ApproverInfoCard from "@/components/card/approverInfoCard";
 import ChooseDriverCard from "@/components/card/chooseDriverCard";
 import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
+import { convertToISO } from "@/utils/convertToISO";
 
 interface Props {
   approverCard?: boolean;
@@ -57,7 +58,6 @@ Props) {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-
 
   const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
 
@@ -107,12 +107,29 @@ Props) {
       if (parsedData?.vehicleSelect) {
         const fetchVehicleInfoFunc = async () => {
           try {
-            const response = await fetchVehicleInfo(parsedData?.vehicleSelect);
+            const response = await fetchVehicleInfo({
+              mas_carpool_uid: parsedData.masCarpoolUid,
+              work_type: parsedData?.tripType,
+              mas_vehicle_uid: parsedData.masCarpoolUid
+                ? ""
+                : parsedData.vehicleSelect,
+              emp_id: parsedData.vehicleUserEmpId,
+              start_date: convertToISO(
+                String(parsedData.startDate),
+                String(parsedData.timeStart)
+              ),
+              end_date: convertToISO(
+                String(parsedData.endDate),
+                String(parsedData.timeEnd)
+              ),
+            });
+
             setAvailableDriver(response.data.number_of_available_drivers);
           } catch (error) {
             console.error("API Error:", error);
           }
         };
+
         fetchVehicleInfoFunc();
       }
     }
@@ -156,7 +173,9 @@ Props) {
                         {updatedFormData.vehicleUserEmpId}
                       </div>
                       <div className="supporting-text">
-                        { updatedFormData.vehicleUserEmpPosition + " " + updatedFormData.deptSapShort}
+                        {updatedFormData.vehicleUserEmpPosition +
+                          " " +
+                          updatedFormData.deptSapShort}
                       </div>
                     </div>
                   </div>
@@ -174,19 +193,17 @@ Props) {
                       </div>
                     </div>
 
-                    {updatedFormData.telInternal && (
-                      <div className="col-span-12 md:col-span-6">
-                        <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">call</i>
-                          <div className="form-plaintext-group">
-                            <div className="form-text text-nowra">
-                              {" "}
-                              {updatedFormData.telInternal}
-                            </div>
+                    <div className="col-span-12 md:col-span-6">
+                      <div className="form-group form-plaintext">
+                        <i className="material-symbols-outlined">call</i>
+                        <div className="form-plaintext-group">
+                          <div className="form-text text-nowra">
+                            {" "}
+                            {updatedFormData.telInternal}
                           </div>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -309,7 +326,9 @@ Props) {
                           ผู้ดูแลเลือกยานพาหนะให้
                         </div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">{updatedFormData.carpoolName}</div>
+                          <div className="supporting-text">
+                            {updatedFormData.carpoolName}
+                          </div>
                         </div>
                       </div>
 
@@ -354,7 +373,9 @@ Props) {
                           ระบบเลือกยานพาหนะให้อัตโนมัติ
                         </div>
                         <div className="supporting-text-group">
-                        <div className="supporting-text">{updatedFormData.carpoolName}</div>
+                          <div className="supporting-text">
+                            {updatedFormData.carpoolName}
+                          </div>
                         </div>
                       </div>
 
@@ -388,23 +409,28 @@ Props) {
                 <CarDetailCard vehicle={vehicleDetail} />
               )}
 
-            {updatedFormData.isAdminChooseDriver && (
-              <ChooseDriverCard number={availableDriver} />
+            {updatedFormData.isAdminChooseDriver === true && (
+              <>
+                <ChooseDriverCard
+                  number={availableDriver}
+                  requestData={updatedFormData}
+                />
+              </>
             )}
 
             {updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
-                   <div className="form-section-header">
-              <div className="form-section-header-title">ผู้ขับขี่</div>
-            </div>
+                <div className="form-section-header">
+                  <div className="form-section-header-title">ผู้ขับขี่</div>
+                </div>
                 <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
               </div>
             ) : (
               !updatedFormData?.isAdminChooseDriver && (
                 <div className="mt-5">
-                   <div className="form-section-header">
-              <div className="form-section-header-title">ผู้ขับขี่</div>
-            </div>
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">ผู้ขับขี่</div>
+                  </div>
                   <DriverSmallInfoCard
                     showPhone={true}
                     id={updatedFormData?.masCarpoolDriverUid}
@@ -444,7 +470,11 @@ Props) {
         ref={vehiclePickModalRef}
         masCarpoolUid={updatedFormData.masCarpoolUid}
         process="edit"
-        selectType={updatedFormData.isAdminChooseVehicle ? "ผู้ดูแลเลือกยานพาหนะให้" : "ระบบเลือกยานพาหนะให้อัตโนมัติ"}
+        selectType={
+          updatedFormData.isAdminChooseVehicle === "1"
+            ? "ผู้ดูแลเลือกยานพาหนะให้"
+            : "ระบบเลือกยานพาหนะให้อัตโนมัติ"
+        }
         desc={updatedFormData.carpoolName}
         onUpdate={handleModalUpdate}
       />

@@ -58,7 +58,7 @@ export default function ProcessFour() {
         ref_cost_type_code: parseInt(formData.refCostTypeCode || ""),
         doc_no: formData.referenceNumber || "",
         remark: formData.remark || "",
-        requested_vehicle_type: formData.requestedVehicleTypeName || "",
+        requested_vehicle_type: formData.masCarpoolUid === "" ? "" : formData.requestedVehicleTypeName,
         reserved_time_type: "1",
         start_datetime: convertToISO(
           String(formData.startDate),
