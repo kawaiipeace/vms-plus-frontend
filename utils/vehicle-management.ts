@@ -16,7 +16,7 @@ export const STATUS_COLOR_GROUPS: Record<keyof typeof BASE_STATUS_COLORS, string
   green: ['ปกติ', 'เสร็จสิ้น'],
   orange: ['บำรุงรักษา', 'รออนุมัติ'],
   blue: ['ใช้ชั่วคราว', 'ระหว่างโอน', 'ค้างแรม'],
-  red: ['ส่งซ่อม', 'ไป - กลับ'],
+  red: ['ส่งซ่อม', 'ไป-กลับ'],
   gray: ['สิ้นสุดสัญญา'],
 };
 
@@ -112,6 +112,7 @@ export function transformApiToTableData(rawData: any, dates: any[]): VehicleTime
       vehicleBrandName: vehicle.vehicle_brand_name,
       vehicleType: vehicle.vehicle_car_type_detail,
       vehicleDepartment: vehicle.vehicle_dept_name,
+      vehicleCarpoolName: vehicle.vehicle_carpool_name,
       distance: vehicle.vehicle_mileage,
       vehicleStatus: latestStatus,
       timeline,
