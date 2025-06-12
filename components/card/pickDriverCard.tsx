@@ -18,6 +18,7 @@ export default function PickDriverCard({
   seeDetail,
   driverStatus,
   workTypeName,
+  onBack,
   workDays,
   workCount,
   onVehicleSelect,
@@ -40,6 +41,8 @@ export default function PickDriverCard({
   isSelected?: boolean;
   onVehicleSelect: (id: string) => void;
   onClickSeeDetail: (id: string) => void;
+  onBack: () => void;
+  
 }) {
 
   const driverInfoModalRef = useRef<{

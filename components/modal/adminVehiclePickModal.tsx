@@ -30,6 +30,7 @@ interface Vehicle {
   vehicle_owner_dept_sap: string;
   vehicle_img: string;
   seat: number;
+  vehicle_pea_id?: string;
   is_admin_choose_vehicle?: boolean;
   vehicle_owner_dept_short?: string;
   vehicle_license_plate_province_full?: string;
@@ -39,8 +40,8 @@ interface Vehicle {
 
 interface Props {
   reqId?: string;
-    selectType?: string;
-    desc?: string;
+  selectType?: string;
+  desc?: string;
   vehicleType?: RequestVehicleType;
   typeName?: string;
   requestData?: RequestDetailType;
@@ -124,7 +125,8 @@ const AdminVehiclePickModal = forwardRef<
             .includes(value.toLowerCase()) ||
           vehicle.vehicle_model_name
             ?.toLowerCase()
-            .includes(value.toLowerCase())
+            .includes(value.toLowerCase()) ||
+          vehicle.vehicle_pea_id?.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredVehicles(filtered);
     };
@@ -150,7 +152,6 @@ const AdminVehiclePickModal = forwardRef<
     }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
 
     const handleVehicleSelect = async (id: string) => {
-  
       setSelectedVehicleId(id);
       const payload = {
         mas_vehicle_uid: id,
@@ -159,11 +160,11 @@ const AdminVehiclePickModal = forwardRef<
 
       try {
         const response = await adminUpdateVehicle(payload);
-          
+
         if (response) {
-       console.log('test====>');
+          console.log("test====>");
           if (onUpdate) {
-                 console.log('test====>');
+            console.log("test====>");
             onUpdate(response.data);
           }
 

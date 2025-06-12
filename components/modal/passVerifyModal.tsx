@@ -61,7 +61,7 @@ const PassVerifyModal = forwardRef<
           setVehicleUserDatas(vehicleUserData);
           const driverOptionsArray = vehicleUserData.map((user:any) => ({
             value: user.emp_id,
-            label: `${user.full_name} (${user.dept_sap})`,
+            label: `${user.full_name} (${user.emp_id})`,
           }));
           setDriverOptions(driverOptionsArray);
 
@@ -117,7 +117,7 @@ const PassVerifyModal = forwardRef<
           modalRef.current?.close();
 
           router.push(
-            "/administrator/request-list?approve-req=success&request-id=" +
+            "/administrator/request-list?verify-req=success&request-id=" +
               res.data.result?.request_no
           );
         }

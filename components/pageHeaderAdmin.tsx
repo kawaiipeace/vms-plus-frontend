@@ -122,7 +122,7 @@ const handleCopyRequestNo = async (text?: string) => {
               <span className="badge badge-pill-outline badge-gray">
                 {data?.ref_request_status_name}
               </span>
-            ) : data?.ref_request_status_name === "ตีกลับ" ? (
+            ) : (data?.ref_request_status_name === "ตีกลับ" || data?.ref_request_status_name === "ถูกตีกลับ") ? (
               <span className="badge badge-pill-outline badge-warning">
                 {data?.ref_request_status_name}
               </span>

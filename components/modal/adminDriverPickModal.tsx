@@ -59,9 +59,10 @@ const AdminDriverPickModal = forwardRef<
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    const filtered = drivers.filter((driver: DriverType) =>
-      driver.driver_name.includes(value)
-    );
+   const filtered = drivers.filter((driver: DriverType) =>
+    driver.driver_name?.toLowerCase().includes(value.toLowerCase()) ||
+    driver.driver_nickname?.toLowerCase().includes(value.toLowerCase())
+  );
     setFilteredDrivers(filtered);
   };
 
@@ -129,9 +130,11 @@ const AdminDriverPickModal = forwardRef<
 
   const fetchDriverData = async () => {
     const newParams = {
+      mas_carpool_uid: requestData?.mas_carpool_uid || "",
       emp_id: requestData?.vehicle_user_emp_id || "",
       start_date: requestData?.start_datetime || "",
       end_date: requestData?.end_datetime || "",
+      work_type: requestData?.trip_type || ""
     };
     setParams(newParams);
 
@@ -221,7 +224,7 @@ const AdminDriverPickModal = forwardRef<
                   value={searchTerm}
                   onChange={handleSearch}
                   className="form-control dt-search-input"
-                  placeholder="ค้นหาชื่อ-นามสกุล, ชื่อเล่น, บริษัท"
+                  placeholder="ค้นหาชื่อ-นามสกุล, ชื่อเล่น"
                 />
               </div>
               <CustomSelect

@@ -60,7 +60,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId, requestD
           <div className="card-content-top">
             <div className="card-title">ผู้ดูแลเลือกพนักงานขับรถให้</div>
             <div className="supporting-text-group">
-              <div className="supporting-text">สายงานดิจิทัล</div>
+                 <div className="supporting-text">{requestData?.carpool_name}</div>
             </div>
           </div>
 

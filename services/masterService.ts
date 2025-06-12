@@ -238,9 +238,16 @@ export const fetchUserApproverUsers = async (search?: string) => {
   }
 };
 
-export const fetchVehicleInfo = async (code: string) => {
+export const fetchVehicleInfo = async (params: {
+  mas_carpool_uid?: string;
+  mas_vehicle_uid?: string;
+  work_type?:string;
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+}) => {
   try {
-    const response = await axiosInstance.get("vehicle-info/" + code);
+    const response = await axiosInstance.get("vehicle-info", { params });
     return response;
   } catch (error) {
     throw error;

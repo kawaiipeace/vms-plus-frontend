@@ -58,7 +58,7 @@ const DriverInfoModal = forwardRef<
         <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
           <div className="modal-title flex items-center gap-4">
             {" "}
-            {pickable && (
+            {onBack && (
               <i
                 className="material-symbols-outlined cursor-pointer"
                 onClick={() => {

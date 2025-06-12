@@ -264,7 +264,7 @@ export default function RequestDetailForm({
                     />
                   )}
 
-                {requestData?.can_choose_driver === true && (
+                {requestData?.can_choose_driver === true ? (
                   <ChooseDriverCard
                     reqId={requestData?.trn_request_uid}
                     requestData={requestData}
@@ -272,51 +272,56 @@ export default function RequestDetailForm({
                     onChooseDriver={handleModalUpdate}
                     chooseDriver={requestData?.can_choose_driver === true}
                   />
-                )}
-
-                {requestData?.is_pea_employee_driver === "1" ? (
-                  <div className="mt-5 w-full overflow-hidden">
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">ผู้ขับขี่</div>
-                    </div>
-                    <DriverPeaInfoCard
-                      role="admin"
-                      driver_emp_id={requestData?.driver_emp_id}
-                      driver_emp_name={requestData?.driver_emp_name}
-                      driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
-                      driver_internal_contact_number={
-                        requestData?.driver_internal_contact_number
-                      }
-                      driver_mobile_contact_number={
-                        requestData?.driver_mobile_contact_number
-                      }
-                      driver_image_url={requestData?.driver_image_url}
-                      seeDetail={true}
-                    />
-                  </div>
                 ) : (
-                  requestData?.driver && (
-                    <div className="mt-5">
-                      <div className="form-section-header">
-                        <div className="form-section-header-title">
-                          ผู้ขับขี่
+                  <>
+                    {requestData?.is_pea_employee_driver === "1" ? (
+                      <div className="mt-5 w-full overflow-hidden">
+                        <div className="form-section-header">
+                          <div className="form-section-header-title">
+                            ผู้ขับขี่
+                          </div>
                         </div>
+                        <DriverPeaInfoCard
+                          role="admin"
+                          driver_emp_id={requestData?.driver_emp_id}
+                          driver_emp_name={requestData?.driver_emp_name}
+                          driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
+                          driver_internal_contact_number={
+                            requestData?.driver_internal_contact_number
+                          }
+                          driver_mobile_contact_number={
+                            requestData?.driver_mobile_contact_number
+                          }
+                          driver_image_url={requestData?.driver_image_url}
+                          seeDetail={true}
+                        />
                       </div>
-                      <DriverSmallInfoCard
-                        reqId={requestData?.trn_request_uid}
-                        driverDetail={requestData?.driver}
-                        noBack={true}
-                        showPhone={true}
-                        seeDetail={true}
-                        selectDriver={
-                          requestData?.ref_request_status_code === "30"
-                            ? true
-                            : false
-                        }
-                        onUpdate={handleModalUpdate}
-                      />
-                    </div>
-                  )
+                    ) : (
+                      requestData?.driver && (
+                        <div className="mt-5">
+                          <div className="form-section-header">
+                            <div className="form-section-header-title">
+                              ผู้ขับขี่
+                            </div>
+                          </div>
+                          <DriverSmallInfoCard
+                            reqId={requestData?.trn_request_uid}
+                            driverDetail={requestData?.driver}
+                            requestData={requestData}
+                            noBack={true}
+                            showPhone={true}
+                            seeDetail={true}
+                            selectDriver={
+                              requestData?.ref_request_status_code === "30"
+                                ? true
+                                : false
+                            }
+                            onUpdate={handleModalUpdate}
+                          />
+                        </div>
+                      )
+                    )}
+                  </>
                 )}
               </div>
             </div>

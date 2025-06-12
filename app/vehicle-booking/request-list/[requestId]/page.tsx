@@ -4,17 +4,19 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import RequestDetailTabs from "@/components/tabs/requestDetailTab";
 import SideBar from "@/components/sideBar";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { requestDetail } from "@/services/bookingUser";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import PageHeader from "@/components/pageHeader";
-
+import ToastCustom from "@/components/toastCustom";
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
+  const searchParams = useSearchParams();
   const request_id = String(params.requestId);
+  const requestNo = searchParams.get("request-no");
 
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
@@ -24,7 +26,7 @@ export default function RequestDetail() {
         try {
           const response = await requestDetail(request_id);
           setRequestData(response.data);
-          console.log('reqeustdetail',response.data);
+          console.log("reqeustdetail", response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }
@@ -33,6 +35,8 @@ export default function RequestDetail() {
       fetchRequestDetailfunc();
     }
   }, [request_id]);
+
+  const sendbackagainReq = searchParams.get("sendbackagain-req");
 
   return (
     <div>
@@ -46,12 +50,24 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeader data={requestData} />}
+            {sendbackagainReq === "success" && (
+              <ToastCustom
+                title="ส่งคำขออีกครั้งสำเร็จ"
+                desc={
+                  <>
+                    คำขอใช้ยานพาหนะเลขที่ {requestNo}
+                    <br />
+                    ส่งคำขออีกครั้งเรียบร้อยแล้ว
+                  </>
+                }
+                status="success"
+              />
+            )}
+            {requestData && <PageHeader data={requestData} />}
             <RequestDetailTabs requestId={request_id} />
           </div>
         </div>
       </div>
-      
     </div>
   );
 }
