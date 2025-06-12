@@ -3,9 +3,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { DataTable } from "./dataTable";
 import VehicleTaxCredit from "../vehicle-management/taxCredit.tsx";
-import VehicleStatus from "../vehicle-management/status";
 import { updateVehicleStatus } from "@/services/vehicleService";
 import { VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
+import VehicleStatus from "../vehicle-management/vehicle-status-without-icon";
 
 type FormValues = {
     selectedRows: Record<string, boolean>;
@@ -168,9 +168,20 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
             cell: info => info.getValue(),
             enableSorting: false,
         }),
-        columnHelper.accessor('vehicle_owner_dept_short', {
+        columnHelper.accessor((row) => ({
+            department: row.vehicle_owner_dept_short,
+            carpoolName: row.vehicle_carpool_name,
+        }), {
             header: 'สังกัดยานพาหนะ',
-            cell: info => info.getValue(),
+            cell: info => {
+                const { department, carpoolName } = info.getValue();
+                return (
+                    <div className="flex flex-col text-left">
+                        <span className="truncate">{department}</span>
+                        <span className="text-gray-500">{carpoolName}</span>
+                    </div>
+                );
+            },
             enableSorting: false,
         }),
         columnHelper.accessor('fleet_card_no', {

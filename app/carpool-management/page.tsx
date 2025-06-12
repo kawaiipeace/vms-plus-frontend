@@ -26,6 +26,7 @@ const defaultPagination = {
 export default function CarpoolManagement() {
   const [params, setParams] = useState<CarpoolParams>({});
   const [data, setData] = useState<Carpool[]>([]);
+  const [paramsSearch, setParamsSearch] = useState<string>("");
   const [pagination, setPagination] =
     useState<PaginationType>(defaultPagination);
 
@@ -55,6 +56,25 @@ export default function CarpoolManagement() {
 
     fetchCarpoolManagementSearchFunc();
   }, [params]);
+
+  useEffect(() => {
+    if (paramsSearch?.trim().length >= 3) {
+      setParams((prevParams) => ({
+        ...prevParams,
+        search: paramsSearch,
+        page: 1,
+      }));
+    } else {
+      if (params.search !== "") {
+        setParams((prevParams) => ({
+          ...prevParams,
+          search: "",
+          page: 1,
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsSearch]);
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -109,6 +129,7 @@ export default function CarpoolManagement() {
   const handleClearAllFilters = () => {
     setParams({ ...params, page: 1, is_active: "", search: "", dept_sap: "" });
     setPagination(defaultPagination);
+    setParamsSearch("");
   };
 
   const isSearch = !!params.search || !!params.dept_sap || !!params.is_active;
@@ -164,14 +185,8 @@ export default function CarpoolManagement() {
                           id="myInputTextField"
                           className="form-control dt-search-input !w-60"
                           placeholder="ชื่อกลุ่มยานพาหนะ, ผู้รับผิดชอบหลัก"
-                          value={params.search}
-                          onChange={(e) =>
-                            setParams((prevParams) => ({
-                              ...prevParams,
-                              search: e.target.value,
-                              page: 1, // Reset to page 1 on search
-                            }))
-                          }
+                          value={paramsSearch}
+                          onChange={(e) => setParamsSearch(e.target.value)}
                         />
                       </div>
                     </div>

@@ -6,7 +6,7 @@ import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type
 import PaginationControls from "@/components/table/pagination-control";
 import SearchInput from "@/components/vehicle-management/input/search";
 import VehicleNoData from "@/components/vehicle-management/noData";
-import VehicleStatus from "@/components/vehicle-management/status";
+import VehicleStatus from "@/components/vehicle-management/vehicle-status-with-icon";
 import dayjs from "dayjs";
 import "flatpickr/dist/themes/material_blue.css";
 

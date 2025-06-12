@@ -6,9 +6,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomSelect from "../customSelect";
-import { getCarpoolDepartmentByType } from "@/services/carpoolManagement";
+import { getCarpoolDepartment } from "@/services/carpoolManagement";
 import { CarpoolParams } from "@/app/types/carpool-management-type";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   params: CarpoolParams;
@@ -39,20 +39,6 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
 
   useEffect(() => {
     // Set options only once when component mounts
-    const fetchDepartmentFunc = async () => {
-      try {
-        const response = await getCarpoolDepartmentByType("0");
-        const result = response.data;
-        const options = result.map((item: any) => ({
-          value: item.dept_sap,
-          label: item.dept_short,
-          subLabel: item.dept_full,
-        }));
-        setOptions([defaultSelected, ...options]);
-      } catch (error) {
-        console.error("Error fetching status data:", error);
-      }
-    };
 
     fetchDepartmentFunc();
   }, []);
@@ -65,6 +51,21 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
       setStatus([]);
     }
   }, [props.params]);
+
+  const fetchDepartmentFunc = async (search?: string) => {
+    try {
+      const response = await getCarpoolDepartment(search);
+      const result = response.data;
+      const _options = result.map((item: any) => ({
+        value: item.dept_sap,
+        label: item.dept_short,
+        subLabel: item.dept_full,
+      }));
+      setOptions([defaultSelected, ..._options]);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
 
   const submitForm = () => {
     const { params, setParams } = props;
@@ -88,7 +89,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
-    <dialog ref={modalRef} id="my_modal_1" className="modal">
+    <dialog ref={modalRef} id="my_modal_1" className="modal h-full">
       <div className="modal-box max-w-[500px] p-0 relative rounded-none overflow-hidden flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
         <div className="bottom-sheet" {...swipeDownHandlers}>
           <div className="bottom-sheet-icon"></div>
@@ -117,16 +118,18 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
             </button>
           </form>
         </div>
-        <div className="modal-body overflow-y-auto flex flex-col max-h-[62vh]">
+        <div className="modal-body overflow-y-auto flex flex-col min-h-[62vh]">
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
               <div className="form-group">
                 <label className="form-label">หน่วยงานที่ใช้บริการ</label>
-                <CustomSelect
+                <CustomSelectOnSearch
                   w="100"
                   options={options}
                   value={selected}
                   onChange={setSelected}
+                  enableSearchOnApi
+                  onSearchInputChange={(value) => fetchDepartmentFunc(value)}
                 />
               </div>
             </div>

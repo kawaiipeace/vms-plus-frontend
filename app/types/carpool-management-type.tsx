@@ -104,6 +104,10 @@ export interface Carpool {
   is_must_pass_status_50: string;
   carpool_authorized_depts: {
     dept_sap: string;
+    mas_department: {
+      dept_short: string;
+      dept_full: string;
+    };
   }[];
   carpool_admin_emp_name: string;
   carpool_admin_dept_sap: string;

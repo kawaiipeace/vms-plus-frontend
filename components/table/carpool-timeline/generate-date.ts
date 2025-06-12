@@ -62,6 +62,7 @@ export function transformVehicleApiToTableData(rawData: any, dates: any[]): Vehi
       vehicleBrandName: vehicle.vehicle_brand_name,
       vehicleType: vehicle.vehicle_car_type_detail,
       vehicleDepartment: vehicle.vehicle_dept_name,
+      vehicleCarpoolName: vehicle.vehicle_carpool_name,
       distance: vehicle.vehicle_mileage,
       vehicleStatus: status,
       timeline: timeline,
@@ -129,12 +130,24 @@ export function transformDriverApiToTableData(rawData: any, dates: any[]): Drive
 
       latestStatus = req.time_line_status;
 
-      carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
-      carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
-      carUserDetail.userContactInternalNumber = req.car_user_internal_contact_number || "1234";
+      carUserDetail = {
+        userName: req.vehicle_user_emp_name ?? "นายไข่ สนาม",
+        userDeptShortName: req.vehicle_user_dept_name_short ?? "ฝ่ายขนส่ง",
+        userPosition: req.vehicle_user_position ?? "พนักงานขับรถ",
+        userContactNumber: req.car_user_mobile_contact_number ?? "0912345678",
+        userContactInternalNumber: req.car_user_internal_contact_number ?? "1234",
+      };
+      // carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
+      // carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
+      // carUserDetail.userContactInternalNumber = req.car_user_internal_contact_number || "1234";
 
-      driverDetail.driverName = driver.driver_name;
-      driverDetail.licensePlate = "";
+      driverDetail = {
+        driverName: driver?.driver_name ?? "",
+        licensePlate: req.vehicle_license_plate ?? "",
+        licensePlateProvinceShort: req.vehicle_license_plate_province_short ?? "",
+      };
+      // driverDetail.driverName = driver.driver_name;
+      // driverDetail.licensePlate = "";
 
       req.trip_details?.forEach((trip: any) => {
         const start = dayjs(trip.trip_start_datetime);
@@ -149,6 +162,7 @@ export function transformDriverApiToTableData(rawData: any, dates: any[]): Drive
             tripDetailId: trip.trn_trip_detail_uid,
             startDate: start,
             endDate: end,
+            workplace: req.work_place,
             destinationPlace: trip.trip_destination_place,
             startTime: start.format("HH:mm"),
             endTime: end.format("HH:mm"),

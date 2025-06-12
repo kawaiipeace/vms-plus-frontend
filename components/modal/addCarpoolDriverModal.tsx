@@ -34,6 +34,7 @@ const AddCarpoolDriverModal = forwardRef<
   const [search, setSearch] = useState<string>("");
   const [drivers, setDrivers] = useState<CarpoolDriver[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
+  const [paramsSearch, setParamsSearch] = useState<string>("");
   const [params, setParams] = useState({
     name: "",
   });
@@ -73,6 +74,21 @@ const AddCarpoolDriverModal = forwardRef<
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.name]);
+
+  useEffect(() => {
+    if (paramsSearch.trim().length >= 3) {
+      setParams({
+        name: paramsSearch,
+      });
+    } else {
+      if (params.name !== "") {
+        setParams({
+          name: "",
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsSearch]);
 
   useEffect(() => {
     if (CBRef.current) {
@@ -197,13 +213,8 @@ const AddCarpoolDriverModal = forwardRef<
                   id="myInputTextField"
                   className="form-control dt-search-input !w-60"
                   placeholder="ชื่อ-นามสกุล ,ชื่อเล่น ,สังกัด"
-                  value={params.name}
-                  onChange={(e) =>
-                    setParams((prevParams) => ({
-                      ...prevParams,
-                      name: e.target.value,
-                    }))
-                  }
+                  value={paramsSearch}
+                  onChange={(e) => setParamsSearch(e.target.value)}
                 />
               </div>
 

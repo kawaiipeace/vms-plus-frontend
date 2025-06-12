@@ -79,7 +79,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
   return (
     <div className="mt-5 border rounded-lg overflow-hidden">
       {/* Wrapper scrollable container */}
-      <div className="overflow-y-auto max-h-[600px] hide-scrollbar">
+      <div className="overflow-y-auto max-h-[600px]">
         <table className="min-w-full table-fixed border-collapse calendarTable no-mobile-card">
           {renderTableHead()}
           {renderTableBody()}

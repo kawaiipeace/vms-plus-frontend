@@ -71,6 +71,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const name = useSearchParams().get("name");
   const router = useRouter();
 
+  const [firstFetch, setFirstFetch] = useState(false);
   const [carRadio, setCarRadio] = useState<CarChoice[]>([]);
   const [driverRadio, setDriverRadio] = useState<DriverChoice[]>([]);
   const [departments, setDepartments] = useState<CarpoolDepartment[]>([]);
@@ -82,6 +83,8 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const [dLoading, setDLoading] = useState(false);
 
   const { formData, updateFormData } = useFormContext();
+
+  console.log("departmentSelected: ", departmentSelected);
 
   const {
     register,
@@ -144,22 +147,22 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     if (group?.value) {
       fetchDepartmentFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group]);
 
   useEffect(() => {
-    if (carpool) {
+    if (carpool && !firstFetch) {
       const { carpool_authorized_depts } = carpool;
-      const strArr = carpool_authorized_depts.map((item) => item.dept_sap);
-      const options = departments
-        .filter((item) => strArr.includes(item.dept_sap))
-        .map((item) => ({
-          value: item.dept_sap,
-          label: item.dept_short,
-          subLabel: item.dept_full,
-        }));
+      const selected = carpool_authorized_depts.map((item) => ({
+        value: item.dept_sap,
+        label: item.mas_department?.dept_short,
+        subLabel: item.mas_department?.dept_full,
+        desc: item.mas_department?.dept_full,
+      }));
 
-      setValue("carpool_authorized_depts", carpool_authorized_depts);
-      setDepartmentSelected(options);
+      setValue("carpool_authorized_depts", selected);
+      setDepartmentSelected(selected);
+      setFirstFetch(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departments]);
@@ -395,6 +398,8 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           }}
                           loading={dLoading}
                           enableSearchOnApi={true}
+                          showDescriptions={true}
+                          isInputOil={false}
                         />
                       )}
                       {group.value === "03" && (
@@ -404,6 +409,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                             value: item.dept_sap,
                             label: item.dept_short,
                             subLabel: item.dept_full,
+                            desc: item.dept_full,
                           }))}
                           value={departmentSelected}
                           {...register("carpool_authorized_depts", {

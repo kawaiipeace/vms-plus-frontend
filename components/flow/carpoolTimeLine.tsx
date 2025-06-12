@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
-import VehicleStatus from "../vehicle-management/status";
+import VehicleStatus from "../vehicle-management/vehicle-status-with-icon";
 import SearchInput from "../vehicle-management/input/search";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import PaginationControls from "../table/pagination-control";

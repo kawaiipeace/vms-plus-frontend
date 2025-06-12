@@ -247,7 +247,8 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score ||      "ยังไม่มีการให้คะแนน"}
+            {row.original.driver_average_satisfaction_score ||
+              "ยังไม่มีการให้คะแนน"}
           </div>
         );
       },
@@ -258,7 +259,7 @@ export default function CarpoolDriverTable({
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="สถานะ">
+          <div className="text-left w-40" data-name="สถานะ">
             <BadgeStatus status={row.original.driver_status_name} />
           </div>
         );
@@ -383,7 +384,8 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score ||      "ยังไม่มีการให้คะแนน"}
+            {row.original.driver_average_satisfaction_score ||
+              "ยังไม่มีการให้คะแนน"}
           </div>
         );
       },
@@ -394,7 +396,7 @@ export default function CarpoolDriverTable({
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="สถานะ">
+          <div className="text-left w-40" data-name="สถานะ">
             <BadgeStatus status={row.original.driver_status_name} />
           </div>
         );

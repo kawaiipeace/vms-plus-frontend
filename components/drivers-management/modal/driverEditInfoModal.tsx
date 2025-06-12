@@ -110,10 +110,10 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
 
     useEffect(() => {
       if (driverInfo && driverDepartmentList.length > 0) {
-        const initialEmployingAgency = driverDepartmentList.find(
+        const initialDepartment = driverDepartmentList.find(
           (option) => option.label === driverInfo.driver_dept_sap_short_name_hire
         );
-        const initialDepartment = driverDepartmentList.find(
+        const initialEmployingAgency = driverDepartmentList.find(
           (option) => option.label === driverInfo.driver_dept_sap_short_name_work
         );
 

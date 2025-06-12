@@ -305,7 +305,7 @@ const DriverForm = () => {
 
         if (response.status === 201) {
           console.log("Driver created successfully:", response.data);
-          router.push(`/drivers-management?create=success&driverName=${formData.driverName}`);
+          router.push(`/drivers-management?activeTab=1&create=success&driverName=${formData.driverName}`);
         }
       } catch (error) {
         console.error("Error creating driver:", error);

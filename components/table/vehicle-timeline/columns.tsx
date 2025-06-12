@@ -21,6 +21,8 @@ type UseColumnsProps = {
     dates: DateColumnData[];
     selectedOption: string;
     lastMonth: string;
+    startDate: string;
+    endDate: string;
     handleOpenDetailModal: () => void;
     setTripDetails: (dayTimeline: any[]) => void;
     setDateSelected: (date: string) => void;
@@ -36,6 +38,8 @@ export const useColumns = ({
     handleOpenDetailModal,
     setTripDetails,
     setDateSelected,
+    startDate,
+    endDate,
 }: UseColumnsProps) =>
     useMemo(() => {
         const baseColumns = [
@@ -87,9 +91,21 @@ export const useColumns = ({
                         ),
                     },
                 }),
-                columnHelper.accessor("vehicleDepartment", {
+                columnHelper.accessor((row) => ({
+                    department: row.vehicleDepartment,
+                    carpoolName: row.vehicleCarpoolName,
+                }), {
+                    id: "vehicleDepartment",
                     header:() => <span className="w-full">สังกัดยานพาหนะ</span>,
-                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
+                    cell: (info) => {
+                        const { department, carpoolName } = info.getValue();
+                        return (
+                            <div className="flex flex-col text-start">
+                                <span className="truncate">{department}</span>
+                                <span className="text-gray-500">{carpoolName}</span>
+                            </div>
+                        );
+                    },
                     enableSorting: false,
                     meta: {
                         className: clsx(
@@ -159,9 +175,10 @@ export const useColumns = ({
                                         key={item.tripDetailId}
                                         item={item}
                                         onClick={() => handleClickOpenDetailModal([item])}
-                                        durationDays={
-                                            dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1
-                                        }
+                                        startDate={item.startDate}
+                                        endDate={item.endDate}
+                                        timelineStartDate={startDate}
+                                        timelineEndDate={endDate}
                                     />
                                 ))}
                                 {hiddenCount > 0 && (

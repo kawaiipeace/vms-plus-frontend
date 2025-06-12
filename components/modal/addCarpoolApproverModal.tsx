@@ -17,8 +17,8 @@ import { CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
-import CustomSearchSelect from "../customSelectSerch";
 import FormHelper from "../formHelper";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   id?: string;
@@ -56,16 +56,6 @@ const AddCarpoolApproverModal = forwardRef<
   }));
 
   useEffect(() => {
-    const fetchCarpoolApproverFunc = async () => {
-      try {
-        const response = await getCarpoolApprover();
-        const result = response.data;
-        setApprover(result);
-      } catch (error) {
-        console.error("Error fetching status data:", error);
-      }
-    };
-
     fetchCarpoolApproverFunc();
   }, []);
 
@@ -109,6 +99,16 @@ const AddCarpoolApproverModal = forwardRef<
     fetchCarpoolApproverDetailsFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
+
+  const fetchCarpoolApproverFunc = async (search?: string) => {
+    try {
+      const response = await getCarpoolApprover(search);
+      const result = response.data;
+      setApprover(result);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
 
   const handleConfirm = () => {
     if (editId) {
@@ -288,7 +288,7 @@ const AddCarpoolApproverModal = forwardRef<
                 <div className="col-span-2">
                   <div className="form-group">
                     <label className="form-label">ผู้อนุมัติ</label>
-                    <CustomSearchSelect
+                    <CustomSelectOnSearch
                       iconName="person"
                       w="w-full"
                       options={approver.map((item) => ({
@@ -297,8 +297,10 @@ const AddCarpoolApproverModal = forwardRef<
                       }))}
                       value={selectedApprover}
                       onChange={selectApprover}
-                      enableSearch
-                      classNamePlaceholder="flex-1 text-start"
+                      enableSearchOnApi
+                      onSearchInputChange={(value) =>
+                        fetchCarpoolApproverFunc(value)
+                      }
                     />
                   </div>
                 </div>

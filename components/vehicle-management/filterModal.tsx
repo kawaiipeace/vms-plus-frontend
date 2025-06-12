@@ -1,5 +1,4 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import VehicleStatus from "./status";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
 import { 
     CustomData, 
@@ -11,8 +10,10 @@ import {
 } from "@/app/types/vehicle-management/vehicle-list-type";
 import CustomSelectOnSearch from "../customSelectOnSearch";
 import CustomSearchSelect from "../customSelectSerch";
+import VehicleStatus from "./vehicle-status-without-icon";
 
 type FilterProps = {
+    defaultVehicleBookingStatus?: string[];
     flag: string;
     onSubmitFilter?: (params: VehicleInputParams) => void;
 };
@@ -67,6 +68,7 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
 );
 
 const ModalBody = ({
+    defaultBookingStatus,
     vehicleDepartments,
     fuelTypes,
     vehicleTypes,
@@ -99,6 +101,15 @@ const ModalBody = ({
     useEffect(() => {
         setParams(formData);
     }, [formData]);
+
+    useEffect(() => {
+        if(defaultBookingStatus.length > 0) {
+            setFormData(prev => ({
+                ...prev,
+                vehicleBookingStatus: defaultBookingStatus
+            }));
+        }
+    }, [defaultBookingStatus]);
 
     const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
         setFormData(prev => {
@@ -229,29 +240,27 @@ const ModalBody = ({
                 )}
 
                 {flag === 'TIMELINE' && (
-                    <>
-                        <div className="col-span-12">
-                            <div className="form-group">
-                                <span>สถานะ</span>
-                                <div className="flex flex-col gap-2 mt-2">
-                                    {VEHICLE_BOOKING_STATUS.map((status, index) => (
-                                        <div key={index} className="flex items-center gap-2">
-                                            <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`status-${index}`}
-                                                    className="checkbox checkbox-primary h-5 w-5"
-                                                    checked={formData.vehicleBookingStatus.includes(status.id)}
-                                                    onChange={() => handleCheckboxToggle('vehicleBookingStatus', status.id)}
-                                                />
-                                                <VehicleStatus status={status.name} />
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
+                    <div className="col-span-12">
+                        <div className="form-group">
+                            <span>สถานะ</span>
+                            <div className="flex flex-col gap-2 mt-2">
+                                {VEHICLE_BOOKING_STATUS.map((status, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                id={`status-${index}`}
+                                                checked={formData.vehicleBookingStatus.includes(status.id)}
+                                                className="checkbox checkbox-primary h-5 w-5"
+                                                onChange={() => handleCheckboxToggle('vehicleBookingStatus', status.id)}
+                                            />
+                                            <VehicleStatus status={status.name} />
+                                        </label>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
@@ -293,7 +302,8 @@ const ModalFooter = (
     );
 };
 
-const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, flag }, ref) => {
+const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, flag, defaultVehicleBookingStatus }, ref) => {
+    // Setup Ref
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -301,14 +311,16 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         close: () => dialogRef.current?.close(),
     }));
 
-    const [params, setParams] = useState<VehicleInputParams>({
+    const initialParams = {
         fuelType: "",
         vehicleType: "",
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
-        vehicleBookingStatus: []
-    });
+        vehicleBookingStatus: defaultVehicleBookingStatus ?? []
+    };
+
+    const [params, setParams] = useState<VehicleInputParams>(initialParams);
     const [fuelType, setFuelType] = useState<FuelTypeApiCustomData[]>([]);
     const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentCustomData[]>([]);
     const [vehicleType, setVehicleType] = useState<VehicleTypeApiCustomData[]>([]);
@@ -359,6 +371,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
                         flag={flag}
                         setParams={setParams}
                         params={params}
+                        defaultBookingStatus={defaultVehicleBookingStatus ?? []}
                     />
                 </div>
 
