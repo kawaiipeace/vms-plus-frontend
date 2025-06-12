@@ -5,6 +5,7 @@ export interface VehicleTimelineListTableData {
     vehicleLicensePlateProvinceShort: string;
     vehicleType: string;
     vehicleDepartment: string;
+    vehicleCarpoolName: string;
     distance: string;
     timeline: VehicleTimelineDetails;
     vehicleStatus: string;
@@ -38,6 +39,7 @@ export interface VehicleTimelineTransformData {
     vehicleBrandName: string;
     vehicleType: string;
     vehicleDepartment: string;
+    vehicleCarpoolName: string;
     distance: string;
     vehicleStatus: string;
     timeline: VehicleTimelineDetails;

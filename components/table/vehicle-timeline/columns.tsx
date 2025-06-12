@@ -91,9 +91,21 @@ export const useColumns = ({
                         ),
                     },
                 }),
-                columnHelper.accessor("vehicleDepartment", {
+                columnHelper.accessor((row) => ({
+                    department: row.vehicleDepartment,
+                    carpoolName: row.vehicleCarpoolName,
+                }), {
+                    id: "vehicleDepartment",
                     header:() => <span className="w-full">สังกัดยานพาหนะ</span>,
-                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
+                    cell: (info) => {
+                        const { department, carpoolName } = info.getValue();
+                        return (
+                            <div className="flex flex-col text-start">
+                                <span className="truncate">{department}</span>
+                                <span className="text-gray-500">{carpoolName}</span>
+                            </div>
+                        );
+                    },
                     enableSorting: false,
                     meta: {
                         className: clsx(
