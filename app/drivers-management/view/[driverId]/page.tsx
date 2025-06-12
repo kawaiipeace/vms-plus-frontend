@@ -303,11 +303,11 @@ const DriverViewProfilePage = () => {
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
                   ) : driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
-                    <div className="badge badge-pill-outline badge-gray whitespace-nowrap">
+                    <div className="badge badge-pill-outline badge-neutral whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
                   ) : (
-                    <div className="badge badge-pill-outline badge-success whitespace-nowrap">
+                    <div className="badge badge-pill-outline badge-accent whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
                   )}
