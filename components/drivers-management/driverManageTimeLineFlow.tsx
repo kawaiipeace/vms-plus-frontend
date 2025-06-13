@@ -72,6 +72,14 @@ export default function VehicleTimeLine() {
   const filterModalRef = useRef<FilterModalRef>(null);
 
   useEffect(() => {
+    setParams((prev) => ({
+      ...prev,
+      ref_timeline_status_id: "1,2,3,4", // Default to all statuses
+    }));
+    setFilterParams(["1", "2", "3", "4"]); // Default to all statuses
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         // console.log("Fetching vehicle timeline data with params:", params);
