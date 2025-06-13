@@ -26,7 +26,7 @@ export default function VehicleTimeLine() {
     // Function
 
     // Manage Filter Params
-    const [filterParams, setFilterParams] = useState<string[]>([]);
+    const [filterParams, setFilterParams] = useState<string[]>(['1', '2', '3', '4']);
 
     useEffect(() => {
         setParams((prev) => ({

@@ -167,3 +167,14 @@ export const DateLongTH = (date: Date) => {
 
   return `${day}/${month}/${year}`;
 };
+
+export const convertDateToLongTH = (date: Date, format?: string, locale?:string) => {
+  const dateLocale = locale ? dayjs(date).locale('th') : dayjs(date);
+  if (format === 'full') {
+    return `${dateLocale.format("D MMMM")} ${dateLocale.year() + 543}`;
+  }else if(format === 'DD/MM/YYYY') {
+    return `${dateLocale.format("DD/MM/") }${dateLocale.year() + 543}`;
+  }
+
+  return `${dateLocale.format("D MMM")} ${dateLocale.year() + 543}`;
+};

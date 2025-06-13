@@ -11,6 +11,7 @@ import {
 import CustomSelectOnSearch from "../customSelectOnSearch";
 import CustomSearchSelect from "../customSelectSerch";
 import VehicleStatus from "./vehicle-status-without-icon";
+import { TripStatus, vehicleBookingStatus } from "@/utils/vehicle-constant";
 
 type FilterProps = {
     defaultVehicleBookingStatus?: string[];
@@ -35,13 +36,6 @@ const VEHICLE_STATUS = [
     { id: "3", name: "ส่งซ่อม" },
     { id: "4", name: "สิ้นสุดสัญญา" },
 ];
-
-const VEHICLE_BOOKING_STATUS = [
-    { id: "1", name: "รออนุมัติ" },
-    { id: "2", name: "ไป - กลับ" },
-    { id: "3", name: "ค้างแรม" },
-    { id: "4", name: "เสร็จสิ้น" },
-]
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
     <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
@@ -103,7 +97,7 @@ const ModalBody = ({
     }, [formData]);
 
     useEffect(() => {
-        if(defaultBookingStatus.length > 0) {
+        if(Array.isArray(defaultBookingStatus)) {
             setFormData(prev => ({
                 ...prev,
                 vehicleBookingStatus: defaultBookingStatus
@@ -244,7 +238,7 @@ const ModalBody = ({
                         <div className="form-group">
                             <span>สถานะ</span>
                             <div className="flex flex-col gap-2 mt-2">
-                                {VEHICLE_BOOKING_STATUS.map((status, index) => (
+                                {vehicleBookingStatus.map((status, index) => (
                                     <div key={index} className="flex items-center gap-2">
                                         <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
                                             <input
@@ -317,7 +311,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
-        vehicleBookingStatus: defaultVehicleBookingStatus ?? []
+        vehicleBookingStatus: []
     };
 
     const [params, setParams] = useState<VehicleInputParams>(initialParams);
@@ -330,16 +324,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         dialogRef.current?.close();
     };
 
-    const handleClearFilter = () => {
-        setParams({
-            fuelType: "",
-            vehicleType: "",
-            vehicleDepartment: "",
-            taxVehicle: [],
-            vehicleStatus: [],
-            vehicleBookingStatus: []
-        });
-    };
+    const handleClearFilter = () => setParams(initialParams);
 
     useEffect(() => {
         const fetchData = async () => {

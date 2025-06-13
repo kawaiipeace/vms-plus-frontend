@@ -97,7 +97,7 @@ export default function VehicleFlow() {
             ref_vehicle_category_code: params.vehicleType,
             vehicle_owner_dept_sap: params.vehicleDepartment,
             is_tax_credit: params.taxVehicle.join(","),
-            ref_vehicle_status_code: params.vehicleStatus.map(item => item).join(","),
+            ref_vehicle_status_code: params.vehicleStatus.join(","),
         }));
     };
 
