@@ -1,6 +1,6 @@
 "use client";
 
-import { getThaiIdData } from "@/services/authService";
+import { fetchProfile, getThaiIdData } from "@/services/authService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -17,7 +17,16 @@ export default function CallbackCodeTokenThai() {
           if (response.status === 200) {
             localStorage.setItem("accessToken", response.data.accessToken);
             localStorage.setItem("refreshToken", response.data.refreshToken);
-            router.push("/vehicle-booking/request-list");
+
+            // Fetch profile after setting tokens
+            const profileRes = await fetchProfile();
+            const roles = profileRes?.data?.roles || [];
+
+            if (roles.includes("driver")) {
+              router.push("/vehicle-in-use/driver");
+            } else {
+              router.push("/vehicle-booking/request-list");
+            }
           }
         } catch (error) {
           router.push("/login-os");

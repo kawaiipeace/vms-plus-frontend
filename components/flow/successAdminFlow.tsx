@@ -19,6 +19,7 @@ interface PaginationType {
 export default function SuccessAdminFlow() {
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+  const [loading, setLoading] = useState(true); 
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
@@ -130,14 +131,25 @@ export default function SuccessAdminFlow() {
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false); // <-- End loading after fetch
       }
     };
 
     fetchRequestData();
   }, [params]);
 
+  
+  if (loading) {
+    return (
+       <div className="mt-0 pt-0">
+      </div>
+    );
+  }
+
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col transition-opacity duration-500">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
         <div className="block">
           <div className="input-group input-group-search hidden">

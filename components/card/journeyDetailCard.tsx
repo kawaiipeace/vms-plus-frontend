@@ -25,6 +25,7 @@ export default function JourneyDetailCard({
   tripType,
   numberOfPassenger,
 }: JourneyDetailCardProps) {
+  console.log("JourneyDetailCard props:", tripType);
   return (
     <div className="form-card">
       <div className="form-card-body">
@@ -72,7 +73,7 @@ export default function JourneyDetailCard({
               <i className="material-symbols-outlined">travel_luggage_and_bags</i>
               <div className="form-plaintext-group">
                 <div className="form-label">ประเภท</div>
-                <div className="form-text">{tripType ? (Number(tripType) === 0 ? "ไป-กลับ" : "ค้างแรม") : ""}</div>
+                <div className="form-text">{tripType === 0 ? "ไป-กลับ" : "ค้างแรม"}</div>
               </div>
             </div>
           </div>

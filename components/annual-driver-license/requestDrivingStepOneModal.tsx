@@ -24,6 +24,8 @@ import * as yup from "yup";
 import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
 import ImageUpload from "../imageUpload";
+import { convertToThaiDate } from "@/utils/driver-management";
+import { isISODateString } from "@/utils/isIsoDateString";
 
 export interface ValueFormStep1 {
   driverLicenseType: any;
@@ -178,49 +180,32 @@ const RequestDrivingStepOneModal = forwardRef<
       return (
         vehicleTypeArr.find(
           (type) =>
-            type.value ===
+            String(type.value) ===
             licRequestDetail.driver_certificate_type_code.toString()
         ) || null
       );
     }
-    if (requestData?.driver_certificate?.driver_certificate_type_code) {
-      return (
-        vehicleTypeArr.find(
-          (type) =>
-            type.value ===
-            requestData?.driver_certificate.driver_certificate_type_code.toString()
-        ) || null
-      );
-    }
-    return null;
-  };
 
-  const getDefaultYear = () => {
-    if (licRequestDetail?.annual_yyyy) {
-      return licRequestDetail.annual_yyyy.toString();
-    }
-    if (requestData?.next_license_status !== "") {
-      return (dayjs().year() + 544).toString();
-    }
-    
-    if (requestData?.license_status === "มีผลปีถัดไป") {
-      return (dayjs().year() + 543).toString();
-    }
-    return (dayjs().year() + 543).toString();
+    return null;
   };
 
   // Build default values object for react-hook-form
   const buildDefaultValues = () => ({
     driverLicenseType: getDefaultCostType(costTypeOptions),
-    year: (requestData?.license_status === "อนุมัติแล้ว" && requestData?.next_license_status_code === "00" ?  (dayjs().year() + 544).toString() :  (dayjs().year() + 543).toString()),
-    licenseNumber: requestData ? (requestData?.next_license_status_code === "00" ? "" : requestData?.driver_license?.driver_license_no) : "",
-    licenseExpiryDate: requestData
-      ? convertToBuddhistDateTime(
-          requestData?.driver_license?.driver_license_expire_date
-        ).date
-      : convertToBuddhistDateTime(
+    year:
+      requestData?.license_status === "อนุมัติแล้ว" &&
+      requestData?.next_license_status_code === "00"
+        ? (dayjs().year() + 544).toString()
+        : (dayjs().year() + 543).toString(),
+    licenseNumber: licRequestDetail ? licRequestDetail?.driver_license_no : "",
+    // licenseExpiryDate: licRequestDetail
+    //   ? convertToThaiDate(licRequestDetail?.driver_license_expire_date)
+    //   : "",
+    licenseExpiryDate:
+      licRequestDetail ?
+        convertToBuddhistDateTime(
           licRequestDetail?.driver_license_expire_date || ""
-        ).date || "",
+        ).date : "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
@@ -276,7 +261,7 @@ const RequestDrivingStepOneModal = forwardRef<
 
   useEffect(() => {
     setDefaultValues(buildDefaultValues());
-    console.log('defaultyear',defaultValues);
+    console.log("defaultyear", defaultValues);
     reset(buildDefaultValues());
   }, [
     JSON.stringify(costTypeOptions),
@@ -286,7 +271,8 @@ const RequestDrivingStepOneModal = forwardRef<
   ]);
 
   useEffect(() => {
-    console.log("reqstepone", requestData);
+    console.log("reqData====>", requestData);
+    console.log("requestLicdata====>", licRequestDetail);
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -393,14 +379,26 @@ const RequestDrivingStepOneModal = forwardRef<
   };
 
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
-
+  const currentBuddhistYear = dayjs().year() + 543;
   const onSubmit = (formData: ValueFormStep1) => {
     const expiry =
       isISODate(formData.licenseExpiryDate) &&
       (formData.licenseExpiryDate = convertToBuddhistDateTime(
         formData.licenseExpiryDate
       ).date);
-    console.log("formdata", formData);
+
+    const trainingDateSubmit =
+      isISODate(formData.trainingDate) &&
+      (formData.trainingDate = convertToBuddhistDateTime(
+        formData.trainingDate
+      ).date);
+
+    const trainingEndDateSubmit =
+      isISODate(formData.trainingEndDate) &&
+      (formData.trainingEndDate = convertToBuddhistDateTime(
+        formData.trainingEndDate
+      ).date);
+    console.log("formdata==>", formData);
     if (stepOneSubmit) {
       stepOneSubmit(formData);
     }
@@ -411,32 +409,35 @@ const RequestDrivingStepOneModal = forwardRef<
     <>
       {openModal && (
         <div className={`modal modal-open modal-middle`}>
-          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col">
             <div className="bottom-sheet" {...swipeDownHandlers}>
               <div className="bottom-sheet-icon"></div>
             </div>
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title items-center flex">
-                <i
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    if (onBack) {
+                {onBack && (
+                  <i
+                    className="material-symbols-outlined cursor-pointer"
+                    onClick={() => {
                       onBack();
-                    }
-                  }}
-                >
-                  keyboard_arrow_left
-                </i>{" "}
-                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                {requestData?.license_status !== "ไม่มี" &&
-                  requestData?.license_status !== "" &&
-                  requestData?.license_status !== "ตีกลับ" && (
-                    <>
-                      {requestData?.license_status === "มีผลปีถัดไป" &&
-                        `${dayjs().year() + 543}`}{" "}
-                      {requestData?.next_license_status !== "" &&
-                        `${dayjs().year() + 544}`}
-                    </>
+                    }}
+                  >
+                    keyboard_arrow_left
+                  </i>
+                )}
+                ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี
+                {requestData?.license_status === "อนุมัติแล้ว" &&
+                  requestData &&
+                  requestData.next_annual_yyyy !== currentBuddhistYear &&
+                  requestData.next_annual_yyyy !== 0 && (
+                    <div className="ml-1">
+                      {" " + requestData.next_annual_yyyy}
+                    </div>
+                  )}
+                {requestData &&
+                  requestData.annual_yyyy !== currentBuddhistYear &&
+                  requestData.annual_yyyy !== 0 && (
+                    <div className="ml-1">{" " + requestData.annual_yyyy}</div>
                   )}
               </div>
               <form method="dialog">
@@ -481,7 +482,7 @@ const RequestDrivingStepOneModal = forwardRef<
                         />
                       </div>
                     </div>
-                    {requestData?.next_license_status_code === "ไม่มี" && (
+                    {requestData?.trn_request_annual_driver_uid === "" && (
                       <div className="col-span-12">
                         <div className="form-group text-left">
                           <label className="form-label">ประจำปี</label>
@@ -720,7 +721,10 @@ const RequestDrivingStepOneModal = forwardRef<
                                   <DatePicker
                                     placeholder={"ระบุวันที่"}
                                     onChange={field.onChange}
-                                    defaultValue={field.value}
+                                    defaultValue={
+                                      convertToBuddhistDateTime(field.value)
+                                        .date
+                                    }
                                   />
                                 )}
                               />
@@ -751,8 +755,11 @@ const RequestDrivingStepOneModal = forwardRef<
                                   <DatePicker
                                     placeholder={"ระบุวันที่"}
                                     onChange={field.onChange}
-                                    defaultValue={field.value}
-                                    minDate={watch('trainingDate')}
+                                    minDate={watch("trainingDate")}
+                                    defaultValue={
+                                      convertToBuddhistDateTime(field.value)
+                                        .date
+                                    }
                                   />
                                 )}
                               />

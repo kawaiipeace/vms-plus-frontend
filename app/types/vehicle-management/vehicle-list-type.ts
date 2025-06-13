@@ -25,6 +25,7 @@ export interface VehicleManagementApiResponse {
   vehicle_carpool_name: string;
   vehicle_get_date: string;
   vehicle_license_plate: string;
+  vehicle_license_plate_province_short: string;
   vehicle_mileage: number;
   vehicle_model_name: string;
   vehicle_owner_dept_short: string;
@@ -90,9 +91,11 @@ export interface VehicleInputParams {
   vehicleDepartment: string;
   taxVehicle: string[];
   vehicleStatus: string[];
+  vehicleBookingStatus: string[];
 }
 
 export interface VehicleStatusProps {
+  defaultBookingStatus: string[];
   vehicleDepartments: VehicleDepartmentCustomData[];
   fuelTypes: FuelTypeApiCustomData[];
   vehicleTypes: VehicleTypeApiCustomData[];
@@ -107,4 +110,17 @@ export interface RepoCardProps {
   description: string;
   count: number;
   onClick?: () => void;
+}
+
+export interface VehicleListParams {
+  search?: string;
+  vehicle_owner_dept_sap?: string;
+  ref_vehicle_category_code?: string;
+  ref_vehicle_status_code?: string;
+  ref_fuel_type_id?: string;
+  is_tax_credit?: string;
+  order_by?: string;
+  order_dir?: string;
+  page?: number;
+  limit?: number;
 }

@@ -77,7 +77,7 @@ export default function AdminVehicleInsTable({
           <div className="flex flex-col">
             {" "}
             <div className="text-left">
-              {row.original.vehicle_license_plate}
+            {row.original.vehicle_license_plate + " " +row.original.vehicle_license_plate_province_short}
             </div>
             <div className="text-color-secondary text-xs">
               {row.original.ref_vehicle_type_name}
@@ -121,10 +121,10 @@ export default function AdminVehicleInsTable({
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
-          <div className="flex flex-col">
-            <div>{row.original.vehicle_user_emp_name}</div>
-            <div className="text-color-secondary text-xs">
-              {row.original.vehicle_user_dept_sap_short}
+           <div className="flex flex-col">
+            <div>{row.original.vehicle_user_emp_name} ({row.original.vehicle_user_emp_id})</div>
+             <div className="text-color-secondary text-xs">
+              {row.original.vehicle_user_position + " " + row.original.vehicle_user_dept_name_short}
             </div>
           </div>
         </div>

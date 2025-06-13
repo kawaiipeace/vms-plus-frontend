@@ -503,7 +503,7 @@ const KeyPickUpEditModal = forwardRef<
                     <div className="form-group form-plaintext form-users">
                       <Image
                         src={imgSrc}
-                        className="avatar avatar-md"
+                        className="avatar avatar-md object-cover"
                         width={100}
                         height={100}
                         alt=""

@@ -11,7 +11,7 @@ import {
 } from "@/utils/vehicle-management";
 import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "../vehicle/vehicle-timeline-detail-modal";
+import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "../vehicle-management/vehicle-timeline-detail-modal";
 
 interface RequestListTableProps {
   readonly dataRequest: any[];
@@ -172,27 +172,40 @@ const useColumns = (
             const dayTimeline = timeline[key];
             const holidayClass = holiday ? "text-white bg-gray-100" : "";
 
-            const handleClickOpenDetailModal = () => {
-              setTripDetails(dayTimeline);
+            const handleClickOpenDetailModal = (trips: any[]) => {
+              setTripDetails(trips);
               setDateSelected(`${day} ${fullMonth} ${fullYear}`);
               handleOpenDetailModal();
             };
 
+            if (!dayTimeline || dayTimeline.length === 0) return null;
+
+            const isTripStartToday = (item: any) => dayjs(item.startDate).format("YYYY/MM/DD") === date;
+
+            const todayTrips = dayTimeline.filter(isTripStartToday);
+
+            const showTrips = todayTrips.slice(0, 2); // Show only the first 2 trips
+            const hiddenCount = todayTrips.length - showTrips.length;
+
             return (
               <div className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${holidayClass}`}>
-                {dayTimeline?.map((item: any) => {
-                  const isTripStartToday = dayjs(item.startDate).format('YYYY/MM/DD') === date;
-                  if (!isTripStartToday) return null;
+                {showTrips.map((item: any) => (
+                  <TripTimelineItem
+                    key={item.tripDetailId}
+                    item={item}
+                    onClick={() => handleClickOpenDetailModal([item])}
+                    durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1}
+                  />
+                ))}
 
-                  return (
-                    <TripTimelineItem 
-                      key={item.tripDetailId}
-                      item={item}
-                      onClick={handleClickOpenDetailModal}
-                      durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), 'day') + 1}
-                    />
-                  );
-                })}
+                {hiddenCount > 0 && (
+                  <button
+                    onClick={() => handleClickOpenDetailModal(todayTrips)}
+                    className="rounded-lg border border-gray-300 text-sm text-gray-700 py-1 px-2 bg-white hover:bg-gray-100"
+                  >
+                    +{hiddenCount} เพิ่มเติม
+                  </button>
+                )}
               </div>
             );
           },
@@ -223,7 +236,6 @@ export default function RequestListTable({
 
   // Transform the API data to table data format
   const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest, dates]);
-  console.log('dataTransform', dataTransform)
 
   const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();

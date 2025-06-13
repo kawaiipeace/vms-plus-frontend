@@ -172,7 +172,7 @@ export default function DrivingRequestProgress({
                     </div>
                     <div className="supporting-text-group">
                       <div className="supporting-text">
-                        {confirmedRequest.confirmed_request_dept_sap_short}
+                        {confirmedRequest.confirmed_request_emp_position} {confirmedRequest.confirmed_request_dept_sap_short}
                       </div>
                     </div>
                   </div>

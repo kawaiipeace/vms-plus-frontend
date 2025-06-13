@@ -3,7 +3,6 @@ import AutoCarCard from "@/components/card/autoCarCard";
 import SelectCarCard from "@/components/card/selectCarCard";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
 import Header from "@/components/header";
-import Pagination from "@/components/pagination";
 import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
 import ZeroRecord from "@/components/zeroRecord";
@@ -22,6 +21,7 @@ interface Carpool {
   mas_carpool_uid: string;
   carpool_name: string;
   ref_carpool_choose_car_id: number;
+  is_admin_choose_driver?: boolean;
   ref_carpool_choose_car: {
     ref_carpool_choose_car_id: number;
     type_of_choose_car: string;
@@ -37,18 +37,13 @@ interface Vehicle {
   vehicle_owner_dept_sap: string;
   vehicle_img: string;
   vehicle_license_plate_province_full: string;
+  vehicle_license_plate_province_short: string;
   seat: number;
   vehicle_owner_dept_short: string;
   is_admin_choose_driver?: boolean;
 }
 
 type VehicleCard = Carpool | Vehicle;
-
-interface ApiResponse {
-  carpools: Carpool[];
-  vehicles: Vehicle[];
-  pagination: PaginationInterface;
-}
 
 interface PaginationInterface {
   limit: number;
@@ -63,6 +58,8 @@ interface FormData {
   isSystemChooseVehicle?: string;
   isAdminChooseDriver?: boolean;
   vehicleSelect?: string;
+  carpoolName?: string;
+  masCarpoolUid?: string;
 }
 
 export default function ProcessTwo() {
@@ -134,16 +131,52 @@ export default function ProcessTwo() {
         (card) => "mas_vehicle_uid" in card && card.mas_vehicle_uid === value
       ) as Vehicle | undefined;
 
-      if (selectedVehicleObj?.is_admin_choose_driver !== undefined) {
-        updatedData.isAdminChooseDriver =
-          selectedVehicleObj.is_admin_choose_driver;
-      }
+      updatedData.isAdminChooseDriver =
+        selectedVehicleObj?.is_admin_choose_driver;
     }
 
     updateFormData(updatedData);
+
+    if (updatedData?.isAdminChooseDriver === true) {
+      router.push("process-four");
+    }
+
+    localStorage.setItem("processTwo", "Done");
+    router.push("process-three");
   };
 
-  const NextProcess = () => {
+  const handleCarpoolSelect = (value: string) => {
+    setSelectedVehicle(value);
+    const updatedData: Partial<FormData> = {};
+
+    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
+      updatedData.isAdminChooseVehicle = "1";
+      updatedData.isSystemChooseVehicle = "0";
+    } else if (value === "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
+      updatedData.isSystemChooseVehicle = "1";
+      updatedData.isAdminChooseVehicle = "0";
+    }
+
+    console.log("vehiclecard", vehicleCards);
+
+    // Add carpool name if a carpool is selected
+    const selectedCarpool = vehicleCards.find(
+      (card) =>
+        "mas_carpool_uid" in card &&
+        String(card.mas_carpool_uid) === String(value)
+    ) as Carpool | undefined;
+    if (selectedCarpool) {
+      updatedData.carpoolName = selectedCarpool.carpool_name;
+      updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
+      updatedData.masCarpoolUid = "";
+    }
+
+    updateFormData(updatedData);
+
+    if (selectedCarpool?.is_admin_choose_driver === true) {
+      router.push("process-four");
+    }
+
     localStorage.setItem("processTwo", "Done");
     router.push("process-three");
   };
@@ -191,7 +224,7 @@ export default function ProcessTwo() {
             ...(response.data.vehicles || []),
           ];
           setVehicleCards(allCards);
-          console.log('vehicles',allCards);
+          console.log("vehicles", allCards);
           setPaginationData(response.data.pagination);
         }
       } catch (error) {
@@ -217,7 +250,7 @@ export default function ProcessTwo() {
       };
 
       try {
-        const response = await fetchVehicleCarTypes( vehicleParams );
+        const response = await fetchVehicleCarTypes(vehicleParams);
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
@@ -256,7 +289,7 @@ export default function ProcessTwo() {
         end_date: `${formData.endDate} ${formData.timeEnd}`,
       };
       try {
-        const response = await fetchVehicleDepartmentTypes( vehicleParams );
+        const response = await fetchVehicleDepartmentTypes(vehicleParams);
 
         if (response.status === 200) {
           const vehicleCatData = response.data;
@@ -397,6 +430,7 @@ export default function ProcessTwo() {
                           return (
                             <AutoCarCard
                               key={carpool.mas_carpool_uid}
+                              masCarpoolUid={carpool.mas_carpool_uid}
                               imgSrc={
                                 carpool.ref_carpool_choose_car_id === 3
                                   ? "/assets/img/system-selected.png"
@@ -407,13 +441,14 @@ export default function ProcessTwo() {
                                   .type_of_choose_car
                               }
                               desc={carpool.carpool_name}
-                              onSelect={() =>
-                                handleVehicleSelect(
-                                  carpool.ref_carpool_choose_car_id === 3
-                                    ? "ระบบเลือกยานพาหนะให้อัตโนมัติ"
-                                    : "ผู้ดูแลยานพาหนะเลือกให้"
-                                )
-                              }
+                              onSelect={() => {
+                                // Set carpoolName in formData when selecting an AutoCarCard
+                                updateFormData({
+                                  carpoolName: carpool.carpool_name,
+                                  masCarpoolUid: carpool.mas_carpool_uid,
+                                });
+                                handleCarpoolSelect(carpool.mas_carpool_uid);
+                              }}
                               isSelected={
                                 selectedVehicle === carpool.mas_carpool_uid ||
                                 formData.vehicleSelect ===
@@ -437,7 +472,7 @@ export default function ProcessTwo() {
                               carType={vehicle.car_type}
                               deptSap={vehicle.vehicle_owner_dept_short}
                               province={
-                                vehicle.vehicle_license_plate_province_full
+                                vehicle.vehicle_license_plate_province_short
                               }
                               seat={vehicle.seat}
                               onSelect={() =>
@@ -554,7 +589,7 @@ export default function ProcessTwo() {
             </div>
           </div>
 
-          <div className="form-action">
+          {/* <div className="form-action">
             <button
               onClick={() => NextProcess()}
               className="btn btn-primary"
@@ -565,7 +600,7 @@ export default function ProcessTwo() {
                 arrow_right_alt
               </i>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

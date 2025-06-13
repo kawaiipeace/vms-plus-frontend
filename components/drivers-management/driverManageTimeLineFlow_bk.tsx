@@ -4,15 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 // import { getVehicleTimeline } from "@/services/vehicleService";
 import { PaginationType } from "@/app/types/vehicle-management/vehicle-list-type";
 import PaginationControls from "@/components/table/pagination-control";
-import SearchInput from "@/components/vehicle/input/search";
-import VehicleNoData from "@/components/vehicle/noData";
-import VehicleStatus from "@/components/vehicle/status";
+import SearchInput from "@/components/vehicle-management/input/search";
+import VehicleNoData from "@/components/vehicle-management/noData";
+import VehicleStatus from "@/components/vehicle-management/vehicle-status-with-icon";
 import dayjs from "dayjs";
 import "flatpickr/dist/themes/material_blue.css";
 
 import { getDriverTimeline } from "@/services/driversManagement";
 import { debounce } from "lodash";
-import DateRangePicker from "../vehicle/input/dateRangeInput";
+import DateRangePicker from "../vehicle-management/input/dateRangeInput";
 
 export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);
@@ -125,11 +125,6 @@ export default function VehicleTimeLine() {
 
   const Actions = () => (
     <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-5">
-      <SearchInput
-        defaultValue={params.search}
-        placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-        onSearch={debouncedSetParams}
-      />
       <div className="flex gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <VehicleStatus status="รออนุมัติ" />
@@ -245,7 +240,14 @@ export default function VehicleTimeLine() {
   return (
     <div>
       <Header />
-      <Actions />
+      <div className="flex justify-between items-center mb-4">
+        <SearchInput
+          defaultValue={params.search}
+          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+          onSearch={debouncedSetParams}
+        />
+        <Actions />
+      </div>
       <RenderTableOrNoData />
       <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TIMELINE" />
     </div>

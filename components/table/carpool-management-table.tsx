@@ -156,7 +156,7 @@ export default function CarpoolManagementTable({
                     "&name=" +
                     row.original.carpool_name +
                     "&active=" +
-                    row.original.is_active
+                    row.original.carpool_status
                 )
               }
             >

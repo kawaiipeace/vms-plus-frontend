@@ -43,6 +43,7 @@ export default function AdminApproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+    const [loading, setLoading] = useState(true); 
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -214,6 +215,8 @@ export default function AdminApproveFlow() {
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false); // <-- End loading after fetch
       }
     };
 
@@ -224,6 +227,13 @@ export default function AdminApproveFlow() {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]); // This will log whenever dataRequest changes
 
+    if (loading) {
+    return (
+       <div className="mt-0 pt-0">
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="md:hidden block">
@@ -231,7 +241,7 @@ export default function AdminApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div
@@ -262,7 +272,7 @@ export default function AdminApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div

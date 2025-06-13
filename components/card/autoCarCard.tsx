@@ -7,11 +7,13 @@ export default function AutoCarCard({
   title,
   desc,
   onSelect,
+  masCarpoolUid,
   isSelected = false, // Add this prop
 }: {
   imgSrc: string;
   title: string;
   desc: string;
+  masCarpoolUid?: string;
   onSelect: (vehicleTitle: string) => void; // Define the type of onSelect
   isSelected?: boolean; // Add this prop type
 }) {
@@ -57,7 +59,7 @@ console.log('tttttitle',title);
           </button>
         </div>
       </div>
-      <VehiclePickModel process="add" selectType={title} ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
+      <VehiclePickModel process="add" selectType={title} masCarpoolUid={masCarpoolUid} desc={desc} ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
     </div>
   );
 }

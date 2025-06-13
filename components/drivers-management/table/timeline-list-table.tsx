@@ -4,7 +4,7 @@ import { DataTable } from "@/components/table/time-table";
 import { generateDateObjects, transformDriverApiToTableData } from "@/components/table/carpool-timeline/generate-date";
 // import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import dayjs from "dayjs";
-import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle/vehicle-timeline-detail-modal";
+import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle-management/vehicle-timeline-detail-modal";
 import { DriverTimelineListTableData } from "@/app/types/carpool-management-type";
 
 interface RequestListTableProps {
@@ -18,10 +18,10 @@ interface RequestListTableProps {
 }
 
 const statusColorMap = {
-  รออนุมัติ: { bg: "bg-[#FEDF89] border border-[#B54708]", text: "text-[#B54708]" },
-  "ไป - กลับ": { bg: "bg-[#FED8F6] border border-[#A80689]", text: "text-[#A80689]" },
-  ค้างแรม: { bg: "bg-[#C7D7FE] border border-[#3538CD]", text: "text-[#3538CD]" },
-  เสร็จสิ้น: { bg: "bg-[#ABEFC6] border border-[#067647]", text: "text-[#067647]" },
+  รออนุมัติ: { bg: "border-orange-300 bg-orange-100 border", text: "text-orange-700" },
+  "ไป - กลับ": { bg: "border-red-300 bg-red-100 border", text: "text-red-700" },
+  ค้างแรม: { bg: "border-blue-300 bg-blue-100 border", text: "text-blue-700" },
+  เสร็จสิ้น: { bg: "border-green-300 bg-green-100 border", text: "text-green-700" },
 } as const;
 
 const useGenerateDates = (params: { start_date: string; end_date: string }) => {
@@ -152,27 +152,40 @@ const useColumns = (
             const dayTimeline = timeline[key];
             const holidayClass = holiday ? "text-white bg-gray-100" : "";
 
-            const handleClickOpenDetailModal = () => {
-              setTripDetails(dayTimeline);
+            const handleClickOpenDetailModal = (trips: any[]) => {
+              setTripDetails(trips);
               setDateSelected(`${day} ${fullMonth} ${fullYear}`);
               handleOpenDetailModal();
             };
 
+            if (!dayTimeline || dayTimeline.length === 0) return null;
+
+            const isTripStartToday = (item: any) => dayjs(item.startDate).format("YYYY/MM/DD") === date;
+
+            const todayTrips = dayTimeline.filter(isTripStartToday);
+
+            const showTrips = todayTrips.slice(0, 2); // Show only the first 2 trips
+            const hiddenCount = todayTrips.length - showTrips.length;
+
             return (
               <div className={`flex flex-col text-left min-h-[140px] gap-1 px-1 ${holidayClass}`}>
-                {dayTimeline?.map((item: any) => {
-                  const isTripStartToday = dayjs(item.startDate).format("YYYY/MM/DD") === date;
-                  if (!isTripStartToday) return null;
+                {showTrips.map((item: any) => (
+                  <TripTimelineItem
+                    key={item.tripDetailId}
+                    item={item}
+                    onClick={() => handleClickOpenDetailModal([item])}
+                    durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1}
+                  />
+                ))}
 
-                  return (
-                    <TripTimelineItem
-                      key={item.tripDetailId}
-                      item={item}
-                      onClick={handleClickOpenDetailModal}
-                      durationDays={dayjs(item.endDate).diff(dayjs(item.startDate), "day") + 1}
-                    />
-                  );
-                })}
+                {hiddenCount > 0 && (
+                  <button
+                    onClick={() => handleClickOpenDetailModal(todayTrips)}
+                    className="rounded-lg border border-gray-300 text-sm text-gray-700 py-1 px-2 bg-white hover:bg-gray-100"
+                  >
+                    +{hiddenCount} เพิ่มเติม
+                  </button>
+                )}
               </div>
             );
           },
@@ -198,7 +211,7 @@ export default function RequestListTable({ dataRequest, params, selectedOption, 
 
   // Transform the API data to table data format
   const dataTransform = useMemo(() => transformDriverApiToTableData(dataRequest, dates), [dataRequest, dates]);
-  console.log("dataTransform", dataTransform);
+  // console.log("dataTransform", dataTransform);
 
   const columnHelper = createColumnHelper<DriverTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();

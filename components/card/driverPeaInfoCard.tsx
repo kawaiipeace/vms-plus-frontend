@@ -4,12 +4,14 @@ import { fetchVehicleUsers } from "@/services/masterService";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import PeaDriverInfoModal from "../modal/peaDriverInfoModal";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface DriverInfoProps {
   userKeyPickup?: boolean;
   seeDetail?: boolean;
   driverEmpID?: string;
   role?: string;
+  requestData?:RequestDetailType;
   // fallback props
   driver_emp_id?: string;
   driver_emp_name?: string;
@@ -91,12 +93,12 @@ export default function DriverPeaInfoCard({
                   </span>
                 </div>
              
-              {driver?.tel_internal && (
+          
                 <div className="card-item">
                   <i className="material-symbols-outlined">call</i>
                   <span className="card-item-text">{driver?.tel_internal}</span>
                 </div>
-              )}
+           
             </div>
           </div>
         </div>

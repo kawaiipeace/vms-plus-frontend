@@ -26,8 +26,8 @@ const DriverBasicInfoCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => 
                   </div>
                 </div>
               </div>
-              <div className="flex justify-end items-center col-span-12 md:col-span-5">
-                <div className="form-card-right align-self-center">
+              <div className="flex xl:justify-end justify-start items-center col-span-12 xl:col-span-5">
+                <div className="form-card-right align-self-center xl:w-auto w-full">
                   <div className="flex flex-wrap gap-4">
                     <div className="col-span-12 md:col-span-6">
                       <div className="form-group form-plaintext">

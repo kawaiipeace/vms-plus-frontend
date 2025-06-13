@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import VehicleUserInfoCard from "@/components/annual-driver-license/vehicleUserInfoCard";
 import { fetchFinalRequestDetail, fetchRequestDetail } from "@/services/driver";
 import DrivingRequestProgress from "./drivingRequestProgress";
-import EditApproverModal from "./editApproverModal";
 import DriverPeaInfoCard from "../card/driverPeaInfoCard";
 import ToastCustom from "../toastCustom";
 import EditFinalApproverModal from "./editFinalApproverModal";
@@ -18,7 +17,7 @@ interface RequestDetailFormProps {
 
 export default function RequestDetailForm({
   requestId,
-  licType
+  licType,
 }: RequestDetailFormProps) {
   const editFinalApproverModalRef = useRef<{
     openModal: () => void;
@@ -222,8 +221,8 @@ export default function RequestDetailForm({
                             "/assets/img/ex_driver_license.png"
                           }
                           className="w-full"
-                          width={100}
-                          height={100}
+                          width={300}
+                          height={200}
                           alt="Driver License"
                         />
                         <button
@@ -341,8 +340,8 @@ export default function RequestDetailForm({
                               "/assets/img/ex_certificate.png"
                             }
                             className="w-full"
-                            width={100}
-                            height={100}
+                            width={300}
+                            height={200}
                             alt="Driver Certificate"
                           />
                           <button
@@ -400,7 +399,8 @@ export default function RequestDetailForm({
             )}
 
             {(requestData?.ref_request_annual_driver_status_code === "20" ||
-              requestData?.ref_request_annual_driver_status_code === "30") && (
+              requestData?.ref_request_annual_driver_status_code === "30" ||
+              requestData?.ref_request_annual_driver_status_code === "21") && (
               <DrivingRequestProgress
                 progressSteps={requestData?.progress_request_status}
                 title="ผู้อนุมัติ"

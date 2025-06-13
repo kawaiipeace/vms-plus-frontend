@@ -1,4 +1,4 @@
-import DatePicker from "@/components/drivers-management/datePicker";
+import DatePicker from "@/components/datePicker";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
@@ -9,6 +9,7 @@ import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
 import { DriverInfoType, DriverUpdateLicenseDetails } from "@/app/types/drivers-management-type";
 import { formatDateToThai } from "@/components/drivers-management/driverForm";
+// import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface CustomSelectOption {
   value: string;
@@ -122,14 +123,19 @@ const DriverEditLicenseModal = forwardRef<
 
       console.log("Form data before validation:", params);
 
-      const response = await driverUpdateLicenseDetails({ params });
-      if (response.status === 200) {
-        handleCloseModal();
-        onUpdateDriver(true);
-        setUpdateType("basicInfo");
-      }
+      try {
+        const response = await driverUpdateLicenseDetails({ params });
+        if (response.status === 200) {
+          handleCloseModal();
+          onUpdateDriver(true);
+          setUpdateType("basicInfo");
+        }
 
-      console.log("Form submitted successfully", params);
+        console.log("Form submitted successfully", params);
+      } catch (error) {
+        console.error("Error validating form data:", error);
+        throw error; // Re-throw to handle in the catch block below
+      }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const errors: { [key: string]: string } = {};
@@ -187,7 +193,10 @@ const DriverEditLicenseModal = forwardRef<
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
               <div className="modal-title">แก้ไขข้อมูลการขับขี่</div>
               <form method="dialog">
-                <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
+                <button
+                  className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
+                  onClick={handleCloseModal}
+                >
                   <i className="material-symbols-outlined">close</i>
                 </button>
               </form>
@@ -244,7 +253,8 @@ const DriverEditLicenseModal = forwardRef<
                               </div>
                               <DatePicker
                                 placeholder="เลือกวันที่ออกใบขับขี่"
-                                defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
+                                defaultValue={convertToThaiDate(formData?.driverLicenseStartDate)}
+                                // defaultValue={convertToBuddhistDateTime(formData?.driverLicenseStartDate || "").date}
                                 onChange={(dateStr) => {
                                   handleChangeDriverLicenseStartDate(dateStr);
                                   setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
@@ -276,7 +286,7 @@ const DriverEditLicenseModal = forwardRef<
                                 defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
                                 onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
                                 minDate={disableStartDate ? disableStartDate : undefined}
-                                disabled={disableStartDate ? false : true}
+                                // disabled={disableStartDate ? false : true}
                               />
                             </div>
                             {formErrors.driverLicenseEndDate && (

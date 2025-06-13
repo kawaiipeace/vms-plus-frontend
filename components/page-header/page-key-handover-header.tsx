@@ -4,7 +4,6 @@ import CancelRequestModal from "@/components/modal/cancelRequestModal";
 import { useRef, useState } from "react";
 import LicenseCardModal from "@/components/modal/admin/licenseCardModal";
 import ToastCustom from "@/components/toastCustom";
-import ReturnCarAddModal from "../modal/returnCarAddModal";
 import FileBackRequestModal from "../modal/fileBackModal";
 import ConfirmReturnVehicleModal from "../modal/confirmReturnVehicleModal";
 import ReceiveCarVehicleModal from "../modal/receiveCarVehicleModal";
@@ -68,7 +67,7 @@ const handleCopyRequestNo = async (text?: string) => {
   };
 
   return (
-    <div className="page-header w-full sticky top-[64px] z-10 bg-white pt-5 pb-3 !mb-0">
+    <div className="page-header w-full bg-white pt-5 pb-3 !mb-0">
       {alertVisible && (
         <ToastCustom
           title="บันทึกใบอนุญาตสำเร็จ"

@@ -1,4 +1,4 @@
-import DatePicker from "@/components/drivers-management/datePicker";
+import DatePicker from "@/components/datePicker";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
@@ -266,7 +266,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                                   defaultValue={convertToThaiDate(formData.leave_end_date)}
                                   onChange={(dateStr) => handleChangeLeaveEndDate(dateStr)}
                                   minDate={disableStartDate ? disableStartDate : undefined}
-                                  disabled={disableStartDate ? false : true}
+                                  // disabled={disableStartDate ? false : true}
                                 />
                               </div>
                               {formErrors.leave_end_date && <FormHelper text={String(formErrors.leave_end_date)} />}

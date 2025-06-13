@@ -75,11 +75,20 @@ export default function CarpoolAdminTable({
           setRefetch(true);
           setToast({
             title: "กำหนดผู้รับผิดชอบหลักสำเร็จ",
-            desc:
-              "กำหนดให้ " +
-              defaultData.find((item) => item.mas_carpool_admin_uid === _id)
-                ?.admin_emp_name +
-              " เป็นผู้รับผิดชอบหลักของกลุ่มเรียบร้อยแล้ว",
+            desc: (
+              <>
+                กำหนดให้{" "}
+                <span className="font-bold">
+                  {
+                    defaultData.find(
+                      (item) => item.mas_carpool_admin_uid === _id
+                    )?.admin_emp_name
+                  }
+                </span>
+                {""}
+                เป็นผู้รับผิดชอบหลักของกลุ่มเรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
@@ -115,12 +124,19 @@ export default function CarpoolAdminTable({
             setRefetch(true);
             setToast({
               title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
-              desc:
-                "ผู้ดูแลยานพาหนะ " +
-                defaultData.find(
-                  (item) => item.mas_carpool_admin_uid === deleteId
-                )?.admin_emp_name +
-                " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+              desc: (
+                <>
+                  ผู้ดูแลยานพาหนะ{""}
+                  <span className="font-bold">
+                    {
+                      defaultData.find(
+                        (item) => item.mas_carpool_admin_uid === deleteId
+                      )?.admin_emp_name
+                    }
+                  </span>{" "}
+                  ถูกลบออกจากกลุ่มเรียบร้อยแล้ว
+                </>
+              ),
               status: "success",
             });
             cancelCreateModalRef.current?.closeModal();
@@ -148,11 +164,18 @@ export default function CarpoolAdminTable({
         setDeleteId(undefined);
         setToast({
           title: "ลบผู้ดูแลยานพาหนะสำเร็จ",
-          desc:
-            "ผู้ดูแลยานพาหนะ " +
-            defaultData.find((item) => item.admin_emp_no === deleteId)
-              ?.admin_emp_name +
-            " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+          desc: (
+            <>
+              ผู้ดูแลยานพาหนะ{" "}
+              <span className="font-bold">
+                {
+                  defaultData.find((item) => item.admin_emp_no === deleteId)
+                    ?.admin_emp_name
+                }
+              </span>{" "}
+              ถูกลบออกจากกลุ่มเรียบร้อยแล้ว
+            </>
+          ),
           status: "success",
         });
         cancelCreateModalRef.current?.closeModal();
@@ -315,12 +338,20 @@ export default function CarpoolAdminTable({
         ref={cancelCreateModalRef}
         title={"ยืนยันยกเลิกผู้ดูแลยานพาหนะ"}
         desc={
-          "คุณต้องการยกเลิกผู้ดูแลยานพาหนะ " +
-          defaultData.find((item) => {
-            const uid = id ? item.mas_carpool_admin_uid : item.admin_emp_no;
-            return uid === deleteId;
-          })?.admin_emp_name +
-          " ใช่หรือไม่?"
+          <>
+            คุณต้องการยกเลิกผู้ดูแลยานพาหนะ{" "}
+            <span className="font-bold">
+              {
+                defaultData.find((item) => {
+                  const uid = id
+                    ? item.mas_carpool_admin_uid
+                    : item.admin_emp_no;
+                  return uid === deleteId;
+                })?.admin_emp_name
+              }
+            </span>{" "}
+            ใช่หรือไม่?
+          </>
         }
         confirmText={"ยกเลิกผู้ดูแลยานพาหนะ"}
         onConfirm={handleDelete}

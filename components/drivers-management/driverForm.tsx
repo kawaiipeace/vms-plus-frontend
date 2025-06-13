@@ -1,4 +1,4 @@
-import DatePicker from "@/components/drivers-management/datePicker";
+import DatePicker from "@/components/datePicker";
 import CustomSelect from "@/components/drivers-management/customSelect";
 import UploadFilePreview from "@/components/drivers-management/uploadFilePreview";
 import FormHelper from "@/components/formHelper";
@@ -9,12 +9,13 @@ import UploadFilePDF from "@/components/uploadFilePDF";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
+import CustomSearchSelect from "@/components/customSelectSerch";
 
 import {
   DriverCreate,
   listDriverDepartment,
   listDriverLicense,
-  listDriverVendors,
+  // listDriverVendors,
   listUseByOtherRadio,
 } from "@/services/driversManagement";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
@@ -66,7 +67,7 @@ const DriverForm = () => {
   const [useByotherRadio, setUseByotherRadio] = useState<UseByOtherRadioItem[]>([]);
   const [driverLicenseList, setDriverLicenseList] = useState<CustomSelectOption[]>([]);
   const [driverDepartmentList, setDriverDepartmentList] = useState<CustomSelectOption[]>([]);
-  const [driverVendorsList, setDriverVendorsList] = useState<CustomSelectOption[]>([]);
+  // const [driverVendorsList, setDriverVendorsList] = useState<CustomSelectOption[]>([]);
   const [overNightStay, setOverNightStay] = useState<string>("1");
   const [operationType, setOperationType] = useState<string>("1");
   const [useByOther, setUseByOther] = useState<string>("0");
@@ -74,6 +75,14 @@ const DriverForm = () => {
   const [profileImage, setProfileImage] = useState<UploadFileType>();
   const [filePDF, setFilePDF] = useState<UploadFileType2>();
   const [filePDF2, setFilePDF2] = useState<UploadFileType2[]>([]);
+  const [driverDepartmentOptions, setDriverDepartmentOptions] = useState<CustomSelectOption>({
+    value: "",
+    label: "ทั้งหมด",
+  });
+  const [driverDepartmentOptions2, setDriverDepartmentOptions2] = useState<CustomSelectOption>({
+    value: "",
+    label: "ทั้งหมด",
+  });
   const [formData, setFormData] = useState({
     driverImage: profileImage?.file_url || "",
     driverName: "",
@@ -201,11 +210,11 @@ const DriverForm = () => {
             return {
               value: item.dept_sap,
               label: item.dept_short,
-              labelDetail: item.dept_full,
+              desc: item.dept_full,
             };
           }
         );
-        // console.log(driverDepartmentData);
+        console.log(driverDepartmentData);
         setDriverDepartmentList(driverDepartmentData);
       } catch (error) {
         console.error("Error fetching driver department data:", error);
@@ -234,9 +243,9 @@ const DriverForm = () => {
     // fetchDriverVendors();
   }, []);
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log(formData);
+  // }, [formData]);
 
   useEffect(() => {
     const updatedFiles = filePDF2.map((file, index) => ({
@@ -296,7 +305,7 @@ const DriverForm = () => {
 
         if (response.status === 201) {
           console.log("Driver created successfully:", response.data);
-          router.push(`/drivers-management?create=success&driverName=${formData.driverName}`);
+          router.push(`/drivers-management?activeTab=1&create=success&driverName=${formData.driverName}`);
         }
       } catch (error) {
         console.error("Error creating driver:", error);
@@ -438,6 +447,24 @@ const DriverForm = () => {
 
   const handleDeleteFile2 = (index: number) => {
     setFilePDF2((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  const handleDriverDepartmentChange = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
+    // console.log(selectedOption);
+    setFormData((prevData) => ({
+      ...prevData,
+      driverEmployingAgency: selectedOption.value,
+    }));
+    setDriverDepartmentOptions(selectedOption as { value: string; label: string });
+  };
+
+  const handleDriverDepartmentChange2 = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
+    // console.log(selectedOption);
+    setFormData((prevData) => ({
+      ...prevData,
+      driverDepartment: selectedOption.value,
+    }));
+    setDriverDepartmentOptions2(selectedOption as { value: string; label: string });
   };
 
   return (
@@ -622,13 +649,21 @@ const DriverForm = () => {
                 <div className="form-group">
                   <label className="form-label">หน่วยงานผู้ว่าจ้าง</label>
                   {/* {formData.driverEmployingAgency} */}
-                  <CustomSelect
+                  {/* <CustomSelect
                     w="w-full"
                     options={driverDepartmentList}
                     value={
                       driverDepartmentList.find((option) => option.value === formData.driverEmployingAgency) || null
                     }
                     onChange={(selected) => setFormData((prev) => ({ ...prev, driverEmployingAgency: selected.value }))}
+                  /> */}
+                  <CustomSearchSelect
+                    w="md:w-full"
+                    options={driverDepartmentList}
+                    value={driverDepartmentOptions}
+                    enableSearch
+                    showDescriptions
+                    onChange={handleDriverDepartmentChange}
                   />
                   {formErrors.driverEmployingAgency && <FormHelper text={String(formErrors.driverEmployingAgency)} />}
                 </div>
@@ -666,11 +701,19 @@ const DriverForm = () => {
               <div>
                 <div className="form-group">
                   <label className="form-label">หน่วยงานที่สังกัด</label>
-                  <CustomSelect
+                  {/* <CustomSelect
                     w="w-full"
                     options={driverDepartmentList}
                     value={driverDepartmentList.find((option) => option.value === formData.driverDepartment) || null}
                     onChange={(selected) => setFormData((prev) => ({ ...prev, driverDepartment: selected.value }))}
+                  /> */}
+                  <CustomSearchSelect
+                    w="md:w-full"
+                    options={driverDepartmentList}
+                    value={driverDepartmentOptions2}
+                    enableSearch
+                    showDescriptions
+                    onChange={handleDriverDepartmentChange2}
                   />
                   {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
                 </div>
@@ -720,7 +763,7 @@ const DriverForm = () => {
                     onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
                     minDate={disableStartDate ? disableStartDate : undefined}
                     // minDate="27/05/2025"
-                    disabled={disableStartDate ? false : true}
+                    // disabled={disableStartDate ? false : true}
                   />
                 </div>
                 {formErrors.driverContractEndDate && <FormHelper text={String(formErrors.driverContractEndDate)} />}
@@ -852,7 +895,7 @@ const DriverForm = () => {
                       defaultValue={convertToThaiDate(formData.driverLicenseEndDate)}
                       onChange={(dateStr) => handleChangeDriverLicenseEndDate(dateStr)}
                       minDate={disableDriverStartDate ? disableDriverStartDate : undefined}
-                      disabled={disableDriverStartDate ? false : true}
+                      // disabled={disableDriverStartDate ? false : true}
                     />
                   </div>
                   {formErrors.driverLicenseEndDate && <FormHelper text={String(formErrors.driverLicenseEndDate)} />}
@@ -875,8 +918,10 @@ const DriverForm = () => {
                 <div className="form-group">
                   <label className="form-label">
                     รูปใบขับขี่
-                    <br />
-                    &nbsp;
+                    <div className="2xl:hidden xl:block hidden">
+                      <br />
+                      &nbsp;
+                    </div>
                   </label>
                   <UploadFilePDF onImageChange={handleFileChange} />
                   <div className="flex flex-col gap-3 mt-3">

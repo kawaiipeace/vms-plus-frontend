@@ -67,10 +67,10 @@ const ApproveRequestModal = forwardRef<
           let basePath;
           switch (role) {
             case "firstApprover":
-              basePath = "/administrator/booking-approver";
+              basePath = "/administrator/booking-confirmer";
               break;
             case "licAdmin":
-              basePath = "/administrator/booking-approver"; // Adjust this path as needed
+              basePath = "/administrator/booking-confirmer"; // Adjust this path as needed
               break;
             case "licFinalAdmin":
               basePath = "/administrator/booking-approver"; // Adjust this path as needed
@@ -81,14 +81,14 @@ const ApproveRequestModal = forwardRef<
           }
           if (role === "licAdmin") {
             if(onSuccess) {
-              onSuccess
+              onSuccess()
             }
             router.push(
-              `${basePath}?licenseType=ตรวจสอบ&approvelic-req=success&request-id=${requestId}`
+              `${basePath}?licenseType=ตรวจสอบ&activeTab=คำขออนุมัติทำหน้าที่ขับรถยนต์&approvelic-req=success&request-id=${requestId}`
             );
           }else  if (role === "licFinalAdmin") {
             if(onSuccess) {
-              onSuccess
+              onSuccess()
             }
             router.push(
               `${basePath}?licenseType=อนุมัติ&approvelicfinal-req=success&request-id=${requestId}`

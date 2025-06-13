@@ -1,4 +1,5 @@
 import axiosInstance from "@/utils/axiosInstance";
+import qs from 'qs';
 
 export const fetchVehicleUsers = async (search?: string) => {
   try {
@@ -116,9 +117,15 @@ export const fetchVehicleCarTypes = async (params: {
   emp_id?: string;
   start_date?: string;
   end_date?: string;
-})=> {
+  mas_carpool_uid?: string;
+}) => {
   try {
-    const response = await axiosInstance.get("vehicle/types", { params });
+    const response = await axiosInstance.get("vehicle/types", {
+      params,
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { encode: true, arrayFormat: 'brackets' });
+      }
+    });
     return response;
   } catch (error) {
     throw error;
@@ -127,7 +134,12 @@ export const fetchVehicleCarTypes = async (params: {
 
 export const fetchVehicleDepartmentTypes = async (params: any) => {
   try {
-    const response = await axiosInstance.get("vehicle/departments", { params });
+    const response = await axiosInstance.get("vehicle/departments", {
+      params,
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { encode: true, arrayFormat: 'brackets' });
+      }
+    });
     return response;
   } catch (error) {
     throw error;
@@ -226,9 +238,16 @@ export const fetchUserApproverUsers = async (search?: string) => {
   }
 };
 
-export const fetchVehicleInfo = async (code: string) => {
+export const fetchVehicleInfo = async (params: {
+  mas_carpool_uid?: string;
+  mas_vehicle_uid?: string;
+  work_type?:string;
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+}) => {
   try {
-    const response = await axiosInstance.get("vehicle-info/" + code);
+    const response = await axiosInstance.get("vehicle-info", { params });
     return response;
   } catch (error) {
     throw error;
@@ -256,6 +275,22 @@ export const fetchVehicles = async (params: {
 }) => {
   try {
     const response = await axiosInstance.get("vehicle/search", { params });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchSearchVehicleCarpools = async (params: {
+  search?: string;
+  emp_id?: string;
+  start_date?: string;
+  end_date?: string;
+  mas_carpool_uid?: string;
+  car_type?: string;
+}) => {
+  try {
+    const response = await axiosInstance.get("vehicle/search-booking-carpool", { params });
     return response;
   } catch (error) {
     throw error;

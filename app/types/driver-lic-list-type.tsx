@@ -12,6 +12,7 @@ export type DriverLicListType = Partial<{
   ref_driver_license_type_code: string;
   ref_driver_license_type_name: string;
   driver_license_expire_date: string;
+  created_request_emp_position: string;
 }>;
 
 export interface summaryType {
