@@ -260,6 +260,7 @@ const AddCarpoolApproverModal = forwardRef<
               approver_emp_no: selectedApprover?.value as string,
               internal_contact_number: internal_contact_number as string,
               mobile_contact_number: mobile_contact_number as string,
+              approver_position: approve?.posi_text as string,
             },
           ],
         });

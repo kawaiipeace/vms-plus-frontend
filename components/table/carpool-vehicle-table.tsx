@@ -210,7 +210,10 @@ export default function CarpoolVehicleTable({
           className="text-left font-semibold"
           data-name="เลขทะเบียน / ยี่ห้อ / รุ่น"
         >
-          <div>{row.original.vehicle_license_plate}</div>
+          <div>
+            {row.original.vehicle_license_plate}{" "}
+            {row.original.vehicle_license_plate_province_short}
+          </div>
           <div className="text-xs text-[#475467]">
             {row.original.vehicle_brand_name} {row.original.vehicle_model_name}
           </div>
@@ -355,7 +358,10 @@ export default function CarpoolVehicleTable({
           className="text-left font-semibold"
           data-name="เลขทะเบียน / ยี่ห้อ / รุ่น"
         >
-          <div>{row.original.vehicle_license_plate}</div>
+          <div>
+            {row.original.vehicle_license_plate}{" "}
+            {row.original.vehicle_license_plate_province_short}
+          </div>
           <div className="text-xs text-[#475467]">
             {row.original.vehicle_brand_name} {row.original.vehicle_model_name}
           </div>

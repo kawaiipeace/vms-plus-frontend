@@ -23,6 +23,7 @@ export interface CarpoolForm {
     image_url: string;
     internal_contact_number?: string;
     mobile_contact_number?: string;
+    admin_position?: string;
   }[];
   carpool_approvers?: {
     approver_emp_no: string;
@@ -32,6 +33,7 @@ export interface CarpoolForm {
     image_url: string;
     internal_contact_number?: string;
     mobile_contact_number?: string;
+    approver_position?: string;
   }[];
   carpool_vehicles?: { mas_vehicle_uid: string }[];
   carpool_drivers?: { mas_driver_uid: string }[];
@@ -133,6 +135,7 @@ export interface CarpoolAdmin {
   tel_mobile: string;
   tel_internal: string;
   image_url: string;
+  posi_text: string;
 }
 
 export interface CarpoolApprover {
@@ -144,6 +147,7 @@ export interface CarpoolApprover {
   tel_mobile: string;
   tel_internal: string;
   image_url: string;
+  posi_text: string;
 }
 
 export interface CarpoolVehicleParams {
@@ -167,6 +171,7 @@ export interface CarpoolVehicle {
   vehicle_mileage: string;
   age: string;
   ref_vehicle_status_name: string;
+  vehicle_license_plate_province_short: string;
 }
 
 export interface CarpoolDriverParams {
@@ -196,6 +201,7 @@ export interface CarpoolDriver {
   };
   contract_end_date: string;
   driver_status: { ref_driver_status_desc: string };
+  driver_dept_sap_short: string;
 }
 
 export interface CarpoolDepartment {
@@ -272,4 +278,26 @@ export interface DriverTimelineTransformData {
   workThisMonth: string;
   timeline: DriverTimelineDetails;
   status: string;
+}
+
+export interface VehicleTimelineListTableDataParams {
+  search: string;
+  start_date: string;
+  end_date: string;
+  page: number;
+  limit: number;
+  is_active: string;
+  ref_vehicle_status_code: string;
+  vehicel_car_type_detail: string;
+}
+
+export interface DriverTimelineListTableDataParams {
+  search: string;
+  start_date: string;
+  end_date: string;
+  page: number;
+  limit: number;
+  is_active: string;
+  work_type: string;
+  ref_driver_status_code: string;
 }

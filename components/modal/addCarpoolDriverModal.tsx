@@ -304,7 +304,7 @@ const AddCarpoolDriverModal = forwardRef<
                             : ""}
                         </div>
                         <div className="flex items-center text-xs gap-2">
-                          <span>{driver.driver_dept_sap || "-"}</span>{" "}
+                          <span>{driver.driver_dept_sap_short || "-"}</span>{" "}
                           <div className="border-l border-primary-grayBorder h-3" />
                           <span>{getBirthDate(driver.driver_birthdate)}</span>{" "}
                         </div>

@@ -1,66 +1,126 @@
-import { DriverTimelineTransformData } from "@/app/types/carpool-management-type";
 import { VehicleTimelineTransformData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
+import "dayjs/locale/en-gb";
+import { DriverTimelineTransformData } from "@/app/types/carpool-management-type";
 
-dayjs.locale("th");
+export const BASE_STATUS_COLORS = {
+  green: { border: "#ABEFC6", bg: "#ECFDF3", text: "#067647" },
+  orange: { border: "#FEDF89", bg: "#FFFAEB", text: "#B54708" },
+  blue: { border: "#C7D7FE", bg: "#EEF4FF", text: "#3538CD" },
+  red: { border: "#FED8F6", bg: "#FFF5FD", text: "#A80689" },
+  gray: { border: "gray-300", bg: "gray-100", text: "gray-700" },
+} as const;
+
+export const STATUS_COLOR_GROUPS: Record<
+  keyof typeof BASE_STATUS_COLORS,
+  string[]
+> = {
+  green: ["ปกติ", "เสร็จสิ้น"],
+  orange: ["บำรุงรักษา", "รออนุมัติ"],
+  blue: ["ใช้ชั่วคราว", "ระหว่างโอน", "ค้างแรม"],
+  red: ["ส่งซ่อม", "ไป-กลับ"],
+  gray: ["สิ้นสุดสัญญา"],
+};
+
+export const STATUS_CLASS_MAP: Record<string, string> = Object.entries(
+  STATUS_COLOR_GROUPS
+).reduce((acc, [color, statuses]) => {
+  const colorSet = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
+  const classes = `border-[${colorSet.border}] bg-[${colorSet.bg}] text-[${colorSet.text}]`;
+  statuses.forEach((status) => {
+    acc[status] = classes;
+  });
+  return acc;
+}, {} as Record<string, string>);
+
+export const STATUS_DETAIL_MAP: Record<
+  string,
+  (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]
+> = Object.entries(STATUS_COLOR_GROUPS).reduce((acc, [color, statuses]) => {
+  const detail = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
+  statuses.forEach((status) => {
+    acc[status] = detail;
+  });
+  return acc;
+}, {} as Record<string, (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]>);
+
+export const imgPath = new Map([
+  ["รออนุมัติ", "/assets/img/vehicle/pending_approval.svg"],
+  ["ไป - กลับ", "/assets/img/vehicle/completed.svg"],
+  ["ค้างแรม", "/assets/img/vehicle/with_overnight_stay.svg"],
+  ["เสร็จสิ้น", "/assets/img/vehicle/completed.svg"],
+]);
 
 export function transformVehicleApiToTableData(
   rawData: any,
   dates: any[]
 ): VehicleTimelineTransformData[] {
-  const createEmptyTimeline = () => {
-    const timeline: Record<string, any[]> = {};
-    for (let i = 1; i <= dates.length; i++) {
-      timeline[dates[i - 1].key] = [];
-    }
-    return timeline;
-  };
-
   const vehicles: any[] = rawData ?? [];
+
+  const createEmptyTimeline = () =>
+    dates.reduce((timeline: Record<string, any[]>, date: any) => {
+      timeline[date.key] = [];
+      return timeline;
+    }, {});
 
   return vehicles.map((vehicle) => {
     const timeline = createEmptyTimeline();
-    let status = "";
-    const carUserDetail: Record<string, string> = {};
-    const driverDetail: Record<string, string> = {};
+    let latestStatus = "";
+    let carUserDetail: Record<string, string> = {};
+    let driverDetail: Record<string, string> = {};
 
-    vehicle.vehicle_trn_requests?.forEach((req: any) => {
-      if (req.trip_details.length === 0) return;
+    vehicle.vehicle_trn_requests?.forEach((request: any) => {
+      if (!request.trip_details?.length) return;
 
-      status = req.time_line_status;
+      latestStatus = request.time_line_status;
+      carUserDetail = {
+        userName: request.vehicle_user_emp_name ?? "นายไข่ สนาม",
+        userDeptShortName: request.vehicle_user_dept_name_short ?? "ฝ่ายขนส่ง",
+        userPosition: request.vehicle_user_position ?? "พนักงานขับรถ",
+        userContactNumber:
+          request.car_user_mobile_contact_number ?? "0912345678",
+        userContactInternalNumber:
+          request.car_user_internal_contact_number ?? "1234",
+      };
 
-      carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
-      carUserDetail.userContactNumber =
-        req.car_user_mobile_contact_number || "0912345678";
-      carUserDetail.userContactInternalNumber =
-        req.car_user_internal_contact_number || "1234";
+      driverDetail = {
+        driverName: request.driver?.driver_name ?? "",
+        licensePlate: vehicle.vehicle_license_plate ?? "",
+        licensePlateProvinceShort:
+          vehicle.vehicle_license_plate_province_short ?? "",
+      };
 
-      driverDetail.driverName = req.driver.driver_name;
-      driverDetail.licensePlate = vehicle.vehicle_license_plate;
-
-      req.trip_details?.forEach((trip: any) => {
+      request.trip_details.forEach((trip: any) => {
         const start = dayjs(trip.trip_start_datetime);
         const end = dayjs(trip.trip_end_datetime);
-        const dayStart = start.date();
-        const dayEnd = end.date();
-        const duration = Math.max(dayEnd - dayStart + 1, 1);
-        const destinationPlace = trip.trip_destination_place;
+        const duration = Math.max(end.diff(start, "day") + 1, 1);
 
-        timeline[`day_${start.format("D_M_YYYY")}`]?.push({
-          tripDetailId: trip.trn_trip_detail_uid,
-          destinationPlace: destinationPlace,
-          startTime: start.format("HH:mm"),
-          duration: duration.toString(),
-          status: status,
-          carUserDetail: carUserDetail,
-          driverDetail: driverDetail,
-        });
+        for (let i = 0; i < duration; i++) {
+          const currentDateKey = `${start.add(i, "day").date()}_${
+            start.month() + 1
+          }_${start.year()}`;
+          if (!timeline[`day_${currentDateKey}`]) continue;
+
+          timeline[`day_${currentDateKey}`].push({
+            tripDetailId: trip.trn_trip_detail_uid,
+            startDate: start,
+            endDate: end,
+            workplace: request.work_place,
+            destinationPlace: trip.trip_destination_place,
+            startTime: start.format("HH:mm"),
+            endTime: end.format("HH:mm"),
+            duration: duration.toString(),
+            status: latestStatus,
+            carUserDetail,
+            driverDetail,
+          });
+        }
       });
     });
 
-    const result = {
+    return {
       vehicleLicensePlate: vehicle.vehicle_license_plate,
       vehicleLicensePlateProvinceShort:
         vehicle.vehicle_license_plate_province_short,
@@ -70,11 +130,9 @@ export function transformVehicleApiToTableData(
       vehicleDepartment: vehicle.vehicle_dept_name,
       vehicleCarpoolName: vehicle.vehicle_carpool_name,
       distance: vehicle.vehicle_mileage,
-      vehicleStatus: status,
-      timeline: timeline,
+      vehicleStatus: latestStatus,
+      timeline,
     };
-
-    return result;
   });
 }
 
@@ -103,7 +161,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
         date: formattedDate,
         day: start.date(),
         fullMonth: start.format("MMMM"),
-        month: start.format("MMM"),
+        month: start.locale("th").format("MMM"),
         fullYear: (start.year() + 543).toString(),
         weekday: start.format("ddd"),
         holiday: holidayMap.get(formattedDate) ?? null,
@@ -119,6 +177,30 @@ export async function generateDateObjects(startDate: string, endDate: string) {
     return [];
   }
 }
+
+export const DateLongTH = (date: Date) => {
+  const thDate = dayjs(date).locale("th");
+  const day = thDate.format("DD");
+  const month = thDate.format("MM");
+  const year = thDate.year() + 543;
+
+  return `${day}/${month}/${year}`;
+};
+
+export const convertDateToLongTH = (
+  date: Date,
+  format?: string,
+  locale?: string
+) => {
+  const dateLocale = locale ? dayjs(date).locale("th") : dayjs(date);
+  if (format === "full") {
+    return `${dateLocale.format("D MMMM")} ${dateLocale.year() + 543}`;
+  } else if (format === "DD/MM/YYYY") {
+    return `${dateLocale.format("DD/MM/")}${dateLocale.year() + 543}`;
+  }
+
+  return `${dateLocale.format("D MMM")} ${dateLocale.year() + 543}`;
+};
 
 export function transformDriverApiToTableData(
   rawData: any,
@@ -225,12 +307,3 @@ export function transformDriverApiToTableData(
     return result;
   });
 }
-
-export const DateLongTH = (date: Date) => {
-  const thDate = dayjs(date).locale("th");
-  const day = thDate.format("DD");
-  const month = thDate.format("MM");
-  const year = thDate.year() + 543;
-
-  return `${day}/${month}/${year}`;
-};

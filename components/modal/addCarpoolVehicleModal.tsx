@@ -304,11 +304,14 @@ const AddCarpoolVehicleModal = forwardRef<
                       >
                         <div className="text-start">
                           <div className="text-brand-900">
-                            {vehicle.vehicle_license_plate}
+                            {vehicle.vehicle_license_plate}{" "}
+                            {vehicle.vehicle_license_plate_province_short}
                           </div>
                           <div className="text-xs">
                             {vehicle.vehicle_brand_name}{" "}
-                            {vehicle.vehicle_model_name}{" "}
+                            {vehicle.vehicle_model_name}
+                            {" | "}
+                            {vehicle.vehicle_owner_dept_short}
                           </div>
                         </div>
                         <div className="custom-group">
