@@ -39,17 +39,18 @@ const VehicleTimeLineDetailModal = forwardRef<
 
     const sameMonth = startDate.month() === endDate.month();
     const sameYear = startDate.year() === endDate.year();
+    const sameDay = startDate.date() === endDate.date();
 
-    if (sameMonth && sameYear) {
-      // เช่น 4 - 6 มกราคม 2568
+    if(sameDay) {
       const year = startDate.year() + 543;
-      dateRange = `${startDate.format('D')} - ${endDate.locale('th').format('D MMMM')} ${year}`;
-    } else if (sameYear) {
-      // เช่น 30 ม.ค. - 2 ก.พ. 2568
+      dateRange = `${startDate.locale('th').format('D MMMM')} ${year}`;
+    } else if(sameMonth) {
+      const year = startDate.year() + 543;
+      dateRange = `${startDate.locale('th').format('D')} - ${endDate.locale('th').format('D MMMM')} ${year}`;
+    } else if(sameYear) {
       const year = startDate.year() + 543;
       dateRange = `${startDate.locale('th').format('D MMM')} - ${endDate.locale('th').format('D MMM')} ${year}`;
     } else {
-      // คนละปี เช่น 31 ธ.ค. 2567 - 1 ม.ค. 2568
       const yearStart = startDate.year() + 543;
       const yearEnd = endDate.year() + 543;
       dateRange = `${startDate.locale('th').format('D MMM')} ${yearStart} - ${endDate.locale('th').format('D MMM')} ${yearEnd}`;
