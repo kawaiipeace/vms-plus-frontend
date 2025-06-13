@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import { imgPath } from "@/utils/vehicle-management";
+import { convertDateToLongTH, DateLongTH, imgPath } from "@/utils/vehicle-management";
 import dayjs from "dayjs";
 import 'dayjs/locale/th';
+import { TripStatus, vehicleImgPath } from "@/utils/vehicle-constant";
 
 export type VehicleTimelineRef = {
   open: () => void;
@@ -111,7 +112,7 @@ const CardBox = ({ data }: { data: any }) => {
         {/* Image Section */}
         <div className="flex items-start justify-center">
           <Image
-            src={imgPath.get(status) ?? "/assets/img/vehicle/check_car_complete.svg"}
+            src={vehicleImgPath[status as TripStatus]}
             width={150}
             height={150}
             alt="check_car_complete"
@@ -134,8 +135,8 @@ const CardBox = ({ data }: { data: any }) => {
             <span className="text-base font-semibold text-gray-600">{workplace}</span>
             <span className="font-medium text-gray-700">{schedule_title}</span>
             <span className="text-gray-500">
-              {dayjs(startDate).format('DD/MM/YYYY')}
-              {parseInt(duration) > 1 ? ` - ${dayjs(endDate).format('DD/MM/YYYY')}` : ""} {startTime} - {endTime} | {status}
+              {convertDateToLongTH(dayjs(startDate).toDate(), 'DD/MM/YYYY')}
+              {parseInt(duration) > 1 ? ` - ${convertDateToLongTH(dayjs(endDate).toDate(), 'DD/MM/YYYY')}` : ""} {startTime} - {endTime} | {status}
             </span>
           </div>
 

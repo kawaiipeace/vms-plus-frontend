@@ -206,7 +206,7 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
         }),
         columnHelper.accessor('vms_ref_vehicle_status.ref_vehicle_status_name', {
             header: 'สถานะ',
-            cell: info => <div className="whitespace-nowrap"><VehicleStatus status={info.getValue()} /></div>,
+            cell: info => <div><VehicleStatus status={info.getValue()} /></div>,
             enableSorting: false,
         }),
         columnHelper.accessor(row => ({
