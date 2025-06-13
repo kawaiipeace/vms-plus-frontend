@@ -44,3 +44,14 @@ export interface VehicleTimelineTransformData {
     vehicleStatus: string;
     timeline: VehicleTimelineDetails;
 };
+
+export interface VehicleTimelineSearchParams {
+    search?: string;
+    start_date?: string;
+    end_date?: string;
+    vehicle_owner_dept_sap: string;
+    vehicle_car_type_detail?: string;
+    ref_timeline_status_id?: string;
+    page?: number;
+    limit?: number;
+}
