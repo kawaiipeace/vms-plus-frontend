@@ -155,7 +155,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
           const response = await driverLayoff(params);
           if (response.status === 200) {
             modalRef.current?.close();
-            router.push("/drivers-management?giveout=success&driverName=" + driverInfo?.driver_name);
+            router.push("/drivers-management?activeTab=1&giveout=success&driverName=" + driverInfo?.driver_name);
           }
         } catch (error) {
           if (error instanceof Yup.ValidationError) {
@@ -186,7 +186,7 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
             const response = await driverResign(params);
             if (response.status === 200) {
               modalRef.current?.close();
-              router.push("/drivers-management?resign=success&driverName=" + driverInfo?.driver_name);
+              router.push("/drivers-management?activeTab=1&resign=success&driverName=" + driverInfo?.driver_name);
             }
           } catch (error) {
             console.error("Error deleting driver:", error);

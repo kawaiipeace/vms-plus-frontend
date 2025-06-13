@@ -200,7 +200,7 @@ const ModalBody = ({
                     id={`option3-${index}`}
                     checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
                     onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}
-                    className="checkbox checkbox-primary h-5 w-5"
+                    className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                   />
                   <BadgeStatus status={status.ref_driver_status_desc} />
                 </label>
@@ -219,7 +219,7 @@ const ModalBody = ({
                     <input
                       type="checkbox"
                       id={`status-${index}`}
-                      className="checkbox checkbox-primary h-5 w-5"
+                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                       checked={formData.vehicleBookingStatus.includes(status.id)}
                       onChange={() => handleCheckboxToggle("vehicleBookingStatus", status.id)}
                     />

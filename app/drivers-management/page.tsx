@@ -26,6 +26,8 @@ const RequestListContent: React.FC<RequestListContentProps> = ({ setTabActive })
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create");
   const deleteReq = searchParams.get("delete");
+  const resignReq = searchParams.get("resign");
+  const blackListReq = searchParams.get("giveout");
   const driverCreateName = searchParams.get("driverName");
   const activeTab = searchParams.get("activeTab");
 
@@ -63,6 +65,30 @@ const RequestListContent: React.FC<RequestListContentProps> = ({ setTabActive })
             <>
               พนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> <br />
               ถูกลบจากระบบเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+      {resignReq === "success" && (
+        <ToastCustom
+          title="พนักงานขับรถลาออกสำเร็จ"
+          desc={
+            <>
+              พนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> <br />
+              ลาออกเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+      {blackListReq === "success" && (
+        <ToastCustom
+          title="พนักงานขับรถถูกให้ออกสำเร็จ"
+          desc={
+            <>
+              พนักงานขับรถ <span className="font-semibold">{driverCreateName}</span> <br />
+              ถูกให้ออกเรียบร้อยแล้ว
             </>
           }
           status="success"

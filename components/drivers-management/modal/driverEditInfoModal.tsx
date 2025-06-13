@@ -48,7 +48,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       value: "",
       label: "ทั้งหมด",
     });
-    const [driverDepartmentOptions2, setDriverDepartmentOptions2] = useState<CustomSelectOption>({
+    const [driverEmployingAgencyOptions, setDriverEmployingAgencyOptions] = useState<CustomSelectOption>({
       value: "",
       label: "ทั้งหมด",
     });
@@ -111,22 +111,22 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
     useEffect(() => {
       if (driverInfo && driverDepartmentList.length > 0) {
         const initialDepartment = driverDepartmentList.find(
-          (option) => option.label === driverInfo.driver_dept_sap_short_name_hire
+          (option) => option.label === driverInfo.driver_dept_sap_short_name_work
         );
         const initialEmployingAgency = driverDepartmentList.find(
-          (option) => option.label === driverInfo.driver_dept_sap_short_name_work
+          (option) => option.label === driverInfo.driver_dept_sap_short_name_hire
         );
 
         setDriverDepartmentOptions({
           value: initialDepartment?.value || "",
           label: initialDepartment?.label || "ทั้งหมด",
         });
-        setDriverDepartmentOptions2({
+        setDriverEmployingAgencyOptions({
           value: initialEmployingAgency?.value || "",
           label: initialEmployingAgency?.label || "ทั้งหมด",
         });
 
-        // console.log(initialDepartment, initialEmployingAgency);
+        // console.log("Department : ", initialDepartment, "Employing Agency : ", initialEmployingAgency);
 
         setFormData({
           driverContractStartDate: driverInfo.approved_job_driver_start_date || "",
@@ -300,21 +300,23 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       // console.log(selectedOption);
       setFormData((prevData) => ({
         ...prevData,
-        driverEmployingAgency: selectedOption.value,
+        driverDepartment: selectedOption.value,
       }));
+      console.log("Selected Employing Agency:", selectedOption);
       setDriverDepartmentOptions(selectedOption as { value: string; label: string });
     };
 
-    const handleDriverDepartmentChange2 = async (selectedOption: {
+    const handleDriverEmployingAgencyChange = async (selectedOption: {
       value: string;
       label: string | React.ReactNode;
     }) => {
       // console.log(selectedOption);
       setFormData((prevData) => ({
         ...prevData,
-        driverDepartment: selectedOption.value,
+        driverEmployingAgency: selectedOption.value,
       }));
-      setDriverDepartmentOptions2(selectedOption as { value: string; label: string });
+      console.log("Selected Department:", selectedOption);
+      setDriverEmployingAgencyOptions(selectedOption as { value: string; label: string });
     };
 
     return (
@@ -373,10 +375,10 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                               <CustomSearchSelect
                                 w="md:w-full"
                                 options={driverDepartmentList}
-                                value={driverDepartmentOptions}
+                                value={driverEmployingAgencyOptions}
                                 enableSearch
                                 showDescriptions
-                                onChange={handleDriverDepartmentChange}
+                                onChange={handleDriverEmployingAgencyChange}
                               />
                               {formErrors.driverEmployingAgency && (
                                 <FormHelper text={String(formErrors.driverEmployingAgency)} />
@@ -430,10 +432,10 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                               <CustomSearchSelect
                                 w="md:w-full"
                                 options={driverDepartmentList}
-                                value={driverDepartmentOptions2}
+                                value={driverDepartmentOptions}
                                 enableSearch
                                 showDescriptions
-                                onChange={handleDriverDepartmentChange2}
+                                onChange={handleDriverDepartmentChange}
                               />
                               {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
                             </div>
