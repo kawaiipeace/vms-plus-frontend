@@ -41,6 +41,7 @@ interface Vehicle {
   seat: number;
   vehicle_owner_dept_short: string;
   is_admin_choose_driver?: boolean;
+  fleet_card_no?: string;
 }
 
 type VehicleCard = Carpool | Vehicle;
@@ -133,6 +134,8 @@ export default function ProcessTwo() {
 
       updatedData.isAdminChooseDriver =
         selectedVehicleObj?.is_admin_choose_driver;
+    updatedData.masCarpoolUid = "";
+    updatedData.carpoolName = "";
     }
 
     updateFormData(updatedData);
@@ -168,7 +171,7 @@ export default function ProcessTwo() {
     if (selectedCarpool) {
       updatedData.carpoolName = selectedCarpool.carpool_name;
       updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
-      updatedData.masCarpoolUid = "";
+      updatedData.vehicleSelect = selectedCarpool.mas_carpool_uid;
     }
 
     updateFormData(updatedData);
@@ -474,6 +477,7 @@ export default function ProcessTwo() {
                               province={
                                 vehicle.vehicle_license_plate_province_short
                               }
+                              fleetCardNo={vehicle?.fleet_card_no}
                               seat={vehicle.seat}
                               onSelect={() =>
                                 handleVehicleSelect(vehicle.mas_vehicle_uid)
