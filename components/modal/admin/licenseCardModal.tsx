@@ -100,7 +100,7 @@ const LicenseCardModal = forwardRef<{ openModal: () => void; closeModal: () => v
                 <div className="flex justify-start col-span-12">
                   <div className="text-left">
                     <p className="font-bold text-3xl">{data?.vehicle_license_plate || "-"}</p>
-                    <p>{data?.vehicle_license_plate_province_full || "-"}</p>
+                    <p>{data?.vehicle_license_plate_province_short || "-"}</p>
                   </div>
                 </div>
                 <div className="col-span-12">

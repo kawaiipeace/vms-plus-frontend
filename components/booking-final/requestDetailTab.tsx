@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  requestHistoryLog,
-  requestHistoryLogColumns,
-} from "@/data/requestHistory";
-import TableComponent from "@/components/table";
 import RequestDetailForm from "@/components/booking-final/requestDetailForm";
 import LogListTable from "../table/log-list-table";
 import PaginationControls from "../table/pagination-control";

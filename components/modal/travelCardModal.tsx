@@ -128,7 +128,7 @@ const TravelCardModal = forwardRef<
                     {requestData?.vehicle_license_plate || "-"}
                   </p>
                   <p>
-                    {requestData?.vehicle_license_plate_province_full || "-"}
+                    {requestData?.vehicle_license_plate_province_short || "-"}
                   </p>
                 </div>
               </div>

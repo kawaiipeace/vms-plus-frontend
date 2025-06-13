@@ -232,9 +232,7 @@ export default function RequestDetailForm({
                   </div>
                 )}
 
-                {requestData?.vehicle &&
-                  (!requestData?.is_admin_choose_vehicle ||
-                    requestData?.is_admin_choose_vehicle === "0") && (
+                {requestData?.vehicle && (
                     <CarDetailCard
                       reqId={requestData?.trn_request_uid}
                       vehicle={requestData?.vehicle}

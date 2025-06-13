@@ -14,7 +14,7 @@ export type RequestData = {
   date_range: string;
   trip_type: number;
   work_place: string;
-  objective: string;
+  work_description: string;
   remark: string;
   number_of_passengers: number;
   pickup_place: string;
@@ -136,7 +136,7 @@ export const requestData_1: RequestData[] = [
     date_range: "24/06/67 - 27/06/67",
     trip_type: 1,
     work_place: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
-    objective: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
+    work_description: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
     remark: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",
     number_of_passengers: 1,
     pickup_place: "การไฟฟ้าเขต ฉ.1 และ กฟฟ. ในสังกัด กระทรวงมหาดไทย",

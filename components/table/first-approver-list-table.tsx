@@ -67,8 +67,10 @@ export default function FirstApproverListTable({
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
           <div className="flex flex-col">
-            <div>{row.original.vehicle_user_emp_name}</div>
-            <div>{row.original.vehicle_user_dept_sap_short}</div>
+            <div>{row.original.vehicle_user_emp_name} ({row.original.vehicle_user_emp_id})</div>
+             <div className="text-color-secondary text-xs">
+              {row.original.vehicle_user_position + " " + row.original.vehicle_user_dept_name_short}
+            </div>
           </div>
         </div>
       ),
@@ -81,10 +83,22 @@ export default function FirstApproverListTable({
         <div className="text-left" data-name="ยานพาหนะ">
           <div className="flex flex-col">
             <div className="text-left">
-              {row.original.vehicle_license_plate}
+              {row.original.vehicle_license_plate + " " +row.original.vehicle_license_plate_province_short}
             </div>
-            <div className="">
-              {row.original.vehicle_department_dept_sap_short}
+          </div>
+        </div>
+      ),
+    },
+    {
+          accessorKey: "vehicle_carpool_name",
+      header: () => <div className="text-center">สังกัดยานพาหนะ</div>,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="text-left" data-name="สังกัดยานพาหนะ">
+          <div className="flex flex-col">
+            <div>{row.original.vehicle_department_dept_sap_short}</div>
+             <div className="text-color-secondary text-xs">
+              {row.original.vehicle_carpool_name}
             </div>
           </div>
         </div>
@@ -167,7 +181,7 @@ export default function FirstApproverListTable({
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/booking-approver/" +
+                    "/administrator/booking-confirmer/" +
                       row.original.trn_request_uid
                   )
                 }
@@ -182,7 +196,7 @@ export default function FirstApproverListTable({
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/booking-approver/" +
+                    "/administrator/booking-confirmer/" +
                       row.original.trn_request_uid +
                       "?status=" +
                       statusValue
@@ -199,7 +213,7 @@ export default function FirstApproverListTable({
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
                   router.push(
-                    "/administrator/booking-approver/" +
+                    "/administrator/booking-confirmer/" +
                       row.original.trn_request_uid +
                       "?status=" +
                       statusValue

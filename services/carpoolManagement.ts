@@ -43,11 +43,12 @@ export const chooseDriverChoice = async () => {
   }
 };
 
-export const getCarpoolAdmin = async () => {
+export const getCarpoolAdmin = async (search?: string) => {
   try {
-    const response = await axiosInstance.get(
-      "carpool-management/admin-mas-search"
-    );
+    const url = search
+      ? "carpool-management/admin-mas-search?search=" + search
+      : "carpool-management/admin-mas-search";
+    const response = await axiosInstance.get(url);
 
     return response;
   } catch (error) {
@@ -55,11 +56,12 @@ export const getCarpoolAdmin = async () => {
   }
 };
 
-export const getCarpoolApprover = async () => {
+export const getCarpoolApprover = async (search?: string) => {
   try {
-    const response = await axiosInstance.get(
-      "carpool-management/approver-mas-search"
-    );
+    const url = search
+      ? "carpool-management/approver-mas-search?search=" + search
+      : "carpool-management/approver-mas-search";
+    const response = await axiosInstance.get(url);
 
     return response;
   } catch (error) {
@@ -93,11 +95,12 @@ export const getCarpoolDriver = async (params: CarpoolDriverParams) => {
   }
 };
 
-export const getCarpoolDepartment = async () => {
+export const getCarpoolDepartment = async (search?: string) => {
   try {
-    const response = await axiosInstance.get(
-      "carpool-management/mas-department"
-    );
+    const url = search
+      ? "carpool-management/mas-department?search=" + search
+      : "carpool-management/mas-department";
+    const response = await axiosInstance.get(url);
 
     return response;
   } catch (error) {
@@ -105,10 +108,13 @@ export const getCarpoolDepartment = async () => {
   }
 };
 
-export const getCarpoolDepartmentByType = async (type: string) => {
+export const getCarpoolDepartmentByType = async (
+  type: string,
+  search?: string
+) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/mas-department/" + type
+      "carpool-management/mas-department/" + type + "?search=" + search
     );
 
     return response;

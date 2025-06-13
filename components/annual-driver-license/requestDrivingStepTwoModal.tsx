@@ -14,7 +14,6 @@ import {
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
 import {
   forwardRef,
   useEffect,
@@ -25,7 +24,7 @@ import {
 import ApproverInfoCard from "./ApproverInfoCard";
 import EditApproverModal from "./editApproverModal";
 import EditFinalApproverModal from "./editFinalApproverModal";
-import Link from "next/link";
+import { useProfile } from "@/contexts/profileContext";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -85,6 +84,8 @@ const RequestDrivingStepTwoModal = forwardRef<
     const [approvers, setApprovers] = useState<VehicleUserType>();
     const [finalApprovers, setFinalApprovers] = useState<VehicleUserType>();
     const [isLoading, setIsLoading] = useState(false);
+    const { profile } = useProfile();
+    const currentBuddhistYear = dayjs().year() + 543;
 
     const { showToast } = useToast();
 
@@ -104,6 +105,9 @@ const RequestDrivingStepTwoModal = forwardRef<
           fetchUserApprovalLic(""),
         ]);
 
+        console.log("Confirmer Response:", confirmerResponse);
+        console.log("Approval Response:", approvalResponse);
+
         if (confirmerResponse?.data) {
           setApprovers(confirmerResponse.data[0]);
         }
@@ -118,6 +122,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     };
 
     useEffect(() => {
+      console.log("Request Data:", valueFormStep1);
       if (requestData) {
         setApprovers({
           emp_id: requestData?.confirmed_request_emp_id || "",
@@ -262,33 +267,46 @@ const RequestDrivingStepTwoModal = forwardRef<
     return (
       <>
         <dialog ref={modalRef} className={`modal modal-middle`}>
-          <div className="modal-box max-w-[500px] p-0 relative overflow-hidden flex flex-col">
+          <div className="modal-box max-w-[600px] p-0 relative overflow-hidden flex flex-col">
             <form className="flex flex-col h-full">
               <div className="bottom-sheet" {...swipeDownHandlers}>
                 <div className="bottom-sheet-icon"></div>
               </div>
               <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
                 <div className="modal-title items-center flex">
-                  <i
-                    className="material-symbols-outlined cursor-pointer"
-                    onClick={() => {
-                      if (onBack) {
-                        onBack();
-                      }
-                    }}
-                  >
-                    keyboard_arrow_left
-                  </i>{" "}
+                  {onBack && (
+                    <i
+                      className="material-symbols-outlined cursor-pointer"
+                      onClick={() => {
+                        if (onBack) {
+                          onBack();
+                        }
+                      }}
+                    >
+                      keyboard_arrow_left
+                    </i>
+                  )}
                   ขออนุมัติทำหน้าที่ขับรถยนต์ประจำปี{" "}
-                  {driverData?.license_status !== "ไม่มี" &&
-                    requestData?.license_status !== "ตีกลับ" && (
-                      <>
-                        {driverData?.license_status === "มีผลปีถัดไป" &&
-                          dayjs().year() + 543}
-                        {driverData?.next_license_status !== "" &&
-                          dayjs().year() + 544}
-                      </>
-                    )}
+                     {driverData?.license_status === "อนุมัติแล้ว" &&
+                  driverData &&
+                  driverData.next_annual_yyyy !== currentBuddhistYear && (
+                    <div className="ml-1">
+                      {" "}
+                      {" " + driverData?.next_annual_yyyy || ""}
+                    </div>
+                  )}
+                  {((driverData &&
+                    driverData.annual_yyyy !== currentBuddhistYear &&
+                    driverData.annual_yyyy !== 0) ||
+                    (!driverData &&
+                      requestData?.annual_yyyy !== currentBuddhistYear &&
+                      requestData?.annual_yyyy !== 0)) && (
+                    <div>
+                      {driverData
+                        ? driverData.annual_yyyy
+                        : requestData?.annual_yyyy}
+                    </div>
+                  )}
                 </div>
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
@@ -317,25 +335,24 @@ const RequestDrivingStepTwoModal = forwardRef<
                       Step 2: ผู้อนุมัติ
                     </p>
 
-                    {approvers?.emp_id !== finalApprovers?.emp_id && (
+                    {profile?.is_level_m5 === "0" && (
                       <div className="form-section">
                         <div className="form-section-header">
                           <div className="form-section-header-title">
                             ผู้อนุมัติต้นสังกัด
                           </div>
-                          {editable && (
-                            <button
-                              className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                modalRef.current?.close();
-                                editApproverModalRef.current?.openModal();
-                              }}
-                            >
-                              แก้ไข
-                            </button>
-                          )}
+
+                          <button
+                            className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              modalRef.current?.close();
+                              editApproverModalRef.current?.openModal();
+                            }}
+                          >
+                            แก้ไข
+                          </button>
                         </div>
                         <ApproverInfoCard
                           user={{
@@ -343,6 +360,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                             full_name: approvers?.full_name || "",
                             emp_id: approvers?.emp_id || "",
                             dept_sap_short: approvers?.dept_sap_short || "",
+                            posi_text: approvers?.posi_text || "",
                             tel_mobile: approvers?.tel_mobile || "",
                             tel_internal: approvers?.tel_internal || "",
                           }}
@@ -355,19 +373,20 @@ const RequestDrivingStepTwoModal = forwardRef<
                         <div className="form-section-header-title">
                           ผู้อนุมัติให้ทำหน้าที่ขับรถยนต์
                         </div>
-                        {editable && (
-                          <button
-                            className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              modalRef.current?.close();
-                              editFinalApproverModalRef.current?.openModal();
-                            }}
-                          >
-                            แก้ไข
-                          </button>
-                        )}
+
+                        <button
+                          className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+
+                            console.log("Request Data:", requestData);
+                            modalRef.current?.close();
+                            editFinalApproverModalRef.current?.openModal();
+                          }}
+                        >
+                          แก้ไข
+                        </button>
                       </div>
                       <ApproverInfoCard
                         user={{
@@ -375,13 +394,15 @@ const RequestDrivingStepTwoModal = forwardRef<
                           full_name: finalApprovers?.full_name || "",
                           emp_id: finalApprovers?.emp_id || "",
                           dept_sap_short: finalApprovers?.dept_sap_short || "",
+                          posi_text: finalApprovers?.posi_text || "",
                           tel_mobile: finalApprovers?.tel_mobile || "",
                           tel_internal: finalApprovers?.tel_internal || "",
                         }}
                       />
                     </div>
                     <div className="text-left mt-5">
-                      การกดปุ่ม "ขออนุมัติ" จะถือว่าท่านรับรองว่ามีคุณสมบัติถูกต้อง
+                      การกดปุ่ม "ขออนุมัติ"
+                      จะถือว่าท่านรับรองว่ามีคุณสมบัติถูกต้อง
                       <br />
                       <a
                         href="/assets/อนุมัติให้พนักงานขับขี่รถยนต์ กฟภ. โดยใช้.pdf"
@@ -389,8 +410,8 @@ const RequestDrivingStepTwoModal = forwardRef<
                         rel="noopener noreferrer"
                         className="text-[#444CE7] underline"
                       >
-                        ตามอนุมัติ ผวก. ลว. 16 ก.พ. 2541 เรื่อง ให้พนักงานของ กฟภ.
-                        ขับรถยนต์ที่ใช้ใบอนุญาตขับขี่ส่วนบุคคล
+                        ตามอนุมัติ ผวก. ลว. 16 ก.พ. 2541 เรื่อง ให้พนักงานของ
+                        กฟภ. ขับรถยนต์ที่ใช้ใบอนุญาตขับขี่ส่วนบุคคล
                       </a>
                     </div>
                   </>
@@ -433,6 +454,7 @@ const RequestDrivingStepTwoModal = forwardRef<
         <EditApproverModal
           ref={editApproverModalRef}
           requestData={requestData}
+          approvers={approvers}
           title={"แก้ไขผู้อนุมัติต้นสังกัด"}
           onUpdate={handleApproverUpdate}
           onBack={() => {
@@ -444,6 +466,7 @@ const RequestDrivingStepTwoModal = forwardRef<
         <EditFinalApproverModal
           ref={editFinalApproverModalRef}
           requestData={requestData}
+          finalApprovers={finalApprovers}
           title={"แก้ไขผู้อนุมัติให้ทำหน้าที่ขับรถยนต์"}
           onUpdate={handleFinalApproverUpdate}
           onBack={() => {

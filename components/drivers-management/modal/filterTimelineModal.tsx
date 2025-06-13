@@ -4,11 +4,13 @@ import {
   VehicleTypeApiResponse,
 } from "@/app/types/vehicle-management/vehicle-list-type";
 import BadgeStatus from "@/components/carpool-management/modal/status";
+import VehicleStatus from "@/components/vehicle-management/vehicle-status-without-icon";
 import { driverStatusRef } from "@/services/driversManagement";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 type Props = {
+  defaultVehicleBookingStatus?: string[];
   flag: string;
   onSubmitFilter?: (params: VehicleInputParams) => void;
 };
@@ -37,6 +39,7 @@ interface DriverStatus {
 }
 
 export interface VehicleStatusProps {
+  defaultBookingStatus: string[];
   vehicleDepartments: VehicleDepartmentApiResponse[];
   fuelTypes: FuelTypeApiResponse[];
   vehicleTypes: VehicleTypeApiResponse[];
@@ -52,6 +55,10 @@ export interface VehicleStatusProps {
     ref_request_status_name: string;
     ref_request_status_code: string;
   }[];
+  timelineStatus: {
+    ref_request_status_name: string;
+    ref_request_status_code: string;
+  }[];
 }
 
 export interface VehicleInputParams {
@@ -61,7 +68,15 @@ export interface VehicleInputParams {
   taxVehicle: string[];
   vehicleStatus: string[];
   driverWorkType: string[];
+  vehicleBookingStatus: string[];
 }
+
+const VEHICLE_BOOKING_STATUS = [
+  { id: "1", name: "รออนุมัติ" },
+  { id: "2", name: "ไป - กลับ" },
+  { id: "3", name: "ค้างแรม" },
+  { id: "4", name: "เสร็จสิ้น" },
+];
 
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
   <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
@@ -88,6 +103,7 @@ const ModalBody = ({
   driverStatus,
   statusDriver,
   driverWorkType,
+  defaultBookingStatus,
 }: VehicleStatusProps) => {
   const [formData, setFormData] = useState<VehicleInputParams>(params);
 
@@ -99,6 +115,15 @@ const ModalBody = ({
     setParams(formData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
+
+  useEffect(() => {
+    if (defaultBookingStatus.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        vehicleBookingStatus: defaultBookingStatus,
+      }));
+    }
+  }, [defaultBookingStatus]);
 
   const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
     setFormData((prev) => {
@@ -167,26 +192,42 @@ const ModalBody = ({
           <span className="text-base font-semibold">สถานะการปฏิบัติงาน</span>
           <div className="flex flex-col gap-2 mt-2">
             {driverStatus.map((status, index) => (
-              <div className="form-group" key={index}>
-                <div className="custom-group">
-                  <div className="custom-control custom-checkbox custom-control-inline">
-                    <input
-                      type="checkbox"
-                      // defaultChecked
-                      id={`option3-${index}`}
-                      checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
-                      onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}
-                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
-                    />
-                    <label className="custom-control-label" htmlFor={`option3-${index}`}>
-                      <div className="custom-control-label-group">
-                        <BadgeStatus status={status.ref_driver_status_desc} />
-                      </div>
-                    </label>
-                  </div>
-                </div>
+              <div key={index} className="flex items-center gap-2">
+                <label htmlFor={`option3-${index}`} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    // defaultChecked
+                    id={`option3-${index}`}
+                    checked={formData.vehicleStatus.includes(status.ref_driver_status_code)}
+                    onChange={() => handleCheckboxToggle("vehicleStatus", status.ref_driver_status_code)}
+                    className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                  />
+                  <BadgeStatus status={status.ref_driver_status_desc} />
+                </label>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="col-span-12">
+          <div className="form-group">
+            <span>สถานะ</span>
+            <div className="flex flex-col gap-2 mt-2">
+              {VEHICLE_BOOKING_STATUS.map((status, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      id={`status-${index}`}
+                      className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
+                      checked={formData.vehicleBookingStatus.includes(status.id)}
+                      onChange={() => handleCheckboxToggle("vehicleBookingStatus", status.id)}
+                    />
+                    <VehicleStatus status={status.name} />
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -223,7 +264,7 @@ const ModalFooter = ({
   );
 };
 
-const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag }, ref) => {
+const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag, defaultVehicleBookingStatus }, ref) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
 
@@ -239,6 +280,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     taxVehicle: [],
     vehicleStatus: [],
     driverWorkType: [],
+    vehicleBookingStatus: defaultVehicleBookingStatus ?? [],
   });
   const [fuelType, setFuelType] = useState<FuelTypeApiResponse[]>([]);
   const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentApiResponse[]>([]);
@@ -257,6 +299,12 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
     { ref_request_status_name: "ได้", ref_request_status_code: "1" },
     { ref_request_status_name: "ไม่ได้", ref_request_status_code: "2" },
   ];
+  const timelineStatus = [
+    { ref_request_status_name: "รออนุมัติ", ref_request_status_code: "1" },
+    { ref_request_status_name: "ไป - กลับ", ref_request_status_code: "2" },
+    { ref_request_status_name: "ค้างแรม", ref_request_status_code: "3" },
+    { ref_request_status_name: "เสร็จสิ้น", ref_request_status_code: "4" },
+  ];
 
   const handleSubmitFilter = () => {
     console.log("submit filter", params);
@@ -273,6 +321,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
       taxVehicle: [],
       vehicleStatus: [],
       driverWorkType: [],
+      vehicleBookingStatus: [],
     });
   };
   const handleCancelFilter = () => {
@@ -327,6 +376,8 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag },
             driverStatus={driverStatus}
             statusDriver={statusDriver}
             driverWorkType={driverWorkType}
+            timelineStatus={timelineStatus}
+            defaultBookingStatus={defaultVehicleBookingStatus ?? []}
           />
         </div>
 

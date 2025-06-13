@@ -9,9 +9,10 @@ import TravelInfoTab from "../travelInfoTab";
 import ReturnCarTab from "@/components/admin/returnCarTab";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { fetchRequestAdminKeyDetail, fetchRequestKeyDetail } from "@/services/masterService";
+import { fetchRequestAdminKeyDetail } from "@/services/masterService";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import AdminRecordFuelTab from "@/components/admin/tabs/adminRecordFuelTab";
+import { useCallback } from "react"; // Add useCallback
 
 interface Props {
   requestId: string;
@@ -45,6 +46,11 @@ export default function RequestDetailTabs({
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prev) => ({ ...prev, limit, page: 1 }));
   };
+
+const reloadRequestData = async () => {
+  const latest = await fetchRequestAdminKeyDetail(requestId); // <--- must hit your API!
+  setRequestData(latest.data);
+};
 
   useEffect(() => {
     if (requestId) {
@@ -127,6 +133,7 @@ export default function RequestDetailTabs({
                   displayOn="adminTab"
                   useBy="admin"
                   requestData={requestData}
+                  reloadRequestData={reloadRequestData}
                 />
               ),
               badge: "",
@@ -159,6 +166,7 @@ export default function RequestDetailTabs({
     displayReturnVehicle,
     dataRequest,
     pagination,
+    reloadRequestData
   ]);
 
   const [activeTab, setActiveTab] = useState(0);
@@ -174,7 +182,7 @@ export default function RequestDetailTabs({
 
   return (
     <div className="w-full">
-      <div className="flex border-b tablist z-[] w-[100vw] max-w-[100vw] overflow-auto sticky top-[200px] bg-white">
+      <div className="flex border-b tablist w-[100vw] max-w-[100vw] overflow-auto bg-white">
         {tabs.map((tab, index) => (
           <button
             key={index}

@@ -17,10 +17,12 @@ import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import { RequestAnnualDriver } from "@/app/types/driver-lic-list-type";
 import { fetchUserApprovalLic } from "@/services/masterService";
 import { updateAnnualApprover } from "@/services/driver";
+import { fi } from "date-fns/locale";
 
 interface EditApproverModalProps {
   title: string;
   requestData?: RequestAnnualDriver;
+  finalApprovers?: VehicleUserType;
   onUpdate?: (data: VehicleUserType) => void;
   onSubmitForm?: () => void;
   onBack?: () => void;
@@ -34,7 +36,7 @@ const schema = yup.object().shape({
 const EditFinalApproverModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   EditApproverModalProps
->(({ title, requestData, onSubmitForm, onUpdate, onBack }, ref) => {
+>(({ title, requestData, finalApprovers, onSubmitForm, onUpdate, onBack }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [driverOptions, setDriverOptions] = useState<CustomSelectOption[]>([]);
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] =
@@ -71,11 +73,17 @@ const EditFinalApproverModal = forwardRef<
     }
   };
 
+  useEffect(() => {
+    if (requestData) { 
+      console.log("Request data received:", requestData);
+    }},[requestData]);
+
   const fetchVehicleUserData = async () => {
+    console.log("Fetching vehicle user data...",requestData);
     setIsLoading(true);
     try {
       const response = await fetchUserApprovalLic(
-        requestData?.created_request_emp_id
+        requestData?.created_request_emp_id || finalApprovers?.emp_id || ""
       );
 
       if (response) {
@@ -98,9 +106,9 @@ const EditFinalApproverModal = forwardRef<
         setDriverOptions(driverOptionsArray);
 
         // Set default approver if requestData has approved_request_emp_id
-        if (requestData?.approved_request_emp_id) {
+        if (requestData?.approved_request_emp_id || finalApprovers?.emp_id) {
           const defaultApprover = driverOptionsArray.find(
-            (opt) => opt.value === requestData.approved_request_emp_id
+            (opt) => opt.value === (requestData?.approved_request_emp_id || finalApprovers?.emp_id)
           );
 
           if (defaultApprover) {

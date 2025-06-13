@@ -1,13 +1,15 @@
 "use client";
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { fetchVehicleCarTypes, fetchVehicles } from "@/services/masterService";
+import {
+  fetchSearchVehicleCarpools,
+  fetchVehicleCarTypes,
+} from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import SelectCarCard from "@/components/admin/cards/selectCarCard";
 import VehicleDetailModel from "@/components/modal/admin/vehicleDetailModal";
@@ -18,8 +20,6 @@ import {
   RequestDetailType,
   RequestVehicleType,
 } from "@/app/types/request-detail-type";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
-import dayjs from "dayjs";
 
 interface Vehicle {
   mas_vehicle_uid: string;
@@ -30,11 +30,18 @@ interface Vehicle {
   vehicle_owner_dept_sap: string;
   vehicle_img: string;
   seat: number;
+  vehicle_pea_id?: string;
   is_admin_choose_vehicle?: boolean;
+  vehicle_owner_dept_short?: string;
+  vehicle_license_plate_province_full?: string;
+  last_month_mileage?: number;
+  vehicle_mileage?: number;
 }
 
 interface Props {
   reqId?: string;
+  selectType?: string;
+  desc?: string;
   vehicleType?: RequestVehicleType;
   typeName?: string;
   requestData?: RequestDetailType;
@@ -49,11 +56,13 @@ const AdminVehiclePickModal = forwardRef<
 >(
   (
     {
+      desc,
       onSelect,
       onUpdate,
       vehicleType,
       reqId,
       onClickDetail,
+      selectType,
       typeName,
       requestData,
     },
@@ -61,6 +70,7 @@ const AdminVehiclePickModal = forwardRef<
   ) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const hasReset = useRef(false);
+    const [loading, setLoading] = useState(false);
 
     const vehicleDetailModalRef = useRef<{
       openModal: () => void;
@@ -70,6 +80,8 @@ const AdminVehiclePickModal = forwardRef<
     useImperativeHandle(ref, () => ({
       openModal: () => {
         hasReset.current = false;
+        setLoading(true);
+        fetchVehicleData();
         fetchVehicleCarTypesData();
         modalRef.current?.showModal();
       },
@@ -78,7 +90,11 @@ const AdminVehiclePickModal = forwardRef<
 
     const [params, setParams] = useState({
       search: "",
-      category_code: "",
+      emp_id: "",
+      start_date: "",
+      end_date: "",
+      mas_carpool_uid: "",
+      car_type: "",
     });
 
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -86,6 +102,7 @@ const AdminVehiclePickModal = forwardRef<
     const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(
       null
     );
+    const [fetchFinished, setFetchFinished] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentSlide, setCurrentSlide] = useState(0);
     const [selectedVehicleIdForDetail, setSelectedVehicleIdForDetail] =
@@ -97,8 +114,19 @@ const AdminVehiclePickModal = forwardRef<
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchTerm(value);
-      const filtered = vehicles.filter((vehicle: Vehicle) =>
-        vehicle.vehicle_model_name.includes(value)
+
+      const filtered = vehicles.filter(
+        (vehicle: Vehicle) =>
+          vehicle.vehicle_license_plate
+            ?.toLowerCase()
+            .includes(value.toLowerCase()) ||
+          vehicle.vehicle_brand_name
+            ?.toLowerCase()
+            .includes(value.toLowerCase()) ||
+          vehicle.vehicle_model_name
+            ?.toLowerCase()
+            .includes(value.toLowerCase()) ||
+          vehicle.vehicle_pea_id?.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredVehicles(filtered);
     };
@@ -131,10 +159,17 @@ const AdminVehiclePickModal = forwardRef<
       };
 
       try {
-        await adminUpdateVehicle(payload);
-        // if (response) {
-        //   modalRef.current?.close();
-        // }
+        const response = await adminUpdateVehicle(payload);
+
+        if (response) {
+          console.log("test====>");
+          if (onUpdate) {
+            console.log("test====>");
+            onUpdate(response.data);
+          }
+
+          modalRef.current?.close();
+        }
       } catch (error) {
         console.error("Network error:", error);
       }
@@ -145,46 +180,82 @@ const AdminVehiclePickModal = forwardRef<
       label: string;
     }) => {
       setSelectedVehicleOption(selectedOption);
-      console.log("option", selectedOption);
-      setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
+      const newParams = { ...params, car_type: selectedOption.value };
+      setParams(newParams);
+
+      setLoading(true);
+      setFetchFinished(false);
+      try {
+        const response = await fetchSearchVehicleCarpools(newParams);
+        if (response.status === 200) {
+          setVehicles(response.data.vehicles);
+          setFilteredVehicles(response.data.vehicles);
+          setCurrentSlide(0);
+        } else {
+          setVehicles([]);
+          setFilteredVehicles([]);
+        }
+      } catch (error) {
+        setVehicles([]);
+        setFilteredVehicles([]);
+        console.error("Search failed:", error);
+      } finally {
+        setLoading(false);
+        setFetchFinished(true);
+      }
     };
 
     const handleClearAllFilters = () => {
       setParams({
         search: "",
-        category_code: "",
+        emp_id: "",
+        start_date: "",
+        end_date: "",
+        mas_carpool_uid: "",
+        car_type: "",
       });
     };
 
-    useEffect(() => {
-      const fetchVehicleData = async () => {
-        try {
-          const response = await fetchVehicles(params);
-          if (response.status === 200) {
-            setVehicles(response.data.vehicles);
-            setFilteredVehicles(response.data.vehicles);
+    const fetchVehicleData = async () => {
+      setLoading(true);
+      setFetchFinished(false);
 
-            hasReset.current = true;
-          }
-        } catch (error) {
-          console.error("Error fetching requests:", error);
-        }
+      // Build params locally
+      const newParams = {
+        search: "",
+        emp_id: requestData?.vehicle_user_emp_id || "",
+        start_date: requestData?.start_datetime || "",
+        end_date: requestData?.end_datetime || "",
+        mas_carpool_uid: requestData?.mas_carpool_uid || "",
+        car_type: requestData?.requested_vehicle_type || "",
       };
-      fetchVehicleData();
-    }, [params]);
+      setParams(newParams);
+
+      try {
+        const response = await fetchSearchVehicleCarpools(newParams); // use newParams directly
+        if (response.status === 200) {
+          setVehicles(response.data.vehicles);
+
+          setFilteredVehicles(response.data.vehicles);
+          console.log("vehicle", response.data.vehicles);
+          hasReset.current = true;
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false);
+        setFetchFinished(true);
+      }
+    };
 
     const fetchVehicleCarTypesData = async () => {
       const vehicleParams = {
         emp_id: requestData?.vehicle_user_emp_id,
-        start_date: `${dayjs(requestData?.start_datetime).format(
-          "YYYY-MM-DD"
-        )} ${
-          convertToBuddhistDateTime(requestData?.start_datetime || "").time
-        }`,
-        end_date: `${dayjs(requestData?.end_datetime).format("YYYY-MM-DD")} ${
-          convertToBuddhistDateTime(requestData?.end_datetime || "").time
-        }`,
+        start_date: requestData?.start_datetime,
+        end_date: requestData?.end_datetime,
+        mas_carpool_uid: requestData?.mas_carpool_uid,
       };
+      console.log("vehicle", vehicleParams);
       try {
         const response = await fetchVehicleCarTypes(vehicleParams);
 
@@ -193,15 +264,10 @@ const AdminVehiclePickModal = forwardRef<
 
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
-            ...vehicleCatData.map(
-              (cat: {
-                ref_vehicle_type_code: string;
-                ref_vehicle_type_name: string;
-              }) => ({
-                value: cat.ref_vehicle_type_code,
-                label: cat.ref_vehicle_type_name,
-              })
-            ),
+            ...vehicleCatData.map((cat: { ref_vehicle_type_name: string }) => ({
+              value: cat.ref_vehicle_type_name,
+              label: cat.ref_vehicle_type_name,
+            })),
           ];
 
           setVehicleCatOptions(vehicleCatArr);
@@ -232,146 +298,163 @@ const AdminVehiclePickModal = forwardRef<
           </div>
 
           <div className="modal-body overflow-y-auto">
-            <div className="page-section-header border-0">
-              <div className="page-header-left">
-                <div className="page-title">
-                  <span className="page-title-label">เลือกยานพาหนะ</span>
-                  <span className="badge badge-outline badge-gray page-title-status">
-                    ว่าง {filteredVehicles.length} คัน
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="flex justify-between items-top w-full">
-                <div className="input-group input-group-search hidden mb-5 w-[20em]">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text search-ico-info">
-                      <i className="material-symbols-outlined">search</i>
-                    </span>
-                  </div>
-
-                  <input
-                    type="text"
-                    id="myInputTextField"
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    className="form-control dt-search-input"
-                    placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ, รหัสข้างรถ"
-                  />
-                </div>
-                <CustomSelectBadge
-                  w="md:w-[17rem]"
-                  vehicleType={typeName}
-                  options={vehicleCatOptions}
-                  value={selectedVehicleOption}
-                  onChange={handleVehicleTypeChange}
-                />
-              </div>
-
-              {filteredVehicles.length > 0 && (
-                <div className="relative w-full">
-                  <div className="relative">
-                    {/* Left Arrow */}
-                    <button
-                      className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-1 shadow-sm transition disabled:opacity-50 disabled:bg-surface-disabled select-none"
-                      style={{ width: "40px", height: "40px" }}
-                      onClick={() =>
-                        setCurrentSlide((prev) => Math.max(prev - 1, 0))
-                      }
-                      disabled={currentSlide === 0}
-                    >
-                      <i className="material-symbols-outlined text-lg">
-                        keyboard_arrow_left
-                      </i>
-                    </button>
-
-                    {/* Right Arrow */}
-                    <button
-                      className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-1 shadow-sm transition disabled:opacity-50 disabled:bg-surface-disabled select-none"
-                      style={{ width: "40px", height: "40px" }}
-                      onClick={() =>
-                        setCurrentSlide((prev) =>
-                          Math.min(prev + 1, groupedVehicles.length - 1)
-                        )
-                      }
-                      disabled={currentSlide === groupedVehicles.length - 1}
-                    >
-                      <i className="material-symbols-outlined text-lg">
-                        keyboard_arrow_right
-                      </i>
-                    </button>
-
-                    <div className="px-20">
-                      <div className="grid grid-cols-3 gap-4">
-                        {groupedVehicles[currentSlide]?.map(
-                          (vehicle, index) => (
-                            <div key={index} className="h-full">
-                              <SelectCarCard
-                                key={vehicle.mas_vehicle_uid}
-                                vehicleId={vehicle.mas_vehicle_uid}
-                                imgSrc={
-                                  vehicle.vehicle_img ||
-                                  "/assets/img/sample-car.jpeg"
-                                }
-                                title={
-                                  vehicle.vehicle_brand_name +
-                                  vehicle.vehicle_model_name
-                                }
-                                subTitle={vehicle.vehicle_license_plate}
-                                carType={vehicle.car_type}
-                                deptSap={vehicle.vehicle_owner_dept_sap}
-                                seat={vehicle.seat}
-                                isSelected={
-                                  selectedVehicleId === vehicle.mas_vehicle_uid
-                                }
-                                onSelect={() =>
-                                  handleVehicleSelect(vehicle.mas_vehicle_uid)
-                                }
-                                onClickSeeDetail={() =>
-                                  handleSeeDetail(vehicle.mas_vehicle_uid)
-                                }
-                              />
-                            </div>
-                          )
-                        )}
-                      </div>
+            {loading ? (
+              <div className="flex justify-center items-center h-64"></div>
+            ) : (
+              <>
+                <div className="page-section-header border-0">
+                  <div className="page-header-left">
+                    <div className="page-title">
+                      <span className="page-title-label">เลือกยานพาหนะ</span>
+                      <span className="badge badge-outline badge-gray page-title-status">
+                        ว่าง {filteredVehicles.length} คัน
+                      </span>
                     </div>
                   </div>
-
-                  <VehicleDetailModel
-                    reqId={reqId}
-                    ref={vehicleDetailModalRef}
-                    vehicleId={selectedVehicleIdForDetail}
-                    onBack={() => modalRef.current?.showModal()}
-                  />
-
-                  <div className="indicator-daisy flex justify-center mt-4 gap-2">
-                    {groupedVehicles.map((_, idx) => (
-                      <button
-                        key={idx}
-                        className={`btn btn-xs !rounded-full focus:outline-none border-0 !min-h-2 !min-w-2 p-0 size-2 overflow-hidden ${
-                          idx === currentSlide ? "active" : ""
-                        }`}
-                        onClick={() => setCurrentSlide(idx)}
-                      ></button>
-                    ))}
-                  </div>
                 </div>
-              )}
+                <div className="form-group">
+                  <div className="flex justify-between items-top w-full">
+                    <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text search-ico-info">
+                          <i className="material-symbols-outlined">search</i>
+                        </span>
+                      </div>
 
-              {vehicles.length <= 0 && (
-                <ZeroRecord
-                  imgSrc="/assets/img/empty/search_not_found.png"
-                  title="ไม่พบข้อมูล"
-                  desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-                  button="ล้างตัวกรอง"
-                  displayBtn={true}
-                  btnType="secondary"
-                  useModal={handleClearAllFilters}
-                />
-              )}
-            </div>
+                      <input
+                        type="text"
+                        id="myInputTextField"
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        className="form-control dt-search-input"
+                        placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ, รหัสข้างรถ"
+                      />
+                    </div>
+                    <CustomSelectBadge
+                      w="md:w-[17rem]"
+                      vehicleType={typeName}
+                      options={vehicleCatOptions}
+                      value={selectedVehicleOption}
+                      onChange={handleVehicleTypeChange}
+                    />
+                  </div>
+
+                  {filteredVehicles.length > 0 && (
+                    <div className="relative w-full">
+                      <div className="relative">
+                        {/* Left Arrow */}
+                        <button
+                          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-1 shadow-sm transition disabled:opacity-50 disabled:bg-surface-disabled select-none"
+                          style={{ width: "40px", height: "40px" }}
+                          onClick={() =>
+                            setCurrentSlide((prev) => Math.max(prev - 1, 0))
+                          }
+                          disabled={currentSlide === 0}
+                        >
+                          <i className="material-symbols-outlined text-lg">
+                            keyboard_arrow_left
+                          </i>
+                        </button>
+
+                        {/* Right Arrow */}
+                        <button
+                          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-1 shadow-sm transition disabled:opacity-50 disabled:bg-surface-disabled select-none"
+                          style={{ width: "40px", height: "40px" }}
+                          onClick={() =>
+                            setCurrentSlide((prev) =>
+                              Math.min(prev + 1, groupedVehicles.length - 1)
+                            )
+                          }
+                          disabled={currentSlide === groupedVehicles.length - 1}
+                        >
+                          <i className="material-symbols-outlined text-lg">
+                            keyboard_arrow_right
+                          </i>
+                        </button>
+
+                        <div className="px-20">
+                          <div className="grid grid-cols-3 gap-4">
+                            {groupedVehicles[currentSlide]?.map(
+                              (vehicle, index) => (
+                                <div key={index} className="h-full">
+                                  <SelectCarCard
+                                    key={vehicle.mas_vehicle_uid}
+                                    vehicleId={vehicle.mas_vehicle_uid}
+                                    imgSrc={
+                                      vehicle.vehicle_img ||
+                                      "/assets/img/sample-car.jpeg"
+                                    }
+                                    title={
+                                      vehicle.vehicle_brand_name +
+                                      vehicle.vehicle_model_name
+                                    }
+                                    subTitle={
+                                      vehicle.vehicle_license_plate +
+                                      " " +
+                                      vehicle.vehicle_license_plate_province_full
+                                    }
+                                    carType={vehicle.car_type}
+                                    deptSap={vehicle.vehicle_owner_dept_short}
+                                    seat={vehicle.seat}
+                                    lastMonthMile={vehicle.last_month_mileage}
+                                    monthMile={vehicle.vehicle_mileage}
+                                    isSelected={
+                                      selectedVehicleId ===
+                                      vehicle.mas_vehicle_uid
+                                    }
+                                    onSelect={() =>
+                                      handleVehicleSelect(
+                                        vehicle.mas_vehicle_uid
+                                      )
+                                    }
+                                    onClickSeeDetail={() =>
+                                      handleSeeDetail(vehicle.mas_vehicle_uid)
+                                    }
+                                  />
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <VehicleDetailModel
+                        reqId={reqId}
+                        ref={vehicleDetailModalRef}
+                        vehicleId={selectedVehicleIdForDetail}
+                        onBack={() => modalRef.current?.showModal()}
+                      />
+
+                      <div className="indicator-daisy flex justify-center mt-4 gap-2">
+                        {groupedVehicles.map((_, idx) => (
+                          <button
+                            key={idx}
+                            className={`btn btn-xs !rounded-full focus:outline-none border-0 !min-h-2 !min-w-2 p-0 size-2 overflow-hidden ${
+                              idx === currentSlide ? "active" : ""
+                            }`}
+                            onClick={() => setCurrentSlide(idx)}
+                          ></button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {!loading &&
+                    fetchFinished &&
+                    filteredVehicles.length === 0 && (
+                      <ZeroRecord
+                        imgSrc="/assets/img/empty/search_not_found.png"
+                        title="ไม่พบข้อมูล"
+                        desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                        button="ล้างตัวกรอง"
+                        displayBtn={true}
+                        btnType="secondary"
+                        useModal={handleClearAllFilters}
+                      />
+                    )}
+                </div>
+              </>
+            )}
           </div>
         </div>
 

@@ -60,11 +60,11 @@ const DriverLicenseModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10 !border-b-0">
-            <div className="modal-title flex flex-col">
+            <div className="modal-title flex flex-col !items-start text-left">
               {" "}
               ใบอนุญาตทำหน้าที่ขับรถยนต์{" "}
               <span className="text-base text-color-secondary font-normal">
-                ประจำปี {requestData?.annual_yyyy}
+                ประจำปี { requestData?.annual_yyyy}
               </span>{" "}
             </div>
 
@@ -126,7 +126,7 @@ const DriverLicenseModal = forwardRef<
                   <div className="form-section">
                     <div className="form-card bg-[#EAECF0] rounded-md backdrop-blur-md shadow-[0px_0px_7px_0px_#63636340_inset]">
                       <div className="form-card-body">
-                        {profile?.license_status !== "ไม่มี" ? (
+                        {profile?.license_status_code !== "40" ? (
                           <div className="grid grid-cols-12 gap-y-3">
                             <div className="col-span-12">
                               <div className="form-group form-plaintext">

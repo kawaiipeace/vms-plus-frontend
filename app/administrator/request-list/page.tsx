@@ -15,6 +15,7 @@ function RequestListContent() {
   const cancelReq = searchParams.get("cancel-req");
   const returned = searchParams.get("returned");
   const approveReq = searchParams.get("approve-req");
+    const verifyReq = searchParams.get("verify-req");
   const keychangeReq = searchParams.get("keychange-req");
   const requestId = searchParams.get("request-id");
 
@@ -28,6 +29,20 @@ function RequestListContent() {
               คำขอใช้ยานพาหนะเลขที่ {requestId}
               <br />
               ถูกตีกลับเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
+        {verifyReq === "success" && (
+        <ToastCustom
+          title="ตรวจสอบคำขอสำเร็จ"
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่  {requestId}
+              <br />
+              ผ่านการตรวจสอบแล้ว
             </>
           }
           status="success"

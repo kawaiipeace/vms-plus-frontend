@@ -140,7 +140,7 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
                     </div>
                     <div className="modal-inner-subtitle">
                       {vehicleDetail?.vehicle_license_plate?.trim()}{" "}
-                      {vehicleDetail?.vehicle_license_plate_province_full}
+                      {vehicleDetail?.vehicle_license_plate_province_short}
                     </div>
                     <div className="supporting-text-group">
                       <div className="supporting-text">

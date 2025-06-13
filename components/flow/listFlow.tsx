@@ -86,7 +86,7 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitForKeyCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -110,7 +110,7 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitForVehicleCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -134,7 +134,7 @@ export default function ListFlow({ requestData }: Props) {
             <MobileTravelLogCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -159,7 +159,7 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitVerifyCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -176,7 +176,7 @@ export default function ListFlow({ requestData }: Props) {
               title="ตีกลับยานพาหนะ"
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -194,7 +194,7 @@ export default function ListFlow({ requestData }: Props) {
               title="คืนยานพาหนะไม่สำเร็จ"
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -211,7 +211,7 @@ export default function ListFlow({ requestData }: Props) {
             <MobileDriverCard
               key={request.trn_request_uid || index}
               title={"เสร็จสิ้น"}
-              carRegis={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_full}
+              carRegis={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
               location={request?.work_place || ""}
               date={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +

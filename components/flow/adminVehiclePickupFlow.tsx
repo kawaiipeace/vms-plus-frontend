@@ -42,6 +42,7 @@ export default function AdminVehiclePickupFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -55,14 +56,16 @@ export default function AdminVehiclePickupFlow() {
     }));
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
-    "51": { iconName: "directions_car", status: "warning" },
-    "60": { iconName: "travel_luggage_and_bags", status: "info" },
-    "60e": { iconName: "car_crash", status: "error" },
-  };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "51": { iconName: "directions_car", status: "warning" },
+      "60": { iconName: "travel_luggage_and_bags", status: "info" },
+      "60e": { iconName: "car_crash", status: "error" },
+    };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -83,7 +86,9 @@ export default function AdminVehiclePickupFlow() {
     department?: string;
   }) => {
     const mappedNames = selectedStatuses.map(
-      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
+      (code) =>
+        summary.find((item) => item.ref_request_status_code === code)
+          ?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
@@ -99,20 +104,30 @@ export default function AdminVehiclePickupFlow() {
       ...prevParams,
       ref_request_status_code: selectedStatuses.join(","),
       vehicle_owner_dept_sap: department || "",
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      startdate:
+        selectedStartDate &&
+        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate:
+        selectedEndDate &&
+        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
     }));
   };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
+      setFilterNames((prevFilterNames) =>
+        prevFilterNames.filter((name) => name !== filterValue)
+      );
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
-          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
-          return name !== filterValue;
-        });
+        const updatedStatuses = prevParams.ref_request_status_code
+          .split(",")
+          .filter((code) => {
+            const name = summary.find(
+              (item) => item.ref_request_status_code === code
+            )?.ref_request_status_name;
+            return name !== filterValue;
+          });
 
         setFilterNum(updatedStatuses.length);
 
@@ -173,6 +188,8 @@ export default function AdminVehiclePickupFlow() {
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false); // <-- End loading after fetch
       }
     };
 
@@ -183,20 +200,34 @@ export default function AdminVehiclePickupFlow() {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]);
 
+  if (loading) {
+    return <div className="mt-0 pt-0"></div>;
+  }
+
   return (
     <>
-      <div className="md:hidden block">
+      <div className="md:hidden block transition-opacity duration-500">
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
-              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -206,18 +237,28 @@ export default function AdminVehiclePickupFlow() {
         </div>
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:block transition-opacity duration-500">
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
-              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
                   title={item.ref_request_status_name}
                   number={item.count}
                   onClick={() => {
@@ -229,7 +270,10 @@ export default function AdminVehiclePickupFlow() {
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
 
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
@@ -276,7 +320,9 @@ export default function AdminVehiclePickupFlow() {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {filterNum}
+              </span>
             </div>
           </button>
         </div>
@@ -284,9 +330,15 @@ export default function AdminVehiclePickupFlow() {
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
+          <span
+            key={index}
+            className="badge badge-brand badge-outline rounded-sm mr-2"
+          >
             {name}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("status", name)}
+            >
               close_small
             </i>
           </span>
@@ -294,7 +346,10 @@ export default function AdminVehiclePickupFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("date", filterDate)}
+            >
               close_small
             </i>
           </span>
@@ -318,10 +373,13 @@ export default function AdminVehiclePickupFlow() {
       ) : (
         <>
           {" "}
-          {dataRequest?.length > 0 ? (
+          {dataRequest?.length > 0 && (
             <>
               <div className="mt-2">
-                <AdminVehiclePickupTable defaultData={dataRequest} pagination={pagination} />
+                <AdminVehiclePickupTable
+                  defaultData={dataRequest}
+                  pagination={pagination}
+                />
               </div>
 
               <PaginationControls
@@ -330,10 +388,9 @@ export default function AdminVehiclePickupFlow() {
                 onPageSizeChange={handlePageSizeChange}
               />
             </>
-          ) : (
-            filterNum > 0 ||
-            filterDate ||
-            (filterDate?.length <= 0 && (
+          )}
+          {pagination.total > 0 ? (
+            dataRequest.length <= 0 && (
               <ZeroRecord
                 imgSrc="/assets/img/empty/search_not_found.png"
                 title="ไม่พบข้อมูล"
@@ -343,12 +400,30 @@ export default function AdminVehiclePickupFlow() {
                 btnType="secondary"
                 useModal={handleClearAllFilters}
               />
-            ))
+            )
+          ) : (
+            <ZeroRecord
+              imgSrc="/assets/img/graphic/empty.svg"
+              title="ไม่มีคำขอใช้ยานพาหนะ"
+              desc={
+                <>
+                  เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล<br></br>
+                  รายการคำขอจะแสดงที่นี่
+                </>
+              }
+              displayBtn={false}
+              button={""}
+            />
           )}
         </>
       )}
 
-      <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        department={true}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </>
   );
 }

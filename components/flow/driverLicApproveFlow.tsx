@@ -36,11 +36,8 @@ interface ActiveFilter {
 }
 
 
-interface Props {
-  licType: string;
-}
 
-export default function DriverLicApproveFlow({ licType }: Props) {
+export default function DriverLicApproveFlow() {
   const [params, setParams] = useState({
     search: "",
     ref_request_annual_driver_status_code: "",
@@ -75,6 +72,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
     "10": { iconName: "schedule", status: "info" },
     "11": { iconName: "reply", status: "warning" },
     "20": { iconName: "schedule", status: "info" },
+    "21": { iconName: "reply", status: "warning" },
     "30": { iconName: "check", status: "success" },
     "90": { iconName: "delete", status: "default" },
   };
@@ -116,18 +114,16 @@ export default function DriverLicApproveFlow({ licType }: Props) {
           annual_yyyy: params.annual_yyyy ? (parseInt(params.annual_yyyy) - 543).toString() : "",
         };
 
-        let response;
-        if (licType === "ตรวจสอบ") {
-          response = await fetchDriverLicRequests(params);
-        } else {
-          response = await fetchFinalApproverRequests(params);
-        }
+        const response = await fetchFinalApproverRequests(params);
+
 
 
         if (response.status === 200) {
           setDataRequest(response.data.requests);
+          console.log("Fetched requests:", response.data.requests);
 
           setSummary(response.data.summary);
+               console.log("Fetched summary:", response.data.summary);
           setPagination(response.data.pagination);
         }
       } catch (error) {
@@ -271,7 +267,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_annual_driver_status_code];
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
             return (
               <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
@@ -291,7 +287,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_annual_driver_status_code];
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
             return (
               <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
                 <RequestStatusBox
@@ -359,7 +355,7 @@ export default function DriverLicApproveFlow({ licType }: Props) {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <DriverLicApproverListTable defaultData={dataRequest} pagination={pagination} licType={licType} />
+            <DriverLicApproverListTable defaultData={dataRequest} pagination={pagination} />
           </div>
           <PaginationControls
             pagination={pagination}

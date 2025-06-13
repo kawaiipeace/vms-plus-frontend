@@ -1,5 +1,6 @@
 export interface Profile {
   emp_id: string;
+  annual_yyyy: string;
   first_name: string;
   last_name: string;
   internal_number: string;
@@ -12,4 +13,5 @@ export interface Profile {
   position: string;
   image_url: string;
   roles: string[];
+  is_level_m5: string;
 }

@@ -70,22 +70,22 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       },
     });
 
-    useEffect(() => {
-      if (requestData) {
-        reset({
-          startDate: convertToThaiDate(requestData?.start_datetime || "") || "",
-          endDate: convertToThaiDate(requestData?.end_datetime || "") || "",
-          timeStart: convertToBuddhistDateTime(requestData?.start_datetime || "").time || "",
-          timeEnd: convertToBuddhistDateTime(requestData?.end_datetime || "").time || "",
-          workPlace: requestData?.work_place || "",
-          purpose: requestData?.work_description || "",
-          remark: requestData?.remark || "",
-        });
-        setSelectedTripType(String(requestData?.trip_type || "0"));
-        setPassengerCount(requestData?.number_of_passengers || 0);
-        hasReset.current = true;
-      }
-    }, [requestData, reset]);
+  useEffect(() => {
+  if (requestData) {
+    reset({
+      startDate: convertToThaiDate(requestData?.start_datetime || "") || "",
+      endDate: convertToThaiDate(requestData?.end_datetime || "") || "",
+      timeStart: convertToBuddhistDateTime(requestData?.start_datetime || "").time || "",
+      timeEnd: convertToBuddhistDateTime(requestData?.end_datetime || "").time || "",
+      workPlace: requestData?.work_place ?? "",
+      purpose: requestData?.work_description ?? "",
+      remark: requestData?.remark ?? "",
+    });
+    setSelectedTripType(String(requestData?.trip_type ?? "0"));
+    setPassengerCount(requestData?.number_of_passengers ?? 0);
+    hasReset.current = true;
+  }
+}, [requestData, reset]);
 
     const onSubmit = async (data: any) => {
       const payload = {

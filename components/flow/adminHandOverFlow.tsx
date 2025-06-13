@@ -43,6 +43,7 @@ export default function AdminKeyHandOverFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+  const [loading, setLoading] = useState(true); 
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -176,6 +177,8 @@ export default function AdminKeyHandOverFlow() {
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false); // <-- End loading after fetch
       }
     };
 
@@ -193,14 +196,23 @@ export default function AdminKeyHandOverFlow() {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]);
 
+      
+  if (loading) {
+    return (
+       <div className="mt-0 pt-0">
+      </div>
+    );
+  }
+
+
   return (
     <>
-      <div className="md:hidden block">
+      <div className="md:hidden block transition-opacity duration-500">
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
@@ -216,12 +228,12 @@ export default function AdminKeyHandOverFlow() {
         </div>
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:block transition-opacity duration-500">
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">

@@ -37,7 +37,7 @@ export default function LogListTable({ defaultData, pagination }: Props) {
 
   useEffect(() => {
     setReqData(defaultData);
-    console.log("defaultdata", defaultData);
+    console.log("defaultdata==>", defaultData);
   }, [defaultData]);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function LogListTable({ defaultData, pagination }: Props) {
   ];
 
   const table = useReactTable({
-    data: defaultData,
+    data: reqData,
     columns: requestListColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

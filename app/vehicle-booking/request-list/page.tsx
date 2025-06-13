@@ -13,23 +13,23 @@ function RequestListContent() {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-req");
   const cancelReq = searchParams.get("cancel-req");
+  const sendbackagainReq = searchParams.get("sendbackagain-req");
   const requestId = searchParams.get("request-id");
   const receivedKey = searchParams.get("received-key");
   const licensePlate = searchParams.get("license-plate");
   const returned = searchParams.get("returned");
   const requestNo = searchParams.get("request-no");
 
-  const {profile, setProfile, setIsAuthenticated} = useProfile();
+  const { profile, setProfile, setIsAuthenticated } = useProfile();
 
   useEffect(() => {
     if (!profile && localStorage.getItem("accessToken")) {
-      fetchProfile().then(res => {
+      fetchProfile().then((res) => {
         setProfile(res.data);
         setIsAuthenticated(true);
       });
     }
   }, []);
-  
 
   return (
     <>
@@ -42,6 +42,21 @@ function RequestListContent() {
           seeDetailText="ดูสถานะ"
         />
       )}
+
+      {sendbackagainReq === "success" && (
+        <ToastCustom
+          title="ส่งคำขออีกครั้งสำเร็จ"
+          desc={
+            <>
+              คำขอใช้ยานพาหนะเลขที่ {requestId}
+              <br />
+              ส่งคำขออีกครั้งเรียบร้อยแล้ว
+            </>
+          }
+          status="success"
+        />
+      )}
+
       {cancelReq === "success" && (
         <ToastCustom
           title="ยกเลิกคำขอสำเร็จ"
@@ -96,7 +111,11 @@ export default function RequestList() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">

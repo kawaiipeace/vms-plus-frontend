@@ -113,7 +113,7 @@ export default function AdminKeyHandOverListTable({
         <div className="text-left" data-name="ยานพาหนะ">
           <div className="flex flex-col">
             <div className="text-left">
-              {row.original.vehicle_license_plate}
+           {row.original.vehicle_license_plate + " " +row.original.vehicle_license_plate_province_short}
             </div>
             <div className="text-color-secondary text-xs">
               {row.original.ref_vehicle_type_name}

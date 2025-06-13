@@ -14,7 +14,7 @@ import ToastCustom from "../toastCustom";
 interface Props {
   id: string;
   title: string;
-  desc: string;
+  desc: string | React.ReactElement;
   confirmText: string;
 }
 
@@ -45,6 +45,9 @@ const ConfirmCreateCarpoolModal = forwardRef<
     try {
       const response = await postCarpoolCreate({
         ...formData.form,
+        carpool_authorized_depts: formData.form.carpool_authorized_depts?.map(
+          (e: any) => ({ dept_sap: e.value })
+        ),
         carpool_admins: formData.carpool_admins,
         carpool_approvers: formData.carpool_approvers,
         carpool_vehicles: formData.carpool_vehicles,

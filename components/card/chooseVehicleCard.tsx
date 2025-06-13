@@ -1,7 +1,7 @@
 import Image from "next/image";
 import AdminVehiclePickModal from "../modal/adminVehiclePickModal";
 import { useRef } from "react";
-import { RequestVehicleType } from "@/app/types/request-detail-type";
+import { RequestDetailType, RequestVehicleType } from "@/app/types/request-detail-type";
 
 interface Props {
   chooseVehicle?: boolean;
@@ -9,11 +9,17 @@ interface Props {
   typeName?: string;
   reqId?: string;
   vehicleType?: RequestVehicleType;
+  carpoolName?: string;
+  requestData?: RequestDetailType;
+  onUpdate?: () => void;
 }
 
 export default function ChooseVehicleCard({
   reqId,
   chooseType,
+  onUpdate,
+  requestData,
+  carpoolName,
   chooseVehicle,
   typeName,
   vehicleType
@@ -40,7 +46,7 @@ export default function ChooseVehicleCard({
             <div className="card-content-top-left">
               <div className="card-title">ผู้ดูแลเลือกยานพาหนะให้</div>
               <div className="supporting-text-group">
-                <div className="supporting-text">สายงานดิจิทัล</div>
+                <div className="supporting-text">{carpoolName}</div>
               </div>
             </div>
           </div>
@@ -65,7 +71,7 @@ export default function ChooseVehicleCard({
           </div>
         )}
       </div>
-      <AdminVehiclePickModal reqId={reqId} vehicleType={vehicleType} typeName={typeName} ref={adminVehiclePickModalRef} />
+      <AdminVehiclePickModal reqId={reqId} vehicleType={vehicleType} requestData={requestData} typeName={typeName} ref={adminVehiclePickModalRef} onUpdate={onUpdate} />
     </div>
   );
 }

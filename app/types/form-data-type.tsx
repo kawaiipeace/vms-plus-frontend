@@ -11,6 +11,7 @@ export interface FormDataType {
   attachmentFile?: string;
   doc_no?: string;
   doc_file?: string;
+  carpoolName?: string;
   costNo?: string;
   costOrigin?: string;
   costCenter?: string;
@@ -27,6 +28,7 @@ export interface FormDataType {
   isDriverNeed?: string;
   isHaveSubRequest?: string;
   isPeaEmployeeDriver?: string;
+  vehicleUserEmpPosition?: string;
   masCarpoolDriverUid?: string;
   masVehicleUid?: string;
   numberOfPassenger?: number;

@@ -17,8 +17,8 @@ import { CarpoolAdmin } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
-import CustomSearchSelect from "../customSelectSerch";
 import FormHelper from "../formHelper";
+import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   id?: string;
@@ -55,16 +55,6 @@ const AddCarpoolAdminModal = forwardRef<
   }));
 
   useEffect(() => {
-    const fetchCarpoolAdminFunc = async () => {
-      try {
-        const response = await getCarpoolAdmin();
-        const result = response.data;
-        setAdmins(result);
-      } catch (error) {
-        console.error("Error fetching status data:", error);
-      }
-    };
-
     fetchCarpoolAdminFunc();
   }, []);
 
@@ -104,6 +94,16 @@ const AddCarpoolAdminModal = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
+  const fetchCarpoolAdminFunc = async (search?: string) => {
+    try {
+      const response = await getCarpoolAdmin(search);
+      const result = response.data;
+      setAdmins(result);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
+
   const handleConfirm = () => {
     if (editId) {
       adminEdit(editId);
@@ -121,6 +121,7 @@ const AddCarpoolAdminModal = forwardRef<
           internal_contact_number: internal_contact_number as string,
           mobile_contact_number: mobile_contact_number as string,
         });
+
         if (response.request.status === 200) {
           setRefetch(true);
           setAdminSelected(undefined);
@@ -130,11 +131,18 @@ const AddCarpoolAdminModal = forwardRef<
           modalRef.current?.close();
           setToast({
             title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
-            desc:
-              "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
-              admins.find((item) => item.emp_id === adminSelected?.value)
-                ?.full_name +
-              " ได้รับการแก้ไขเรียบร้อยแล้ว",
+            desc: (
+              <>
+                ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ{" "}
+                <span className="font-bold">
+                  {
+                    admins.find((item) => item.emp_id === adminSelected?.value)
+                      ?.full_name
+                  }
+                </span>{" "}
+                ได้รับการแก้ไขเรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
@@ -160,12 +168,19 @@ const AddCarpoolAdminModal = forwardRef<
         modalRef.current?.close();
         setToast({
           title: "แก้ไขข้อมูลผู้ดูแลยานพาหนะสำเร็จ",
-          desc:
-            "ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ " +
-            carpool_admins.find(
-              (item) => item.admin_emp_no === adminSelected?.value
-            )?.admin_emp_name +
-            " ได้รับการแก้ไขเรียบร้อยแล้ว",
+          desc: (
+            <>
+              ข้อมูลการติดต่อของผู้ดูแลยานพาหนะ{" "}
+              <span className="font-bold">
+                {
+                  carpool_admins.find(
+                    (item) => item.admin_emp_no === adminSelected?.value
+                  )?.admin_emp_name
+                }
+              </span>{" "}
+              ได้รับการแก้ไขเรียบร้อยแล้ว
+            </>
+          ),
           status: "success",
         });
       }
@@ -200,6 +215,22 @@ const AddCarpoolAdminModal = forwardRef<
           setInternalContactNumber("");
           setMobileContactNumber("");
           modalRef.current?.close();
+          setToast({
+            title: "เพิ่มผู้ดูแลยานพาหนะสำเร็จ",
+            desc: (
+              <>
+                เพิ่มผู้ดูแลยานพาหนะ{" "}
+                <span className="font-bold">
+                  {
+                    admins.find((item) => item.emp_id === adminSelected?.value)
+                      ?.full_name
+                  }
+                </span>{" "}
+                เรียบร้อยแล้ว
+              </>
+            ),
+            status: "success",
+          });
         }
       } else {
         const admin = admins.find((e) => e.emp_id === adminSelected?.value);
@@ -226,6 +257,22 @@ const AddCarpoolAdminModal = forwardRef<
         setInternalContactNumber("");
         setMobileContactNumber("");
         modalRef.current?.close();
+        setToast({
+          title: "เพิ่มผู้ดูแลยานพาหนะสำเร็จ",
+          desc: (
+            <>
+              เพิ่มผู้ดูแลยานพาหนะ{" "}
+              <span className="font-bold">
+                {
+                  admins.find((item) => item.emp_id === adminSelected?.value)
+                    ?.full_name
+                }
+              </span>{" "}
+              เรียบร้อยแล้ว
+            </>
+          ),
+          status: "success",
+        });
       }
     } catch (error: any) {
       console.error(error);
@@ -280,7 +327,7 @@ const AddCarpoolAdminModal = forwardRef<
                 <div className="col-span-2">
                   <div className="form-group">
                     <label className="form-label">ผู้ดูแลยานพาหนะ</label>
-                    <CustomSearchSelect
+                    <CustomSelectOnSearch
                       iconName="person"
                       w="w-full"
                       options={admins.map((item) => ({
@@ -289,8 +336,10 @@ const AddCarpoolAdminModal = forwardRef<
                       }))}
                       value={adminSelected}
                       onChange={selectAdmin}
-                      enableSearch
-                      classNamePlaceholder="flex-1 text-start"
+                      enableSearchOnApi
+                      onSearchInputChange={(value) =>
+                        fetchCarpoolAdminFunc(value)
+                      }
                     />
                   </div>
                 </div>

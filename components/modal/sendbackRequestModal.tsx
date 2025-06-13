@@ -36,7 +36,7 @@ const SendbackRequestModal = forwardRef<
 
         if (res) {
           modalRef.current?.close();
-          router.push("/vehicle-booking/request-list/" + id);
+          router.push("/vehicle-booking/request-list/" + id +"?request-no="+res.data.result.request_no+"sendbackagain-req=success");
         }
       } catch (error) {
         console.error("error:", error);

@@ -55,8 +55,7 @@ export default function CustomSearchSelect({
       : enableSearch && value?.label !== inputText
       ? options.filter((option) => {
           const text =
-            (typeof option.label === "string" ? option.label : option.value) +
-            (option.desc ? ` ${option.desc}` : "");
+            (typeof option.label === "string" ? option.label : option.value) + (option.desc ? ` ${option.desc}` : "");
           return text.toLowerCase().includes(inputText.toLowerCase());
         })
       : options; // Show all options when search text is less than 3 chars if not API search
@@ -71,10 +70,7 @@ export default function CustomSearchSelect({
   // Handle outside click to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setHighlightedIndex(-1);
       }
@@ -98,13 +94,9 @@ export default function CustomSearchSelect({
       setHighlightedIndex(0);
     } else if (isOpen) {
       if (e.key === "ArrowDown") {
-        setHighlightedIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : 0
-        );
+        setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : 0));
       } else if (e.key === "ArrowUp") {
-        setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredOptions.length - 1
-        );
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : filteredOptions.length - 1));
       } else if (e.key === "Enter" && highlightedIndex >= 0) {
         const selected = filteredOptions[highlightedIndex];
         onChange(selected);
@@ -121,7 +113,7 @@ export default function CustomSearchSelect({
   const renderDropdownOption = (option: CustomSelectOption) => {
     if (!showDescriptions || !option.desc) return <div>{option.label}</div>;
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col items-start">
         <div className="font-medium">{option.label}</div>
         <div className="text-xs text-gray-500 mt-1">{option.desc}</div>
       </div>
@@ -160,16 +152,11 @@ export default function CustomSearchSelect({
             onKeyDown={handleKeyDown}
           />
         ) : (
-          <div
-            className={classNamePlaceholder ? classNamePlaceholder : "flex-1"}
-          >
+          <div className={classNamePlaceholder ? classNamePlaceholder : "flex-1"}>
             {inputText ? inputText : placeholder}
           </div>
         )}
-        <div
-          className="flex-shrink-0 w-8 text-right cursor-pointer"
-          onClick={() => setIsOpen((open) => !open)}
-        >
+        <div className="flex-shrink-0 w-8 text-right cursor-pointer" onClick={() => setIsOpen((open) => !open)}>
           <i className="material-symbols-outlined">keyboard_arrow_down</i>
         </div>
       </div>
@@ -196,11 +183,7 @@ export default function CustomSearchSelect({
                 }}
               >
                 {renderDropdownOption(option)}
-                {value?.value === option.value && (
-                  <span className="material-symbols-outlined ml-auto">
-                    check
-                  </span>
-                )}
+                {value?.value === option.value && <span className="material-symbols-outlined ml-auto">check</span>}
               </li>
             ))
           ) : (

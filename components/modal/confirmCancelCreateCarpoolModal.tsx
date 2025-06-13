@@ -60,7 +60,12 @@ const ConfirmCancelCreateCarpoolModal = forwardRef<
             modalRef.current?.close();
             setToast({
               title: "ลบกลุ่มยานพาหนะสำเร็จ",
-              desc: "กลุ่มยานพาหนะ " + inputValue + " ถูกลบจากระบบแล้ว",
+              desc: (
+                <>
+                  กลุ่มยานพาหนะ <span className="font-bold">{inputValue}</span>{" "}
+                  ถูกลบจากระบบแล้ว
+                </>
+              ),
               status: "success",
             });
             setTimeout(() => {

@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  requestHistoryLog,
-  requestHistoryLogColumns,
-} from "@/data/requestHistory";
-import TableComponent from "@/components/table";
 import RequestDetailForm from "@/components/booking-approver/requestDetailForm";
 import LogListTable from "../table/log-list-table";
 import { fetchLogs } from "@/services/masterService";

@@ -216,7 +216,7 @@ const DriverListTable = ({
       header: "คะแนน",
       cell: ({ getValue }) => (
         <div className="text-left" data-name="คะแนน">
-          <div className="text-center">{getValue() as string}</div>
+          <div className="text-center">{getValue() === 0 ? "ยังไม่มีการให้คะแนน" : (getValue() as string)}</div>
         </div>
       ),
       enableSorting: true,

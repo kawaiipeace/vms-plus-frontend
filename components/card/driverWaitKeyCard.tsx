@@ -1,3 +1,4 @@
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
 
 interface DriverWaitKeyCardProps {
@@ -44,8 +45,8 @@ export default function DriverWaitKeyCard(props: DriverWaitKeyCardProps) {
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่</div>
                 <div className="form-text">
-                  {props.received_key_datetime
-                    ? dayjs(props.received_key_datetime).format("DD/MM/BBBB")
+                  {props.received_key_start_datetime
+                    ? convertToBuddhistDateTime(props.received_key_start_datetime).date
                     : "-"}
                 </div>
               </div>

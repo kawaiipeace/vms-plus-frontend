@@ -1,16 +1,18 @@
 import Image from "next/image";
 import AdminDriverPickModal from "../modal/adminDriverPickModal";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DriverInfoModal from "../modal/driverInfoModal";
+import { RequestDetailType } from "@/app/types/request-detail-type";
 
 interface Props {
   chooseDriver?: boolean;
   number?: number;
+  requestData?: RequestDetailType;
   reqId?: string;
   onChooseDriver?: () => void;
 }
 
-export default function ChooseDriverCard({ chooseDriver, number, reqId, onChooseDriver }: Props) {
+export default function ChooseDriverCard({ chooseDriver, number, reqId, requestData , onChooseDriver }: Props) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -23,11 +25,24 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId, onChoose
 
   const [driverId, setDriverId] = useState<string>("");
 
+
+
   const seeDriverDetail = (id: string) => {
     setDriverId(id);
     // adminDriverPickModalRef.current?.closeModal();
     driverInfoModalRef.current?.openModal();
   };
+
+
+
+  useEffect(() => {
+    if (requestData) {
+      console.log('Request Data in ChooseDriverCard:', requestData);
+    }
+  }, [requestData]);
+
+    if (!requestData) return null; 
+
 
   return (
     <div className="card card-section-inline mt-5">
@@ -45,7 +60,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId, onChoose
           <div className="card-content-top">
             <div className="card-title">ผู้ดูแลเลือกพนักงานขับรถให้</div>
             <div className="supporting-text-group">
-              <div className="supporting-text">สายงานดิจิทัล</div>
+                 <div className="supporting-text">{requestData?.carpool_name}</div>
             </div>
           </div>
 
@@ -72,6 +87,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId, onChoose
 
       <AdminDriverPickModal
         ref={adminDriverPickModalRef}
+        requestData={requestData}
         reqId={reqId}
         onClickDetail={seeDriverDetail}
         onUpdate={onChooseDriver}
