@@ -11,6 +11,7 @@ export default function SelectCarCard({
   deptSap,
   seat,
   vehicleId,
+  fleetCardNo,
   province,
   onSelect,
   isSelected = false, // Add this prop
@@ -19,8 +20,9 @@ export default function SelectCarCard({
   title: string;
   subTitle: string;
   carType?: string;
-  province?:string;
+  province?: string;
   deptSap?: string;
+  fleetCardNo?: string;
   seat?: number;
   vehicleId: string;
   onSelect: (vehicleTitle: string) => void;
@@ -32,15 +34,20 @@ export default function SelectCarCard({
   } | null>(null);
 
   return (
-    <div className={`card relative ${isSelected ? "!border-2 !border-brand-900" : ""}`}>
+    <div
+      className={`card relative ${
+        isSelected ? "!border-2 !border-brand-900" : ""
+      }`}
+    >
       {isSelected && (
         <div className="absolute top-2 right-2">
-        <span className="badge badge-pill-outline badge-active bg-brand-100 whitespace-nowrap !rounded-md text-brand-800">
-        <i className="material-symbols-outlined">check</i>
-         เลือกอยู่</span> 
-       </div>
+          <span className="badge badge-pill-outline badge-active bg-brand-100 whitespace-nowrap !rounded-md text-brand-800">
+            <i className="material-symbols-outlined">check</i>
+            เลือกอยู่
+          </span>
+        </div>
       )}
-      
+
       <div className="card-body">
         <div className="card-img-top h-[165px]">
           <Image
@@ -55,7 +62,9 @@ export default function SelectCarCard({
         <div className="card-content">
           <div className="card-content-top">
             <div className="card-title">{title}</div>
-            <div className="card-subtitle">{subTitle} {province}</div>
+            <div className="card-subtitle">
+              {subTitle} {province}
+            </div>
             <div className="card-supporting-text-group">
               <div className="card-supporting-text">{carType}</div>
               <div className="card-supporting-text">{deptSap}</div>
@@ -63,10 +72,12 @@ export default function SelectCarCard({
           </div>
 
           <div className="card-item-group">
-            <div className="card-item">
-              <i className="material-symbols-outlined">credit_card</i>
-              <span className="card-item-text">บัตรเติมน้ำมัน</span>
-            </div>
+            {fleetCardNo !== "" && (
+              <div className="card-item">
+                <i className="material-symbols-outlined">credit_card</i>
+                <span className="card-item-text">บัตรเติมน้ำมัน</span>
+              </div>
+            )}
             <div className="card-item">
               <i className="material-symbols-outlined">
                 airline_seat_recline_extra
@@ -90,7 +101,11 @@ export default function SelectCarCard({
           </button>
         </div>
       </div>
-      <VehicleDetailModel ref={vehicleDetailModalRef} vehicleId={vehicleId} onSelect={() => onSelect(vehicleId)} />
+      <VehicleDetailModel
+        ref={vehicleDetailModalRef}
+        vehicleId={vehicleId}
+        onSelect={() => onSelect(vehicleId)}
+      />
     </div>
   );
 }

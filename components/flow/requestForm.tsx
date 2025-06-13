@@ -131,6 +131,8 @@ export default function RequestForm() {
     }
   };
 
+  
+
   useEffect(() => {
    
     const fetchCostTypeRequest = async () => {
@@ -338,6 +340,7 @@ useEffect(() => {
     setValue,
     watch,
     formState: { errors, isValid },
+    reset,
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
@@ -529,6 +532,41 @@ const handleDriverSearch = async (search: string) => {
     updateFormData(data);
     router.push("process-two");
   };
+
+  useEffect(() => {
+  if (!formData || Object.keys(formData).length === 0) {
+    reset({
+      telInternal: "",
+      telMobile: "",
+      workPlace: "",
+      purpose: "",
+      remark: "",
+      referenceNumber: "",
+      startDate: "",
+      endDate: "",
+      refCostTypeCode: "",
+      timeStart: "08:30",
+      timeEnd: "16:30",
+      attachmentFile: "",
+      deptSapShort: "",
+      deptSap: "",
+      userImageUrl: "",
+      costCenter: "",
+      pmOrderNo: "",
+      networkNo: "",
+      activityNo: "",
+    });
+    setFileName("อัพโหลดเอกสารแนบ");
+    setSelectedVehicleUserOption(null);
+    setSelectedCostTypeOption({ value: "", label: "" });
+    setSelectedCostCenterOption(undefined);
+    setPassengerCount(1);
+    setSelectedTripType("0");
+    
+  }
+}, [formData, reset]);
+
+
 
   return (
     <>

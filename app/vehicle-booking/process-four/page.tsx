@@ -11,10 +11,12 @@ import Link from "next/link";
 import { createRequest } from "@/services/bookingUser";
 import { FormDataType } from "@/app/types/form-data-type";
 import { convertToISO } from "@/utils/convertToISO";
+import { useFormContext } from "@/contexts/requestFormContext";
 
 export default function ProcessFour() {
   const router = useRouter();
   const { isPinned } = useSidebar();
+  const { updateFormData } = useFormContext();
   const termAndConditionModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -87,6 +89,7 @@ export default function ProcessFour() {
           localStorage.removeItem("processOne");
           localStorage.removeItem("processTwo");
           localStorage.removeItem("processThree");
+          updateFormData({});
           console.log("ttt=====>requ", response.data);
           router.push(
             "request-list?create-req=success&request-id=" +

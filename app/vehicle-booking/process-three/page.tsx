@@ -13,10 +13,7 @@ import Tooltip from "@/components/tooltips";
 import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
 import { useSidebar } from "@/contexts/sidebarContext";
-import {
-  fetchSearchDrivers,
-  fetchUserDrivers,
-} from "@/services/masterService";
+import { fetchSearchDrivers, fetchUserDrivers } from "@/services/masterService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -160,16 +157,17 @@ export default function ProcessThree() {
 
   const allValid = licenseValid && annualValid;
 
-  const handleSelectTypes = (typeName: string) => {
-    setSelectedDriverType(typeName);
-    setValue("isPeaEmployeeDriver", "0");
-    updateFormData({
-      isPeaEmployeeDriver: "0",
-    });
-    if (formData.isAdminChooseDriver) {
-      driverAppointmentRef.current?.openModal();
-    }
-  };
+const handleSelectTypes = (typeName: string) => {
+  setSelectedDriverType(typeName);
+  setValue("isPeaEmployeeDriver", typeName === "พนักงาน กฟภ." ? "1" : "0");
+  console.log("typeName", typeName);
+  updateFormData({
+    isPeaEmployeeDriver: typeName === "พนักงาน กฟภ." ? "1" : "0",
+  });
+  if (typeName === "พนักงานขับรถ" && formData.isAdminChooseDriver) {
+    driverAppointmentRef.current?.openModal();
+  }
+};
 
   useEffect(() => {
     const fetchDriverData = async () => {
@@ -200,6 +198,12 @@ export default function ProcessThree() {
     setValue("driverEmpID", "");
     setValue("driverEmpName", "");
     setValue("driverDeptSap", "");
+    setDriverLicenseNo("");
+    setAnnualYear(0);
+    setRequestAnnual("");
+    setLicenseExpDate("");
+    setLicenseValid(false);
+    setAnnualValid(false);
 
     if (selectedOption.value === "") {
       setSelectedVehicleUserOption(null);
@@ -212,6 +216,7 @@ export default function ProcessThree() {
     const empData = vehicleUserDatas.find(
       (user: { emp_id: string }) => user.emp_id === selectedOption.value
     );
+    console.log("empData", empData);
 
     if (empData) {
       setValue("driverInternalContact", empData.tel_internal);
@@ -233,7 +238,8 @@ export default function ProcessThree() {
         driverMobileContact: empData.tel_mobile,
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
-        driverDeptSap: empData.dept_sap_short,
+        driverEmpPosition: empData.posi_text,
+        driverDeptSap: empData.posi_text + "/" + empData.dept_sap_short,
         isPeaEmployeeDriver: "1",
       });
     }
@@ -251,8 +257,8 @@ export default function ProcessThree() {
         );
         if (response) {
           const vehicleUserData = response.data;
-setVehicleUserDatas(vehicleUserData);
-          console.log("vehicledata", vehicleUserData);
+          setVehicleUserDatas(vehicleUserData);
+          console.log("vehicledatass", vehicleUserData);
           const driverOptionsArray = vehicleUserData.map(
             (user: {
               emp_id: string;
@@ -282,11 +288,21 @@ setVehicleUserDatas(vehicleUserData);
             setLicenseExpDate(
               vehicleUserData[0]?.annual_driver?.driver_license_expire_date
             );
+            if (formData.vehicleUserEmpId === vehicleUserData[0]?.emp_id) {
+              setValue("driverMobileContact", formData.telMobile);
+            } else {
+              setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
+            }
             setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
-            setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
+
             setValue("driverEmpID", vehicleUserData[0]?.emp_id);
             setValue("driverEmpName", vehicleUserData[0]?.full_name);
-            setValue("driverDeptSap", vehicleUserData[0]?.dept_sap_short);
+            setValue(
+              "driverDeptSap",
+              vehicleUserData[0]?.posi_text +
+                "/" +
+                vehicleUserData[0]?.dept_sap_short
+            );
             console.log("test", vehicleUserData[0]?.emp_id);
           }
 
@@ -323,40 +339,42 @@ setVehicleUserDatas(vehicleUserData);
     },
   });
 
-const handleDriverSearch = async (search: string) => {
-  const trimmed = search.trim();
+  const handleDriverSearch = async (search: string) => {
+    const trimmed = search.trim();
 
-  if (trimmed.length < 3) {
-    setDriverOptions([]);
-    setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
-    setLoadingDrivers(false);
-    return;
-  }
+    if (trimmed.length < 3) {
+      setDriverOptions([]);
+      setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
+      setLoadingDrivers(false);
+      return;
+    }
 
-  setLoadingDrivers(true);
-  try {
-    const response = await fetchUserDrivers(trimmed);
-    if (response && Array.isArray(response.data)) {
-      const vehicleUserData = response.data;
-      setVehicleUserDatas(vehicleUserData); // <-- Update here!
-      setDriverOptions(
-        vehicleUserData.map((user: { emp_id: string; full_name: string }) => ({
-          value: user.emp_id,
-          label: `${user.full_name} (${user.emp_id})`,
-        }))
-      );
-    } else {
+    setLoadingDrivers(true);
+    try {
+      const response = await fetchUserDrivers(trimmed);
+      if (response && Array.isArray(response.data)) {
+        const vehicleUserData = response.data;
+        setVehicleUserDatas(vehicleUserData); // <-- Update here!
+        setDriverOptions(
+          vehicleUserData.map(
+            (user: { emp_id: string; full_name: string }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          )
+        );
+      } else {
+        setDriverOptions([]);
+        setVehicleUserDatas([]);
+      }
+    } catch (error) {
       setDriverOptions([]);
       setVehicleUserDatas([]);
+      console.error("Error in handleDriverSearch:", error);
+    } finally {
+      setLoadingDrivers(false);
     }
-  } catch (error) {
-    setDriverOptions([]);
-    setVehicleUserDatas([]);
-    console.error("Error in handleDriverSearch:", error);
-  } finally {
-    setLoadingDrivers(false);
-  }
-};
+  };
 
   return (
     <div>
@@ -420,7 +438,9 @@ const handleDriverSearch = async (search: string) => {
                         label="พนักงาน กฟภ."
                         value="พนักงาน กฟภ."
                         selectedValue={selectedDriverType}
-                        setSelectedValue={setSelectedDriverType}
+                       setSelectedValue={() =>
+                          handleSelectTypes("พนักงาน กฟภ.")
+                        }
                       />
 
                       <RadioButton
