@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import { useEffect, useState } from "react";
 import { DriverInfo, driversMamagement } from "@/services/driversManagement";
-import { se } from "date-fns/locale";
+// import { se } from "date-fns/locale";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -77,6 +77,8 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
     driverSearch();
   }, [params, replacementDriverName]);
 
+  const buddhistYear = dayjs(driverInfo?.approved_job_driver_start_date).year() + 543;
+
   return (
     <>
       <div className="form-card">
@@ -115,14 +117,31 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                 <i className="material-symbols-outlined">calendar_month</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">วันที่เริ่มต้นสัญญาจ้าง</h5>
-                  <p>{dayjs(driverInfo?.approved_job_driver_start_date).format("D/MM/BBBB")}</p>
+                  {/* {buddhistYear}
+                  {driverInfo?.approved_job_driver_start_date}
+                  <p>{dayjs(driverInfo?.approved_job_driver_start_date).format("D/MM/BBBB")}</p> */}
+                  <p>
+                    {buddhistYear < 1980
+                      ? dayjs(driverInfo?.approved_job_driver_start_date)
+                          .year(dayjs(driverInfo?.approved_job_driver_start_date).year() + 1980)
+                          .format("D/MM/BBBB")
+                      : dayjs(driverInfo?.approved_job_driver_start_date).format("D/MM/BBBB")}
+                  </p>
                 </div>
               </div>
               <div className="flex col-span-1">
                 <i className="material-symbols-outlined">calendar_month</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">วันที่สิ้นสุดสัญญาจ้าง</h5>
-                  <p>{dayjs(driverInfo?.approved_job_driver_end_date).format("D/MM/BBBB")}</p>
+                  {/* {driverInfo?.approved_job_driver_end_date}
+                  <p>{dayjs(driverInfo?.approved_job_driver_end_date).format("D/MM/BBBB")}</p> */}
+                  <p>
+                    {buddhistYear < 1980
+                      ? dayjs(driverInfo?.approved_job_driver_end_date)
+                          .year(dayjs(driverInfo?.approved_job_driver_end_date).year() + 1980)
+                          .format("D/MM/BBBB")
+                      : dayjs(driverInfo?.approved_job_driver_end_date).format("D/MM/BBBB")}
+                  </p>
                 </div>
               </div>
               <div className="flex col-span-1">

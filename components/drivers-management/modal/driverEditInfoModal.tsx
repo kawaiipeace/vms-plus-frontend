@@ -5,6 +5,11 @@ import RadioButton from "@/components/radioButton";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as Yup from "yup";
 import CustomSearchSelect from "@/components/customSelectSerch";
+import dayjs from "dayjs";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
 
 import {
   driverReplacementLists,
@@ -327,6 +332,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
       setDriverEmployingAgencyOptions(selectedOption as { value: string; label: string });
     };
 
+    const buddhistYear = dayjs(formData.driverContractStartDate).year() + 543;
+
     return (
       <>
         {openModal && (
@@ -453,6 +460,8 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           <div className="w-full">
                             <div className="form-group">
                               <label className="label form-label">วันเริ่มต้นสัญญาจ้าง</label>
+                              {/* {dayjs(formData.driverContractStartDate).format("D/MM/BBBB")}
+                              {formData.driverContractStartDate} */}
                               <div className={`input-group`}>
                                 <div className="input-group-prepend">
                                   <span className="input-group-text">
@@ -461,7 +470,14 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 </div>
                                 <DatePicker
                                   placeholder="เลือกวันที่เริ่มต้น"
-                                  defaultValue={convertToThaiDate(formData.driverContractStartDate)}
+                                  defaultValue={
+                                    buddhistYear < 1980
+                                      ? dayjs(formData.driverContractStartDate)
+                                          .year(dayjs(formData.driverContractStartDate).year() + 1980)
+                                          .format("D/MM/BBBB")
+                                      : dayjs(formData.driverContractStartDate).format("D/MM/BBBB")
+                                  }
+                                  // defaultValue={convertToThaiDate(formData.driverContractStartDate)}
                                   onChange={(dateStr) => {
                                     handleChangeContractStartDate(dateStr);
                                     setFormData((prev) => ({ ...prev, driverContractEndDate: "" }));
@@ -477,6 +493,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                           <div className="w-full">
                             <div className="form-group">
                               <label className="label form-label">วันสิ้นสุดสัญญาจ้าง</label>
+                              {/* {formData.driverContractEndDate} */}
                               <div className={`input-group`}>
                                 <div className="input-group-prepend">
                                   <span className="input-group-text">
@@ -486,7 +503,15 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                                 <DatePicker
                                   key={disableStartDate || "default"} // Reset DatePicker when disableStartDate changes
                                   placeholder="เลือกวันที่สิ้นสุด"
-                                  defaultValue={convertToThaiDate(formData.driverContractEndDate)}
+                                  defaultValue={
+                                    buddhistYear < 1980
+                                      ? dayjs(formData.driverContractEndDate)
+                                          .year(dayjs(formData.driverContractEndDate).year() + 1980)
+                                          .format("D/MM/BBBB")
+                                      : dayjs(formData.driverContractEndDate).format("D/MM/BBBB")
+                                  }
+                                  // defaultValue={dayjs(formData.driverContractEndDate).format("D/MM/BBBB")}
+                                  // defaultValue={convertToThaiDate(formData.driverContractEndDate)}
                                   onChange={(dateStr) => handleChangeContractEndDate(dateStr)}
                                   // minDate={disableStartDate || undefined}
                                   minDate={disableStartDate ? disableStartDate : undefined}
