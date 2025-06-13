@@ -29,6 +29,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const returnedData = searchParams.get("edit-data-returned-tabs");
   const returnedImage = searchParams.get("edit-image-returned-tabs");
   const returnedCar = searchParams.get("returned-tabs");
+  const cancelReq = searchParams.get("cancel-req");
 
   const [requestUid] = useState(requestId);
   const [loading, setLoading] = useState(true);
@@ -72,7 +73,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
           limit: 100,
         });
         const { total, totalPages } = responseLog.data;
-        console.log('responseKey', response.data);
+        console.log("responseKey", response.data);
 
         setRequestData(response.data);
         setPagination({
@@ -105,7 +106,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     if (requestId) {
       fetchRequestDetailfunc();
     }
-  }, [requestId, returnedCar, returnedData, returnedImage]);
+  }, [requestId, returnedCar, returnedData, returnedImage, cancelReq]);
 
   const createQueryString = useCallback(
     (value: string) => {
