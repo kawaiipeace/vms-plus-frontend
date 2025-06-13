@@ -1,11 +1,82 @@
+"use client";
+
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
+import { useEffect, useState } from "react";
+import { DriverInfo, driversMamagement } from "@/services/driversManagement";
+import { se } from "date-fns/locale";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
 const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => {
+  const [replacementDriverName, setReplacementDriverName] = useState<string>("");
+  const [params, setParams] = useState({
+    search: "",
+    driver_dept_sap_work: "",
+    work_type: "",
+    ref_driver_status_code: "",
+    is_active: "",
+    driver_license_end_date: "",
+    approved_job_driver_end_date: "",
+    order_by: "",
+    order_dir: "",
+    page: 1,
+    limit: 10,
+  });
+  const [replacementDriverActive, setReplacementDriverActive] = useState<number>(0);
+  useEffect(() => {
+    const fetchDriverInfo = async () => {
+      try {
+        const driverUid = driverInfo?.replacement_driver_uid; // Replace with actual driver UID
+
+        if (driverUid) {
+          const response = await DriverInfo(driverUid);
+          // console.log("Driver Info Response:", response);
+          if (response.status === 200) {
+            setReplacementDriverName(response.data.driver.driver_name);
+            setParams((pre) => ({
+              ...pre,
+              search: response.data.driver.driver_name,
+              page: 1,
+              limit: 10,
+            }));
+            // setReplacementDriverActive(response.data.driver.is_active);
+          } else {
+            console.error("Failed to fetch driver info");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching driver info:", error);
+      }
+    };
+
+    if (driverInfo?.replacement_driver_uid) {
+      fetchDriverInfo();
+    }
+  }, [driverInfo]);
+
+  useEffect(() => {
+    const driverSearch = async () => {
+      try {
+        const response = await driversMamagement(params);
+        console.log("Driver Search Response2:", response?.data?.drivers[0]?.is_active);
+        if (response.status === 200) {
+          if (response?.data?.drivers[0]?.is_active) {
+            setReplacementDriverActive(response?.data?.drivers[0]?.is_active);
+          }
+        } else {
+          console.error("Failed to fetch driver info");
+        }
+      } catch (error) {
+        console.error("Error fetching driver info:", error);
+      }
+    };
+
+    driverSearch();
+  }, [params, replacementDriverName]);
+
   return (
     <>
       <div className="form-card">
@@ -61,6 +132,23 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                   <p>{driverInfo?.is_replacement === "0" ? "ปฏิบัติงานปกติ" : "สำรอง"}</p>
                 </div>
               </div>
+              {driverInfo?.replacement_driver_uid !== "" && (
+                <>
+                  <div className="flex col-span-1">
+                    <i className="material-symbols-outlined">person</i>
+                    <div className="pl-2">
+                      <h5 className="font-semibold mb-1">พนักงานที่ปฏิบัติงานแทน</h5>
+                      <p className="text-blue-700 underline">
+                        <a
+                          href={`/drivers-management/view/${driverInfo?.replacement_driver_uid}?active=${replacementDriverActive}`}
+                        >
+                          {replacementDriverName}
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
               <div className="flex col-span-1">
                 <i className="material-symbols-outlined">group_search</i>
                 <div className="pl-2">

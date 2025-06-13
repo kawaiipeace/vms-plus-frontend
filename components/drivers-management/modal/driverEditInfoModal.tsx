@@ -137,7 +137,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           driverContractorCompany: driverInfo.vendor_name || "",
           driverUseByOther: Number(driverInfo.ref_other_use_code) || 0,
           driverOperationType: driverInfo.is_replacement || "0",
-          driverReplacementEmployee: "",
+          driverReplacementEmployee: driverInfo.replacement_driver_uid || "",
         });
         // setDisableEndDate(
         //   driverInfo.approved_job_driver_start_date
@@ -198,6 +198,14 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                 label: `${item.driver_name}${item.driver_nickname && `(${item.driver_nickname})`}`,
               };
             }); // Exclude current driver
+
+          const addDriverReplacementOption: CustomSelectOption = {
+            value: "",
+            label: "ไม่มี",
+          };
+          driverReplacementData.unshift(addDriverReplacementOption);
+
+          console.log("Driver Replacement Data:", driverReplacementData);
 
           setDriverReplacementList(driverReplacementData);
         } catch (error) {
@@ -524,6 +532,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
                               <label className="justify-start label form-label">
                                 พนักงานที่ถูกปฏิบัติงานแทน<span className="text-[#98A2B3]">(ถ้ามี)</span>
                               </label>
+                              {/* {formData.driverReplacementEmployee} */}
                               <CustomSelect
                                 w="w-full"
                                 options={driverReplacementList}
