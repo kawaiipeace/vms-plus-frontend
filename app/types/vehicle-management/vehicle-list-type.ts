@@ -111,3 +111,16 @@ export interface RepoCardProps {
   count: number;
   onClick?: () => void;
 }
+
+export interface VehicleListParams {
+  search?: string;
+  vehicle_owner_dept_sap?: string;
+  ref_vehicle_category_code?: string;
+  ref_vehicle_status_code?: string;
+  ref_fuel_type_id?: string;
+  is_tax_credit?: string;
+  order_by?: string;
+  order_dir?: string;
+  page?: number;
+  limit?: number;
+}

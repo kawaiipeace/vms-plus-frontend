@@ -13,6 +13,7 @@ import RequestListTable from "../table/vehicle-timeline/request-list-table";
 import SearchInput from "../vehicle-management/input/search";
 import { TripStatus } from "@/utils/vehicle-constant";
 import { debounce } from "lodash";
+import { VehicleTimelineSearchParams } from "@/app/types/vehicle-management/vehicle-timeline-type";
 
 export default function VehicleTimeLine() {
     // Setting Initial
@@ -26,7 +27,7 @@ export default function VehicleTimeLine() {
     // Function
 
     // Manage Filter Params
-    const [filterParams, setFilterParams] = useState<string[]>([]);
+    const [filterParams, setFilterParams] = useState<string[]>(['1', '2', '3', '4']);
 
     useEffect(() => {
         setParams((prev) => ({
@@ -57,9 +58,9 @@ export default function VehicleTimeLine() {
     });
 
     const initialParams = {
+        search: "",
         start_date: dayjs().startOf("month").format("YYYY-MM-DD"),
         end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
-        search: "",
         vehicle_owner_dept_sap: "",
         vehicle_car_type_detail: "",
         ref_timeline_status_id: "",
@@ -67,12 +68,14 @@ export default function VehicleTimeLine() {
         limit: pagination.limit,
     };
 
-    const [params, setParams] = useState(initialParams);
+    const [params, setParams] = useState<VehicleTimelineSearchParams>(initialParams);
+    const [filterCount, setFilterCount] = useState(0);
 
     // Filter Modal Ref
     const filterModalRef = useRef<FilterModalRef>(null);
 
     useEffect(() => {
+        let countFilters = 0;
         const fetchData = async () => {
             console.log('params', params)
             try {
@@ -82,14 +85,26 @@ export default function VehicleTimeLine() {
 
                 const { total, totalPages } = response.pagination;
                 setPagination({
-                    limit: params.limit,
-                    page: params.page,
+                    limit: params.limit ?? pagination.limit,
+                    page: params.page ?? pagination.page,
                     total,
                     totalPages,
                 });
             } catch (error) {
                 console.error("Error fetching vehicle timeline data:", error);
             }
+
+            Object.keys(params).forEach((key) => {
+                if (
+                    key === "ref_timeline_status_id"
+                ) {
+                    const value = params[key];
+                    if(value && value.trim() !== "") {
+                        countFilters += value.split(",").length;
+                    }
+                }
+              });
+            setFilterCount(countFilters);
         };
 
         fetchData();
@@ -161,10 +176,11 @@ export default function VehicleTimeLine() {
                 />
                 <button
                     onClick={handleOpenFilterModal}
-                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block"
+                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
                 >
                     <i className="material-symbols-outlined">filter_list</i>
                     <span className="text-base font-bold">ตัวกรอง</span>
+                    <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
                 </button>
 
                 <button

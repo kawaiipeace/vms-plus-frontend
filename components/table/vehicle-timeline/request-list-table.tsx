@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { transformApiToTableData } from "@/utils/vehicle-management";
-import { VehicleTimelineListTableData } from "@/app/types/vehicle-management/vehicle-timeline-type";
+import { VehicleTimelineListTableData, VehicleTimelineSearchParams } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import useGenerateDates from "./useGenerateDates";
 import { useColumns } from "./columns";
 import VehicleTimeLineDetailModal, { VehicleTimelineRef } from "@/components/vehicle-management/vehicle-timeline-detail-modal";
@@ -9,7 +9,7 @@ import { DataTable } from "../time-table";
 
 interface RequestListTableProps {
   readonly dataRequest: any[];
-  readonly params: { start_date: string; end_date: string };
+  readonly params: Partial<VehicleTimelineSearchParams>;
   readonly selectedOption: string;
   readonly lastMonth: string;
 }
@@ -38,8 +38,8 @@ export default function RequestListTable({
     handleOpenDetailModal,
     setTripDetails,
     setDateSelected,
-    startDate: params.start_date,
-    endDate: params.end_date,
+    startDate: params.start_date ?? '',
+    endDate: params.end_date ?? '',
   });
 
   const table = useReactTable({

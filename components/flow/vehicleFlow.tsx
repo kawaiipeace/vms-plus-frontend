@@ -5,30 +5,35 @@ import VehicleNoData from "../vehicle-management/noData";
 import FilterModal, { FilterModalRef } from "../vehicle-management/filterModal";
 import ReportModal, { ReportModalRef } from "../vehicle-management/vehicleReportModal";
 import VehicleTable from "../table/vehicle-table";
-import { PaginationType, VehicleInputParams, VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
+import { PaginationType, VehicleInputParams, VehicleListParams, VehicleManagementApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
 import SearchInput from "../vehicle-management/input/search";
 import { debounce } from "lodash";
 
 export default function VehicleFlow() {
-    const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
-    const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [pagination, setPagination] = useState<PaginationType>({
         limit: 10,
         page: 1,
         total: 0,
         totalPages: 0,
     });
-    const [params, setParams] = useState({
+
+    const paramsInitial = {
         search: "",
         vehicle_owner_dept_sap: "",
         ref_vehicle_category_code: "",
         ref_vehicle_status_code: "",
         ref_fuel_type_id: "",
+        is_tax_credit: "",
         order_by: "",
         order_dir: "",
         page: pagination.page,
         limit: pagination.limit,
-    });
+    };
+
+    const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [params, setParams] = useState<VehicleListParams>(paramsInitial);
+    const [filterCount, setFilterCount] = useState(0);
 
     // Handle Filter Modal
     const filterModalRef = useRef<FilterModalRef>(null);
@@ -43,28 +48,43 @@ export default function VehicleFlow() {
     };
 
     useEffect(() => {
+        let countFilters = 0;
         const fetchData = async () => {
             try {
+                console.log('params', params)
                 const response = await fetchVehicles(params);
                 const { total, totalPages } = response.pagination;
 
                 setDataRequest(response.vehicles);
                 setPagination({
-                    limit: params.limit,
-                    page: params.page,
+                    limit: params.limit ?? pagination.limit,
+                    page: params.page ?? pagination.page,
                     total,
                     totalPages,
                 });
             } catch (error) {
                 console.error("Error fetching vehicles:", error);
             }
+
+            Object.keys(params).forEach((key) => {
+                if (
+                    key === "is_tax_credit" ||
+                    key === "ref_vehicle_status_code"
+                ) {
+                    const value = params[key];
+                    if(value && value.trim() !== "") {
+                        countFilters += value.split(",").length;
+                    }
+                }
+              });
+            setFilterCount(countFilters);
         };
 
         fetchData();
     }, [params]);
 
     const handlePageChange = (newPage: number) => {
-        setParams((prevParams) => ({ ...prevParams, page: newPage }));
+        setParams((prevParams: any) => ({ ...prevParams, page: newPage }));
     };
 
     const handlePageSizeChange = (newLimit: string | number) => {
@@ -73,17 +93,7 @@ export default function VehicleFlow() {
     };
 
     const handleClearAllFilters = () => {
-        setParams({
-            search: "",
-            vehicle_owner_dept_sap: "",
-            ref_vehicle_category_code: "",
-            ref_vehicle_status_code: "",
-            ref_fuel_type_id: "",
-            order_by: "",
-            order_dir: "",
-            page: 1,
-            limit: pagination.limit,
-        });
+        setParams(paramsInitial);
     };
 
     const handleSelectItem = (ids: string[]) => {
@@ -97,7 +107,7 @@ export default function VehicleFlow() {
             ref_vehicle_category_code: params.vehicleType,
             vehicle_owner_dept_sap: params.vehicleDepartment,
             is_tax_credit: params.taxVehicle.join(","),
-            ref_vehicle_status_code: params.vehicleStatus.map(item => item).join(","),
+            ref_vehicle_status_code: params.vehicleStatus.join(","),
         }));
     };
 
@@ -119,18 +129,19 @@ export default function VehicleFlow() {
             <div className="flex gap-4">
                 <button
                     onClick={handleOpenFilterModal}
-                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block "
+                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
                 >
                     <i className="material-symbols-outlined">filter_list</i>
                     <span className="text-sm font-bold">ตัวกรอง</span>
+                    <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
                 </button>
                 <button
-                    className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex gap-2 justify-center items-center"
+                    className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex justify-center items-center"
                     onClick={handleOpenReportModal}
                     disabled={!selectedRows.length}>
                     <i className="material-symbols-outlined">download</i>
                     <span className="text-sm font-bold">รายงาน</span>
-                    <span className="border border-gray-300 p-1 rounded-full">{selectedRows.length}</span>
+                    <span className="badge badge-brand badge-outline rounded-[50%]">{selectedRows.length}</span>
                 </button>
                 <button 
                     disabled={true}
