@@ -1,21 +1,20 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import VehicleStatus from "./status";
 import { getFuelType, getVehicleDepartment, getVehicleType } from "@/services/vehicleService";
 import { 
     CustomData, 
-    FuelTypeApiCustomData, 
-    FuelTypeApiResponse, 
-    VehicleDepartmentApiResponse, 
+    FuelTypeApiCustomData,
     VehicleDepartmentCustomData, 
     VehicleInputParams, 
     VehicleStatusProps, 
-    VehicleTypeApiCustomData, 
-    VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
-// import CustomSelect from "../customSelect";
+    VehicleTypeApiCustomData
+} from "@/app/types/vehicle-management/vehicle-list-type";
 import CustomSelectOnSearch from "../customSelectOnSearch";
 import CustomSearchSelect from "../customSelectSerch";
+import VehicleStatus from "./vehicle-status-without-icon";
+import { vehicleBookingStatus } from "@/utils/vehicle-constant";
 
 type FilterProps = {
+    defaultVehicleBookingStatus?: string[];
     flag: string;
     onSubmitFilter?: (params: VehicleInputParams) => void;
 };
@@ -63,6 +62,7 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
 );
 
 const ModalBody = ({
+    defaultBookingStatus,
     vehicleDepartments,
     fuelTypes,
     vehicleTypes,
@@ -90,11 +90,20 @@ const ModalBody = ({
             setFuelTypeOptions(defaultOption);
             setVehicleDepartmentOptions(defaultOption);
         }
-    }, [params]);    
+    }, [params]);
 
     useEffect(() => {
         setParams(formData);
     }, [formData]);
+
+    useEffect(() => {
+        if(defaultBookingStatus.length > 0 && defaultBookingStatus.length == 0) {
+            setFormData(prev => ({
+                ...prev,
+                vehicleBookingStatus: defaultBookingStatus
+            }));
+        }
+    }, [defaultBookingStatus]);
 
     const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
         setFormData(prev => {
@@ -209,8 +218,8 @@ const ModalBody = ({
                                             <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    id={`status-${index}`}
-                                                    className="checkbox checkbox-primary h-5 w-5"
+                                                    id={`status-list-${index}`}
+                                                    className="checkbox rounded-lg border-gray-300"
                                                     checked={formData.vehicleStatus.includes(status.id)}
                                                     onChange={() => handleCheckboxToggle('vehicleStatus', status.id)}
                                                 />
@@ -222,6 +231,30 @@ const ModalBody = ({
                             </div>
                         </div>
                     </>
+                )}
+
+                {flag === 'TIMELINE' && (
+                    <div className="col-span-12">
+                        <div className="form-group">
+                            <span>สถานะ</span>
+                            <div className="flex flex-col gap-2 mt-2">
+                                {vehicleBookingStatus.map((status, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                id={`status-timeline-${index}`}
+                                                checked={formData.vehicleBookingStatus.includes(status.id)}
+                                                className="checkbox rounded-lg border-gray-300"
+                                                onChange={() => handleCheckboxToggle('vehicleBookingStatus', status.id)}
+                                            />
+                                            <VehicleStatus status={status.name} />
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
@@ -263,7 +296,8 @@ const ModalFooter = (
     );
 };
 
-const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, flag }, ref) => {
+const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, flag, defaultVehicleBookingStatus }, ref) => {
+    // Setup Ref
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -271,13 +305,16 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         close: () => dialogRef.current?.close(),
     }));
 
-    const [params, setParams] = useState<VehicleInputParams>({
+    const initialParams = {
         fuelType: "",
         vehicleType: "",
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
-    });
+        vehicleBookingStatus: []
+    };
+
+    const [params, setParams] = useState<VehicleInputParams>(initialParams);
     const [fuelType, setFuelType] = useState<FuelTypeApiCustomData[]>([]);
     const [vehicleDepartment, setVehicleDepartment] = useState<VehicleDepartmentCustomData[]>([]);
     const [vehicleType, setVehicleType] = useState<VehicleTypeApiCustomData[]>([]);
@@ -287,15 +324,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         dialogRef.current?.close();
     };
 
-    const handleClearFilter = () => {
-        setParams({
-            fuelType: "",
-            vehicleType: "",
-            vehicleDepartment: "",
-            taxVehicle: [],
-            vehicleStatus: [],
-        });
-    };
+    const handleClearFilter = () => setParams(initialParams);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -327,6 +356,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
                         flag={flag}
                         setParams={setParams}
                         params={params}
+                        defaultBookingStatus={defaultVehicleBookingStatus ?? []}
                     />
                 </div>
 

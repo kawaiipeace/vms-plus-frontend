@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
-import ApproveVehicleTabs from "@/components/tabs/approveVehicleTabs";
+import ApproveVehicleApproverTabs from "@/components/tabs/approveVehicleApproverTabs";
 import ToastCustom from "@/components/toastCustom";
 import { useSidebar } from "@/contexts/sidebarContext";
 import { useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { Suspense } from "react";
 function RequestListContent() {
   const searchParams = useSearchParams();
   const sendbackReq = searchParams.get("sendback-req");
-  const sendbackLicReq = searchParams.get("sendbacklic-req");
+  const sendbackLicReq = searchParams.get("sendbackfinallic-req");
   const cancelReq = searchParams.get("cancel-req");
   const approveReq = searchParams.get("approve-req");
   const approveLicReq = searchParams.get("approvelic-req");
@@ -133,13 +133,11 @@ function RequestListContent() {
 
 export default function ApproveRequest() {
   const { isPinned } = useSidebar();
-  const searchParams = useSearchParams();
-  const licType = searchParams.get("licenseType");
 
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
+        <SideBar menuName="อนุมัติคำขอใช้และใบอนุญาต" />
 
         <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
@@ -153,7 +151,7 @@ export default function ApproveRequest() {
                     </a>
                   </li>
                   <li className="breadcrumb-item active">
-                    <a>อนุมัติขอคำใช้และใบอนุญาต</a>
+                    <a>อนุมัติคำขอใช้และใบอนุญาต</a>
                   </li>
                 </ul>
               </div>
@@ -166,7 +164,7 @@ export default function ApproveRequest() {
               </div>
             </div>
 
-            <ApproveVehicleTabs licType={licType || ""} />
+            <ApproveVehicleApproverTabs  />
           </div>
         </div>
       </div>

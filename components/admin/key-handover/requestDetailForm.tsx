@@ -99,7 +99,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
               timeStart={convertToBuddhistDateTime(requestData?.start_datetime || "").time}
               timeEnd={convertToBuddhistDateTime(requestData?.end_datetime || "").time}
               workPlace={requestData?.work_place}
-              purpose={requestData?.objective}
+              purpose={requestData?.work_description}
               remark={requestData?.remark}
               tripType={requestData?.trip_type}
               numberOfPassenger={requestData?.number_of_passengers}
@@ -144,6 +144,7 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
                 {requestData?.is_admin_choose_vehicle === "1" && (
                   <ChooseVehicleCard
                     reqId={requestData?.trn_request_uid}
+                    carpoolName={requestData?.carpool_name}
                     vehicleType={requestData?.request_vehicle_type}
                     typeName={requestData?.request_vehicle_type?.ref_vehicle_type_name}
                   />

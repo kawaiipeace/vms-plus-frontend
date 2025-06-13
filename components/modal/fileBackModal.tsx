@@ -83,7 +83,7 @@ const FileBackRequestModal = forwardRef<
 
           if (role === "firstApprover") {
             router.push(
-              "/administrator/booking-approver?sendback-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=" +
+              "/administrator/booking-confirmer?sendback-req=success&activeTab=คำขอใช้ยานพาหนะ&request-id=" +
                 data.result?.request_no
             );
           } else if (role === "admin") {
@@ -98,11 +98,11 @@ const FileBackRequestModal = forwardRef<
             );
           } else if (role === "licAdmin") {
             if(onSuccess) {
-              onSuccess
+              onSuccess()
             }
    
             router.push(
-              "/administrator/booking-approver?sendbacklic-req=success&request-id=" +
+              "/administrator/booking-confirmer?activeTab=คำขออนุมัติทำหน้าที่ขับรถยนต์&sendbacklic-req=success&request-id=" +
                 data.result?.request_annual_driver_no
             );
           } else if (role === "licFinalAdmin") {

@@ -4,6 +4,7 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { fetchProfile } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { Profile } from "@/app/types/profile-type";
+import { useToast } from "./toast-context";
 
 
 interface ProfileContextType {
@@ -22,7 +23,9 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const { hideToast } = useToast();
   const router = useRouter();
+  // const { clearToast } = useToast();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -53,6 +56,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    hideToast();  
     setProfile(null);
     setIsAuthenticated(false);
     router.push("/");

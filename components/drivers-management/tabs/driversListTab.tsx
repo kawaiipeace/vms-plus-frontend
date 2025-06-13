@@ -8,7 +8,7 @@ import CreateDriverManagementModal from "@/components/modal/createDriverManageme
 import UploadCSVModal from "@/components/modal/uploadCSVModal";
 import PaginationControls from "@/components/table/pagination-control";
 import ToastCustom from "@/components/toastCustom";
-import ZeroRecord from "@/components/zeroRecord";
+// import ZeroRecord from "@/components/zeroRecord";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 
 // import dayjs from "dayjs";
@@ -17,7 +17,7 @@ import { DriverInfoType } from "@/app/types/drivers-management-type";
 import { RequestListType } from "@/app/types/request-list-type";
 import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
 import DriverDeleteModal from "../modal/driverDeleteModal";
-import VehicleNoData from "@/components/vehicle/noData";
+import VehicleNoData from "@/components/vehicle-management/noData";
 
 interface PaginationType {
   limit: number;
@@ -299,6 +299,7 @@ const DriversListTab = () => {
               id="myInputTextField"
               className="form-control dt-search-input"
               placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+              value={params.search}
               onChange={(e) => handleSearch(e.target.value)}
             />
           </div>

@@ -49,7 +49,7 @@ const ReferenceModal = forwardRef<
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
-      referenceNumber: formData.doc_no || "",
+      referenceNumber: formData.referenceNumber || "",
     },
   });
 
@@ -58,9 +58,10 @@ const ReferenceModal = forwardRef<
       setFileName(shortenFilename(formData.attachmentFile));
       setFileValue(formData.attachmentFile);
     }
-  }, [formData.attachmentFile]);
+  }, [formData]);
 
   useEffect(() => {
+    console.log("requestData===>", formData);
     if (requestData) {
       reset({
         referenceNumber: requestData?.doc_no || "",
@@ -118,14 +119,14 @@ const ReferenceModal = forwardRef<
       if (onUpdate) {
         onUpdate({
           ...data,
-          doc_no: data.referenceNumber,
-          doc_file: fileValue,
+          referenceNumber: data.referenceNumber,
+          attachmentFile: fileValue,
         });
       }
 
       updateFormData({
-        doc_no: data.referenceNumber,
-        doc_file: fileValue,
+        referenceNumber: data.referenceNumber,
+        attachmentFile: fileValue,
       });
 
       modalRef.current?.close();

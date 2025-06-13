@@ -7,6 +7,7 @@ interface UserType {
   dept_sap_short?: string;
   tel_mobile?: string;
   tel_internal?: string;
+  posi_text?: string;
 }
 
 interface Props {
@@ -34,14 +35,14 @@ export default function ApproverInfoCard({
             <div className="supporting-text-group">
               <div className="supporting-text">{user?.emp_id}</div>
               <div className="supporting-text">
-                {user?.dept_sap_short}
+                 {user?.posi_text} {user?.dept_sap_short}
               </div>
             </div>
           </div>
         </div>
         
         {displayPhone && (
-          <div className="form-card-right align-self-center">
+          <div className="form-card-right align-self-center !w-[30%]">
             <div className="flex flex-wrap gap-4">
               <div className="col-span-12 md:col-span-6">
                 <div className="form-group form-plaintext">
@@ -54,7 +55,7 @@ export default function ApproverInfoCard({
                 </div>
               </div>
 
-              {user?.tel_internal && (
+            
                 <div className="col-span-12 md:col-span-6">
                   <div className="form-group form-plaintext">
                     <i className="material-symbols-outlined">call</i>
@@ -65,7 +66,7 @@ export default function ApproverInfoCard({
                     </div>
                   </div>
                 </div>
-              )}
+            
             </div>
           </div>
         )}

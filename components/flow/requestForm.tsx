@@ -40,6 +40,7 @@ const schema = yup
     startDate: yup.string(),
     endDate: yup.string(),
     refCostTypeCode: yup.string(),
+    vehicleUserEmpPosition: yup.string(),
     timeStart: yup.string(),
     timeEnd: yup.string(),
     attachmentFile: yup.string(),
@@ -131,32 +132,7 @@ export default function RequestForm() {
   };
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetchVehicleUsers("");
-        if (response.status === 200) {
-          const vehicleUserData = response.data;
-          setVehicleUserDatas(vehicleUserData);
-          const driverOptionsArray = [
-            ...vehicleUserData.map(
-              (user: {
-                emp_id: string;
-                full_name: string;
-                dept_sap: string;
-              }) => ({
-                value: user.emp_id,
-                label: `${user.full_name} (${user.emp_id})`,
-              })
-            ),
-          ];
-
-          setDriverOptions(driverOptionsArray);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-
+   
     const fetchCostTypeRequest = async () => {
       try {
         const response = await fetchCostTypes();
@@ -182,56 +158,71 @@ export default function RequestForm() {
       }
     };
 
-    fetchRequests();
+
     fetchCostTypeRequest();
   }, []);
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
-    driverOptions[0]
-  );
-
-  useEffect(() => {
-    if (driverOptions.length > 0 && !selectedVehicleUserOption) {
-      setSelectedVehicleUserOption(driverOptions[0]);
-    }
-  }, [driverOptions, selectedVehicleUserOption]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
 
 
-  useEffect(() => {
-    if (!formData.timeStart) {
-      setValue("timeStart", "08:00");
-    }
-    if (!formData.timeEnd) {
-      setValue("timeEnd", "16:00");
-    }
-    if (profile && profile.emp_id && vehicleUserDatas.length > 0) {
-      if (formData.vehicleUserEmpId) {
-        setSelectedVehicleUserOption({
-          value: formData.vehicleUserEmpId,
-          label: `${formData.vehicleUserEmpName} (${formData.vehicleUserEmpId})`,
-        });
-      } else {
-        const defaultVehicleUser = vehicleUserDatas.find(
-          (user) => user.emp_id === profile.emp_id
+useEffect(() => {
+  // Set default times if not provided
+  if (!formData.timeStart) {
+    setValue("timeStart", "08:30");
+  }
+  if (!formData.timeEnd) {
+    setValue("timeEnd", "16:30");
+  }
+
+  if (profile) {
+    const fetchDefaultData = async () => {
+      try {
+        const response = await fetchVehicleUsers(
+          formData?.vehicleUserEmpId ? formData?.vehicleUserEmpId : profile?.emp_id
         );
-        if (defaultVehicleUser) {
-          setSelectedVehicleUserOption({
-            value: defaultVehicleUser.emp_id,
-            label: `${defaultVehicleUser.full_name} (${defaultVehicleUser.emp_id})`,
-          });
-          setValue("telInternal", defaultVehicleUser.tel_internal);
-          setValue("telMobile", defaultVehicleUser.tel_mobile);
-          setValue(
-            "deptSapShort",
-            defaultVehicleUser.posi_text +
-              "/" +
-              defaultVehicleUser.dept_sap_short
+        
+        if (response) {
+          const vehicleUserData = response.data;
+          setVehicleUserDatas(vehicleUserData);
+          
+          const driverOptionsArray = vehicleUserData.map(
+            (user: {
+              emp_id: string;
+              full_name: string;
+              dept_sap: string;
+            }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
           );
-          setValue("deptSap", defaultVehicleUser.dept_sap);
-          setValue("userImageUrl", defaultVehicleUser.image_url);
+          setDriverOptions(driverOptionsArray);
+
+          const selectedDriverOption = {
+            value: vehicleUserData[0]?.emp_id,
+            label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
+          };
+
+          if (vehicleUserData) {
+            setValue("telInternal", vehicleUserData[0].tel_internal);
+            setValue("telMobile", vehicleUserData[0].tel_mobile);
+            setValue(
+              "deptSapShort",
+              `${vehicleUserData[0].posi_text}/${vehicleUserData[0].dept_sap_short}`
+            );
+            setValue("deptSap", vehicleUserData[0].dept_sap);
+            setValue("userImageUrl", vehicleUserData[0].image_url);
+            setValue("vehicleUserEmpPosition", vehicleUserData[0].posi_text || "");
+          }
+
+          setSelectedVehicleUserOption(selectedDriverOption);
         }
+      } catch (error) {
+        console.error("Error resetting options:", error);
       }
-    }
+    };
 
     const fetchApprover = async () => {
       try {
@@ -244,20 +235,43 @@ export default function RequestForm() {
         console.error("Error fetching requests:", error);
       }
     };
-
+    
+    fetchDefaultData();
     fetchApprover();
-  }, [profile, vehicleUserDatas]);
+  }
+}, [profile, formData]);
 
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
-    setSelectedVehicleUserOption(
-      selectedOption as { value: string; label: string }
-    );
+  setValue("telInternal", "");
+      setValue("telMobile", "");
+      setValue("deptSapShort", "");
+      setValue("vehicleUserEmpPosition", "");
 
+    if (selectedOption.value === "") {
+      setSelectedVehicleUserOption(null);
+    } else {
+      setSelectedVehicleUserOption(
+        selectedOption as { value: string; label: string }
+      );
+    }
+
+
+    // If cleared (value is empty), reset related fields
+    if (!selectedOption.value) {
+      setValue("telInternal", "");
+      setValue("telMobile", "");
+      setValue("deptSapShort", "");
+      setValue("vehicleUserEmpPosition", "");
+      return;
+    }
+    console.log("selectedOption===>", vehicleUserDatas);
     const empData = vehicleUserDatas.find(
-      (user: { emp_id: string }) => user.emp_id === selectedOption.value
+      (user: { emp_id: string }) =>
+        String(user.emp_id) === String(selectedOption.value)
     );
+    console.log("empData===>", empData);
 
     if (empData) {
       setValue("telInternal", empData.tel_internal);
@@ -265,6 +279,7 @@ export default function RequestForm() {
       setValue("deptSapShort", empData.dept_sap_short);
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
+      setValue("vehicleUserEmpPosition", empData.posi_text || "");
     }
   };
 
@@ -304,7 +319,7 @@ export default function RequestForm() {
     try {
       const response = await uploadFile(file);
       setValue("attachmentFile", response.file_url || "");
-      setFileName(shortenFilename(response.file_url) || "อัพโหลดเอกสารแนบ");
+      // setFileName(shortenFilename(response.file_url) || "อัพโหลดเอกสารแนบ");
     } catch (error: unknown) {
       if (typeof error === "object" && error !== null && "response" in error) {
         const axiosError = error as {
@@ -336,8 +351,8 @@ export default function RequestForm() {
       startDate: formData.startDate || "",
       endDate: formData.endDate || "",
       refCostTypeCode: formData.refCostTypeCode || "",
-      timeStart: formData.timeStart || "08:00",
-      timeEnd: formData.timeEnd || "16:00",
+      timeStart: formData.timeStart || "08:30",
+      timeEnd: formData.timeEnd || "16:30",
       attachmentFile: formData.attachmentFile || "",
       deptSapShort: formData.deptSapShort || "",
       deptSap: formData.vehicleUserDeptSap || "",
@@ -354,7 +369,7 @@ export default function RequestForm() {
   const endDate = watch("endDate");
   const isSameDay = startDate === endDate;
   const isOvernightDisabled = startDate === endDate;
-  const [minTime, setMinTime] = useState("8:00");
+  const [minTime, setMinTime] = useState("8:30");
   // ADD: Require cost center for type 2
   const isCostCenterRequired =
     selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
@@ -385,62 +400,55 @@ export default function RequestForm() {
     }
   }, [formData, costTypeDatas]);
 
-  const handleDriverSearch = async (search: string) => {
-    // Debounce handled by parent component or elsewhere
-    if (search.trim().length < 3) {
-      setLoadingDrivers(true);
-      try {
-        const response = await fetchVehicleUsers("");
-        if (response.status === 200) {
-          const vehicleUserData = response.data;
-          const driverOptionsArray = vehicleUserData.map(
-            (user: {
-              emp_id: string;
-              full_name: string;
-              dept_sap: string;
-            }) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.emp_id})`,
-            })
-          );
-          setDriverOptions(driverOptionsArray);
-        } else {
-          setDriverOptions([]);
-        }
-      } catch (error) {
-        setDriverOptions([]);
-        console.error("Error resetting options:", error);
-      } finally {
-        setLoadingDrivers(false);
+  useEffect(() => {
+    if (costTypeDatas.length > 0 && selectedCostTypeOption.label === "") {
+      const defaultData = costTypeDatas.find(
+        (cost) => cost.ref_cost_type_code === (formData.refCostTypeCode || "1")
+      );
+      if (defaultData) {
+        setSelectedCostTypeOption({
+          value: defaultData.ref_cost_type_code,
+          label: defaultData.ref_cost_type_name,
+        });
+        setValue("costCenter", defaultData.cost_center);
       }
-      return;
     }
+  }, [costTypeDatas, formData.refCostTypeCode]);
 
-    setLoadingDrivers(true);
-    try {
-      const response = await fetchVehicleUsers(search);
-      if (response.status === 200) {
-        const vehicleUserData = response.data;
-        const driverOptionsArray = vehicleUserData.map(
-          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-            value: user.emp_id,
-            label: `${user.full_name} (${user.emp_id})`,
-          })
-        );
-        setDriverOptions(driverOptionsArray);
-      } else {
-        setDriverOptions([]);
-      }
-    } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        setDriverOptions([]);
-        console.error("Search failed:", error);
-      }
-    } finally {
-      setLoadingDrivers(false);
+const handleDriverSearch = async (search: string) => {
+  const trimmed = search.trim();
+
+  if (trimmed.length < 3) {
+    setDriverOptions([]);
+    setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
+    setLoadingDrivers(false);
+    return;
+  }
+
+  setLoadingDrivers(true);
+  try {
+    const response = await fetchVehicleUsers(trimmed);
+    if (response && Array.isArray(response.data)) {
+      const vehicleUserData = response.data;
+      setVehicleUserDatas(vehicleUserData); // <-- Update here!
+      setDriverOptions(
+        vehicleUserData.map((user: { emp_id: string; full_name: string }) => ({
+          value: user.emp_id,
+          label: `${user.full_name} (${user.emp_id})`,
+        }))
+      );
+    } else {
+      setDriverOptions([]);
+      setVehicleUserDatas([]);
     }
-  };
- 
+  } catch (error) {
+    setDriverOptions([]);
+    setVehicleUserDatas([]);
+    console.error("Error in handleDriverSearch:", error);
+  } finally {
+    setLoadingDrivers(false);
+  }
+};
 
   const handleCostCenterSearch = async (search: string) => {
     if (search.trim().length < 3) {
@@ -471,33 +479,34 @@ export default function RequestForm() {
     }
 
     setLoadingCostCenter(true);
-    try {
-      const response = await fetchVehicleUsers(search);
-      if (response.status === 200) {
-        const vehicleUserData = response.data;
-        const driverOptionsArray = vehicleUserData.map(
-          (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-            value: user.emp_id,
-            label: `${user.full_name} (${user.emp_id})`,
-          })
-        );
-        setDriverOptions(driverOptionsArray);
-      } else {
-        setDriverOptions([]);
-      }
-    } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        setDriverOptions([]);
-        console.error("Search failed:", error);
-      }
-    } finally {
-      setLoadingDrivers(false);
-    }
+    // try {
+    //   const response = await fetchVehicleUsers(search);
+    //   if (response.status === 200) {
+    //     const vehicleUserData = response.data;
+    //     const driverOptionsArray = vehicleUserData.map(
+    //       (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+    //         value: user.emp_id,
+    //         label: `${user.full_name} (${user.emp_id})`,
+    //       })
+    //     );
+    //     setDriverOptions(driverOptionsArray);
+    //   } else {
+    //     setDriverOptions([]);
+    //   }
+    // } catch (error) {
+    //   if ((error as Error).name !== "AbortError") {
+    //     setDriverOptions([]);
+    //     console.error("Search failed:", error);
+    //   }
+    // } finally {
+    //   setLoadingDrivers(false);
+    // }
   };
 
   const onSubmit = (data: any) => {
-    data.vehicleUserEmpId = selectedVehicleUserOption.value;
-    const result = selectedVehicleUserOption.label.split("(")[0].trim();
+    data.vehicleUserEmpId = selectedVehicleUserOption?.value;
+    const result = selectedVehicleUserOption?.label.split("(")[0].trim();
+
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;
     data.numberOfPassenger = passengerCount;
@@ -514,6 +523,8 @@ export default function RequestForm() {
     } else {
       data.costCenter = data.costCenter;
     }
+    data.vehicleUserEmpPosition = watch("vehicleUserEmpPosition") || "";
+
     localStorage.setItem("processOne", "Done");
     updateFormData(data);
     router.push("process-two");
@@ -636,6 +647,7 @@ export default function RequestForm() {
                       </div>
                       <input
                         type="text"
+                        maxLength={10}
                         className="form-control"
                         {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
@@ -661,7 +673,7 @@ export default function RequestForm() {
               </div>
 
               <div className="grid w-full flex-wrap gap-5 grid-cols-12">
-                <div className="col-span-6 md:col-span-3">
+                <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">วันที่เริ่มต้นเดินทาง</label>
                     <div className="input-group">
@@ -676,7 +688,7 @@ export default function RequestForm() {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
-                        // minDate={startDate}
+                        minDate={new Date().toISOString().split("T")[0]}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -695,7 +707,7 @@ export default function RequestForm() {
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
                         defaultValue={
-                          formData.timeEnd ? formData.timeEnd : "8:00"
+                          formData.timeEnd ? formData.timeEnd : "8:30"
                         }
                         onChange={(dateStr) => {
                           setValue("timeStart", dateStr);
@@ -706,7 +718,7 @@ export default function RequestForm() {
                   </div>
                 </div>
 
-                <div className="col-span-6 md:col-span-3">
+                <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">วันที่สิ้นสุดเดินทาง</label>
                     <div className="input-group">
@@ -739,11 +751,11 @@ export default function RequestForm() {
                       </div>
                       <TimePicker
                         defaultValue={
-                          formData.timeEnd ? formData.timeEnd : "16:00"
+                          formData.timeEnd ? formData.timeEnd : "16:30"
                         }
                         placeholder="ระบุเวลาที่สิ้นสุดเดินทาง"
                         onChange={(dateStr) => setValue("timeEnd", dateStr)}
-                        minTime={ isSameDay ? minTime : undefined}
+                        minTime={isSameDay ? minTime : undefined}
                       />
                     </div>
                   </div>

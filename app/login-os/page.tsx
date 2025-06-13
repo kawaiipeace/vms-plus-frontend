@@ -26,7 +26,6 @@ export default function LoginOS() {
 
   useEffect(() => {
     const errorThaiId = sessionStorage.getItem("errorThaiId");
-    console.log("errorThaiId", errorThaiId);
     if (errorThaiId) {
       // setErrorLogin(errorThaiId);
       errorLoginModalRef.current?.openModal();

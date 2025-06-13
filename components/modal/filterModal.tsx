@@ -6,7 +6,7 @@ import useSwipeDown from "@/utils/swipeDown";
 import dayjs from "dayjs";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import CustomSelect, { CustomSelectOption } from "../customSelect";
-import DateRangePicker from "../vehicle/input/dateRangeInput";
+import DateRangePicker from "../vehicle-management/input/dateRangeInput";
 
 interface Props {
   statusData?: summaryType[];

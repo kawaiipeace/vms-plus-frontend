@@ -30,7 +30,7 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                 <i className="material-symbols-outlined">apartment</i>
                 <div className="pl-2">
                   <h5 className="font-semibold mb-1">บริษัทผู้รับจ้าง</h5>
-                  <p>{driverInfo?.vender_name}</p>
+                  <p>{driverInfo?.vendor_name}</p>
                 </div>
               </div>
               <div className="flex col-span-1">

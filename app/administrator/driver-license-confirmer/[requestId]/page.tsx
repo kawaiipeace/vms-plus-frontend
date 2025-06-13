@@ -35,13 +35,13 @@ export default function RequestDetail() {
   return (
     <div>
       <div className="main-container">
-        <SideBar menuName="อนุมัติขอคำใช้และใบอนุญาต" />
+        <SideBar menuName="อนุมัติคำขอใช้และใบอนุญาต" />
 
         <div
           className={`main-content ${
             isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
           }`}
-        >
+      >
           <Header />
           <div className="main-content-body">
           {requestData && <PageHeaderFirst data={requestData} />}

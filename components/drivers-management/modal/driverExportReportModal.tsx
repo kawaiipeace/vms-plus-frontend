@@ -1,12 +1,12 @@
 // import DatePicker from "@/components/datePicker";
-import DatePicker from "@/components/drivers-management/datePicker";
+import DatePicker from "@/components/datePicker";
 import FormHelper from "@/components/formHelper";
 import { downloadReport } from "@/services/driversManagement";
 import Image from "next/image";
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import * as Yup from "yup";
 
-import { convertToThaiDate, convertToISO8601 } from "@/utils/driver-management";
+import { convertToThaiDate } from "@/utils/driver-management";
 
 interface DriverExportReportModalProps {
   selectedRow: { [key: string]: string };
@@ -57,11 +57,11 @@ const DriverExportReportModal = forwardRef<
   //   }
   // }, [selectedRow]);
 
-  function convertDDMMYYYYToISO(dateStr: string): string {
-    const [day, month, year] = dateStr.split("/");
-    if (!day || !month || !year) return "";
-    return `${Number(year) - 543}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
+  // function convertDDMMYYYYToISO(dateStr: string): string {
+  //   const [day, month, year] = dateStr.split("/");
+  //   if (!day || !month || !year) return "";
+  //   return `${Number(year) - 543}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  // }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -209,7 +209,7 @@ const DriverExportReportModal = forwardRef<
                       <div className="grid grid-cols-1 mt-3">
                         <div className=" card card-body p-4 ">
                           <div className="w-full flex rounded-2xl  items-stretch">
-                            <Image src="/assets/img/empty/add_driver.svg" alt="" width={100} height={100} />
+                            <Image src="/assets/img/empty/driver.svg" alt="" width={100} height={100} />
                             <div className="text-left">
                               <h5 className="text-[#344054] font-semibold pl-4">ประวัติการทำงานของพนักงานขับรถ</h5>
                               <p className="text-[#667085] font-semibold text-sm pl-4">ดาวน์โหลดไฟล์ .XLSX</p>

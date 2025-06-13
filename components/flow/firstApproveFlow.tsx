@@ -190,7 +190,7 @@ export default function FirstApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
@@ -211,7 +211,7 @@ export default function FirstApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">

@@ -75,7 +75,7 @@ export default function RequestDetailForm({
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await requestDetail(requestId);
-      console.log("data---", response.data);
+      console.log("data1====>", response.data);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -231,7 +231,9 @@ export default function RequestDetailForm({
           <div className="form-section">
             <ApproveProgress
               progressSteps={requestData?.progress_request_status}
-              progressRequestStatusEmp={requestData?.progress_request_status_emp}
+              progressRequestStatusEmp={
+                requestData?.progress_request_status_emp
+              }
             />
 
             <div className="col-span-1 row-start-1 md:row-start-2">
@@ -260,7 +262,7 @@ export default function RequestDetailForm({
                             </div>
                             <div className="supporting-text-group">
                               <div className="supporting-text">
-                                สายงานดิจิทัล
+                                {requestData?.carpool_name || ""}
                               </div>
                             </div>
                           </div>
@@ -283,10 +285,7 @@ export default function RequestDetailForm({
                               directions_car
                             </i>
                             <span className="card-item-text">
-                              {
-                                requestData?.request_vehicle_type
-                                  ?.ref_vehicle_type_name
-                              }
+                              {requestData?.requested_vehicle_type}
                             </span>
                           </div>
                         </div>
@@ -352,33 +351,14 @@ export default function RequestDetailForm({
                     <CarDetailCard vehicle={requestData?.vehicle} />
                   )}
 
-                {requestData?.is_admin_choose_driver && (
+                {requestData?.can_choose_driver === true && (
                   <ChooseDriverCard
                     number={requestData?.number_of_available_drivers}
+                    requestData={requestData}
                   />
                 )}
-
-                {requestData?.is_pea_employee_driver === "1" ? (
-                  <div className="mt-5">
-                    <div className="form-section-header">
-                      <div className="form-section-header-title">ผู้ขับขี่</div>
-                    </div>
-
-                    <DriverPeaInfoCard
-                      driver_emp_id={requestData?.driver_emp_id}
-                      driver_emp_name={requestData?.driver_emp_name}
-                      driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
-                      driver_internal_contact_number={
-                        requestData?.driver_internal_contact_number
-                      }
-                      driver_mobile_contact_number={
-                        requestData?.driver_mobile_contact_number
-                      }
-                      driver_image_url={requestData?.driver_image_url}
-                    />
-                  </div>
-                ) : (
-                  requestData?.driver && (
+                {requestData?.can_choose_driver === false &&
+                  (requestData?.is_pea_employee_driver === "1" ? (
                     <div className="mt-5">
                       <div className="form-section-header">
                         <div className="form-section-header-title">
@@ -386,13 +366,35 @@ export default function RequestDetailForm({
                         </div>
                       </div>
 
-                      <DriverSmallInfoCard
-                        driverDetail={requestData?.driver}
-                        showPhone={true}
+                      <DriverPeaInfoCard
+                        driver_emp_id={requestData?.driver_emp_id}
+                        driver_emp_name={requestData?.driver_emp_name}
+                        driver_emp_dept_sap={requestData?.driver_emp_dept_sap}
+                        driver_internal_contact_number={
+                          requestData?.driver_internal_contact_number
+                        }
+                        driver_mobile_contact_number={
+                          requestData?.driver_mobile_contact_number
+                        }
+                        driver_image_url={requestData?.driver_image_url}
                       />
                     </div>
-                  )
-                )}
+                  ) : (
+                    requestData?.driver && (
+                      <div className="mt-5">
+                        <div className="form-section-header">
+                          <div className="form-section-header-title">
+                            ผู้ขับขี่
+                          </div>
+                        </div>
+
+                        <DriverSmallInfoCard
+                          driverDetail={requestData?.driver}
+                          showPhone={true}
+                        />
+                      </div>
+                    )
+                  ))}
               </div>
             </div>
           </div>
@@ -406,6 +408,13 @@ export default function RequestDetailForm({
       <VehiclePickModel
         process="edit"
         ref={vehiclePickModalRef}
+        masCarpoolUid={requestData?.mas_carpool_uid}
+        selectType={
+          requestData?.is_admin_choose_vehicle === "1"
+            ? "Admin เลือกยานพาหนะให้"
+            : "ระบบเลือกยานพาหนะให้"
+        }
+        desc={requestData?.carpool_name}
         requestData={requestData}
         onUpdate={handleModalUpdate}
       />

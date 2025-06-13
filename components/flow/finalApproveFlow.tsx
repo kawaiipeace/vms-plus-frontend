@@ -1,6 +1,5 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import FilterModal from "@/components/modal/filterModal";
-import FilterSortModal from "@/components/modal/filterSortModal";
 import RequestStatusBox from "@/components/requestStatusBox";
 import FinalListTable from "@/components/table/final-list-table";
 import PaginationControls from "@/components/table/pagination-control";
@@ -111,21 +110,21 @@ export default function FinalApproveFlow() {
     }));
   };
 
-  const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
-      setParams((prevParams) => ({
-        ...prevParams,
-        order_by: "start_datetime",
-        order_dir: "desc",
-      }));
-    } else {
-      setParams((prevParams) => ({
-        ...prevParams,
-        order_by: "request_no",
-        order_dir: "desc",
-      }));
-    }
-  };
+  // const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
+  //   if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
+  //     setParams((prevParams) => ({
+  //       ...prevParams,
+  //       order_by: "start_datetime",
+  //       order_dir: "desc",
+  //     }));
+  //   } else {
+  //     setParams((prevParams) => ({
+  //       ...prevParams,
+  //       order_by: "request_no",
+  //       order_dir: "desc",
+  //     }));
+  //   }
+  // };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
@@ -212,7 +211,7 @@ export default function FinalApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
@@ -233,7 +232,7 @@ export default function FinalApproveFlow() {
           {summary.map((item) => {
             const config = statusConfig[item.ref_request_status_code];
 
-            if (!config || item.count === 0) return null;
+            if (!config) return null;
 
             return (
               <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
@@ -324,7 +323,7 @@ export default function FinalApproveFlow() {
         )}
       </div>
 
-      {dataRequest?.length > 0 ? (
+      {dataRequest?.length > 0 && (
         <>
           <div className="mt-2">
             <FinalListTable defaultData={dataRequest} pagination={pagination} />
@@ -336,10 +335,9 @@ export default function FinalApproveFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-      ) : (
-        filterNum > 0 ||
-        filterDate ||
-        (filterDate?.length <= 0 && (
+      ) }
+      {pagination.total > 0 ? (
+        dataRequest.length <= 0 && (
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"
@@ -349,8 +347,22 @@ export default function FinalApproveFlow() {
             btnType="secondary"
             useModal={handleClearAllFilters}
           />
-        ))
+        )
+      ) : (
+       <ZeroRecord
+              imgSrc="/assets/img/graphic/empty.svg"
+              title="ไม่มีคำขอใช้ยานพาหนะ"
+              desc={
+                <>
+                  เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติ<br></br>
+                  รายการคำขอจะแสดงที่นี่
+                </>
+              }
+              displayBtn={false}
+              button={""}
+            />
       )}
+
       <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
     </>
   );

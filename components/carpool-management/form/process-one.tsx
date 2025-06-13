@@ -7,7 +7,7 @@ import {
 } from "@/app/types/carpool-management-type";
 import CustomMultiSelect from "@/components/customMultiSelect";
 import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
-import CustomSearchSelect from "@/components/customSelectSerch";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 import FormHelper from "@/components/formHelper";
 import RadioButton from "@/components/radioButton";
 import ToastCustom from "@/components/toastCustom";
@@ -71,6 +71,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   const name = useSearchParams().get("name");
   const router = useRouter();
 
+  const [firstFetch, setFirstFetch] = useState(false);
   const [carRadio, setCarRadio] = useState<CarChoice[]>([]);
   const [driverRadio, setDriverRadio] = useState<DriverChoice[]>([]);
   const [departments, setDepartments] = useState<CarpoolDepartment[]>([]);
@@ -79,6 +80,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     CustomSelectOption[]
   >([]);
   const [toast, setToast] = useState<ToastProps | undefined>();
+  const [dLoading, setDLoading] = useState(false);
 
   const { formData, updateFormData } = useFormContext();
 
@@ -115,6 +117,12 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   }, [formData.form?.carpool_type]);
 
   useEffect(() => {
+    if (formData.form?.carpool_authorized_depts) {
+      setDepartmentSelected(formData.form.carpool_authorized_depts as any);
+    }
+  }, [formData.form?.carpool_authorized_depts]);
+
+  useEffect(() => {
     const fetchCarFunc = async () => {
       try {
         const response = await chooseCarChoice();
@@ -141,34 +149,24 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
 
   useEffect(() => {
     if (group?.value) {
-      const fetchDepartmentFunc = async () => {
-        try {
-          const response = await getCarpoolDepartmentByType(group?.value);
-          const result = response.data;
-          setDepartments(result);
-        } catch (error) {
-          console.error("Error fetching status data:", error);
-        }
-      };
-
       fetchDepartmentFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group]);
 
   useEffect(() => {
-    if (carpool) {
+    if (carpool && !firstFetch) {
       const { carpool_authorized_depts } = carpool;
-      const strArr = carpool_authorized_depts.map((item) => item.dept_sap);
-      const options = departments
-        .filter((item) => strArr.includes(item.dept_sap))
-        .map((item) => ({
-          value: item.dept_sap,
-          label: item.dept_short,
-          subLabel: item.dept_full,
-        }));
+      const selected = carpool_authorized_depts.map((item) => ({
+        value: item.dept_sap,
+        label: item.mas_department?.dept_short,
+        subLabel: item.mas_department?.dept_full,
+        desc: item.mas_department?.dept_full,
+      }));
 
-      setValue("carpool_authorized_depts", carpool_authorized_depts);
-      setDepartmentSelected(options);
+      setValue("carpool_authorized_depts", selected);
+      setDepartmentSelected(selected);
+      setFirstFetch(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [departments]);
@@ -208,6 +206,21 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carpool]);
 
+  const fetchDepartmentFunc = async (search?: string) => {
+    try {
+      const response = await getCarpoolDepartmentByType(
+        group?.value || "",
+        search || ""
+      );
+      const result = response.data;
+      setDepartments(result);
+      setDLoading(false);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+      setDLoading(false);
+    }
+  };
+
   const onSubmit = async (data: any) => {
     const carpool_authorized_depts = data.carpool_authorized_depts?.map(
       (e: { value: string }) => ({ dept_sap: e.value })
@@ -230,12 +243,17 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
         if (response.request.status === 200) {
           setToast({
             title: "บันทึกการตั้งค่าสำเร็จ",
-            desc: "บันทึกการตั้งค่ากลุ่มยานพาหนะ " + name + " เรียบร้อยแล้ว",
+            desc: (
+              <>
+                บันทึกการตั้งค่ากลุ่มยานพาหนะ{" "}
+                <span className="font-bold">{name}</span> เรียบร้อยแล้ว
+              </>
+            ),
             status: "success",
           });
         }
       } catch (error: any) {
-        console.log(error);
+        console.error(error);
         setToast({
           title: "Error",
           desc: (
@@ -248,7 +266,12 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
         });
       }
     } else {
-      updateFormData({ form: dataToApi });
+      updateFormData({
+        form: {
+          ...dataToApi,
+          carpool_authorized_depts: data.carpool_authorized_depts,
+        },
+      });
       localStorage.setItem("carpoolProcessOne", "Done");
       router.push("/carpool-management/form/process-two");
     }
@@ -352,6 +375,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                     onChange={(e) => {
                       setGroup(e);
                       setValue("carpool_type", e.value);
+                      setDepartmentSelected([]);
                     }}
                   />
                   <div>
@@ -370,22 +394,26 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           "หน่วยงานที่ใช้บริการกลุ่มยานพาหนะนี้ได้"}
                       </label>
                       {group.value === "02" && (
-                        <CustomSearchSelect
+                        <CustomSelectOnSearch
                           w="w-full"
                           options={departments.map((item) => ({
                             value: item.dept_sap,
                             label: item.dept_short,
-                            subLabel: item.dept_full,
+                            desc: item.dept_full,
                           }))}
                           value={departmentSelected[0]}
-                          {...register("carpool_authorized_depts", {
-                            required: group.value === "02",
-                          })}
                           onChange={(e) => {
                             setDepartmentSelected([e]);
                             setValue("carpool_authorized_depts", [e]);
                           }}
-                          enableSearch
+                          onSearchInputChange={(value) => {
+                            fetchDepartmentFunc(value);
+                            setDLoading(true);
+                          }}
+                          loading={dLoading}
+                          enableSearchOnApi={true}
+                          showDescriptions={true}
+                          isInputOil={false}
                         />
                       )}
                       {group.value === "03" && (
@@ -395,6 +423,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                             value: item.dept_sap,
                             label: item.dept_short,
                             subLabel: item.dept_full,
+                            desc: item.dept_full,
                           }))}
                           value={departmentSelected}
                           {...register("carpool_authorized_depts", {
@@ -403,6 +432,11 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           onChange={(e) => {
                             setDepartmentSelected(e as CustomSelectOption[]);
                             setValue("carpool_authorized_depts", e);
+                          }}
+                          enableSearchApi
+                          setSearch={(value) => {
+                            fetchDepartmentFunc(value);
+                            setDLoading(true);
                           }}
                         />
                       )}

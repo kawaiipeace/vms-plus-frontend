@@ -46,7 +46,7 @@ export default function ApproverInfoCard({
               <div className="card-title">{approverData?.full_name}</div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{approverData?.emp_id}</div>
-                <div className="supporting-text">{approverData?.dept_sap_short}</div>
+                <div className="supporting-text">{approverData?.posi_text + " " + approverData?.dept_sap_short}</div>
               </div>
             </div>
             <div className="card-item-group md:!grid-cols-2 !grid-cols-1">

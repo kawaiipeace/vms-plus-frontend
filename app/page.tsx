@@ -26,6 +26,10 @@ export default function Home() {
 
             // Ensure state is set before navigation
             setTimeout(() => {
+              if (profileResponse.data.roles?.includes("driver")) {
+                router.replace("/vehicle-in-use/driver");
+              }
+
               router.push("/vehicle-booking/request-list");
             }, 0);
           } else {

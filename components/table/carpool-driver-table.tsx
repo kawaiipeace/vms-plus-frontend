@@ -16,13 +16,14 @@ import "dayjs/locale/th";
 import { useSearchParams } from "next/navigation";
 import {
   deleteCarpoolDriver,
-  putCarpoolSetVehicleActive,
+  putCarpoolSetDriverActive,
 } from "@/services/carpoolManagement";
 import ConfirmCancelCreateCarpoolModal from "../modal/confirmCancelCreateCarpoolModal";
 import DriverInfoCarpoolModal from "../modal/driverInfoCarpoolModal";
 import ToastCustom from "../toastCustom";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import Image from "next/image";
+import BadgeStatus from "../carpool-management/modal/status";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -52,6 +53,7 @@ export default function CarpoolDriverTable({
   setRefetch,
 }: Props) {
   const id = useSearchParams().get("id");
+  const active = useSearchParams().get("active");
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [deleteId, setDeleteId] = useState<string | undefined>();
@@ -92,12 +94,19 @@ export default function CarpoolDriverTable({
             cancelCreateModalRef.current?.closeModal();
             setToast({
               title: "ลบพนักงานขับรถสำเร็จ",
-              desc:
-                "พนักงานขับรถ " +
-                defaultData.find(
-                  (item) => item.mas_carpool_driver_uid === deleteId
-                )?.driver_name +
-                " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+              desc: (
+                <>
+                  พนักงานขับรถ{" "}
+                  <span className="font-bold">
+                    {
+                      defaultData.find(
+                        (item) => item.mas_carpool_driver_uid === deleteId
+                      )?.driver_name
+                    }
+                  </span>{" "}
+                  ถูกลบออกจากกลุ่มเรียบร้อยแล้ว
+                </>
+              ),
               status: "success",
             });
           }
@@ -125,28 +134,61 @@ export default function CarpoolDriverTable({
         cancelCreateModalRef.current?.closeModal();
         setToast({
           title: "ลบพนักงานขับรถสำเร็จ",
-          desc:
-            "พนักงานขับรถ " +
-            defaultData.find((item) => item.mas_driver_uid === deleteId)
-              ?.driver_name +
-            " ถูกลบออกจากกลุ่มเรียบร้อยแล้ว",
+          desc: (
+            <>
+              พนักงานขับรถ{" "}
+              <span className="font-bold">
+                {
+                  defaultData.find((item) => item.mas_driver_uid === deleteId)
+                    ?.driver_name
+                }
+              </span>{" "}
+              ถูกลบออกจากกลุ่มเรียบร้อยแล้ว
+            </>
+          ),
           status: "success",
         });
       }
     }
   };
 
-  const handleActive = async (id: string, active: string) => {
+  const handleActive = async (id: string, _active: string, name: string) => {
+    if (active === "ปิด" || active === "ไม่พร้อมใช้งาน") return;
+
     try {
-      const response = await putCarpoolSetVehicleActive(
+      const response = await putCarpoolSetDriverActive(
         id as string,
-        active === "1" ? "0" : "1"
+        _active === "1" ? "0" : "1"
       );
       if (response.request.status === 200) {
         setRefetch(true);
+        setToast({
+          title:
+            _active === "1"
+              ? "ปิดใช้งานพนักงานขับรถสำเร็จ"
+              : "เปิดใช้งานพนักงานขับรถสำเร็จ",
+          desc: (
+            <>
+              {_active === "1" ? "ปิดให้บริการพนักงานขับรถ" : "พนักงานขับรถ"}{" "}
+              <span className="font-bold">{name}</span>{" "}
+              {_active === "1" ? "เรียบร้อยแล้ว" : "พร้อมให้บริการแล้ว"}
+            </>
+          ),
+          status: "success",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setToast({
+        title: "Error",
+        desc: (
+          <div>
+            <div>{error.response.data.error}</div>
+            <div>{error.response.data.message}</div>
+          </div>
+        ),
+        status: "error",
+      });
     }
   };
 
@@ -246,7 +288,8 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score || 0}
+            {row.original.driver_average_satisfaction_score ||
+              "ยังไม่มีการให้คะแนน"}
           </div>
         );
       },
@@ -257,8 +300,8 @@ export default function CarpoolDriverTable({
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="สถานะ">
-            {row.original.driver_status_name}
+          <div className="text-left w-40" data-name="สถานะ">
+            <BadgeStatus status={row.original.driver_status_name} />
           </div>
         );
       },
@@ -382,7 +425,8 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score || 0}
+            {row.original.driver_average_satisfaction_score ||
+              "ยังไม่มีการให้คะแนน"}
           </div>
         );
       },
@@ -393,8 +437,8 @@ export default function CarpoolDriverTable({
       enableSorting: true,
       cell: ({ row }) => {
         return (
-          <div className="text-left" data-name="สถานะ">
-            {row.original.driver_status_name}
+          <div className="text-left w-40" data-name="สถานะ">
+            <BadgeStatus status={row.original.driver_status_name} />
           </div>
         );
       },
@@ -410,11 +454,13 @@ export default function CarpoolDriverTable({
               <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                 <input
                   type="checkbox"
+                  defaultChecked={row.original.is_active === "1" ? true : false}
                   checked={row.original.is_active === "1" ? true : false}
-                  onClick={() =>
+                  onChange={() =>
                     handleActive(
                       row.original.mas_carpool_driver_uid,
-                      row.original.is_active
+                      row.original.is_active,
+                      row.original.driver_name
                     )
                   }
                   className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
@@ -492,20 +538,29 @@ export default function CarpoolDriverTable({
         ref={cancelCreateModalRef}
         title={"ยืนยันนำพนักงานขับรถออกจากกลุ่ม?"}
         desc={
-          "คุณต้องการนำพนักงานขับรถ " +
-          defaultData.find((item) =>
-            id
-              ? item.mas_carpool_driver_uid === deleteId
-              : item.mas_driver_uid === deleteId
-          )?.driver_name +
-          "(" +
-          defaultData.find((item) =>
-            id
-              ? item.mas_carpool_driver_uid === deleteId
-              : item.mas_driver_uid === deleteId
-          )?.driver_nickname +
-          ")" +
-          " ออกจากการให้บริการของกลุ่มใช่หรือไม่?"
+          <>
+            คุณต้องการนำพนักงานขับรถ{" "}
+            <span className="font-bold">
+              {
+                defaultData.find((item) =>
+                  id
+                    ? item.mas_carpool_driver_uid === deleteId
+                    : item.mas_driver_uid === deleteId
+                )?.driver_name
+              }
+            </span>{" "}
+            ({" "}
+            <span className="font-bold">
+              {
+                defaultData.find((item) =>
+                  id
+                    ? item.mas_carpool_driver_uid === deleteId
+                    : item.mas_driver_uid === deleteId
+                )?.driver_nickname
+              }
+            </span>{" "}
+            ) ออกจากการให้บริการของกลุ่มใช่หรือไม่?
+          </>
         }
         confirmText={"นำพนักงานขับรถออก"}
         onConfirm={handleDelete}

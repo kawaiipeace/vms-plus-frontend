@@ -1,4 +1,4 @@
-import { fi } from "date-fns/locale";
+// import { fi } from "date-fns/locale";
 
 interface UploadFilePreviewProps {
   file_name?: string;

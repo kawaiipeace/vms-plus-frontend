@@ -24,7 +24,9 @@ const schema = yup.object().shape({
 
 interface VehiclePickModelProps {
   selectType?: string;
+  desc?: string;
   requestData?: RequestDetailType;
+  masCarpoolUid?: string;
   process: string;
   onSelect?: (vehicle: string) => void;
   onUpdate?: (data: any) => void;
@@ -40,7 +42,7 @@ interface VehicleCat {
 const VehiclePickModel = forwardRef<
   { openModal: () => void; closeModal: () => void },
   VehiclePickModelProps
->(({ process, onSelect, onUpdate, requestData, selectType }, ref) => {
+>(({ process, onSelect, onUpdate, requestData, desc, selectType, masCarpoolUid }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { profile } = useProfile();
   const hasReset = useRef(false);
@@ -71,8 +73,17 @@ const VehiclePickModel = forwardRef<
 
   const vehicleParams = {
     emp_id: profile?.emp_id,
-    start_date: `${formData.startDate} ${formData.timeStart}`,
-    end_date: `${formData.endDate} ${formData.timeEnd}`,
+   start_date: formData?.startDate && formData?.timeStart
+    ? `${formData.startDate} ${formData.timeStart}`
+    : requestData?.start_datetime
+    ? `${requestData.start_datetime}`
+    : "",
+  end_date: formData?.endDate && formData?.timeEnd
+    ? `${formData.endDate} ${formData.timeEnd}`
+    : requestData?.end_datetime
+    ? `${requestData.end_datetime}`
+    : "",
+    mas_carpool_uid: masCarpoolUid || "",
   };
 
   const fetchVehicleCarTypesData = async () => {
@@ -92,16 +103,25 @@ const VehiclePickModel = forwardRef<
   });
 
   useEffect(() => {
+    // If requestData exists, use its value first
     if (requestData?.request_vehicle_type) {
       setSelectedCarTypeId(
-        String(requestData.request_vehicle_type.ref_vehicle_type_code)
+        String(requestData.request_vehicle_type.ref_vehicle_type_name)
       );
       setSelectedCarTypeName(
         requestData?.request_vehicle_type?.ref_vehicle_type_name || ""
       );
       hasReset.current = true;
     }
-  }, [requestData]);
+    // If formData exists and has a name, use it (overrides requestData)
+    if (formData?.requestedVehicleTypeName) {
+      console.log('requestedVehicleTypeName',formData.requestedVehicleTypeName);
+      setSelectedCarTypeId(formData.requestedVehicleTypeName);
+      setSelectedCarTypeName(formData.requestedVehicleTypeName);
+      hasReset.current = true;
+    }
+  }, [requestData, formData]);
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -141,7 +161,7 @@ const VehiclePickModel = forwardRef<
                       <div className="card-content-top">
                         <div className="card-title">{selectType}</div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">สายงานดิจิทัล</div>
+                          <div className="supporting-text">{desc}</div>
                         </div>
                       </div>
                     </div>
@@ -161,7 +181,7 @@ const VehiclePickModel = forwardRef<
                       <div className="card-content-top">
                         <div className="card-title">{selectType}</div>
                         <div className="supporting-text-group">
-                          <div className="supporting-text">สายงานดิจิทัล</div>
+                          <div className="supporting-text">{desc}</div>
                         </div>
                       </div>
                     </div>
@@ -199,10 +219,7 @@ const VehiclePickModel = forwardRef<
                 <div className="px-0">
                   <div className="grid grid-cols-3 gap-4">
                     {groupedVehicles[currentSlide]?.map((vehicle, index) => (
-                      <div
-                        key={index}
-                        className="h-full"
-                      >
+                      <div key={index} className="h-full">
                         <CarTypeCard
                           imgSrc={
                             vehicle.vehicle_type_image ||
@@ -248,6 +265,7 @@ const VehiclePickModel = forwardRef<
           <button
             type="button"
             className="btn btn-primary"
+            disabled={!selectedCarTypeId}
             onClick={async () => {
               if (onSelect) onSelect(selectedCarTypeId);
               setValue("requestedVehicleTypeName", selectedCarTypeName);
@@ -255,7 +273,7 @@ const VehiclePickModel = forwardRef<
               if (requestData) {
                 const payload = {
                   trn_request_uid: requestData.trn_request_uid,
-                  requested_vehicle_type_id: Number(selectedCarTypeId),
+                  requested_vehicle_type: selectedCarTypeName,
                 };
 
                 try {

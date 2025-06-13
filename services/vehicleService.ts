@@ -1,4 +1,3 @@
-import { VehicleManagementStatus } from "@/app/types/vehicle-management/vehicle-constant";
 import { VehicleManagementReportApiParamsInput } from "@/app/types/vehicle-management/vehicle-list-type";
 import axiosInstance from "@/utils/axiosInstance";
 import { saveAs } from "file-saver";
@@ -16,14 +15,6 @@ export const fetchVehicles = async (params: RequestParams) => {
         const { data } = await axiosInstance.get("vehicle-management/search", { params });
         return data;
     } catch (error: any) {
-        const status = error.response?.status;
-        const message = error.response?.data?.message;
-
-        if (status === 404 && message === "No vehicles found") {
-            console.warn("No vehicles found for params:", params);
-            return VehicleManagementStatus.NO_VEHICLES_FOUND;
-        }
-
         console.error("Failed to fetch vehicle data:", error);
         throw new Error("Failed to fetch vehicle data");
     }

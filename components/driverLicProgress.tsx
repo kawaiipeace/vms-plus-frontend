@@ -22,21 +22,19 @@ export default function DriverLicProgress({ progressSteps }: Props) {
       setCurrentStep(currentStep?.progress_name || "");
       setNextPendingStep(nextPendingStep?.progress_name || "");
     }
-
   }, [progressSteps]);
 
   return (
     <div className="card card-approvalprogress !border-0">
-
       <div className="card-body border-0">
         {/* Mobile View */}
         {progressSteps && (
           <>
-
             <div className="w-full">
               <div className="progress-steps-column">
                 {progressSteps.map((step, index) => {
-                  const { progress_icon, progress_name, progress_datetime } = step;
+                  const { progress_icon, progress_name, progress_datetime } =
+                    step;
                   const getStepIcon = () => {
                     if (progress_icon === "3")
                       return <i className="material-symbols-outlined">check</i>;
@@ -68,9 +66,13 @@ export default function DriverLicProgress({ progressSteps }: Props) {
                         <div className="progress-step-title">
                           {progress_name}
                         </div>
-                        <div className="progress-desc font-normal text-color-secondary">
-                          {convertToBuddhistDateTime(progress_datetime).date + " " + convertToBuddhistDateTime(progress_datetime).time}
-                        </div>
+                        {progress_datetime !== "0001-01-01T00:00:00Z" && (
+                          <div className="progress-desc font-normal text-color-secondary">
+                            {convertToBuddhistDateTime(progress_datetime).date +
+                              " " +
+                              convertToBuddhistDateTime(progress_datetime).time}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -79,7 +81,6 @@ export default function DriverLicProgress({ progressSteps }: Props) {
             </div>
           </>
         )}
-
       </div>
     </div>
   );

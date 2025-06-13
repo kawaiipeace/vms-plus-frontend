@@ -14,6 +14,8 @@ import React, {
 import { DriverLicenseCardType } from "@/app/types/vehicle-user-type";
 import DriverLicenseDetailModal from "../driverLicenseDetailModal";
 import AlertCustom from "@/components/alertCustom";
+import { fetchProfile } from "@/services/authService";
+import { useProfile } from "@/contexts/profileContext";
 
 interface Props {
   requestData?: RequestAnnualDriver;
@@ -41,10 +43,10 @@ const RequestStatusLicDetailModal = forwardRef<
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-  
 
   const [currentStep, setCurrentStep] = useState("");
   const [nextPendingStep, setNextPendingStep] = useState("");
+    const { setProfile } = useProfile();
   const progressSteps = requestData?.progress_request_status;
   const doneSteps =
     progressSteps?.filter((step) => step.progress_icon === "3").length || 0;
@@ -187,18 +189,18 @@ const RequestStatusLicDetailModal = forwardRef<
                               <div className="progress-step-title">
                                 {progress_name}
                               </div>
-                              {progress_datetime !== "0001-01-01T00:00:00Z" &&
-                              <div className="progress-step-text">
-                                {" "}
-                                {convertToBuddhistDateTime(
-                                  progress_datetime || ""
-                                ).date +
-                                  " " +
-                                  convertToBuddhistDateTime(
+                              {progress_datetime !== "0001-01-01T00:00:00Z" && (
+                                <div className="progress-step-text">
+                                  {" "}
+                                  {convertToBuddhistDateTime(
                                     progress_datetime || ""
-                                  ).time}{" "}
-                              </div>
-                               }
+                                  ).date +
+                                    " " +
+                                    convertToBuddhistDateTime(
+                                      progress_datetime || ""
+                                    ).time}{" "}
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -224,50 +226,46 @@ const RequestStatusLicDetailModal = forwardRef<
                           </div>
                           <div className="supporting-text-group">
                             <div className="supporting-text">
-                              {
+                              {requestData?.progress_request_status_emp
+                                ?.emp_position +
+                                " " +
                                 requestData?.progress_request_status_emp
-                                  ?.dept_sap_short
-                              }
+                                  ?.dept_sap_short}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="form-card-right align-self-center">
                         <div className="flex gap-3 flex-wrap">
-                       
-                            <div className="col-span-12 md:col-span-6">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">
-                                  smartphone
-                                </i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-text text-nowrap">
-                                    {
-                                      requestData?.progress_request_status_emp
-                                        ?.mobile_number
-                                    }
-                                  </div>
+                          <div className="col-span-12 md:col-span-6">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">
+                                smartphone
+                              </i>
+                              <div className="form-plaintext-group">
+                                <div className="form-text text-nowrap">
+                                  {
+                                    requestData?.progress_request_status_emp
+                                      ?.mobile_number
+                                  }
                                 </div>
                               </div>
                             </div>
-                   
-                       
-                            <div className="col-span-12 md:col-span-6">
-                              <div className="form-group form-plaintext">
-                                <i className="material-symbols-outlined">
-                                  call
-                                </i>
-                                <div className="form-plaintext-group">
-                                  <div className="form-text text-nowrap">
-                                    {
-                                      requestData?.progress_request_status_emp
-                                        ?.phone_number
-                                    }
-                                  </div>
+                          </div>
+
+                          <div className="col-span-12 md:col-span-6">
+                            <div className="form-group form-plaintext">
+                              <i className="material-symbols-outlined">call</i>
+                              <div className="form-plaintext-group">
+                                <div className="form-text text-nowrap">
+                                  {
+                                    requestData?.progress_request_status_emp
+                                      ?.phone_number
+                                  }
                                 </div>
                               </div>
                             </div>
-                       
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -282,7 +280,9 @@ const RequestStatusLicDetailModal = forwardRef<
                 />
               )}
 
-                {(requestData?.ref_request_annual_driver_status_code === "21" || requestData?.ref_request_annual_driver_status_code === "11") && (
+              {(requestData?.ref_request_annual_driver_status_code === "21" ||
+                requestData?.ref_request_annual_driver_status_code ===
+                  "11") && (
                 <AlertCustom
                   title="คำขออนุมัติถูกตีกลับ"
                   desc={requestData?.rejected_request_reason}
@@ -293,10 +293,13 @@ const RequestStatusLicDetailModal = forwardRef<
           </div>
         </div>
         <div className="modal-action sticky bottom-0 gap-3 mt-0 justify-between">
-          {(requestData?.ref_request_annual_driver_status_code !== "11" && requestData?.ref_request_annual_driver_status_code !== "21") ? (
+          {requestData?.ref_request_annual_driver_status_code !== "90" ? (
             <button
               className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-              onClick={() => cancelRequestModalRef.current?.openModal()}
+              onClick={() => {
+                modalRef.current?.close(); // Close the main modal
+                cancelRequestModalRef.current?.openModal();
+              }}
             >
               ยกเลิกคำขอ
             </button>
@@ -308,7 +311,8 @@ const RequestStatusLicDetailModal = forwardRef<
             <form method="dialog">
               <button className="btn btn-secondary">ปิด</button>
             </form>
-            {(requestData?.ref_request_annual_driver_status_code !== "11" && requestData?.ref_request_annual_driver_status_code !== "21") ? (
+            {requestData?.ref_request_annual_driver_status_code !== "11" &&
+            requestData?.ref_request_annual_driver_status_code !== "21" ? (
               <button
                 className="btn btn-secondary"
                 type="button"
@@ -325,9 +329,9 @@ const RequestStatusLicDetailModal = forwardRef<
                 type="button"
                 onClick={() => {
                   modalRef.current?.close(); // Added parentheses to call the function
-                  if(onStepOne){
+                  if (onStepOne) {
                     onStepOne();
-                  }       
+                  }
                 }}
               >
                 ขออนุมัติอีกครั้ง
@@ -352,7 +356,18 @@ const RequestStatusLicDetailModal = forwardRef<
         desc="เมื่อยกเลิกคำขอแล้ว คุณจะสามารถแก้ไขข้อมูล และขออนุมัติทำหน้าที่ขับรถยนต์ได้อีกครั้ง"
         role="userLic"
         confirmText="ยกเลิกคำขอ"
-        onBack={() => modalRef.current?.close()}
+        onBack={() => {
+          const refreshProfile = async () => {
+            try {
+              const response = await fetchProfile();
+              setProfile(response.data);
+            } catch (error) {
+              console.error("Failed to refresh profile:", error);
+            }
+          };
+          refreshProfile();
+          modalRef.current?.close(); // Close the cancel modal
+        }}
       />
     </dialog>
   );

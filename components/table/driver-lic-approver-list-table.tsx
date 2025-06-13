@@ -23,13 +23,11 @@ interface PaginationType {
 interface Props {
   defaultData: DriverLicListType[];
   pagination: PaginationType;
-  licType: string;
 }
 
 export default function DriverLicApproverListTable({
   defaultData,
   pagination,
-  licType,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
@@ -67,7 +65,7 @@ export default function DriverLicApproverListTable({
           <div className="flex flex-col">
             <div>{row.original.created_request_emp_name}</div>
             <div className="text-color-secondary text-xs">
-              {row.original.created_request_dept_sap_name_short}
+              {row.original.created_request_emp_position + " " + row.original.created_request_dept_sap_name_short}
             </div>
           </div>
         </div>
@@ -133,13 +131,13 @@ export default function DriverLicApproverListTable({
         const value = getValue() as string;
         return (
           <div className="w-[80px] text-center" data-name="สถานะคำขอ">
-            {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
+            {value === "เกินวันที่นัดหมาย" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
             ) : value === "ตีกลับคำขอ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
-                ตีกลับคำขอ
+                  {value as React.ReactNode}
               </span>
             ) : value === "ยกเลิกคำขอ" ? (
               <span className="badge badge-pill-outline badge-gray whitespace-nowrap">
@@ -185,12 +183,7 @@ export default function DriverLicApproverListTable({
                 className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"
                 data-tip="ดูรายละเอียดคำขอ"
                 onClick={() =>
-                  router.push(
-                    licType === "ตรวจสอบ"
-                      ? "/administrator/driver-license-confirmer/" +  row.original.trn_request_annual_driver_uid
-                      : "/administrator/driver-license-approver/" +
-                          row.original.trn_request_annual_driver_uid
-                  )
+                  router.push("/administrator/driver-license-approver/" + row.original.trn_request_annual_driver_uid)
                 }
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>

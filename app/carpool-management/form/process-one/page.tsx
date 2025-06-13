@@ -47,24 +47,25 @@ export default function CarpoolProcessOne() {
   }, [id]);
 
   const handleActive = async () => {
-    try {
-      const response = await putCarpoolSetActive(
-        id as string,
-        active === "1" ? "0" : "1"
-      );
-      if (response.request.status === 200) {
-        router.push(
-          "/carpool-management/form/process-one?id=" +
-            id +
-            "&name=" +
-            name +
-            "&active=" +
-            (active === "1" ? "0" : "1")
+    if (active !== "ไม่พร้อมใช้งาน")
+      try {
+        const response = await putCarpoolSetActive(
+          id as string,
+          active === "เปิด" ? "0" : "1"
         );
+        if (response.request.status === 200) {
+          router.push(
+            "/carpool-management/form/process-one?id=" +
+              id +
+              "&name=" +
+              name +
+              "&active=" +
+              (active === "เปิด" ? "ปิด" : "เปิด")
+          );
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -103,27 +104,32 @@ export default function CarpoolProcessOne() {
                       {id ? name : "สร้างกลุ่มยานพาหนะ"}
                     </span>
                     {id &&
-                      (active === "1" ? (
+                      (active === "เปิด" ? (
                         <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
                           <div className="w-[6px] h-[6px] rounded-full bg-success" />
                           <span>เปิด</span>
                         </div>
-                      ) : (
+                      ) : active === "ปิด" ? (
                         <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
                           <div className="w-[6px] h-[6px] rounded-full bg-icon-error" />
                           <span>ปิด</span>
+                        </div>
+                      ) : (
+                        <div className="w-fit flex items-center gap-[6px] px-2 py-[3px] border border-primary-grayBorder rounded">
+                          <div className="w-[6px] h-[6px] rounded-full bg-[#667085]" />
+                          <span>ไม่พร้อมใช้งาน</span>
                         </div>
                       ))}
                   </div>
                   <div className="flex items-center gap-6">
                     <span
                       className={
-                        active === "1"
+                        active === "เปิด"
                           ? "text-[#98A2B3] font-bold"
                           : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
-                        active === "1"
+                        active === "เปิด"
                           ? {}
                           : cancelCreateModalRef.current?.openModal()
                       }
@@ -135,13 +141,13 @@ export default function CarpoolProcessOne() {
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
-                            checked={active === "1"}
+                            checked={active === "เปิด"}
                             onClick={handleActive}
                             className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
                           />
                           <label className="custom-control-label !w-fit">
                             <div className="custom-control-label-group">
-                              {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                              {active}
                             </div>
                           </label>
                         </div>
