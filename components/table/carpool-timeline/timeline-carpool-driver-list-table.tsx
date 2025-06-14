@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -29,7 +29,6 @@ export default function CarpoolDriverListTable({
   selectedOption,
   lastMonth,
 }: RequestListTableProps) {
-  const [isLoading, setIsLoading] = useState(true);
   const [tripDetails, setTripDetails] = useState<any[]>([]);
   const [dateSelected, setDateSelected] = useState<string | null>(null);
 
@@ -64,15 +63,9 @@ export default function CarpoolDriverListTable({
     },
   });
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-  }, []);
-
   return (
     <div className="w-full overflow-x-auto py-4 pt-0">
-      {!isLoading && <DataTable table={table} />}
+      <DataTable table={table} />
       <VehicleTimeLineDetailModal
         ref={vehicleTimelineDetailRef}
         detailRequest={tripDetails}

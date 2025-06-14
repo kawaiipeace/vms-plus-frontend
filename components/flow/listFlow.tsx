@@ -31,7 +31,11 @@ export default function ListFlow({ requestData }: Props) {
               imageSrc="/assets/img/graphic/status_waiting_approval.png"
               imageAlt="Waiting Approval"
               cardTitle={request.ref_request_status_name || "รออนุมัติ"}
-              cardSubtitle={request.vehicle_license_plate || ""}
+              cardSubtitle={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               supportingTexts={[
                 request.work_place || "-",
                 `${
@@ -55,7 +59,11 @@ export default function ListFlow({ requestData }: Props) {
               imageSrc="/assets/img/graphic/status_reject_request.png"
               imageAlt="Rejected Request"
               cardTitle={request.ref_request_status_name || "ถูกตีกลับ"}
-              cardSubtitle={request.vehicle_license_plate || ""}
+              cardSubtitle={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               supportingTexts={[
                 request.work_place || "-",
                 `${
@@ -80,7 +88,11 @@ export default function ListFlow({ requestData }: Props) {
               imageSrc="/assets/img/graphic/status_reject_request.png"
               imageAlt="Rejected Request"
               cardTitle={request.ref_request_status_name || "-"}
-              cardSubtitle={request.vehicle_license_plate || ""}
+              cardSubtitle={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               supportingTexts={[
                 request.work_place || "-",
                 `${

@@ -59,7 +59,12 @@ const ReceiveCarVehicleModal = forwardRef<
   useEffect(() => {
     if (requestData) {
       setFuelQuantity(requestData?.fuel_start || 0);
-      setMiles(requestData?.mile_start?.toString() || "0");
+      setMiles(
+        (
+          requestData?.mile_start ||
+          requestData.vehicle?.vehicle_department?.vehicle_mileage
+        )?.toString() || "0"
+      );
       setRemark(requestData?.received_vehicle_remark || "");
 
       // Set default date and time

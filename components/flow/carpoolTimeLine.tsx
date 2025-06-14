@@ -234,32 +234,6 @@ export default function CarpoolTimeLine() {
     });
   };
 
-  const VehicleHeader = () => (
-    <div className="page-section-header border-0 mt-5">
-      <div className="page-header-left">
-        <div className="page-title">
-          <span className="page-title-label">ยานพาหนะ</span>
-          <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-            {vehiclePagination.total ?? 0} คัน
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-
-  const DriverHeader = () => (
-    <div className="page-section-header border-0 mt-5">
-      <div className="page-header-left">
-        <div className="page-title">
-          <span className="page-title-label">พนักงานขับรถ</span>
-          <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-            {driverPagination.total ?? 0} คน
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-
   const debouncedSetVehicleParams = useMemo(
     () =>
       debounce((value: string) => {
@@ -269,63 +243,6 @@ export default function CarpoolTimeLine() {
         }));
       }, 500),
     []
-  );
-
-  const VehicleActions = () => (
-    <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex gap-4 md:flex-row md:items-center">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            {statusOptions.map(({ value, status }) => (
-              <button key={value} onClick={() => toggleFilter(value)}>
-                <VehicleStatus
-                  status={status}
-                  isActive={filterParams.includes(value)}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-        <DateRangePicker
-          date={selectedRange}
-          onChange={(range) => {
-            setVehicleParams((prev) => ({
-              ...prev,
-              start_date: range?.from
-                ? dayjs(range?.from).format("YYYY-MM-DD")
-                : "",
-              end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-            }));
-
-            setSelectedRange(range || undefined);
-          }}
-        />
-        <button
-          onClick={handleOpenVehicleFilterModal}
-          className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
-        >
-          <i className="material-symbols-outlined">filter_list</i>
-          <span className="text-base font-bold">ตัวกรอง</span>
-          <span className="badge badge-brand badge-outline rounded-[50%]">
-            {vehicleParams.is_active?.split(",").filter((e) => e !== "")
-              .length +
-              vehicleParams.ref_vehicle_status_code
-                ?.split(",")
-                .filter((e) => e !== "").length || 0}
-          </span>
-        </button>
-
-        <button
-          onClick={toggleDropdown}
-          className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
-        >
-          <i className="material-symbols-outlined text-lg">view_column</i>
-        </button>
-      </div>
-    </div>
   );
 
   const debouncedSetDriverParams = useMemo(
@@ -339,43 +256,102 @@ export default function CarpoolTimeLine() {
     []
   );
 
-  const DriverActions = () => (
-    <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
-      <button
-        onClick={handleOpenDriverFilterModal}
-        className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
-      >
-        <i className="material-symbols-outlined">filter_list</i>
-        <span className="text-base font-bold">ตัวกรอง</span>
-        <span className="badge badge-brand badge-outline rounded-[50%]">
-          {driverParams.is_active?.split(",").filter((e) => e !== "").length +
-            driverParams.work_type?.split(",").filter((e) => e !== "").length +
-            driverParams.ref_driver_status_code
-              ?.split(",")
-              .filter((e) => e !== "").length || 0}
-        </span>
-      </button>
-    </div>
-  );
+  const dropdownRef = useRef(null);
 
-  const RenderVehicleTableOrNoData = () => {
-    const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !(dropdownRef.current as any).contains(event.target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          dropdownRef.current &&
-          !(dropdownRef.current as any).contains(event.target)
-        ) {
-          setShowDropdown(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+  return (
+    <div>
+      {/* <VehicleHeader /> */}
+      <div className="page-section-header border-0 mt-5">
+        <div className="page-header-left">
+          <div className="page-title">
+            <span className="page-title-label">ยานพาหนะ</span>
+            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+              {vehiclePagination.total ?? 0} คัน
+            </span>
+          </div>
+        </div>
+      </div>
 
-    return (
+      {/* <vehicleActions /> */}
+      <div className="flex justify-between items-center mb-4 gap-4">
+        <SearchInput
+          defaultValue={vehicleParams.search}
+          placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+          onSearch={debouncedSetVehicleParams}
+        />
+
+        <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex gap-4 md:flex-row md:items-center">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {statusOptions.map(({ value, status }) => (
+                  <button key={value} onClick={() => toggleFilter(value)}>
+                    <VehicleStatus
+                      status={status}
+                      isActive={filterParams.includes(value)}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+            <DateRangePicker
+              date={selectedRange}
+              onChange={(range) => {
+                setVehicleParams((prev) => ({
+                  ...prev,
+                  start_date: range?.from
+                    ? dayjs(range?.from).format("YYYY-MM-DD")
+                    : "",
+                  end_date: range?.to
+                    ? dayjs(range?.to).format("YYYY-MM-DD")
+                    : "",
+                }));
+
+                setSelectedRange(range || undefined);
+              }}
+            />
+            <button
+              onClick={handleOpenVehicleFilterModal}
+              className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
+            >
+              <i className="material-symbols-outlined">filter_list</i>
+              <span className="text-base font-bold">ตัวกรอง</span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {vehicleParams.is_active?.split(",").filter((e) => e !== "")
+                  .length +
+                  vehicleParams.ref_vehicle_status_code
+                    ?.split(",")
+                    .filter((e) => e !== "").length || 0}
+              </span>
+            </button>
+
+            <button
+              onClick={toggleDropdown}
+              className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
+            >
+              <i className="material-symbols-outlined text-lg">view_column</i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* <RenderVehicleTableOrNoData /> */}
       <div className="relative">
         {showDropdown && (
           <DropdownMenu
@@ -409,111 +385,69 @@ export default function CarpoolTimeLine() {
           />
         )}
       </div>
-    );
-  };
 
-  const RenderDriverTableOrNoData = () => {
-    const dropdownRef = useRef(null);
-
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          dropdownRef.current &&
-          !(dropdownRef.current as any).contains(event.target)
-        ) {
-          setShowDropdown(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    return (
-      <div>
-        {showDropdown && (
-          <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
-            <button
-              onClick={() => handleSelect("all")}
-              className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-              role="menuitem"
-            >
-              {selectedOption === "all" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">
-                  check
-                </i>
-              ) : (
-                <span className="w-4 mr-2" />
-              )}
-              แสดงทุกคอลัมน์
-            </button>
-            <button
-              onClick={() => handleSelect("first")}
-              className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-              role="menuitem"
-            >
-              {selectedOption === "first" ? (
-                <i className="material-symbols-outlined text-blue-600 mr-2">
-                  check
-                </i>
-              ) : (
-                <span className="w-4 mr-2" />
-              )}
-              แสดงเฉพาะคอลัมน์แรก
-            </button>
+      {/* <DriverHeader /> */}
+      <div className="page-section-header border-0 mt-5">
+        <div className="page-header-left">
+          <div className="page-title">
+            <span className="page-title-label">พนักงานขับรถ</span>
+            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+              {driverPagination.total ?? 0} คน
+            </span>
           </div>
-        )}
-
-        {dataDriver.length !== 0 ? (
-          <>
-            <CarpoolDriverListTable
-              dataRequest={dataDriver}
-              params={driverParams}
-              selectedOption={selectedOption}
-              lastMonth={driverLastMonth}
-            />
-            <PaginationControls
-              pagination={driverPagination}
-              onPageChange={handleDriverPageChange}
-              onPageSizeChange={handleDriverPageSizeChange}
-            />
-          </>
-        ) : (
-          <VehicleNoData
-            imgSrc={"/assets/img/empty/search_not_found.png"}
-            title={"ไม่พบข้อมูล"}
-            desc={"เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง"}
-            button={"ล้างตัวกรอง"}
-            useModal={handleClearDriverAllFilters}
-          />
-        )}
+        </div>
       </div>
-    );
-  };
 
-  return (
-    <div>
-      <VehicleHeader />
-      <div className="flex justify-between items-center mb-4 gap-4">
-        <SearchInput
-          defaultValue={vehicleParams.search}
-          placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-          onSearch={debouncedSetVehicleParams}
-        />
-        <VehicleActions />
-      </div>
-      <RenderVehicleTableOrNoData />
-
-      <DriverHeader />
+      {/* <DriverActions /> */}
       <div className="flex justify-between items-center mb-4 gap-4">
         <SearchInput
           defaultValue={driverParams.search}
           placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
           onSearch={debouncedSetDriverParams}
         />
-        <DriverActions />
+        <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
+          <button
+            onClick={handleOpenDriverFilterModal}
+            className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
+          >
+            <i className="material-symbols-outlined">filter_list</i>
+            <span className="text-base font-bold">ตัวกรอง</span>
+            <span className="badge badge-brand badge-outline rounded-[50%]">
+              {driverParams.is_active?.split(",").filter((e) => e !== "")
+                .length +
+                driverParams.work_type?.split(",").filter((e) => e !== "")
+                  .length +
+                driverParams.ref_driver_status_code
+                  ?.split(",")
+                  .filter((e) => e !== "").length || 0}
+            </span>
+          </button>
+        </div>
       </div>
-      <RenderDriverTableOrNoData />
+      {/* <RenderDriverTableOrNoData /> */}
+      {dataDriver.length !== 0 ? (
+        <>
+          <CarpoolDriverListTable
+            dataRequest={dataDriver}
+            params={driverParams}
+            selectedOption={selectedOption}
+            lastMonth={driverLastMonth}
+          />
+          <PaginationControls
+            pagination={driverPagination}
+            onPageChange={handleDriverPageChange}
+            onPageSizeChange={handleDriverPageSizeChange}
+          />
+        </>
+      ) : (
+        <VehicleNoData
+          imgSrc={"/assets/img/empty/search_not_found.png"}
+          title={"ไม่พบข้อมูล"}
+          desc={"เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง"}
+          button={"ล้างตัวกรอง"}
+          useModal={handleClearDriverAllFilters}
+        />
+      )}
 
       <VehicleFilterModal
         ref={filterVehicleModalRef}

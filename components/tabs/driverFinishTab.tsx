@@ -31,6 +31,8 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
     const startDate = dayjs(start).format("DD/MM/YYYY");
     const endDate = dayjs(end).format("DD/MM/YYYY");
 
+    if (startDate === endDate) return startDate;
+
     return `${startDate} - ${endDate}`;
   };
 
@@ -69,15 +71,19 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
 
               return (
                 <div key={key}>
-                  <h6 className="text-md font-bold my-4">{getDateMMYYYY(key).format("MMMM BBBB")}</h6>
-                  <p className="font-light mb-4">{finishData[key].length} งาน</p>
+                  <h6 className="text-md font-bold my-4">
+                    {getDateMMYYYY(key).format("MMMM BBBB")}
+                  </h6>
+                  <p className="font-light mb-4">
+                    {finishData[key].length} งาน
+                  </p>
                   <div className="grid grid-cols-1 gap-4">
                     {finishData[key].map((item) => {
                       const {
                         start_datetime: s_date,
                         end_datetime: e_date,
                         vehicle_license_plate: license_plate,
-                        vehicle_license_plate_province_full: province,
+                        vehicle_license_plate_province_short: province,
                       } = item;
 
                       const license_plate_full = `${license_plate} ${province}`;
@@ -85,7 +91,10 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}`;
 
                       return (
-                        <Link key={item.request_no} href={link + "?progressType=ภารกิจสำเร็จ"}>
+                        <Link
+                          key={item.request_no}
+                          href={link + "?progressType=ภารกิจสำเร็จ"}
+                        >
                           <MobileDriverCard
                             title={"ภารกิจสำเร็จ"}
                             carRegis={license_plate_full}
@@ -103,14 +112,23 @@ const DriverFinishTab = ({ data }: DriverFinishTabProps) => {
             })}
           </div>
           <div className="hidden md:block">
-            <RequestListTable defaultData={data} pagination={pagination} role="driver" />
+            <RequestListTable
+              defaultData={data}
+              pagination={pagination}
+              role="driver"
+            />
           </div>
         </>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 text-center">
             <div className="flex items-center justify-center w-[300px] h-[300px] mx-auto my-5 col-span-12">
-              <Image src="/assets/img/graphic/data_empty.svg" width={900} height={900} alt="" />
+              <Image
+                src="/assets/img/graphic/data_empty.svg"
+                width={900}
+                height={900}
+                alt=""
+              />
             </div>
             <div className="col-span-12">
               <p className="font-bold text-2xl">ไม่มีคำขอใช้ยานพาหนะ</p>
