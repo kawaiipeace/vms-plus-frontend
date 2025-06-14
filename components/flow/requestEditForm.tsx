@@ -86,8 +86,9 @@ Props) {
       console.log("Parsed Data:", parsedData); // Debugging line
       setUpdatedFormData(parsedData);
       if (
-        parsedData.isAdminChooseVehicle !== "1" &&
-        parsedData.isSystemChooseVehicle !== "1"
+        (parsedData.isAdminChooseVehicle && parsedData.isSystemChooseVehicle) ||
+        (parsedData.isAdminChooseVehicle !== "1" &&
+          parsedData.isSystemChooseVehicle !== "1")
       ) {
         const fetchVehicleDetailData = async () => {
           try {
