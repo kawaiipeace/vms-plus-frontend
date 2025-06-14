@@ -47,6 +47,7 @@ export default function LoginOS() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -62,16 +63,11 @@ export default function LoginOS() {
         router.push(`/login-authen`);
       }
     } catch (error: any) {
-      console.error(error);
-      setToast({
-        title: "Error",
-        desc: (
-          <div>
-            <div>{error.response.data.error}</div>
-            <div>{error.response.data.message}</div>
-          </div>
-        ),
-        status: "error",
+      setError("phone", {
+        type: "manual",
+        message:
+          error?.response?.data?.message ||
+          "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
       });
     }
   };
