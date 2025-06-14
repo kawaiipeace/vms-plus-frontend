@@ -42,6 +42,7 @@ export default function VehicleTimeLine() {
   const [dataRequest, setDataRequest] = useState<any[]>([]);
   const [lastMonth, setLastMonth] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [filterCount, setFilterCount] = useState(0);
   const [selectedOption, setSelectedOption] = useState<"all" | "first">("all");
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>({
     from: dayjs().startOf("month").toDate(),
@@ -70,37 +71,7 @@ export default function VehicleTimeLine() {
 
   // Filter Modal Ref
   const filterModalRef = useRef<FilterModalRef>(null);
-
-  useEffect(() => {
-    setParams((prev) => ({
-      ...prev,
-      ref_timeline_status_id: "1,2,3,4", // Default to all statuses
-    }));
-    setFilterParams(["1", "2", "3", "4"]); // Default to all statuses
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // console.log("Fetching vehicle timeline data with params:", params);
-        const response = await getDriverTimeline(params);
-        setDataRequest(response.data.drivers);
-        setLastMonth(response.data.last_month);
-
-        const { total, totalPages } = response.data.pagination;
-        setPagination({
-          limit: params.limit,
-          page: params.page,
-          total,
-          totalPages,
-        });
-      } catch (error) {
-        console.error("Error fetching vehicle timeline data:", error);
-      }
-    };
-
-    fetchData();
-  }, [params]);
+  const dropdownRef = useRef(null);
 
   const handleOpenFilterModal = () => filterModalRef.current?.open();
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
@@ -119,6 +90,17 @@ export default function VehicleTimeLine() {
   };
 
   const handleFilterSubmit = (filterParams: any) => {
+    const isActive = filterParams.taxVehicle.map((item: any) => item).join(",");
+    const workType = filterParams.driverWorkType.map((item: any) => item).join(",");
+    const driverStatus = filterParams.vehicleStatus.map((item: any) => item).join(",");
+    setParams((prev) => ({
+      ...prev,
+      // vehicel_car_type_detail: filterParams.vehicleType,
+      // vehicle_owner_dept_sap: filterParams.vehicleDepartment,
+      is_active: isActive,
+      work_type: workType,
+      ref_driver_status_code: driverStatus,
+    }));
     setFilterParams(() => [...filterParams.vehicleBookingStatus]);
   };
 
@@ -127,83 +109,141 @@ export default function VehicleTimeLine() {
     setFilterParams([]);
   };
 
-  const Header = () => (
-    <div className="page-section-header border-0 mt-5">
-      <div className="page-header-left">
-        <div className="page-title">
-          <span className="page-title-label">พนักงานขับรถ</span>
-          <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-            {pagination.total ?? 0} คน
-          </span>
-        </div>
-      </div>
-    </div>
+  useEffect(() => {
+    let countFilters = 0;
+    const fetchData = async () => {
+      try {
+        console.log("params", params);
+        const response = await getDriverTimeline(params);
+        setDataRequest(response.data.drivers);
+        setLastMonth(response.data.last_month);
+
+        const { total, totalPages } = response.data.pagination;
+        setPagination({
+          limit: params.limit ?? pagination.limit,
+          page: params.page ?? pagination.page,
+          total,
+          totalPages,
+        });
+      } catch (error) {
+        console.error("Error fetching vehicle timeline data:", error);
+      }
+
+      Object.keys(params).forEach((key) => {
+        if (key === "ref_timeline_status_id") {
+          const value = params[key];
+          if (value && value.trim() !== "") {
+            countFilters += value.split(",").length;
+          }
+        }
+        if (key === "ref_driver_status_code") {
+          const value = params[key];
+          if (value && value.trim() !== "") {
+            countFilters += value.split(",").length;
+          }
+        }
+        if (key === "work_type") {
+          const value = params[key];
+          if (value && value.trim() !== "") {
+            countFilters += value.split(",").length;
+          }
+        }
+        if (key === "is_active") {
+          const value = params[key];
+          if (value && value.trim() !== "") {
+            countFilters += value.split(",").length;
+          }
+        }
+      });
+      setFilterCount(countFilters);
+    };
+
+    fetchData();
+  }, [params]);
+
+  useEffect(() => {
+    setParams((prev) => ({
+      ...prev,
+      ref_timeline_status_id: "1,2,3,4", // Default to all statuses
+    }));
+    setFilterParams(["1", "2", "3", "4"]); // Default to all statuses
+  }, []);
+
+  const debouncedSetParams = useMemo(
+    () =>
+      debounce((value: string) => {
+        if (value.length > 2 || value.length === 0) {
+          setParams((prev) => ({ ...prev, search: value }));
+        }
+      }, 500),
+    []
   );
 
-  const Actions = () => (
-    <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex gap-4 md:flex-row md:items-center">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            {statusOptions.map(({ value, status }) => (
-              <button key={value} onClick={() => toggleFilter(value)}>
-                <VehicleStatus status={status} isActive={filterParams.includes(value)} />
-              </button>
-            ))}
+  return (
+    <div className="px-4 sm:px6 lg:px8 py6">
+      {/* ----- Header ----- */}
+      <div className="page-section-header border-0 mt-5">
+        <div className="page-header-left">
+          <div className="page-title">
+            <span className="page-title-label">พนักงานขับรถ</span>
+            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+              {pagination.total ?? 0} คน
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-        <DateRangePicker
-          date={selectedRange}
-          onChange={(range) => {
-            setParams((prev) => ({
-              ...prev,
-              start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
-              end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-            }));
-
-            setSelectedRange(range || undefined);
-          }}
+      {/* ----- Search and Filter Section ----- */}
+      <div className="flex justify-between items-center mb-4">
+        <SearchInput
+          defaultValue={params.search}
+          placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+          onSearch={(value) => debouncedSetParams(value)}
         />
-        <button
-          onClick={handleOpenFilterModal}
-          className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px] block"
-        >
-          <i className="material-symbols-outlined">filter_list</i>
-          <span className="text-base font-bold">ตัวกรอง</span>
-        </button>
+        <div className="flex gap-4 md:flex-row md:items-center">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {statusOptions.map(({ value, status }) => (
+                <button key={value} onClick={() => toggleFilter(value)}>
+                  <VehicleStatus status={status} isActive={filterParams.includes(value)} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+          <DateRangePicker
+            date={selectedRange}
+            onChange={(range) => {
+              setParams((prev) => ({
+                ...prev,
+                start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+                end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+              }));
 
-        <button
-          onClick={toggleDropdown}
-          className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
-        >
-          <i className="material-symbols-outlined text-lg">view_column</i>
-        </button>
+              setSelectedRange(range || undefined);
+            }}
+          />
+          <button onClick={handleOpenFilterModal} className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]">
+            <i className="material-symbols-outlined">filter_list</i>
+            <span className="text-base font-bold">ตัวกรอง</span>
+            <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
+          </button>
+
+          <button
+            onClick={toggleDropdown}
+            className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
+          >
+            <i className="material-symbols-outlined text-lg">view_column</i>
+          </button>
+        </div>
       </div>
-    </div>
-  );
 
-  const RenderTableOrNoData = () => {
-    const dropdownRef = useRef(null);
-
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (dropdownRef.current && !(dropdownRef.current as any).contains(event.target)) {
-          setShowDropdown(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    return (
+      {/* ----- Table ----- */}
       <div className="relative">
         {showDropdown && (
           <DropdownMenu dropdownRef={dropdownRef} selectedOption={selectedOption} handleSelect={handleSelect} />
         )}
-
         {dataRequest.length !== 0 ? (
           <div className="overflow-x-auto mt-4">
             <RequestListTable
@@ -228,31 +268,8 @@ export default function VehicleTimeLine() {
           />
         )}
       </div>
-    );
-  };
 
-  const debouncedSetParams = useMemo(
-    () =>
-      debounce((value: string) => {
-        if (value.length > 2 || value.length === 0) {
-          setParams((prev) => ({ ...prev, search: value }));
-        }
-      }, 500),
-    []
-  );
-
-  return (
-    <div className="px-4 sm:px6 lg:px8 py6">
-      <Header />
-      <div className="flex justify-between items-center mb-4">
-        <SearchInput
-          defaultValue={params.search}
-          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-          onSearch={(value) => debouncedSetParams(value)}
-        />
-        <Actions />
-      </div>
-      <RenderTableOrNoData />
+      {/* ----- Filter Modal ----- */}
       <FilterModal
         ref={filterModalRef}
         onSubmitFilter={handleFilterSubmit}

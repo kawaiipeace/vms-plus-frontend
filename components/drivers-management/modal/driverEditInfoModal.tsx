@@ -206,7 +206,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
 
           const addDriverReplacementOption: CustomSelectOption = {
             value: "",
-            label: "ไม่ระบุ",
+            label: "ไม่มีระบุ",
           };
           driverReplacementData.unshift(addDriverReplacementOption);
 
