@@ -97,7 +97,9 @@ const ModalBody = ({
     }, [formData]);
 
     useEffect(() => {
-        if(defaultBookingStatus.length > 0 && defaultBookingStatus.length == 0) {
+        if(!defaultBookingStatus) return;
+
+        if(defaultBookingStatus.length > 0) {
             setFormData(prev => ({
                 ...prev,
                 vehicleBookingStatus: defaultBookingStatus
@@ -311,7 +313,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
-        vehicleBookingStatus: []
+        vehicleBookingStatus: defaultVehicleBookingStatus ?? []
     };
 
     const [params, setParams] = useState<VehicleInputParams>(initialParams);
@@ -356,7 +358,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
                         flag={flag}
                         setParams={setParams}
                         params={params}
-                        defaultBookingStatus={defaultVehicleBookingStatus ?? []}
+                        defaultBookingStatus={defaultVehicleBookingStatus}
                     />
                 </div>
 
