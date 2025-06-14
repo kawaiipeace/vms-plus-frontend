@@ -227,10 +227,14 @@ useEffect(() => {
     };
 
     const fetchApprover = async () => {
+      const param = {
+        "emp_id": profile?.emp_id
+      }
       try {
-        const response = await fetchUserApproverUsers("");
+        const response = await fetchUserApproverUsers(param);
         if (response.status === 200) {
           const data = response.data[0];
+          console.log("Approver Data:", data);
           setApproverData(data);
         }
       } catch (error) {
