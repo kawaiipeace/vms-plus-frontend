@@ -124,6 +124,7 @@ export default function VehicleTimeLine() {
 
   const handleClearAllFilters = () => {
     setParams(initialParams);
+    setFilterParams([]);
   };
 
   const Header = () => (
