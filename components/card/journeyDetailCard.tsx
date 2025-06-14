@@ -89,7 +89,7 @@ export default function JourneyDetailCard({
               <div className="form-plaintext-group">
                 <div className="form-label">ประเภท</div>
                 <div className="form-text">
-                  {tripType === 0 ? "ไป-กลับ" : "ค้างแรม"}
+                  {String(tripType) === String(0) ? "ไป-กลับ" : "ค้างแรม"}
                 </div>
               </div>
             </div>

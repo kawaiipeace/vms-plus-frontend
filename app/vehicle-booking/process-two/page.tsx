@@ -5,6 +5,7 @@ import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
 import Header from "@/components/header";
 import ProcessRequestCar from "@/components/processRequestCar";
 import SideBar from "@/components/sideBar";
+import PaginationControls from "@/components/table/pagination-control";
 import ZeroRecord from "@/components/zeroRecord";
 import { useProfile } from "@/contexts/profileContext";
 import { useFormContext } from "@/contexts/requestFormContext";
@@ -61,6 +62,7 @@ interface FormData {
   vehicleSelect?: string;
   carpoolName?: string;
   masCarpoolUid?: string;
+  masVehicleUid?: string;
 }
 
 export default function ProcessTwo() {
@@ -87,7 +89,7 @@ export default function ProcessTwo() {
     car_type: "",
     category_code: "",
     page: 1,
-    limit: 10, // Set initial limit to 8
+    limit: 10,
   });
 
   const [vehicleCatOptions, setVehicleCatOptions] = useState<
@@ -112,8 +114,12 @@ export default function ProcessTwo() {
     if (processOneStatus !== "Done") {
       router.push("process-one");
     }
-    setLoading(false);
   }, []);
+
+  useEffect(() => {
+  console.log('Pagination updated:', paginationData);
+}, [paginationData]);
+
 
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
@@ -122,20 +128,21 @@ export default function ProcessTwo() {
     if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
       updatedData.isAdminChooseVehicle = "1";
       updatedData.isSystemChooseVehicle = "0";
-    } else if (value === "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
-      updatedData.isSystemChooseVehicle = "1";
+    } else if (value === "ระบบเลือกให้(อัตโนมัติ)") {
       updatedData.isAdminChooseVehicle = "0";
     } else {
       updatedData.vehicleSelect = value;
-      // Find the selected vehicle (if it's a vehicle, not a carpool)
       const selectedVehicleObj = vehicleCards.find(
         (card) => "mas_vehicle_uid" in card && card.mas_vehicle_uid === value
       ) as Vehicle | undefined;
 
       updatedData.isAdminChooseDriver =
         selectedVehicleObj?.is_admin_choose_driver;
-    updatedData.masCarpoolUid = "";
-    updatedData.carpoolName = "";
+      updatedData.masCarpoolUid = "";
+      updatedData.carpoolName = "";
+      updatedData.masVehicleUid = value;
+            updatedData.isSystemChooseVehicle = "0";
+      updatedData.isAdminChooseVehicle = "0";
     }
 
     updateFormData(updatedData);
@@ -151,18 +158,15 @@ export default function ProcessTwo() {
   const handleCarpoolSelect = (value: string) => {
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
-
+    console.log("handleCarpoolSelect value:", value);
     if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
       updatedData.isAdminChooseVehicle = "1";
       updatedData.isSystemChooseVehicle = "0";
-    } else if (value === "ระบบเลือกยานพาหนะให้อัตโนมัติ") {
+    } else if (value === "ระบบเลือกให้(อัตโนมัติ)") {
       updatedData.isSystemChooseVehicle = "1";
       updatedData.isAdminChooseVehicle = "0";
     }
 
-    console.log("vehiclecard", vehicleCards);
-
-    // Add carpool name if a carpool is selected
     const selectedCarpool = vehicleCards.find(
       (card) =>
         "mas_carpool_uid" in card &&
@@ -171,7 +175,10 @@ export default function ProcessTwo() {
     if (selectedCarpool) {
       updatedData.carpoolName = selectedCarpool.carpool_name;
       updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
+      updatedData.isSystemChooseVehicle = selectedCarpool.ref_carpool_choose_car_id === 3 ? "1" : "0";
+      updatedData.isAdminChooseVehicle = selectedCarpool.ref_carpool_choose_car_id === 2 ? "1" : "0";
       updatedData.vehicleSelect = selectedCarpool.mas_carpool_uid;
+      updatedData.masVehicleUid = "";
     }
 
     updateFormData(updatedData);
@@ -185,7 +192,7 @@ export default function ProcessTwo() {
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setParams((prev) => ({ ...prev, search: e.target.value }));
+    setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }));
   };
 
   const handleOrgChange = async (selectedOption: CustomSelectOption) => {
@@ -193,16 +200,26 @@ export default function ProcessTwo() {
     setParams((prev) => ({
       ...prev,
       vehicle_owner_dept: selectedOption.value,
+      page: 1,
     }));
   };
 
-  const handleVehicleTypeChange = async (
-    selectedOption: CustomSelectOption
-  ) => {
-    setSelectedVehicleOption(
-      selectedOption as { value: string; label: string }
-    );
-    setParams((prev) => ({ ...prev, category_code: selectedOption.value }));
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams((prev) => ({
+      ...prev,
+      limit,
+      page: 1,
+    }));
+  };
+
+  const handleVehicleTypeChange = async (selectedOption: CustomSelectOption) => {
+    setSelectedVehicleOption(selectedOption as { value: string; label: string });
+    setParams((prev) => ({
+      ...prev,
+      category_code: selectedOption.value,
+      page: 1,
+    }));
   };
 
   const handlePageChange = (page: number) => {
@@ -210,116 +227,74 @@ export default function ProcessTwo() {
   };
 
   useEffect(() => {
-    const fetchVehicleData = async () => {
-      try {
-        const currentLimit = params.page === 1 ? 10 : 10;
-        const response = await fetchSearchVehicles({
-          ...params,
-          limit: currentLimit,
-          emp_id: profile?.emp_id,
-          start_date: `${formData.startDate} ${formData.timeStart}`,
-          end_date: `${formData.endDate} ${formData.timeEnd}`,
-        });
+    console.log('paginationData:', paginationData);
+    const fetchAllData = async () => {
+      if (!profile?.emp_id) return;
 
-        if (response.status === 200) {
+      try {
+        setLoading(true);
+        
+        const [vehiclesResponse, carTypesResponse, deptTypesResponse] = await Promise.all([
+          fetchSearchVehicles({
+            ...params,
+            emp_id: profile.emp_id,
+            start_date: `${formData.startDate} ${formData.timeStart}`,
+            end_date: `${formData.endDate} ${formData.timeEnd}`,
+          }),
+          fetchVehicleCarTypes({
+            emp_id: profile.emp_id,
+            start_date: `${formData.startDate} ${formData.timeStart}`,
+            end_date: `${formData.endDate} ${formData.timeEnd}`,
+          }),
+          fetchVehicleDepartmentTypes({
+            emp_id: profile.emp_id,
+            start_date: `${formData.startDate} ${formData.timeStart}`,
+            end_date: `${formData.endDate} ${formData.timeEnd}`,
+          })
+        ]);
+
+        if (vehiclesResponse.status === 200) {
           const allCards = [
-            ...(response.data.carpools || []),
-            ...(response.data.vehicles || []),
+            ...(vehiclesResponse.data.carpools || []),
+            ...(vehiclesResponse.data.vehicles || []),
           ];
           setVehicleCards(allCards);
-          console.log("vehicles", allCards);
-          setPaginationData(response.data.pagination);
+          setPaginationData(vehiclesResponse.data.pagination);
         }
-      } catch (error) {
-        console.error("Error fetching vehicle data:", error);
-      }
-    };
 
-    const fetchVehicleCarTypesData = async () => {
-      if (
-        !profile?.emp_id ||
-        !formData.startDate ||
-        !formData.timeStart ||
-        !formData.endDate ||
-        !formData.timeEnd
-      ) {
-        // Required data not available yet
-        return;
-      }
-      const vehicleParams = {
-        emp_id: profile?.emp_id,
-        start_date: `${formData.startDate} ${formData.timeStart}`,
-        end_date: `${formData.endDate} ${formData.timeEnd}`,
-      };
-
-      try {
-        const response = await fetchVehicleCarTypes(vehicleParams);
-
-        if (response.status === 200) {
-          const vehicleCatData = response.data;
+        if (carTypesResponse.status === 200) {
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
-            ...vehicleCatData.map((cat: { ref_vehicle_type_name: string }) => ({
+            ...carTypesResponse.data.map((cat: { ref_vehicle_type_name: string }) => ({
               value: cat.ref_vehicle_type_name,
               label: cat.ref_vehicle_type_name,
             })),
           ];
-
           setVehicleCatOptions(vehicleCatArr);
-          setSelectedVehicleOption((prev) =>
-            prev.value ? prev : vehicleCatArr[0]
-          );
+          setSelectedVehicleOption(prev => prev.value ? prev : vehicleCatArr[0]);
         }
-      } catch (error) {
-        console.error("Error fetching vehicle car types:", error);
-      }
-    };
 
-    const fetchVehicleDepartmentsData = async () => {
-      if (
-        !profile?.emp_id ||
-        !formData.startDate ||
-        !formData.timeStart ||
-        !formData.endDate ||
-        !formData.timeEnd
-      ) {
-        // Required data not available yet
-        return;
-      }
-      const vehicleParams = {
-        emp_id: profile?.emp_id,
-        start_date: `${formData.startDate} ${formData.timeStart}`,
-        end_date: `${formData.endDate} ${formData.timeEnd}`,
-      };
-      try {
-        const response = await fetchVehicleDepartmentTypes(vehicleParams);
-
-        if (response.status === 200) {
-          const vehicleCatData = response.data;
-          const vehicleCatArr = [
+        if (deptTypesResponse.status === 200) {
+          const orgArr = [
             { value: "", label: "ทุกสังกัด" },
-            ...vehicleCatData.map(
+            ...deptTypesResponse.data.map(
               (cat: { dept_sap: string; dept_short: string }) => ({
                 value: cat.dept_sap,
                 label: cat.dept_short,
               })
             ),
           ];
-
-          setOrgOptions(vehicleCatArr);
-          setSelectedOrgOption((prev) =>
-            prev.value ? prev : vehicleCatArr[0]
-          );
+          setOrgOptions(orgArr);
+          setSelectedOrgOption(prev => prev.value ? prev : orgArr[0]);
         }
       } catch (error) {
-        console.error("Error fetching vehicle car types:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    if (profile?.emp_id) {
-      fetchVehicleData();
-      fetchVehicleCarTypesData();
-      fetchVehicleDepartmentsData();
-    }
+
+    fetchAllData();
   }, [
     params,
     profile?.emp_id,
@@ -329,17 +304,27 @@ export default function ProcessTwo() {
     formData.timeEnd,
   ]);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="main-container">
+        <SideBar menuName="คำขอใช้ยานพาหนะ" />
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+          <Header />
+          <div className="main-content-body">
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="main-container">
       <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-      <div
-        className={`main-content ${
-          isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-        }`}
-      >
+      <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
         <Header />
         <div className="main-content-body">
           <div className="page-header">
@@ -401,11 +386,6 @@ export default function ProcessTwo() {
                       onChange={handleSearchChange}
                       placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
                     />
-                    <div className="input-group-append hidden">
-                      <span className="input-group-text search-ico-trailing">
-                        <i className="material-symbols-outlined">close_small</i>
-                      </span>
-                    </div>
                   </div>
 
                   <div className="search-filter w-12/12 md:w-6/12 sm:gap-4 flex md:justify-end">
@@ -439,13 +419,9 @@ export default function ProcessTwo() {
                                   ? "/assets/img/system-selected.png"
                                   : "/assets/img/admin-selected.png"
                               }
-                              title={
-                                carpool.ref_carpool_choose_car
-                                  .type_of_choose_car
-                              }
+                              title={carpool.ref_carpool_choose_car.type_of_choose_car}
                               desc={carpool.carpool_name}
                               onSelect={() => {
-                                // Set carpoolName in formData when selecting an AutoCarCard
                                 updateFormData({
                                   carpoolName: carpool.carpool_name,
                                   masCarpoolUid: carpool.mas_carpool_uid,
@@ -454,44 +430,47 @@ export default function ProcessTwo() {
                               }}
                               isSelected={
                                 selectedVehicle === carpool.mas_carpool_uid ||
-                                formData.vehicleSelect ===
-                                  carpool.mas_carpool_uid
+                                formData.vehicleSelect === carpool.mas_carpool_uid
                               }
                             />
                           );
                         } else {
-                          // It's a Vehicle
                           const vehicle = card;
                           return (
                             <SelectCarCard
                               key={vehicle.mas_vehicle_uid}
                               vehicleId={vehicle.mas_vehicle_uid}
-                              imgSrc={
-                                vehicle.vehicle_img ||
-                                "/assets/img/sample-car.jpeg"
-                              }
+                              imgSrc={vehicle.vehicle_img || "/assets/img/sample-car.jpeg"}
                               title={`${vehicle.vehicle_brand_name} ${vehicle.vehicle_model_name}`}
                               subTitle={vehicle.vehicle_license_plate}
                               carType={vehicle.car_type}
                               deptSap={vehicle.vehicle_owner_dept_short}
-                              province={
-                                vehicle.vehicle_license_plate_province_short
-                              }
+                              province={vehicle.vehicle_license_plate_province_short}
                               fleetCardNo={vehicle?.fleet_card_no}
                               seat={vehicle.seat}
-                              onSelect={() =>
-                                handleVehicleSelect(vehicle.mas_vehicle_uid)
-                              }
+                              onSelect={() => handleVehicleSelect(vehicle.mas_vehicle_uid)}
                               isSelected={
                                 selectedVehicle === vehicle.mas_vehicle_uid ||
-                                formData.vehicleSelect ===
-                                  vehicle.mas_vehicle_uid
+                                formData.vehicleSelect === vehicle.mas_vehicle_uid
                               }
                             />
                           );
                         }
                       })}
                     </div>
+
+                    {paginationData.totalPages > 1 && (
+                      <PaginationControls
+                        pagination={{
+                          limit: paginationData.limit,
+                          page: paginationData.page,
+                          totalPages: paginationData.totalPages,
+                          total: paginationData.total,
+                        }}
+                        onPageChange={handlePageChange}
+                        onPageSizeChange={handlePageSizeChange}
+                      />
+                    )}
                   </>
                 ) : (
                   <ZeroRecord
@@ -507,104 +486,9 @@ export default function ProcessTwo() {
                     button="ล้างคำค้นหา"
                   />
                 )}
-
-                {vehicleCards.length > 0 && (
-                  <div className="flex justify-between items-center mt-5 dt-bottom">
-                    <div className="flex items-center gap-2">
-                      <div className="dt-info" aria-live="polite" role="status">
-                        แสดง{" "}
-                        {(paginationData.page - 1) * paginationData.limit + 1}{" "}
-                        ถึง{" "}
-                        {Math.min(
-                          paginationData.page * paginationData.limit,
-                          paginationData.total
-                        )}{" "}
-                        จาก {paginationData.total} รายการ
-                      </div>
-                      <CustomSelect
-                        w="w-[5em]"
-                        options={[
-                          { value: "10", label: "10" },
-                          { value: "30", label: "30" },
-                          { value: "50", label: "50" },
-                          { value: "100", label: "100" },
-                        ]}
-                        value={{
-                          value: paginationData.limit.toString(),
-                          label: paginationData.limit.toString(),
-                        }}
-                        onChange={(selectedOption) =>
-                          setParams((prev) => ({
-                            ...prev,
-                            limit: Number(selectedOption.value),
-                            page: 1,
-                          }))
-                        }
-                      />
-                    </div>
-
-                    <div className="pagination flex justify-end">
-                      <div className="join">
-                        <button
-                          className="join-item btn btn-sm btn-outline"
-                          onClick={() =>
-                            handlePageChange(paginationData.page - 1)
-                          }
-                          disabled={paginationData.page === 1}
-                        >
-                          <i className="material-symbols-outlined">
-                            chevron_left
-                          </i>
-                        </button>
-
-                        {Array.from(
-                          { length: paginationData.totalPages },
-                          (_, index) => index + 1
-                        ).map((page) => (
-                          <button
-                            key={page}
-                            className={`join-item btn btn-sm btn-outline ${
-                              paginationData.page === page ? "btn-active" : ""
-                            }`}
-                            onClick={() => handlePageChange(page)}
-                          >
-                            {page}
-                          </button>
-                        ))}
-
-                        <button
-                          className="join-item btn btn-sm btn-outline"
-                          onClick={() =>
-                            handlePageChange(paginationData.page + 1)
-                          }
-                          disabled={
-                            paginationData.page === paginationData.totalPages
-                          }
-                        >
-                          <i className="material-symbols-outlined">
-                            chevron_right
-                          </i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
-
-          {/* <div className="form-action">
-            <button
-              onClick={() => NextProcess()}
-              className="btn btn-primary"
-              disabled={selectedVehicle === "" && formData.vehicleSelect === ""}
-            >
-              ต่อไป
-              <i className="material-symbols-outlined icon-settings-300-24">
-                arrow_right_alt
-              </i>
-            </button>
-          </div> */}
         </div>
       </div>
     </div>
