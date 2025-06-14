@@ -95,7 +95,7 @@ export interface VehicleInputParams {
 }
 
 export interface VehicleStatusProps {
-  defaultBookingStatus: string[];
+  defaultBookingStatus?: string[];
   vehicleDepartments: VehicleDepartmentCustomData[];
   fuelTypes: FuelTypeApiCustomData[];
   vehicleTypes: VehicleTypeApiCustomData[];

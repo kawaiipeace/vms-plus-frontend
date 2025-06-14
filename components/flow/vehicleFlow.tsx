@@ -51,7 +51,6 @@ export default function VehicleFlow() {
         let countFilters = 0;
         const fetchData = async () => {
             try {
-                console.log('params', params)
                 const response = await fetchVehicles(params);
                 const { total, totalPages } = response.pagination;
 
