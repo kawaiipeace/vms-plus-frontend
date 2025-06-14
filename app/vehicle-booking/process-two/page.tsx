@@ -117,9 +117,8 @@ export default function ProcessTwo() {
   }, []);
 
   useEffect(() => {
-  console.log('Pagination updated:', paginationData);
-}, [paginationData]);
-
+    console.log("Pagination updated:", paginationData);
+  }, [paginationData]);
 
   const handleVehicleSelect = (value: string) => {
     setSelectedVehicle(value);
@@ -141,7 +140,7 @@ export default function ProcessTwo() {
       updatedData.masCarpoolUid = "";
       updatedData.carpoolName = "";
       updatedData.masVehicleUid = value;
-            updatedData.isSystemChooseVehicle = "0";
+      updatedData.isSystemChooseVehicle = "0";
       updatedData.isAdminChooseVehicle = "0";
     }
 
@@ -175,8 +174,10 @@ export default function ProcessTwo() {
     if (selectedCarpool) {
       updatedData.carpoolName = selectedCarpool.carpool_name;
       updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
-      updatedData.isSystemChooseVehicle = selectedCarpool.ref_carpool_choose_car_id === 3 ? "1" : "0";
-      updatedData.isAdminChooseVehicle = selectedCarpool.ref_carpool_choose_car_id === 2 ? "1" : "0";
+      updatedData.isSystemChooseVehicle =
+        selectedCarpool.ref_carpool_choose_car_id === 3 ? "1" : "0";
+      updatedData.isAdminChooseVehicle =
+        selectedCarpool.ref_carpool_choose_car_id === 2 ? "1" : "0";
       updatedData.vehicleSelect = selectedCarpool.mas_carpool_uid;
       updatedData.masVehicleUid = "";
     }
@@ -205,7 +206,8 @@ export default function ProcessTwo() {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prev) => ({
       ...prev,
       limit,
@@ -213,8 +215,12 @@ export default function ProcessTwo() {
     }));
   };
 
-  const handleVehicleTypeChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedVehicleOption(selectedOption as { value: string; label: string });
+  const handleVehicleTypeChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
+    setSelectedVehicleOption(
+      selectedOption as { value: string; label: string }
+    );
     setParams((prev) => ({
       ...prev,
       category_code: selectedOption.value,
@@ -227,31 +233,32 @@ export default function ProcessTwo() {
   };
 
   useEffect(() => {
-    console.log('paginationData:', paginationData);
+    console.log("paginationData:", paginationData);
     const fetchAllData = async () => {
       if (!profile?.emp_id) return;
 
       try {
         setLoading(true);
-        
-        const [vehiclesResponse, carTypesResponse, deptTypesResponse] = await Promise.all([
-          fetchSearchVehicles({
-            ...params,
-            emp_id: profile.emp_id,
-            start_date: `${formData.startDate} ${formData.timeStart}`,
-            end_date: `${formData.endDate} ${formData.timeEnd}`,
-          }),
-          fetchVehicleCarTypes({
-            emp_id: profile.emp_id,
-            start_date: `${formData.startDate} ${formData.timeStart}`,
-            end_date: `${formData.endDate} ${formData.timeEnd}`,
-          }),
-          fetchVehicleDepartmentTypes({
-            emp_id: profile.emp_id,
-            start_date: `${formData.startDate} ${formData.timeStart}`,
-            end_date: `${formData.endDate} ${formData.timeEnd}`,
-          })
-        ]);
+
+        const [vehiclesResponse, carTypesResponse, deptTypesResponse] =
+          await Promise.all([
+            fetchSearchVehicles({
+              ...params,
+              emp_id: profile.emp_id,
+              start_date: `${formData.startDate} ${formData.timeStart}`,
+              end_date: `${formData.endDate} ${formData.timeEnd}`,
+            }),
+            fetchVehicleCarTypes({
+              emp_id: profile.emp_id,
+              start_date: `${formData.startDate} ${formData.timeStart}`,
+              end_date: `${formData.endDate} ${formData.timeEnd}`,
+            }),
+            fetchVehicleDepartmentTypes({
+              emp_id: profile.emp_id,
+              start_date: `${formData.startDate} ${formData.timeStart}`,
+              end_date: `${formData.endDate} ${formData.timeEnd}`,
+            }),
+          ]);
 
         if (vehiclesResponse.status === 200) {
           const allCards = [
@@ -265,13 +272,17 @@ export default function ProcessTwo() {
         if (carTypesResponse.status === 200) {
           const vehicleCatArr = [
             { value: "", label: "ทุกประเภทยานพาหนะ" },
-            ...carTypesResponse.data.map((cat: { ref_vehicle_type_name: string }) => ({
-              value: cat.ref_vehicle_type_name,
-              label: cat.ref_vehicle_type_name,
-            })),
+            ...carTypesResponse.data.map(
+              (cat: { ref_vehicle_type_name: string }) => ({
+                value: cat.ref_vehicle_type_name,
+                label: cat.ref_vehicle_type_name,
+              })
+            ),
           ];
           setVehicleCatOptions(vehicleCatArr);
-          setSelectedVehicleOption(prev => prev.value ? prev : vehicleCatArr[0]);
+          setSelectedVehicleOption((prev) =>
+            prev.value ? prev : vehicleCatArr[0]
+          );
         }
 
         if (deptTypesResponse.status === 200) {
@@ -285,7 +296,7 @@ export default function ProcessTwo() {
             ),
           ];
           setOrgOptions(orgArr);
-          setSelectedOrgOption(prev => prev.value ? prev : orgArr[0]);
+          setSelectedOrgOption((prev) => (prev.value ? prev : orgArr[0]));
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -308,7 +319,11 @@ export default function ProcessTwo() {
     return (
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="flex justify-center items-center h-64">
@@ -324,7 +339,11 @@ export default function ProcessTwo() {
     <div className="main-container">
       <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-      <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+      <div
+        className={`main-content ${
+          isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+        }`}
+      >
         <Header />
         <div className="main-content-body">
           <div className="page-header">
@@ -419,7 +438,10 @@ export default function ProcessTwo() {
                                   ? "/assets/img/system-selected.png"
                                   : "/assets/img/admin-selected.png"
                               }
-                              title={carpool.ref_carpool_choose_car.type_of_choose_car}
+                              title={
+                                carpool.ref_carpool_choose_car
+                                  .type_of_choose_car
+                              }
                               desc={carpool.carpool_name}
                               onSelect={() => {
                                 updateFormData({
@@ -430,7 +452,8 @@ export default function ProcessTwo() {
                               }}
                               isSelected={
                                 selectedVehicle === carpool.mas_carpool_uid ||
-                                formData.vehicleSelect === carpool.mas_carpool_uid
+                                formData.vehicleSelect ===
+                                  carpool.mas_carpool_uid
                               }
                             />
                           );
@@ -440,18 +463,26 @@ export default function ProcessTwo() {
                             <SelectCarCard
                               key={vehicle.mas_vehicle_uid}
                               vehicleId={vehicle.mas_vehicle_uid}
-                              imgSrc={vehicle.vehicle_img || "/assets/img/sample-car.jpeg"}
+                              imgSrc={
+                                vehicle.vehicle_img ||
+                                "/assets/img/sample-car.jpeg"
+                              }
                               title={`${vehicle.vehicle_brand_name} ${vehicle.vehicle_model_name}`}
                               subTitle={vehicle.vehicle_license_plate}
                               carType={vehicle.car_type}
                               deptSap={vehicle.vehicle_owner_dept_short}
-                              province={vehicle.vehicle_license_plate_province_short}
+                              province={
+                                vehicle.vehicle_license_plate_province_short
+                              }
                               fleetCardNo={vehicle?.fleet_card_no}
                               seat={vehicle.seat}
-                              onSelect={() => handleVehicleSelect(vehicle.mas_vehicle_uid)}
+                              onSelect={() =>
+                                handleVehicleSelect(vehicle.mas_vehicle_uid)
+                              }
                               isSelected={
                                 selectedVehicle === vehicle.mas_vehicle_uid ||
-                                formData.vehicleSelect === vehicle.mas_vehicle_uid
+                                formData.vehicleSelect ===
+                                  vehicle.mas_vehicle_uid
                               }
                             />
                           );
