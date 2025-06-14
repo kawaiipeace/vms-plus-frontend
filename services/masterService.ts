@@ -226,7 +226,7 @@ export const fetchVehicleKeyType = async () => {
   }
 };
 
-export const fetchUserApproverUsers = async (params: {
+export const fetchUserApproverUsers = async (params?: {
   emp_id?: string
 }) => {
   try {
