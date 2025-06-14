@@ -190,15 +190,15 @@ const ModalBody = ({
                         <div className="col-span-12">
                             <div className="form-group">
                                 <span className="form-label">เครดิตภาษี</span>
-                                <div>
+                                <div className="flex flex-col gap-2 mt-2">
                                     {TAX_TYPE.map((option, index) => (
-                                        <div key={index} className="flex gap-2">
+                                        <div key={index} className="flex items-center gap-2">
                                             <label htmlFor={`option-${index}`} className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     id={`option-${index}`}
                                                     checked={formData.taxVehicle.includes(option.id)}
-                                                    className="checkbox checkbox-primary h-5 w-5"
+                                                    className="checkbox rounded-lg border-gray-300"
                                                     onChange={() => handleCheckboxToggle('taxVehicle', option.id)}
                                                 />
                                                 <span className="text-base">{option.name}</span>
