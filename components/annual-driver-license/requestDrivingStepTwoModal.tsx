@@ -101,8 +101,8 @@ const RequestDrivingStepTwoModal = forwardRef<
       setIsLoading(true);
       try {
         const [confirmerResponse, approvalResponse] = await Promise.all([
-          fetchUserConfirmerLic(""),
-          fetchUserApprovalLic(""),
+          fetchUserConfirmerLic(profile?.emp_id || ""),
+          fetchUserApprovalLic(profile?.emp_id || ""),
         ]);
 
         console.log("Confirmer Response:", confirmerResponse);

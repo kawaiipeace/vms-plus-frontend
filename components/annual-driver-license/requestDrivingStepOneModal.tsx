@@ -24,8 +24,7 @@ import * as yup from "yup";
 import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
 import ImageUpload from "../imageUpload";
-import { convertToThaiDate } from "@/utils/driver-management";
-import { isISODateString } from "@/utils/isIsoDateString";
+import { convertToISO } from "@/utils/convertToISO";
 
 export interface ValueFormStep1 {
   driverLicenseType: any;
@@ -338,11 +337,6 @@ const RequestDrivingStepOneModal = forwardRef<
     setOpenModal(false); // Update state to reflect modal is closed
   };
 
-  const isISODate = (str: string) => {
-    const date = new Date(str);
-    return !isNaN(date.getTime()) && str.includes("T");
-  };
-
   // Handler for ImageUpload components
   const handleLicenseImageChange = (newImage: UploadFileType) => {
     setValue("licenseImages", [newImage]);
@@ -380,30 +374,30 @@ const RequestDrivingStepOneModal = forwardRef<
 
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
   const currentBuddhistYear = dayjs().year() + 543;
-  const onSubmit = (formData: ValueFormStep1) => {
-    const expiry =
-      isISODate(formData.licenseExpiryDate) &&
-      (formData.licenseExpiryDate = convertToBuddhistDateTime(
-        formData.licenseExpiryDate
-      ).date);
+const onSubmit = (formData: ValueFormStep1) => {
+  // Convert date fields to ISO string using your utility
+  const licenseExpiryDateISO = formData.licenseExpiryDate
+    ? convertToISO(formData.licenseExpiryDate,"00:00")
+    : "";
+  const trainingDateISO = formData.trainingDate
+    ? convertToISO(formData.trainingDate,"00:00")
+    : "";
+  const trainingEndDateISO = formData.trainingEndDate
+    ? convertToISO(formData.trainingEndDate,"00:00")
+    : "";
 
-    const trainingDateSubmit =
-      isISODate(formData.trainingDate) &&
-      (formData.trainingDate = convertToBuddhistDateTime(
-        formData.trainingDate
-      ).date);
-
-    const trainingEndDateSubmit =
-      isISODate(formData.trainingEndDate) &&
-      (formData.trainingEndDate = convertToBuddhistDateTime(
-        formData.trainingEndDate
-      ).date);
-    console.log("formdata==>", formData);
-    if (stepOneSubmit) {
-      stepOneSubmit(formData);
-    }
-    handleCloseModal();
+  const submitData = {
+    ...formData,
+    licenseExpiryDate: licenseExpiryDateISO,
+    trainingDate: trainingDateISO,
+    trainingEndDate: trainingEndDateISO,
   };
+
+  if (stepOneSubmit) {
+    stepOneSubmit(submitData);
+  }
+  handleCloseModal();
+};
 
   return (
     <>
@@ -572,7 +566,7 @@ const RequestDrivingStepOneModal = forwardRef<
                               <DatePicker
                                 placeholder={"ระบุวันที่"}
                                 onChange={field.onChange}
-                                defaultValue={field.value}
+                                defaultValue={convertToBuddhistDateTime(field.value || "").date}
                               />
                             )}
                           />

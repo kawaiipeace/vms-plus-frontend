@@ -449,7 +449,7 @@ export const fetchSatisfactionSurveyQuestions = async () => {
 export const fetchUserConfirmerLic = async (search?: string) => {
   try {
     const response = await axiosInstance.get(
-      "mas/user-confirmer-license-users?search=" + search
+      "mas/user-confirmer-license-users?emp_id=" + search
     );
     return response;
   } catch (error) {
