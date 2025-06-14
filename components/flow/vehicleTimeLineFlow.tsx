@@ -79,66 +79,6 @@ export default function VehicleTimeLine() {
     const filterModalRef = useRef<FilterModalRef>(null);
     const dropdownRef = useRef(null);
 
-    // ----- Component -----
-    const Header = () => (
-        <div className="page-section-header border-0 mt-5">
-            <div className="page-header-left">
-                <div className="page-title">
-                    <span className="page-title-label">ยานพาหนะ</span>
-                    <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                        {pagination.total ?? 0} คัน
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
-
-    const Actions = () => (
-        <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex gap-4 md:flex-row md:items-center">
-                <div className="flex flex-wrap items-center gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                        {statusOptions.map(({ value, status }) => (
-                            <button key={value} onClick={() => toggleFilter(value)}>
-                                <VehicleStatus status={status} isActive={filterParams.includes(value)} />
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-                <DateRangePicker
-                    date={selectedRange}
-                    onChange={(range) => {
-                        setParams((prev) => ({
-                            ...prev,
-                            start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
-                            end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-                        }));
-
-                        setSelectedRange(range || undefined);
-                    }}
-                />
-                <button
-                    onClick={handleOpenFilterModal}
-                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
-                >
-                    <i className="material-symbols-outlined">filter_list</i>
-                    <span className="text-base font-bold">ตัวกรอง</span>
-                    <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
-                </button>
-
-                <button
-                    onClick={toggleDropdown}
-                    className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
-                >
-                    <i className="material-symbols-outlined text-lg">view_column</i>
-                </button>
-            </div>
-        </div>
-    );
-
     // ----- useEffect -----
     useEffect(() => {
         let countFilters = 0;
@@ -205,15 +145,68 @@ export default function VehicleTimeLine() {
 
     return (
         <div className="px-4 sm:px6 lg:px8 py6">
-            <Header />
+            {/* ----- Header ----- */}
+            <div className="page-section-header border-0 mt-5">
+                <div className="page-header-left">
+                    <div className="page-title">
+                        <span className="page-title-label">ยานพาหนะ</span>
+                        <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+                            {pagination.total ?? 0} คัน
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* ----- Search and Filter Section ----- */}
             <div className="flex justify-between items-center mb-4">
                 <SearchInput
                     defaultValue={params.search}
                     placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
                     onSearch={(value) => debouncedSetParams(value)}
                 />
-                <Actions />
+                <div className="flex gap-4 md:flex-row md:items-center">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                            {statusOptions.map(({ value, status }) => (
+                                <button key={value} onClick={() => toggleFilter(value)}>
+                                    <VehicleStatus status={status} isActive={filterParams.includes(value)} />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+                    <DateRangePicker
+                        date={selectedRange}
+                        onChange={(range) => {
+                            setParams((prev) => ({
+                                ...prev,
+                                start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+                                end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+                            }));
+
+                            setSelectedRange(range || undefined);
+                        }}
+                    />
+                    <button
+                        onClick={handleOpenFilterModal}
+                        className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
+                    >
+                        <i className="material-symbols-outlined">filter_list</i>
+                        <span className="text-base font-bold">ตัวกรอง</span>
+                        <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
+                    </button>
+
+                    <button
+                        onClick={toggleDropdown}
+                        className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
+                    >
+                        <i className="material-symbols-outlined text-lg">view_column</i>
+                    </button>
+                </div>
             </div>
+
+            {/* ----- Table ----- */}
             <div className="relative">
                 {showDropdown && (
                     <DropdownMenu
@@ -246,6 +239,8 @@ export default function VehicleTimeLine() {
                     />
                 )}
             </div>
+
+            {/* ----- Filter Modal ----- */}
             <FilterModal
                 ref={filterModalRef}
                 onSubmitFilter={handleFilterSubmit}
