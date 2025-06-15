@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
 import { getDriverTimeline } from "@/services/driversManagement";
-import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
 import VehicleStatus from "../vehicle-management/vehicle-status-with-icon";
 import PaginationControls from "../table/pagination-control";

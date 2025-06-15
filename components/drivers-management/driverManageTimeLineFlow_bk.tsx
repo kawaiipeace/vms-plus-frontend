@@ -8,7 +8,6 @@ import SearchInput from "@/components/vehicle-management/input/search";
 import VehicleNoData from "@/components/vehicle-management/noData";
 import VehicleStatus from "@/components/vehicle-management/vehicle-status-with-icon";
 import dayjs from "dayjs";
-import "flatpickr/dist/themes/material_blue.css";
 
 import { getDriverTimeline } from "@/services/driversManagement";
 import { debounce } from "lodash";

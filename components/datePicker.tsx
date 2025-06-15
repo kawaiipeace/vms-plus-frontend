@@ -3,8 +3,6 @@
 import dayjs from "dayjs";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-// import 'flatpickr/dist/themes/material_blue.css';
-// import "@/styles/datePicker.css";
 import { Thai } from "flatpickr/dist/l10n/th";
 import { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";

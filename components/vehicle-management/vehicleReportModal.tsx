@@ -4,7 +4,7 @@ import Image from "next/image";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import dayjs from "dayjs";
 import AlertCustom from "../alertCustom";
-import dynamic from "next/dynamic";
+import DatePicker from "../datePicker";
 
 export type ReportModalRef = {
   open: () => void;
@@ -59,10 +59,6 @@ const CheckboxWithLabel = ({ id, name, label }: { id: string; name: string; labe
     <span>{label}</span>
   </div>
 );
-
-const DatePicker = dynamic(() => import('../datePicker'), {
-  ssr: false,
-});
 
 interface ReportBodyProps {
   selected: string[];

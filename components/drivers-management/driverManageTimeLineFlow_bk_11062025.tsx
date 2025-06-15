@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import RequestListTable from "@/components/drivers-management/table/timeline-list-table";
 import FilterModal, { FilterModalRef } from "@/components/drivers-management/modal/filterTimelineModal";
 import { getDriverTimeline } from "@/services/driversManagement";
-import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
 import SearchInput from "@/components/vehicle-management/input/search";
 import PaginationControls from "@/components/table/pagination-control";

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import FilterModal, { FilterModalRef } from "../vehicle-management/filterModal";
 import { getVehicleTimeline } from "@/services/vehicleService";
-import "flatpickr/dist/themes/material_blue.css";
 import dayjs from "dayjs";
 import VehicleStatus from "../vehicle-management/vehicle-status-with-icon";
 import PaginationControls from "../table/pagination-control";
