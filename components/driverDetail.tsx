@@ -338,7 +338,7 @@ const DriverDetailContent = ({
             )}
           </div>
           <div className="w-full overflow-x-auto">
-            <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+            <div className="flex border-b tablist w-[100vw] max-w-[100vw] overflow-auto">
               {tabs.map((tab, index) => (
                 <button
                   key={index}
