@@ -6,6 +6,7 @@ import AdminListTable from "@/components/table/admin-list-table";
 import PaginationControls from "@/components/table/pagination-control";
 import ZeroRecord from "@/components/zeroRecord";
 import { fetchRequests } from "@/services/bookingAdmin";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 
@@ -43,7 +44,7 @@ export default function AdminApproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
-    const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -95,13 +96,17 @@ export default function AdminApproveFlow() {
     department?: string;
   }) => {
     console.log("department", department);
+    console.log('params===>', params);
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
           ?.ref_request_status_name || code
     );
 
-    const date = selectedStartDate + " - " + selectedEndDate;
+    const date =
+      convertToBuddhistDateTime(selectedStartDate).date +
+      " - " +
+      convertToBuddhistDateTime(selectedEndDate).date;
 
     setFilterNames(mappedNames);
     console.log(selectedStartDate);
@@ -112,7 +117,9 @@ export default function AdminApproveFlow() {
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
       ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
+      ref_request_status_code: selectedStatuses
+        ? selectedStatuses.join(",")
+        : "30,31,40",
       vehicle_owner_dept_sap: department || "",
       startdate:
         selectedStartDate &&
@@ -162,12 +169,19 @@ export default function AdminApproveFlow() {
           ref_request_status_code: updatedStatuses.join(","),
         };
       });
+    } else if (filterType === "department") {
+      setParams((prevParams) => ({
+        ...prevParams,
+        vehicle_owner_dept_sap: "", // Clear the department filter
+        ref_request_status_code: "30,31,40", // Ensure statuses 30,31,40 are always included
+      }));
     } else if (filterType === "date") {
       setFilterDate(""); // Clear the `filterDate`
       setParams((prevParams) => ({
         ...prevParams,
         startdate: "",
         enddate: "",
+        ref_request_status_code: "30,31,40", // Ensure statuses 30,31,40 are always included
       }));
     }
   };
@@ -176,7 +190,7 @@ export default function AdminApproveFlow() {
     setParams({
       search: "",
       vehicle_owner_dept_sap: "",
-      ref_request_status_code: "",
+      ref_request_status_code: "30,31,40",
       startdate: "",
       enddate: "",
       car_type: "",
@@ -200,7 +214,7 @@ export default function AdminApproveFlow() {
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log('requestDataAdmin',requestList);
+          console.log("requestDataAdmin", requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -227,11 +241,8 @@ export default function AdminApproveFlow() {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]); // This will log whenever dataRequest changes
 
-    if (loading) {
-    return (
-       <div className="mt-0 pt-0">
-      </div>
-    );
+  if (loading) {
+    return <div className="mt-0 pt-0"></div>;
   }
 
   return (
@@ -364,7 +375,7 @@ export default function AdminApproveFlow() {
             key={index}
             className="badge badge-brand badge-outline rounded-sm mr-2"
           >
-            {name}
+            {name}sss
             <i
               className="material-symbols-outlined cursor-pointer"
               onClick={() => removeFilter("status", name)}
