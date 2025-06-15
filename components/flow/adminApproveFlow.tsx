@@ -57,7 +57,7 @@ export default function AdminApproveFlow() {
       page: newPage,
     }));
   };
-const [departmentLabel, setDepartmentLabel] = useState<string>("");
+  const [departmentLabel, setDepartmentLabel] = useState<string>("");
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
       "30": { iconName: "schedule", status: "info" },
@@ -93,9 +93,9 @@ const [departmentLabel, setDepartmentLabel] = useState<string>("");
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
-   department?: { value: string; label: string }; 
+    department?: { value: string; label: string };
   }) => {
-     setDepartmentLabel(department?.label || "");
+    setDepartmentLabel(department?.label || "");
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -148,32 +148,30 @@ const [departmentLabel, setDepartmentLabel] = useState<string>("");
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-    setFilterNames((prevFilterNames) =>
-      prevFilterNames.filter((name) => name !== filterValue)
-    );
+      setFilterNames((prevFilterNames) =>
+        prevFilterNames.filter((name) => name !== filterValue)
+      );
 
-    setParams((prevParams) => {
-      const updatedStatuses = prevParams.ref_request_status_code
-        .split(",")
-        .filter((code) => {
-          const name = summary.find(
-            (item) => item.ref_request_status_code === code
-          )?.ref_request_status_name;
-          return name !== filterValue;
-        });
+      setParams((prevParams) => {
+        const updatedStatuses = prevParams.ref_request_status_code
+          .split(",")
+          .filter((code) => {
+            const name = summary.find(
+              (item) => item.ref_request_status_code === code
+            )?.ref_request_status_name;
+            return name !== filterValue;
+          });
 
-      setFilterNum(updatedStatuses.length);
+        setFilterNum(updatedStatuses.length);
 
-      return {
-        ...prevParams,
-        ref_request_status_code:
-          updatedStatuses.length > 0
-            ? updatedStatuses.join(",")
-            : "30,31,40", // fallback to default if all removed
-      };
-    });
+        return {
+          ...prevParams,
+          ref_request_status_code:
+            updatedStatuses.length > 0 ? updatedStatuses.join(",") : "30,31,40", // fallback to default if all removed
+        };
+      });
     } else if (filterType === "department") {
-        setDepartmentLabel("");
+      setDepartmentLabel("");
       setParams((prevParams) => ({
         ...prevParams,
         vehicle_owner_dept_sap: "",
@@ -392,7 +390,7 @@ const [departmentLabel, setDepartmentLabel] = useState<string>("");
         {/* Department badge */}
         {params.vehicle_owner_dept_sap && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
-         {departmentLabel}
+            {departmentLabel}
             <i
               className="material-symbols-outlined cursor-pointer"
               onClick={() =>
@@ -432,18 +430,18 @@ const [departmentLabel, setDepartmentLabel] = useState<string>("");
       )}
 
       {pagination.total > 0 ? (
- (
-           (filterNames.length > 0 || params.vehicle_owner_dept_sap || filterDate) && (
-    <ZeroRecord
-      imgSrc="/assets/img/empty/search_not_found.png"
-      title="ไม่พบข้อมูล"
-      desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-      button="ล้างตัวกรอง"
-      displayBtn={true}
-      btnType="secondary"
-      useModal={handleClearAllFilters}
-    />
-  )
+        (filterNames.length > 0 ||
+          params.vehicle_owner_dept_sap ||
+          filterDate) && (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
+          />
         )
       ) : (
         <ZeroRecord
