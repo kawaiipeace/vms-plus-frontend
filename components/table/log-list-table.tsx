@@ -6,7 +6,6 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -25,27 +24,8 @@ interface Props {
 }
 
 export default function LogListTable({ defaultData, pagination }: Props) {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [reqData, setReqData] = useState<LogType[]>(defaultData);
-
-  // Set pagination from props
-  const [paginationState, setPagination] = useState<PaginationState>({
-    pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
-    pageSize: pagination.limit,
-  });
-
-  useEffect(() => {
-    setReqData(defaultData);
-    console.log("defaultdata==>", defaultData);
-  }, [defaultData]);
-
-  useEffect(() => {
-    setPagination({
-      pageIndex: pagination.page - 1,
-      pageSize: pagination.limit,
-    });
-  }, [pagination.page, pagination.limit]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const requestListColumns: ColumnDef<LogType>[] = [
     {
@@ -57,56 +37,73 @@ export default function LogListTable({ defaultData, pagination }: Props) {
       ),
       enableSorting: true,
       cell: ({ row }) => {
-        const startDateTime = convertToBuddhistDateTime(row.original.log_request_action_datetime);
-        return <div className="text-left">{startDateTime.date + " " + startDateTime.time}</div>;
+        const startDateTime = convertToBuddhistDateTime(
+          row.original.log_request_action_datetime
+        );
+        return (
+          <div className="text-left">
+            {startDateTime.date + " " + startDateTime.time}
+          </div>
+        );
       },
     },
     {
       accessorKey: "action_by_fullname",
       header: () => <div className="text-left">ผู้ดำเนินการ</div>,
       enableSorting: false,
-      cell: ({ row }) => <div className="text-left">{row.original.action_by_fullname}</div>,
+      cell: ({ row }) => (
+        <div className="text-left">{row.original.action_by_fullname}</div>
+      ),
     },
     {
       accessorKey: "debt_sap",
       header: () => <div className="text-center">ตำแหน่ง/สังกัด</div>,
       enableSorting: false,
-      cell: ({ row }) => <div className="text-left">{row.original.action_by_position +"/"+ row.original.action_by_department}</div>,
+      cell: ({ row }) => (
+        <div className="text-left">
+          {row.original.action_by_position +
+            "/" +
+            row.original.action_by_department}
+        </div>
+      ),
     },
     {
       accessorKey: "status",
       header: () => <div className="text-center">รายละเอียด</div>,
       enableSorting: false,
-      cell: ({ row }) => <div className="text-left">{row.original.action_detail}</div>,
+      cell: ({ row }) => (
+        <div className="text-left">{row.original.action_detail}</div>
+      ),
     },
     {
       accessorKey: "remark",
       header: () => <div className="text-center">หมายเหตุ</div>,
       enableSorting: false,
-      cell: ({ getValue }) => <div className="text-left">{getValue() as string}</div>,
+      cell: ({ getValue }) => (
+        <div className="text-left">{getValue() as string}</div>
+      ),
     },
   ];
 
   const table = useReactTable({
-    data: reqData,
+    data: defaultData,
     columns: requestListColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    manualPagination: true,
     state: {
       sorting,
-      pagination: paginationState,
+      pagination: {
+        pageIndex: pagination.page - 1,
+        pageSize: pagination.limit,
+      },
     },
     defaultColumn: {
       enableSorting: false,
     },
   });
-
-  useEffect(() => {
-    console.log("page", pagination);
-  }, [pagination]);
 
   useEffect(() => {
     setIsLoading(false);
