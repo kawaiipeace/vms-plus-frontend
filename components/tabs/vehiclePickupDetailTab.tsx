@@ -2,9 +2,7 @@
 import { LogType } from "@/app/types/log-type";
 import { PaginationType } from "@/app/types/request-action-type";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { RequestHistoryLog } from "@/data/requestHistory";
 import { fetchLogs, fetchRequestKeyDetail } from "@/services/masterService";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ReturnCarTab from "../admin/returnCarTab";
@@ -68,12 +66,8 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     const fetchRequestDetailfunc = async () => {
       try {
         const response = await fetchRequestKeyDetail(requestId);
-        const responseLog = await fetchLogs(requestUid, {
-          page: 1,
-          limit: 100,
-        });
-        const { total, totalPages } = responseLog.data;
-        console.log("responseKey", response.data);
+        const responseLog = await fetchLogs(requestUid, params);
+        const { total, totalPages, logs } = responseLog.data;
 
         setRequestData(response.data);
         setPagination({
@@ -83,17 +77,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
           totalPages,
         });
 
-        const requestList = responseLog.data.logs;
-        const mapDataRequest: RequestHistoryLog[] = requestList.map((item: LogType) => {
-          const dateTime = convertToBuddhistDateTime(item.created_at);
-          return {
-            dateTime: dateTime.date + "" + dateTime.time,
-            operator: item.action_by_fullname,
-            position: item.action_by_position,
-            detail: item.action_detail,
-            remark: item.log_remark,
-          };
-        });
+        const requestList = logs;
 
         setLoading(false);
         setDataRequest(requestList);
@@ -106,7 +90,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     if (requestId) {
       fetchRequestDetailfunc();
     }
-  }, [requestId, returnedCar, returnedData, returnedImage, cancelReq]);
+  }, [requestId, returnedCar, returnedData, returnedImage, cancelReq, params]);
 
   const createQueryString = useCallback(
     (value: string) => {
@@ -177,7 +161,6 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ประวัติการดำเนินการ",
         content: (
           <>
-            {/* <TableComponent data={dataRequest} columns={requestHistoryLogColumns} /> */}
             <LogListTable defaultData={dataRequest} pagination={pagination} />
             {dataRequest.length > 0 && (
               <PaginationControls
@@ -191,7 +174,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         badge: "",
       },
     ],
-    [dataRequest, requestData, requestId]
+    [dataRequest, requestData, requestId, params, pagination]
   ).filter((tab) => {
     if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver === "1") {
       return false;
