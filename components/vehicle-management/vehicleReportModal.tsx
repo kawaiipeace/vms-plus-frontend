@@ -2,9 +2,9 @@ import { RepoCardProps, VehicleManagementReportApiParams } from "@/app/types/veh
 import { loadReportAddFuel, loadReportTripDetail } from "@/services/vehicleService";
 import Image from "next/image";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import DatePicker from "../datePicker";
 import dayjs from "dayjs";
 import AlertCustom from "../alertCustom";
+import dynamic from "next/dynamic";
 
 export type ReportModalRef = {
   open: () => void;
@@ -59,6 +59,10 @@ const CheckboxWithLabel = ({ id, name, label }: { id: string; name: string; labe
     <span>{label}</span>
   </div>
 );
+
+const DatePicker = dynamic(() => import('../datePicker'), {
+  ssr: false,
+});
 
 interface ReportBodyProps {
   selected: string[];

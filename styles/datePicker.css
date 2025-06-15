@@ -1,0 +1,243 @@
+/* ========================
+   📅 Flatpickr Calendar Base
+=========================== */
+.flatpickr-calendar {
+    margin-left: -3rem;
+    margin-top: 0.3rem;
+    border-radius: 0.5rem;
+    min-width: 312px;
+    box-shadow: none !important;
+    border: 1px solid;
+    z-index: 99999 !important;
+}
+
+.flatpickr-calendar.hasTime {
+    max-width: 200px;
+}
+
+.journey-time .flatpickr-calendar.static.open {
+    left: 2.3em;
+}
+
+.flatpickr-calendar::before,
+.flatpickr-calendar::after {
+    display: none;
+}
+
+/* Light / Dark background */
+.light-mode .flatpickr-calendar {
+    background-color: #ffffff;
+    border-color: #d0d5dd;
+}
+
+.dark-mode .flatpickr-calendar {
+    background-color: #0c111d;
+    border-color: #61646c;
+}
+
+/* ========================
+     📆 Month Navigation
+  =========================== */
+.flatpickr-calendar .flatpickr-months {
+    padding: 1rem 1rem 0 1rem;
+    align-items: center;
+}
+
+.flatpickr-calendar .flatpickr-months .flatpickr-prev-month,
+.flatpickr-calendar .flatpickr-months .flatpickr-next-month {
+    position: relative;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flatpickr-calendar .flatpickr-months .flatpickr-current-month {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: -0.2px;
+    padding: 0 !important;
+}
+
+.light-mode .flatpickr-months .flatpickr-current-month {
+    color: #000;
+}
+
+.dark-mode .flatpickr-months .flatpickr-current-month {
+    color: #f5f5f6;
+}
+
+.flatpickr-calendar .flatpickr-month {
+    background-color: transparent !important;
+}
+
+.flatpickr-calendar .cur-month {
+    padding: 0;
+    margin: 0;
+    background-color: transparent !important;
+}
+
+.flatpickr-calendar .numInput.cur-year {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: -0.2px;
+}
+
+.light-mode .numInput.cur-year {
+    color: #000;
+}
+
+.dark-mode .numInput.cur-year {
+    color: #f5f5f6;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  fill: #000000 !important; /* สีดำ */
+  width: 1rem;
+  height: 1rem;
+}
+
+.dark-mode .flatpickr-prev-month svg,
+.dark-mode .flatpickr-next-month svg {
+  fill: #ffffff !important; /* สีขาว */
+}
+
+/* ========================
+     🗓️ Inner Container & Days
+  =========================== */
+.flatpickr-innerContainer {
+    padding: 1rem;
+}
+
+.flatpickr-days {
+    width: 100%;
+}
+
+.dayContainer {
+    width: 100%;
+    min-width: 100%;
+    gap: 0;
+}
+
+.flatpickr-weekdays {
+    background-color: transparent !important;
+}
+
+.flatpickr-weekday {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: -0.2px;
+    background-color: transparent !important;
+}
+
+.light-mode .flatpickr-weekday {
+    color: #000;
+}
+
+.dark-mode .flatpickr-weekday {
+    color: #f5f5f6;
+}
+
+.flatpickr-calendar .flatpickr-rContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dark-mode .flatpickr-calendar .flatpickr-rContainer {
+    background-color: #0c111d;
+    color: #f5f5f6;
+}
+
+/* ========================
+     📅 Individual Day Styles
+  =========================== */
+.flatpickr-day {
+    display: flex;
+}
+
+.light-mode .flatpickr-day {
+    color: #000;
+}
+
+.dark-mode .flatpickr-day {
+    color: #f5f5f6;
+}
+
+/* Hover / Focus states */
+.light-mode .flatpickr-day:hover,
+.light-mode .flatpickr-day:focus,
+.light-mode .flatpickr-day.today:hover,
+.light-mode .flatpickr-day.today:focus {
+    background-color: #f2f4f7 !important;
+    border-color: #f2f4f7 !important;
+    color: #a80689 !important;
+}
+
+.dark-mode .flatpickr-day:hover,
+.dark-mode .flatpickr-day:focus,
+.dark-mode .flatpickr-day.today:hover,
+.dark-mode .flatpickr-day.today:focus {
+    background-color: #333741 !important;
+    border-color: #333741 !important;
+    color: #f5f5f6 !important;
+}
+
+/* Selected Day */
+.light-mode .flatpickr-day.selected,
+.dark-mode .flatpickr-day.selected {
+    background-color: #a80689 !important;
+    border-color: #a80689 !important;
+    color: #ffffff !important;
+}
+
+/* Today Day Indicator */
+.flatpickr-day.today {
+    border-color: transparent !important;
+    position: relative;
+}
+
+.flatpickr-day.today::before {
+    content: "";
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.light-mode .flatpickr-day.today::before {
+    background-color: #a80689;
+}
+
+.dark-mode .flatpickr-day.today::before {
+    background-color: #f5f5f6;
+}
+
+/* Previous & Next month days */
+.light-mode .flatpickr-day.prevMonthDay,
+.light-mode .flatpickr-day.nextMonthDay {
+    color: #98a2b3 !important;
+}
+
+.dark-mode .flatpickr-day.prevMonthDay,
+.dark-mode .flatpickr-day.nextMonthDay {
+    color: #85888e !important;
+}
