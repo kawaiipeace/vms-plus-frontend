@@ -62,7 +62,7 @@ const AddCarpoolVehicleModal = forwardRef<
 
   const fetchCarpoolVehicleFunc = async () => {
     try {
-      const response = await getCarpoolVehicle(params);
+      const response = await getCarpoolVehicle(params, id || undefined);
       const result = response.data;
       setVehicles(result.vehicles);
     } catch (error) {

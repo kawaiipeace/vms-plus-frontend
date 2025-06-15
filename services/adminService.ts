@@ -25,10 +25,11 @@ export const fetchRequests = async (params: {
 
 export const fetchRequestDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('received-key-admin/request/' + id);
+    const response = await axiosInstance.get(
+      "received-key-admin/request/" + id
+    );
 
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -36,7 +37,10 @@ export const fetchRequestDetail = async (id: string) => {
 
 export const adminReceivedVehicle = async (data: any) => {
   try {
-    const response = await axiosInstance.put("received-vehicle-admin/received-vehicle", data);
+    const response = await axiosInstance.put(
+      "received-vehicle-admin/received-vehicle",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -45,21 +49,23 @@ export const adminReceivedVehicle = async (data: any) => {
 
 export const fetchVehiclePickupRequestDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get('received-key-admin/request/' + id);
+    const response = await axiosInstance.get(
+      "received-key-admin/request/" + id
+    );
 
     return response;
-
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchTravelDetailTrips = async (id: string,search?: string) => {
+export const fetchTravelDetailTrips = async (id: string, search?: string) => {
   try {
-    const response = await axiosInstance.get(`vehicle-in-use-admin/travel-details/${id}?search=`+search);
+    const response = await axiosInstance.get(
+      `vehicle-in-use-admin/travel-details/${id}?search=` + search
+    );
 
     return response;
-
   } catch (error) {
     throw error;
   }
@@ -67,7 +73,9 @@ export const fetchTravelDetailTrips = async (id: string,search?: string) => {
 
 export const adminDeleteTravelDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.delete("vehicle-in-use-admin/delete-travel-detail/" + id);
+    const response = await axiosInstance.delete(
+      "vehicle-in-use-admin/delete-travel-detail/" + id
+    );
     return response;
   } catch (error) {
     throw error;
@@ -76,17 +84,24 @@ export const adminDeleteTravelDetail = async (id: string) => {
 
 export const adminDeleteFuelDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.delete("vehicle-in-use-admin/delete-add-fuel/" + id);
+    const response = await axiosInstance.delete(
+      "vehicle-in-use-admin/delete-add-fuel/" + id
+    );
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-
-export const adminAddFuelDetails = async (id: string, params: { search?: string }) => {
+export const adminAddFuelDetails = async (
+  id: string,
+  params: { search?: string }
+) => {
   try {
-    const response = await axiosInstance.get(`vehicle-in-use-admin/add-fuel-details/` + id, { params });
+    const response = await axiosInstance.get(
+      `vehicle-in-use-admin/add-fuel-details/` + id,
+      { params }
+    );
     return response;
   } catch (error) {
     throw error;
@@ -95,7 +110,10 @@ export const adminAddFuelDetails = async (id: string, params: { search?: string 
 
 export const adminUpdateAddFuelDetail = async (id: string, data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-in-use-admin/update-add-fuel/" + id, data);
+    const response = await axiosInstance.put(
+      "vehicle-in-use-admin/update-add-fuel/" + id,
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -116,7 +134,6 @@ export const fetchAdminAddFuelDetails = async (
     throw error;
   }
 };
-
 
 export const fetchVehicleInsRequests = async (params: {
   search?: string;
@@ -142,7 +159,10 @@ export const fetchVehicleInsRequests = async (params: {
 
 export const adminCreateTravelDetail = async (data: any) => {
   try {
-    const response = await axiosInstance.post("vehicle-in-use-admin/create-travel-detail", data);
+    const response = await axiosInstance.post(
+      "vehicle-in-use-admin/create-travel-detail",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -151,18 +171,22 @@ export const adminCreateTravelDetail = async (data: any) => {
 
 export const adminCreateFuelDetail = async (data: any) => {
   try {
-    const response = await axiosInstance.post("vehicle-in-use-admin/create-add-fuel", data);
+    const response = await axiosInstance.post(
+      "vehicle-in-use-admin/create-add-fuel",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-
-
 export const adminUpdateTravelDetail = async (id: string, data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-in-use-admin/update-travel-detail/" + id, data);
+    const response = await axiosInstance.put(
+      "vehicle-in-use-admin/update-travel-detail/" + id,
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -171,7 +195,10 @@ export const adminUpdateTravelDetail = async (id: string, data: any) => {
 
 export const adminUpdateImageDetail = async (data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-in-use-admin/update-received-vehicle-images", data);
+    const response = await axiosInstance.put(
+      "vehicle-in-use-admin/update-received-vehicle-images",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -180,7 +207,10 @@ export const adminUpdateImageDetail = async (data: any) => {
 
 export const adminUpdateReturnImageDetail = async (data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-inspection-admin/update-returned-vehicle-images", data);
+    const response = await axiosInstance.put(
+      "vehicle-inspection-admin/update-returned-vehicle-images",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -189,7 +219,10 @@ export const adminUpdateReturnImageDetail = async (data: any) => {
 
 export const adminUpdateVehicleInsImage = async (data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-inspection-admin/update-inspect-vehicle-images", data);
+    const response = await axiosInstance.put(
+      "vehicle-inspection-admin/update-inspect-vehicle-images",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -198,7 +231,10 @@ export const adminUpdateVehicleInsImage = async (data: any) => {
 
 export const AdminReturnedVehicle = async (data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-in-use-admin/returned-vehicle", data);
+    const response = await axiosInstance.put(
+      "vehicle-in-use-admin/returned-vehicle",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -207,17 +243,22 @@ export const AdminReturnedVehicle = async (data: any) => {
 
 export const AdminUpdateReturnedVehicle = async (data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-inspection-admin/update-returned-vehicle", data);
+    const response = await axiosInstance.put(
+      "vehicle-inspection-admin/update-returned-vehicle",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-
 export const adminSendBackVehicle = async (data: SendbackRequestType) => {
   try {
-    const response = await axiosInstance.put("vehicle-inspection-admin/update-rejected", data);
+    const response = await axiosInstance.put(
+      "vehicle-inspection-admin/update-rejected",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -226,7 +267,10 @@ export const adminSendBackVehicle = async (data: SendbackRequestType) => {
 
 export const adminAcceptVehicle = async (data: any) => {
   try {
-    const response = await axiosInstance.put("vehicle-inspection-admin/update-accepted", data);
+    const response = await axiosInstance.put(
+      "vehicle-inspection-admin/update-accepted",
+      data
+    );
     return response;
   } catch (error) {
     throw error;
@@ -235,14 +279,24 @@ export const adminAcceptVehicle = async (data: any) => {
 
 export const fetchReviewDriverDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get("vehicle-inspection-admin/satisfaction-survey/" + id);
+    const response = await axiosInstance.get(
+      "vehicle-inspection-admin/satisfaction-survey/" + id
+    );
 
     return response;
-
   } catch (error) {
     throw error;
   }
 };
 
+export const fetchUserReviewDriverDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(
+      "vehicle-inspection-user/satisfaction-survey/" + id
+    );
 
-
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

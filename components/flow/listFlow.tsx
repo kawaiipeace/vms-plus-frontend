@@ -218,6 +218,7 @@ export default function ListFlow({ requestData }: Props) {
                   request?.received_key_end_datetime || ""
                 ).time
               }
+              isDriverPEA={request?.is_pea_employee_driver === "1"}
             />
           );
         }

@@ -104,7 +104,7 @@ const AddCarpoolApproverModal = forwardRef<
 
   const fetchCarpoolApproverFunc = async (search?: string) => {
     try {
-      const response = await getCarpoolApprover(search);
+      const response = await getCarpoolApprover(search, id || undefined);
       const result = response.data;
       setApprover(result);
     } catch (error) {

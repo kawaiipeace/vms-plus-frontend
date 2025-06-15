@@ -61,7 +61,7 @@ const AddCarpoolDriverModal = forwardRef<
 
   const fetchCarpoolDriverFunc = async () => {
     try {
-      const response = await getCarpoolDriver(params);
+      const response = await getCarpoolDriver(params, id || undefined);
       const result = response.data;
       setDrivers(result.drivers);
     } catch (error) {

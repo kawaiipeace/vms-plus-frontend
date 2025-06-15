@@ -114,6 +114,8 @@ export interface Carpool {
   carpool_admin_emp_name: string;
   carpool_admin_dept_sap: string;
   carpool_type: string;
+  admin_position: string;
+  carpool_admin_dept_sap_short: string;
 }
 
 export interface CarChoice {

@@ -511,7 +511,7 @@ export default function CarpoolVehicleTable({
               data-tip="ดูรายละเอียด"
               onClick={() => {
                 detailsModalRef.current?.openModal();
-                setVehicleId(row.original.mas_carpool_vehicle_uid);
+                setVehicleId(row.original.mas_vehicle_uid);
               }}
             >
               <i className="material-symbols-outlined">quick_reference_all</i>

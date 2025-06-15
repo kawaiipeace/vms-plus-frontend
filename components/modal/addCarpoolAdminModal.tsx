@@ -96,7 +96,7 @@ const AddCarpoolAdminModal = forwardRef<
 
   const fetchCarpoolAdminFunc = async (search?: string) => {
     try {
-      const response = await getCarpoolAdmin(search);
+      const response = await getCarpoolAdmin(search, id || undefined);
       const result = response.data;
       setAdmins(result);
     } catch (error) {

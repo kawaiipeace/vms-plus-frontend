@@ -321,6 +321,15 @@ export default function CarpoolTimeLine() {
                     ? dayjs(range?.to).format("YYYY-MM-DD")
                     : "",
                 }));
+                setDriverParams((prev) => ({
+                  ...prev,
+                  start_date: range?.from
+                    ? dayjs(range?.from).format("YYYY-MM-DD")
+                    : "",
+                  end_date: range?.to
+                    ? dayjs(range?.to).format("YYYY-MM-DD")
+                    : "",
+                }));
 
                 setSelectedRange(range || undefined);
               }}

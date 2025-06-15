@@ -19,6 +19,7 @@ interface MobileWaitForKeyCardProps {
   pickupDate: string; // expected in format 'YYYY-MM-DD' or similar
   pickupTime: string;
   parkingLocation?: string;
+  isDriverPEA?: boolean;
 }
 
 export default function MobileTravelLogCard({
@@ -33,6 +34,7 @@ export default function MobileTravelLogCard({
   pickupDate,
   pickupTime,
   parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
+  isDriverPEA,
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
   const [requestData, setRequestData] = useState<RequestDetailType>();
@@ -80,7 +82,6 @@ export default function MobileTravelLogCard({
     return today > pickup;
   }, [pickupDate]);
 
-  const isDriverPEA = false;
   const shouldShowRatingButton = useMemo(() => {
     const today = new Date();
     const nowHour = today.getHours();
@@ -108,11 +109,14 @@ export default function MobileTravelLogCard({
       enDate.getHours() >= 12;
 
     const isAfterTravel =
-      today.getDate() > enDate.getDate() || (today.getDate() === enDate.getDate() && today.getHours() >= 12);
+      today.getDate() > enDate.getDate() ||
+      (today.getDate() === enDate.getDate() && today.getHours() >= 12);
 
     if (!isDriverPEA) {
       return (
-        (dayIsHaftMorning && nowHour >= 12) || (dayIsHalfAfternoon && nowHour >= 16) || (dayIsFull && isAfterTravel)
+        (dayIsHaftMorning && nowHour >= 12) ||
+        (dayIsHalfAfternoon && nowHour >= 16) ||
+        (dayIsFull && isAfterTravel)
       );
     }
 
@@ -135,12 +139,19 @@ export default function MobileTravelLogCard({
             <div className="card-content">
               <div className="card-content-top">
                 <div className="card-title">
-                  {title} <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
+                  {title}{" "}
+                  <i className="material-symbols-outlined icon-settings-400-20">
+                    keyboard_arrow_right
+                  </i>
                 </div>
                 <div className="card-subtitle">{licensePlate}</div>
                 <div className="supporting-text-group supporting-text-column">
-                  <div className="supporting-text text-truncate w-full">{location}</div>
-                  <div className="supporting-text text-truncate">{dateRange}</div>
+                  <div className="supporting-text text-truncate w-full">
+                    {location}
+                  </div>
+                  <div className="supporting-text text-truncate">
+                    {dateRange}
+                  </div>
                 </div>
               </div>
             </div>
@@ -160,7 +171,9 @@ export default function MobileTravelLogCard({
               className="btn btn-secondary flex-1"
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง`);
+                router.push(
+                  `/vehicle-in-use/user/${id}?activeTab=ข้อมูลการเดินทาง`
+                );
               }}
             >
               บันทึกเดินทาง
@@ -169,12 +182,16 @@ export default function MobileTravelLogCard({
               className="btn btn-secondary flex-1"
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง`);
+                router.push(
+                  `/vehicle-in-use/user/${id}?activeTab=การเติมเชื้อเพลิง`
+                );
               }}
             >
               เติมเชื้อเพลิง
               {isPickupDatePassed && (
-                <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
+                <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">
+                  error
+                </i>
               )}
             </button>
             {isDriverPEA ? (
@@ -193,7 +210,9 @@ export default function MobileTravelLogCard({
                 className="btn btn-secondary flex-1"
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(`/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`);
+                  router.push(
+                    `/vehicle-in-use/user/${id}?activeTab=การนัดหมายเดินทาง`
+                  );
                 }}
               >
                 ดูนัดหมาย
@@ -219,7 +238,9 @@ export default function MobileTravelLogCard({
             >
               คืนยานพาหนะ
               {isPickupDatePassed && (
-                <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">error</i>
+                <i className="material-symbols-outlined icon-settings-fill-300-24 text-error">
+                  error
+                </i>
               )}
             </button>
           </div>
@@ -227,7 +248,12 @@ export default function MobileTravelLogCard({
       </div>
 
       <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />
-      <ReturnCarAddModal ref={returnCarAddModalRef} id={id} requestData={requestData} useBy="user" />
+      <ReturnCarAddModal
+        ref={returnCarAddModalRef}
+        id={id}
+        requestData={requestData}
+        useBy="user"
+      />
       <LicenseCardModal ref={licenseCardModalRef} requestData={requestData} />
     </div>
   );
