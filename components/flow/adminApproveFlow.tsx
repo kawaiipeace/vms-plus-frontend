@@ -73,6 +73,12 @@ export default function AdminApproveFlow() {
       "90": { iconName: "delete", status: "default" },
     };
 
+    useEffect(() => {
+  if (summary && summary.length < 0) {
+    setFilterNames([]);
+  }
+}, [summary]);
+
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
@@ -108,12 +114,16 @@ export default function AdminApproveFlow() {
       convertToBuddhistDateTime(selectedEndDate).date;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
-    if (selectedStartDate && selectedEndDate) {
-      setFilterDate(date);
-    }
-    console.log("adminsummary", summary);
-    setFilterNum(selectedStatuses.length);
+
+
+   let num = selectedStatuses.length;
+  if (selectedStartDate && selectedEndDate) {
+    setFilterDate(date);
+    num += 1; // add 1 for date filter
+  } else {
+    setFilterDate("");
+  }
+    setFilterNum(num);
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code:
