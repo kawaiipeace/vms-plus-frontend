@@ -3540,9 +3540,36 @@ img {
   border-color: #61646c;
 }
 
-.flatpickr-calendar::before,
+/* .flatpickr-calendar::before,
 .flatpickr-calendar::after {
   display: none;
+} */
+
+/* Light mode */
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  fill: #000000 !important; /* สีดำ */
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Dark mode */
+.dark-mode .flatpickr-prev-month svg,
+.dark-mode .flatpickr-next-month svg {
+  fill: #ffffff !important; /* สีขาว */
+}
+
+.light-mode .flatpickr-rContainer {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.dark-mode .flatpickr-rContainer {
+  background-color: #0c111d !important;
+  color: #f5f5f6 !important;
 }
 
 .flatpickr-calendar .flatpickr-months {
