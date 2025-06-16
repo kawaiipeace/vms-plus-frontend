@@ -26,6 +26,7 @@ import {
   adminUpdateTravelDetail,
 } from "@/services/adminService";
 import dayjs from "dayjs";
+import { convertToThaiDate } from "@/utils/driver-management";
 
 interface Props {
   status?: boolean;
@@ -70,13 +71,6 @@ const RecordTravelAddModal = forwardRef<
 
   const startPickerRef = useRef<DatePickerRef>(null);
   const endPickerRef = useRef<DatePickerRef>(null);
-  const errorModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-
-  const [errorDate, setErrorDate] = useState(false);
-  const [errorTime, setErrorTime] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -132,12 +126,6 @@ const RecordTravelAddModal = forwardRef<
       });
     }
   }, [dataItem, status, openModal]);
-
-  useEffect(() => {
-    if (errorDate || errorTime) {
-      errorModalRef.current?.openModal();
-    }
-  }, [errorDate, errorTime]);
 
   const handleSubmit = () => {
     const {
@@ -298,17 +286,19 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <DatePicker
                             placeholder={"ระบุวันที่จากต้นทาง"}
-                            onChange={(date) => {
-                              if (dayjs(date).isAfter(dayjs(value?.endDate))) {
-                                setErrorDate(true);
-                              } else {
-                                setErrorDate(false);
-                              }
-
-                              setValue((val) => ({ ...val, startDate: date }));
-                            }}
+                            minDate={dayjs().format("DD/MM/YYYY")}
+                            onChange={(dateStr) =>
+                              setValue({
+                                ...value,
+                                startDate: dateStr,
+                              })
+                            }
                             ref={startPickerRef}
-                            defaultValue={dayjs().format("DD/MM/YYYY")}
+                            defaultValue={
+                              value.startDate
+                                ? convertToThaiDate(value.startDate)
+                                : dayjs().format("DD/MM/YYYY")
+                            }
                           />
                         </div>
                       </div>
@@ -328,21 +318,11 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <TimePicker
                             placeholder="ระบุเวลาจากต้นทาง"
-                            onChange={(time) => {
-                              if (
-                                dayjs(time, "HH:mm").isAfter(
-                                  dayjs(value?.endTime, "HH:mm")
-                                ) &&
-                                dayjs(value.startDate).isSame(
-                                  dayjs(value.endDate)
-                                )
-                              ) {
-                                setErrorTime(true);
-                              } else {
-                                setErrorTime(false);
-                              }
-
-                              setValue((val) => ({ ...val, startTime: time }));
+                            onChange={(dateStr) => {
+                              setValue({
+                                ...value,
+                                startTime: dateStr,
+                              });
                             }}
                             defaultValue={
                               value?.startTime ||
@@ -367,24 +347,10 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <DatePicker
                             placeholder={"ระบุวันที่ถึงปลายทาง"}
-                            onChange={(date) => {
-                              if (
-                                dayjs(date).isBefore(
-                                  dayjs(
-                                    value?.startDate
-                                      ?.split("/")
-                                      .reverse()
-                                      .join("-")
-                                  )
-                                )
-                              ) {
-                                setErrorDate(true);
-                              } else {
-                                setErrorDate(false);
-                              }
-                              console.log("end ", date);
-                              setValue((val) => ({ ...val, endDate: date }));
-                            }}
+                            onChange={(dateStr) =>
+                              setValue({ ...value, endDate: dateStr })
+                            }
+                            minDate={value.startDate}
                             ref={endPickerRef}
                           />
                         </div>
@@ -405,35 +371,22 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <TimePicker
                             placeholder="ระบุเวลาถึงปลายทาง"
-                            onChange={(time) => {
-                              if (
-                                dayjs(time, "HH:mm").isBefore(
-                                  dayjs(value?.startTime, "HH:mm")
-                                ) &&
-                                dayjs(value.startDate).isSame(
-                                  dayjs(value.endDate)
-                                )
-                              ) {
-                                setErrorTime(true);
-                              } else {
-                                setErrorTime(false);
-                              }
-
-                              setValue((val) => ({ ...val, endTime: time }));
-                            }}
+                            onChange={(dateStr) =>
+                              setValue({ ...value, endTime: dateStr })
+                            }
+                            minTime={
+                              dayjs(value.startDate).isSame(
+                                dayjs(value.endDate),
+                                "date"
+                              )
+                                ? value.startTime
+                                : undefined
+                            }
                             defaultValue={value?.endTime}
                             value={value?.endTime}
                           />
                         </div>
                       </div>
-                    </div>
-
-                    <div className="col-span-12 text-error-border">
-                      {errorDate
-                        ? "วันที่ถึงปลายทางไม่ควรน้อยกว่าวันที่จากต้นทาง"
-                        : errorTime
-                        ? "เวลาถึงปลายทางไม่ควรน้อยกว่าเวลาจากต้นทาง"
-                        : ""}
                     </div>
 
                     <div className="col-span-6">
