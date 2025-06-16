@@ -40,7 +40,6 @@ export default function VehicleTimeLine() {
         limit: 10,
     };
 
-
     // ----- State -----
     const [dataRequest, setDataRequest] = useState<any[]>([]);
     const [params, setParams] = useState<VehicleTimelineSearchParams>(initialParams);
@@ -54,7 +53,6 @@ export default function VehicleTimeLine() {
         from: dayjs().startOf("month").toDate(),
         to: dayjs().endOf("month").toDate(),
     });
-
 
     // ----- Handle Function -----
     const handlePageChange = (newPage: number) => setParams((prevParams) => ({ ...prevParams, page: newPage }));
@@ -244,7 +242,6 @@ export default function VehicleTimeLine() {
             <FilterModal
                 ref={filterModalRef}
                 onSubmitFilter={handleFilterSubmit}
-                defaultVehicleBookingStatus={filterParams}
                 flag="TIMELINE" />
         </div>
     );

@@ -62,7 +62,6 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
 );
 
 const ModalBody = ({
-    defaultBookingStatus,
     vehicleDepartments,
     fuelTypes,
     vehicleTypes,
@@ -95,15 +94,6 @@ const ModalBody = ({
     useEffect(() => {
         setParams(formData);
     }, [formData]);
-
-    useEffect(() => {
-        if (!Array.isArray(defaultBookingStatus)) return;
-    
-        setFormData(prev => ({
-            ...prev,
-            vehicleBookingStatus: defaultBookingStatus
-        }));
-    }, [defaultBookingStatus]);
 
     const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
         setFormData(prev => {
@@ -232,30 +222,6 @@ const ModalBody = ({
                         </div>
                     </>
                 )}
-
-                {flag === 'TIMELINE' && (
-                    <div className="col-span-12">
-                        <div className="form-group">
-                            <span>สถานะ</span>
-                            <div className="flex flex-col gap-2 mt-2">
-                                {vehicleBookingStatus.map((status, index) => (
-                                    <div key={index} className="flex items-center gap-2">
-                                        <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                id={`status-timeline-${index}`}
-                                                checked={formData.vehicleBookingStatus.includes(status.id)}
-                                                className="checkbox rounded-lg border-gray-300"
-                                                onChange={() => handleCheckboxToggle('vehicleBookingStatus', status.id)}
-                                            />
-                                            <VehicleStatus status={status.name} />
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
@@ -356,7 +322,6 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
                         flag={flag}
                         setParams={setParams}
                         params={params}
-                        defaultBookingStatus={defaultVehicleBookingStatus}
                     />
                 </div>
 
