@@ -95,7 +95,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       fetchRequestDetailfunc();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params]);
+  }, [params, returnedData, returnedImage, returnedCar, cancelReq]);
 
   const createQueryString = useCallback(
     (value: string) => {
