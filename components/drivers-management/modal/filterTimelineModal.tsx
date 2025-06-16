@@ -11,7 +11,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 
 type Props = {
   defaultVehicleBookingStatus?: string[];
-  flag: string;
+  flag?: string;
   onSubmitFilter?: (params: VehicleInputParams) => void;
 };
 
@@ -43,7 +43,7 @@ export interface VehicleStatusProps {
   vehicleDepartments: VehicleDepartmentApiResponse[];
   fuelTypes: FuelTypeApiResponse[];
   vehicleTypes: VehicleTypeApiResponse[];
-  flag: string;
+  flag?: string;
   params: VehicleInputParams;
   setParams: (params: VehicleInputParams) => void;
   driverStatus: DriverStatus[];
@@ -264,7 +264,7 @@ const ModalFooter = ({
   );
 };
 
-const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag, defaultVehicleBookingStatus }, ref) => {
+const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, defaultVehicleBookingStatus }, ref) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [driverStatus, setDriverStatus] = useState<DriverStatus[]>([]);
 
@@ -370,7 +370,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, flag, d
             fuelTypes={fuelType}
             vehicleDepartments={vehicleDepartment}
             vehicleTypes={vehicleType}
-            flag={flag}
+            // flag={flag}
             setParams={setParams}
             params={params}
             driverStatus={driverStatus}

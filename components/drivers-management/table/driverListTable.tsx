@@ -136,7 +136,7 @@ const DriverListTable = ({
       cell: ({ getValue, row }) => (
         <div className="text-left" data-name="ชื่อ - นามสกุล">
           <div className="text-left">
-            {getValue() as string}({row?.original?.driver_nickname})
+            {getValue() as string} ({row?.original?.driver_nickname})
           </div>
         </div>
       ),

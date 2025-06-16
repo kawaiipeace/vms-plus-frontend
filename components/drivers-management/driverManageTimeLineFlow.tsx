@@ -21,11 +21,12 @@ export default function VehicleTimeLine() {
     { value: "3", status: TripStatus["Overnight"] },
     { value: "4", status: TripStatus["Completed"] },
   ];
+  const initialFilter = ["1", "2", "3", "4"];
 
   // Function
 
   // Manage Filter Params
-  const [filterParams, setFilterParams] = useState<string[]>([]);
+  const [filterParams, setFilterParams] = useState<string[]>(initialFilter);
 
   useEffect(() => {
     setParams((prev) => ({
@@ -60,7 +61,7 @@ export default function VehicleTimeLine() {
     end_date: dayjs().endOf("month").format("YYYY-MM-DD"),
     work_type: "",
     ref_driver_status_code: "",
-    ref_timeline_status_id: "",
+    ref_timeline_status_id: initialFilter.join(","),
     is_active: "",
     page: pagination.page,
     limit: pagination.limit,
@@ -159,14 +160,6 @@ export default function VehicleTimeLine() {
 
     fetchData();
   }, [params]);
-
-  useEffect(() => {
-    setParams((prev) => ({
-      ...prev,
-      ref_timeline_status_id: "1,2,3,4", // Default to all statuses
-    }));
-    setFilterParams(["1", "2", "3", "4"]); // Default to all statuses
-  }, []);
 
   const debouncedSetParams = useMemo(
     () =>
@@ -275,7 +268,7 @@ export default function VehicleTimeLine() {
         ref={filterModalRef}
         onSubmitFilter={handleFilterSubmit}
         defaultVehicleBookingStatus={filterParams}
-        flag="TIMELINE"
+        // flag="TIMELINE"
       />
     </div>
   );
