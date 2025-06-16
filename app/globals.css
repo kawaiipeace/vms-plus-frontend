@@ -24,7 +24,13 @@ img {
   image-rendering: crisp-edges; /* Standard */
 }
 
-
+@media (max-width: 768px) {
+  .flatpickr-calendar.flatpickr-center-mobile {
+       position: fixed !important;
+    left: 80% !important;
+    transform: translateX(-80%) !important;
+  }
+}
 .avatar {
   overflow: hidden;
   display: flex;

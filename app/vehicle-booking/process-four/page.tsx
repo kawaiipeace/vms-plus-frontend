@@ -66,7 +66,7 @@ export default function ProcessFour() {
           String(formData.startDate),
           String(formData.timeStart)
         ),
-        trip_type: Number(formData.tripType) || 1,
+        trip_type: String(formData.tripType) === "0" ? 0 : 1,
         vehicle_user_dept_sap: formData.vehicleUserDeptSap || "",
         vehicle_user_emp_id: formData.vehicleUserEmpId || "",
         vehicle_user_emp_name: formData.vehicleUserEmpName || "",

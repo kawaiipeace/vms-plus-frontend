@@ -15,6 +15,7 @@ import {
   fetchVehicleCarTypes,
   fetchVehicleDepartmentTypes,
 } from "@/services/masterService";
+import { convertToISO } from "@/utils/convertToISO";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -245,18 +246,18 @@ export default function ProcessTwo() {
             fetchSearchVehicles({
               ...params,
               emp_id: profile.emp_id,
-              start_date: `${formData.startDate} ${formData.timeStart}`,
-              end_date: `${formData.endDate} ${formData.timeEnd}`,
+              start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
+              end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
             }),
             fetchVehicleCarTypes({
               emp_id: profile.emp_id,
-              start_date: `${formData.startDate} ${formData.timeStart}`,
-              end_date: `${formData.endDate} ${formData.timeEnd}`,
+              start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
+            end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
             }),
             fetchVehicleDepartmentTypes({
               emp_id: profile.emp_id,
-              start_date: `${formData.startDate} ${formData.timeStart}`,
-              end_date: `${formData.endDate} ${formData.timeEnd}`,
+             start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
+               end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
             }),
           ]);
 

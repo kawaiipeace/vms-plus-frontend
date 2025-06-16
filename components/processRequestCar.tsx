@@ -50,7 +50,7 @@ export default function ProcessRequestCar({ step }: { step: number }) {
         className={`${isCollapsed ? 'hidden' : 'block'}`}
         >
       <div
-        className="progress-steps-group collapse d-md-flex"
+        className="progress-steps-group collapse d-md-flex z-[0]"
         id="collapseSteps"
       >
         <div

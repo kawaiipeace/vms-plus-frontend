@@ -62,7 +62,7 @@ export default function LogListTable({ defaultData, pagination }: Props) {
       cell: ({ row }) => (
         <div className="text-left">
           {row.original.action_by_position +
-            "/" +
+            " " +
             row.original.action_by_department}
         </div>
       ),
