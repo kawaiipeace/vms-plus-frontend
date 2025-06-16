@@ -117,12 +117,12 @@ const ModalBody = ({
   }, [formData]);
 
   useEffect(() => {
-    if (defaultBookingStatus.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        vehicleBookingStatus: defaultBookingStatus,
-      }));
-    }
+    if (!Array.isArray(defaultBookingStatus)) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      vehicleBookingStatus: defaultBookingStatus,
+    }));
   }, [defaultBookingStatus]);
 
   const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
