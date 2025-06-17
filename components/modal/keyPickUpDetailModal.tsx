@@ -10,6 +10,7 @@ import { requestReceivedKeyDriver } from "@/services/vehicleInUseDriver";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
+import dayjs from "dayjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -67,8 +68,8 @@ const KeyPickupDetailModal = forwardRef<
   const [selectedAttach, setSelectedAttach] = useState<string>(
     "กุญแจหลัก และบัตรเติมน้ำมัน"
   );
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>();
+  const [selectedTime, setSelectedTime] = useState<string>();
 
   // Expose open and close methods via ref
   const [openModal, setOpenModal] = useState(false);
@@ -107,8 +108,12 @@ const KeyPickupDetailModal = forwardRef<
   }, [modalRef]);
 
   useEffect(() => {
-    setSelectedDate(convertToBuddhistDateTime(keyStartTime || "").date);
-    setSelectedTime(convertToBuddhistDateTime(keyStartTime || "").time);
+    if (keyStartTime) {
+      setSelectedDate(convertToBuddhistDateTime(keyStartTime || "").date);
+      setSelectedTime(convertToBuddhistDateTime(keyStartTime || "").time);
+    } else {
+      setSelectedTime(dayjs().hour(8).minute(30).format("HH:mm"));
+    }
   }, [keyStartTime]);
 
   const submit = async () => {
@@ -274,7 +279,9 @@ const KeyPickupDetailModal = forwardRef<
                             placeholder="ระบุเวลา"
                             onChange={(time) => setSelectedTime(time)}
                             defaultValue={
-                              convertToBuddhistDateTime(keyStartTime || "").time
+                              keyStartTime
+                                ? convertToBuddhistDateTime(keyStartTime).time
+                                : dayjs().hour(8).minute(30).format("HH:mm")
                             }
                           />
                         </div>

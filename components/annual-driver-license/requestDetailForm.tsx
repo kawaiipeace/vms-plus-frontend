@@ -454,6 +454,9 @@ export default function RequestDetailForm({
                 driver_emp_dept_sap={
                   requestData?.approved_request_dept_sap_short
                 }
+                driver_emp_posi_text={
+                  requestData?.approved_request_emp_position
+                }
                 driver_internal_contact_number={
                   requestData?.approved_request_phone_number
                 }

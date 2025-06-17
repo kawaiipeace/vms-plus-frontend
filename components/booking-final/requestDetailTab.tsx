@@ -54,7 +54,7 @@ export default function RequestDetailTabs({ requestId }: Props) {
 
   return (
     <div className="w-full overflow-hidden">
-     <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+     <div className="flex border-b tablist w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}

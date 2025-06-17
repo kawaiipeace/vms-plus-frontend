@@ -23,6 +23,8 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
     const startDate = dayjs(start).format(format || "DD/MM/YYYY");
     const endDate = dayjs(end).format(format || "DD/MM/YYYY");
 
+    if (startDate === endDate) return startDate;
+
     if (!end) return startDate;
     return `${startDate} - ${endDate}`;
   };
@@ -69,7 +71,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                       start_datetime: s_date,
                       end_datetime: e_date,
                       vehicle_license_plate: license_plate,
-                      vehicle_license_plate_province_full: province,
+                      vehicle_license_plate_province_short: province,
                     } = item;
 
                     const license_plate_full = `${license_plate} ${province}`;
@@ -119,7 +121,7 @@ const DriverProgressTab = ({ data }: DriverProgressTabProps) => {
                       start_datetime: s_date,
                       end_datetime: e_date,
                       vehicle_license_plate: license_plate,
-                      vehicle_license_plate_province_full: province,
+                      vehicle_license_plate_province_short: province,
                     } = item;
 
                     const license_plate_full = `${license_plate} ${province}`;

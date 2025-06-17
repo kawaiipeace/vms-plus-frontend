@@ -85,10 +85,10 @@ Props) {
       const parsedData = JSON.parse(storedDataString); // Parse the string
       console.log("Parsed Data:", parsedData); // Debugging line
       setUpdatedFormData(parsedData);
-      if (
-        parsedData.isAdminChooseVehicle !== "1" &&
-        parsedData.isSystemChooseVehicle !== "1"
-      ) {
+  if (
+  (parsedData.isAdminChooseVehicle && parsedData.isSystemChooseVehicle) ||
+  (parsedData.isAdminChooseVehicle !== "1" && parsedData.isSystemChooseVehicle !== "1")
+) {
         const fetchVehicleDetailData = async () => {
           try {
             if (parsedData?.vehicleSelect) {
@@ -173,9 +173,11 @@ Props) {
                         {updatedFormData.vehicleUserEmpId}
                       </div>
                       <div className="supporting-text">
-                        {updatedFormData.vehicleUserEmpPosition +
-                          " " +
-                          updatedFormData.deptSapShort}
+                       {
+  updatedFormData.deptSapShort
+    ? updatedFormData.deptSapShort.replace(/\//g, " ")
+    : ""
+}
                       </div>
                     </div>
                   </div>
@@ -379,12 +381,12 @@ Props) {
                         </div>
                       </div>
 
-                      <button
+                      {/* <button
                         className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                         onClick={() => vehiclePickModalRef.current?.openModal()}
                       >
                         เลือกประเภทยานพาหนะ
-                      </button>
+                      </button> */}
                     </div>
 
                     <div className="card-item-group d-flex">
@@ -417,8 +419,8 @@ Props) {
                 />
               </>
             )}
-
-            {updatedFormData.isPeaEmployeeDriver === "1" ? (
+         { updatedFormData?.isAdminChooseDriver === false && (
+            updatedFormData.isPeaEmployeeDriver === "1" ? (
               <div className="mt-5">
                 <div className="form-section-header">
                   <div className="form-section-header-title">ผู้ขับขี่</div>
@@ -426,7 +428,7 @@ Props) {
                 <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
               </div>
             ) : (
-              !updatedFormData?.isAdminChooseDriver && (
+           
                 <div className="mt-5">
                   <div className="form-section-header">
                     <div className="form-section-header-title">ผู้ขับขี่</div>

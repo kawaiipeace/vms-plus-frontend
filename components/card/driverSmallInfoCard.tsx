@@ -86,7 +86,7 @@ export default function DriverSmallInfoCard({
   return (
     <div className="card card-section-inline gap-4 flex-col">
       <div className="card-body">
-        {requestData?.can_choose_driver === false && (
+      {(!requestData || requestData?.can_choose_driver === false) && (
           <>
             <div className="card-body-inline">
               <div className="img-square w-[30%] rounded-md overflow-hidden self-start">
@@ -207,7 +207,7 @@ export default function DriverSmallInfoCard({
                           <div className="form-label">วันที่และเวลา</div>
                           <div className="form-text">
                             {convertToBuddhistDateTime(pickupDatetime || "")
-                              .date +
+                              .date + " " +
                               convertToBuddhistDateTime(pickupDatetime || "")
                                 .time}
                           </div>

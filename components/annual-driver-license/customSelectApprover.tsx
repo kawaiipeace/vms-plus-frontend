@@ -60,7 +60,7 @@ export default function CustomSelectApprover({
         <div className="font-medium truncate">{option.full_name || option.label}</div>
 
         {option.dept_sap_short && (
-          <div className="text-xs text-gray-500 truncate">{option.dept_sap_short}</div>
+          <div className="text-xs text-gray-500 truncate">{option.posi_text +" "+option.dept_sap_short}</div>
         )}
       </div>
     );

@@ -11,10 +11,12 @@ import Link from "next/link";
 import { createRequest } from "@/services/bookingUser";
 import { FormDataType } from "@/app/types/form-data-type";
 import { convertToISO } from "@/utils/convertToISO";
+import { useFormContext } from "@/contexts/requestFormContext";
 
 export default function ProcessFour() {
   const router = useRouter();
   const { isPinned } = useSidebar();
+  const { updateFormData } = useFormContext();
   const termAndConditionModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -30,6 +32,7 @@ export default function ProcessFour() {
       }
     }
   }, []);
+
 
   const nextStep = async () => {
     if (formData) {
@@ -50,7 +53,7 @@ export default function ProcessFour() {
         ),
         is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
         is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
-        mas_vehicle_uid: formData.vehicleSelect || "",
+        mas_vehicle_uid: formData.masVehicleUid,
         number_of_passengers: formData.numberOfPassenger || 0,
         work_description: formData.purpose || "",
         pickup_datetime: formData.pickupDatetime || null,
@@ -64,7 +67,7 @@ export default function ProcessFour() {
           String(formData.startDate),
           String(formData.timeStart)
         ),
-        trip_type: Number(formData.tripType) || 1,
+        trip_type: String(formData.tripType) === "0" ? 0 : 1,
         vehicle_user_dept_sap: formData.vehicleUserDeptSap || "",
         vehicle_user_emp_id: formData.vehicleUserEmpId || "",
         vehicle_user_emp_name: formData.vehicleUserEmpName || "",
@@ -87,11 +90,14 @@ export default function ProcessFour() {
           localStorage.removeItem("processOne");
           localStorage.removeItem("processTwo");
           localStorage.removeItem("processThree");
-          console.log("ttt=====>requ", response.data);
+          updateFormData({});
+          console.log("formData after reset:", formData);
+          sessionStorage.clear();
           router.push(
             "request-list?create-req=success&request-id=" +
               response.data.trn_request_uid
           );
+       
         }
       } catch (error) {
         console.error("API Error:", error);
@@ -100,6 +106,10 @@ export default function ProcessFour() {
       console.warn("No formData found!");
     }
   };
+
+
+
+
 
   return (
     <div>

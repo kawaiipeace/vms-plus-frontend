@@ -23,7 +23,7 @@ export type RequestListType = Partial<{
   driver_dept_name: string;
   is_admin_choose_driver: number;
   is_admin_choose_vehicle: number;
-  is_pea_employee_driver: number;
+  is_pea_employee_driver: string | number;
   driver_emp_id: string;
   driver_name: string;
   can_choose_driver: boolean;

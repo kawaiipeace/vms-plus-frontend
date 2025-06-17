@@ -23,7 +23,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
   };
 
   const renderTableHead = () => (
-    <thead className="bg-white sticky top-[60px] z-10 shadow">
+    <thead className="bg-white sticky top-[60px] !z-[1] shadow">
       {table.getHeaderGroups().map((headerGroup) => (
         <tr key={headerGroup.id} className="text-sm sm:text-base font-semibold">
           {headerGroup.headers.map((header) => (

@@ -8,7 +8,10 @@ import ExampleCarImageModal from "@/components/modal/exampleCarImageModal";
 import ReceiveCarSuccessModal from "@/components/modal/receiveCarSuccessModal";
 import Tooltip from "@/components/tooltips";
 import { adminReceivedVehicle } from "@/services/adminService";
-import { fetchUserTravelCard, userReceivedVehicle } from "@/services/receivedVehicleUser";
+import {
+  fetchUserTravelCard,
+  userReceivedVehicle,
+} from "@/services/receivedVehicleUser";
 import {
   driverReceivedVehicle,
   driverUpdateReceivedVehicle,
@@ -17,7 +20,13 @@ import {
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToISO } from "@/utils/convertToISO";
 import useSwipeDown from "@/utils/swipeDown";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import TimePicker from "../timePicker";
 
 interface ReceiveCarVehicleModalProps {
@@ -35,7 +44,7 @@ const ReceiveCarVehicleModal = forwardRef<
   const datePickerRef = useRef<DatePickerRef>(null);
   const fuelQuantityRef = useRef<HTMLInputElement>(null);
 
-  const [miles, setMiles] = useState<number>(0);
+  const [miles, setMiles] = useState<string>("0");
   const [remark, setRemark] = useState<string>("");
   const [images, setImages] = useState<UploadFileType[]>([]);
   const [images2, setImages2] = useState<UploadFileType[]>([]);
@@ -44,17 +53,28 @@ const ReceiveCarVehicleModal = forwardRef<
   const [fuelQuantity, setFuelQuantity] = useState(0);
   const [imageEx, setImageEx] = useState<UploadFileType[]>();
 
-  const [travelCardData, setTravelCardData] = useState<VehicleUserTravelCardType>();
+  const [travelCardData, setTravelCardData] =
+    useState<VehicleUserTravelCardType>();
 
   useEffect(() => {
     if (requestData) {
       setFuelQuantity(requestData?.fuel_start || 0);
-      setMiles(requestData?.mile_start || 0);
+      setMiles(
+        (
+          requestData?.mile_start ||
+          requestData.vehicle?.vehicle_department?.vehicle_mileage
+        )?.toString() || "0"
+      );
       setRemark(requestData?.received_vehicle_remark || "");
 
       // Set default date and time
-      if (requestData?.pickup_datetime && requestData.pickup_datetime !== "0001-01-01T00:00:00Z") {
-        const { date, time } = convertToBuddhistDateTime(requestData.pickup_datetime);
+      if (
+        requestData?.pickup_datetime &&
+        requestData.pickup_datetime !== "0001-01-01T00:00:00Z"
+      ) {
+        const { date, time } = convertToBuddhistDateTime(
+          requestData.pickup_datetime
+        );
         setSelectedDate(date);
         setSelectedTime(time);
       } else {
@@ -126,7 +146,7 @@ const ReceiveCarVehicleModal = forwardRef<
       const formData = {
         received_vehicle_remark: remark,
         fuel_start: fuelQuantity,
-        mile_start: miles,
+        mile_start: isNaN(Number(miles)) ? 0 : Number(miles),
         pickup_datetime: pickup,
         trn_request_uid: requestData?.trn_request_uid,
         vehicle_images: imageList,
@@ -149,9 +169,13 @@ const ReceiveCarVehicleModal = forwardRef<
         if (response.status === 200) {
           let response;
           if (role === "driver") {
-            response = await fetchDriverTravelCard(requestData?.trn_request_uid || "");
+            response = await fetchDriverTravelCard(
+              requestData?.trn_request_uid || ""
+            );
           } else {
-            response = await fetchUserTravelCard(requestData?.trn_request_uid || "");
+            response = await fetchUserTravelCard(
+              requestData?.trn_request_uid || ""
+            );
           }
           setTravelCardData(response?.data);
           clearForm();
@@ -170,7 +194,7 @@ const ReceiveCarVehicleModal = forwardRef<
     if (fuelQuantityRef.current) {
       fuelQuantityRef.current.value = "0";
     }
-    setMiles(0);
+    setMiles("0");
     setRemark("");
     setImages([]);
     setImages2([]);
@@ -193,7 +217,12 @@ const ReceiveCarVehicleModal = forwardRef<
               <div className="bottom-sheet-icon"></div>
             </div>
             <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-              <div className="modal-title"> {status === "edit" ? "แก้ไขข้อมูลการรับยานพาหนะ" : "รับยานพาหนะ"}</div>
+              <div className="modal-title">
+                {" "}
+                {status === "edit"
+                  ? "แก้ไขข้อมูลการรับยานพาหนะ"
+                  : "รับยานพาหนะ"}
+              </div>
               <form method="dialog">
                 <button
                   className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary"
@@ -215,7 +244,9 @@ const ReceiveCarVehicleModal = forwardRef<
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
-                                <i className="material-symbols-outlined">calendar_month</i>
+                                <i className="material-symbols-outlined">
+                                  calendar_month
+                                </i>
                               </span>
                             </div>
                             <DatePicker
@@ -235,7 +266,9 @@ const ReceiveCarVehicleModal = forwardRef<
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
-                                <i className="material-symbols-outlined">schedule</i>
+                                <i className="material-symbols-outlined">
+                                  schedule
+                                </i>
                               </span>
                             </div>
                             <TimePicker
@@ -248,7 +281,9 @@ const ReceiveCarVehicleModal = forwardRef<
                       </div>
                       <div className="col-span-12">
                         <div className="form-group">
-                          <label className="form-label">เลขไมล์ก่อนเดินทาง</label>
+                          <label className="form-label">
+                            เลขไมล์ก่อนเดินทาง
+                          </label>
                           <div className="input-group">
                             <input
                               type="number"
@@ -256,7 +291,7 @@ const ReceiveCarVehicleModal = forwardRef<
                               placeholder="ระบุเลขไมล์ก่อนเดินทาง"
                               value={miles}
                               onChange={(e) => {
-                                setMiles(Number(e.target.value));
+                                setMiles(e.target.value);
                               }}
                             />
                           </div>
@@ -277,7 +312,9 @@ const ReceiveCarVehicleModal = forwardRef<
                             value={fuelQuantity}
                             className="range"
                             step={1}
-                            onChange={(e) => setFuelQuantity(Number(e.target.value))}
+                            onChange={(e) =>
+                              setFuelQuantity(Number(e.target.value))
+                            }
                           />
                           <div className="flex w-full justify-between px-2 text-xs">
                             {Array.from({ length: 9 }, (_, index) => {
@@ -298,7 +335,11 @@ const ReceiveCarVehicleModal = forwardRef<
                           </div>
                           <div className="flex w-full justify-between px-2 text-[#475467] font-semibold ">
                             {Array.from({ length: 9 }, (_, index) => {
-                              return <span key={index}>{index === 0 ? "E" : index === 8 ? "F" : ""}</span>;
+                              return (
+                                <span key={index}>
+                                  {index === 0 ? "E" : index === 8 ? "F" : ""}
+                                </span>
+                              );
                             })}
                           </div>
                         </div>
@@ -310,7 +351,11 @@ const ReceiveCarVehicleModal = forwardRef<
                             <div className="form-group">
                               <label className="form-label">
                                 รูปหน้าปัดเรือนไมล์
-                                <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 1 รูป" position="right">
+                                <Tooltip
+                                  title="รูปหน้าปัดเรือนไมล์"
+                                  content="Upload ได้ 1 รูป"
+                                  position="right"
+                                >
                                   <i
                                     className="material-symbols-outlined"
                                     onClick={() => {
@@ -323,7 +368,11 @@ const ReceiveCarVehicleModal = forwardRef<
                                   </i>
                                 </Tooltip>
                               </label>
-                              {images.length < 1 && <ImageUpload onImageChange={handleImageChange} />}
+                              {images.length < 1 && (
+                                <ImageUpload
+                                  onImageChange={handleImageChange}
+                                />
+                              )}
                               <div className="image-preview flex flex-wrap gap-3">
                                 {images.map((image, index) => (
                                   <ImagePreview
@@ -340,7 +389,11 @@ const ReceiveCarVehicleModal = forwardRef<
                               <label className="form-label">
                                 รูปยานพาหนะภายในและภายนอก
                                 <span className="font-light">(ถ้ามี)</span>
-                                <Tooltip title="รูปหน้าปัดเรือนไมล์" content="Upload ได้ 4 รูป" position="right">
+                                <Tooltip
+                                  title="รูปหน้าปัดเรือนไมล์"
+                                  content="Upload ได้ 4 รูป"
+                                  position="right"
+                                >
                                   <i
                                     className="material-symbols-outlined"
                                     onClick={() => {
@@ -353,7 +406,11 @@ const ReceiveCarVehicleModal = forwardRef<
                                   </i>
                                 </Tooltip>
                               </label>
-                              {images2.length < 4 && <ImageUpload onImageChange={handleImageChange2} />}
+                              {images2.length < 4 && (
+                                <ImageUpload
+                                  onImageChange={handleImageChange2}
+                                />
+                              )}
                               <div className="image-preview flex flex-wrap gap-3">
                                 {images2.map((image, index) => (
                                   <ImagePreview
@@ -419,7 +476,11 @@ const ReceiveCarVehicleModal = forwardRef<
           </form>
         </div>
       )}
-      <ReceiveCarSuccessModal ref={receiveCarSuccessModalRef} requestData={travelCardData} role="admin" />
+      <ReceiveCarSuccessModal
+        ref={receiveCarSuccessModalRef}
+        requestData={travelCardData}
+        role={role || "admin"}
+      />
       <ExampleCarImageModal
         backModal={() => modalRef.current?.showModal()}
         ref={exampleCarImageModalRef}

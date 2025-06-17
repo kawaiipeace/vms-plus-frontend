@@ -43,8 +43,9 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
 
   useEffect(() => {
     const fetchApprover = async () => {
+      
       try {
-        const response = await fetchUserApproverUsers("");
+        const response = await fetchUserApproverUsers();
         if (response.status === 200) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);

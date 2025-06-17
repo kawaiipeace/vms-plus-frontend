@@ -101,12 +101,12 @@ export default function CarpoolCalendar() {
                   <div className="flex items-center gap-6">
                     <span
                       className={
-                        active === "1"
+                        active === "เปิด"
                           ? "text-[#98A2B3] font-bold"
                           : "text-icon-error cursor-pointer font-bold"
                       }
                       onClick={() =>
-                        active === "1"
+                        active === "เปิด"
                           ? {}
                           : cancelCreateModalRef.current?.openModal()
                       }
@@ -119,13 +119,13 @@ export default function CarpoolCalendar() {
                         <div className="custom-control custom-checkbox custom-control-inline !gap-2">
                           <input
                             type="checkbox"
-                            // checked={active === "1"}
+                            checked={active === "เปิด"}
                             onClick={handleActive}
                             className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
                           />
                           <label className="custom-control-label !w-fit">
                             <div className="custom-control-label-group">
-                              {active === "1" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                              {active === "เปิด" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
                             </div>
                           </label>
                         </div>

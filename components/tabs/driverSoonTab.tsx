@@ -31,6 +31,8 @@ const DriverSoonTab = ({ data }: DriverSoonTabProps) => {
     const startDate = dayjs(start).format(format || "DD/MM/YYYY");
     const endDate = dayjs(end).format(format || "DD/MM/YYYY");
 
+    if (startDate === endDate) return startDate;
+
     if (!end) return startDate;
     return `${startDate} - ${endDate}`;
   };
@@ -78,14 +80,20 @@ const DriverSoonTab = ({ data }: DriverSoonTabProps) => {
                         end_datetime: e_date,
                         received_key_start_datetime: receive_key_date,
                         vehicle_license_plate: license_plate,
-                        vehicle_license_plate_province_full: province,
+                        vehicle_license_plate_province_short: province,
                       } = item;
 
                       const license_plate_full = `${license_plate} ${province}`;
 
                       const date = getDateRange(s_date || "", e_date);
-                      const timeRange = getDateRange(s_date || "", e_date, "HH:mm");
-                      const receivedKeyDate = getDateRange(receive_key_date || "");
+                      const timeRange = getDateRange(
+                        s_date || "",
+                        e_date,
+                        "HH:mm"
+                      );
+                      const receivedKeyDate = getDateRange(
+                        receive_key_date || ""
+                      );
 
                       const link = `/vehicle-in-use/driver/${item.trn_request_uid}?progressType=รอรับกุญแจ`;
 

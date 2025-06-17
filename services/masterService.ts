@@ -226,10 +226,12 @@ export const fetchVehicleKeyType = async () => {
   }
 };
 
-export const fetchUserApproverUsers = async (search?: string) => {
+export const fetchUserApproverUsers = async (params?: {
+  emp_id?: string
+}) => {
   try {
     const response = await axiosInstance.get(
-      "mas/user-confirmer-users?search=" + search
+      "mas/user-confirmer-users", { params }
     );
 
     return response;
@@ -241,7 +243,7 @@ export const fetchUserApproverUsers = async (search?: string) => {
 export const fetchVehicleInfo = async (params: {
   mas_carpool_uid?: string;
   mas_vehicle_uid?: string;
-  work_type?:string;
+  work_type?: string;
   emp_id?: string;
   start_date?: string;
   end_date?: string;
@@ -447,7 +449,7 @@ export const fetchSatisfactionSurveyQuestions = async () => {
 export const fetchUserConfirmerLic = async (search?: string) => {
   try {
     const response = await axiosInstance.get(
-      "mas/user-confirmer-license-users?search=" + search
+      "mas/user-confirmer-license-users?emp_id=" + search
     );
     return response;
   } catch (error) {

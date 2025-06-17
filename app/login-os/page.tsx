@@ -8,14 +8,21 @@ import { requestOTP, requestThaiID } from "@/services/authService";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import Cookies from "js-cookie";
+import ToastCustom from "@/components/toastCustom";
 
 const schema = yup.object().shape({
   phone: yup.string().required("กรุณาระบุเบอร์โทรศัพท์"),
 });
+
+interface ToastProps {
+  title: string;
+  desc: string | React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+}
 
 export default function LoginOS() {
   const router = useRouter();
@@ -23,6 +30,8 @@ export default function LoginOS() {
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  const [toast, setToast] = useState<ToastProps | undefined>();
 
   useEffect(() => {
     const errorThaiId = sessionStorage.getItem("errorThaiId");
@@ -38,6 +47,7 @@ export default function LoginOS() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -52,8 +62,13 @@ export default function LoginOS() {
         sessionStorage.setItem("refCode", response.data.refCode);
         router.push(`/login-authen`);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setError("phone", {
+        type: "manual",
+        message:
+          error?.response?.data?.message ||
+          "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      });
     }
   };
   const clickThaiID = async () => {
@@ -93,9 +108,16 @@ export default function LoginOS() {
           <label className="form-label">เบอร์โทรศัพท์</label>
           <label className="input-group flex items-center gap-2">
             <span className="flex items-center justify-center h-10 w-10 text-gray-400">
-              <i className="material-symbols-outlined icon-settings-300-20">smartphone</i>
+              <i className="material-symbols-outlined icon-settings-300-20">
+                smartphone
+              </i>
             </span>
-            <input {...register("phone")} type="text" onInput={handlePhoneChange} placeholder="ระบุเบอร์โทรศัพท์" />
+            <input
+              {...register("phone")}
+              type="text"
+              onInput={handlePhoneChange}
+              placeholder="ระบุเบอร์โทรศัพท์"
+            />
           </label>
           {errors.phone && <FormHelper text={String(errors.phone.message)} />}
         </div>
@@ -109,10 +131,25 @@ export default function LoginOS() {
           className="btn btn-secondary btn-login-thaiid border border-[#D0D5DD]"
           onClick={clickThaiID}
         >
-          ลงชื่อเข้าใช้งานผ่าน ThaID <Image src="/assets/img/thaiid.png" width={20} height={20} alt=""></Image>
+          ลงชื่อเข้าใช้งานผ่าน ThaID{" "}
+          <Image
+            src="/assets/img/thaiid.png"
+            width={20}
+            height={20}
+            alt=""
+          ></Image>
         </button>
       </form>
       <ErrorLoginModal ref={errorLoginModalRef} onCloseModal={onCloseModal} />
+
+      {toast && (
+        <ToastCustom
+          title={toast.title}
+          desc={toast.desc}
+          status={toast.status}
+          onClose={() => setToast(undefined)}
+        />
+      )}
     </div>
   );
 }

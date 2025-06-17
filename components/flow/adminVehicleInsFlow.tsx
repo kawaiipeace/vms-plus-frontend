@@ -84,7 +84,7 @@ export default function AdminVehicleInsFlow() {
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
-    department?: string;
+   department?: { value: string; label: string };
   }) => {
     console.log("department", department);
     const mappedNames = selectedStatuses.map(
@@ -102,10 +102,13 @@ export default function AdminVehicleInsFlow() {
     }
 
     setFilterNum(selectedStatuses.length);
-    setParams((prevParams) => ({
+   setParams((prevParams) => ({
       ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      vehicle_owner_dept_sap: department || "",
+      ref_request_status_code:
+        selectedStatuses && selectedStatuses.length > 0
+          ? selectedStatuses.join(",")
+          : "30,31,40", // always fallback to default
+      vehicle_owner_dept_sap: department?.value || "",
       startdate:
         selectedStartDate &&
         dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),

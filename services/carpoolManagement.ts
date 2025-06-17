@@ -43,11 +43,17 @@ export const chooseDriverChoice = async () => {
   }
 };
 
-export const getCarpoolAdmin = async (search?: string) => {
+export const getCarpoolAdmin = async (
+  search?: string,
+  mas_carpool_uid?: string
+) => {
   try {
     const url = search
-      ? "carpool-management/admin-mas-search?search=" + search
-      : "carpool-management/admin-mas-search";
+      ? "carpool-management/admin-mas-search?search=" +
+        search +
+        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "")
+      : "carpool-management/admin-mas-search" +
+        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "");
     const response = await axiosInstance.get(url);
 
     return response;
@@ -56,11 +62,17 @@ export const getCarpoolAdmin = async (search?: string) => {
   }
 };
 
-export const getCarpoolApprover = async (search?: string) => {
+export const getCarpoolApprover = async (
+  search?: string,
+  mas_carpool_uid?: string
+) => {
   try {
     const url = search
-      ? "carpool-management/approver-mas-search?search=" + search
-      : "carpool-management/approver-mas-search";
+      ? "carpool-management/approver-mas-search?search=" +
+        search +
+        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "")
+      : "carpool-management/approver-mas-search" +
+        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "");
     const response = await axiosInstance.get(url);
 
     return response;
@@ -69,10 +81,14 @@ export const getCarpoolApprover = async (search?: string) => {
   }
 };
 
-export const getCarpoolVehicle = async (params: CarpoolVehicleParams) => {
+export const getCarpoolVehicle = async (
+  params: CarpoolVehicleParams,
+  mas_carpool_uid?: string
+) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/vehicle-mas-search",
+      "carpool-management/vehicle-mas-search" +
+        (mas_carpool_uid ? "?mas_carpool_uid=" + mas_carpool_uid : ""),
       { params }
     );
 
@@ -82,10 +98,14 @@ export const getCarpoolVehicle = async (params: CarpoolVehicleParams) => {
   }
 };
 
-export const getCarpoolDriver = async (params: CarpoolDriverParams) => {
+export const getCarpoolDriver = async (
+  params: CarpoolDriverParams,
+  mas_carpool_uid?: string
+) => {
   try {
     const response = await axiosInstance.get(
-      "carpool-management/driver-mas-search",
+      "carpool-management/driver-mas-search" +
+        (mas_carpool_uid ? "?mas_carpool_uid=" + mas_carpool_uid : ""),
       { params }
     );
 

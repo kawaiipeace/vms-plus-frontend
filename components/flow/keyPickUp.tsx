@@ -14,6 +14,7 @@ import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import PickupKeyDetailCard from "../card/pickupKeyDetailCard";
 import VehicleDetailCard from "../card/vehicleDetailCard";
 import KeyPickUpEditModal from "../modal/keyPickUpEditModal";
+import dayjs from "dayjs";
 
 interface RequestDetailFormProps {
   editable?: boolean;
@@ -185,11 +186,7 @@ export default function KeyPickUp({
         ref={keyPickupDetailModalRef}
         id={requestData?.received_key_emp_id || "-"}
         name={requestData?.received_key_emp_name || "-"}
-        deptSap={
-          requestData?.received_key_emp_id +
-            "/" +
-            requestData?.received_key_dept_sap_short || "-"
-        }
+        deptSap={requestData?.received_key_emp_id || ""}
         phone={requestData?.received_key_mobile_contact_number || "-"}
         keyStartTime={requestData?.received_key_start_datetime}
         vehicle={requestData?.vehicle}
@@ -198,7 +195,11 @@ export default function KeyPickUp({
         }}
         reqId={requestData?.trn_request_uid || ""}
         imgSrc={""}
-        deptSapShort={""}
+        deptSapShort={
+          (requestData?.received_key_position || "") +
+            " " +
+            requestData?.received_key_dept_sap_short || "-"
+        }
         onSubmit={() => {
           handleModalUpdate();
         }}

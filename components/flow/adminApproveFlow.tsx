@@ -1,11 +1,12 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import FilterModal from "@/components/modal/filterModal";
-import FilterSortModal from "@/components/modal/filterSortModal";
+// import FilterSortModal from "@/components/modal/filterSortModal";
 import RequestStatusBox from "@/components/requestStatusBox";
 import AdminListTable from "@/components/table/admin-list-table";
 import PaginationControls from "@/components/table/pagination-control";
 import ZeroRecord from "@/components/zeroRecord";
 import { fetchRequests } from "@/services/bookingAdmin";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 
@@ -43,7 +44,7 @@ export default function AdminApproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
-    const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -56,7 +57,7 @@ export default function AdminApproveFlow() {
       page: newPage,
     }));
   };
-
+  const [departmentLabel, setDepartmentLabel] = useState<string>("");
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
       "30": { iconName: "schedule", status: "info" },
@@ -71,6 +72,12 @@ export default function AdminApproveFlow() {
       "80": { iconName: "done_all", status: "success" },
       "90": { iconName: "delete", status: "default" },
     };
+
+    useEffect(() => {
+  if (summary && summary.length < 0) {
+    setFilterNames([]);
+  }
+}, [summary]);
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
@@ -92,28 +99,38 @@ export default function AdminApproveFlow() {
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
-    department?: string;
+    department?: { value: string; label: string };
   }) => {
-    console.log("department", department);
+    setDepartmentLabel(department?.label || "");
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
           ?.ref_request_status_name || code
     );
 
-    const date = selectedStartDate + " - " + selectedEndDate;
+    const date =
+      convertToBuddhistDateTime(selectedStartDate).date +
+      " - " +
+      convertToBuddhistDateTime(selectedEndDate).date;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
-    if (selectedStartDate && selectedEndDate) {
-      setFilterDate(date);
-    }
-    console.log("adminsummary", summary);
-    setFilterNum(selectedStatuses.length);
+
+
+   let num = selectedStatuses.length;
+  if (selectedStartDate && selectedEndDate) {
+    setFilterDate(date);
+    num += 1; // add 1 for date filter
+  } else {
+    setFilterDate("");
+  }
+    setFilterNum(num);
     setParams((prevParams) => ({
       ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      vehicle_owner_dept_sap: department || "",
+      ref_request_status_code:
+        selectedStatuses && selectedStatuses.length > 0
+          ? selectedStatuses.join(",")
+          : "30,31,40", // always fallback to default
+      vehicle_owner_dept_sap: department?.value || "",
       startdate:
         selectedStartDate &&
         dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
@@ -123,21 +140,21 @@ export default function AdminApproveFlow() {
     }));
   };
 
-  const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
-    if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
-      setParams((prevParams) => ({
-        ...prevParams,
-        order_by: "start_datetime",
-        order_dir: "desc",
-      }));
-    } else {
-      setParams((prevParams) => ({
-        ...prevParams,
-        order_by: "request_no",
-        order_dir: "desc",
-      }));
-    }
-  };
+  // const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
+  //   if (filters.selectedSortType === "วันที่เริ่มต้นเดินทางใหม่ที่สุด") {
+  //     setParams((prevParams) => ({
+  //       ...prevParams,
+  //       order_by: "start_datetime",
+  //       order_dir: "desc",
+  //     }));
+  //   } else {
+  //     setParams((prevParams) => ({
+  //       ...prevParams,
+  //       order_by: "request_no",
+  //       order_dir: "desc",
+  //     }));
+  //   }
+  // };
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
@@ -159,15 +176,24 @@ export default function AdminApproveFlow() {
 
         return {
           ...prevParams,
-          ref_request_status_code: updatedStatuses.join(","),
+          ref_request_status_code:
+            updatedStatuses.length > 0 ? updatedStatuses.join(",") : "30,31,40", // fallback to default if all removed
         };
       });
+    } else if (filterType === "department") {
+      setDepartmentLabel("");
+      setParams((prevParams) => ({
+        ...prevParams,
+        vehicle_owner_dept_sap: "",
+        ref_request_status_code: "30,31,40", // always fallback to default
+      }));
     } else if (filterType === "date") {
-      setFilterDate(""); // Clear the `filterDate`
+      setFilterDate("");
       setParams((prevParams) => ({
         ...prevParams,
         startdate: "",
         enddate: "",
+        ref_request_status_code: "30,31,40", // always fallback to default
       }));
     }
   };
@@ -176,7 +202,7 @@ export default function AdminApproveFlow() {
     setParams({
       search: "",
       vehicle_owner_dept_sap: "",
-      ref_request_status_code: "",
+      ref_request_status_code: "30,31,40",
       startdate: "",
       enddate: "",
       car_type: "",
@@ -200,7 +226,7 @@ export default function AdminApproveFlow() {
         console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log('requestDataAdmin',requestList);
+          console.log("requestDataAdmin", requestList);
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -227,11 +253,8 @@ export default function AdminApproveFlow() {
     console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]); // This will log whenever dataRequest changes
 
-    if (loading) {
-    return (
-       <div className="mt-0 pt-0">
-      </div>
-    );
+  if (loading) {
+    return <div className="mt-0 pt-0"></div>;
   }
 
   return (
@@ -373,6 +396,22 @@ export default function AdminApproveFlow() {
             </i>
           </span>
         ))}
+
+        {/* Department badge */}
+        {params.vehicle_owner_dept_sap && (
+          <span className="badge badge-brand badge-outline rounded-sm mr-2">
+            {departmentLabel}
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() =>
+                removeFilter("department", params.vehicle_owner_dept_sap)
+              }
+            >
+              close_small
+            </i>
+          </span>
+        )}
+
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
@@ -401,7 +440,9 @@ export default function AdminApproveFlow() {
       )}
 
       {pagination.total > 0 ? (
-        dataRequest.length <= 0 && (
+        (filterNames.length > 0 ||
+          params.vehicle_owner_dept_sap ||
+          filterDate) && (
           <ZeroRecord
             imgSrc="/assets/img/empty/search_not_found.png"
             title="ไม่พบข้อมูล"

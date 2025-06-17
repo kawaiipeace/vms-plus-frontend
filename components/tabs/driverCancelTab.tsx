@@ -31,6 +31,8 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
     const startDate = dayjs(start).format("DD/MM/YYYY");
     const endDate = dayjs(end).format("DD/MM/YYYY");
 
+    if (startDate === endDate) return startDate;
+
     return `${startDate} - ${endDate}`;
   };
 
@@ -78,7 +80,7 @@ const DriverCancelTab = ({ data }: DriverCancelTabProps) => {
                         start_datetime: s_date,
                         end_datetime: e_date,
                         vehicle_license_plate: license_plate,
-                        vehicle_license_plate_province_full: province,
+                        vehicle_license_plate_province_short: province,
                       } = item;
 
                       const license_plate_full = `${license_plate} ${province}`;
