@@ -257,6 +257,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
         vehicel_car_type_detail: params.vehicel_car_type_detail.value,
         ref_vehicle_status_code: params.ref_vehicle_status_code.join(","),
         is_active: params.is_active.join(","),
+        page: 1,
       });
       dialogRef.current?.close();
     };

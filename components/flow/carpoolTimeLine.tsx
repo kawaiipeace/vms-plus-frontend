@@ -239,6 +239,7 @@ export default function CarpoolTimeLine() {
         setVehicleParams((prev) => ({
           ...prev,
           search: value.trim().length >= 3 ? value : "",
+          page: 1,
         }));
       }, 500),
     []
@@ -250,6 +251,7 @@ export default function CarpoolTimeLine() {
         setDriverParams((prev) => ({
           ...prev,
           search: value.trim().length >= 3 ? value : "",
+          page: 1,
         }));
       }, 500),
     []
