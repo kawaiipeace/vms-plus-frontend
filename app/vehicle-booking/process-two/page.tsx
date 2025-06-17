@@ -286,7 +286,7 @@ export default function ProcessTwo() {
   const handleCarpoolSelect = (value: string) => {
     setSelectedVehicle(value);
     const updatedData: Partial<FormData> = {};
-    console.log("handleCarpoolSelect value:", value);
+
     if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
       updatedData.isAdminChooseVehicle = "1";
       updatedData.isSystemChooseVehicle = "0";

@@ -122,7 +122,6 @@ export default function CancelAdminFlow() {
         const response = await fetchRequests(params);
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log('request',requestList);
           const { total, totalPages } = response.data.pagination;
           setDataRequest(requestList);
           setPagination({

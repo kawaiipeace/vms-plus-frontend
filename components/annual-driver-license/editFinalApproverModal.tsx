@@ -75,11 +75,11 @@ const EditFinalApproverModal = forwardRef<
 
   useEffect(() => {
     if (requestData) { 
-      console.log("Request data received:", requestData);
+
     }},[requestData]);
 
   const fetchVehicleUserData = async () => {
-    console.log("Fetching vehicle user data...",requestData);
+
     setIsLoading(true);
     try {
       const response = await fetchUserApprovalLic(
@@ -87,7 +87,7 @@ const EditFinalApproverModal = forwardRef<
       );
 
       if (response) {
-        console.log("userapprovelist", response);
+ 
         const vehicleUserData: VehicleUserType[] = response.data;
         const driverOptionsArray = vehicleUserData.map(
           (user: VehicleUserType) => ({

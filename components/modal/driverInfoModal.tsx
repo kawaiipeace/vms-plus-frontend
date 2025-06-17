@@ -37,7 +37,7 @@ const DriverInfoModal = forwardRef<
   const fetchVehicleUserData = async (id: string) => {
     try {
       const response = await fetchDriverDetail(id);
-      console.log("driver---", response.data);
+
       if (response.status === 200) {
         const res = response.data;
         setVehicleUserData(res);

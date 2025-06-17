@@ -250,7 +250,7 @@ export default function FirstApproverListTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+    
   }, [pagination]);
 
   useEffect(() => {

@@ -162,9 +162,8 @@ const AdminVehiclePickModal = forwardRef<
         const response = await adminUpdateVehicle(payload);
 
         if (response) {
-          console.log("test====>");
+
           if (onUpdate) {
-            console.log("test====>");
             onUpdate(response.data);
           }
 
@@ -237,7 +236,6 @@ const AdminVehiclePickModal = forwardRef<
           setVehicles(response.data.vehicles);
 
           setFilteredVehicles(response.data.vehicles);
-          console.log("vehicle", response.data.vehicles);
           hasReset.current = true;
         }
       } catch (error) {
@@ -255,7 +253,7 @@ const AdminVehiclePickModal = forwardRef<
         end_date: requestData?.end_datetime,
         mas_carpool_uid: requestData?.mas_carpool_uid,
       };
-      console.log("vehicle", vehicleParams);
+
       try {
         const response = await fetchVehicleCarTypes(vehicleParams);
 

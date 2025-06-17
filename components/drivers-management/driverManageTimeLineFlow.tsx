@@ -113,7 +113,7 @@ export default function VehicleTimeLine() {
     let countFilters = 0;
     const fetchData = async () => {
       try {
-        console.log("params", params);
+
         const response = await getDriverTimeline(params);
         setDataRequest(response.data.drivers);
         setLastMonth(response.data.last_month);

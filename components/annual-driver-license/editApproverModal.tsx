@@ -122,7 +122,7 @@ const EditApproverModal = forwardRef<
 
   const onSubmit = async () => {
     if (!selectedVehicleUserOption) return;
-    console.log("selected", selectedVehicleUserOption);
+
     try {
       if (onUpdate) {
         onUpdate({

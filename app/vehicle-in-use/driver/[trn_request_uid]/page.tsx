@@ -31,7 +31,7 @@ const DriverDetail = () => {
           trn_request_uid as string
         );
         const result = response.data;
-        console.log("Received Key Driver Request Data:", result);
+
         setData(result);
       } catch (error) {
         console.error("Error fetching status data:", error);

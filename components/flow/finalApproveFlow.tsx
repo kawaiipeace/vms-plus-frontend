@@ -76,7 +76,7 @@ export default function FinalApproveFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   const handleFilterSubmit = ({
@@ -99,7 +99,6 @@ export default function FinalApproveFlow() {
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
@@ -195,7 +194,6 @@ export default function FinalApproveFlow() {
     const fetchRequestsData = async () => {
       try {
         const response = await fetchRequests(params);
-        console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -218,7 +216,7 @@ export default function FinalApproveFlow() {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]); // This will log whenever dataRequest changes
 
   return (

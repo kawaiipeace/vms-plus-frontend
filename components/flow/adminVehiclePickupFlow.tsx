@@ -71,7 +71,7 @@ export default function AdminVehiclePickupFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   const handleFilterSubmit = ({
@@ -94,7 +94,7 @@ export default function AdminVehiclePickupFlow() {
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
+
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
@@ -200,7 +200,7 @@ export default function AdminVehiclePickupFlow() {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]);
 
   if (loading) {

@@ -121,7 +121,6 @@ export default function CancelFlow() {
         const response = await requests(params);
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log('request',requestList);
           const { total, totalPages } = response.data.pagination;
           setDataRequest(requestList);
           setPagination({

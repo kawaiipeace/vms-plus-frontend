@@ -110,7 +110,7 @@ const DriversListTab = () => {
         const { total, totalPages } = result.pagination;
         // console.log(params.limit);
         setData(result.drivers ?? []);
-        console.log("driver", result.drivers);
+
         setPagination({
           limit: params.limit,
           page: params.page,
@@ -170,7 +170,7 @@ const DriversListTab = () => {
     selectedEndDate: string;
     driverDepartmentOptions: { value: string; label: string | React.ReactNode };
   }) => {
-    console.log("Filter applied", filter);
+
     setParams((prevParams) => ({
       ...prevParams,
       driver_dept_sap_work: filter.driverDepartmentOptions.value,

@@ -29,7 +29,7 @@ const ErrorLoginModal = forwardRef<
     if (!dialog) return;
 
     const handleClose = () => {
-      console.log("Modal has closed");
+
       onCloseModal();
       // TODO: รีเซ็ต state อื่น ๆ หรือตั้งค่าใหม่ตรงนี้
     };

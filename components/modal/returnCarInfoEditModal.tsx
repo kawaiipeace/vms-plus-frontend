@@ -73,7 +73,7 @@ const ReturnCarInfoEditModal = forwardRef<{ openModal: () => void; closeModal: (
 
     useEffect(() => {
       if (requestData) {
-        console.log("requestData", requestData);
+
 
         defaultData(requestData);
       }
@@ -97,7 +97,7 @@ const ReturnCarInfoEditModal = forwardRef<{ openModal: () => void; closeModal: (
           returned_vehicle_remark: remark,
           trn_request_uid: requestData?.trn_request_uid,
         };
-        console.log("formData", formData);
+     
 
         const response = await AdminUpdateReturnedVehicle(formData);
         if (response)

@@ -213,7 +213,7 @@ export default function DriverLicApproverListTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+
   }, [pagination]);
 
   useEffect(() => {

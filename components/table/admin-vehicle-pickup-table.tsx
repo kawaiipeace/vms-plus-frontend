@@ -335,7 +335,7 @@ export default function AdminVehiclePickupTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+  
   }, [pagination]);
 
   useEffect(() => {

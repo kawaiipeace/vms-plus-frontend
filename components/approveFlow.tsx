@@ -221,7 +221,6 @@ const removeFilter = (filterType: string, filterValue: string) => {
 
   useEffect(() => {}, [dataRequest, params]);
 
-  console.log("dataRequest>>>", dataRequest);
 
   return (
     <>

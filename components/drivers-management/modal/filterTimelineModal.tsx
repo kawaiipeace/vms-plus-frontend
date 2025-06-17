@@ -307,13 +307,13 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, default
   ];
 
   const handleSubmitFilter = () => {
-    console.log("submit filter", params);
+
     onSubmitFilter?.(params);
     dialogRef.current?.close();
   };
 
   const handleClearFilter = () => {
-    console.log("clear filter");
+
     setParams({
       fuelType: "",
       vehicleType: "",
@@ -325,7 +325,7 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, default
     });
   };
   const handleCancelFilter = () => {
-    console.log("cancel filter");
+
     dialogRef.current?.close();
   };
 

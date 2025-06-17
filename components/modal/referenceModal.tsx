@@ -61,7 +61,7 @@ const ReferenceModal = forwardRef<
   }, [formData]);
 
   useEffect(() => {
-    console.log("requestData===>", formData);
+
     if (requestData) {
       reset({
         referenceNumber: requestData?.doc_no || "",

@@ -17,7 +17,7 @@ export const fetchKeyRequests = async (params: {
       "received-key-admin/search-requests",
       { params }
     );
-    console.log("res----", response);
+ 
     return response;
   } catch (error) {
     throw error;

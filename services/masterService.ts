@@ -462,7 +462,7 @@ export const fetchUserApprovalLic = async (search?: string) => {
     const response = await axiosInstance.get(
       "mas/user-approval-license-users?emp_id=" + search
     );
-    console.log("mainres", response);
+
     return response;
   } catch (error) {
     throw error;

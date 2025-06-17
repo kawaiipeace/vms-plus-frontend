@@ -96,7 +96,7 @@ export default function AdminApproveFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   // Update the handleFilterSubmit function
@@ -235,10 +235,10 @@ const removeFilter = (filterType: string, filterValue: string) => {
     const fetchRequestsData = async () => {
       try {
         const response = await fetchRequests(params);
-        console.log("param", params);
+
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log("requestDataAdmin", requestList);
+
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -262,7 +262,7 @@ const removeFilter = (filterType: string, filterValue: string) => {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]); // This will log whenever dataRequest changes
 
   if (loading) {

@@ -101,7 +101,6 @@ export default function TravelInfoTab({ requestType, reqId }: TravelDataProps) {
       const fetchRequestsData = async () => {
         try {
           const response = await fetchTravelDetailTrips(reqId, params.search);
-          console.log("res-trip", response);
           if (response.status === 200) {
             const requestList = response.data;
             setData(requestList);
@@ -136,11 +135,9 @@ export default function TravelInfoTab({ requestType, reqId }: TravelDataProps) {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
   };
 
   useEffect(() => {
-    console.log("Data Request Updated:", data);
   }, [data]);
 
   return (
@@ -205,7 +202,6 @@ export default function TravelInfoTab({ requestType, reqId }: TravelDataProps) {
           link="process-one"
           displayBtn={true}
           useModal={() => {
-            console.log('test');
             recordTravelAddModalRef.current?.openModal()}
           }
         />

@@ -101,12 +101,12 @@ const SearchDriverModal = forwardRef(
 
     const fetchDriverDetailFunc = async (mas_id: string) => {
       try {
-        console.log("masfunc", mas_id);
+    
         const response = await fetchDriverDetail(mas_id);
         if (response.status === 200) {
           const res = response.data;
           setDriverDetail(res);
-          console.log("rrs", res);
+      
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -119,7 +119,6 @@ const SearchDriverModal = forwardRef(
     );
 
     const handleSelected = (mas_id: string) => {
-      console.log("mas", mas_id);
       fetchDriverDetailFunc(mas_id);
       setSelected(mas_id);
     };

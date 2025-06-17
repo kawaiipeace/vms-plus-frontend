@@ -234,7 +234,6 @@ export default function RequestForm() {
           const response = await fetchUserApproverUsers(param);
           if (response.status === 200) {
             const data = response.data[0];
-            console.log("Approver Data:", data);
             setApproverData(data);
           }
         } catch (error) {
@@ -271,12 +270,12 @@ export default function RequestForm() {
       setValue("vehicleUserEmpPosition", "");
       return;
     }
-    console.log("selectedOption===>", vehicleUserDatas);
+
     const empData = vehicleUserDatas.find(
       (user: { emp_id: string }) =>
         String(user.emp_id) === String(selectedOption.value)
     );
-    console.log("empData===>", empData);
+
 
     if (empData) {
       setValue("telInternal", empData.tel_internal);

@@ -213,7 +213,7 @@ export default function DriverLicConfirmerListTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+    
   }, [pagination]);
 
   useEffect(() => {

@@ -49,7 +49,6 @@ export default function LoginAuthen() {
     const storedOtpID = sessionStorage.getItem("otpID");
     const refCode = sessionStorage.getItem("refCode");
 
-    // console.log("Stored Phone:", storedPhone);
 
     if (storedPhone) setPhone(storedPhone);
     if (storedOtpID) setOtpID(storedOtpID);
@@ -59,7 +58,6 @@ export default function LoginAuthen() {
   }, [timeLeft]);
 
   const requestOTPAgain = async () => {
-    console.log("ttt");
     // if (timerText === "ขอรหัสใหม่อีกครั้ง") return;
     if (!phone || phone === null || timeLeft > 0) return;
 
@@ -102,17 +100,12 @@ export default function LoginAuthen() {
         // Fetch and set profile before redirecting
         const profileResponse = await fetchProfile();
         setProfile(profileResponse.data);
-        console.log("Fetched Profile:", profileResponse.data);
-        console.log("Profile Roles:", profileResponse.data.roles);
-        console.log(
-          "Profile Data:",
-          profileResponse.data.roles?.includes("driver")
-        );
+
         if (profileResponse.data.roles?.includes("driver") === true) {
-          console.log("Redirecting to driver page after login");
+
           router.replace("/vehicle-in-use/driver");
         } else {
-             console.log("Redirecting to request list page");
+
           router.push("/vehicle-booking/request-list");
         }
       }
@@ -183,8 +176,6 @@ export default function LoginAuthen() {
   };
 
   const isOtpComplete = otp.every((digit) => digit !== "");
-
-  // console.log("Timer text:", timerText);
 
   return (
     <div className="page-login page-login-authen">

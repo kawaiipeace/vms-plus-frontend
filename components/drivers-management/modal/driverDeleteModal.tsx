@@ -150,8 +150,6 @@ const DriverDeleteModal = forwardRef<{ openModal: () => void; closeModal: () => 
             replaced_mas_driver_uid: formData_2?.replaced_mas_driver_uid || "",
           };
 
-          console.log("Form data is valid:", params);
-
           const response = await driverLayoff(params);
           if (response.status === 200) {
             modalRef.current?.close();

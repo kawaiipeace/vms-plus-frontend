@@ -290,7 +290,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+  
   }, [pagination]);
 
   useEffect(() => {
