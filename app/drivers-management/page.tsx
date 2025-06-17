@@ -235,7 +235,7 @@ const DriverManagementPage = () => {
             </div>
 
             <div className="w-full">
-              <div className="flex border-b tablist z-[10] w-full max-w-[100vw] overflow-auto">
+              <div className="flex border-b tablist w-full max-w-[100vw] overflow-auto">
                 {tabs.map((tab, index) => (
                   <button
                     key={index}

@@ -96,7 +96,7 @@ const AddCarpoolAdminModal = forwardRef<
 
   const fetchCarpoolAdminFunc = async (search?: string) => {
     try {
-      const response = await getCarpoolAdmin(search);
+      const response = await getCarpoolAdmin(search, id || undefined);
       const result = response.data;
       setAdmins(result);
     } catch (error) {
@@ -249,6 +249,7 @@ const AddCarpoolAdminModal = forwardRef<
               admin_emp_no: adminSelected?.value as string,
               internal_contact_number: internal_contact_number as string,
               mobile_contact_number: mobile_contact_number as string,
+              admin_position: admin?.posi_text as string,
             },
           ],
         });

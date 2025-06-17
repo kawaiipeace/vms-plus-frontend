@@ -117,9 +117,7 @@ export default function MobileDriverCard({
           <div className="card-item-group d-flex">
             <div className="card-item">
               <i className="material-symbols-outlined">local_parking</i>
-              <span className="card-item-text">
-                {locationNote || "ล็อคที่ 5A ชั้น 2B อาคาร LED"}
-              </span>
+              <span className="card-item-text">{locationNote || "-"}</span>
             </div>
           </div>
         )}

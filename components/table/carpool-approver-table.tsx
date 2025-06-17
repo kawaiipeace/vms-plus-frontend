@@ -203,6 +203,13 @@ export default function CarpoolApproverTable({
       accessorKey: "approver_dept_sap_short",
       header: () => <div className="text-center">ตำแหน่ง / สังกัด</div>,
       enableSorting: false,
+      cell: ({ row: { original } }) => {
+        return (
+          <>
+            {original.approver_position} {original.approver_dept_sap_short}
+          </>
+        );
+      },
     },
     {
       accessorKey: "internal_contact_number",

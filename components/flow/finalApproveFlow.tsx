@@ -86,7 +86,7 @@ export default function FinalApproveFlow() {
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
-    department?: string;
+   department?: { value: string; label: string };
   }) => {
     const mappedNames = selectedStatuses.map(
       (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
@@ -102,12 +102,19 @@ export default function FinalApproveFlow() {
 
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
-      ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      vehicle_owner_dept_sap: department || "",
-      startdate: selectedStartDate && dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-      enddate: selectedEndDate && dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
-    }));
+          ...prevParams,
+          ref_request_status_code:
+            selectedStatuses && selectedStatuses.length > 0
+              ? selectedStatuses.join(",")
+              : "30,31,40", // always fallback to default
+          vehicle_owner_dept_sap: department?.value || "",
+          startdate:
+            selectedStartDate &&
+            dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+          enddate:
+            selectedEndDate &&
+            dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+        }));
   };
 
   // const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {

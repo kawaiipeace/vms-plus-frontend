@@ -3,13 +3,18 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 interface Props {
   onCloseModal: () => void;
-  message?: string;
+  message?: React.ReactNode;
 }
 
 const ErrorLoginModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props // Props type
->(({ onCloseModal, message = "คุณไม่มีสิทธิเข้าใช้งานระบบ กรุณาติดต่อผู้ดูแลหากต้องการเข้าใช้งาน" }, ref) => {
+>(({ onCloseModal, message = (
+  <>
+    คุณไม่มีสิทธิเข้าใช้งานระบบ<br />
+    กรุณาติดต่อผู้ดูแลหากต้องการเข้าใช้งาน
+  </>
+) }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   useImperativeHandle(ref, () => ({

@@ -19,6 +19,7 @@ interface DriverInfoProps {
   driver_internal_contact_number?: string;
   driver_mobile_contact_number?: string;
   driver_image_url?: string;
+  driver_emp_posi_text?: string;
 }
 
 export default function DriverPeaInfoCard({
@@ -32,6 +33,7 @@ export default function DriverPeaInfoCard({
   driver_internal_contact_number,
   driver_mobile_contact_number,
   driver_image_url,
+  driver_emp_posi_text
 }: DriverInfoProps) {
   const driverInfoModalRef = useRef<{ openModal: () => void; closeModal: () => void } | null>(null);
   const userKeyPickUpModalRef = useRef<{ openModal: () => void; closeModal: () => void } | null>(null);
@@ -56,6 +58,7 @@ export default function DriverPeaInfoCard({
   const driver = fetchedDriver ?? {
     emp_id: driver_emp_id,
     full_name: driver_emp_name,
+    posi_text: driver_emp_posi_text,
     dept_sap_short: driver_emp_dept_sap,
     tel_internal: driver_internal_contact_number,
     tel_mobile: driver_mobile_contact_number,
@@ -80,7 +83,7 @@ export default function DriverPeaInfoCard({
               <div className="card-title">{driver?.full_name}</div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{driver?.emp_id || "-"}</div>
-                <div className="supporting-text">{driver?.dept_sap_short || "-"}</div>
+                <div className="supporting-text">{driver?.posi_text + " " + driver?.dept_sap_short || "-"}</div>
               </div>
             </div>
 

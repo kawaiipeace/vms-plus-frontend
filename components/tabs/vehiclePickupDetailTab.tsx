@@ -2,9 +2,7 @@
 import { LogType } from "@/app/types/log-type";
 import { PaginationType } from "@/app/types/request-action-type";
 import { RequestDetailType } from "@/app/types/request-detail-type";
-import { RequestHistoryLog } from "@/data/requestHistory";
 import { fetchLogs, fetchRequestKeyDetail } from "@/services/masterService";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ReturnCarTab from "../admin/returnCarTab";
@@ -21,6 +19,13 @@ interface Props {
   requestId: string;
 }
 
+const defaultPagination = {
+  limit: 10,
+  page: 1,
+  total: 0,
+  totalPages: 0,
+};
+
 export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,6 +34,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   const returnedData = searchParams.get("edit-data-returned-tabs");
   const returnedImage = searchParams.get("edit-image-returned-tabs");
   const returnedCar = searchParams.get("returned-tabs");
+  const cancelReq = searchParams.get("cancel-req");
 
   const [requestUid] = useState(requestId);
   const [loading, setLoading] = useState(true);
@@ -40,12 +46,8 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     page: 1,
     limit: 10,
   });
-  const [pagination, setPagination] = useState<PaginationType>({
-    limit: 10,
-    page: 1,
-    total: 0,
-    totalPages: 0,
-  });
+  const [pagination, setPagination] =
+    useState<PaginationType>(defaultPagination);
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -55,7 +57,8 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -67,32 +70,18 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     const fetchRequestDetailfunc = async () => {
       try {
         const response = await fetchRequestKeyDetail(requestId);
-        const responseLog = await fetchLogs(requestUid, {
-          page: 1,
-          limit: 100,
-        });
-        const { total, totalPages } = responseLog.data;
-        console.log('responseKey', response.data);
+        const responseLog = await fetchLogs(requestUid, params);
+        const { total, totalPages, logs, page, limit } = responseLog.data;
 
         setRequestData(response.data);
         setPagination({
-          limit: params.limit,
-          page: params.page,
+          limit,
+          page,
           total,
           totalPages,
         });
 
-        const requestList = responseLog.data.logs;
-        const mapDataRequest: RequestHistoryLog[] = requestList.map((item: LogType) => {
-          const dateTime = convertToBuddhistDateTime(item.created_at);
-          return {
-            dateTime: dateTime.date + "" + dateTime.time,
-            operator: item.action_by_fullname,
-            position: item.action_by_position,
-            detail: item.action_detail,
-            remark: item.log_remark,
-          };
-        });
+        const requestList = logs;
 
         setLoading(false);
         setDataRequest(requestList);
@@ -105,7 +94,8 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     if (requestId) {
       fetchRequestDetailfunc();
     }
-  }, [requestId, returnedCar, returnedData, returnedImage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, returnedData, returnedImage, returnedCar, cancelReq]);
 
   const createQueryString = useCallback(
     (value: string) => {
@@ -138,7 +128,13 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
       {
         label: "การรับยานพาหนะ",
-        content: <ReceiveCarVehicleInUseTab requestId={requestId} role="user" displayOn="vehicle-in-use" />,
+        content: (
+          <ReceiveCarVehicleInUseTab
+            requestId={requestId}
+            role="user"
+            displayOn="vehicle-in-use"
+          />
+        ),
         constent: "",
         badge: "",
       },
@@ -146,7 +142,11 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ข้อมูลการเดินทาง",
         content: (
           <>
-            <RecordTravelTab requestId={requestId} data={requestData} role="userRecordTravel" />
+            <RecordTravelTab
+              requestId={requestId}
+              data={requestData}
+              role="userRecordTravel"
+            />
           </>
         ),
         constent: "",
@@ -156,7 +156,11 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การเติมเชื้อเพลิง",
         content: (
           <>
-            <RecordFuelTab requestId={requestId} role="recordFuel" requestData={requestData} />
+            <RecordFuelTab
+              requestId={requestId}
+              role="recordFuel"
+              requestData={requestData}
+            />
           </>
         ),
         constent: "",
@@ -166,7 +170,11 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การคืนยานพาหนะ",
         content: (
           <>
-            <ReturnCarTab displayOn="userTabs" useBy={"userTabs"} requestData={requestData} />
+            <ReturnCarTab
+              displayOn="userTabs"
+              useBy={"userTabs"}
+              requestData={requestData}
+            />
           </>
         ),
         constent: "",
@@ -176,7 +184,6 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ประวัติการดำเนินการ",
         content: (
           <>
-            {/* <TableComponent data={dataRequest} columns={requestHistoryLogColumns} /> */}
             <LogListTable defaultData={dataRequest} pagination={pagination} />
             {dataRequest.length > 0 && (
               <PaginationControls
@@ -190,9 +197,12 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         badge: "",
       },
     ],
-    [dataRequest, requestData, requestId]
+    [dataRequest, requestData, requestId, params, pagination]
   ).filter((tab) => {
-    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver === "1") {
+    if (
+      tab.label === "การนัดหมายเดินทาง" &&
+      requestData?.is_pea_employee_driver === "1"
+    ) {
       return false;
     }
     return true;
@@ -207,7 +217,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+      <div className="flex border-b tablist w-[100vw] max-w-[100vw] overflow-auto">
         {tabs.map((tab, index) => (
           <button
             key={index}
@@ -221,7 +231,9 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
+              {tab.badge && (
+                <span className="badge badge-brand badge-pill-outline">4</span>
+              )}{" "}
             </div>
           </button>
         ))}

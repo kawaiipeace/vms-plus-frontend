@@ -8,12 +8,16 @@ import MobileRejectCard from "../card/mobileRejectCard";
 import MobileTravelLogCard from "../card/mobileTravelLogCard";
 import MobileWaitForVehicleCard from "../card/mobileWaitForVehicleCard";
 import MobileWaitVerifyCard from "../card/mobileWaitVerifyCard";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface Props {
   requestData: RequestListType[];
 }
 
 export default function ListFlow({ requestData }: Props) {
+  const pathname = usePathname();
+
   return (
     <>
       {requestData.map((request, index) => {
@@ -27,11 +31,19 @@ export default function ListFlow({ requestData }: Props) {
               imageSrc="/assets/img/graphic/status_waiting_approval.png"
               imageAlt="Waiting Approval"
               cardTitle={request.ref_request_status_name || "รออนุมัติ"}
-              cardSubtitle={request.vehicle_license_plate || ""}
+              cardSubtitle={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               supportingTexts={[
                 request.work_place || "-",
-                `${convertToBuddhistDateTime(request?.start_datetime || "").date || "-"} - ${
-                  convertToBuddhistDateTime(request.end_datetime || "").date || "-"
+                `${
+                  convertToBuddhistDateTime(request?.start_datetime || "")
+                    .date || "-"
+                } - ${
+                  convertToBuddhistDateTime(request.end_datetime || "").date ||
+                  "-"
                 }`,
               ]}
               cardItemText={request?.ref_request_status_name}
@@ -47,11 +59,19 @@ export default function ListFlow({ requestData }: Props) {
               imageSrc="/assets/img/graphic/status_reject_request.png"
               imageAlt="Rejected Request"
               cardTitle={request.ref_request_status_name || "ถูกตีกลับ"}
-              cardSubtitle={request.vehicle_license_plate || ""}
+              cardSubtitle={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               supportingTexts={[
                 request.work_place || "-",
-                `${convertToBuddhistDateTime(request.start_datetime || "").date || "-"} - ${
-                  convertToBuddhistDateTime(request.end_datetime || "").date || "-"
+                `${
+                  convertToBuddhistDateTime(request.start_datetime || "")
+                    .date || "-"
+                } - ${
+                  convertToBuddhistDateTime(request.end_datetime || "").date ||
+                  "-"
                 }`,
               ]}
               cardItemText={request?.ref_request_status_name}
@@ -68,11 +88,19 @@ export default function ListFlow({ requestData }: Props) {
               imageSrc="/assets/img/graphic/status_reject_request.png"
               imageAlt="Rejected Request"
               cardTitle={request.ref_request_status_name || "-"}
-              cardSubtitle={request.vehicle_license_plate || ""}
+              cardSubtitle={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               supportingTexts={[
                 request.work_place || "-",
-                `${convertToBuddhistDateTime(request.start_datetime || "").date || "-"} - ${
-                  convertToBuddhistDateTime(request.end_datetime || "").date || "-"
+                `${
+                  convertToBuddhistDateTime(request.start_datetime || "")
+                    .date || "-"
+                } - ${
+                  convertToBuddhistDateTime(request.end_datetime || "").date ||
+                  "-"
                 }`,
               ]}
               cardItemText={request?.ref_request_status_name}
@@ -86,7 +114,11 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitForKeyCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -94,11 +126,19 @@ export default function ListFlow({ requestData }: Props) {
                 convertToBuddhistDateTime(request?.end_datetime || "").date
               }
               pickupLocation={request?.received_key_place || ""}
-              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime || "").date}
+              pickupDate={
+                convertToBuddhistDateTime(
+                  request?.received_key_start_datetime || ""
+                ).date
+              }
               pickupTime={
-                convertToBuddhistDateTime(request?.received_key_start_datetime || "").time +
+                convertToBuddhistDateTime(
+                  request?.received_key_start_datetime || ""
+                ).time +
                 " - " +
-                convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
+                convertToBuddhistDateTime(
+                  request?.received_key_end_datetime || ""
+                ).time
               }
               is_pea_employee_driver={request?.is_pea_employee_driver?.toString()}
             />
@@ -110,7 +150,11 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitForVehicleCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -118,11 +162,19 @@ export default function ListFlow({ requestData }: Props) {
                 convertToBuddhistDateTime(request?.end_datetime || "").date
               }
               pickupLocation={request?.received_key_place || ""}
-              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime || "").date}
+              pickupDate={
+                convertToBuddhistDateTime(
+                  request?.received_key_start_datetime || ""
+                ).date
+              }
               pickupTime={
-                convertToBuddhistDateTime(request?.received_key_start_datetime || "").time +
+                convertToBuddhistDateTime(
+                  request?.received_key_start_datetime || ""
+                ).time +
                 " - " +
-                convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
+                convertToBuddhistDateTime(
+                  request?.received_key_end_datetime || ""
+                ).time
               }
               is_pea_employee_driver={request?.is_pea_employee_driver?.toString()}
             />
@@ -134,22 +186,39 @@ export default function ListFlow({ requestData }: Props) {
             <MobileTravelLogCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
                 " - " +
                 convertToBuddhistDateTime(request?.end_datetime || "").date
               }
-              startDate={convertToBuddhistDateTime(request?.start_datetime || "").date}
-              endDate={convertToBuddhistDateTime(request?.end_datetime || "").date}
-              pickupLocation={request?.received_key_place || ""}
-              pickupDate={convertToBuddhistDateTime(request?.received_key_start_datetime || "").date}
-              pickupTime={
-                convertToBuddhistDateTime(request?.received_key_start_datetime || "").time +
-                " - " +
-                convertToBuddhistDateTime(request?.received_key_end_datetime || "").time
+              startDate={
+                convertToBuddhistDateTime(request?.start_datetime || "").date
               }
+              endDate={
+                convertToBuddhistDateTime(request?.end_datetime || "").date
+              }
+              pickupLocation={request?.received_key_place || ""}
+              pickupDate={
+                convertToBuddhistDateTime(
+                  request?.received_key_start_datetime || ""
+                ).date
+              }
+              pickupTime={
+                convertToBuddhistDateTime(
+                  request?.received_key_start_datetime || ""
+                ).time +
+                " - " +
+                convertToBuddhistDateTime(
+                  request?.received_key_end_datetime || ""
+                ).time
+              }
+              isDriverPEA={request?.is_pea_employee_driver === "1"}
             />
           );
         }
@@ -159,7 +228,11 @@ export default function ListFlow({ requestData }: Props) {
             <MobileWaitVerifyCard
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -176,7 +249,11 @@ export default function ListFlow({ requestData }: Props) {
               title="ตีกลับยานพาหนะ"
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -194,7 +271,11 @@ export default function ListFlow({ requestData }: Props) {
               title="คืนยานพาหนะไม่สำเร็จ"
               key={request.trn_request_uid || index}
               id={request.trn_request_uid}
-              licensePlate={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_short
+              }
               location={request?.work_place || ""}
               dateRange={
                 convertToBuddhistDateTime(request?.start_datetime || "").date +
@@ -208,19 +289,28 @@ export default function ListFlow({ requestData }: Props) {
 
         if (ref_request_status_name === "เสร็จสิ้น") {
           return (
-            <MobileDriverCard
+            <Link
               key={request.trn_request_uid || index}
-              title={"เสร็จสิ้น"}
-              carRegis={request?.vehicle_license_plate + " " + request?.vehicle_license_plate_province_short}
-              location={request?.work_place || ""}
-              date={
-                convertToBuddhistDateTime(request?.start_datetime || "").date +
-                " - " +
-                convertToBuddhistDateTime(request?.end_datetime || "").date
-              }
-              cardType="complete"
-              rating={undefined}
-            />
+              href={pathname + "/" + request.trn_request_uid}
+            >
+              <MobileDriverCard
+                title={"เสร็จสิ้น"}
+                carRegis={
+                  request?.vehicle_license_plate +
+                  " " +
+                  request?.vehicle_license_plate_province_short
+                }
+                location={request?.work_place || ""}
+                date={
+                  convertToBuddhistDateTime(request?.start_datetime || "")
+                    .date +
+                  " - " +
+                  convertToBuddhistDateTime(request?.end_datetime || "").date
+                }
+                cardType="complete"
+                rating={undefined}
+              />
+            </Link>
           );
         }
 

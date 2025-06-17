@@ -1,6 +1,9 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Rating from "@/components/rating";
-import { fetchReviewDriverDetail } from "@/services/adminService";
+import {
+  fetchReviewDriverDetail,
+  fetchUserReviewDriverDetail,
+} from "@/services/adminService";
 import {
   fetchRequestKeyDetail,
   fetchSatisfactionSurveyQuestions,
@@ -19,6 +22,7 @@ import {
 interface Props {
   displayOn?: string;
   id?: string;
+  role?: string;
 }
 
 interface SatisfactionSurveyQuestions {
@@ -49,7 +53,7 @@ const iconList = [
 const ReviewCarDriveDetailModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ displayOn, id }, ref) => {
+>(({ displayOn, id, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [reviewSubmit, setReviewSubmit] = useState(false);
   const [requestData, setRequestData] = useState<RequestDetailType>();
@@ -74,8 +78,13 @@ const ReviewCarDriveDetailModal = forwardRef<
 
   const fetchReviewDriverDetailFunc = useCallback(async () => {
     try {
-      const response = await fetchReviewDriverDetail(id || "");
-      setRatting(response.data);
+      if (role === "user") {
+        const response = await fetchUserReviewDriverDetail(id || "");
+        setRatting(response.data);
+      } else {
+        const response = await fetchReviewDriverDetail(id || "");
+        setRatting(response.data);
+      }
     } catch (error) {
       console.error("Error fetching review details:", error);
     }
@@ -94,14 +103,18 @@ const ReviewCarDriveDetailModal = forwardRef<
     fetchSatisfactionSurveyQuestionsFunc();
     fetchRequestDetailfunc();
     fetchReviewDriverDetailFunc(); // Fetch the review data
-  }, [fetchRequestDetailfunc, fetchSatisfactionSurveyQuestionsFunc, fetchReviewDriverDetailFunc]);
+  }, [
+    fetchRequestDetailfunc,
+    fetchSatisfactionSurveyQuestionsFunc,
+    fetchReviewDriverDetailFunc,
+  ]);
 
   useEffect(() => {
     if (displayOn === "admin" || displayOn === "view") {
       setReviewSubmit(true);
     }
   }, [displayOn]);
-  
+
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   return (
@@ -158,38 +171,44 @@ const ReviewCarDriveDetailModal = forwardRef<
               </div>
             </div>
             <div className="mt-3 space-y-5">
-              {ratting.length > 0 ? (
-                ratting.map((item, index) => {
-                  const name = `rating-${item.mas_satisfaction_survey_questions_code}`;
-                  return (
-                    <Rating
-                      key={index}
-                      name={name}
-                      title={item.satisfaction_survey_questions.mas_satisfaction_survey_questions_title}
-                      description={item.satisfaction_survey_questions.mas_satisfaction_survey_questions_desc}
-                      icon={iconList[index]}
-                      value={item.survey_answer}
-                      disabled={reviewSubmit}
-                    />
-                  );
-                })
-              ) : (
-                // Fallback to satisfactionSurveyQuestions if ratting data is not available yet
-                satisfactionSurveyQuestions.map((item, index) => {
-                  const name = `rating-${item.mas_satisfaction_survey_questions_code}`;
-                  return (
-                    <Rating
-                      key={index}
-                      name={name}
-                      title={item.mas_satisfaction_survey_questions_title}
-                      description={item.mas_satisfaction_survey_questions_desc}
-                      icon={iconList[index]}
-                      value={5} // Default value if no rating data
-                      disabled={reviewSubmit}
-                    />
-                  );
-                })
-              )}
+              {ratting.length > 0
+                ? ratting.map((item, index) => {
+                    const name = `rating-${item.mas_satisfaction_survey_questions_code}`;
+                    return (
+                      <Rating
+                        key={index}
+                        name={name}
+                        title={
+                          item.satisfaction_survey_questions
+                            .mas_satisfaction_survey_questions_title
+                        }
+                        description={
+                          item.satisfaction_survey_questions
+                            .mas_satisfaction_survey_questions_desc
+                        }
+                        icon={iconList[index]}
+                        value={item.survey_answer}
+                        disabled={reviewSubmit}
+                      />
+                    );
+                  })
+                : // Fallback to satisfactionSurveyQuestions if ratting data is not available yet
+                  satisfactionSurveyQuestions.map((item, index) => {
+                    const name = `rating-${item.mas_satisfaction_survey_questions_code}`;
+                    return (
+                      <Rating
+                        key={index}
+                        name={name}
+                        title={item.mas_satisfaction_survey_questions_title}
+                        description={
+                          item.mas_satisfaction_survey_questions_desc
+                        }
+                        icon={iconList[index]}
+                        value={5} // Default value if no rating data
+                        disabled={reviewSubmit}
+                      />
+                    );
+                  })}
             </div>
           </div>
         </div>

@@ -15,8 +15,11 @@ export default function ApproverInfoCard({
 
     useEffect(() => {
           const fetchApprover = async () => {
+            const param = {
+              emp_id: emp_id,
+            }
               try {
-                const response = await fetchUserApproverUsers(emp_id);
+                const response = await fetchUserApproverUsers(param);
                 if (response.status === 200) {
                   setApproverData(response.data[0]);
                 }

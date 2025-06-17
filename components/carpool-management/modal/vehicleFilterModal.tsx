@@ -163,9 +163,9 @@ const ModalBody = ({
                   type="checkbox"
                   defaultChecked
                   checked={params.is_active.includes(e.id)}
-                  onChange={(e) =>
-                    onActiveChecked(e.target.checked, e.target.value)
-                  }
+                  onChange={(_e) => {
+                    onActiveChecked(_e.target.checked, e.id);
+                  }}
                   className="checkbox [--chkbg:#A80689] checkbox-sm rounded-md"
                 />
                 <label className="custom-control-label">{e.name}</label>
@@ -179,9 +179,11 @@ const ModalBody = ({
 };
 
 const ModalFooter = ({
+  onClose,
   onClick,
   onSubmit,
 }: {
+  onClose: () => void;
   onClick: () => void;
   onSubmit: () => void;
 }) => {
@@ -196,7 +198,7 @@ const ModalFooter = ({
       </div>
 
       <div className="flex gap-2 ml-auto">
-        <button className="btn btn-secondary" onClick={onClick}>
+        <button className="btn btn-secondary" onClick={onClose}>
           ยกเลิก
         </button>
         <button className="btn btn-primary" onClick={onSubmit}>
@@ -305,6 +307,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
 
           {/* Footer ลอยอยู่ล่างเสมอ */}
           <ModalFooter
+            onClose={() => dialogRef.current?.close()}
             onClick={handleClearFilter}
             onSubmit={handleSubmitFilter}
           />

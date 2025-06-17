@@ -107,7 +107,11 @@ const ReceiveCarSuccessModal = forwardRef<
           </div>
         </div>
       </dialog>
-      <TravelCardModal ref={travelCardModalRef} requestData={requestData} />
+      <TravelCardModal
+        ref={travelCardModalRef}
+        requestData={requestData}
+        role={role}
+      />
       <LicenseCardModal ref={licenseCardModalRef} requestData={requestData} />
     </>
   );

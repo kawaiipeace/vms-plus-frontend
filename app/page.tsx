@@ -74,8 +74,9 @@ export default function Home() {
             />
             <div className="login-brand-title">ระบบจัดการยานพาหนะ VMS Plus</div>
             <div className="login-brand-subtitle">
-              เรื่องเดินทางไม่ใช่ปัญหา ยืมรถสะดวก ง่าย เร็ว ทันใจ
+              เรื่องเดินทางไม่ใช่ปัญหา ยืมรถสะดวก ง่าย เร็ว ทันใจ (Version 0.2)
             </div>
+      
           </div>
 
           <div className="login-label">เข้าสู่ระบบด้วยบัญชี</div>
@@ -107,8 +108,11 @@ export default function Home() {
               <div className="login-type-link-label">บุคคลภายนอก</div>
             </Link>
           </div>
+       
         </div>
+          
       </div>
+      
     </div>
   );
 }
