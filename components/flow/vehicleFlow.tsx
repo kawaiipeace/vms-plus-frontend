@@ -153,7 +153,11 @@ export default function VehicleFlow() {
         () =>
             debounce((value: string) => {
                 if (value.length > 2 || value.length === 0) {
-                    setParams((prev) => ({ ...prev, search: value }));
+                    setParams((prev) => ({
+                        ...prev,
+                        search: value,
+                        page: 1
+                    }));
                 }
             }, 500),
         []

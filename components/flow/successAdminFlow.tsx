@@ -1,4 +1,4 @@
-import { RequestListType } from "@/app/types/request-list-type";
+import { RequestListType,summaryType } from "@/app/types/request-list-type";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
@@ -18,6 +18,7 @@ interface PaginationType {
 
 export default function SuccessAdminFlow() {
   const [filterNames, setFilterNames] = useState<string[]>([]);
+    const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
   const [loading, setLoading] = useState(true); 
   const [params, setParams] = useState({
@@ -246,7 +247,18 @@ export default function SuccessAdminFlow() {
         />
       )}
 
-      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { RequestListType } from "@/app/types/request-list-type";
+import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { fetchRequests } from "@/services/bookingAdmin";
@@ -17,6 +17,7 @@ interface PaginationType {
 
 export default function CancelAdminFlow() {
   const [filterDate, setFilterDate] = useState<string>("");
+     const [summary, setSummary] = useState<summaryType[]>([]);
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
@@ -247,7 +248,18 @@ export default function CancelAdminFlow() {
         />
       )}
 
-      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </div>
   );
 }

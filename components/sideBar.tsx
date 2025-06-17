@@ -152,7 +152,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super", "admin-region", "admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-carpool"],
         },
         // {
         //   title: "ข้อมูล Fleet card",
@@ -247,7 +247,11 @@ export default function SideBar({ menuName }: SidebarProps) {
         <ul className="nav flex-col">
           <li className="nav-item">
             <Link
-              href={`${profile?.roles?.includes("driver") ? "/vehicle-in-use/driver" : "/"}`}
+              href={`${
+                profile?.roles?.includes("driver")
+                  ? "/vehicle-in-use/driver"
+                  : "/"
+              }`}
               className={`nav-link flex items-center ${
                 activeItem === "home" ? "active" : ""
               }`}

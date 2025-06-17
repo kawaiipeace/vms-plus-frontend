@@ -315,7 +315,18 @@ export default function FirstApproveFlow() {
           />
         ))
       )}
-      <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
+          <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </>
   );
 }
