@@ -33,6 +33,7 @@ export default function ProcessFour() {
     }
   }, []);
 
+
   const nextStep = async () => {
     if (formData) {
       const mappedData = {
@@ -90,11 +91,13 @@ export default function ProcessFour() {
           localStorage.removeItem("processTwo");
           localStorage.removeItem("processThree");
           updateFormData({});
-          console.log("ttt=====>requ", response.data);
+          console.log("formData after reset:", formData);
+          sessionStorage.clear();
           router.push(
             "request-list?create-req=success&request-id=" +
               response.data.trn_request_uid
           );
+       
         }
       } catch (error) {
         console.error("API Error:", error);
@@ -103,6 +106,10 @@ export default function ProcessFour() {
       console.warn("No formData found!");
     }
   };
+
+
+
+
 
   return (
     <div>
