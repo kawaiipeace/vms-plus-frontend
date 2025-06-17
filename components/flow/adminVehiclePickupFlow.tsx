@@ -424,7 +424,13 @@ export default function AdminVehiclePickupFlow() {
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
-        department={true}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}department={true}
         onSubmitFilter={handleFilterSubmit}
       />
     </>

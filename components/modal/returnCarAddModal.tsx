@@ -117,7 +117,7 @@ const ReturnCarAddModal = forwardRef<
       setFuelQuantity(data?.fuel_start || 0);
       if (edit) {
         setFuelQuantity(data?.fuel_end || 0);
-        setParkingLocation(data?.parking_place || "");
+        setParkingLocation(data?.returned_parking_place || "");
         setMiles(data?.mile_end?.toString() || "");
         setRemark(data?.returned_vehicle_remark || "");
       } else {

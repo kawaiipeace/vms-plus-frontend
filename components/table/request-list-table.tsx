@@ -130,6 +130,10 @@ export default function RequestListTable({
             {row.original.vehicle_license_plate +
               " " +
               row.original.vehicle_license_plate_province_short}
+              
+          </div>
+           <div className="text-color-secondary text-xs">
+            {row.original.vehicle_department_dept_sap_short}
           </div>
         </div>
       ),
