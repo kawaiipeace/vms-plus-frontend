@@ -300,7 +300,10 @@ const DriversListTab = () => {
               className="form-control dt-search-input"
               placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
               value={params.search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => {
+                handleSearch(e.target.value);
+                setParams((prevParams) => ({ ...prevParams, page: 1 }));
+              }}
             />
           </div>
         </div>
