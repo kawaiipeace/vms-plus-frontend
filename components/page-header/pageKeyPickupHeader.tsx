@@ -124,8 +124,8 @@ export default function PageKeyPickupHeader({ data, editable }: Props) {
                 <i className="material-symbols-outlined">print</i>
                 พิมพ์
               </Link>
-              {data?.ref_cost_type_code !== "60" &&
-                data?.ref_cost_type_code !== "80" && (
+               {Number(data?.ref_request_status_code) >= Number("59") ||
+                Number(data?.ref_request_status_code) <= Number("81") && (
                   <>
                     <div className="divider py-0 my-0"></div>
                     <Link
@@ -142,16 +142,18 @@ export default function PageKeyPickupHeader({ data, editable }: Props) {
           </div>
         </div>
 
-        {data?.ref_cost_type_code !== "60" &&
-          data?.ref_cost_type_code !== "80" && (
+     
             <div className="md:block hidden">
               <div className="flex gap-3">
+                     {Number(data?.ref_request_status_code) >= Number("59") ||
+                Number(data?.ref_request_status_code) <= Number("81") && (
                 <button
                   className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
                   onClick={() => cancelRequestModalRef.current?.openModal()}
                 >
                   ยกเลิกคำขอ
                 </button>
+                    )}
                 <button
                   className="btn btn-secondary"
                   onClick={() => window.print()}
@@ -160,7 +162,7 @@ export default function PageKeyPickupHeader({ data, editable }: Props) {
                 </button>{" "}
               </div>
             </div>
-          )}
+      
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid || ""}
