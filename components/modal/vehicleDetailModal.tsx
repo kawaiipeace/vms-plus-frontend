@@ -253,7 +253,7 @@ const VehicleDetailModel = forwardRef<
               </div>
             )}
             <div className="form-card mt-5">
-              <div className="form-card-body form-card-inline items-center">
+              <div className="form-card-body form-card-inline items-center !bg-transparent text-left !p-0">
                 <div className="form-group form-plaintext form-users items-center">
                   <div className="col-span-12">
                     <div className="form-group form-plaintext">

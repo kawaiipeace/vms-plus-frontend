@@ -662,6 +662,7 @@ const handleDriverSearch = async (search: string) => {
                       <input
                         type="text"
                         className="form-control"
+                        maxLength={10}
                         {...register("telInternal")}
                         placeholder="ระบุเบอร์ภายใน"
                       />
