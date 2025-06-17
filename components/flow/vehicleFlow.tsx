@@ -51,7 +51,6 @@ export default function VehicleFlow() {
         let countFilters = 0;
         const fetchData = async () => {
             try {
-                console.log('params', params)
                 const response = await fetchVehicles(params);
                 const { total, totalPages } = response.pagination;
 
@@ -72,11 +71,11 @@ export default function VehicleFlow() {
                     key === "ref_vehicle_status_code"
                 ) {
                     const value = params[key];
-                    if(value && value.trim() !== "") {
+                    if (value && value.trim() !== "") {
                         countFilters += value.split(",").length;
                     }
                 }
-              });
+            });
             setFilterCount(countFilters);
         };
 
@@ -110,48 +109,6 @@ export default function VehicleFlow() {
             ref_vehicle_status_code: params.vehicleStatus.join(","),
         }));
     };
-
-    const renderHeader = () => (
-        <div className="page-section-header border-0 mt-5">
-            <div className="page-header-left">
-                <div className="page-title">
-                    <span className="page-title-label">ยานพาหนะ</span>
-                    <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
-                        {pagination.total ?? 0} คัน
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
-
-    const Actions = () => (
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
-            <div className="flex gap-4">
-                <button
-                    onClick={handleOpenFilterModal}
-                    className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
-                >
-                    <i className="material-symbols-outlined">filter_list</i>
-                    <span className="text-sm font-bold">ตัวกรอง</span>
-                    <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
-                </button>
-                <button
-                    className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex justify-center items-center"
-                    onClick={handleOpenReportModal}
-                    disabled={!selectedRows.length}>
-                    <i className="material-symbols-outlined">download</i>
-                    <span className="text-sm font-bold">รายงาน</span>
-                    <span className="badge badge-brand badge-outline rounded-[50%]">{selectedRows.length}</span>
-                </button>
-                <button 
-                    disabled={true}
-                    className="btn btn-primary h-[40px] min-h-[40px] text-white hidden md:block">
-                    <i className="material-symbols-outlined">add</i>
-                    <span className="text-sm font-bold">สร้างข้อมูล</span>
-                </button>
-            </div>
-        </div>
-    );
 
     const renderTableOrNoData = () => {
         if (dataRequest.length > 0) {
@@ -204,15 +161,55 @@ export default function VehicleFlow() {
 
     return (
         <div>
-            {renderHeader()}
+            {/* ----- Header ----- */}
+            <div className="page-section-header border-0 mt-5">
+                <div className="page-header-left">
+                    <div className="page-title">
+                        <span className="page-title-label">ยานพาหนะ</span>
+                        <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+                            {pagination.total ?? 0} คัน
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* ----- Search and Filter Section ----- */}
             <div className="flex justify-between items-center mb-4">
                 <SearchInput
                     defaultValue={params.search}
                     placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
                     onSearch={(value) => debouncedSetParams(value)}
                 />
-                <Actions />
+
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
+                    <div className="flex gap-4">
+                        <button
+                            onClick={handleOpenFilterModal}
+                            className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
+                        >
+                            <i className="material-symbols-outlined">filter_list</i>
+                            <span className="text-sm font-bold">ตัวกรอง</span>
+                            <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
+                        </button>
+                        <button
+                            className="btn btn-secondary btn-filtersmodal h-[40px] min-h-[40px] flex justify-center items-center"
+                            onClick={handleOpenReportModal}
+                            disabled={!selectedRows.length}>
+                            <i className="material-symbols-outlined">download</i>
+                            <span className="text-sm font-bold">รายงาน</span>
+                            <span className="badge badge-brand badge-outline rounded-[50%]">{selectedRows.length}</span>
+                        </button>
+                        <button
+                            disabled={true}
+                            className="btn btn-primary h-[40px] min-h-[40px] text-white hidden md:block">
+                            <i className="material-symbols-outlined">add</i>
+                            <span className="text-sm font-bold">สร้างข้อมูล</span>
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            {/* ----- Vehicle Table or No Data ----- */}
             {renderTableOrNoData()}
 
             <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} flag="TABLE_LIST" />

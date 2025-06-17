@@ -55,6 +55,7 @@ export interface DriverInfoType {
   driver_license?: DriverLicenseType;
   driver_documents?: DriverDocument[];
   is_replacement?: string;
+  replacement_driver_uid?: string | null;
   ref_other_use_code?: string;
   driver_status?: DriverStatusType;
   alert_driver_status?: string;

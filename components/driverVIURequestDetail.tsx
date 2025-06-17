@@ -22,6 +22,8 @@ export const DriverVIURequestDetail = ({
     const startDate = dayjs(start).format(format || "DD/MM/YYYY");
     const endDate = dayjs(end).format(format || "DD/MM/YYYY");
 
+    if (startDate === endDate) return startDate;
+
     return `${startDate} - ${endDate}`;
   };
 

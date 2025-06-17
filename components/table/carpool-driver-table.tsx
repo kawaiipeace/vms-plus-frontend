@@ -483,7 +483,7 @@ export default function CarpoolDriverTable({
               data-tip="ดูรายละเอียด"
               onClick={() => {
                 detailsModalRef.current?.openModal();
-                setDriverId(row.original.mas_carpool_driver_uid);
+                setDriverId(row.original.mas_driver_uid);
               }}
             >
               <i className="material-symbols-outlined">quick_reference_all</i>

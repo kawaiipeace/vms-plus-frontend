@@ -11,7 +11,14 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { getOilBrandImage } from "@/utils/getOilBrandImage";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
 import TableRecordTravelComponent from "../tableRecordTravel";
 import ZeroRecord from "../zeroRecord";
@@ -23,6 +30,8 @@ function RequestListContent() {
   const deleteReq = searchParams.get("delete-fuel-req");
   const taxInvoiceNo = searchParams.get("tax_invoice_no");
 
+  const progressType = searchParams.get("progressType");
+
   return (
     <>
       {createReq === "success" && (
@@ -31,7 +40,11 @@ function RequestListContent() {
           desc={`ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ ${taxInvoiceNo} ได้รับการเพิ่มเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={"activeTab=การเติมเชื้อเพลิง"}
+          searchParams={
+            progressType
+              ? "progressType=" + progressType + "&activeTab=การเติมเชื้อเพลิง"
+              : "activeTab=การเติมเชื้อเพลิง"
+          }
         />
       )}
 
@@ -41,7 +54,11 @@ function RequestListContent() {
           desc={`ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ ${taxInvoiceNo} ได้รับการแก้ไขเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={"activeTab=การเติมเชื้อเพลิง"}
+          searchParams={
+            progressType
+              ? "progressType=" + progressType + "&activeTab=การเติมเชื้อเพลิง"
+              : "activeTab=การเติมเชื้อเพลิง"
+          }
         />
       )}
 
@@ -51,7 +68,11 @@ function RequestListContent() {
           desc={`ข้อมูลการเติมเชื้อเพลิงเลขที่ใบเสร็จ ${taxInvoiceNo} ถูกลบเรียบร้อย`}
           status="success"
           styleText="!mx-auto"
-          searchParams={"activeTab=การเติมเชื้อเพลิง"}
+          searchParams={
+            progressType
+              ? "progressType=" + progressType + "&activeTab=การเติมเชื้อเพลิง"
+              : "activeTab=การเติมเชื้อเพลิง"
+          }
         />
       )}
     </>
@@ -64,7 +85,11 @@ interface RecordFuelTabPageProps {
   requestData?: RequestDetailType;
 }
 
-const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps) => {
+const RecordFuelTab = ({
+  requestId,
+  role,
+  requestData,
+}: RecordFuelTabPageProps) => {
   const searchParams = useSearchParams();
   const createReq = searchParams.get("create-fuel-req");
   const updateReq = searchParams.get("update-fuel-req");
@@ -132,17 +157,26 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
 
   useEffect(() => {
     fetchUserTravelDetailsFunc();
-  }, [requestId, params, fetchUserTravelDetailsFunc, createReq, updateReq, deleteReq]);
+  }, [
+    requestId,
+    params,
+    fetchUserTravelDetailsFunc,
+    createReq,
+    updateReq,
+    deleteReq,
+  ]);
 
   const mapDataRequest = useMemo(
     () =>
       requestFuelData.map((item) => {
         const oilStationBrand = oilStationBrandData.find(
-          (brand) => brand.ref_oil_station_brand_id === item.ref_oil_station_brand_id
+          (brand) =>
+            brand.ref_oil_station_brand_id === item.ref_oil_station_brand_id
         );
         return {
           ...item,
-          ref_oil_station_brand_name: oilStationBrand?.ref_oil_station_brand_name_th || "",
+          ref_oil_station_brand_name:
+            oilStationBrand?.ref_oil_station_brand_name_th || "",
           ref_fuel_type_name: item.ref_fuel_type.ref_fuel_type_name_th,
           ref_payment_type_name: item.ref_payment_type.ref_payment_type_name,
           ref_cost_type_name: item.ref_cost_type.ref_cost_type_name,
@@ -151,9 +185,12 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
     [requestFuelData, oilStationBrandData]
   );
 
-  const isAddAndEdit = ["เดินทาง", "เสร็จสิ้น", "รอตรวจสอบ", "ตีกลับยานพาหนะ"].includes(
-    requestData?.ref_request_status_name || ""
-  );
+  const isAddAndEdit = [
+    "เดินทาง",
+    "เสร็จสิ้น",
+    "รอตรวจสอบ",
+    "ตีกลับยานพาหนะ",
+  ].includes(requestData?.ref_request_status_name || "");
 
   const requestListColumns: ColumnDef<RecordFuelTabProps>[] = [
     {
@@ -197,7 +234,12 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
         return (
           <div className="text-left" data-name="สถานีบริการน้ำมัน">
             <div className="flex items-center gap-1 text-md">
-              <img src={imageSrc} alt={"oil-image-" + imageSrc} width={24} height={24} />
+              <img
+                src={imageSrc}
+                alt={"oil-image-" + imageSrc}
+                width={24}
+                height={24}
+              />
               <span className="">{oilStationBrandName}</span>
             </div>
             {/* <div className="flex flex-col">
@@ -355,7 +397,9 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
                   id="myInputTextField"
                   className="form-control dt-search-input"
                   placeholder="ค้นหาเลขที่ใบเสร็จ"
-                  onChange={(e) => setParams({ ...params, search: e.target.value })}
+                  onChange={(e) =>
+                    setParams({ ...params, search: e.target.value })
+                  }
                 />
               </div>
 
@@ -414,7 +458,17 @@ const RecordFuelTab = ({ requestId, role, requestData }: RecordFuelTabPageProps)
             </div>
           </>
         )}
-        <RecordFuelAddModal ref={recordFuelAddModalRef} requestId={requestId} isPayment={true} role={role} />
+        <RecordFuelAddModal
+          ref={recordFuelAddModalRef}
+          requestId={requestId}
+          isPayment={true}
+          role={role}
+          dataItem={
+            {
+              mile: requestData?.vehicle?.vehicle_department?.vehicle_mileage,
+            } as any
+          }
+        />
         <RecordFuelAddModal
           ref={recordFuelEditModalRef}
           requestId={requestId}

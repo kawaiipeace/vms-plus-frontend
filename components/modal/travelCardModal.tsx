@@ -35,12 +35,13 @@ function RequestListContent() {
 interface TravelCardModalProps {
   requestData?: VehicleUserTravelCardType;
   title?: string;
+  role?: string;
 }
 
 const TravelCardModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   TravelCardModalProps
->(({ requestData, title = "บัตรเดินทาง" }, ref) => {
+>(({ requestData, title = "บัตรเดินทาง", role }, ref) => {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -196,7 +197,13 @@ const TravelCardModal = forwardRef<
               <div className="grid grid-cols-2 gap-x-4 overflow-hidden col-span-12">
                 <button
                   className="btn btn-default w-full"
-                  onClick={() => modalRef.current?.close()}
+                  onClick={() => {
+                    if (role === "driver") {
+                      router.push(pathName + "?progressType=บันทึกการเดินทาง");
+                    }
+
+                    modalRef.current?.close();
+                  }}
                 >
                   ปิด
                 </button>

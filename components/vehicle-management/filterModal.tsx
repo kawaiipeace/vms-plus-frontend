@@ -62,7 +62,6 @@ const ModalHeader = ({ onClose }: { onClose: () => void }) => (
 );
 
 const ModalBody = ({
-    defaultBookingStatus,
     vehicleDepartments,
     fuelTypes,
     vehicleTypes,
@@ -95,15 +94,6 @@ const ModalBody = ({
     useEffect(() => {
         setParams(formData);
     }, [formData]);
-
-    useEffect(() => {
-        if(defaultBookingStatus.length > 0 && defaultBookingStatus.length == 0) {
-            setFormData(prev => ({
-                ...prev,
-                vehicleBookingStatus: defaultBookingStatus
-            }));
-        }
-    }, [defaultBookingStatus]);
 
     const handleCheckboxToggle = (key: keyof VehicleInputParams, value: string) => {
         setFormData(prev => {
@@ -190,15 +180,15 @@ const ModalBody = ({
                         <div className="col-span-12">
                             <div className="form-group">
                                 <span className="form-label">เครดิตภาษี</span>
-                                <div>
+                                <div className="flex flex-col gap-2 mt-2">
                                     {TAX_TYPE.map((option, index) => (
-                                        <div key={index} className="flex gap-2">
+                                        <div key={index} className="flex items-center gap-2">
                                             <label htmlFor={`option-${index}`} className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     id={`option-${index}`}
                                                     checked={formData.taxVehicle.includes(option.id)}
-                                                    className="checkbox checkbox-primary h-5 w-5"
+                                                    className="checkbox rounded-lg border-gray-300"
                                                     onChange={() => handleCheckboxToggle('taxVehicle', option.id)}
                                                 />
                                                 <span className="text-base">{option.name}</span>
@@ -231,30 +221,6 @@ const ModalBody = ({
                             </div>
                         </div>
                     </>
-                )}
-
-                {flag === 'TIMELINE' && (
-                    <div className="col-span-12">
-                        <div className="form-group">
-                            <span>สถานะ</span>
-                            <div className="flex flex-col gap-2 mt-2">
-                                {vehicleBookingStatus.map((status, index) => (
-                                    <div key={index} className="flex items-center gap-2">
-                                        <label htmlFor={`status-${index}`} className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                id={`status-timeline-${index}`}
-                                                checked={formData.vehicleBookingStatus.includes(status.id)}
-                                                className="checkbox rounded-lg border-gray-300"
-                                                onChange={() => handleCheckboxToggle('vehicleBookingStatus', status.id)}
-                                            />
-                                            <VehicleStatus status={status.name} />
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
                 )}
             </div>
         </div>
@@ -311,7 +277,7 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         vehicleDepartment: "",
         taxVehicle: [],
         vehicleStatus: [],
-        vehicleBookingStatus: []
+        vehicleBookingStatus: defaultVehicleBookingStatus ?? []
     };
 
     const [params, setParams] = useState<VehicleInputParams>(initialParams);
@@ -356,7 +322,6 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
                         flag={flag}
                         setParams={setParams}
                         params={params}
-                        defaultBookingStatus={defaultVehicleBookingStatus ?? []}
                     />
                 </div>
 

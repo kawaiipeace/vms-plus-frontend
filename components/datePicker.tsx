@@ -96,6 +96,9 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
         onOpen: (_dates, _dateStr, instance) => {
+           document.querySelectorAll(".flatpickr-calendar").forEach((el) => {
+      el.classList.add("flatpickr-center-mobile");
+    });
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "hidden";
           requestAnimationFrame(() => updateCalendarYear(instance));

@@ -47,7 +47,11 @@ const DriverDetailContent = ({
       label: "ข้อมูลการเดินทาง",
       content: (
         <>
-          <RecordTravelTab requestId={data?.trn_request_uid} role="driver" />
+          <RecordTravelTab
+            requestId={data?.trn_request_uid}
+            role="driver"
+            data={data}
+          />
         </>
       ),
       badge: "",
@@ -56,7 +60,11 @@ const DriverDetailContent = ({
       label: "การเติมเชื้อเพลิง",
       content: (
         <>
-          <RecordFuelTab requestId={data?.trn_request_uid} role="driver" />
+          <RecordFuelTab
+            requestId={data?.trn_request_uid}
+            role="driver"
+            requestData={data}
+          />
         </>
       ),
       badge: "",
@@ -171,7 +179,13 @@ const DriverDetailContent = ({
             phone={data?.received_key_mobile_contact_number || "-"}
             vehicle={data?.vehicle}
             role="driver"
-            deptSapShort={data?.received_key_dept_sap_short || "-"}
+            deptSapShort={
+              data?.received_key_position
+                ? data?.received_key_position +
+                  " " +
+                  data?.received_key_dept_sap_short
+                : data?.received_key_dept_sap_short || "-"
+            }
           />
         </div>
       )}
@@ -204,7 +218,7 @@ const DriverDetailContent = ({
                           </i>
                           <div className="form-plaintext-group">
                             <div className="form-text">
-                              {data?.pickup_place || "-"}
+                              {data?.parking_place || "-"}
                             </div>
                           </div>
                         </div>
@@ -324,7 +338,7 @@ const DriverDetailContent = ({
             )}
           </div>
           <div className="w-full overflow-x-auto">
-            <div className="flex border-b tablist z-[10] w-[100vw] max-w-[100vw] overflow-auto">
+            <div className="flex border-b tablist w-[100vw] max-w-[100vw] overflow-auto">
               {tabs.map((tab, index) => (
                 <button
                   key={index}

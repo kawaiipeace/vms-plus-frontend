@@ -208,6 +208,13 @@ export default function CarpoolAdminTable({
       accessorKey: "admin_dept_sap_short",
       header: () => <div className="text-center">ตำแหน่ง / สังกัด</div>,
       enableSorting: false,
+      cell: ({ row: { original } }) => {
+        return (
+          <>
+            {original.admin_position} {original.admin_dept_sap_short}
+          </>
+        );
+      },
     },
     {
       accessorKey: "internal_contact_number",

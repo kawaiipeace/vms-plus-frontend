@@ -15,30 +15,29 @@ export default function PageHeader({ data }: Props) {
 
   const [copied, setCopied] = useState(false);
 
-const handleCopyRequestNo = async (text?: string) => {
-  if (!text) return;
+  const handleCopyRequestNo = async (text?: string) => {
+    if (!text) return;
 
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-    } else {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed"; // prevent scroll
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed"; // prevent scroll
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Copy failed:", err);
     }
-
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  } catch (err) {
-    console.error("Copy failed:", err);
-  }
-};
-
+  };
 
   return (
     <div className="page-header">
@@ -100,6 +99,7 @@ const handleCopyRequestNo = async (text?: string) => {
         </div>
 
         {data?.ref_request_status_name !== "ยกเลิกคำขอ" &&
+          data?.ref_request_status_name !== "เสร็จสิ้น" &&
           data?.can_cancel_request && (
             <button
               className="btn btn-tertiary-danger bg-transparent shadow-none border-none"

@@ -134,40 +134,32 @@ export default function NotificationDropdown() {
                   className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
                     !notification.is_read ? "bg-blue-50" : ""
                   }`}
-                  //   onClick={() => handleNotificationClick(notification)}
+                 onClick={() => {
+  if (notification.notify_url) {
+    const url = notification.notify_url.startsWith("/")
+      ? notification.notify_url
+      : `/${notification.notify_url}`;
+    router.push(url);
+    setIsOpen(false);
+  }
+}}
                 >
                   <div className="flex items-start">
                     <div className="flex-shrink-0 pt-0.5">
                       <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        {notification.notify_type === "request-booking" ? (
-                          <svg
-                            className="h-6 w-6 text-gray-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            className="h-6 w-6 text-gray-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                            />
-                          </svg>
-                        )}
+                        <svg
+                          className="h-6 w-6 text-gray-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                          />
+                        </svg>
                       </div>
                     </div>
                     <div className="ml-3 flex-1">
@@ -181,7 +173,7 @@ export default function NotificationDropdown() {
                         <p className="text-xs text-gray-400">
                           {notification.duration}
                         </p>
-                        <span
+                        {/* <span
                           className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                             notification.is_read
                               ? "bg-gray-200 text-gray-600"
@@ -189,7 +181,7 @@ export default function NotificationDropdown() {
                           }`}
                         >
                           {notification.is_read ? "Read" : "Unread"}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
                   </div>

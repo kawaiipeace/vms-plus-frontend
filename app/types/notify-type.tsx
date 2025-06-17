@@ -9,6 +9,7 @@ export interface Notification {
   created_at: string;
   read_at: string;
   duration: string;
+  notify_url: string;
 }
 
 export interface NotificationResponse {

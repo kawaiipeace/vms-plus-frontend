@@ -189,9 +189,11 @@ const ModalBody = ({ driverStatus, setParams, params }: ModalBodyProps) => {
 };
 
 const ModalFooter = ({
+  onClose,
   onClick,
   onSubmit,
 }: {
+  onClose: () => void;
   onClick: () => void;
   onSubmit: () => void;
 }) => {
@@ -206,7 +208,7 @@ const ModalFooter = ({
       </div>
 
       <div className="flex gap-2 ml-auto">
-        <button className="btn btn-secondary" onClick={onClick}>
+        <button className="btn btn-secondary" onClick={onClose}>
           ยกเลิก
         </button>
         <button className="btn btn-primary" onClick={onSubmit}>
@@ -307,6 +309,7 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
 
           {/* Footer ลอยอยู่ล่างเสมอ */}
           <ModalFooter
+            onClose={() => dialogRef.current?.close()}
             onClick={handleClearFilter}
             onSubmit={handleSubmitFilter}
           />

@@ -20,11 +20,6 @@ interface SelectProps {
   label: string | React.ReactNode;
 }
 
-const defaultSelected = {
-  label: "ทั้งหมด",
-  value: "ทั้งหมด",
-};
-
 const FilterCarpoolModal = forwardRef((props: Props, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
@@ -34,7 +29,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
   }));
 
   const [options, setOptions] = useState<SelectProps[]>([]);
-  const [selected, setSelected] = useState<SelectProps>(defaultSelected);
+  const [selected, setSelected] = useState<SelectProps>();
   const [status, setStatus] = useState<string[]>([]);
 
   useEffect(() => {
@@ -45,7 +40,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
 
   useEffect(() => {
     if (props.params.dept_sap === "") {
-      setSelected(defaultSelected);
+      setSelected(undefined);
     }
     if (props.params.is_active === "") {
       setStatus([]);
@@ -61,7 +56,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
         label: item.dept_short,
         subLabel: item.dept_full,
       }));
-      setOptions([defaultSelected, ..._options]);
+      setOptions(_options);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
@@ -71,7 +66,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
     const { params, setParams } = props;
     const newParams = {
       ...params,
-      dept_sap: selected.value === "ทั้งหมด" ? undefined : selected.value,
+      dept_sap: selected?.value,
       is_active: status.join(","),
     };
     setParams(newParams);
@@ -128,6 +123,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
                   options={options}
                   value={selected}
                   onChange={setSelected}
+                  placeholder="ทั้งหมด"
                   enableSearchOnApi
                   onSearchInputChange={(value) => fetchDepartmentFunc(value)}
                 />
@@ -204,7 +200,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
             <button
               className="btn btn-ghost"
               onClick={() => {
-                setSelected(defaultSelected);
+                setSelected(undefined);
                 setStatus([]);
               }}
             >

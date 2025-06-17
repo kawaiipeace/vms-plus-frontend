@@ -56,6 +56,7 @@ export interface FormDataType {
   driverMobileContact: string;
   driverEmpID: string;
   driverEmpName: string;
+  driverEmpPosition: string;
   driverDeptSap: string;
 }
 

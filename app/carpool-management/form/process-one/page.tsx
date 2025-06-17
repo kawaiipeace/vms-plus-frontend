@@ -147,7 +147,7 @@ export default function CarpoolProcessOne() {
                           />
                           <label className="custom-control-label !w-fit">
                             <div className="custom-control-label-group">
-                              {active}
+                              {active === "เปิด" ? "เปิดใช้งาน" : "ปิดใช้งาน"}
                             </div>
                           </label>
                         </div>
