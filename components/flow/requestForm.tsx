@@ -131,10 +131,7 @@ export default function RequestForm() {
     }
   };
 
-  
-
   useEffect(() => {
-   
     const fetchCostTypeRequest = async () => {
       try {
         const response = await fetchCostTypes();
@@ -160,7 +157,6 @@ export default function RequestForm() {
       }
     };
 
-
     fetchCostTypeRequest();
   }, []);
 
@@ -169,91 +165,95 @@ export default function RequestForm() {
     label: string;
   } | null>(null);
 
+  useEffect(() => {
+    // Set default times if not provided
+    if (!formData.timeStart) {
+      setValue("timeStart", "08:30");
+    }
+    if (!formData.timeEnd) {
+      setValue("timeEnd", "16:30");
+    }
 
-useEffect(() => {
-  // Set default times if not provided
-  if (!formData.timeStart) {
-    setValue("timeStart", "08:30");
-  }
-  if (!formData.timeEnd) {
-    setValue("timeEnd", "16:30");
-  }
-
-  if (profile) {
-    const fetchDefaultData = async () => {
-      try {
-        const response = await fetchVehicleUsers(
-          formData?.vehicleUserEmpId ? formData?.vehicleUserEmpId : profile?.emp_id
-        );
-        
-        if (response) {
-          const vehicleUserData = response.data;
-          setVehicleUserDatas(vehicleUserData);
-          
-          const driverOptionsArray = vehicleUserData.map(
-            (user: {
-              emp_id: string;
-              full_name: string;
-              dept_sap: string;
-            }) => ({
-              value: user.emp_id,
-              label: `${user.full_name} (${user.emp_id})`,
-            })
+    if (profile) {
+      const fetchDefaultData = async () => {
+        try {
+          const response = await fetchVehicleUsers(
+            formData?.vehicleUserEmpId
+              ? formData?.vehicleUserEmpId
+              : profile?.emp_id
           );
-          setDriverOptions(driverOptionsArray);
 
-          const selectedDriverOption = {
-            value: vehicleUserData[0]?.emp_id,
-            label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
-          };
+          if (response) {
+            const vehicleUserData = response.data;
+            setVehicleUserDatas(vehicleUserData);
 
-          if (vehicleUserData) {
-            setValue("telInternal", vehicleUserData[0].tel_internal);
-            setValue("telMobile", vehicleUserData[0].tel_mobile);
-            setValue(
-              "deptSapShort",
-              `${vehicleUserData[0].posi_text}/${vehicleUserData[0].dept_sap_short}`
+            const driverOptionsArray = vehicleUserData.map(
+              (user: {
+                emp_id: string;
+                full_name: string;
+                dept_sap: string;
+              }) => ({
+                value: user.emp_id,
+                label: `${user.full_name} (${user.emp_id})`,
+              })
             );
-            setValue("deptSap", vehicleUserData[0].dept_sap);
-            setValue("userImageUrl", vehicleUserData[0].image_url);
-            setValue("vehicleUserEmpPosition", vehicleUserData[0].posi_text || "");
+            setDriverOptions(driverOptionsArray);
+
+            const selectedDriverOption = {
+              value: vehicleUserData[0]?.emp_id,
+              label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
+            };
+
+            if (vehicleUserData) {
+              setValue("telInternal", vehicleUserData[0].tel_internal);
+              setValue("telMobile", vehicleUserData[0].tel_mobile);
+              setValue(
+                "deptSapShort",
+                `${vehicleUserData[0].posi_text}/${vehicleUserData[0].dept_sap_short}`
+              );
+              setValue("deptSap", vehicleUserData[0].dept_sap);
+              setValue("userImageUrl", vehicleUserData[0].image_url);
+              setValue(
+                "vehicleUserEmpPosition",
+                vehicleUserData[0].posi_text || ""
+              );
+            }
+
+            setSelectedVehicleUserOption(selectedDriverOption);
           }
-
-          setSelectedVehicleUserOption(selectedDriverOption);
+        } catch (error) {
+          console.error("Error resetting options:", error);
         }
-      } catch (error) {
-        console.error("Error resetting options:", error);
-      }
-    };
+      };
 
-    const fetchApprover = async () => {
-      const param = {
-        "emp_id": profile?.emp_id
-      }
-      try {
-        const response = await fetchUserApproverUsers(param);
-        if (response.status === 200) {
-          const data = response.data[0];
-          console.log("Approver Data:", data);
-          setApproverData(data);
+      const fetchApprover = async () => {
+        const param = {
+          emp_id: profile?.emp_id,
+        };
+        try {
+          const response = await fetchUserApproverUsers(param);
+          if (response.status === 200) {
+            const data = response.data[0];
+            console.log("Approver Data:", data);
+            setApproverData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching requests:", error);
         }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-    
-    fetchDefaultData();
-    fetchApprover();
-  }
-}, [profile, formData]);
+      };
+
+      fetchDefaultData();
+      fetchApprover();
+    }
+  }, [profile, formData]);
 
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
-  setValue("telInternal", "");
-      setValue("telMobile", "");
-      setValue("deptSapShort", "");
-      setValue("vehicleUserEmpPosition", "");
+    setValue("telInternal", "");
+    setValue("telMobile", "");
+    setValue("deptSapShort", "");
+    setValue("vehicleUserEmpPosition", "");
 
     if (selectedOption.value === "") {
       setSelectedVehicleUserOption(null);
@@ -262,7 +262,6 @@ useEffect(() => {
         selectedOption as { value: string; label: string }
       );
     }
-
 
     // If cleared (value is empty), reset related fields
     if (!selectedOption.value) {
@@ -422,40 +421,42 @@ useEffect(() => {
     }
   }, [costTypeDatas, formData.refCostTypeCode]);
 
-const handleDriverSearch = async (search: string) => {
-  const trimmed = search.trim();
+  const handleDriverSearch = async (search: string) => {
+    const trimmed = search.trim();
 
-  if (trimmed.length < 3) {
-    setDriverOptions([]);
-    setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
-    setLoadingDrivers(false);
-    return;
-  }
+    if (trimmed.length < 3) {
+      setDriverOptions([]);
+      setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
+      setLoadingDrivers(false);
+      return;
+    }
 
-  setLoadingDrivers(true);
-  try {
-    const response = await fetchVehicleUsers(trimmed);
-    if (response && Array.isArray(response.data)) {
-      const vehicleUserData = response.data;
-      setVehicleUserDatas(vehicleUserData); // <-- Update here!
-      setDriverOptions(
-        vehicleUserData.map((user: { emp_id: string; full_name: string }) => ({
-          value: user.emp_id,
-          label: `${user.full_name} (${user.emp_id})`,
-        }))
-      );
-    } else {
+    setLoadingDrivers(true);
+    try {
+      const response = await fetchVehicleUsers(trimmed);
+      if (response && Array.isArray(response.data)) {
+        const vehicleUserData = response.data;
+        setVehicleUserDatas(vehicleUserData); // <-- Update here!
+        setDriverOptions(
+          vehicleUserData.map(
+            (user: { emp_id: string; full_name: string }) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          )
+        );
+      } else {
+        setDriverOptions([]);
+        setVehicleUserDatas([]);
+      }
+    } catch (error) {
       setDriverOptions([]);
       setVehicleUserDatas([]);
+      console.error("Error in handleDriverSearch:", error);
+    } finally {
+      setLoadingDrivers(false);
     }
-  } catch (error) {
-    setDriverOptions([]);
-    setVehicleUserDatas([]);
-    console.error("Error in handleDriverSearch:", error);
-  } finally {
-    setLoadingDrivers(false);
-  }
-};
+  };
 
   const handleCostCenterSearch = async (search: string) => {
     if (search.trim().length < 3) {
@@ -538,39 +539,36 @@ const handleDriverSearch = async (search: string) => {
   };
 
   useEffect(() => {
-  if (!formData || Object.keys(formData).length === 0) {
-    reset({
-      telInternal: "",
-      telMobile: "",
-      workPlace: "",
-      purpose: "",
-      remark: "",
-      referenceNumber: "",
-      startDate: "",
-      endDate: "",
-      refCostTypeCode: "",
-      timeStart: "08:30",
-      timeEnd: "16:30",
-      attachmentFile: "",
-      deptSapShort: "",
-      deptSap: "",
-      userImageUrl: "",
-      costCenter: "",
-      pmOrderNo: "",
-      networkNo: "",
-      activityNo: "",
-    });
-    setFileName("อัพโหลดเอกสารแนบ");
-    setSelectedVehicleUserOption(null);
-    setSelectedCostTypeOption({ value: "", label: "" });
-    setSelectedCostCenterOption(undefined);
-    setPassengerCount(1);
-    setSelectedTripType("0");
-    
-  }
-}, [formData, reset]);
-
-
+    if (!formData || Object.keys(formData).length === 0) {
+      reset({
+        telInternal: "",
+        telMobile: "",
+        workPlace: "",
+        purpose: "",
+        remark: "",
+        referenceNumber: "",
+        startDate: "",
+        endDate: "",
+        refCostTypeCode: "",
+        timeStart: "08:30",
+        timeEnd: "16:30",
+        attachmentFile: "",
+        deptSapShort: "",
+        deptSap: "",
+        userImageUrl: "",
+        costCenter: "",
+        pmOrderNo: "",
+        networkNo: "",
+        activityNo: "",
+      });
+      setFileName("อัพโหลดเอกสารแนบ");
+      setSelectedVehicleUserOption(null);
+      setSelectedCostTypeOption({ value: "", label: "" });
+      setSelectedCostCenterOption(undefined);
+      setPassengerCount(1);
+      setSelectedTripType("0");
+    }
+  }, [formData, reset]);
 
   return (
     <>
@@ -665,6 +663,11 @@ const handleDriverSearch = async (search: string) => {
                         maxLength={10}
                         {...register("telInternal")}
                         placeholder="ระบุเบอร์ภายใน"
+                        onKeyDown ={(e) => {
+                          if (!/[0-9]/.test(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                     {errors.telInternal && (
@@ -690,10 +693,17 @@ const handleDriverSearch = async (search: string) => {
                       </div>
                       <input
                         type="text"
-                        maxLength={10}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         className="form-control"
+                        maxLength={10}
                         {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
+                        onKeyDown ={(e) => {
+                          if (!/[0-9]/.test(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                     {errors.telMobile && (
