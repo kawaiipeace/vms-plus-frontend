@@ -158,10 +158,7 @@ const RequestDrivingStepTwoModal = forwardRef<
           annual_yyyy: Number(valueFormStep1?.year),
           approved_request_emp_id: finalApprovers?.emp_id,
           confirmed_request_emp_id: approvers?.emp_id,
-          driver_license_expire_date: convertToISO(
-            String(valueFormStep1?.licenseExpiryDate),
-            "00:00"
-          ),
+          driver_license_expire_date: valueFormStep1?.licenseExpiryDate,
           driver_license_img: valueFormStep1?.licenseImages[0].file_url,
           driver_license_no: valueFormStep1?.licenseNumber,
           ref_driver_license_type_code:
@@ -173,10 +170,7 @@ const RequestDrivingStepTwoModal = forwardRef<
           valueFormStep1?.driverLicenseType?.value === "3+"
         ) {
           if (valueFormStep1?.trainingEndDate) {
-            basePayload.driver_certificate_expire_date = convertToISO(
-              String(valueFormStep1.trainingEndDate),
-              "00:00"
-            );
+            basePayload.driver_certificate_expire_date = valueFormStep1.trainingEndDate
           }
 
           if (valueFormStep1?.certificateImages?.length) {
