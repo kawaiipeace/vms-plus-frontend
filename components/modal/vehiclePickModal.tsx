@@ -115,7 +115,6 @@ const VehiclePickModel = forwardRef<
     }
     // If formData exists and has a name, use it (overrides requestData)
     if (formData?.requestedVehicleTypeName) {
-      console.log('requestedVehicleTypeName',formData.requestedVehicleTypeName);
       setSelectedCarTypeId(formData.requestedVehicleTypeName);
       setSelectedCarTypeName(formData.requestedVehicleTypeName);
       hasReset.current = true;

@@ -260,7 +260,7 @@ const RequestDrivingStepOneModal = forwardRef<
 
   useEffect(() => {
     setDefaultValues(buildDefaultValues());
-    console.log("defaultyear", defaultValues);
+
     reset(buildDefaultValues());
   }, [
     JSON.stringify(costTypeOptions),
@@ -270,8 +270,7 @@ const RequestDrivingStepOneModal = forwardRef<
   ]);
 
   useEffect(() => {
-    console.log("reqData====>", requestData);
-    console.log("requestLicdata====>", licRequestDetail);
+
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -292,7 +291,7 @@ const RequestDrivingStepOneModal = forwardRef<
             ),
           ];
           setCostTypeOptions(costTypeArr);
-          console.log("costtypeoption", costTypeArr);
+
         }
         const responseVehicle = await fetchDriverCertificateType();
         if (responseVehicle.status === 200) {

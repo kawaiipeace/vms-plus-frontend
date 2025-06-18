@@ -104,14 +104,30 @@ const ReturnCarTab = ({
 
   return (
     <>
-      {(status == "returnFail" &&
+      {/* {(status == "returnFail" &&
         requestData?.ref_request_status_code === "71") ||
         (requestData?.ref_request_status_name === "ตีกลับยานพาหนะ" && (
           <AlertCustom
             title="ถูกตีกลับโดยผู้ดูแลยานพาหนะ"
             desc="เหตุผล: ยานพาหนะไม่สะอาด"
           />
-        ))}
+        ))} */}
+
+      {requestData?.ref_request_status_name === "ตีกลับยานพาหนะ" && (
+        <AlertCustom
+          title="ถูกตีกลับโดยผู้ดูแลยานพาหนะ"
+          desc={requestData?.sended_back_request_reason}
+        />
+      )}
+
+         {requestData?.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ" && (
+        <AlertCustom
+          title="ถูกตีกลับโดยผู้ดูแลยานพาหนะ"
+          desc={requestData?.rejected_request_reason}
+        />
+      )}
+
+
       {showToast && (
         <ToastCustom
           title="แก้ไขรูปภาพสำเร็จ"

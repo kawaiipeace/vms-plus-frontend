@@ -45,6 +45,15 @@ export default function AdminApproveFlow() {
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
   const [loading, setLoading] = useState(true);
+    const [datePickerKey, setDatePickerKey] = useState(0); 
+  // Add this state to track the selected department
+  const [selectedDepartment, setSelectedDepartment] = useState<{
+    value: string;
+    label: string;
+  }>({
+    value: "",
+    label: "",
+  });
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -73,11 +82,11 @@ export default function AdminApproveFlow() {
       "90": { iconName: "delete", status: "default" },
     };
 
-    useEffect(() => {
-  if (summary && summary.length < 0) {
-    setFilterNames([]);
-  }
-}, [summary]);
+  useEffect(() => {
+    if (summary && summary.length < 0) {
+      setFilterNames([]);
+    }
+  }, [summary]);
 
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
@@ -87,9 +96,10 @@ export default function AdminApproveFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
+  // Update the handleFilterSubmit function
   const handleFilterSubmit = ({
     selectedStatuses,
     selectedStartDate,
@@ -101,7 +111,10 @@ export default function AdminApproveFlow() {
     selectedEndDate: string;
     department?: { value: string; label: string };
   }) => {
-    setDepartmentLabel(department?.label || "");
+    const dept = department || { value: "", label: "" };
+    setDepartmentLabel(dept.label);
+    setSelectedDepartment(dept);
+
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -109,35 +122,97 @@ export default function AdminApproveFlow() {
     );
 
     const date =
-      convertToBuddhistDateTime(selectedStartDate).date +
-      " - " +
-      convertToBuddhistDateTime(selectedEndDate).date;
+      selectedStartDate && selectedEndDate
+        ? convertToBuddhistDateTime(selectedStartDate).date +
+          " - " +
+          convertToBuddhistDateTime(selectedEndDate).date
+        : "";
 
     setFilterNames(mappedNames);
-
-
-   let num = selectedStatuses.length;
-  if (selectedStartDate && selectedEndDate) {
     setFilterDate(date);
-    num += 1; // add 1 for date filter
-  } else {
-    setFilterDate("");
-  }
+
+    let num = selectedStatuses.length;
+    if (selectedStartDate && selectedEndDate) num += 1;
+    if (dept.value) num += 1;
     setFilterNum(num);
+
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code:
         selectedStatuses && selectedStatuses.length > 0
           ? selectedStatuses.join(",")
-          : "30,31,40", // always fallback to default
-      vehicle_owner_dept_sap: department?.value || "",
+          : "30,31,40",
+      vehicle_owner_dept_sap: dept.value,
       startdate:
         selectedStartDate &&
         dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
       enddate:
         selectedEndDate &&
         dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+      page: 1, // Reset to first page when filters change
     }));
+  };
+
+const removeFilter = (filterType: string, filterValue: string) => {
+  if (filterType === "status") {
+    // Find the actual status code for this name
+    const statusCode = summary.find(
+      item => item.ref_request_status_name === filterValue
+    )?.ref_request_status_code;
+
+    if (!statusCode) return; // Skip if no matching code found
+
+    setFilterNames((prevFilterNames) =>
+      prevFilterNames.filter((name) => name !== filterValue)
+    );
+
+    setParams((prevParams) => {
+      const updatedStatuses = prevParams.ref_request_status_code
+        .split(",")
+        .filter(code => code !== statusCode);
+
+      setFilterNum(updatedStatuses.length + (filterDate ? 1 : 0));
+
+      return {
+        ...prevParams,
+        ref_request_status_code: updatedStatuses.join(","),
+        page: 1,
+      };
+    });
+  } else if (filterType === "date") {
+    setFilterDate("");
+    setParams((prevParams) => ({
+      ...prevParams,
+      startdate: "",
+      enddate: "",
+      page: 1,
+    }));
+    setFilterNum(filterNames.length);
+    setDatePickerKey((prev) => prev + 1);
+  }
+};
+
+  // Update the handleClearAllFilters function
+  const handleClearAllFilters = () => {
+    setParams({
+      search: "",
+      vehicle_owner_dept_sap: "",
+      ref_request_status_code: "30,31,40",
+      startdate: "",
+      enddate: "",
+      car_type: "",
+      category_code: "",
+      order_by: "request_no",
+      order_dir: "desc",
+      page: 1,
+      limit: 10,
+    });
+
+    setFilterNum(0);
+    setFilterNames([]);
+    setFilterDate("");
+    setSelectedDepartment({ value: "", label: "" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
@@ -156,77 +231,14 @@ export default function AdminApproveFlow() {
   //   }
   // };
 
-  const removeFilter = (filterType: string, filterValue: string) => {
-    if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
-
-      setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
-
-        setFilterNum(updatedStatuses.length);
-
-        return {
-          ...prevParams,
-          ref_request_status_code:
-            updatedStatuses.length > 0 ? updatedStatuses.join(",") : "30,31,40", // fallback to default if all removed
-        };
-      });
-    } else if (filterType === "department") {
-      setDepartmentLabel("");
-      setParams((prevParams) => ({
-        ...prevParams,
-        vehicle_owner_dept_sap: "",
-        ref_request_status_code: "30,31,40", // always fallback to default
-      }));
-    } else if (filterType === "date") {
-      setFilterDate("");
-      setParams((prevParams) => ({
-        ...prevParams,
-        startdate: "",
-        enddate: "",
-        ref_request_status_code: "30,31,40", // always fallback to default
-      }));
-    }
-  };
-
-  const handleClearAllFilters = () => {
-    setParams({
-      search: "",
-      vehicle_owner_dept_sap: "",
-      ref_request_status_code: "30,31,40",
-      startdate: "",
-      enddate: "",
-      car_type: "",
-      category_code: "",
-      order_by: "",
-      order_dir: "",
-      page: 1,
-      limit: 10,
-    });
-
-    setFilterNum(0);
-    setFilterNames([]);
-    setFilterDate("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   useEffect(() => {
     const fetchRequestsData = async () => {
       try {
         const response = await fetchRequests(params);
-        console.log("param", params);
+
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log("requestDataAdmin", requestList);
+
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -250,7 +262,7 @@ export default function AdminApproveFlow() {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]); // This will log whenever dataRequest changes
 
   if (loading) {
@@ -468,36 +480,25 @@ export default function AdminApproveFlow() {
         />
       )}
 
-      {/* {dataRequest !== null && filterDate.length <= 0 && (
-        <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-          button="ล้างตัวกรอง"
-          displayBtn={true}
-          btnType="secondary"
-          useModal={handleClearAllFilters}
-        />
-      )} */}
-
-      {/* {dataRequest === null && (
-        <ZeroRecord
-          imgSrc="/assets/img/graphic/empty.svg"
-          title="ไม่มีคำขอใช้ยานพาหนะ"
-          desc={
-            <>
-              เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล<br></br>
-              รายการคำขอจะแสดงที่นี่
-            </>
-          }
-          displayBtn={false}
-          button={""}
-        />
-      )} */}
+    
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
         department={true}
+         selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate
+            ? dayjs(params.startdate).add(543, "year").format("YYYY-MM-DD")
+            : "",
+          end: params.enddate
+            ? dayjs(params.enddate).add(543, "year").format("YYYY-MM-DD")
+            : "",
+        }}
+        
+        selectedDepartment={selectedDepartment}
+        setSelectedDepartment={setSelectedDepartment}
         onSubmitFilter={handleFilterSubmit}
       />
     </>

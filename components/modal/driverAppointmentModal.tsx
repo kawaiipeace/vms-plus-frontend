@@ -211,6 +211,7 @@ const DriverAppointmentModal = forwardRef<
                           </div>
                           <DatePicker 
                             placeholder="ระบุวันที่นัดหมาย" 
+                                      minDate={new Date().toISOString().split("T")[0]}
                             defaultValue={convertToBuddhistDateTime(formData?.pickupDatetime || "").date} 
                             onChange={handleDateChange} 
                           />

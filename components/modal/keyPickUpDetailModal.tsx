@@ -117,9 +117,7 @@ const KeyPickupDetailModal = forwardRef<
   }, [keyStartTime]);
 
   const submit = async () => {
-    console.log("selectedDate: ", selectedDate);
-    console.log("selectedTime: ", selectedTime);
-    console.log("selectedAttach: ", selectedAttach);
+
     if (selectedDate && selectedTime && selectedAttach) {
       try {
         const dateTime = convertToISO(selectedDate, selectedTime);
@@ -137,7 +135,6 @@ const KeyPickupDetailModal = forwardRef<
           }
         } else {
           const response = await updateReceivedKeyConfirmed(payload);
-          console.log("response", response);
 
           if (response.status === 200) {
             router.push(

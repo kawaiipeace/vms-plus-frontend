@@ -42,7 +42,7 @@ const SearchDriverModal = forwardRef(
         
             try {
               const response = await adminUpdateDriver(payload);
-              console.log('res',response);
+      
             } catch (error) {
               console.error("Network error:", error);
 
@@ -68,7 +68,7 @@ const SearchDriverModal = forwardRef(
       const fetchDriverData = async () => {
         try {
           const response = await fetchOtherDeptDrivers(params);
-          console.log("driverout",response);
+
           if (response.status === 200) {
             const vehicleUserData = response.data.drivers;
             const driverOptionsArray = [
@@ -115,7 +115,7 @@ const SearchDriverModal = forwardRef(
 
     const fetchDriverDetailFunc = async (mas_id: string) => {
       try {
-        console.log("masfunc", mas_id);
+  
         const response = await fetchDriverDetail(mas_id);
         if (response.status === 200) {
           const res = response.data;

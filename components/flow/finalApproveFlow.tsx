@@ -55,26 +55,28 @@ export default function FinalApproveFlow() {
     }));
   };
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
-    "40": { iconName: "schedule", status: "info" },
-    "41": { iconName: "check", status: "success" },
-    "50": { iconName: "check", status: "success" },
-    "51": { iconName: "vpn_key", status: "info" },
-    "60": { iconName: "directions_car", status: "info" },
-    "70": { iconName: "build", status: "warning" },
-    "71": { iconName: "build", status: "warning" },
-    "80": { iconName: "done_all", status: "success" },
-    "90": { iconName: "delete", status: "default" },
-  };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "40": { iconName: "schedule", status: "info" },
+      "41": { iconName: "check", status: "success" },
+      "50": { iconName: "check", status: "success" },
+      "51": { iconName: "vpn_key", status: "info" },
+      "60": { iconName: "directions_car", status: "info" },
+      "70": { iconName: "build", status: "warning" },
+      "71": { iconName: "build", status: "warning" },
+      "80": { iconName: "done_all", status: "success" },
+      "90": { iconName: "delete", status: "default" },
+    };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit; // Convert to number if it's a string
     setParams((prevParams) => ({
       ...prevParams,
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   const handleFilterSubmit = ({
@@ -86,35 +88,36 @@ export default function FinalApproveFlow() {
     selectedStatuses: string[];
     selectedStartDate: string;
     selectedEndDate: string;
-   department?: { value: string; label: string };
+    department?: { value: string; label: string };
   }) => {
     const mappedNames = selectedStatuses.map(
-      (code) => summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name || code
+      (code) =>
+        summary.find((item) => item.ref_request_status_code === code)
+          ?.ref_request_status_name || code
     );
 
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
 
     setFilterNum(selectedStatuses.length);
     setParams((prevParams) => ({
-          ...prevParams,
-          ref_request_status_code:
-            selectedStatuses && selectedStatuses.length > 0
-              ? selectedStatuses.join(",")
-              : "30,31,40", // always fallback to default
-          vehicle_owner_dept_sap: department?.value || "",
-          startdate:
-            selectedStartDate &&
-            dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
-          enddate:
-            selectedEndDate &&
-            dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
-        }));
+      ...prevParams,
+      ref_request_status_code:
+        selectedStatuses && selectedStatuses.length > 0
+          ? selectedStatuses.join(",")
+          : "30,31,40", // always fallback to default
+      vehicle_owner_dept_sap: department?.value || "",
+      startdate:
+        selectedStartDate &&
+        dayjs(selectedStartDate).subtract(543, "year").format("YYYY-MM-DD"),
+      enddate:
+        selectedEndDate &&
+        dayjs(selectedEndDate).subtract(543, "year").format("YYYY-MM-DD"),
+    }));
   };
 
   // const handleFilterSortSubmit = (filters: { selectedSortType: string }) => {
@@ -135,13 +138,19 @@ export default function FinalApproveFlow() {
 
   const removeFilter = (filterType: string, filterValue: string) => {
     if (filterType === "status") {
-      setFilterNames((prevFilterNames) => prevFilterNames.filter((name) => name !== filterValue));
+      setFilterNames((prevFilterNames) =>
+        prevFilterNames.filter((name) => name !== filterValue)
+      );
 
       setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code.split(",").filter((code) => {
-          const name = summary.find((item) => item.ref_request_status_code === code)?.ref_request_status_name;
-          return name !== filterValue;
-        });
+        const updatedStatuses = prevParams.ref_request_status_code
+          .split(",")
+          .filter((code) => {
+            const name = summary.find(
+              (item) => item.ref_request_status_code === code
+            )?.ref_request_status_name;
+            return name !== filterValue;
+          });
 
         setFilterNum(updatedStatuses.length);
 
@@ -185,7 +194,6 @@ export default function FinalApproveFlow() {
     const fetchRequestsData = async () => {
       try {
         const response = await fetchRequests(params);
-        console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -208,7 +216,7 @@ export default function FinalApproveFlow() {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]); // This will log whenever dataRequest changes
 
   return (
@@ -221,10 +229,20 @@ export default function FinalApproveFlow() {
             if (!config) return null;
 
             return (
-              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
                   title={item.ref_request_status_name}
                   number={item.count}
                 />
@@ -242,10 +260,20 @@ export default function FinalApproveFlow() {
             if (!config) return null;
 
             return (
-              <div key={item.ref_request_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
-                  status={config.status as "info" | "warning" | "success" | "default" | "error"}
+                  status={
+                    config.status as
+                      | "info"
+                      | "warning"
+                      | "success"
+                      | "default"
+                      | "error"
+                  }
                   title={item.ref_request_status_name}
                   number={item.count}
                   onClick={() => {
@@ -257,7 +285,10 @@ export default function FinalApproveFlow() {
 
                     const statusName = item.ref_request_status_name;
                     if (!filterNames.includes(statusName)) {
-                      setFilterNames((prevFilterNames) => [...prevFilterNames, statusName]);
+                      setFilterNames((prevFilterNames) => [
+                        ...prevFilterNames,
+                        statusName,
+                      ]);
                     }
 
                     setFilterNum((prevFilterNum) => prevFilterNum + 1);
@@ -304,18 +335,25 @@ export default function FinalApproveFlow() {
             <div className="flex items-center gap-1">
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
-              <span className="badge badge-brand badge-outline rounded-[50%]">{filterNum}</span>
+              <span className="badge badge-brand badge-outline rounded-[50%]">
+                {filterNum}
+              </span>
             </div>
           </button>
-
         </div>
       </div>
 
       <div className="mt-3">
         {filterNames.map((name, index) => (
-          <span key={index} className="badge badge-brand badge-outline rounded-sm mr-2">
+          <span
+            key={index}
+            className="badge badge-brand badge-outline rounded-sm mr-2"
+          >
             {name}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("status", name)}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("status", name)}
+            >
               close_small
             </i>
           </span>
@@ -323,7 +361,10 @@ export default function FinalApproveFlow() {
         {filterDate && (
           <span className="badge badge-brand badge-outline rounded-sm mr-2">
             {filterDate}
-            <i className="material-symbols-outlined cursor-pointer" onClick={() => removeFilter("date", filterDate)}>
+            <i
+              className="material-symbols-outlined cursor-pointer"
+              onClick={() => removeFilter("date", filterDate)}
+            >
               close_small
             </i>
           </span>
@@ -342,7 +383,7 @@ export default function FinalApproveFlow() {
             onPageSizeChange={handlePageSizeChange}
           />
         </>
-      ) }
+      )}
       {pagination.total > 0 ? (
         dataRequest.length <= 0 && (
           <ZeroRecord
@@ -356,21 +397,33 @@ export default function FinalApproveFlow() {
           />
         )
       ) : (
-       <ZeroRecord
-              imgSrc="/assets/img/graphic/empty.svg"
-              title="ไม่มีคำขอใช้ยานพาหนะ"
-              desc={
-                <>
-                  เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติ<br></br>
-                  รายการคำขอจะแสดงที่นี่
-                </>
-              }
-              displayBtn={false}
-              button={""}
-            />
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ยานพาหนะ"
+          desc={
+            <>
+              เมื่อคำขอใช้ยานพาหนะได้รับการอนุมัติ<br></br>
+              รายการคำขอจะแสดงที่นี่
+            </>
+          }
+          displayBtn={false}
+          button={""}
+        />
       )}
 
-      <FilterModal ref={filterModalRef} statusData={summary} department={true} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        department={true}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </>
   );
 }

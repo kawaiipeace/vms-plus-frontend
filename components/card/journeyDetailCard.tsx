@@ -25,7 +25,7 @@ export default function JourneyDetailCard({
   tripType,
   numberOfPassenger,
 }: JourneyDetailCardProps) {
-  console.log("JourneyDetailCard props:", tripType);
+
   return (
     <div className="form-card">
       <div className="form-card-body">

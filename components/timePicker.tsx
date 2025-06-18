@@ -15,12 +15,10 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, 
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
 
   useEffect(() => {
-    console.log("defaultvalue", defaultValue);
-    console.log("mintime==>", minTime);
+
 
     if (!timeInputRef.current) return;
 
-    // 🛑 สำคัญมาก: ป้องกันสร้างซ้ำ
     if (flatpickrRef.current) {
       flatpickrRef.current.destroy();
     }

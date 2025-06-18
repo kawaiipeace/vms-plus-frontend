@@ -120,10 +120,10 @@ export default function DriverLicApproveFlow() {
 
         if (response.status === 200) {
           setDataRequest(response.data.requests);
-          console.log("Fetched requests:", response.data.requests);
+
 
           setSummary(response.data.summary);
-               console.log("Fetched summary:", response.data.summary);
+   
           setPagination(response.data.pagination);
         }
       } catch (error) {

@@ -22,90 +22,89 @@ export default function ProcessFour() {
     closeModal: () => void;
   } | null>(null);
 
-  const [formData, setFormData] = useState<FormDataType>();
+  // const [formData, setFormData] = useState<FormDataType>();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedData = localStorage.getItem("formData");
-      if (storedData) {
-        setFormData(JSON.parse(storedData));
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedData = localStorage.getItem("formData");
+  //     if (storedData) {
+  //       setFormData(JSON.parse(storedData));
+  //     }
+  //   }
+  // }, []);
+
+const nextStep = async () => {
+  const storedData = localStorage.getItem("formData");
+  const latestFormData: FormDataType | undefined = storedData ? JSON.parse(storedData) : undefined;
+
+  if (latestFormData) {
+    const mappedData = {
+      confirmed_request_emp_id: latestFormData.approvedRequestEmpId,
+      doc_file: latestFormData.attachmentFile || "",
+      car_user_internal_contact_number: latestFormData.telInternal || "",
+      car_user_mobile_contact_number: latestFormData.telMobile || "",
+      cost_no: latestFormData.referenceNumber || "",
+      driver_emp_dept_sap: latestFormData.driverDeptSap || "",
+      driver_emp_id: latestFormData.driverEmpID || "",
+      driver_emp_name: latestFormData.driverEmpName || "",
+      driver_internal_contact_number: latestFormData.driverInternalContact || "",
+      driver_mobile_contact_number: latestFormData.driverMobileContact || "",
+      end_datetime: convertToISO(
+        String(latestFormData.endDate),
+        String(latestFormData.timeEnd)
+      ),
+      is_admin_choose_vehicle: latestFormData.isAdminChooseVehicle || "0",
+      is_pea_employee_driver: latestFormData.isPeaEmployeeDriver || "0",
+      mas_vehicle_uid: latestFormData.masVehicleUid,
+      number_of_passengers: latestFormData.numberOfPassenger || 0,
+      work_description: latestFormData.purpose || "",
+      pickup_datetime: latestFormData.pickupDatetime || null,
+      pickup_place: latestFormData.pickupPlace || "",
+      ref_cost_type_code: parseInt(latestFormData.refCostTypeCode || ""),
+      doc_no: latestFormData.referenceNumber || "",
+      remark: latestFormData.remark || "",
+      requested_vehicle_type: latestFormData.masCarpoolUid === "" ? "" : latestFormData.requestedVehicleTypeName,
+      reserved_time_type: "1",
+      start_datetime: convertToISO(
+        String(latestFormData.startDate),
+        String(latestFormData.timeStart)
+      ),
+      trip_type: String(latestFormData.tripType) === "0" ? 0 : 1,
+      vehicle_user_dept_sap: latestFormData.vehicleUserDeptSap || "",
+      vehicle_user_emp_id: latestFormData.vehicleUserEmpId || "",
+      vehicle_user_emp_name: latestFormData.vehicleUserEmpName || "",
+      work_place: latestFormData.workPlace || "",
+      is_system_choose_vehicle: latestFormData.isSystemChooseVehicle || "0",
+      pm_order_no: latestFormData.pmOrderNo || "",
+      wbs_no: latestFormData.wbsNumber || "",
+      activity_no: latestFormData.activityNo || "",
+      cost_center: latestFormData.costCenter || "",
+      mas_carpool_driver_uid: latestFormData.masCarpoolDriverUid || null,
+      mas_carpool_uid: latestFormData.masCarpoolUid || null,
+    };
+
+    try {
+      const response = await createRequest(mappedData);
+      if (response.data) {
+        localStorage.removeItem("formData");
+        localStorage.removeItem("processOne");
+        localStorage.removeItem("processTwo");
+        localStorage.removeItem("processThree");
+        updateFormData({});
+        sessionStorage.clear();
+        router.push(
+          "request-list?create-req=success&request-id=" +
+            response.data.trn_request_uid
+        );
       }
+    } catch (error) {
+      console.error("API Error:", error);
     }
-  }, []);
+  } else {
+    console.warn("No formData found!");
+  }
+};
 
-
-  const nextStep = async () => {
-    if (formData) {
-      const mappedData = {
-        confirmed_request_emp_id: formData.approvedRequestEmpId,
-        doc_file: formData.attachmentFile || "",
-        car_user_internal_contact_number: formData.telInternal || "",
-        car_user_mobile_contact_number: formData.telMobile || "",
-        cost_no: formData.referenceNumber || "",
-        driver_emp_dept_sap: formData.driverDeptSap || "",
-        driver_emp_id: formData.driverEmpID || "",
-        driver_emp_name: formData.driverEmpName || "",
-        driver_internal_contact_number: formData.driverInternalContact || "",
-        driver_mobile_contact_number: formData.driverMobileContact || "",
-        end_datetime: convertToISO(
-          String(formData.endDate),
-          String(formData.timeEnd)
-        ),
-        is_admin_choose_vehicle: formData.isAdminChooseVehicle || "0",
-        is_pea_employee_driver: formData.isPeaEmployeeDriver || "0",
-        mas_vehicle_uid: formData.masVehicleUid,
-        number_of_passengers: formData.numberOfPassenger || 0,
-        work_description: formData.purpose || "",
-        pickup_datetime: formData.pickupDatetime || null,
-        pickup_place: formData.pickupPlace || "",
-        ref_cost_type_code: parseInt(formData.refCostTypeCode || ""),
-        doc_no: formData.referenceNumber || "",
-        remark: formData.remark || "",
-        requested_vehicle_type: formData.masCarpoolUid === "" ? "" : formData.requestedVehicleTypeName,
-        reserved_time_type: "1",
-        start_datetime: convertToISO(
-          String(formData.startDate),
-          String(formData.timeStart)
-        ),
-        trip_type: String(formData.tripType) === "0" ? 0 : 1,
-        vehicle_user_dept_sap: formData.vehicleUserDeptSap || "",
-        vehicle_user_emp_id: formData.vehicleUserEmpId || "",
-        vehicle_user_emp_name: formData.vehicleUserEmpName || "",
-        work_place: formData.workPlace || "",
-        is_system_choose_vehicle: formData.isSystemChooseVehicle || "0",
-        pm_order_no: formData.pmOrderNo || "",
-        wbs_no: formData.wbsNumber || "",
-        activity_no: formData.activityNo || "",
-        cost_center: formData.costCenter || "",
-        mas_carpool_driver_uid: formData.masCarpoolDriverUid || null,
-        mas_carpool_uid: formData.masCarpoolUid || null,
-      };
-
-      console.log("formdata", mappedData);
-
-      try {
-        const response = await createRequest(mappedData);
-        if (response.data) {
-          localStorage.removeItem("formData");
-          localStorage.removeItem("processOne");
-          localStorage.removeItem("processTwo");
-          localStorage.removeItem("processThree");
-          updateFormData({});
-          console.log("formData after reset:", formData);
-          sessionStorage.clear();
-          router.push(
-            "request-list?create-req=success&request-id=" +
-              response.data.trn_request_uid
-          );
-       
-        }
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    } else {
-      console.warn("No formData found!");
-    }
-  };
 
 
 

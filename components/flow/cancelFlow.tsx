@@ -1,4 +1,4 @@
-import { RequestListType } from "@/app/types/request-list-type";
+import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import RequestListTable from "@/components/table/request-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
@@ -17,6 +17,7 @@ interface PaginationType {
 
 export default function CancelFlow() {
   const [filterDate, setFilterDate] = useState<string>("");
+  const [summary, setSummary] = useState<summaryType[]>([]);
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept_sap: "",
@@ -120,7 +121,6 @@ export default function CancelFlow() {
         const response = await requests(params);
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log('request',requestList);
           const { total, totalPages } = response.data.pagination;
           setDataRequest(requestList);
           setPagination({
@@ -236,7 +236,18 @@ export default function CancelFlow() {
         />
       )}
 
-      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </div>
   );
 }

@@ -69,7 +69,6 @@ const ReviewCarDriveDetailModal = forwardRef<
   const fetchRequestDetailfunc = useCallback(async () => {
     try {
       const response = await fetchRequestKeyDetail(id || "");
-      console.log("requestdata", response);
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);

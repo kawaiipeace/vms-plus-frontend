@@ -71,7 +71,7 @@ export default function AdminKeyHandOverFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   const handleFilterSubmit = ({
@@ -85,7 +85,7 @@ export default function AdminKeyHandOverFlow() {
     selectedEndDate: string;
     department?: { value: string; label: string };
   }) => {
-    console.log("department", department);
+
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -95,11 +95,11 @@ export default function AdminKeyHandOverFlow() {
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
+
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
-    console.log("adminsummary", summary);
+
     setParams((prevParams) => ({
       ...prevParams,
       ref_request_status_code:
@@ -177,8 +177,7 @@ export default function AdminKeyHandOverFlow() {
 
         if (response.status === 200) {
           const requestList = response.data.requests;
-          console.log("res-----", response.data);
-          console.log("list", requestList);
+
           const { total, totalPages } = response.data.pagination;
           const summary = response.data.summary;
 
@@ -209,7 +208,7 @@ export default function AdminKeyHandOverFlow() {
   };
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]);
 
   if (loading) {
@@ -418,7 +417,13 @@ export default function AdminKeyHandOverFlow() {
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
-        department={true}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}department={true}
         onSubmitFilter={handleFilterSubmit}
       />
     </>

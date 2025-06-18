@@ -77,8 +77,6 @@ const ReturnInsCarModal = forwardRef<
           vehicle_images: imageList,
         };
 
-        console.log("payload", payload);
-
         let response;
         if (useBy === "admin") {
           response = await adminUpdateVehicleInsImage(payload);
@@ -95,7 +93,6 @@ const ReturnInsCarModal = forwardRef<
     };
 
     useEffect(() => {
-      console.log("img", previewImages);
       if (previewImages && previewImages.length > 0) {
         // Skip the first image when setting images2
         const image2Set = previewImages.map((img) => ({

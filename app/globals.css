@@ -43,6 +43,14 @@ img {
   color: #667085;
 }
 
+.light-mode .text-object-search{
+  color: black;
+}
+
+.dark-mode .text-object-search{
+  color: #f5f5f6;
+}
+
 /* In your global CSS file */
 .toggle {
   transition: none !important;

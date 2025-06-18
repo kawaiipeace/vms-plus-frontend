@@ -9,7 +9,12 @@ interface DataTableProps<TData> {
   style?: string;
 }
 
+
+
+
 export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TData>) {
+
+  
   return (
     <>
       <div className="mt-5 overflow-x-auto rounded-none">
@@ -22,7 +27,7 @@ export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TD
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className="p-2 cursor-pointer select-none"
+                    className="p-2 cursor-pointer select-none sticky top-0 z-[1] bg-gray-200 border-b border-gray-300"
                   >
                     <div className="flex items-center gap-3">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}

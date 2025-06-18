@@ -21,7 +21,7 @@ export default function DisburstmentCard({
   const [costTypeData, setCostTypeData] = useState<any>();
 
   useEffect(() => {
-    console.log('tt',activityNo);
+
     if (refCostTypeCode) {
       const fetchCostTypeFromCodeFunc = async () => {
         try {

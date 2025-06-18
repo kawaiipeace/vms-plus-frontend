@@ -33,7 +33,7 @@ const PeaDriverInfoModal = forwardRef<
     const fetchVehicleUserData = async () => {
       try {
         const response = await fetchUserDrivers(id);
-        console.log()
+
         if (response.status === 200) {
           const res = response.data[0];
           setVehicleUserData(res);

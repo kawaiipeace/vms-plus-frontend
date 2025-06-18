@@ -36,7 +36,7 @@ export default function RequestDetailForm({
         response = await fetchFinalRequestDetail(requestId);
       }
 
-      console.log("res", response.data);
+
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -44,7 +44,6 @@ export default function RequestDetailForm({
   };
 
   const handleModalUpdate = () => {
-    console.log("tstsuccess");
     setToastStatus("success");
     fetchRequestDetailfunc();
   };
@@ -55,8 +54,7 @@ export default function RequestDetailForm({
   }, [requestId]);
 
   const handleDownload = () => {
-    // Implement download functionality
-    console.log("Downloading driver license image");
+
   };
 
   return (

@@ -66,7 +66,7 @@ const ConfirmReturnVehicleModal = forwardRef<
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
   useEffect(() => {
-    console.log('ke--===>',data);
+
     const today = new Date();
     const localDate = `${today.getFullYear()}-${String(
       today.getMonth() + 1

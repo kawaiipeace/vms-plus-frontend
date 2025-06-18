@@ -92,11 +92,10 @@ const DriverEditLicenseModal = forwardRef<{ openModal: () => void; closeModal: (
           mas_driver_uid: driverInfo?.mas_driver_uid,
         };
         // Handle form submission logic here
-        console.log("Form submitted successfully", updatedFormData);
+
         try {
           const response = await driverUpdateDocument(updatedFormData);
           if (response.status === 200) {
-            console.log("Document updated successfully");
             modalRef.current?.close();
             onUpdateDriver(true);
             setUpdateType("basicInfo");

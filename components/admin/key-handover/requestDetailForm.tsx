@@ -28,7 +28,6 @@ export default function RequestDetailForm({ requestId }: RequestDetailFormProps)
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestDetail(requestId);
-      console.log("datakey---", response.data);
       setRequestData(response.data);
       const today = new Date();
       const pickup = new Date(response?.data?.received_key_start_datetime);

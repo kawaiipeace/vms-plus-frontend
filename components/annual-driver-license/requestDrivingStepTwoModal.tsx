@@ -105,9 +105,6 @@ const RequestDrivingStepTwoModal = forwardRef<
           fetchUserApprovalLic(profile?.emp_id || ""),
         ]);
 
-        console.log("Confirmer Response:", confirmerResponse);
-        console.log("Approval Response:", approvalResponse);
-
         if (confirmerResponse?.data) {
           setApprovers(confirmerResponse.data[0]);
         }
@@ -122,7 +119,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     };
 
     useEffect(() => {
-      console.log("Request Data:", valueFormStep1);
+  
       if (requestData) {
         setApprovers({
           emp_id: requestData?.confirmed_request_emp_id || "",
@@ -374,7 +371,6 @@ const RequestDrivingStepTwoModal = forwardRef<
                             e.stopPropagation();
                             e.preventDefault();
 
-                            console.log("Request Data:", requestData);
                             modalRef.current?.close();
                             editFinalApproverModalRef.current?.openModal();
                           }}
