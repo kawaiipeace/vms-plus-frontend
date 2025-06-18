@@ -265,7 +265,7 @@ export default function AdminKeyHandOverListTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+
   }, [pagination]);
 
   useEffect(() => {

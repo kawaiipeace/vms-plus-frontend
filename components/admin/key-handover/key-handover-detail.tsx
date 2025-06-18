@@ -51,7 +51,6 @@ export default function KeyHandoverDetail({
     if (requestId) {
       try {
         const response = await fetchRequestKeyDetail(requestId);
-        console.log("data---", response.data);
 
         if (!isEqual(response.data, requestData)) {
           setRequestData(response.data);
@@ -80,7 +79,6 @@ export default function KeyHandoverDetail({
   }, [fetchData]);
 
   useEffect(() => {
-    console.log(requestData?.ref_request_status_code);
     if (requestData?.ref_request_status_code === "51") {
       receiveKeySuccessModalRef.current?.openModal();
     }

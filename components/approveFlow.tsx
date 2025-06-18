@@ -45,6 +45,7 @@ export default function ArpproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+  const [datePickerKey, setDatePickerKey] = useState(0); // Add this for date picker reset
   const router = useRouter();
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -89,73 +90,84 @@ export default function ArpproveFlow() {
     }));
   };
 
-  const handleFilterSubmit = ({
-    selectedStatuses,
-    selectedStartDate,
-    selectedEndDate,
-  }: {
-    selectedStatuses: string[];
-    selectedStartDate: string;
-    selectedEndDate: string;
-  }) => {
-    const mappedNames = selectedStatuses.map(
-      (code) =>
-        summary.find((item) => item.ref_request_status_code === code)
-          ?.ref_request_status_name || code
+const handleFilterSubmit = ({
+  selectedStatuses,
+  selectedStartDate,
+  selectedEndDate,
+}: {
+  selectedStatuses: string[];
+  selectedStartDate: string;
+  selectedEndDate: string;
+}) => {
+  // Filter out status codes that don't exist in summary data
+  const validStatuses = selectedStatuses.filter(code => 
+    summary.some(item => item.ref_request_status_code === code)
+  );
+
+  const mappedNames = validStatuses.map(
+    (code) => {
+      const statusItem = summary.find(item => item.ref_request_status_code === code);
+      return statusItem?.ref_request_status_name || code; // Fallback to code if name not found
+    }
+  );
+
+  const date =
+    selectedStartDate && selectedEndDate
+      ? convertToBuddhistDateTime(selectedStartDate).date +
+        " - " +
+        convertToBuddhistDateTime(selectedEndDate).date
+      : "";
+
+  setFilterNames(mappedNames);
+  setFilterDate(date);
+  setFilterNum(validStatuses.length + (date ? 1 : 0));
+
+  setParams((prevParams) => ({
+    ...prevParams,
+    ref_request_status_code: validStatuses.join(","),
+    startdate: selectedStartDate,
+    enddate: selectedEndDate,
+    page: 1,
+  }));
+};
+const removeFilter = (filterType: string, filterValue: string) => {
+  if (filterType === "status") {
+    // Find the actual status code for this name
+    const statusCode = summary.find(
+      item => item.ref_request_status_name === filterValue
+    )?.ref_request_status_code;
+
+    if (!statusCode) return; // Skip if no matching code found
+
+    setFilterNames((prevFilterNames) =>
+      prevFilterNames.filter((name) => name !== filterValue)
     );
 
-    const date =
-      convertToBuddhistDateTime(selectedStartDate).date +
-      " - " +
-      convertToBuddhistDateTime(selectedEndDate).date;
+    setParams((prevParams) => {
+      const updatedStatuses = prevParams.ref_request_status_code
+        .split(",")
+        .filter(code => code !== statusCode);
 
-    setFilterNames(mappedNames);
-    if (selectedStartDate && selectedEndDate) {
-      setFilterDate(date);
-    }
+      setFilterNum(updatedStatuses.length + (filterDate ? 1 : 0));
 
-    setFilterNum(selectedStatuses.length);
-
+      return {
+        ...prevParams,
+        ref_request_status_code: updatedStatuses.join(","),
+        page: 1,
+      };
+    });
+  } else if (filterType === "date") {
+    setFilterDate("");
     setParams((prevParams) => ({
       ...prevParams,
-      ref_request_status_code: selectedStatuses.join(","),
-      startdate: selectedStartDate,
-      enddate: selectedEndDate,
+      startdate: "",
+      enddate: "",
+      page: 1,
     }));
-  };
-
-  const removeFilter = (filterType: string, filterValue: string) => {
-    if (filterType === "status") {
-      setFilterNames((prevFilterNames) =>
-        prevFilterNames.filter((name) => name !== filterValue)
-      );
-
-      setParams((prevParams) => {
-        const updatedStatuses = prevParams.ref_request_status_code
-          .split(",")
-          .filter((code) => {
-            const name = summary.find(
-              (item) => item.ref_request_status_code === code
-            )?.ref_request_status_name;
-            return name !== filterValue;
-          });
-
-        setFilterNum(updatedStatuses.length);
-
-        return {
-          ...prevParams,
-          ref_request_status_code: updatedStatuses.join(","),
-        };
-      });
-    } else if (filterType === "date") {
-      setFilterDate(""); // Clear the `filterDate`
-      setParams((prevParams) => ({
-        ...prevParams,
-        startdate: "",
-        enddate: "",
-      }));
-    }
-  };
+    setFilterNum(filterNames.length);
+    setDatePickerKey((prev) => prev + 1);
+  }
+};
 
   const handleClearAllFilters = () => {
     setParams({
@@ -175,7 +187,11 @@ export default function ArpproveFlow() {
     setFilterNum(0);
     setFilterNames([]);
     setFilterDate("");
+    setDatePickerKey((prev) => prev + 1); // Force reset date picker
     window.scrollTo({ top: 0, behavior: "smooth" });
+    
+    // Close modal if open
+    filterModalRef.current?.closeModal();
   };
 
   useEffect(() => {
@@ -205,7 +221,6 @@ export default function ArpproveFlow() {
 
   useEffect(() => {}, [dataRequest, params]);
 
-  console.log("dataRequest>>>", dataRequest);
 
   return (
     <>
@@ -367,6 +382,13 @@ export default function ArpproveFlow() {
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
         onSubmitFilter={handleFilterSubmit}
       />
     </>

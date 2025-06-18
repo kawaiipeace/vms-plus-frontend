@@ -68,7 +68,7 @@ const RequestStatusLicDetailModal = forwardRef<
   };
 
   useEffect(() => {
-    console.log("requesteata--------", requestData);
+
   }, [requestData]);
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());

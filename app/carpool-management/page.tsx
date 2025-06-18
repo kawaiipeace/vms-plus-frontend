@@ -15,6 +15,7 @@ import ZeroRecord from "@/components/zeroRecord";
 import FilterCarpoolModal from "@/components/modal/filterCarpool";
 import { useRouter } from "next/navigation";
 import Header from "@/components/header";
+import { useProfile } from "@/contexts/profileContext";
 
 const defaultPagination = {
   limit: 10,
@@ -32,6 +33,10 @@ export default function CarpoolManagement() {
 
   const router = useRouter();
   const { isPinned } = useSidebar();
+
+  const { profile } = useProfile();
+
+  const roles = profile?.roles;
 
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -134,6 +139,10 @@ export default function CarpoolManagement() {
 
   const isSearch = !!params.search || !!params.dept_sap || !!params.is_active;
 
+  const canCreateCarpool = ["admin-super", "admin-region"].some((role) =>
+    roles?.includes(role)
+  );
+
   return (
     <>
       <div className="main-container">
@@ -217,15 +226,17 @@ export default function CarpoolManagement() {
                           Export
                         </div>
                       </button>
-                      <button
-                        onClick={() =>
-                          router.push("/carpool-management/form/process-one")
-                        }
-                        className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
-                      >
-                        <i className="material-symbols-outlined">add</i>
-                        สร้างกลุ่ม
-                      </button>
+                      {canCreateCarpool && (
+                        <button
+                          onClick={() =>
+                            router.push("/carpool-management/form/process-one")
+                          }
+                          className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
+                        >
+                          <i className="material-symbols-outlined">add</i>
+                          สร้างกลุ่ม
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -269,11 +280,12 @@ export default function CarpoolManagement() {
                   desc={<>เริ่มสร้างกลุ่มยานพาหนะกลุ่มแรก</>}
                   button="สร้างกลุ่ม"
                   icon="add"
-                  displayBtn={true}
+                  displayBtn={canCreateCarpool}
                   btnType="primary"
                   classNameImg="w-[200px] h-[200px]"
-                  useModal={() => () =>
-                    router.push("/carpool-management/form/process-one")}
+                  useModal={() =>
+                    router.push("/carpool-management/form/process-one")
+                  }
                 />
               )}
               <FilterCarpoolModal

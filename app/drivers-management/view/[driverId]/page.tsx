@@ -19,7 +19,12 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 
-import { DriverInfo, driverStatusRef, listDriverVendors, updateDriverStatus } from "@/services/driversManagement";
+import {
+  DriverInfo,
+  driverStatusRef,
+  listDriverVendors,
+  updateDriverStatus,
+} from "@/services/driversManagement";
 
 import { DriverMasType } from "@/app/types/driver-user-type";
 import { DriverInfoType } from "@/app/types/drivers-management-type";
@@ -31,7 +36,13 @@ interface DriverStatus {
   ref_driver_status_desc: string;
 }
 
-function ToastCustomComponent({ type, driverName }: { type: string; driverName?: string }) {
+function ToastCustomComponent({
+  type,
+  driverName,
+}: {
+  type: string;
+  driverName?: string;
+}) {
   const active = useSearchParams().get("active");
   return (
     <>
@@ -40,7 +51,8 @@ function ToastCustomComponent({ type, driverName }: { type: string; driverName?:
           title="แก้ไขข้อมูลสำเร็จ"
           desc={
             <span>
-              บันทึกการแก้ไขข้อมูลพนักงานขับรถ <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
+              บันทึกการแก้ไขข้อมูลพนักงานขับรถ{" "}
+              <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
             </span>
           }
           status="success"
@@ -60,8 +72,8 @@ function ToastCustomComponent({ type, driverName }: { type: string; driverName?:
           title="บันทึกข้อมูลลาป่วย/ลากิจสำเร็จ"
           desc={
             <span>
-              เรียบร้อยแล้วบันทึกข้อมูลลาป่วย/ลากิจของพนักงานขับรถ <span className="font-semibold">{driverName}</span>{" "}
-              เรียบร้อยแล้ว
+              เรียบร้อยแล้วบันทึกข้อมูลลาป่วย/ลากิจของพนักงานขับรถ{" "}
+              <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
             </span>
           }
           status="success"
@@ -73,7 +85,8 @@ function ToastCustomComponent({ type, driverName }: { type: string; driverName?:
           title="เปิดใช้งานพนักงานขับรถสำเร็จ"
           desc={
             <span>
-              เปิดใช้งานพนักงานขับรถ <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
+              เปิดใช้งานพนักงานขับรถ{" "}
+              <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
             </span>
           }
           status="success"
@@ -85,7 +98,8 @@ function ToastCustomComponent({ type, driverName }: { type: string; driverName?:
           title="ปิดใช้งานพนักงานขับรถสำเร็จ"
           desc={
             <span>
-              ปิดใช้งานพนักงานขับรถ <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
+              ปิดใช้งานพนักงานขับรถ{" "}
+              <span className="font-semibold">{driverName}</span> เรียบร้อยแล้ว
             </span>
           }
           status="success"
@@ -96,7 +110,11 @@ function ToastCustomComponent({ type, driverName }: { type: string; driverName?:
   );
 }
 
-function IsActiveWrapper({ setIsActive }: { setIsActive: (v: number) => void }) {
+function IsActiveWrapper({
+  setIsActive,
+}: {
+  setIsActive: (v: number) => void;
+}) {
   const searchParams = useSearchParams();
   useEffect(() => {
     setIsActive(searchParams.get("active") === "1" ? 1 : 0);
@@ -215,9 +233,12 @@ const DriverViewProfilePage = () => {
 
   useEffect(() => {
     if (driverInfo) {
-      const status: DriverStatus | undefined = (driverStatus as DriverStatus[]).find(
+      const status: DriverStatus | undefined = (
+        driverStatus as DriverStatus[]
+      ).find(
         (status: DriverStatus) =>
-          String(status.ref_driver_status_code) === String(driverInfo?.driver_status?.ref_driver_status_code)
+          String(status.ref_driver_status_code) ===
+          String(driverInfo?.driver_status?.ref_driver_status_code)
       );
       if (status) {
         setDriverStatusDesc(status.ref_driver_status_code);
@@ -230,10 +251,11 @@ const DriverViewProfilePage = () => {
       if (driverUid) {
         updateDriverStatus(driverUid, isActive)
           .then((response) => {
-            console.log("Driver status updated successfully:", response.data);
-            setDriverUpdated(true);
-            setIsActive(Number(isActive));
-            setUpdateType(isActive === "1" ? "activeUser" : "inactiveUser");
+            if (response) {
+              setDriverUpdated(true);
+              setIsActive(Number(isActive));
+              setUpdateType(isActive === "1" ? "activeUser" : "inactiveUser");
+            }
           })
           .catch((error) => {
             console.error("Error updating driver status:", error);
@@ -248,7 +270,11 @@ const DriverViewProfilePage = () => {
     <>
       <div className="main-container">
         <SideBar menuName="ข้อมูลพนักงานขับรถ" />
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             <div className="page-header">
@@ -270,39 +296,54 @@ const DriverViewProfilePage = () => {
 
               <div className="page-group-header">
                 <div className="page-title">
-                  <span className="page-title-label">{driverInfo?.driver_name}</span>
+                  <span className="page-title-label">
+                    {driverInfo?.driver_name}
+                  </span>
                   <div className="flex items-center">
-                    <i className="material-symbols-outlined text-[#A80689] !text-3xl">star</i>
-                    {vehicleUserData?.driver_average_satisfaction_score === 0 ? (
+                    <i className="material-symbols-outlined text-[#A80689] !text-3xl">
+                      star
+                    </i>
+                    {vehicleUserData?.driver_average_satisfaction_score ===
+                    0 ? (
                       "ยังไม่มีการให้คะแนน"
                     ) : (
                       <>
-                        <span className="px-2">{vehicleUserData?.driver_average_satisfaction_score}</span>
-                        <span>({vehicleUserData?.driver_satisfaction_score_count})</span>
+                        <span className="px-2">
+                          {vehicleUserData?.driver_average_satisfaction_score}
+                        </span>
+                        <span>
+                          ({vehicleUserData?.driver_satisfaction_score_count})
+                        </span>
                       </>
                     )}
                   </div>
-                  {driverInfo?.driver_status?.ref_driver_status_desc === "ปฏิบัติงานปกติ" ? (
+                  {driverInfo?.driver_status?.ref_driver_status_desc ===
+                  "ปฏิบัติงานปกติ" ? (
                     <div className="badge badge-pill-outline badge-success whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ลา (ป่วย/กิจ)" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "ลา (ป่วย/กิจ)" ? (
                     <div className="badge badge-pill-outline badge-warning whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "หมดสัญญาจ้าง" ? (
                     <div className="badge badge-pill-outline badge-gray whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ลาออก" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "ลาออก" ? (
                     <div className="badge badge-pill-outline badge-error whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "สำรอง" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "สำรอง" ? (
                     <div className="badge badge-pill-outline badge-info whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "ให้ออก(BackList)" ? (
                     <div className="badge badge-pill-outline badge-neutral whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
@@ -322,9 +363,12 @@ const DriverViewProfilePage = () => {
                   >
                     ลบพนักงาน
                   </button>
-                  {driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" ||
-                  driverInfo?.driver_status?.ref_driver_status_desc === "ลาออก" ||
-                  driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
+                  {driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "หมดสัญญาจ้าง" ||
+                  driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "ลาออก" ||
+                  driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "ให้ออก(BackList)" ? (
                     <></>
                   ) : (
                     <>
@@ -348,9 +392,12 @@ const DriverViewProfilePage = () => {
                       </button>
                       <button
                         className="btn btn-secondary"
-                        onClick={() => driverLeaveFormModalRef.current?.openModal()}
+                        onClick={() =>
+                          driverLeaveFormModalRef.current?.openModal()
+                        }
                       >
-                        <i className="material-symbols-outlined">sick</i> ลาป่วย/ลากิจ
+                        <i className="material-symbols-outlined">sick</i>{" "}
+                        ลาป่วย/ลากิจ
                       </button>
                       <div className="flex items-center">
                         <ToggleSwitch
@@ -364,14 +411,16 @@ const DriverViewProfilePage = () => {
                       </div>
                     </>
                   )}
-                  {driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" && (
+                  {driverInfo?.driver_status?.ref_driver_status_desc ===
+                    "หมดสัญญาจ้าง" && (
                     <button className="btn btn-secondary">ต่อสัญญา</button>
                   )}
                 </div>
               </div>
             </div>
 
-            {driverInfo?.driver_status?.ref_driver_status_desc === "ลา (ป่วย/กิจ)" && (
+            {driverInfo?.driver_status?.ref_driver_status_desc ===
+              "ลา (ป่วย/กิจ)" && (
               <div className="mb-5">
                 <AlertCustom
                   title="ลา 28/02/2568 - 01/03/2568 เต็มวัน"
@@ -381,9 +430,14 @@ const DriverViewProfilePage = () => {
                 />
               </div>
             )}
-            {driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" && (
+            {driverInfo?.driver_status?.ref_driver_status_desc ===
+              "ให้ออก(BackList)" && (
               <div className="mb-5">
-                <AlertCustom title="พนักงานคนนี้ถูกให้ออก" desc="เลขมท : มท123(กอพ.1)" icon="cancel" />
+                <AlertCustom
+                  title="พนักงานคนนี้ถูกให้ออก"
+                  desc="เลขมท : มท123(กอพ.1)"
+                  icon="cancel"
+                />
               </div>
             )}
 
@@ -391,45 +445,65 @@ const DriverViewProfilePage = () => {
               <div className="w-full md:col-span-2">
                 <div className="form-section">
                   <div className="form-section-header">
-                    <div className="form-section-header-title">ข้อมูลทั่วไป</div>
+                    <div className="form-section-header-title">
+                      ข้อมูลทั่วไป
+                    </div>
                     <button
                       className="text-[#A80689] font-semibold"
-                      onClick={() => driverEditBasicInfoModalRef.current?.openModal()}
+                      onClick={() =>
+                        driverEditBasicInfoModalRef.current?.openModal()
+                      }
                     >
                       แก้ไข
                     </button>
                   </div>
-                  {driverInfo && <DriverBasicInfoCard driverInfo={driverInfo} />}
+                  {driverInfo && (
+                    <DriverBasicInfoCard driverInfo={driverInfo} />
+                  )}
                 </div>
                 <div className="form-section">
                   <div className="form-section-header">
-                    <div className="form-section-header-title">ข้อมูลสัญญาจ้างและสังกัด</div>
+                    <div className="form-section-header-title">
+                      ข้อมูลสัญญาจ้างและสังกัด
+                    </div>
                     <button
                       className="text-[#A80689] font-semibold"
-                      onClick={() => driverEditInfoModalRef.current?.openModal()}
+                      onClick={() =>
+                        driverEditInfoModalRef.current?.openModal()
+                      }
                     >
                       แก้ไข
                     </button>
                   </div>
-                  {driverInfo && <DriverEmployeeContractCard driverInfo={driverInfo} />}
+                  {driverInfo && (
+                    <DriverEmployeeContractCard driverInfo={driverInfo} />
+                  )}
                 </div>
                 <div className="form-section">
                   <div className="form-section-header">
-                    <div className="form-section-header-title">ข้อมูลการขับขี่</div>
+                    <div className="form-section-header-title">
+                      ข้อมูลการขับขี่
+                    </div>
                     <button
                       className="text-[#A80689] font-semibold"
-                      onClick={() => driverEditLicenseModalRef.current?.openModal()}
+                      onClick={() =>
+                        driverEditLicenseModalRef.current?.openModal()
+                      }
                     >
                       แก้ไข
                     </button>
                   </div>
-                  {driverInfo && <DriverDriveInfoCard driverInfo={driverInfo} />}
+                  {driverInfo && (
+                    <DriverDriveInfoCard driverInfo={driverInfo} />
+                  )}
                 </div>
               </div>
               <div className="w-full md:col-span-1">
                 <div className="form-section">
                   <div className="form-section-header">
-                    <div className="form-section-header-title">เอกสารเพิ่มเติม</div>
+                    <div className="form-section-header-title">
+                      เอกสารเพิ่มเติม
+                    </div>
                     <button
                       className="text-[#A80689] font-semibold"
                       onClick={() => driverEditDocModalRef.current?.openModal()}
@@ -501,7 +575,10 @@ const DriverViewProfilePage = () => {
 
       <Suspense fallback={<div></div>}>
         <IsActiveWrapper setIsActive={setIsActive} />
-        <ToastCustomComponent type={updateType} driverName={driverInfo?.driver_name} />
+        <ToastCustomComponent
+          type={updateType}
+          driverName={driverInfo?.driver_name}
+        />
       </Suspense>
     </>
   );

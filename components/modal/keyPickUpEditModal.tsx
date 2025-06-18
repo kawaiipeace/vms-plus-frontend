@@ -170,7 +170,6 @@ const KeyPickUpEditModal = forwardRef<
 
   const handleVehicleUserChange = async (selectedOption: VehicleUserType) => {
     setSelectedVehicleUserOption(selectedOption);
-    console.log("test", selectedOption);
 
     const empData = vehicleUserDatas.find(
       (user) => user.emp_id === selectedOption.emp_id
@@ -227,7 +226,7 @@ const KeyPickUpEditModal = forwardRef<
         }
         modalRef.current?.close();
         if (onUpdate) onUpdate(res.data);
-        console.log("API Response:ss", res);
+
       } else {
         if (selectedUserType === "พนักงาน กฟภ.") {
           res = await updateKeyPickupPea(payload);
@@ -236,7 +235,7 @@ const KeyPickUpEditModal = forwardRef<
         } else {
           res = await updateKeyPickupDriver(payload);
         }
-        console.log("API Response:", res);
+   
         modalRef.current?.close();
       }
 

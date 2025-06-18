@@ -80,13 +80,12 @@ export default function Header() {
   } | null>(null);
 
   useEffect(() => {
-    console.log("proifile", profile);
+
   }, [profile]);
 
   const getDriverUserCard = async () => {
     try {
       const response = await driverLicenseUserCard();
-      console.log("driveruserardorg", response);
       if (response) {
         setDriverUser(response.data.driver);
         return response.data.driver;
@@ -106,12 +105,10 @@ export default function Header() {
       setPendingOpenModal(null);
     }
     if (pendingOpenModal === "request" && driverUser) {
-      console.log(licRequestDetail);
       RequestDrivingStepOneModalRef.current?.openModal();
       setPendingOpenModal(null);
     }
     if (pendingOpenModal === "requestnoback" && driverUser) {
-      console.log(licRequestDetail);
       RequestDrivingStepOneModalNoBackRef.current?.openModal();
       setPendingOpenModal(null);
     }
@@ -141,7 +138,6 @@ export default function Header() {
 
   const handleOneSubmit = (data: ValueFormStep1) => {
     setValueFormStep1(data);
-    console.log("handleOneSubmit", data);
     RequestDrivingStepTwoModalRef.current?.openModal();
   };
 

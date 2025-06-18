@@ -271,7 +271,7 @@ const RecordTravelAddModal = forwardRef<
           ),
         };
 
-        console.log("payload: ", payload);
+
 
         if (status) {
           const res =

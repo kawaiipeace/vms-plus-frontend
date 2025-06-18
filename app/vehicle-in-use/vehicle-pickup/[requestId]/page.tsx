@@ -58,7 +58,7 @@ export default function RequestDetail() {
         try {
           const response = await requestDetail(request_id);
           setRequestData(response.data);
-          console.log("reqeustdetail", response.data);
+
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }

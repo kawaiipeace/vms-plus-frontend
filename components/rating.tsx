@@ -12,8 +12,6 @@ interface RatingProps {
 
 const Rating = ({ title, description, icon, onChange, value, name, disabled }: RatingProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("e.target.value", e.target.value);
-
     onChange?.(e.target.value);
   };
   return (

@@ -117,7 +117,7 @@ const ReturnCarAddModal = forwardRef<
       setFuelQuantity(data?.fuel_start || 0);
       if (edit) {
         setFuelQuantity(data?.fuel_end || 0);
-        setParkingLocation(data?.parking_place || "");
+        setParkingLocation(data?.returned_parking_place || "");
         setMiles(data?.mile_end?.toString() || "");
         setRemark(data?.returned_vehicle_remark || "");
       } else {
@@ -156,7 +156,7 @@ const ReturnCarAddModal = forwardRef<
       miles
     ) {
       if (edit) {
-        console.log("edit");
+  
 
         return handleSubmit();
       }
@@ -182,8 +182,7 @@ const ReturnCarAddModal = forwardRef<
         selectedDate && selectedTime
           ? convertToISO(selectedDate, selectedTime)
           : "";
-      console.log("data", data);
-      console.log("id", id);
+
 
       const formData = {
         fuel_end: fuelQuantity,
@@ -195,7 +194,7 @@ const ReturnCarAddModal = forwardRef<
         trn_request_uid: data?.trn_request_uid || id,
         vehicle_images: imageList,
       };
-      console.log("formData", formData);
+   
       let response;
       if (useBy === "user" || useBy === "userTabs") {
         response = await UserReturnedVehicle(formData);

@@ -72,7 +72,7 @@ export default function AdminVehicleInsFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   const handleFilterSubmit = ({
@@ -86,7 +86,7 @@ export default function AdminVehicleInsFlow() {
     selectedEndDate: string;
    department?: { value: string; label: string };
   }) => {
-    console.log("department", department);
+
     const mappedNames = selectedStatuses.map(
       (code) =>
         summary.find((item) => item.ref_request_status_code === code)
@@ -96,7 +96,7 @@ export default function AdminVehicleInsFlow() {
     const date = selectedStartDate + " - " + selectedEndDate;
 
     setFilterNames(mappedNames);
-    console.log(selectedStartDate);
+
     if (selectedStartDate && selectedEndDate) {
       setFilterDate(date);
     }
@@ -192,7 +192,7 @@ export default function AdminVehicleInsFlow() {
     const fetchRequestsData = async () => {
       try {
         const response = await fetchVehicleInsRequests(params);
-        console.log("param", params);
+   
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -218,7 +218,7 @@ export default function AdminVehicleInsFlow() {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
+
   }, [dataRequest]); // This will log whenever dataRequest changes
 
     
@@ -401,7 +401,13 @@ export default function AdminVehicleInsFlow() {
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
-        department={true}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}department={true}
         onSubmitFilter={handleFilterSubmit}
       />
 

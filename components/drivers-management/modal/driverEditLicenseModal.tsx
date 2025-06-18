@@ -121,7 +121,6 @@ const DriverEditLicenseModal = forwardRef<
         mas_driver_uid: driverInfo?.mas_driver_uid || "",
       };
 
-      console.log("Form data before validation:", params);
 
       try {
         const response = await driverUpdateLicenseDetails({ params });
@@ -130,8 +129,6 @@ const DriverEditLicenseModal = forwardRef<
           onUpdateDriver(true);
           setUpdateType("basicInfo");
         }
-
-        console.log("Form submitted successfully", params);
       } catch (error) {
         console.error("Error validating form data:", error);
         throw error; // Re-throw to handle in the catch block below

@@ -307,7 +307,7 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+    
   }, [pagination]);
 
   useEffect(() => {
@@ -324,7 +324,7 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
 
               const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
-              console.log("row clicked", { status, uid }); 
+
               if (status === "รออนุมัติ") {
                 router.push(`/administrator/booking-final/${uid}/edit`);
               } else {

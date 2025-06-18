@@ -68,7 +68,8 @@ interface FormData {
 
 export default function ProcessTwo() {
   const router = useRouter();
-  const [vehicleCards, setVehicleCards] = useState<VehicleCard[]>([]);
+  const [allVehicleCards, setAllVehicleCards] = useState<VehicleCard[]>([]);
+  const [filteredVehicleCards, setFilteredVehicleCards] = useState<VehicleCard[]>([]);
   const [loading, setLoading] = useState(true);
   const { formData, updateFormData } = useFormContext();
   const [paginationData, setPaginationData] = useState<PaginationInterface>({
@@ -109,6 +110,7 @@ export default function ProcessTwo() {
     value: string;
     label: string;
   }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     const processOneStatus = localStorage.getItem("processOne");
@@ -117,124 +119,56 @@ export default function ProcessTwo() {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("Pagination updated:", paginationData);
-  }, [paginationData]);
+  const applyFilters = () => {
+    let filtered = [...allVehicleCards];
 
-  const handleVehicleSelect = (value: string) => {
-    setSelectedVehicle(value);
-    const updatedData: Partial<FormData> = {};
-
-    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
-      updatedData.isAdminChooseVehicle = "1";
-      updatedData.isSystemChooseVehicle = "0";
-    } else if (value === "ระบบเลือกให้(อัตโนมัติ)") {
-      updatedData.isAdminChooseVehicle = "0";
-    } else {
-      updatedData.vehicleSelect = value;
-      const selectedVehicleObj = vehicleCards.find(
-        (card) => "mas_vehicle_uid" in card && card.mas_vehicle_uid === value
-      ) as Vehicle | undefined;
-
-      updatedData.isAdminChooseDriver =
-        selectedVehicleObj?.is_admin_choose_driver;
-      updatedData.masCarpoolUid = "";
-      updatedData.carpoolName = "";
-      updatedData.masVehicleUid = value;
-      updatedData.isSystemChooseVehicle = "0";
-      updatedData.isAdminChooseVehicle = "0";
+    // Apply search filter
+    if (params.search) {
+      const searchLower = params.search.toLowerCase();
+      filtered = filtered.filter(card => {
+        if ('vehicle_license_plate' in card) {
+          // Vehicle card
+          return (
+            card.vehicle_license_plate.toLowerCase().includes(searchLower) ||
+            card.vehicle_brand_name.toLowerCase().includes(searchLower) ||
+            card.vehicle_model_name.toLowerCase().includes(searchLower)
+          );
+        } else {
+          // Carpool card
+          return card.carpool_name.toLowerCase().includes(searchLower)
+        }
+      });
     }
 
-    updateFormData(updatedData);
-
-    if (updatedData?.isAdminChooseDriver === true) {
-      router.push("process-four");
+    // Apply organization filter
+    if (params.vehicle_owner_dept) {
+      filtered = filtered.filter(card => 
+        'vehicle_owner_dept_sap' in card && 
+        card.vehicle_owner_dept_sap === params.vehicle_owner_dept
+      );
     }
 
-    localStorage.setItem("processTwo", "Done");
-    router.push("process-three");
-  };
-
-  const handleCarpoolSelect = (value: string) => {
-    setSelectedVehicle(value);
-    const updatedData: Partial<FormData> = {};
-    console.log("handleCarpoolSelect value:", value);
-    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
-      updatedData.isAdminChooseVehicle = "1";
-      updatedData.isSystemChooseVehicle = "0";
-    } else if (value === "ระบบเลือกให้(อัตโนมัติ)") {
-      updatedData.isSystemChooseVehicle = "1";
-      updatedData.isAdminChooseVehicle = "0";
+    // Apply vehicle type filter
+    if (params.category_code) {
+      filtered = filtered.filter(card => 
+        'car_type' in card && 
+        card.car_type === params.category_code
+      );
     }
 
-    const selectedCarpool = vehicleCards.find(
-      (card) =>
-        "mas_carpool_uid" in card &&
-        String(card.mas_carpool_uid) === String(value)
-    ) as Carpool | undefined;
-    if (selectedCarpool) {
-      updatedData.carpoolName = selectedCarpool.carpool_name;
-      updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
-      updatedData.isSystemChooseVehicle =
-        selectedCarpool.ref_carpool_choose_car_id === 3 ? "1" : "0";
-      updatedData.isAdminChooseVehicle =
-        selectedCarpool.ref_carpool_choose_car_id === 2 ? "1" : "0";
-      updatedData.vehicleSelect = selectedCarpool.mas_carpool_uid;
-      updatedData.masVehicleUid = "";
-    }
-
-    updateFormData(updatedData);
-
-    if (selectedCarpool?.is_admin_choose_driver === true) {
-      router.push("process-four");
-    }
-
-    localStorage.setItem("processTwo", "Done");
-    router.push("process-three");
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }));
-  };
-
-  const handleOrgChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedOrgOption(selectedOption as { value: string; label: string });
-    setParams((prev) => ({
+    setFilteredVehicleCards(filtered);
+    setPaginationData(prev => ({
       ...prev,
-      vehicle_owner_dept: selectedOption.value,
-      page: 1,
+      total: filtered.length,
+      totalPages: Math.ceil(filtered.length / prev.limit)
     }));
-  };
-
-  const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
-    setParams((prev) => ({
-      ...prev,
-      limit,
-      page: 1,
-    }));
-  };
-
-  const handleVehicleTypeChange = async (
-    selectedOption: CustomSelectOption
-  ) => {
-    setSelectedVehicleOption(
-      selectedOption as { value: string; label: string }
-    );
-    setParams((prev) => ({
-      ...prev,
-      category_code: selectedOption.value,
-      page: 1,
-    }));
-  };
-
-  const handlePageChange = (page: number) => {
-    setParams((prev) => ({ ...prev, page }));
   };
 
   useEffect(() => {
-    console.log("paginationData:", paginationData);
+    applyFilters();
+  }, [params.search, params.vehicle_owner_dept, params.category_code, allVehicleCards]);
+
+  useEffect(() => {
     const fetchAllData = async () => {
       if (!profile?.emp_id) return;
 
@@ -252,12 +186,12 @@ export default function ProcessTwo() {
             fetchVehicleCarTypes({
               emp_id: profile.emp_id,
               start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
-            end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
+              end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
             }),
             fetchVehicleDepartmentTypes({
               emp_id: profile.emp_id,
-             start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
-               end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
+              start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
+              end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
             }),
           ]);
 
@@ -266,7 +200,7 @@ export default function ProcessTwo() {
             ...(vehiclesResponse.data.carpools || []),
             ...(vehiclesResponse.data.vehicles || []),
           ];
-          setVehicleCards(allCards);
+          setAllVehicleCards(allCards);
           setPaginationData(vehiclesResponse.data.pagination);
         }
 
@@ -308,13 +242,126 @@ export default function ProcessTwo() {
 
     fetchAllData();
   }, [
-    params,
     profile?.emp_id,
     formData.startDate,
     formData.timeStart,
     formData.endDate,
     formData.timeEnd,
   ]);
+
+  const handleVehicleSelect = (value: string) => {
+    setSelectedVehicle(value);
+    const updatedData: Partial<FormData> = {};
+
+    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
+      updatedData.isAdminChooseVehicle = "1";
+      updatedData.isSystemChooseVehicle = "0";
+    } else if (value === "ระบบเลือกให้(อัตโนมัติ)") {
+      updatedData.isAdminChooseVehicle = "0";
+    } else {
+      updatedData.vehicleSelect = value;
+      const selectedVehicleObj = allVehicleCards.find(
+        (card) => "mas_vehicle_uid" in card && card.mas_vehicle_uid === value
+      ) as Vehicle | undefined;
+
+      updatedData.isAdminChooseDriver =
+        selectedVehicleObj?.is_admin_choose_driver;
+      updatedData.masCarpoolUid = "";
+      updatedData.carpoolName = "";
+      updatedData.masVehicleUid = value;
+      updatedData.isSystemChooseVehicle = "0";
+      updatedData.isAdminChooseVehicle = "0";
+    }
+
+    updateFormData(updatedData);
+
+    if (updatedData?.isAdminChooseDriver === true) {
+      router.push("process-four");
+    }
+
+    localStorage.setItem("processTwo", "Done");
+    router.push("process-three");
+  };
+
+  const handleCarpoolSelect = (value: string) => {
+    setSelectedVehicle(value);
+    const updatedData: Partial<FormData> = {};
+
+    if (value === "ผู้ดูแลยานพาหนะเลือกให้") {
+      updatedData.isAdminChooseVehicle = "1";
+      updatedData.isSystemChooseVehicle = "0";
+    } else if (value === "ระบบเลือกให้(อัตโนมัติ)") {
+      updatedData.isSystemChooseVehicle = "1";
+      updatedData.isAdminChooseVehicle = "0";
+    }
+
+    const selectedCarpool = allVehicleCards.find(
+      (card) =>
+        "mas_carpool_uid" in card &&
+        String(card.mas_carpool_uid) === String(value)
+    ) as Carpool | undefined;
+    if (selectedCarpool) {
+      updatedData.carpoolName = selectedCarpool.carpool_name;
+      updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
+      updatedData.isSystemChooseVehicle =
+        selectedCarpool.ref_carpool_choose_car_id === 3 ? "1" : "0";
+      updatedData.isAdminChooseVehicle =
+        selectedCarpool.ref_carpool_choose_car_id === 2 ? "1" : "0";
+      updatedData.vehicleSelect = selectedCarpool.mas_carpool_uid;
+      updatedData.masVehicleUid = "";
+    }
+
+    updateFormData(updatedData);
+
+    if (selectedCarpool?.is_admin_choose_driver === true) {
+      router.push("process-four");
+    }
+
+    localStorage.setItem("processTwo", "Done");
+    router.push("process-three");
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    setParams(prev => ({ ...prev, search: value, page: 1 }));
+  };
+
+  const handleOrgChange = async (selectedOption: CustomSelectOption) => {
+    setSelectedOrgOption(selectedOption as { value: string; label: string });
+    setParams(prev => ({
+      ...prev,
+      vehicle_owner_dept: selectedOption.value,
+      page: 1,
+    }));
+  };
+
+  const handlePageSizeChange = (newLimit: string | number) => {
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    setParams(prev => ({
+      ...prev,
+      limit,
+      page: 1,
+    }));
+  };
+
+  const handleVehicleTypeChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
+    setSelectedVehicleOption(
+      selectedOption as { value: string; label: string }
+    );
+    setParams(prev => ({
+      ...prev,
+      category_code: selectedOption.value,
+      page: 1,
+    }));
+  };
+
+  const handlePageChange = (page: number) => {
+    setParams(prev => ({ ...prev, page }));
+  };
 
   if (loading) {
     return (
@@ -335,6 +382,11 @@ export default function ProcessTwo() {
       </div>
     );
   }
+
+  // Calculate paginated results
+  const startIndex = (params.page - 1) * params.limit;
+  const endIndex = startIndex + params.limit;
+  const paginatedResults = filteredVehicleCards.slice(startIndex, endIndex);
 
   return (
     <div className="main-container">
@@ -383,8 +435,7 @@ export default function ProcessTwo() {
                         ข้อมูลผู้ใช้ยานพาหนะ
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
-                        ว่าง {paginationData.total} คัน และ{" "}
-                        {paginationData.totalGroups} กลุ่ม
+                        ว่าง {filteredVehicleCards.length} คัน
                       </span>
                     </div>
                     <div className="page-desc">
@@ -403,6 +454,7 @@ export default function ProcessTwo() {
                     <input
                       type="text"
                       className="form-control dt-search-input"
+                      value={searchInput}
                       onChange={handleSearchChange}
                       placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
                     />
@@ -424,10 +476,10 @@ export default function ProcessTwo() {
                   </div>
                 </div>
 
-                {vehicleCards.length > 0 ? (
+                {filteredVehicleCards.length > 0 ? (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
-                      {vehicleCards.map((card) => {
+                      {paginatedResults.map((card) => {
                         if ("ref_carpool_choose_car" in card) {
                           const carpool = card;
                           return (
@@ -494,10 +546,10 @@ export default function ProcessTwo() {
                     {paginationData.totalPages > 1 && (
                       <PaginationControls
                         pagination={{
-                          limit: paginationData.limit,
-                          page: paginationData.page,
-                          totalPages: paginationData.totalPages,
-                          total: paginationData.total,
+                          limit: params.limit,
+                          page: params.page,
+                          totalPages: Math.ceil(filteredVehicleCards.length / params.limit),
+                          total: filteredVehicleCards.length,
                         }}
                         onPageChange={handlePageChange}
                         onPageSizeChange={handlePageSizeChange}

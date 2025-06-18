@@ -127,7 +127,6 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
           replacement_driver_uid: formData.replacement_driver_uid,
         };
 
-        console.log("Leave Data:", leaveData);
         try {
           const response = await driverUpdateLeaveStatus(leaveData);
           if (response.status === 200) {

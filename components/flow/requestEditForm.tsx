@@ -83,7 +83,6 @@ Props) {
 
     if (storedDataString) {
       const parsedData = JSON.parse(storedDataString); // Parse the string
-      console.log("Parsed Data:", parsedData); // Debugging line
       setUpdatedFormData(parsedData);
   if (
   (parsedData.isAdminChooseVehicle && parsedData.isSystemChooseVehicle) ||

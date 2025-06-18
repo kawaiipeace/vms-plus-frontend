@@ -29,7 +29,7 @@ const ReturnCarTab = ({ status, requestId }: ReturnCarTabProps) => {
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestKeyDetail(requestId || "");
-      console.log("data---", response.data);
+
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);

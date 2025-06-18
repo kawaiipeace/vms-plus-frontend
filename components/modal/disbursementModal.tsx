@@ -212,7 +212,7 @@ const DisbursementModal = forwardRef<
 
   useEffect(() => {
     // Initialize form values from formData or requestData
-    console.log("requestatadis", requestData);
+
     let initialValues;
     if (requestData) {
       initialValues = {
@@ -251,7 +251,7 @@ const DisbursementModal = forwardRef<
         setSelectedCostTypeOption(selectedOption);
 
         if (selectedOption.value === "2" && initialValues.costCenter) {
-          console.log("ttt", selectedOption);
+
           const costCenterOption = costCenterOptions.find(
             (opt) => opt.value === initialValues.costCenter
           );

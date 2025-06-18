@@ -55,13 +55,15 @@ export default function VehicleTimeLine() {
     });
 
     // ----- Handle Function -----
-    const handlePageChange = (newPage: number) => setParams((prevParams) => ({ ...prevParams, page: newPage }));
     const handleFilterSubmit = (filterParams: any) => setFilterParams(() => [...filterParams.vehicleBookingStatus]);
     const handleClearAllFilters = () => setParams(initialParams);
     const handleOpenFilterModal = () => filterModalRef.current?.open();
     const toggleFilter = (value: string) => setFilterParams((prev) =>
         prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     );
+    const handlePageChange = (newPage: number) => {
+        setParams((prevParams: any) => ({ ...prevParams, page: newPage }));
+    };
     const handlePageSizeChange = (newLimit: string | number) => {
         const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
         setParams((prevParams) => ({ ...prevParams, limit, page: 1 }));
@@ -133,7 +135,11 @@ export default function VehicleTimeLine() {
         () =>
             debounce((value: string) => {
                 if (value.length > 2 || value.length === 0) {
-                    setParams((prev) => ({ ...prev, search: value }));
+                    setParams((prev) => ({ 
+                        ...prev, 
+                        search: value,
+                        page: 1
+                    }));
                 }
             }, 500),
         []

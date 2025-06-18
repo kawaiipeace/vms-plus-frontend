@@ -140,7 +140,7 @@ const RecordTravelAddModal = forwardRef<
       detail,
     } = value || {};
 
-    console.log("value: ", value);
+
 
     if (
       startDate &&

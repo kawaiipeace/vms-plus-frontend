@@ -116,7 +116,7 @@ export default function CustomSelect({
             </div>
           )
         ) : (
-          <div className="flex-1 text-md truncate text-object-search text-black">{value?.label || placeholder}</div>
+          <div className="flex-1 text-md truncate text-object-search">{value?.label || placeholder}</div>
         )}
         <div className="flex-shrink-0 w-8 text-right cursor-pointer">
           <i className="material-symbols-outlined">keyboard_arrow_down</i>

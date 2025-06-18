@@ -37,7 +37,7 @@ const AdminDriverPickModal = forwardRef<
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
-      console.log("driver===>", requestData);
+
       fetchDriverData();
       hasReset.current = false;
       modalRef.current?.showModal();

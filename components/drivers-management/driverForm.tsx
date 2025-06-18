@@ -214,7 +214,7 @@ const DriverForm = () => {
             };
           }
         );
-        console.log(driverDepartmentData);
+
         setDriverDepartmentList(driverDepartmentData);
       } catch (error) {
         console.error("Error fetching driver department data:", error);
@@ -298,13 +298,12 @@ const DriverForm = () => {
       };
       // console.log("params", params);
 
-      console.log("Form data is valid:", params);
+ 
 
       try {
         const response = await DriverCreate(params);
 
         if (response.status === 201) {
-          console.log("Driver created successfully:", response.data);
           router.push(`/drivers-management?activeTab=1&create=success&driverName=${formData.driverName}`);
         }
       } catch (error) {
@@ -312,7 +311,7 @@ const DriverForm = () => {
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        console.log("Validation errors:", error);
+  
         const errors: { [key: string]: string } = {};
         setFormErrors({
           driverImage: "",

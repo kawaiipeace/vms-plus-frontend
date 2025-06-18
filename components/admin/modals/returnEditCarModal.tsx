@@ -86,7 +86,6 @@ const ReturnEditCarModal = forwardRef<
   };
 
   useEffect(() => {
-    console.log("img", previewImages);
     if (previewImages && previewImages.length > 0) {
       // Add one image to images
       if (images.length === 0) {

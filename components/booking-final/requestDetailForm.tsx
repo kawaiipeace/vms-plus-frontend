@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   AppointmentDriverCard,
@@ -6,7 +6,6 @@ import {
   CarDetailCard,
   DisburstmentCard,
   DriverPeaInfoCard,
-  DriverSmallInfoCard,
   JourneyDetailCard,
   ReferenceCard,
   VehicleUserInfoCard,
@@ -25,35 +24,7 @@ interface RequestDetailFormProps {
 export default function RequestDetailForm({
   requestId,
 }: RequestDetailFormProps) {
-  const editDriverAppointmentModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-  const vehicleUserModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-  const journeyDetailModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-  const vehiclePickModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-  const referenceModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
-  const disbursementModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
-  const sendbackRequestModalRef = useRef<{
-    openModal: () => void;
-    closeModal: () => void;
-  } | null>(null);
 
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
@@ -70,9 +41,6 @@ export default function RequestDetailForm({
     fetchRequestDetailfunc();
   }, [requestId]);
 
-  const handleModalUpdate = () => {
-    fetchRequestDetailfunc();
-  };
 
   return (
     <>

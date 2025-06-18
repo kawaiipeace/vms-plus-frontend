@@ -1,5 +1,6 @@
-import { RequestListType } from "@/app/types/request-list-type";
+
 import RequestListTable from "@/components/table/request-list-table";
+import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import ZeroRecord from "@/components/zeroRecord";
 import { requests } from "@/services/bookingUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
@@ -17,6 +18,7 @@ interface PaginationType {
 
 export default function SuccessFlow() {
   const [filterNames, setFilterNames] = useState<string[]>([]);
+    const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
   const [params, setParams] = useState({
     search: "",
@@ -118,7 +120,7 @@ export default function SuccessFlow() {
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
-       
+
           setDataRequest(requestList);
           setPagination({
             limit: params.limit,
@@ -211,28 +213,38 @@ export default function SuccessFlow() {
         </>
       )}
 
-      {pagination.total > 0 ?
+      {pagination.total > 0 ? (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
+      ) : (
+        <ZeroRecord
+          imgSrc="/assets/img/graphic/empty.svg"
+          title="ไม่มีคำขอใช้ที่สำเร็จ"
+          desc={<>รายการคำขอใช้ยานพาหนะที่สำเร็จจะแสดงที่นี่</>}
+          button="สร้างคำขอใช้"
+          displayBtn={false}
+        />
+      )}
 
-          <ZeroRecord
-            imgSrc="/assets/img/empty/search_not_found.png"
-            title="ไม่พบข้อมูล"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-            displayBtn={true}
-            btnType="secondary"
-            useModal={handleClearAllFilters}
-          />
-         : 
-          <ZeroRecord
-            imgSrc="/assets/img/graphic/empty.svg"
-            title="ไม่มีคำขอใช้ที่สำเร็จ"
-            desc={<>รายการคำขอใช้ยานพาหนะที่สำเร็จจะแสดงที่นี่</>}
-            button="สร้างคำขอใช้"
-            displayBtn={false}
-          />
-        }
-
-      <FilterModal ref={filterModalRef} onSubmitFilter={handleFilterSubmit} />
+      <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </div>
   );
 }

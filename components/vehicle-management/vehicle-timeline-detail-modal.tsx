@@ -126,12 +126,6 @@ const CardBox = ({ data }: { data: any }) => {
           <div className="flex flex-col gap-2 text-base">
             <div className="flex justify-between">
               <span className="text-xl font-bold">{status}</span>
-              <i
-                className="material-symbols-outlined text-xl text-gray-600 cursor-pointer"
-                onClick={() => { }}
-              >
-                chevron_right
-              </i>
             </div>
             <span className="text-base font-semibold text-gray-600">{workplace}</span>
             <span className="font-medium text-gray-700">{schedule_title}</span>

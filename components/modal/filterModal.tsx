@@ -17,6 +17,10 @@ import DateRangePicker from "../vehicle-management/input/dateRangeInput";
 interface Props {
   statusData?: summaryType[];
   department?: boolean;
+  selectedStatuses?: string[];
+  selectedDates?: { start: string; end: string };
+  selectedDepartment?: { value: string; label: string };
+  setSelectedDepartment?: React.Dispatch<React.SetStateAction<{ value: string; label: string }>>;
   onSubmitFilter: (filters: {
     selectedStatuses: string[];
     selectedStartDate: string;
@@ -28,9 +32,44 @@ interface Props {
 const FilterModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ statusData, onSubmitFilter, department }, ref) => {
+>(({ 
+  statusData, 
+  selectedStatuses: propSelectedStatuses = [], 
+  selectedDates, 
+  onSubmitFilter, 
+  department 
+}, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(propSelectedStatuses);
+  const [vehicleCatOptions, setVehicleCatOptions] = useState<CustomSelectOption[]>([]);
+  const [selectedVehicleOption, setSelectedVehicleOption] = useState<CustomSelectOption>({
+    value: "",
+    label: "ทั้งหมด",
+  });
+  const [params, setParams] = useState<{
+    start_date: string;
+    end_date: string;
+  }>({
+    start_date: selectedDates?.start || "",
+    end_date: selectedDates?.end || "",
+  });
+
+  
+
+  // Sync internal state with props
+  useEffect(() => {
+    setSelectedStatuses(propSelectedStatuses);
+  }, [propSelectedStatuses]);
+
+  useEffect(() => {
+    if (selectedDates) {
+      setParams({
+        start_date: selectedDates.start || "",
+        end_date: selectedDates.end || "",
+      });
+    }
+  }, [selectedDates]);
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
@@ -48,24 +87,6 @@ const FilterModal = forwardRef<
     setOpenModal(false);
   };
 
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [vehicleCatOptions, setVehicleCatOptions] = useState<
-    CustomSelectOption[]
-  >([]);
-  const [selectedVehicleOption, setSelectedVehicleOption] =
-    useState<CustomSelectOption>({
-      value: "",
-      label: "ทั้งหมด",
-    });
-
-  const [params, setParams] = useState<{
-    start_date: string;
-    end_date: string;
-  }>({
-    start_date: "",
-    end_date: "",
-  });
-
   const handleCheckboxChange = (code: string) => {
     setSelectedStatuses((prev) =>
       prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
@@ -75,24 +96,21 @@ const FilterModal = forwardRef<
   const handleVehicleTypeChange = (selectedOption: CustomSelectOption) => {
     setSelectedVehicleOption(selectedOption);
   };
-  const [datePickerKey, setDatePickerKey] = useState(0);
 
-const handleResetFilters = () => {
-  setSelectedStatuses([]);
-  setParams((prev) => ({
-    ...prev,
-    start_date: "",
-    end_date: "",
-  }));
-  setSelectedVehicleOption({ value: "", label: "ทั้งหมด" });
-  setDatePickerKey((prev) => prev + 1); // force re-render
-};
+  const handleResetFilters = () => {
+    setSelectedStatuses([]);
+    setParams({
+      start_date: "",
+      end_date: "",
+    });
+    setSelectedVehicleOption({ value: "", label: "ทั้งหมด" });
+  };
+
   useEffect(() => {
     if (department) {
       const fetchVehicleCarTypesData = async () => {
         try {
           const response = await fetchVehicleDepartments();
-
           if (response.status === 200) {
             const vehicleCatData = response.data;
             const vehicleCatArr = [
@@ -107,17 +125,12 @@ const handleResetFilters = () => {
                 })
               ),
             ];
-
             setVehicleCatOptions(vehicleCatArr);
-            setSelectedVehicleOption((prev) =>
-              prev.value ? prev : vehicleCatArr[0]
-            );
           }
         } catch (error) {
           console.error("Error fetching requests:", error);
         }
       };
-
       fetchVehicleCarTypesData();
     }
   }, [department]);
@@ -128,7 +141,7 @@ const handleResetFilters = () => {
     <div>
       {openModal && (
         <div className="modal modal-open">
-          <div className="modal-box max-w-[500px] p-0  rounded-none !overflow-visible flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
+          <div className="modal-box max-w-[500px] p-0 rounded-none !overflow-visible flex flex-col max-h-[100vh] ml-auto mr-10 h-[100vh]">
             <div className="bottom-sheet" {...swipeDownHandlers}>
               <div className="bottom-sheet-icon"></div>
             </div>
@@ -158,7 +171,7 @@ const handleResetFilters = () => {
               </button>
             </div>
             <div className="modal-scroll-wrapper overflow-y-auto">
-              <div className="modal-body  flex flex-col gap-4 h-[70vh] max-h-[70vh]">
+              <div className="modal-body flex flex-col gap-4 h-[70vh] max-h-[70vh]">
                 <div className="grid grid-cols-12 gap-4">
                   {department && (
                     <div className="col-span-12">
@@ -238,28 +251,26 @@ const handleResetFilters = () => {
                   <div className="col-span-12">
                     <div className="form-group text-left">
                       <label className="form-label">วันที่เดินทาง</label>
-                     <DateRangePicker
-  key={datePickerKey}
-  date={{
-    from: params.start_date
-      ? dayjs(params.start_date).toDate()
-      : undefined,
-    to: params.end_date
-      ? dayjs(params.end_date).toDate()
-      : undefined,
-  }}
-  onChange={(range) =>
-    setParams((prev) => ({
-      ...prev,
-      start_date: range?.from
-        ? dayjs(range.from).format("YYYY-MM-DD")
-        : "",
-      end_date: range?.to
-        ? dayjs(range.to).format("YYYY-MM-DD")
-        : "",
-    }))
-  }
-/>
+                      <DateRangePicker
+                        date={{
+                          from: params.start_date
+                            ? dayjs(params.start_date).toDate()
+                            : undefined,
+                          to: params.end_date
+                            ? dayjs(params.end_date).toDate()
+                            : undefined,
+                        }}
+                        onChange={(range) =>
+                          setParams({
+                            start_date: range?.from
+                              ? dayjs(range.from).format("YYYY-MM-DD")
+                              : "",
+                            end_date: range?.to
+                              ? dayjs(range.to).format("YYYY-MM-DD")
+                              : "",
+                          })
+                        }
+                      />
                     </div>
                   </div>
                 </div>

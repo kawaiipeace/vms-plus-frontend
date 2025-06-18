@@ -70,7 +70,7 @@ export default function FirstApproveFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-    console.log(newLimit);
+
   };
 
   const handleFilterSubmit = ({
@@ -156,7 +156,6 @@ export default function FirstApproveFlow() {
       try {
         
         const response = await firstApproverRequests(params);
-        console.log("param", params);
         if (response.status === 200) {
           const requestList = response.data.requests;
           const { total, totalPages } = response.data.pagination;
@@ -180,7 +179,6 @@ export default function FirstApproveFlow() {
   }, [params]);
 
   useEffect(() => {
-    console.log("Data Request Updated:", dataRequest);
   }, [dataRequest]); // This will log whenever dataRequest changes
 
   return (
@@ -315,7 +313,18 @@ export default function FirstApproveFlow() {
           />
         ))
       )}
-      <FilterModal ref={filterModalRef} statusData={summary} onSubmitFilter={handleFilterSubmit} />
+          <FilterModal
+        ref={filterModalRef}
+        statusData={summary}
+        selectedStatuses={params.ref_request_status_code
+          .split(",")
+          .filter(Boolean)}
+        selectedDates={{
+          start: params.startdate,
+          end: params.enddate,
+        }}
+        onSubmitFilter={handleFilterSubmit}
+      />
     </>
   );
 }

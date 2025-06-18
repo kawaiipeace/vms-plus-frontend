@@ -1,5 +1,4 @@
 export function convertToISO(dateStr: string, timeStr: string): string {
-  console.log("Converting date and time to ISO format:", dateStr, timeStr);
   
   // Determine separator
   const separator = dateStr.includes("/") ? "/" : "-";
