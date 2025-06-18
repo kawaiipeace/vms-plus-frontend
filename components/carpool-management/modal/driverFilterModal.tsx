@@ -291,7 +291,6 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
       };
 
       fetchData();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

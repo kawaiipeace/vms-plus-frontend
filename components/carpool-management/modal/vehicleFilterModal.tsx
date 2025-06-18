@@ -8,8 +8,9 @@ import {
 import BadgeStatus from "./status";
 import { getVehicleType } from "@/services/vehicleService";
 import { VehicleTypeApiResponse } from "@/app/types/vehicle-management/vehicle-list-type";
-import CustomSelect, { CustomSelectOption } from "@/components/customSelect";
+import { CustomSelectOption } from "@/components/customSelect";
 import { getVehicleStatus } from "@/services/carpoolManagement";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 
 type Props = {
   flag: string;
@@ -31,7 +32,7 @@ interface ModalBodyProps {
 }
 
 interface VehicleParams {
-  vehicel_car_type_detail: CustomSelectOption;
+  vehicel_car_type_detail?: CustomSelectOption;
   ref_vehicle_status_code: string[];
   is_active: string[];
 }
@@ -70,11 +71,18 @@ const ModalBody = ({
   params,
 }: ModalBodyProps) => {
   const [selected, setSelected] = useState<CustomSelectOption>();
+  const [search, setSearch] = useState<string>("");
 
-  const options = vehicleTypes.map((vt) => ({
-    value: vt.car_type_detail,
-    label: vt.car_type_detail,
-  }));
+  const options = vehicleTypes
+    .map((item: any) => ({
+      value: item.value,
+      label: item.label,
+    }))
+    .filter((item) =>
+      item.label.toLowerCase().includes(search.toLowerCase())
+    ) as CustomSelectOption[];
+
+  console.log("options: ", options);
 
   const onActiveChecked = (checked: boolean, id: string) => {
     if (checked) {
@@ -109,11 +117,17 @@ const ModalBody = ({
         <div className="mb-4">
           <label className="form-label">ประเภทยานพาหนะ</label>
           <div className="mt-2">
-            <CustomSelect
+            <CustomSelectOnSearch
               w="100"
-              options={[{ value: "", label: "ทั้งหมด" }, ...options]}
+              options={options}
               value={selected}
               onChange={setSelected}
+              placeholder="ทั้งหมด"
+              enableSearchOnApi
+              onSearchInputChange={(value) => {
+                const search = value.trim().length >= 3 ? value : "";
+                setSearch(search);
+              }}
             />
           </div>
         </div>
@@ -224,7 +238,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
     );
 
     const [params, setParams] = useState<VehicleParams>({
-      vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
+      vehicel_car_type_detail: undefined,
       ref_vehicle_status_code: [],
       is_active: [],
     });
@@ -233,7 +247,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
       if (vehicleParams.ref_vehicle_status_code === "") {
         setParams({
           ...params,
-          vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
+          vehicel_car_type_detail: undefined,
         });
       }
       if (vehicleParams.is_active === "") {
@@ -254,7 +268,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
     const handleSubmitFilter = () => {
       onSubmitFilter?.({
         ...params,
-        vehicel_car_type_detail: params.vehicel_car_type_detail.value,
+        vehicel_car_type_detail: params.vehicel_car_type_detail?.value,
         ref_vehicle_status_code: params.ref_vehicle_status_code.join(","),
         is_active: params.is_active.join(","),
         page: 1,
@@ -264,7 +278,7 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
 
     const handleClearFilter = () => {
       setParams({
-        vehicel_car_type_detail: { value: "", label: "ทั้งหมด" },
+        vehicel_car_type_detail: undefined,
         ref_vehicle_status_code: [],
         is_active: [],
       });
@@ -288,7 +302,6 @@ const VehicleFilterModal = forwardRef<VehicleFilterModalRef, Props>(
       };
 
       fetchData();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
