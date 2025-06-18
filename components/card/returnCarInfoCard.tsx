@@ -34,7 +34,7 @@ export const ReturnCarInfoCard = ({ data }: { data?: RequestDetailType }) => {
               <i className="material-symbols-outlined">local_parking</i>
               <div className="form-plaintext-group">
                 <div className="form-label">สถานที่จอดรถ</div>
-                <div className="form-text">{data?.parking_place || "-"}</div>
+                <div className="form-text">{data?.returned_parking_place || "-"}</div>
               </div>
             </div>
           </div>

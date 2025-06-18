@@ -210,8 +210,6 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           };
           driverReplacementData.unshift(addDriverReplacementOption);
 
-          console.log("Driver Replacement Data:", driverReplacementData);
-
           setDriverReplacementList(driverReplacementData);
         } catch (error) {
           console.error("Error fetching driver replacement lists:", error);
@@ -239,7 +237,6 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
           replacement_driver_uid: formData.driverReplacementEmployee != "" ? formData.driverReplacementEmployee : null,
         };
 
-        console.log("Submitting form with params:", params);
 
         // Submit form data
         try {
@@ -249,7 +246,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
             onUpdateDriver(true);
             setUpdateType("basicInfo");
           }
-          console.log("Form submitted successfully", params);
+
         } catch (error) {
           console.error("Error submitting form", error);
         }
@@ -315,7 +312,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         ...prevData,
         driverDepartment: selectedOption.value,
       }));
-      console.log("Selected Employing Agency:", selectedOption);
+
       setDriverDepartmentOptions(selectedOption as { value: string; label: string });
     };
 
@@ -328,7 +325,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
         ...prevData,
         driverEmployingAgency: selectedOption.value,
       }));
-      console.log("Selected Department:", selectedOption);
+
       setDriverEmployingAgencyOptions(selectedOption as { value: string; label: string });
     };
 

@@ -69,7 +69,6 @@ export default function DriverSmallInfoCard({
     const fetchData = async () => {
       try {
         const res = await fetchDriverDetail(id || "");
-        console.log("dataDriver", res.data);
         setDriver(res.data);
       } catch (error) {
         console.error("Error fetching driver data:", error);

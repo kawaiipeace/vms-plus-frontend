@@ -21,7 +21,7 @@ export default function AutoCarCard({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
-console.log('tttttitle',title);
+
 
   return (
     <div className={`card relative ${isSelected ? "!border-2 !border-brand-900" : ""}`}>

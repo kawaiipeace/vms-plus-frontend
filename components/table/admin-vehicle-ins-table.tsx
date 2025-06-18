@@ -276,7 +276,7 @@ export default function AdminVehicleInsTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+ 
   }, [pagination]);
 
   useEffect(() => {

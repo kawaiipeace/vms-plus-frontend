@@ -66,7 +66,7 @@ const DriverExportReportModal = forwardRef<
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      console.log("Form data before validation:", formData);
+
       validationSchema.validateSync(formData, { abortEarly: false });
       const selectedRowValues: string[] = [];
       Object.keys(selectedRow).forEach((key) => {
@@ -74,7 +74,7 @@ const DriverExportReportModal = forwardRef<
           selectedRowValues.push(selectedRow[key]);
         }
       });
-      console.log("Selected row values:", selectedRowValues);
+
       const params = {
         starDate: formData.driverReportStartDate,
         endDate: formData.driverReportEndDate,
@@ -103,8 +103,6 @@ const DriverExportReportModal = forwardRef<
         console.error("Error downloading report:", error);
       }
 
-      // Perform the form submission logic here
-      console.log("Form submitted successfully:", formData);
       // modalRef.current?.close();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {

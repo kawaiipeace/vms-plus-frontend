@@ -148,6 +148,8 @@ export default function ApproveProgress({ progressSteps, progressRequestStatusEm
                           <div className="supporting-text-group">
                             <div className="supporting-text">
                               {
+                                 progressRequestStatusEmp
+                                  ?.emp_position + " " +
                                 progressRequestStatusEmp
                                   ?.dept_sap_short
                               }

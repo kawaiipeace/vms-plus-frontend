@@ -36,9 +36,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId, requestD
 
 
   useEffect(() => {
-    if (requestData) {
-      console.log('Request Data in ChooseDriverCard:', requestData);
-    }
+
   }, [requestData]);
 
     if (!requestData) return null; 

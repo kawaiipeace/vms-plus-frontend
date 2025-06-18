@@ -160,7 +160,7 @@ export default function ProcessThree() {
 const handleSelectTypes = (typeName: string) => {
   setSelectedDriverType(typeName);
   setValue("isPeaEmployeeDriver", typeName === "พนักงาน กฟภ." ? "1" : "0");
-  console.log("typeName", typeName);
+
   updateFormData({
     isPeaEmployeeDriver: typeName === "พนักงาน กฟภ." ? "1" : "0",
   });
@@ -216,7 +216,7 @@ const handleSelectTypes = (typeName: string) => {
     const empData = vehicleUserDatas.find(
       (user: { emp_id: string }) => user.emp_id === selectedOption.value
     );
-    console.log("empData", empData);
+
 
     if (empData) {
       setValue("driverInternalContact", empData.tel_internal);
@@ -258,7 +258,7 @@ const handleSelectTypes = (typeName: string) => {
         if (response) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
-          console.log("vehicledatass", vehicleUserData);
+ 
           const driverOptionsArray = vehicleUserData.map(
             (user: {
               emp_id: string;
@@ -303,7 +303,7 @@ const handleSelectTypes = (typeName: string) => {
                 "/" +
                 vehicleUserData[0]?.dept_sap_short
             );
-            console.log("test", vehicleUserData[0]?.emp_id);
+
           }
 
           setSelectedVehicleUserOption(selectedDriverOption);

@@ -20,7 +20,6 @@ export default function Home() {
         try {
           const profileResponse = await fetchProfile();
           if (profileResponse?.data) {
-            console.log("Fetched Profile:", profileResponse.data);
             setProfile(profileResponse.data);
             setIsAuthenticated(true);
 
@@ -74,7 +73,7 @@ export default function Home() {
             />
             <div className="login-brand-title">ระบบจัดการยานพาหนะ VMS Plus</div>
             <div className="login-brand-subtitle">
-              เรื่องเดินทางไม่ใช่ปัญหา ยืมรถสะดวก ง่าย เร็ว ทันใจ (Version 0.2)
+              เรื่องเดินทางไม่ใช่ปัญหา ยืมรถสะดวก ง่าย เร็ว ทันใจ (Version 0.9)
             </div>
       
           </div>

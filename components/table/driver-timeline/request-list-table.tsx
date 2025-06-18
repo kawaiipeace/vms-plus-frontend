@@ -48,7 +48,7 @@ export default function RequestListTable({ dataRequest, params, selectedOption, 
     defaultColumn: { enableSorting: false },
   });
 
-  console.log("tripDetails", tripDetails);
+
 
   return (
     <div className="w-full overflow-x-auto py-4 pt-0">

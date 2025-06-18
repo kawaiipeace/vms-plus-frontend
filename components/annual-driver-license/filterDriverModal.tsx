@@ -53,7 +53,6 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
     const endDatePickerRef = useRef<DatePickerRef>(null);
 
     // useEffect(() => {
-    //   console.log("FilterDriverModal useEffect", startDate, endDate);
 
     //   startDatePickerRef.current?.setValue(startDate ? dayjs(startDate).format("YYYY-MM-DD") : "");
     //   endDatePickerRef.current?.setValue(endDate || "");

@@ -14,7 +14,6 @@ export default function NotificationDropdown() {
     const loadNotifications = async () => {
       try {
         const response = await fetchNotify();
-        console.log("res", response);
         setNotifications(response.data.notifications);
         setUnreadCount(
           response.data.notifications.filter(

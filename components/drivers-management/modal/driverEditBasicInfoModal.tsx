@@ -117,7 +117,7 @@ const DriverEditBasicInfoModal = forwardRef<
       } else {
         console.error("Error submitting form", response);
       }
-      console.log("Form submitted successfully", params);
+
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const errors: { [key: string]: string } = {};

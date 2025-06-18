@@ -264,6 +264,7 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
         work_type: params.work_type.join(","),
         is_active: params.is_active.join(","),
         ref_driver_status_code: params.ref_driver_status_code.join(","),
+        page: 1,
       });
       dialogRef.current?.close();
     };
@@ -290,7 +291,6 @@ const DriverFilterModal = forwardRef<DriverFilterModalRef, Props>(
       };
 
       fetchData();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

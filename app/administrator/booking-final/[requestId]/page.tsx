@@ -14,7 +14,6 @@ export default function RequestDetail() {
   const { isPinned } = useSidebar();
 
   const params = useParams();
-  console.log("tttpp", params);
   const request_id = String(params.requestId);
   const [requestData, setRequestData] = useState<RequestDetailType>();
 

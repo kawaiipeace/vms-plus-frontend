@@ -58,7 +58,7 @@ export default function RequestDetailForm({
   const fetchRequestDetailfunc = async () => {
     try {
       const response = await firstApproverRequestDetail(requestId);
-      console.log("res", response.data);
+
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);

@@ -64,7 +64,7 @@ const ReviewCarDriveModal = forwardRef<
     try {
       // Ensure parsedData is an object before accessing vehicleSelect
       const response = await fetchRequestKeyDetail(id || "");
-      console.log("response", response);
+
 
       setRequestData(response.data);
     } catch (error) {
@@ -134,7 +134,7 @@ const ReviewCarDriveModal = forwardRef<
   // const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
 
   const onChangeRatting = (value: string, id: string) => {
-    console.log(value, id);
+
     const newRatting = ratting?.map(
       (r: {
         mas_satisfaction_survey_questions_code: string;
@@ -167,7 +167,7 @@ const ReviewCarDriveModal = forwardRef<
           };
         }
       );
-      console.log(payLoad);
+  
 
       const response = await UserUpdateSatisfactionSurvey(id || "", payLoad);
       if (response.status === 200) {

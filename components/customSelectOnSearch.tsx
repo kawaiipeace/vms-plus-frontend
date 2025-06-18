@@ -151,7 +151,7 @@ export default function CustomSelectOnSearch({
             width={24}
             height={24}
           />
-          <span className="text-black">{option.label}</span>
+          <span className=" text-object-search">{option.label}</span>
         </div>
       );
     }
@@ -193,13 +193,13 @@ export default function CustomSelectOnSearch({
                 width={24}
                 height={24}
               />
-              <span className="text-black">{value?.label}</span>
+              <span className="text-object-search">{value?.label}</span>
             </div>
           )
         ) : enableSearchOnApi ? (
           <input
             ref={inputRef}
-            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md text-black"
+            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md text-object-search"
             value={inputText}
             placeholder={placeholder}
             disabled={disabled}

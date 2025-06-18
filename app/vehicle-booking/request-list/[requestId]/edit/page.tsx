@@ -20,13 +20,12 @@ export default function RequestDetail() {
   const [requestData, setRequestData] = useState<RequestDetailType>();
 
   useEffect(() => {
-    console.log(request_id);
+
     if (request_id) {
       const fetchRequestDetailfunc = async () => {
       try {
           const response = await requestDetail(request_id);
           setRequestData(response.data);
-          console.log("reqeustdetail", response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
         }

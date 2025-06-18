@@ -48,7 +48,6 @@ const DriverLicenseModal = forwardRef<
     };
 
     useEffect(() => {
-      console.log("requesteata--------", requestData);
     }, [requestData]);
     return (
       <dialog ref={modalRef} className="modal">

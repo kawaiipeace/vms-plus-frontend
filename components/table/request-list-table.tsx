@@ -130,6 +130,10 @@ export default function RequestListTable({
             {row.original.vehicle_license_plate +
               " " +
               row.original.vehicle_license_plate_province_short}
+              
+          </div>
+           <div className="text-color-secondary text-xs">
+            {row.original.vehicle_department_dept_sap_short}
           </div>
         </div>
       ),
@@ -211,7 +215,6 @@ export default function RequestListTable({
       cell: ({ row }) => {
         const statusValue = row.original.ref_request_status_name;
         const id = row.original.trn_request_uid;
-        console.log("id", id);
 
         const progressType = {
           "50": "รอรับกุญแจ",
@@ -649,7 +652,7 @@ export default function RequestListTable({
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+    
   }, [pagination]);
 
   useEffect(() => {

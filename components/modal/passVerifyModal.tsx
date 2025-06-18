@@ -55,7 +55,7 @@ const PassVerifyModal = forwardRef<
     const fetchRequests = async (id: string) => {
       try {
         const response = await fetchFinalApprovalUsers(id);
-        console.log('finalapprover',response);
+
         if (response.status === 200) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
@@ -111,7 +111,7 @@ const PassVerifyModal = forwardRef<
         };
 
         const res = await adminApproveRequest(payload);
-        console.log("approve", res);
+
 
         if (res) {
           modalRef.current?.close();

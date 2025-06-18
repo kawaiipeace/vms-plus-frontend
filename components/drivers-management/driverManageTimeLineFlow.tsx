@@ -113,7 +113,7 @@ export default function VehicleTimeLine() {
     let countFilters = 0;
     const fetchData = async () => {
       try {
-        console.log("params", params);
+
         const response = await getDriverTimeline(params);
         setDataRequest(response.data.drivers);
         setLastMonth(response.data.last_month);
@@ -189,7 +189,7 @@ export default function VehicleTimeLine() {
       <div className="flex justify-between items-center mb-4">
         <SearchInput
           defaultValue={params.search}
-          placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
           onSearch={(value) => debouncedSetParams(value)}
         />
         <div className="flex gap-4">

@@ -241,7 +241,7 @@ export default function TravelListTable({ defaultData, pagination, editRecordTra
   });
 
   useEffect(() => {
-    console.log("page", pagination);
+    
   }, [pagination]);
 
   useEffect(() => {
@@ -256,7 +256,6 @@ export default function TravelListTable({ defaultData, pagination, editRecordTra
             table={table}
             onRowClick={(row) => {
               const uid = row.trn_request_uid;
-              console.log("row clicked", { uid });
               router.push(`/administrator/request-list/${uid}`);
             }}
           />

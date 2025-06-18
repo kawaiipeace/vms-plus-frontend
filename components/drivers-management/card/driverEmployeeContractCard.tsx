@@ -61,7 +61,6 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
     const driverSearch = async () => {
       try {
         const response = await driversMamagement(params);
-        console.log("Driver Search Response2:", response?.data?.drivers[0]?.is_active);
         if (response.status === 200) {
           if (response?.data?.drivers[0]?.is_active) {
             setReplacementDriverActive(response?.data?.drivers[0]?.is_active);
