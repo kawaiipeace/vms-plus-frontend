@@ -1,7 +1,7 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Link from "next/link";
 import CancelRequestModal from "@/components/modal/cancelRequestModal";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import LicenseCardModal from "@/components/modal/admin/licenseCardModal";
 import ToastCustom from "@/components/toastCustom";
 import FileBackRequestModal from "../modal/fileBackModal";
@@ -60,6 +60,10 @@ const handleCopyRequestNo = async (text?: string) => {
     console.error("Copy failed:", err);
   }
 };
+
+useEffect(() => {
+  console.log("data:", data);
+},[data]);
 
 
   const saveImage = () => {
@@ -270,7 +274,7 @@ const handleCopyRequestNo = async (text?: string) => {
 
       <ConfirmReturnVehicleModal
         ref={confirmReturnVehicleModalRef}
-        key={data?.receiver_key_type_detail?.ref_vehicle_key_type_name}
+        data={data}
         id={data?.trn_request_uid}
       />
 

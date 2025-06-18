@@ -65,6 +65,26 @@ img {
   color: #cecfd2;
 }
 
+.dark-mode .noti-main {
+  background-color: #333741;
+  color: #cecfd2;
+}
+
+.dark-mode .alert.alert-success{
+    background-color: #333741 !important;
+  color: #cecfd2;
+}
+
+.dark-mode .noti-content {
+  background-color: #333741;
+  color: #cecfd2;
+}
+
+.dark-mode .noti-item {
+  background-color: #333741;
+  color: #cecfd2;
+}
+
 .dark-mode .tablist {
   background-color: #0c111d;
   color: #f5f5f6;
