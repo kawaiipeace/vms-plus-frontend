@@ -17,6 +17,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 interface Props {
   id?: string;
   fleet_card_no?: string;
+  key?: string;
   data?: RequestDetailType;
 }
 
@@ -26,7 +27,7 @@ const ConfirmReturnVehicleModal = forwardRef<
     closeModal: () => void;
   },
   Props
->(({ id, data, fleet_card_no }, ref) => {
+>(({ id, data, fleet_card_no, key }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const [openModal, setOpenModal] = useState(false);
@@ -66,7 +67,7 @@ const ConfirmReturnVehicleModal = forwardRef<
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
   useEffect(() => {
-
+    console.log("data:", data);
     const today = new Date();
     const localDate = `${today.getFullYear()}-${String(
       today.getMonth() + 1
@@ -137,15 +138,21 @@ const ConfirmReturnVehicleModal = forwardRef<
                     <div className="card-item-group !border-0 !rounded-md shadow-none outline-0">
                       <div className="card-item">
                         <i className="material-symbols-outlined">key</i>
-                        <span className="card-item-text">{""}</span>
-                      </div>
-
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">credit_card</i>
                         <span className="card-item-text">
-                          {fleet_card_no && "บัตรเติมน้ำมัน"}
+                          {
+                            data?.receiver_key_type_detail
+                              ?.ref_vehicle_key_type_name
+                          }
                         </span>
                       </div>
+                      {data?.fleet_card_no !== "" && (
+                        <div className="card-item">
+                          <i className="material-symbols-outlined">
+                            credit_card
+                          </i>
+                          <span className="card-item-text">บัตรเติมน้ำมัน</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

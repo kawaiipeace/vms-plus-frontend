@@ -105,10 +105,10 @@ export default function NotificationDropdown() {
       </button> */}
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+        <div className="absolute noti-main right-0 mt-2 w-80 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
           <div className="border-b border-gray-200 px-4 py-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold">
                 All notifications
               </h3>
               {/* {unreadCount > 0 && (
@@ -123,25 +123,25 @@ export default function NotificationDropdown() {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="px-4 py-6 text-center text-sm text-gray-500">
+              <div className="px-4 py-6 text-center text-sm text-gray-500 noti-main">
                 No notifications
               </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.trn_notify_uid}
-                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
+                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer noti-item ${
                     !notification.is_read ? "bg-blue-50" : ""
                   }`}
-                 onClick={() => {
-  if (notification.notify_url) {
-    const url = notification.notify_url.startsWith("/")
-      ? notification.notify_url
-      : `/${notification.notify_url}`;
-    router.push(url);
-    setIsOpen(false);
-  }
-}}
+                  onClick={() => {
+                    if (notification.notify_url) {
+                      const url = notification.notify_url.startsWith("/")
+                        ? notification.notify_url
+                        : `/${notification.notify_url}`;
+                      router.push(url);
+                      setIsOpen(false);
+                    }
+                  }}
                 >
                   <div className="flex items-start">
                     <div className="flex-shrink-0 pt-0.5">
@@ -162,7 +162,7 @@ export default function NotificationDropdown() {
                       </div>
                     </div>
                     <div className="ml-3 flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium ">
                         {notification.title}
                       </p>
                       <p className="text-sm text-gray-500">

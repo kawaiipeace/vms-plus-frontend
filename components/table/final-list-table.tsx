@@ -65,10 +65,15 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
-           <div className="flex flex-col">
-            <div>{row.original.vehicle_user_emp_name} ({row.original.vehicle_user_emp_id})</div>
-             <div className="text-color-secondary text-xs">
-              {row.original.vehicle_user_position + " " + row.original.vehicle_user_dept_name_short}
+          <div className="flex flex-col">
+            <div>
+              {row.original.vehicle_user_emp_name} (
+              {row.original.vehicle_user_emp_id})
+            </div>
+            <div className="text-color-secondary text-xs">
+              {row.original.vehicle_user_position +
+                " " +
+                row.original.vehicle_user_dept_name_short}
             </div>
           </div>
         </div>
@@ -90,7 +95,9 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
             <div className="flex flex-col">
               {" "}
               <div className="text-left">
-            {row.original.vehicle_license_plate + " " +row.original.vehicle_license_plate_province_short}
+                {row.original.vehicle_license_plate +
+                  " " +
+                  row.original.vehicle_license_plate_province_short}
               </div>
               <div className="text-color-secondary text-xs">
                 {row.original.ref_vehicle_type_name}
@@ -108,9 +115,7 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
         <div className="text-left" data-name="สังกัดยานพาหนะ">
           <div className="flex flex-col">
             {" "}
-            <div className="text-left">
-              {row.original.vehicle_dept_name}
-            </div>
+            <div className="text-left">{row.original.vehicle_dept_name}</div>
             <div className="text-color-secondary text-xs">
               {row.original.vehicle_carpool_name}
             </div>
@@ -182,14 +187,27 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
         const endDateTime = convertToBuddhistDateTime(
           row.original.end_datetime || ""
         );
+
+        const isSameDate = startDateTime.date === endDateTime.date;
+
         return (
           <div className="text-left" data-name="วันที่เดินทาง">
             <div className="flex flex-col">
-              <div>{startDateTime.date + " - " + endDateTime.date}</div>
+              <div>
+                {isSameDate ? (
+                  <>
+                    {startDateTime.date} {startDateTime.time} -{" "}
+                    {endDateTime.time}
+                  </>
+                ) : (
+                  <>
+                    {startDateTime.date} {startDateTime.time} -{" "}
+                    {endDateTime.date} {endDateTime.time}
+                  </>
+                )}
+              </div>
               <div className="text-color-secondary text-xs">
-                {" "}
-                {endDateTime.time + " - " + startDateTime.time} (
-                {row.original.trip_type_name})
+                ({row.original.trip_type_name})
               </div>
             </div>
           </div>
@@ -306,9 +324,7 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
     },
   });
 
-  useEffect(() => {
-    
-  }, [pagination]);
+  useEffect(() => {}, [pagination]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -321,7 +337,6 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
           <DataTable
             table={table}
             onRowClick={(row) => {
-
               const status = row.ref_request_status_name;
               const uid = row.trn_request_uid;
 

@@ -67,9 +67,9 @@ export const fetchDriverCertificateType = async () => {
   }
 };
 
-export const fetchCostTypes = async () => {
+export const fetchCostTypes = async (emp_id?: string) => {
   try {
-    const response = await axiosInstance.get("ref/cost-type");
+    const response = await axiosInstance.get("ref/cost-type?emp_id=" + emp_id);
     return response;
   } catch (error) {
     throw error;

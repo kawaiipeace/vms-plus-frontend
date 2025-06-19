@@ -6,6 +6,7 @@ import { requests } from "@/services/bookingUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useFormContext } from "@/contexts/requestFormContext";
 import ListFlow from "./flow/listFlow";
 import RequestStatusBox from "./requestStatusBox";
 import PaginationControls from "./table/pagination-control";
@@ -45,6 +46,7 @@ export default function ArpproveFlow() {
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
+  const { resetFormData } = useFormContext();
   const [datePickerKey, setDatePickerKey] = useState(0); // Add this for date picker reset
   const router = useRouter();
   const filterModalRef = useRef<{
@@ -54,7 +56,9 @@ export default function ArpproveFlow() {
 
   const addNewRequest = () => {
     localStorage.removeItem("formData");
+    resetFormData();
     router.push("/vehicle-booking/process-one");
+    router.refresh()
   };
 
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
@@ -72,6 +76,8 @@ export default function ArpproveFlow() {
       "71": { iconName: "key", status: "info" },
       "80": { iconName: "check", status: "success" },
     };
+
+
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
