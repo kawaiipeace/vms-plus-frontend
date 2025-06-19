@@ -132,33 +132,36 @@ export default function RequestForm() {
   };
 
   useEffect(() => {
-    const fetchCostTypeRequest = async () => {
-      try {
-        const response = await fetchCostTypes(profile?.emp_id || "");
-        if (response.status === 200) {
-          const costTypeData = response.data;
-          setCostTypeDatas(costTypeData);
-          const costTypeArr = [
-            ...costTypeData.map(
-              (cost: {
-                ref_cost_type_code: string;
-                ref_cost_type_name: string;
-              }) => ({
-                value: cost.ref_cost_type_code,
-                label: cost.ref_cost_type_name,
-              })
-            ),
-          ];
-
-          setCostTypeOptions(costTypeArr);
-        }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    };
-
-    fetchCostTypeRequest();
+    fetchCostTypeRequest(profile?.emp_id || "");
   }, []);
+
+  const fetchCostTypeRequest = async (id: string) => {
+    console.log('cost',id);
+    try {
+      const response = await fetchCostTypes(id);
+      if (response.status === 200) {
+        const costTypeData = response.data;
+        console.log("costtype", costTypeData);
+        setCostTypeDatas(costTypeData);
+        const costTypeArr = [
+          ...costTypeData.map(
+            (cost: {
+              ref_cost_type_code: string;
+              ref_cost_type_name: string;
+            }) => ({
+              value: cost.ref_cost_type_code,
+              label: cost.ref_cost_type_name,
+            })
+          ),
+        ];
+
+        setCostTypeOptions(costTypeArr);
+        setValue("costCenter", costTypeData[0]?.cost_center || "");
+      }
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  };
 
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
     value: string;
@@ -260,6 +263,10 @@ export default function RequestForm() {
       setSelectedVehicleUserOption(
         selectedOption as { value: string; label: string }
       );
+      if (selectedOption?.value) {
+        fetchCostTypeRequest(selectedOption.value); // send the selected id to fetchCostTypes
+      }
+      
     }
 
     // If cleared (value is empty), reset related fields
@@ -275,7 +282,6 @@ export default function RequestForm() {
       (user: { emp_id: string }) =>
         String(user.emp_id) === String(selectedOption.value)
     );
-
 
     if (empData) {
       setValue("telInternal", empData.tel_internal);
@@ -662,7 +668,7 @@ export default function RequestForm() {
                         maxLength={10}
                         {...register("telInternal")}
                         placeholder="ระบุเบอร์ภายใน"
-                        onKeyDown ={(e) => {
+                        onKeyDown={(e) => {
                           if (!/[0-9]/.test(e.key)) {
                             e.preventDefault();
                           }
@@ -698,7 +704,7 @@ export default function RequestForm() {
                         maxLength={10}
                         {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
-                        onKeyDown ={(e) => {
+                        onKeyDown={(e) => {
                           if (!/[0-9]/.test(e.key)) {
                             e.preventDefault();
                           }
