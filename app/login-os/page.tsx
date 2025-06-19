@@ -117,6 +117,22 @@ export default function LoginOS() {
               type="text"
               onInput={handlePhoneChange}
               placeholder="ระบุเบอร์โทรศัพท์"
+              onKeyDown={(e) => {
+                if (
+                  !/[0-9]/.test(e.key) &&
+                  ![
+                    "Backspace",
+                    "Delete",
+                    "Tab",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Home",
+                    "End",
+                  ].includes(e.key)
+                ) {
+                  e.preventDefault();
+                }
+              }}
             />
           </label>
           {errors.phone && <FormHelper text={String(errors.phone.message)} />}

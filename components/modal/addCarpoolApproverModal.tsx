@@ -396,6 +396,22 @@ const AddCarpoolApproverModal = forwardRef<
                         onChange={(e) =>
                           setInternalContactNumber(e.target.value)
                         }
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                   </div>
@@ -416,6 +432,22 @@ const AddCarpoolApproverModal = forwardRef<
                         type="text"
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                         value={mobile_contact_number}
                         onChange={(e) => {
                           setMobileContactNumber(e.target.value);

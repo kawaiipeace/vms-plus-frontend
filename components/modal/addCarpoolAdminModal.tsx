@@ -384,6 +384,22 @@ const AddCarpoolAdminModal = forwardRef<
                         onChange={(e) =>
                           setInternalContactNumber(e.target.value)
                         }
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                   </div>
@@ -405,6 +421,22 @@ const AddCarpoolAdminModal = forwardRef<
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
                         value={mobile_contact_number}
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={(e) => {
                           setMobileContactNumber(e.target.value);
                           if (e.target.value) {

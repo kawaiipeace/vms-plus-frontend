@@ -370,6 +370,22 @@ const KeyPickUpEditModal = forwardRef<
                         className="form-control"
                         {...register("telInternal")}
                         placeholder="ระบุเบอร์ภายใน"
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                   </div>
@@ -394,6 +410,22 @@ const KeyPickUpEditModal = forwardRef<
                         className="form-control"
                         {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                     {errors.telMobile && (
@@ -464,6 +496,22 @@ const KeyPickUpEditModal = forwardRef<
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
                         {...register("telOutsideMobile")}
+                           onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                     {errors.telOutsideMobile && (
