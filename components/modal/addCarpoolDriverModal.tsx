@@ -263,7 +263,7 @@ const AddCarpoolDriverModal = forwardRef<
               </div>
 
               <div>
-                <div className="flex justify-between items-center mt-5 px-4 bg-[#EAECF0] rounded">
+                <div className="flex justify-between items-center mt-5 px-4 bg-[#EAECF0] rounded input-group">
                   <div>
                     รายชื่อพนักงานขับรถ{" "}
                     <span className="badge badge-outline badge-gray !rounded">

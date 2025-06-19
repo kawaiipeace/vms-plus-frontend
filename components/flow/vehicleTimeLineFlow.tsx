@@ -13,6 +13,8 @@ import SearchInput from "../vehicle-management/input/search";
 import { TripStatus } from "@/utils/vehicle-constant";
 import { debounce } from "lodash";
 import { VehicleTimelineSearchParams } from "@/app/types/vehicle-management/vehicle-timeline-type";
+import clsx from "clsx";
+import "../vehicle-management/styles/timeline.css";
 
 export default function VehicleTimeLine() {
     // ----- Setting Initial -----
@@ -64,7 +66,10 @@ export default function VehicleTimeLine() {
             page: 1,
         }));
     };
-    const handleClearAllFilters = () => setParams(initialParams);
+    const handleClearAllFilters = () => {
+        setParams(initialParams);
+        setFilterParams([]);
+    };
     const handleOpenFilterModal = () => filterModalRef.current?.open();
     const toggleFilter = (value: string) => setFilterParams((prev) =>
         prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
@@ -144,7 +149,7 @@ export default function VehicleTimeLine() {
             debounce((value: string) => {
                 if (value.length > 2 || value.length === 0) {
                     setParams((prev) => ({ 
-                        ...prev, 
+                        ...prev,
                         search: value,
                         page: 1
                     }));
@@ -256,30 +261,59 @@ export default function VehicleTimeLine() {
             <FilterModal
                 ref={filterModalRef}
                 onSubmitFilter={handleFilterSubmit}
+                clearAllFilters={handleClearAllFilters}
                 flag="TIMELINE" />
         </div>
     );
 }
 
-const DropdownMenu = ({ dropdownRef, selectedOption, handleSelect }: any) => (
+// ----- Dropdown Menu Component -----
+type DropdownMenuProps = {
+    dropdownRef: any;
+    selectedOption: "all" | "first";
+    handleSelect: (value: "all" | "first") => void;
+};
+
+const OPTIONS: Array<"all" | "first"> = ["all", "first"];
+
+const DropdownMenu = ({
+    dropdownRef,
+    selectedOption,
+    handleSelect
+}: DropdownMenuProps) => (
     <div
+        className={clsx(
+            "absolute right-0 mt-2 w-64 z-50",
+            "rounded-xl shadow",
+            "option-modal"
+        )}
+        role="menu"
         ref={dropdownRef}
-        className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50"
     >
-        {["all", "first"].map((option) => (
-            <button
-                key={option}
-                onClick={() => handleSelect(option)}
-                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-                role="menuitem"
-            >
-                {selectedOption === option ? (
-                    <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
-                ) : (
-                    <span className="w-4 mr-2" />
-                )}
-                {option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก"}
-            </button>
-        ))}
+
+        {OPTIONS.map((option) => {
+            const isSelected = selectedOption === option;
+            const label = option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก";
+
+            return (
+                <button
+                    key={option}
+                    onClick={() => handleSelect(option)}
+                    role="menuitem"
+                    className={clsx(
+                        "flex items-center w-full text-sm text-left",
+                        "px-4 py-2",
+                        "option-modal-select"
+                    )}
+                >
+                    {isSelected ? (
+                        <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
+                    ) : (
+                        <span className="w-4 mr-2" />
+                    )}
+                    {label}
+                </button>
+            );
+        })}
     </div>
 );

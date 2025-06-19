@@ -96,6 +96,8 @@ function RequestListContent() {
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
+  const searchParams = useSearchParams();
+  const active = searchParams.get("activeTab");
 
   const params = useParams();
   const request_id = String(params.requestId);
@@ -107,6 +109,7 @@ export default function RequestDetail() {
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await requestDetail(request_id);
+
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -115,7 +118,7 @@ export default function RequestDetail() {
 
       fetchRequestDetailfunc();
     }
-  }, [request_id]);
+  }, [request_id, active]);
 
   return (
     <div>

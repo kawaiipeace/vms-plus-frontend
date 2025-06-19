@@ -1,0 +1,72 @@
+/* ----------------------------------------
+   Base Styles
+---------------------------------------- */
+.option-modal {
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 6px;
+}
+
+/* ----------------------------------------
+     Light Mode
+  ---------------------------------------- */
+.light-mode .option-modal {
+    border-color: #dcdcdc;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.light-mode .option-modal-select:hover {
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    color: #000000;
+}
+
+.light-mode .dateRangePicker {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #dcdcdc;
+}
+
+.light-mode .dateRangePicker .selected-date {
+    background-color: #fff;
+    color: #000000;
+}
+
+/* ----------------------------------------
+     Dark Mode
+  ---------------------------------------- */
+.dark-mode .option-modal {
+    border-color: #5f5f5f;
+    background-color: #131826;
+    color: #ffffff;
+}
+
+.dark-mode .option-modal-select:hover {
+    border-radius: 10px;
+    background-color: #98a2b3;
+    color: #ffffff;
+}
+
+.dark-mode .rdp-range_middle {
+    background-color: #98a2b3;
+}
+
+.dark-mode .rdp-day_button {
+    color: #ffffff;
+}
+
+.dark-mode .rdp-root {
+    background-color: #131826;
+}
+
+.dark-mode .dateRangePicker {
+    background-color: #131826;
+    color: #ffffff;
+    border: 1px solid #333741;
+}
+
+.dark-mode .dateRangePicker .selected-date {
+    background-color: #131826;
+    color: #ffffff;
+}

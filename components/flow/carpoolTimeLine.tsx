@@ -90,14 +90,14 @@ export default function CarpoolTimeLine() {
   const filterDriverModalRef = useRef<DriverFilterModalRef>(null);
 
   useEffect(() => {
-    // setVehicleParams((prev) => ({
-    //   ...prev,
-    //   ref_vehicle_status_code: filterParams.join(","),
-    // }));
-    // setDriverParams((prev) => ({
-    //   ...prev,
-    //   ref_driver_status_code: filterParams.join(","),
-    // }));
+    setVehicleParams((prev) => ({
+      ...prev,
+      ref_vehicle_status_code: filterParams.join(","),
+    }));
+    setDriverParams((prev) => ({
+      ...prev,
+      ref_driver_status_code: filterParams.join(","),
+    }));
   }, [filterParams]);
 
   useEffect(() => {

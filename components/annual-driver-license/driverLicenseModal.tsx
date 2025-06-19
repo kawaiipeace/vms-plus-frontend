@@ -95,7 +95,7 @@ const DriverLicenseModal = forwardRef<
                       alt=""
                     />
                   </div>
-                  <div className="text-left ml-3 flex flex-col gap-2">
+                  <div className="text-left ml-3 flex flex-col gap-2 content-title">
                     <p className="font-bold text-xl">
                       {profile?.first_name} {profile?.last_name}
                     </p>

@@ -56,9 +56,9 @@ export const useColumns = ({
                     cell: (info) => {
                         const { license, brandModel, brandName, provinceShort } = info.getValue();
                         return (
-                            <div className="flex flex-col text-start">
+                            <div className="flex flex-col text-start px-4">
                                 <span className="text-base font-semibold">{license} {provinceShort}</span>
-                                <span className="text-base text-gray-600">
+                                <span className="text-base">
                                     {brandModel} {brandName}
                                 </span>
                             </div>
@@ -81,7 +81,7 @@ export const useColumns = ({
             ? [
                 columnHelper.accessor("vehicleType", {
                     header: () => <span className="w-full">ประเภทยานพาหนะ</span>,
-                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
+                    cell: (info) => <div className="text-start px-4"><span>{info.getValue()}</span></div>,
                     enableSorting: false,
                     meta: {
                         className: clsx(
@@ -100,9 +100,9 @@ export const useColumns = ({
                     cell: (info) => {
                         const { department, carpoolName } = info.getValue();
                         return (
-                            <div className="flex flex-col text-start">
+                            <div className="flex flex-col text-start px-4">
                                 <span className="truncate">{department}</span>
-                                <span className="text-gray-500">{carpoolName}</span>
+                                <span>{carpoolName}</span>
                             </div>
                         );
                     },
@@ -117,7 +117,7 @@ export const useColumns = ({
                 }),
                 columnHelper.accessor("distance", {
                     header: () => <span className="w-full">{`ระยะทาง ${lastMonth}`}</span>,
-                    cell: (info) => <div className="text-start"><span>{info.getValue()}</span></div>,
+                    cell: (info) => <div className="text-start px-4"><span>{info.getValue()}</span></div>,
                     enableSorting: true,
                     meta: {
                         className: clsx(
