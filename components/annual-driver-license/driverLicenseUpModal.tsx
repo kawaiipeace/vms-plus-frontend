@@ -66,7 +66,7 @@ const DriverLicenseUpModal = forwardRef<
                     </p>
                   </div>
                 </div>
-                <div className="flex justify-start items-center col-span-12 mt-0 px-3">
+                <div className="flex justify-start items-center col-span-12 mt-0 px-3 content-title">
                   <div className="w-[80px] rounded-full overflow-hidden border-brand-900 border-4">
                     <Image
                       src={

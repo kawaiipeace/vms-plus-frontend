@@ -136,7 +136,7 @@ export default function RequestForm() {
   }, []);
 
   const fetchCostTypeRequest = async (id: string) => {
-    console.log('cost',id);
+    console.log("cost", id);
     try {
       const response = await fetchCostTypes(id);
       if (response.status === 200) {
@@ -266,7 +266,6 @@ export default function RequestForm() {
       if (selectedOption?.value) {
         fetchCostTypeRequest(selectedOption.value); // send the selected id to fetchCostTypes
       }
-      
     }
 
     // If cleared (value is empty), reset related fields
@@ -669,7 +668,18 @@ export default function RequestForm() {
                         {...register("telInternal")}
                         placeholder="ระบุเบอร์ภายใน"
                         onKeyDown={(e) => {
-                          if (!/[0-9]/.test(e.key)) {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
                             e.preventDefault();
                           }
                         }}
@@ -705,7 +715,18 @@ export default function RequestForm() {
                         {...register("telMobile")}
                         placeholder="ระบุเบอร์โทรศัพท์"
                         onKeyDown={(e) => {
-                          if (!/[0-9]/.test(e.key)) {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
                             e.preventDefault();
                           }
                         }}
