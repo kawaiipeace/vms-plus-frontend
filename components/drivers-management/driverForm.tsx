@@ -298,8 +298,6 @@ const DriverForm = () => {
       };
       // console.log("params", params);
 
- 
-
       try {
         const response = await DriverCreate(params);
 
@@ -311,7 +309,6 @@ const DriverForm = () => {
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-  
         const errors: { [key: string]: string } = {};
         setFormErrors({
           driverImage: "",
@@ -915,7 +912,7 @@ const DriverForm = () => {
             <div className="col-span-12 md:col-span-3">
               <div className="flex-1">
                 <div className="form-group">
-                  <label className="form-label">
+                  <label className="form-label md:min-h-[48px] min-[1600px]:min-h-0">
                     รูปใบขับขี่
                     <div className="2xl:hidden xl:block hidden">
                       <br />
@@ -936,7 +933,9 @@ const DriverForm = () => {
             <div className="col-span-12 md:col-span-3">
               <div className="flex-1">
                 <div className="form-group">
-                  <label className="form-label">รูปใบรับรองการอบรม,บัตรประชาชน, ทะเบียนบ้าน ฯลฯ</label>
+                  <label className="form-label md:min-h-[48px] min-[1600px]:min-h-0">
+                    รูปใบรับรองการอบรม,บัตรประชาชน, ทะเบียนบ้าน ฯลฯ
+                  </label>
                   <UploadFilePDF onImageChange={handleFileChange2} />
                   <div className="flex flex-col gap-3 mt-3">
                     {filePDF2.length > 0 ? (

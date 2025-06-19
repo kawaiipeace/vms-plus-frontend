@@ -534,6 +534,22 @@ const handleSelectTypes = (typeName: string) => {
                             className="form-control"
                             {...register("driverInternalContact")}
                             placeholder="ระบุเบอร์ภายใน"
+                               onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                           />
                         </div>
                       </div>
@@ -547,6 +563,22 @@ const handleSelectTypes = (typeName: string) => {
                           className="form-control"
                           {...register("driverMobileContact")}
                           placeholder="ระบุเบอร์ภายใน"
+                             onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                         />
                       </div>
                     </div>

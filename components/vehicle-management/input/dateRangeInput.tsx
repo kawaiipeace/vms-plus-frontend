@@ -27,10 +27,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
     };
 
     const ThaiYearDropdown = (props: DropdownProps) => {
-        const { value, onChange, name, required, className } = props;
-
-        // const currentYear = new Date().getFullYear();
-        // const thaiYears = Array.from({ length: 20 }, (_, i) => currentYear - i + 543);
+        const { value, onChange, name, required } = props;
 
         const startYear = 2017; // ค.ศ.
         const endYear = 2032;
@@ -42,7 +39,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
 
         return (
             <select
-                className="bg-white border border-gray-300 rounded-lg p-2 ml-2 text-gray-400 appearance-none"
+                className="selected-date border border-gray-300 rounded-lg p-2 ml-2 text-gray-400 appearance-none"
                 name={name}
                 required={required}
                 value={value}
@@ -67,7 +64,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
 
         return (
             <select 
-                className="bg-white border border-gray-300 rounded-lg p-2 ml-2 text-gray-400 appearance-none"
+                className="selected-date border border-gray-300 rounded-lg p-2 ml-2 text-gray-400 appearance-none"
                 value={value}
                 onChange={onChange}>
                 {thaiMonths.map((month, index) => (
@@ -99,7 +96,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
             <Popover.Portal>
                 <Popover.Content
                     sideOffset={5}
-                    className="bg-white border p-2 m-2 shadow-lg rounded-lg !z-[9999]"
+                    className="dateRangePicker p-2 m-2 shadow-lg rounded-lg !z-[9999]"
                 >
                     <DayPicker
                         mode="range"

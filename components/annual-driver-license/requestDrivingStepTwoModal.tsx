@@ -310,7 +310,7 @@ const RequestDrivingStepTwoModal = forwardRef<
 
               {/* Modal body scrollable and flex-grow */}
               <div
-                className="modal-body overflow-y-auto text-left !bg-white flex-1"
+                className="modal-body overflow-y-auto text-leftflex-1"
                 style={{ maxHeight: "65vh" }}
               >
                 {isLoading ? (

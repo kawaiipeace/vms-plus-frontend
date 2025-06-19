@@ -58,6 +58,7 @@ const AddCarpoolApproverModal = forwardRef<
 
   useEffect(() => {
     fetchCarpoolApproverFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -73,7 +74,9 @@ const AddCarpoolApproverModal = forwardRef<
                 result.approver_emp_name + " (" + result.approver_emp_no + ")",
             });
             setEditName(result.approver_emp_name);
-            setDeptSapShort(result.approver_dept_sap_short);
+            setDeptSapShort(
+              result.approver_position + " " + result.approver_dept_sap_short
+            );
             setInternalContactNumber(result.internal_contact_number);
             setMobileContactNumber(result.mobile_contact_number);
           } catch (error) {
@@ -91,7 +94,9 @@ const AddCarpoolApproverModal = forwardRef<
               approve?.approver_emp_no +
               ")",
           });
-          setDeptSapShort(approve?.approver_dept_sap_short);
+          setDeptSapShort(
+            approve?.approver_position + " " + approve?.approver_dept_sap_short
+          );
           setInternalContactNumber(approve?.internal_contact_number);
           setMobileContactNumber(approve?.mobile_contact_number);
         }
@@ -155,20 +160,55 @@ const AddCarpoolApproverModal = forwardRef<
           });
         }
       } else {
-        const carpool_approvers = (formData.carpool_approvers || []).map((e) =>
-          e.approver_emp_no === editId
-            ? {
-                ...e,
-                approver_emp_no: selectedApprover?.value as string,
-                internal_contact_number: internal_contact_number as string,
-                mobile_contact_number: mobile_contact_number as string,
-              }
-            : e
+        const not_change_approver = (formData.carpool_approvers || []).find(
+          (e) => e.approver_emp_no === selectedApprover?.value
         );
-        updateFormData({
-          ...formData,
-          carpool_approvers,
-        });
+        let carpool_approvers = formData.carpool_approvers || [];
+
+        if (not_change_approver) {
+          carpool_approvers = carpool_approvers.map((e) =>
+            e.approver_emp_no === editId
+              ? {
+                  ...e,
+                  approver_emp_no: selectedApprover?.value as string,
+                  internal_contact_number: internal_contact_number as string,
+                  mobile_contact_number: mobile_contact_number as string,
+                }
+              : e
+          );
+
+          updateFormData({
+            ...formData,
+            carpool_approvers,
+          });
+        } else {
+          const find = (formData.carpool_approvers || []).find(
+            (e) => e.approver_emp_no === editId
+          );
+          const approve = approver.find(
+            (e) => e.emp_id === selectedApprover?.value
+          );
+
+          carpool_approvers = carpool_approvers.map((e) =>
+            e.approver_emp_no !== editId
+              ? e
+              : {
+                  approver_emp_name: approve?.full_name || "",
+                  approver_dept_sap_short: approve?.dept_sap_short || "",
+                  is_main_approver: find?.is_main_approver || "0",
+                  image_url: approve?.image_url || "",
+                  approver_emp_no: selectedApprover?.value as string,
+                  internal_contact_number: internal_contact_number as string,
+                  mobile_contact_number: mobile_contact_number as string,
+                  approver_position: approve?.posi_text as string,
+                }
+          );
+          updateFormData({
+            ...formData,
+            carpool_approvers,
+          });
+        }
+
         setSelectedApprover(undefined);
         setEditName(undefined);
         setDeptSapShort("");
@@ -311,7 +351,7 @@ const AddCarpoolApproverModal = forwardRef<
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
     if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
-    setDeptSapShort(approve?.dept_sap_short);
+    setDeptSapShort(approve?.posi_text + " " + approve?.dept_sap_short);
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
@@ -396,6 +436,22 @@ const AddCarpoolApproverModal = forwardRef<
                         onChange={(e) =>
                           setInternalContactNumber(e.target.value)
                         }
+                        onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                   </div>
@@ -416,6 +472,22 @@ const AddCarpoolApproverModal = forwardRef<
                         type="text"
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
+                        onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                         value={mobile_contact_number}
                         onChange={(e) => {
                           setMobileContactNumber(e.target.value);
