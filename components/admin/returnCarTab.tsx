@@ -120,13 +120,12 @@ const ReturnCarTab = ({
         />
       )}
 
-         {requestData?.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ" && (
+      {requestData?.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ" && (
         <AlertCustom
           title="ถูกตีกลับโดยผู้ดูแลยานพาหนะ"
           desc={requestData?.rejected_request_reason}
         />
       )}
-
 
       {showToast && (
         <ToastCustom
@@ -472,6 +471,18 @@ const ReturnCarTab = ({
                 }}
               >
                 คืนยานพาหนะอีกครั้ง
+              </button>
+            </div>
+          )}
+          {requestData?.ref_request_status_code === "60" && (
+            <div className="w-full md:col-span-2">
+              <button
+                className="btn btn-primary w-full"
+                onClick={() => {
+                  returnCarAddModalRef.current?.openModal();
+                }}
+              >
+                คืนยานพาหนะ
               </button>
             </div>
           )}

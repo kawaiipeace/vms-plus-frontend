@@ -124,45 +124,41 @@ export default function PageKeyPickupHeader({ data, editable }: Props) {
                 <i className="material-symbols-outlined">print</i>
                 พิมพ์
               </Link>
-               {Number(data?.ref_request_status_code) >= Number("59") ||
-                Number(data?.ref_request_status_code) <= Number("81") && (
-                  <>
-                    <div className="divider py-0 my-0"></div>
-                    <Link
-                      className="dropdown-item"
-                      href="#"
-                      onClick={() => cancelRequestModalRef.current?.openModal()}
-                    >
-                      <i className="material-symbols-outlined">delete</i>
-                      ยกเลิกคำขอ
-                    </Link>
-                  </>
-                )}
+              {Number(data?.ref_request_status_code) < Number("60") && (
+                <>
+                  <div className="divider py-0 my-0"></div>
+                  <Link
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => cancelRequestModalRef.current?.openModal()}
+                  >
+                    <i className="material-symbols-outlined">delete</i>
+                    ยกเลิกคำขอ
+                  </Link>
+                </>
+              )}
             </ul>
           </div>
         </div>
 
-     
-            <div className="md:block hidden">
-              <div className="flex gap-3">
-                     {Number(data?.ref_request_status_code) >= Number("59") ||
-                Number(data?.ref_request_status_code) <= Number("81") && (
-                <button
-                  className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
-                  onClick={() => cancelRequestModalRef.current?.openModal()}
-                >
-                  ยกเลิกคำขอ
-                </button>
-                    )}
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => window.print()}
-                >
-                  <i className="material-symbols-outlined">print</i>พิมพ์
-                </button>{" "}
-              </div>
-            </div>
-      
+        <div className="md:block hidden">
+          <div className="flex gap-3">
+            {Number(data?.ref_request_status_code) < Number("60") && (
+              <button
+                className="btn btn-tertiary-danger bg-transparent shadow-none border-none"
+                onClick={() => cancelRequestModalRef.current?.openModal()}
+              >
+                ยกเลิกคำขอ
+              </button>
+            )}
+            <button
+              className="btn btn-secondary"
+              onClick={() => window.print()}
+            >
+              <i className="material-symbols-outlined">print</i>พิมพ์
+            </button>{" "}
+          </div>
+        </div>
       </div>
       <CancelRequestModal
         id={data?.trn_request_uid || ""}

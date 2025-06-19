@@ -96,6 +96,8 @@ function RequestListContent() {
 
 export default function RequestDetail() {
   const { isPinned } = useSidebar();
+  const searchParams = useSearchParams();
+  const active = searchParams.get("activeTab");
 
   const params = useParams();
   const request_id = String(params.requestId);
@@ -115,14 +117,18 @@ export default function RequestDetail() {
 
       fetchRequestDetailfunc();
     }
-  }, [request_id]);
+  }, [request_id, active]);
 
   return (
     <div>
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
+        <div
+          className={`main-content ${
+            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
+          }`}
+        >
           <Header />
           <div className="main-content-body">
             {requestData && <PageKeyPickupHeader data={requestData} />}

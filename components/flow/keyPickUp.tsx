@@ -14,7 +14,6 @@ import DriverPassengerPeaInfoCard from "../card/driverPassengerPeaInfoCard";
 import PickupKeyDetailCard from "../card/pickupKeyDetailCard";
 import VehicleDetailCard from "../card/vehicleDetailCard";
 import KeyPickUpEditModal from "../modal/keyPickUpEditModal";
-import dayjs from "dayjs";
 
 interface RequestDetailFormProps {
   editable?: boolean;
@@ -78,6 +77,7 @@ export default function KeyPickUp({
 
   const handleModalUpdate = () => {
     fetchRequestDetailfunc();
+    window.location.reload();
   };
 
   const findVehicleKeyType: VehicleKeyType | undefined = useMemo(() => {
