@@ -10,43 +10,39 @@ import SearchInput from "../vehicle-management/input/search";
 import { debounce } from "lodash";
 
 export default function VehicleFlow() {
-    const [pagination, setPagination] = useState<PaginationType>({
+    // ----- State and Refs -----
+    const initialPagination = {
         limit: 10,
         page: 1,
         total: 0,
         totalPages: 0,
-    });
-
-    const paramsInitial = {
+    };
+    const initialParams = {
         search: "",
         vehicle_owner_dept_sap: "",
         ref_vehicle_category_code: "",
         ref_vehicle_status_code: "",
         ref_fuel_type_id: "",
         is_tax_credit: "",
-        order_by: "",
-        order_dir: "",
-        page: pagination.page,
-        limit: pagination.limit,
+        page: 1,
+        limit: 10,
     };
 
+    // ----- State Variables -----
+    const [pagination, setPagination] = useState<PaginationType>(initialPagination);
     const [dataRequest, setDataRequest] = useState<VehicleManagementApiResponse[]>([]);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
-    const [params, setParams] = useState<VehicleListParams>(paramsInitial);
+    const [params, setParams] = useState<VehicleListParams>(initialParams);
     const [filterCount, setFilterCount] = useState(0);
 
-    // Handle Filter Modal
+    // ----- Refs -----
     const filterModalRef = useRef<FilterModalRef>(null);
-    const handleOpenFilterModal = () => {
-        filterModalRef.current?.open();
-    };
+    const handleOpenFilterModal = () => filterModalRef.current?.open();
 
-    //Handle Report Modal
     const reportModalRef = useRef<ReportModalRef>(null);
-    const handleOpenReportModal = () => {
-        reportModalRef.current?.open();
-    };
+    const handleOpenReportModal = () => reportModalRef.current?.open();
 
+    // ----- Handlers -----
     useEffect(() => {
         let countFilters = 0;
         const fetchData = async () => {
@@ -82,23 +78,14 @@ export default function VehicleFlow() {
         fetchData();
     }, [params]);
 
-    const handlePageChange = (newPage: number) => {
-        setParams((prevParams: any) => ({ ...prevParams, page: newPage }));
-    };
-
+    // ----- Handlers for Pagination and Filters -----
+    const handlePageChange = (newPage: number) => setParams((prevParams: any) => ({ ...prevParams, page: newPage }));
+    const handleClearAllFilters = () => setParams(initialParams);
+    const handleSelectItem = (ids: string[]) => setSelectedRows(ids);
     const handlePageSizeChange = (newLimit: string | number) => {
         const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
         setParams((prevParams) => ({ ...prevParams, limit, page: 1 }));
     };
-
-    const handleClearAllFilters = () => {
-        setParams(paramsInitial);
-    };
-
-    const handleSelectItem = (ids: string[]) => {
-        setSelectedRows(ids);
-    }
-
     const handleFilterSubmit = (params: VehicleInputParams) => {
         setParams((prevParams) => ({
             ...prevParams,
@@ -107,6 +94,7 @@ export default function VehicleFlow() {
             vehicle_owner_dept_sap: params.vehicleDepartment,
             is_tax_credit: params.taxVehicle.join(","),
             ref_vehicle_status_code: params.vehicleStatus.join(","),
+            page: 1,
         }));
     };
 

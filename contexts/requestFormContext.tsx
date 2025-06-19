@@ -5,9 +5,74 @@ import { createContext, useContext, useState, ReactNode } from "react";
 interface RequestFormContextType {
   formData: FormDataType;
   updateFormData: (newData: Partial<FormDataType>) => void;
+  resetFormData: () => void;
 }
 
-const FormContext = createContext<RequestFormContextType | undefined>(undefined);
+const defaultFormData: FormDataType = {
+  approvedRequestDeptSap: "",
+  approvedRequestDeptSapFull: "",
+  approvedRequestDeptSapShort: "",
+  approvedRequestEmpId: "",
+  approvedRequestEmpName: "",
+  telInternal: "",
+  telMobile: "",
+  workPlace: "",
+  purpose: "",
+  attachmentFile: "",
+  doc_no: "",
+  doc_file: "",
+  carpoolName: "",
+  costNo: "",
+  costOrigin: "",
+  costCenter: "",
+  wbsNumber: "",
+  vehicleType: "",
+  masCarpoolUid: "",
+  networkNo: "",
+  activityNo: "",
+  pmOrderNo: "",
+  endDatetime: "",
+  isAdminChooseDriver: false,
+  isSystemChooseVehicle: "",
+  isAdminChooseVehicle: "",
+  isDriverNeed: "",
+  isHaveSubRequest: "",
+  isPeaEmployeeDriver: "",
+  vehicleUserEmpPosition: "",
+  masCarpoolDriverUid: "",
+  masVehicleUid: "",
+  numberOfPassenger: 0,
+  pickupDatetime: "",
+  pickupPlace: "",
+  refCostTypeCode: "",
+  refRequestTypeCode: 0,
+  referenceNumber: "",
+  remark: "",
+  requestedVehicleTypeId: 0,
+  requestedVehicleTypeName: "",
+  reservedTimeType: "",
+  startDate: "",
+  endDate: "",
+  timeStart: "",
+  timeEnd: "",
+  tripType: 0,
+  vehicleUserDeptSap: "",
+  vehicleUserEmpId: "",
+  vehicleUserEmpName: "",
+  deptSapShort: "",
+  userImageUrl: "",
+  vehicleSelect: "",
+  driverInternalContact: "",
+  driverMobileContact: "",
+  driverEmpID: "",
+  driverEmpName: "",
+  driverEmpPosition: "",
+  driverDeptSap: "",
+};
+
+const FormContext = createContext<RequestFormContextType | undefined>(
+  undefined
+);
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [formData, setFormData] = useState<FormDataType>(() => {
@@ -17,6 +82,8 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     }
     return {};
   });
+
+  const resetFormData = () => setFormData(defaultFormData);
 
   const updateFormData = (newData: Partial<FormDataType>) => {
     setFormData((prev) => {
@@ -29,7 +96,7 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <FormContext.Provider value={{ formData, updateFormData }}>
+    <FormContext.Provider value={{ formData, updateFormData, resetFormData }}>
       {children}
     </FormContext.Provider>
   );

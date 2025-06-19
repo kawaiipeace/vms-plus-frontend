@@ -126,7 +126,7 @@ const DisbursementModal = forwardRef<
   useEffect(() => {
     const fetchCostTypeRequest = async () => {
       try {
-        const response = await fetchCostTypes();
+        const response = await fetchCostTypes(requestData?.vehicle_user_emp_id  || "");
         if (response.status === 200) {
           const costTypeData = response.data;
           setCostTypeDatas(costTypeData);

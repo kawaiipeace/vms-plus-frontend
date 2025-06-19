@@ -82,7 +82,9 @@ const ModalBody = ({
       item.label.toLowerCase().includes(search.toLowerCase())
     ) as CustomSelectOption[];
 
-  console.log("options: ", options);
+  useEffect(() => {
+    if (!params.vehicel_car_type_detail) setSelected(undefined);
+  }, [params.vehicel_car_type_detail]);
 
   const onActiveChecked = (checked: boolean, id: string) => {
     if (checked) {
@@ -121,7 +123,10 @@ const ModalBody = ({
               w="100"
               options={options}
               value={selected}
-              onChange={setSelected}
+              onChange={(value) => {
+                setSelected(value);
+                setParams({ ...params, vehicel_car_type_detail: value });
+              }}
               placeholder="ทั้งหมด"
               enableSearchOnApi
               onSearchInputChange={(value) => {

@@ -134,7 +134,7 @@ export default function RequestForm() {
   useEffect(() => {
     const fetchCostTypeRequest = async () => {
       try {
-        const response = await fetchCostTypes();
+        const response = await fetchCostTypes(profile?.emp_id || "");
         if (response.status === 200) {
           const costTypeData = response.data;
           setCostTypeDatas(costTypeData);
