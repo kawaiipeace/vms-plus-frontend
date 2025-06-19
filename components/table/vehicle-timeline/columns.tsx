@@ -58,7 +58,7 @@ export const useColumns = ({
                         return (
                             <div className="flex flex-col text-start">
                                 <span className="text-base font-semibold">{license} {provinceShort}</span>
-                                <span className="text-base text-gray-600">
+                                <span className="text-base">
                                     {brandModel} {brandName}
                                 </span>
                             </div>
@@ -102,7 +102,7 @@ export const useColumns = ({
                         return (
                             <div className="flex flex-col text-start">
                                 <span className="truncate">{department}</span>
-                                <span className="text-gray-500">{carpoolName}</span>
+                                <span>{carpoolName}</span>
                             </div>
                         );
                     },
