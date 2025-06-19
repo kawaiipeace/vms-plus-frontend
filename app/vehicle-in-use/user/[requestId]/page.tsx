@@ -109,6 +109,7 @@ export default function RequestDetail() {
       const fetchRequestDetailfunc = async () => {
         try {
           const response = await requestDetail(request_id);
+
           setRequestData(response.data);
         } catch (error) {
           console.error("Error fetching vehicle details:", error);
@@ -124,11 +125,7 @@ export default function RequestDetail() {
       <div className="main-container">
         <SideBar menuName="คำขอใช้ยานพาหนะ" />
 
-        <div
-          className={`main-content ${
-            isPinned ? "md:pl-[280px]" : "md:pl-[80px]"
-          }`}
-        >
+        <div className={`main-content ${isPinned ? "md:pl-[280px]" : "md:pl-[80px]"}`}>
           <Header />
           <div className="main-content-body">
             {requestData && <PageKeyPickupHeader data={requestData} />}
