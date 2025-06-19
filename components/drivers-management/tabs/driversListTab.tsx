@@ -56,8 +56,6 @@ const DriversListTab = () => {
     is_active: "",
     driver_license_end_date: "",
     approved_job_driver_end_date: "",
-    order_by: "",
-    order_dir: "",
     page: 1,
     limit: 10,
   });
@@ -170,7 +168,6 @@ const DriversListTab = () => {
     selectedEndDate: string;
     driverDepartmentOptions: { value: string; label: string | React.ReactNode };
   }) => {
-
     setParams((prevParams) => ({
       ...prevParams,
       driver_dept_sap_work: filter.driverDepartmentOptions.value,
@@ -264,8 +261,6 @@ const DriversListTab = () => {
       is_active: "",
       driver_license_end_date: "",
       approved_job_driver_end_date: "",
-      order_by: "",
-      order_dir: "",
       page: 1,
       limit: pagination.limit,
     });

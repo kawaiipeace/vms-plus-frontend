@@ -3,6 +3,11 @@ import { getHoliday } from "@/services/vehicleService";
 import dayjs from "dayjs";
 import 'dayjs/locale/th';
 import 'dayjs/locale/en-gb';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const BASE_STATUS_COLORS = {
   green: { border: '#ABEFC6', bg: '#ECFDF3', text: '#067647' },
@@ -168,13 +173,23 @@ export const DateLongTH = (date: Date) => {
   return `${day}/${month}/${year}`;
 };
 
-export const convertDateToLongTH = (date: Date, format?: string, locale?:string) => {
-  const dateLocale = locale ? dayjs(date).locale(locale ?? 'th') : dayjs(date);
-  if (format === 'full') {
-    return `${dateLocale.format("D MMMM")} ${dateLocale.year() + 543}`;
-  }else if(format === 'DD/MM/YYYY') {
-    return `${dateLocale.format("DD/MM/") }${dateLocale.year() + 543}`;
-  }
+/**
+ * แปลงวันที่ให้แสดงในรูปแบบภาษาไทย พร้อมแปลงปีเป็น พ.ศ.
+ * @param date วันที่ที่ต้องการแปลง
+ * @param format รูปแบบที่ต้องการ: DD/MM/YYYY
+ * @param locale ภาษา (default คือ 'th')
+ * @returns string ที่เป็นวันที่ในรูปแบบที่แปลงแล้ว
+ */
+export const convertDateToLongTH = (date: Date, format?: string, locale: string = "th"): string => {
+  const localizedDate = dayjs(date).tz("Asia/Bangkok").locale(locale);
+  const buddhistYear = localizedDate.year() + 543;
 
-  return `${dateLocale.format("D MMM")} ${dateLocale.year() + 543}`;
+  switch (format) {
+    case 'full':
+      return `${localizedDate.format("D MMMM")} ${buddhistYear}`;
+    case 'DD/MM/YYYY':
+      return `${localizedDate.format("DD/MM/")}${buddhistYear}`;
+    default:
+      return `${localizedDate.format("D MMM")} ${buddhistYear}`;
+  }
 };

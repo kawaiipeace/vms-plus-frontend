@@ -128,11 +128,11 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
     fetchDriverDepartment();
   }, []);
 
-  function convertDDMMYYYYToISO(dateStr: string): string {
-    const [day, month, year] = dateStr.split("/");
-    if (!day || !month || !year) return "";
-    return `${Number(year) - 543}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
+  // function convertDDMMYYYYToISO(dateStr: string): string {
+  //   const [day, month, year] = dateStr.split("/");
+  //   if (!day || !month || !year) return "";
+  //   return `${Number(year) - 543}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  // }
 
   const handleResetFilters = () => {
     setDriverDepartmentOptions({ value: "", label: "ทั้งหมด" });
@@ -156,13 +156,14 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
   };
 
   const handleStartDateChange = (dateStr: string) => {
-    const convertedDate = convertDDMMYYYYToISO(dateStr);
-    setSelectedStartDate(convertedDate);
+    // const convertedDate = convertDDMMYYYYToISO(dateStr);
+    // console.log("Converted start date:", convertedDate);
+    setSelectedStartDate(dateStr);
   };
 
   const handleEndDateChange = (dateStr: string) => {
-    const convertedDate = convertDDMMYYYYToISO(dateStr);
-    setSelectedEndDate(convertedDate);
+    // const convertedDate = convertDDMMYYYYToISO(dateStr);
+    setSelectedEndDate(dateStr);
   };
 
   const handleDriverDepartmentChange = async (selectedOption: { value: string; label: string | React.ReactNode }) => {
@@ -334,7 +335,7 @@ const FilterModal = forwardRef<{ openModal: () => void; closeModal: () => void }
                         <DatePicker
                           ref={startDatePickerRef}
                           placeholder={"ระบุวันที่หมดอายุใบขับขี่"}
-                          onChange={handleStartDateChange}
+                          onChange={(date) => handleStartDateChange(date)}
                           defaultValue={selectedStartDate} // Set default value if needed
                         />
                         <div className="input-group-append hidden" data-clear>

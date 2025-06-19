@@ -37,6 +37,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
   ({ onUpdate, requestData, role }, ref) => {
     const modalRef = useRef<HTMLDialogElement>(null);
     const { formData, updateFormData } = useFormContext();
+    const [isSameDate, setIsSameDate] = useState(false);
 
     const hasReset = useRef(false);
 
@@ -81,9 +82,14 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       purpose: requestData?.work_description ?? "",
       remark: requestData?.remark ?? "",
     });
+       const start = requestData?.start_datetime?.split('T')[0];
+    const end = requestData?.end_datetime?.split('T')[0];
+    setIsSameDate(start === end);
     setSelectedTripType(String(requestData?.trip_type ?? "0"));
     setPassengerCount(requestData?.number_of_passengers ?? 0);
     hasReset.current = true;
+  }else{
+      setIsSameDate(formData.startDate === formData.endDate);
   }
 }, [requestData, reset]);
 
@@ -132,6 +138,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
       }
     };
     const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
+
 
     return (
       <dialog ref={modalRef} id="my_modal_1" className="modal">
@@ -239,6 +246,7 @@ const JourneyDetailModal = forwardRef<{ openModal: () => void; closeModal: () =>
                         value="1"
                         selectedValue={selectedTripType}
                         setSelectedValue={setSelectedTripType}
+                        disabled={isSameDate}
                       />
                     </div>
                   </div>

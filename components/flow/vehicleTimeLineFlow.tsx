@@ -55,7 +55,15 @@ export default function VehicleTimeLine() {
     });
 
     // ----- Handle Function -----
-    const handleFilterSubmit = (filterParams: any) => setFilterParams(() => [...filterParams.vehicleBookingStatus]);
+    const handleFilterSubmit = (dataFilter: any) => {
+        setParams((prev) => ({
+            ...prev,
+            vehicle_owner_dept_sap: dataFilter.vehicleDepartment ?? "",
+            vehicle_car_type_detail: dataFilter.vehicleType ?? "",
+            ref_timeline_status_id: filterParams.join(','),
+            page: 1,
+        }));
+    };
     const handleClearAllFilters = () => setParams(initialParams);
     const handleOpenFilterModal = () => filterModalRef.current?.open();
     const toggleFilter = (value: string) => setFilterParams((prev) =>

@@ -12,6 +12,7 @@ export type RequestListType = Partial<{
   vehicle_license_plate_province_full: string;
   vehicle_license_plate_province_short: string;
   vehicle_user_dept_sap_short: string;
+  
   vehicle_dept_name: string;
   vehicle_carpool_name: string;
   vehicle_user_emp_id: string;

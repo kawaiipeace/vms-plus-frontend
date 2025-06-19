@@ -1,3 +1,4 @@
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { convertToThaiDate } from "@/utils/driver-management";
 
 interface JourneyDetailCardProps {
@@ -36,14 +37,14 @@ export default function JourneyDetailCard({
               <div className="form-plaintext-group">
                 <div className="form-label">วันที่ / เวลาเดินทาง</div>
                 <div className="form-text">
-                  {convertToThaiDate(startDate) === convertToThaiDate(endDate) ? (
+                  {convertToBuddhistDateTime(startDate || "").date === convertToBuddhistDateTime(endDate || "").date ? (
                     <>
-                      {convertToThaiDate(startDate)} {timeStart} - {timeEnd}
+                      {convertToBuddhistDateTime(startDate || "").date} {timeStart} - {timeEnd}
                     </>
                   ) : (
                     <>
-                      {convertToThaiDate(startDate)} {timeStart} -{" "}
-                      {convertToThaiDate(endDate)} {timeEnd}
+                      {convertToBuddhistDateTime(startDate || "").date} {timeStart} -{" "}
+                      {convertToBuddhistDateTime(endDate || "").date} {timeEnd}
                     </>
                   )}
                 </div>
