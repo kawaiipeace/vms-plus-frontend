@@ -69,7 +69,12 @@ export const useColumns = ({
           ),
           enableSorting: false,
           meta: {
-            className: "sticky left-0 z-0 bg-white min-w-[180px] max-w-[180px]",
+            className: clsx(
+              "sticky left-0 z-0 bg-white",
+              "min-w-[180px] max-w-[180px] w-[180px]",
+              selectedOption !== "all" && "border-r",
+              "darkModeBg"
+            ),
           },
         }
       ),
@@ -87,8 +92,11 @@ export const useColumns = ({
               ),
               enableSorting: false,
               meta: {
-                className:
-                  "sticky left-[180px] z-0 bg-white min-w-[155px] max-w-[155px]",
+                className: clsx(
+                  "hidden sm:table-cell sticky left-[180px] z-0 bg-white",
+                  "min-w-[155px] max-w-[155px] w-[155px]",
+                  "darkModeBg"
+                ),
               },
             }),
             columnHelper.accessor("workThisMonth", {
@@ -100,8 +108,12 @@ export const useColumns = ({
               ),
               enableSorting: true,
               meta: {
-                className:
-                  "sticky left-[335px] z-0 bg-white min-w-[130px] max-w-[130px] fixed-column-line",
+                className: clsx(
+                  "hidden sm:table-cell sticky left-[335px] z-0 bg-white",
+                  "min-w-[150px] max-w-[150px] w-[150px]",
+                  "darkModeBg",
+                  selectedOption === "all" && "border-r"
+                ),
               },
             }),
           ]
