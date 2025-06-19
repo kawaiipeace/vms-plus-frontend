@@ -56,6 +56,7 @@ const AddCarpoolAdminModal = forwardRef<
 
   useEffect(() => {
     fetchCarpoolAdminFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -69,7 +70,9 @@ const AddCarpoolAdminModal = forwardRef<
               value: result.admin_emp_no,
               label: result.admin_emp_name + " (" + result.admin_emp_no + ")",
             });
-            setDeptSapShort(result.admin_dept_sap_short);
+            setDeptSapShort(
+              result.admin_position + " " + result.admin_dept_sap_short
+            );
             setInternalContactNumber(result.internal_contact_number);
             setMobileContactNumber(result.mobile_contact_number);
           } catch (error) {
@@ -83,7 +86,9 @@ const AddCarpoolAdminModal = forwardRef<
             value: admin?.admin_emp_no || "",
             label: admin?.admin_emp_name + " (" + admin?.admin_emp_no + ")",
           });
-          setDeptSapShort(admin?.admin_dept_sap_short);
+          setDeptSapShort(
+            admin?.admin_position + " " + admin?.admin_dept_sap_short
+          );
           setInternalContactNumber(admin?.internal_contact_number);
           setMobileContactNumber(admin?.mobile_contact_number);
         }
@@ -147,20 +152,54 @@ const AddCarpoolAdminModal = forwardRef<
           });
         }
       } else {
-        const carpool_admins = (formData.carpool_admins || []).map((e) =>
-          e.admin_emp_no === editId
-            ? {
-                ...e,
-                admin_emp_no: adminSelected?.value as string,
-                internal_contact_number: internal_contact_number as string,
-                mobile_contact_number: mobile_contact_number as string,
-              }
-            : e
+        const not_change_admin = (formData.carpool_admins || []).find(
+          (e) => e.admin_emp_no === adminSelected?.value
         );
-        updateFormData({
-          ...formData,
-          carpool_admins,
-        });
+        let carpool_admins = formData.carpool_admins || [];
+
+        if (not_change_admin) {
+          carpool_admins = carpool_admins.map((e) =>
+            e.admin_emp_no === editId
+              ? {
+                  ...e,
+                  admin_emp_no: adminSelected?.value as string,
+                  internal_contact_number: internal_contact_number as string,
+                  mobile_contact_number: mobile_contact_number as string,
+                }
+              : e
+          );
+
+          updateFormData({
+            ...formData,
+            carpool_admins,
+          });
+        } else {
+          const find = (formData.carpool_admins || []).find(
+            (e) => e.admin_emp_no === editId
+          );
+          const admin = admins.find((e) => e.emp_id === adminSelected?.value);
+
+          carpool_admins = carpool_admins.map((e) =>
+            e.admin_emp_no !== editId
+              ? e
+              : {
+                  admin_emp_name: admin?.full_name || "",
+                  admin_dept_sap_short: admin?.dept_sap_short || "",
+                  is_main_admin: find?.is_main_admin || "0",
+                  image_url: admin?.image_url || "",
+                  admin_emp_no: adminSelected?.value as string,
+                  internal_contact_number: internal_contact_number as string,
+                  mobile_contact_number: mobile_contact_number as string,
+                  admin_position: admin?.posi_text as string,
+                }
+          );
+
+          updateFormData({
+            ...formData,
+            carpool_admins,
+          });
+        }
+
         setAdminSelected(undefined);
         setDeptSapShort("");
         setInternalContactNumber("");
@@ -299,7 +338,7 @@ const AddCarpoolAdminModal = forwardRef<
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
     if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
-    setDeptSapShort(admin?.dept_sap_short);
+    setDeptSapShort(admin?.posi_text + " " + admin?.dept_sap_short);
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
@@ -331,10 +370,17 @@ const AddCarpoolAdminModal = forwardRef<
                     <CustomSelectOnSearch
                       iconName="person"
                       w="w-full"
-                      options={admins.map((item) => ({
-                        value: item.emp_id,
-                        label: item.full_name + " (" + item.emp_id + ")",
-                      }))}
+                      options={admins
+                        .filter(
+                          (item) =>
+                            (formData.carpool_admins || [])
+                              .map((e) => e.admin_emp_no)
+                              .includes(item.emp_id) === false
+                        )
+                        .map((item) => ({
+                          value: item.emp_id,
+                          label: item.full_name + " (" + item.emp_id + ")",
+                        }))}
                       value={adminSelected}
                       onChange={selectAdmin}
                       enableSearchOnApi
@@ -384,7 +430,7 @@ const AddCarpoolAdminModal = forwardRef<
                         onChange={(e) =>
                           setInternalContactNumber(e.target.value)
                         }
-                           onKeyDown={(e) => {
+                        onKeyDown={(e) => {
                           if (
                             !/[0-9]/.test(e.key) &&
                             ![
@@ -421,7 +467,7 @@ const AddCarpoolAdminModal = forwardRef<
                         className="form-control"
                         placeholder="ระบุเบอร์โทรศัพท์"
                         value={mobile_contact_number}
-                           onKeyDown={(e) => {
+                        onKeyDown={(e) => {
                           if (
                             !/[0-9]/.test(e.key) &&
                             ![
