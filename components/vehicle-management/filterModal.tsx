@@ -13,12 +13,6 @@ import CustomSearchSelect from "../customSelectSerch";
 import VehicleStatus from "./vehicle-status-without-icon";
 import { vehicleBookingStatus } from "@/utils/vehicle-constant";
 
-type FilterProps = {
-    defaultVehicleBookingStatus?: string[];
-    flag: string;
-    onSubmitFilter?: (params: VehicleInputParams) => void;
-};
-
 export type FilterModalRef = {
     open: () => void;
     close: () => void;
@@ -262,7 +256,19 @@ const ModalFooter = (
     );
 };
 
-const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, flag, defaultVehicleBookingStatus }, ref) => {
+type FilterProps = {
+    defaultVehicleBookingStatus?: string[];
+    flag: string;
+    onSubmitFilter?: (params: VehicleInputParams) => void;
+    clearAllFilters?: () => void;
+};
+
+const FilterModal = forwardRef<FilterModalRef, FilterProps>(({
+    flag, 
+    defaultVehicleBookingStatus,
+    clearAllFilters,
+    onSubmitFilter,
+}, ref) => {
     // Setup Ref
     const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -290,7 +296,10 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({ onSubmitFilter, f
         dialogRef.current?.close();
     };
 
-    const handleClearFilter = () => setParams(initialParams);
+    const handleClearFilter = () => {
+        setParams(initialParams);
+        clearAllFilters?.();
+    };
 
     useEffect(() => {
         const fetchData = async () => {

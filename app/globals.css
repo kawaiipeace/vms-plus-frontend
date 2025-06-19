@@ -3,13 +3,24 @@
 @tailwind utilities;
 
 @layer base {
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
+  .light-mode input:-webkit-autofill,
+  .light-mode input:-webkit-autofill:hover,
+  .light-mode input:-webkit-autofill:focus,
+  .light-mode input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px transparent inset !important;
-    /* -webkit-text-fill-color: #000 !important; */
+    -webkit-text-fill-color: black !important;
     transition: background-color 5000s ease-in-out 0s !important;
+     /* color: inherit !important; */
+  }
+
+  .dark-mode input:-webkit-autofill,
+  .dark-mode input:-webkit-autofill:hover,
+  .dark-mode input:-webkit-autofill:focus,
+  .dark-mode input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+     /* color: inherit !important; */
   }
   
   /* Alternative approach that sometimes works better */
@@ -51,6 +62,11 @@ img {
   color: #f5f5f6;
 }
 
+
+.dark-mode .content-title{
+   color: black;
+}
+
 /* In your global CSS file */
 .toggle {
   transition: none !important;
@@ -75,6 +91,18 @@ img {
   color: #cecfd2;
 }
 
+input.form-control {
+  color: black;
+}
+
+.dark-mode input.form-control {
+  color: white !important;
+  caret-color: white !important;
+}
+
+.dark-mode .cloud-icon{
+  color: #333741 !important;
+}
 .dark-mode .noti-content {
   background-color: #333741;
   color: #cecfd2;
