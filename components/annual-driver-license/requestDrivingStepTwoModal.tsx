@@ -176,10 +176,7 @@ const RequestDrivingStepTwoModal = forwardRef<
           }
 
           if (valueFormStep1?.trainingDate) {
-            basePayload.driver_certificate_issue_date = convertToISO(
-              String(valueFormStep1.trainingDate),
-              "00:00"
-            );
+            basePayload.driver_certificate_issue_date = valueFormStep1?.trainingDate;
           }
 
           if (valueFormStep1?.courseName) {
