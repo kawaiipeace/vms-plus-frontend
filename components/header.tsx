@@ -95,6 +95,26 @@ export default function Header() {
     }
   };
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check if the `dark-mode` class is applied to the body
+    const checkDarkMode = () => {
+      setIsDarkMode(document.body.classList.contains("dark-mode"));
+    };
+
+    checkDarkMode();
+
+    // Optionally, listen for changes to the class
+    const observer = new MutationObserver(() => {
+      checkDarkMode();
+    });
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (pendingOpenModal === "driver" && driverUser) {
       driverLicenseModalRef.current?.openModal();
@@ -268,8 +288,12 @@ export default function Header() {
           <div className="navbar-start">
             <div className="header-brand block md:hidden">
               <a href="">
-                <Image
-                  src="/assets/img/brand.svg"
+              <Image
+                  src={
+                    isDarkMode
+                      ? "/assets/img/brand-dark.svg"
+                      : "/assets/img/brand.svg"
+                  }
                   width={98}
                   height={40}
                   alt=""

@@ -260,7 +260,7 @@ export default function ArpproveFlow() {
       </div>
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
-        <div className="block w-[25%]">
+        <div className="block md:w-[25%] w-full">
           <div className="input-group input-group-search hidden">
             <div className="input-group-prepend">
               <span className="input-group-text search-ico-info">

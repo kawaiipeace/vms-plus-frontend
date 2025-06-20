@@ -35,11 +35,13 @@ img {
   image-rendering: crisp-edges; /* Standard */
 }
 
+
+
 @media (max-width: 768px) {
   .flatpickr-calendar.flatpickr-center-mobile {
-    position: fixed !important;
-    left: 80% !important;
-    transform: translateX(-80%) !important;
+    left: auto !important;
+    right: 10px !important; /* Align to the right edge */
+    transform: none !important; /* Remove centering */
   }
 }
 .avatar {
@@ -97,6 +99,10 @@ input.form-control {
 .dark-mode input.form-control {
   color: white !important;
   caret-color: white !important;
+}
+
+.dark-mode .in-circle-icon {
+  color: #333741 !important;
 }
 
 .dark-mode .cloud-icon {
@@ -4316,8 +4322,8 @@ input.form-control {
     background-color: white;
   }
 
-  .dark-mode .modal-body {
-    background-color: #cecfd2;
+  .dark-mode .modal-body, .dark-mode .bottom-sheet {
+    background-color: #0C111D;
   }
 
   .bottom-sheet + .modal-header,

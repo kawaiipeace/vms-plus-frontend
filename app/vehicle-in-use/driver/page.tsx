@@ -149,7 +149,7 @@ export default function DriverMain() {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a>
+                    <a href="/">
                       <i className="material-symbols-outlined">home</i>
                     </a>
                   </li>

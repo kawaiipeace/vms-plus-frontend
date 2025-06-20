@@ -70,7 +70,7 @@ export default function CarpoolManagementTable({
         return (
           <div className="text-left" data-name="ผู้รับผิดชอบหลัก">
             <div>{row.original.carpool_admin_emp_name}</div>
-            <div className="text-xs text-[#475467]">
+            <div className="text-xs text-color-secondary">
               {row.original.admin_position}{" "}
               {row.original.carpool_admin_dept_sap_short}
             </div>

@@ -214,7 +214,7 @@ export default function CarpoolVehicleTable({
             {row.original.vehicle_license_plate}{" "}
             {row.original.vehicle_license_plate_province_short}
           </div>
-          <div className="text-xs text-[#475467]">
+          <div className="text-xs text-color-secondary">
             {row.original.vehicle_brand_name} {row.original.vehicle_model_name}
           </div>
         </div>
@@ -362,7 +362,7 @@ export default function CarpoolVehicleTable({
             {row.original.vehicle_license_plate}{" "}
             {row.original.vehicle_license_plate_province_short}
           </div>
-          <div className="text-xs text-[#475467]">
+          <div className="text-xs text-color-secondary">
             {row.original.vehicle_brand_name} {row.original.vehicle_model_name}
           </div>
         </div>
