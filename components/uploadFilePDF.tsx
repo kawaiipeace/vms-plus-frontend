@@ -81,7 +81,7 @@ const UploadFilePDF: React.FC<ImageUploadProps> = ({ onImageChange }) => {
       <label className="image-upload-label">
         <div className="image-upload-content">
           <div className="flex items-center justify-center p-3 rounded-full bg-gray-100 w-[40px] h-[40px]">
-            <i className="material-symbols-outlined">cloud_upload</i>
+            <i className="material-symbols-outlined cloud-icon">cloud_upload</i>
           </div>
 
           <p>

@@ -81,6 +81,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
   >([]);
   const [toast, setToast] = useState<ToastProps | undefined>();
   const [dLoading, setDLoading] = useState(false);
+  const [disabledChoose, setDisabledChoose] = useState(false);
 
   const { formData, updateFormData } = useFormContext();
 
@@ -88,6 +89,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     register,
     handleSubmit,
     setValue,
+    getValues,
     control,
     formState: { errors, isValid },
   } = useForm({
@@ -274,6 +276,23 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
       });
       localStorage.setItem("carpoolProcessOne", "Done");
       router.push("/carpool-management/form/process-two");
+    }
+  };
+
+  const isMustPassStatus40Change = (value: boolean) => {
+    if (value) {
+      const choose_car = getValues("ref_carpool_choose_car_id");
+      const choose_driver = getValues("ref_carpool_choose_driver_id");
+      if (choose_car === 2) {
+        setValue("ref_carpool_choose_car_id", 3);
+      }
+      if (choose_driver === 2) {
+        setValue("ref_carpool_choose_driver_id", 3);
+      }
+
+      setDisabledChoose(true);
+    } else {
+      setDisabledChoose(false);
     }
   };
 
@@ -492,6 +511,10 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                               key={item.ref_carpool_choose_car_id}
                               name="tripType"
                               label={item.type_of_choose_car}
+                              disabled={
+                                disabledChoose &&
+                                item.ref_carpool_choose_car_id === 2
+                              }
                               value={item.ref_carpool_choose_car_id.toString()}
                               selectedValue={field.value?.toString()}
                               setSelectedValue={(e) => {
@@ -538,6 +561,10 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                             key={item.ref_carpool_choose_driver_id}
                             name="tripType"
                             label={item.type_of_choose_driver}
+                            disabled={
+                              disabledChoose &&
+                              item.ref_carpool_choose_driver_id === 2
+                            }
                             value={item.ref_carpool_choose_driver_id.toString()}
                             selectedValue={field.value?.toString()}
                             setSelectedValue={(e) => {
@@ -593,6 +620,9 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                         <input
                           type="checkbox"
                           {...register("is_must_pass_status_40")}
+                          onChange={(e) =>
+                            isMustPassStatus40Change(e.target.checked)
+                          }
                           className="toggle border-[#D0D5DD] [--tglbg:#D0D5DD] text-white checked:border-[#A80689] checked:[--tglbg:#A80689] checked:text-white"
                         />
                         <label className="custom-control-label !w-fit">
