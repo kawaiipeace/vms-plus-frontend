@@ -60,6 +60,7 @@ export interface VehicleDetailType {
       tel_mobile: string;
       tel_internal: string;
       image_url: string;
+      posi_text: string;
     };
   };
   is_admin_choose_driver: boolean;

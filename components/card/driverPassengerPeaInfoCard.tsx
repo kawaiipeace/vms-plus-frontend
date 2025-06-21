@@ -16,7 +16,6 @@ export default function DriverPassengerPeaInfoCard({ id, requestData, displayLoc
   } | null>(null);
 
   const { vehicle_user } = requestData?.vehicle?.vehicle_department || {};
-  console.log("vehicle_user", vehicle_user);
 
   const name = vehicle_user?.full_name;
   const contactNumber = vehicle_user?.tel_mobile;
@@ -41,7 +40,7 @@ export default function DriverPassengerPeaInfoCard({ id, requestData, displayLoc
           </div>
           <div>
             <p className="font-bold">{name}</p>
-            <p className="font-light">{idDriver + " | " + position + " " + deptSap}</p>
+            <p className="font-light">{idDriver + " | " + position + "" + deptSap}</p>
           </div>
         </div>
         <div className="mt-3">
