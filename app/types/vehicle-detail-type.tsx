@@ -43,6 +43,7 @@ export interface VehicleDetailType {
     vehicle_user_emp_name: string;
     vehicle_admin_emp_id: string;
     vehicle_admin_emp_name: string;
+    posi_text: string;
     fleet_card_oil_stations: string;
     parking_place: string;
     fleet_card_no: string;

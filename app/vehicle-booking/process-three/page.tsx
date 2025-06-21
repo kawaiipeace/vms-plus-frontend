@@ -290,17 +290,19 @@ const handleSelectTypes = (typeName: string) => {
             );
             if (formData.vehicleUserEmpId === vehicleUserData[0]?.emp_id) {
               setValue("driverMobileContact", formData.telMobile);
+              setValue("driverInternalContact", formData.telInternal);
             } else {
               setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
+                  setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
             }
-            setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
+        
 
             setValue("driverEmpID", vehicleUserData[0]?.emp_id);
             setValue("driverEmpName", vehicleUserData[0]?.full_name);
             setValue(
               "driverDeptSap",
               vehicleUserData[0]?.posi_text +
-                "/" +
+                " " +
                 vehicleUserData[0]?.dept_sap_short
             );
 

@@ -45,7 +45,7 @@ export default function PageKeyPickupHeader({ data, editable }: Props) {
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
-            <a>
+            <Link href="/">
               <i className="material-symbols-outlined">home</i>
             </Link>
           </li>

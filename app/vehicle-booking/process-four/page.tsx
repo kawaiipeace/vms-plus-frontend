@@ -166,7 +166,7 @@ const nextStep = async () => {
 
               <div className="form-accept">
                 การกดปุ่ม “สร้างคำขอ” จะถือว่าท่านอ่านและตกลงยอมรับ
-                <a
+                <Link
                   onClick={() => termAndConditionModalRef.current?.openModal()}
                   href="#"
                   className="text-info text-underline"

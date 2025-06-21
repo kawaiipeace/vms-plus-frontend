@@ -116,6 +116,7 @@ export default function LoginOS() {
               {...register("phone")}
               type="text"
               onInput={handlePhoneChange}
+              className="!bg-transparent"
               placeholder="ระบุเบอร์โทรศัพท์"
               onKeyDown={(e) => {
                 if (

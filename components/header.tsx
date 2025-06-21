@@ -269,6 +269,7 @@ export default function Header() {
       if (response) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        
         const logoutUrl = response.data.logout_url;
         if (logoutUrl != "") {
           window.open(logoutUrl, "_blank");
@@ -333,7 +334,7 @@ export default function Header() {
                 >
                   {profile && (
                     <li className="nav-item">
-                      <div className="nav-link sidebar-users">
+                      <div className="nav-link sidebar-users pointer-events-none">
                         <div className="avatar avatar-sm">
                           <Image
                             src={profile?.image_url || "/assets/img/avatar.svg"}
@@ -355,7 +356,7 @@ export default function Header() {
                       </div>
                     </li>
                   )}
-                  <li className="nav-item">
+                  <li className="nav-item dropdown-item">
                     <div className="flex justify-between gap-2 items-center">
                       {profile?.license_status === "อนุมัติแล้ว" ? (
                         <>
