@@ -152,8 +152,8 @@ export default function VehicleTable({ data, useModal }: VehicleTableProps) {
 
                 return (
                     <div className="flex flex-col text-left">
-                        <div className="text-base">{row.vehicle_license_plate} {row.vehicle_license_plate_province_short}</div>
-                        <div className="text-sm text-gray-500">{`${row.vehicle_brand_name} / ${row.vehicle_model_name}`}</div>
+                        <span className="text-base">{row.vehicle_license_plate} {row.vehicle_license_plate_province_short}</span>
+                        <span className="text-color-secondary">{`${row.vehicle_brand_name} / ${row.vehicle_model_name}`}</span>
                     </div>
                 );
             },
