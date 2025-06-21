@@ -287,7 +287,7 @@ export default function Header() {
         <div className="navbar p-0 items-center min-h-0">
           <div className="navbar-start">
             <div className="header-brand block md:hidden">
-              <a href="">
+              <Link href="">
               <Image
                   src={
                     isDarkMode
@@ -298,7 +298,7 @@ export default function Header() {
                   height={40}
                   alt=""
                 ></Image>
-              </a>
+              </Link>
             </div>
             <ToggleSidebar />
           </div>
@@ -359,7 +359,8 @@ export default function Header() {
                     <div className="flex justify-between gap-2 items-center">
                       {profile?.license_status === "อนุมัติแล้ว" ? (
                         <>
-                          <a
+                          <Link
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenDriverLicenseModal}
                           >
@@ -367,14 +368,15 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-success">
                             {profile.license_status}
                           </div>
                         </>
                       ) : profile?.license_status === "หมดอายุ" ? (
                         <>
-                          <a
+                          <Link
+                            href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenDriverLicenseModal}
                           >
@@ -382,7 +384,7 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-error">
                             {profile.license_status}
                           </div>
@@ -393,7 +395,8 @@ export default function Header() {
                         </div>
                       ) : profile?.license_status === "รออนุมัติ" ? (
                         <>
-                          <a
+                          <Link
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenRequestDetailDrivingModal}
                           >
@@ -401,14 +404,15 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-gray">
                             {profile.license_status}
                           </div>
                         </>
                       ) : profile?.license_status === "รออนุมัติ" ? (
                         <>
-                          <a
+                          <Link 
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenRequestDetailDrivingModal}
                           >
@@ -416,14 +420,15 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-gray">
                             {profile.license_status}
                           </div>
                         </>
                       ) : profile?.license_status === "ตีกลับ" ? (
                         <>
-                          <a
+                          <Link
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenRequestDetailDrivingModal}
                           >
@@ -431,7 +436,7 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-warning">
                             {profile.license_status}
                           </div>
@@ -439,7 +444,8 @@ export default function Header() {
                       ) : profile?.license_status ===
                         "ใบอนุญาตทำหน้าที่ขับรถยนต์" ? (
                         <>
-                          <a
+                          <Link
+                            href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenDriverLicenseUpModal}
                           >
@@ -447,12 +453,13 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                         </>
                       ) : (
                         (profile?.license_status === "ไม่มี" || profile?.license_status === "ยกเลิก") && (
                           <>
-                            <a
+                            <Link
+                              href="#"
                               className="nav-link toggle-mode gap-1 flex items-center"
                               onClick={() =>
                                 handleOpenRequestNoBackDrivingModal()
@@ -467,7 +474,7 @@ export default function Header() {
                               <div className="badge bg-brand-900 text-white">
                                 ไม่มี
                               </div>
-                            </a>
+                            </Link>
                           </>
                         )
                       )}
@@ -477,13 +484,13 @@ export default function Header() {
                   <a href="" className="nav-link">
                     <i className="material-symbols-outlined">person_check</i>
                     <span className="nav-link-label">มอบอำนาจอนุมัติ</span>
-                  </a>
+                  </Link>
                 </li> */}
                   {/* <li className="nav-item">
                   <a className="nav-link toggle-lock">
                     <i className="material-symbols-outlined">lock</i>
                     <span className="nav-link-label">ล็อกหน้าจอ</span>
-                  </a>
+                  </Link>
                 </li> */}
 
                   <hr />

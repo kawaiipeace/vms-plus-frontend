@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import { RequestListType } from "@/app/types/request-list-type";
 import PaginationControls from "@/components/table/pagination-control";
 import { PaginationType } from "@/app/types/request-action-type";
+import Link from "next/link";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -149,9 +150,9 @@ export default function DriverMain() {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a href="/">
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a>งานของฉัน</a>

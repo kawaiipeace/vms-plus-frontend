@@ -6,6 +6,7 @@ import ToastCustom from "@/components/toastCustom";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import ApproveVehicleForFinalTabs from "@/components/tabs/approveVehicleForFinalTabs";
+import Link from "next/link";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -78,9 +79,9 @@ export default function ApproveRequest() {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a href="/">
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active">
                     <a>อนุมัติใช้ยานพาหนะ</a>

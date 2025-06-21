@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 interface ImgSliderProps {
@@ -39,22 +40,22 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
 
       {/* Navigation Arrows */}
       <div className="absolute slick-arrow left-[2rem] top-2/4 transform -translate-y-1/3">
-        <a
+        <Link
           href={`#slide${id}${activeIndex === 0 ? images.length : activeIndex}`}
           className="btn w-[40px] h-[40px] rounded-full min-h-0"
           onClick={() => setActiveIndex((activeIndex - 1 + images.length) % images.length)}
         >
           <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_left</i>
-        </a>
+        </Link>
       </div>
       <div className="absolute slick-arrow right-[2rem] top-2/4 transform -translate-y-1/3">
-        <a
+        <Link
           href={`#slide${id}${((activeIndex + 1) % images.length) + 1}`}
           className="btn w-[40px] h-[40px] rounded-full min-h-0"
           onClick={() => setActiveIndex((activeIndex + 1) % images.length)}
         >
           <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_right</i>
-        </a>
+        </Link>
       </div>
 
       {/* Indicators */}

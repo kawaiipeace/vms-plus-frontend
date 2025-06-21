@@ -55,6 +55,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("theme");
     hideToast();
     setProfile(null);
     setIsAuthenticated(false);

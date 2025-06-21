@@ -105,7 +105,7 @@ export default function VehicleTimeLine() {
   const Header = () => (
     <div className="flex gap-4 border-l-8 border-brand-900 p-4 rounded-none">
       <span className="text-xl font-bold">พนักงานขับรถ</span>
-      <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+      <span className="font-bold text-secondary border border-gray-300 px-2 py-1 rounded-lg text-sm">
         {pagination.total} คน
       </span>
     </div>

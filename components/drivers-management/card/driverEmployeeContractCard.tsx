@@ -161,7 +161,7 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                           href={`/drivers-management/view/${driverInfo?.replacement_driver_uid}?active=${replacementDriverActive}`}
                         >
                           {replacementDriverName}
-                        </a>
+                        </Link>
                       </p>
                     </div>
                   </div>

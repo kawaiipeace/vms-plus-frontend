@@ -126,9 +126,9 @@ const nextStep = async () => {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a href="/">
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item">
                     <Link href="request-list">คำขอใช้ยานพาหนะ</Link>
@@ -172,7 +172,7 @@ const nextStep = async () => {
                   className="text-info text-underline"
                 >
                   เงื่อนไข หลักเกณฑ์ และระเบียบการใช้ยานพาหนะ
-                </a>
+                </Link>
               </div>
 
               <div className="form-action">

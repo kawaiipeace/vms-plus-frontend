@@ -178,7 +178,7 @@ export default function VehicleTimeLine() {
         <div className="page-header-left">
           <div className="page-title">
             <span className="page-title-label">พนักงานขับรถ</span>
-            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+            <span className="font-bold text-secondary border border-gray-300 px-2 py-1 rounded-lg text-sm">
               {pagination.total ?? 0} คน
             </span>
           </div>

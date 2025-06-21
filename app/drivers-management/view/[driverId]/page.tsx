@@ -30,6 +30,7 @@ import { DriverMasType } from "@/app/types/driver-user-type";
 import { DriverInfoType } from "@/app/types/drivers-management-type";
 import DriverEditInfoModal from "@/components/drivers-management/modal/driverEditInfoModal";
 import { getCarpoolDriverDetails } from "@/services/carpoolManagement";
+import Link from "next/link";
 
 interface DriverStatus {
   ref_driver_status_code: string;
@@ -281,9 +282,9 @@ const DriverViewProfilePage = () => {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a href="/">
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>
