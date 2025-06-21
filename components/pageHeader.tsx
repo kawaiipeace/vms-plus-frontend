@@ -44,9 +44,9 @@ export default function PageHeader({ data }: Props) {
       <div className="breadcrumbs text-sm">
         <ul>
           <li className="breadcrumb-item">
-            <a>
+            <Link href="/">
               <i className="material-symbols-outlined">home</i>
-            </a>
+            </Link>
           </li>
           <li className="breadcrumb-item">
             <Link href="/vehicle-booking/request-list">คำขอใช้ยานพาหนะ</Link>
@@ -91,7 +91,11 @@ export default function PageHeader({ data }: Props) {
               <span className="badge badge-pill-outline badge-gray">
                 {data?.ref_request_status_name}
               </span>
-            ) : (
+            ) : data?.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ" ? (
+              <span className="badge badge-pill-outline badge-error">
+                {data?.ref_request_status_name}
+              </span>
+            )  : (
               <span className="badge badge-pill-outline badge-info">
                 {data?.ref_request_status_name}
               </span>

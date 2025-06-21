@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import { useEffect, useState } from "react";
 import { DriverInfo, driversMamagement } from "@/services/driversManagement";
+import Link from "next/link";
 // import { se } from "date-fns/locale";
 
 dayjs.extend(buddhistEra);
@@ -157,11 +158,11 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                     <div className="pl-2">
                       <h5 className="font-semibold mb-1">พนักงานที่ปฏิบัติงานแทน</h5>
                       <p className="text-blue-700 underline">
-                        <a
+                        <Link
                           href={`/drivers-management/view/${driverInfo?.replacement_driver_uid}?active=${replacementDriverActive}`}
                         >
                           {replacementDriverName}
-                        </a>
+                        </Link>
                       </p>
                     </div>
                   </div>

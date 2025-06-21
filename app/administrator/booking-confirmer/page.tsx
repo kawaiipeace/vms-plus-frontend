@@ -4,6 +4,7 @@ import SideBar from "@/components/sideBar";
 import ApproveVehicleConfirmerTabs from "@/components/tabs/approveVehicleConfirmerTabs";
 import ToastCustom from "@/components/toastCustom";
 import { useSidebar } from "@/contexts/sidebarContext";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -146,9 +147,9 @@ export default function ApproveRequest() {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a>
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active">
                     <a>อนุมัติคำขอใช้และใบอนุญาต</a>

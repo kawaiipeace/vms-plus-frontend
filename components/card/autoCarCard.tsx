@@ -36,8 +36,8 @@ export default function AutoCarCard({
         <div className="card-img-top h-[27vh]">
           <Image
             src={imgSrc}
-            width={100}
-            height={100}
+            width={300}
+            height={600}
             className=""
             alt="..."
           ></Image>

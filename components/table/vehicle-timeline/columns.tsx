@@ -57,10 +57,8 @@ export const useColumns = ({
                         const { license, brandModel, brandName, provinceShort } = info.getValue();
                         return (
                             <div className="flex flex-col text-start px-4">
-                                <span className="text-base font-semibold">{license} {provinceShort}</span>
-                                <span className="text-base">
-                                    {brandModel} {brandName}
-                                </span>
+                                <span className="text-base">{license} {provinceShort}</span>
+                                <span className="text-color-secondary">{brandModel} {brandName}</span>
                             </div>
                         );
                     },

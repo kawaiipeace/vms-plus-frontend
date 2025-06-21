@@ -208,11 +208,14 @@ export default function RequestForm() {
             };
 
             if (vehicleUserData) {
-              setValue("telInternal", vehicleUserData[0].tel_internal);
-              setValue("telMobile", vehicleUserData[0].tel_mobile);
+              if (!formData) {
+                setValue("telInternal", vehicleUserData[0].tel_internal);
+                setValue("telMobile", vehicleUserData[0].tel_mobile);
+              }
+
               setValue(
                 "deptSapShort",
-                `${vehicleUserData[0].posi_text}/${vehicleUserData[0].dept_sap_short}`
+                `${vehicleUserData[0].posi_text} ${vehicleUserData[0].dept_sap_short}`
               );
               setValue("deptSap", vehicleUserData[0].dept_sap);
               setValue("userImageUrl", vehicleUserData[0].image_url);
@@ -283,8 +286,11 @@ export default function RequestForm() {
     );
 
     if (empData) {
-      setValue("telInternal", empData.tel_internal);
-      setValue("telMobile", empData.tel_mobile);
+      if (!formData) {
+        setValue("telInternal", empData.tel_internal);
+        setValue("telMobile", empData.tel_mobile);
+      }
+
       setValue("deptSapShort", empData.dept_sap_short);
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
@@ -323,20 +329,38 @@ export default function RequestForm() {
   ) => {
     if (!event.target.files) return;
     const file = event.target.files?.[0];
-    setFileName(file ? file.name : "อัพโหลดเอกสารแนบ");
 
-    try {
-      const response = await uploadFile(file);
-      setValue("attachmentFile", response.file_url || "");
-      // setFileName(shortenFilename(response.file_url) || "อัพโหลดเอกสารแนบ");
-    } catch (error: unknown) {
-      if (typeof error === "object" && error !== null && "response" in error) {
-        const axiosError = error as {
-          response?: { data?: { message?: string } };
-        };
-        setFileError(axiosError.response?.data?.message || "Upload failed");
-      } else {
-        setFileError("An unexpected error occurred");
+    // Check if file exists and is PDF
+    if (file) {
+      if (file.type !== "application/pdf") {
+        setFileError("กรุณาอัพโหลดไฟล์ PDF เท่านั้น");
+        setFileName("อัพโหลดเอกสารแนบ");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      // Reset previous errors
+      setFileError("");
+      setFileName(file.name);
+
+      try {
+        const response = await uploadFile(file);
+        setValue("attachmentFile", response.file_url || "");
+      } catch (error: unknown) {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error
+        ) {
+          const axiosError = error as {
+            response?: { data?: { message?: string } };
+          };
+          setFileError(axiosError.response?.data?.message || "Upload failed");
+        } else {
+          setFileError("An unexpected error occurred");
+        }
       }
     }
   };
@@ -953,7 +977,6 @@ export default function RequestForm() {
                     </div>
                   </div>
                 </div>
-
                 <div className="col-span-12 md:col-span-3">
                   <div className="form-group">
                     <label className="form-label">
@@ -965,7 +988,6 @@ export default function RequestForm() {
                       }`}
                     >
                       <div className="flex items-center gap-2 w-full justify-between">
-                        {/* File input inside label for click-to-upload */}
                         <label className="flex items-center gap-2 cursor-pointer mb-0">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
@@ -985,7 +1007,6 @@ export default function RequestForm() {
                             {fileName}
                           </div>
                         </label>
-                        {/* Remove button OUTSIDE the label */}
                         {fileName !== "อัพโหลดเอกสารแนบ" && (
                           <button
                             type="button"

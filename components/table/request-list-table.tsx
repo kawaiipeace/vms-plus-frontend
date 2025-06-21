@@ -182,11 +182,11 @@ export default function RequestListTable({
         const value = getValue() as string;
         return (
           <div className="w-[80px] text-center">
-            {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" ? (
+            {value === "เกินวันที่นัดหมาย" || value === "ถูกตีกลับ" || value === "คืนยานพาหนะไม่สำเร็จ" ? (
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "รออนุมัติ" || value === "ตีกลับยานพาหนะ" ? (
+            ) : value === "ตีกลับยานพาหนะ" ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
               </span>

@@ -83,7 +83,7 @@ export default function CustomSelect({
     return (
       <div className="flex flex-col">
         <div className="font-medium">{option.label}</div>
-        <div className="text-xs text-gray-500 mt-1">{option.desc}</div>
+        <div className="text-xs text-color-secondary mt-1">{option.desc}</div>
       </div>
     );
   };

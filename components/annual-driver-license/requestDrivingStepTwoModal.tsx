@@ -25,6 +25,7 @@ import ApproverInfoCard from "./ApproverInfoCard";
 import EditApproverModal from "./editApproverModal";
 import EditFinalApproverModal from "./editFinalApproverModal";
 import { useProfile } from "@/contexts/profileContext";
+import Link from "next/link";
 
 interface ValueFormStep1 {
   driverLicenseType: { value: string; label: string; desc?: string } | null;
@@ -391,7 +392,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                       การกดปุ่ม "ขออนุมัติ"
                       จะถือว่าท่านรับรองว่ามีคุณสมบัติถูกต้อง
                       <br />
-                      <a
+                      <Link
                         href="/assets/อนุมัติให้พนักงานขับขี่รถยนต์ กฟภ. โดยใช้.pdf"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -399,7 +400,7 @@ const RequestDrivingStepTwoModal = forwardRef<
                       >
                         ตามอนุมัติ ผวก. ลว. 16 ก.พ. 2541 เรื่อง ให้พนักงานของ
                         กฟภ. ขับรถยนต์ที่ใช้ใบอนุญาตขับขี่ส่วนบุคคล
-                      </a>
+                      </Link>
                     </div>
                   </>
                 )}

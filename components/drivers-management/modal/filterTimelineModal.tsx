@@ -73,7 +73,7 @@ export interface VehicleInputParams {
 
 const VEHICLE_BOOKING_STATUS = [
   { id: "1", name: "รออนุมัติ" },
-  { id: "2", name: "ไป - กลับ" },
+  { id: "2", name: "ไป-กลับ" },
   { id: "3", name: "ค้างแรม" },
   { id: "4", name: "เสร็จสิ้น" },
 ];

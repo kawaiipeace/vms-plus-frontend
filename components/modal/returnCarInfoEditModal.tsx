@@ -238,7 +238,7 @@ const ReturnCarInfoEditModal = forwardRef<{ openModal: () => void; closeModal: (
                               return <span key={index}>{index === 0 ? "E" : index === 8 ? "F" : ""}</span>;
                             })}
                           </div>
-                          <div className="flex w-full justify-start text-xs text-[#475467]">
+                          <div className="flex w-full justify-start text-xs text-color-secondary">
                             ควรเติมเชื้อเพลิงให้เต็มก่อนคืน
                           </div>
                         </div>

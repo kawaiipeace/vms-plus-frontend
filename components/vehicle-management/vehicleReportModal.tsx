@@ -31,9 +31,9 @@ const ReportCard = ({ imageSrc, title, description, count, onClick }: RepoCardPr
     <div className="w-full flex rounded-2xl items-stretch">
       <Image src={imageSrc} width={100} height={100} alt="" />
       <div className="text-left">
-        <h5 className="text-[#344054] font-semibold pl-4">{title}</h5>
-        <p className="text-[#667085] font-semibold text-sm pl-4">{description}</p>
-        <p className="text-[#667085] text-sm pl-4">{count} คัน</p>
+        <h5 className="card-title font-semibold pl-4">{title}</h5>
+        <p className="card-subtitle font-semibold text-sm pl-4">{description}</p>
+        <p className="card-subtitle text-sm pl-4">{count} คัน</p>
       </div>
       <div className="ml-auto">
         <button

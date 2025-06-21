@@ -57,7 +57,7 @@ const VehicleUserModal = forwardRef<
     if (requestData) {
       return {
         name: requestData.vehicle_user_emp_name || "",
-        position: requestData.vehicle_user_position+"/"+requestData?.vehicle_user_dept_name_short || "",
+        position: requestData.vehicle_user_position+" "+requestData?.vehicle_user_dept_name_short || "",
         internalPhone: requestData.car_user_internal_contact_number || "",
         mobilePhone: requestData.car_user_mobile_contact_number || "",
       };
