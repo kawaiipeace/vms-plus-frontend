@@ -173,55 +173,60 @@ export default function VehicleTimeLine() {
             </div>
 
             {/* ----- Search and Filter Section ----- */}
-            <div className="flex justify-between items-center mb-4">
-                <SearchInput
-                    defaultValue={params.search}
-                    placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-                    onSearch={(value) => debouncedSetParams(value)}
-                />
-                <div className="flex gap-4">
-                    <div className="flex gap-4 md:flex-row md:items-center">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                                {statusOptions.map(({ value, status }) => (
-                                    <button key={value} onClick={() => toggleFilter(value)}>
-                                        <VehicleStatus status={status} isActive={filterParams.includes(value)} />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-                        <DateRangePicker
-                            date={selectedRange}
-                            onChange={(range) => {
-                                setParams((prev) => ({
-                                    ...prev,
-                                    start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
-                                    end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
-                                }));
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+                {/* SEARCH */}
+                <div className="w-full md:w-auto">
+                    <SearchInput
+                        defaultValue={params.search}
+                        placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+                        onSearch={(value) => debouncedSetParams(value)}
+                    />
+                </div>
 
-                                setSelectedRange(range || undefined);
-                            }}
-                        />
-                        <button
-                            onClick={handleOpenFilterModal}
-                            className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
-                        >
-                            <i className="material-symbols-outlined">filter_list</i>
-                            <span className="text-base font-bold">ตัวกรอง</span>
-                            <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
-                        </button>
-
-                        <button
-                            onClick={toggleDropdown}
-                            className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
-                        >
-                            <i className="material-symbols-outlined text-lg">view_column</i>
-                        </button>
+                {/* STATUS + CONTROLS */}
+                <div className="flex flex-wrap justify-end items-start gap-4 w-full md:w-auto">
+                    {/* Status buttons */}
+                    <div className="flex flex-wrap gap-2">
+                        {statusOptions.map(({ value, status }) => (
+                            <button key={value} onClick={() => toggleFilter(value)}>
+                                <VehicleStatus status={status} isActive={filterParams.includes(value)} />
+                            </button>
+                        ))}
                     </div>
+
+                    {/* Date Picker */}
+                    <DateRangePicker
+                        date={selectedRange}
+                        onChange={(range) => {
+                            setParams((prev) => ({
+                                ...prev,
+                                start_date: range?.from ? dayjs(range?.from).format("YYYY-MM-DD") : "",
+                                end_date: range?.to ? dayjs(range?.to).format("YYYY-MM-DD") : "",
+                            }));
+                            setSelectedRange(range || undefined);
+                        }}
+                    />
+
+                    {/* Filter Button */}
+                    <button
+                        onClick={handleOpenFilterModal}
+                        className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
+                    >
+                        <i className="material-symbols-outlined">filter_list</i>
+                        <span className="text-base font-bold">ตัวกรอง</span>
+                        <span className="badge badge-brand badge-outline rounded-[50%]">{filterCount}</span>
+                    </button>
+
+                    {/* Column Toggle */}
+                    <button
+                        onClick={toggleDropdown}
+                        className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
+                    >
+                        <i className="material-symbols-outlined text-lg">view_column</i>
+                    </button>
                 </div>
             </div>
+
 
             {/* ----- Table ----- */}
             <div className="relative">

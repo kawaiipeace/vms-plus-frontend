@@ -224,10 +224,12 @@ const ModalBody = ({
 const ModalFooter = (
     {
         onClick,
-        onSubmit
+        onSubmit,
+        onClose
     }: {
         onClick: () => void;
         onSubmit: () => void;
+        onClose: () => void;
     }) => {
 
     return (
@@ -242,7 +244,7 @@ const ModalFooter = (
             </div>
 
             <div className="flex gap-3 items-center">
-                <button className="btn btn-secondary" onClick={onClick}>
+                <button className="btn btn-secondary" onClick={onClose}>
                     ยกเลิก
                 </button>
                 <button
@@ -336,7 +338,11 @@ const FilterModal = forwardRef<FilterModalRef, FilterProps>(({
 
                 {/* Footer ลอยอยู่ล่างเสมอ */}
                 <div className="modal-action absolute bottom-0 gap-3 mt-0 w-full flex justify-between">
-                    <ModalFooter onClick={handleClearFilter} onSubmit={handleSubmitFilter} />
+                    <ModalFooter 
+                        onClick={handleClearFilter}
+                        onSubmit={handleSubmitFilter}
+                        onClose={() => dialogRef.current?.close()}
+                    />
                 </div>
             </div>
 
