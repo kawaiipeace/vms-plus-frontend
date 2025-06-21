@@ -43,6 +43,8 @@ const FilterModal = forwardRef<
   const [openModal, setOpenModal] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(propSelectedStatuses);
   const [vehicleCatOptions, setVehicleCatOptions] = useState<CustomSelectOption[]>([]);
+  const [resetKey, setResetKey] = useState(0);
+
   const [selectedVehicleOption, setSelectedVehicleOption] = useState<CustomSelectOption>({
     value: "",
     label: "ทั้งหมด",
@@ -97,14 +99,16 @@ const FilterModal = forwardRef<
     setSelectedVehicleOption(selectedOption);
   };
 
-  const handleResetFilters = () => {
-    setSelectedStatuses([]);
-    setParams({
-      start_date: "",
-      end_date: "",
-    });
-    setSelectedVehicleOption({ value: "", label: "ทั้งหมด" });
-  };
+const handleResetFilters = () => {
+  setSelectedStatuses([]);
+  setParams({
+    start_date: "",
+    end_date: "",
+  });
+  setSelectedVehicleOption({ value: "", label: "ทั้งหมด" });
+  setResetKey(prev => prev + 1); // force re-render
+};
+
 
   useEffect(() => {
     if (department) {
@@ -252,6 +256,7 @@ const FilterModal = forwardRef<
                     <div className="form-group text-left">
                       <label className="form-label">วันที่เดินทาง</label>
                       <DateRangePicker
+                        key={resetKey}
                         date={{
                           from: params.start_date
                             ? dayjs(params.start_date).toDate()

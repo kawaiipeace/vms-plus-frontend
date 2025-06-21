@@ -51,7 +51,7 @@ export default function Paginationselect({
         } overflow-hidden`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex-1 overflow-hidden whitespace-nowrap">{value}</div>
+        <div className="flex-1 overflow-hidden whitespace-nowrap text-primary">{value}</div>
 
         <div className="flex-shrink-0 w-8 text-right">
           <i className="material-symbols-outlined">keyboard_arrow_down</i>

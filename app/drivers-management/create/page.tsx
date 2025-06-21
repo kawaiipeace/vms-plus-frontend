@@ -5,6 +5,7 @@ import { useSidebar } from "@/contexts/sidebarContext";
 import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import DriverForm from "@/components/drivers-management/driverForm";
+import Link from "next/link";
 
 const CreateDriverPage = () => {
   const { isPinned } = useSidebar();
@@ -19,9 +20,9 @@ const CreateDriverPage = () => {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a>
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>

@@ -297,7 +297,7 @@ const AddCarpoolDriverModal = forwardRef<
                       className="flex justify-between items-center px-4 py-2 border-b border-[#EAECF0]"
                     >
                       <div className="text-start">
-                        <div className="text-brand-900">
+                        <div className="text-brand">
                           {driver.driver_name}{" "}
                           {driver.driver_nickname
                             ? `(${driver.driver_nickname})`
@@ -330,7 +330,7 @@ const AddCarpoolDriverModal = forwardRef<
           </div>
 
           <div className="modal-footer p-5 grid grid-cols-4 gap-3 border-t border-[#eaecf0]">
-            <div className="h-full flex items-center text-primary-grayText">
+            <div className="h-full flex items-center text-secondary">
               เลือก {checked.length} คน
             </div>
             <form method="dialog" className="col-span-1 col-start-3">

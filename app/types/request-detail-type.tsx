@@ -106,6 +106,7 @@ export type RequestDetailType = Partial<{
   returned_vehicle_datetime: string;
   mile_end: number;
   fuel_end: number;
+  posi_text:string;
   returned_cleanliness_level: number;
   returned_vehicle_remark: string;
   vehicle_images_returned: VehicleImage[];

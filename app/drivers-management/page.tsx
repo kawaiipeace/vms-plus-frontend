@@ -14,6 +14,7 @@ import { DriversManagementParams } from "@/app/types/drivers-management-type";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import "dayjs/locale/th";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -217,9 +218,9 @@ const DriverManagementPage = () => {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a>
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <a href="/drivers-management">ข้อมูลพนักงานขับรถ</a>

@@ -12,6 +12,8 @@ import RequestListTable from "@/components/table/driver-timeline/request-list-ta
 import SearchInput from "../vehicle-management/input/search";
 import { TripStatus } from "@/utils/vehicle-constant";
 import { debounce } from "lodash";
+import clsx from "clsx";
+import "../vehicle-management/styles/timeline.css";
 
 export default function VehicleTimeLine() {
   // Setting Initial
@@ -178,7 +180,7 @@ export default function VehicleTimeLine() {
         <div className="page-header-left">
           <div className="page-title">
             <span className="page-title-label">พนักงานขับรถ</span>
-            <span className="font-bold text-gray-500 border border-gray-300 px-2 py-1 rounded-lg text-sm">
+            <span className="font-bold text-secondary border border-gray-300 px-2 py-1 rounded-lg text-sm">
               {pagination.total ?? 0} คน
             </span>
           </div>
@@ -275,21 +277,39 @@ export default function VehicleTimeLine() {
 }
 
 const DropdownMenu = ({ dropdownRef, selectedOption, handleSelect }: any) => (
-  <div ref={dropdownRef} className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-xl shadow z-50">
-    {["all", "first"].map((option) => (
-      <button
-        key={option}
-        onClick={() => handleSelect(option)}
-        className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-        role="menuitem"
-      >
-        {selectedOption === option ? (
-          <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
-        ) : (
-          <span className="w-4 mr-2" />
-        )}
-        {option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก"}
-      </button>
-    ))}
+  <div
+    className={clsx(
+      "absolute right-0 mt-2 w-64 z-50",
+      "rounded-xl shadow",
+      "option-modal"
+    )}
+    role="menu"
+    ref={dropdownRef}
+  >
+
+    {["all", "first"].map((option) => {
+      const isSelected = selectedOption === option;
+      const label = option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก";
+
+      return (
+        <button
+          key={option}
+          onClick={() => handleSelect(option)}
+          role="menuitem"
+          className={clsx(
+            "flex items-center w-full text-sm text-left",
+            "px-4 py-2",
+            "option-modal-select"
+          )}
+        >
+          {isSelected ? (
+            <i className="material-symbols-outlined text-blue-600 mr-2">check</i>
+          ) : (
+            <span className="w-4 mr-2" />
+          )}
+          {label}
+        </button>
+      );
+    })}
   </div>
 );

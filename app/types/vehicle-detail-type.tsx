@@ -43,6 +43,7 @@ export interface VehicleDetailType {
     vehicle_user_emp_name: string;
     vehicle_admin_emp_id: string;
     vehicle_admin_emp_name: string;
+    posi_text: string;
     fleet_card_oil_stations: string;
     parking_place: string;
     fleet_card_no: string;
@@ -59,6 +60,7 @@ export interface VehicleDetailType {
       tel_mobile: string;
       tel_internal: string;
       image_url: string;
+      posi_text: string;
     };
   };
   is_admin_choose_driver: boolean;

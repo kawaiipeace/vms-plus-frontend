@@ -95,6 +95,26 @@ export default function Header() {
     }
   };
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check if the `dark-mode` class is applied to the body
+    const checkDarkMode = () => {
+      setIsDarkMode(document.body.classList.contains("dark-mode"));
+    };
+
+    checkDarkMode();
+
+    // Optionally, listen for changes to the class
+    const observer = new MutationObserver(() => {
+      checkDarkMode();
+    });
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (pendingOpenModal === "driver" && driverUser) {
       driverLicenseModalRef.current?.openModal();
@@ -249,6 +269,7 @@ export default function Header() {
       if (response) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        
         const logoutUrl = response.data.logout_url;
         if (logoutUrl != "") {
           window.open(logoutUrl, "_blank");
@@ -267,14 +288,18 @@ export default function Header() {
         <div className="navbar p-0 items-center min-h-0">
           <div className="navbar-start">
             <div className="header-brand block md:hidden">
-              <a href="">
-                <Image
-                  src="/assets/img/brand.svg"
+              <Link href="">
+              <Image
+                  src={
+                    isDarkMode
+                      ? "/assets/img/brand-dark.svg"
+                      : "/assets/img/brand.svg"
+                  }
                   width={98}
                   height={40}
                   alt=""
                 ></Image>
-              </a>
+              </Link>
             </div>
             <ToggleSidebar />
           </div>
@@ -309,7 +334,7 @@ export default function Header() {
                 >
                   {profile && (
                     <li className="nav-item">
-                      <div className="nav-link sidebar-users">
+                      <div className="nav-link sidebar-users pointer-events-none">
                         <div className="avatar avatar-sm">
                           <Image
                             src={profile?.image_url || "/assets/img/avatar.svg"}
@@ -331,11 +356,12 @@ export default function Header() {
                       </div>
                     </li>
                   )}
-                  <li className="nav-item">
+                  <li className="nav-item dropdown-item">
                     <div className="flex justify-between gap-2 items-center">
                       {profile?.license_status === "อนุมัติแล้ว" ? (
                         <>
-                          <a
+                          <Link
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenDriverLicenseModal}
                           >
@@ -343,14 +369,15 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-success">
                             {profile.license_status}
                           </div>
                         </>
                       ) : profile?.license_status === "หมดอายุ" ? (
                         <>
-                          <a
+                          <Link
+                            href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenDriverLicenseModal}
                           >
@@ -358,7 +385,7 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-error">
                             {profile.license_status}
                           </div>
@@ -369,7 +396,8 @@ export default function Header() {
                         </div>
                       ) : profile?.license_status === "รออนุมัติ" ? (
                         <>
-                          <a
+                          <Link
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenRequestDetailDrivingModal}
                           >
@@ -377,14 +405,15 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-gray">
                             {profile.license_status}
                           </div>
                         </>
                       ) : profile?.license_status === "รออนุมัติ" ? (
                         <>
-                          <a
+                          <Link 
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenRequestDetailDrivingModal}
                           >
@@ -392,14 +421,15 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-gray">
                             {profile.license_status}
                           </div>
                         </>
                       ) : profile?.license_status === "ตีกลับ" ? (
                         <>
-                          <a
+                          <Link
+                             href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenRequestDetailDrivingModal}
                           >
@@ -407,7 +437,7 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                           <div className="badge badge-warning">
                             {profile.license_status}
                           </div>
@@ -415,7 +445,8 @@ export default function Header() {
                       ) : profile?.license_status ===
                         "ใบอนุญาตทำหน้าที่ขับรถยนต์" ? (
                         <>
-                          <a
+                          <Link
+                            href="#"
                             className="nav-link toggle-mode gap-1 flex items-center"
                             onClick={handleOpenDriverLicenseUpModal}
                           >
@@ -423,12 +454,13 @@ export default function Header() {
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </a>
+                          </Link>
                         </>
                       ) : (
                         (profile?.license_status === "ไม่มี" || profile?.license_status === "ยกเลิก") && (
                           <>
-                            <a
+                            <Link
+                              href="#"
                               className="nav-link toggle-mode gap-1 flex items-center"
                               onClick={() =>
                                 handleOpenRequestNoBackDrivingModal()
@@ -443,7 +475,7 @@ export default function Header() {
                               <div className="badge bg-brand-900 text-white">
                                 ไม่มี
                               </div>
-                            </a>
+                            </Link>
                           </>
                         )
                       )}
@@ -453,13 +485,13 @@ export default function Header() {
                   <a href="" className="nav-link">
                     <i className="material-symbols-outlined">person_check</i>
                     <span className="nav-link-label">มอบอำนาจอนุมัติ</span>
-                  </a>
+                  </Link>
                 </li> */}
                   {/* <li className="nav-item">
                   <a className="nav-link toggle-lock">
                     <i className="material-symbols-outlined">lock</i>
                     <span className="nav-link-label">ล็อกหน้าจอ</span>
-                  </a>
+                  </Link>
                 </li> */}
 
                   <hr />

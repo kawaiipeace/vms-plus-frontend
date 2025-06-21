@@ -16,6 +16,7 @@ import {
   fetchVehicleDepartmentTypes,
 } from "@/services/masterService";
 import { convertToISO } from "@/utils/convertToISO";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -403,9 +404,9 @@ export default function ProcessTwo() {
             <div className="breadcrumbs text-sm">
               <ul>
                 <li className="breadcrumb-item">
-                  <a>
+                  <Link href="/">
                     <i className="material-symbols-outlined">home</i>
-                  </a>
+                  </Link>
                 </li>
                 <li className="breadcrumb-item">
                   <a>คำขอใช้ยานพาหนะ</a>
