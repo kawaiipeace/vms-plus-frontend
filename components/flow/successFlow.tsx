@@ -128,6 +128,7 @@ export default function SuccessFlow() {
             total,
             totalPages,
           });
+          console.log('page',params)
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
@@ -213,25 +214,28 @@ export default function SuccessFlow() {
         </>
       )}
 
-      {pagination.total > 0 ? (
-        <ZeroRecord
-          imgSrc="/assets/img/empty/search_not_found.png"
-          title="ไม่พบข้อมูล"
-          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-          button="ล้างตัวกรอง"
-          displayBtn={true}
-          btnType="secondary"
-          useModal={handleClearAllFilters}
-        />
-      ) : (
-        <ZeroRecord
+
+           {pagination.total > 0 ? (
+              dataRequest.length <= 0 && (
+                <ZeroRecord
+                  imgSrc="/assets/img/empty/search_not_found.png"
+                  title="ไม่พบข้อมูล"
+                  desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                  button="ล้างตัวกรอง"
+                  displayBtn={true}
+                  btnType="secondary"
+                  useModal={handleClearAllFilters}
+                />
+              )
+            ) : (
+             <ZeroRecord
           imgSrc="/assets/img/graphic/empty.svg"
           title="ไม่มีคำขอใช้ที่สำเร็จ"
           desc={<>รายการคำขอใช้ยานพาหนะที่สำเร็จจะแสดงที่นี่</>}
           button="สร้างคำขอใช้"
           displayBtn={false}
         />
-      )}
+            )}
 
       <FilterModal
         ref={filterModalRef}

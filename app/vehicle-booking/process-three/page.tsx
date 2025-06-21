@@ -225,7 +225,7 @@ const handleSelectTypes = (typeName: string) => {
       setValue("driverEmpName", empData.full_name);
       setValue(
         "driverDeptSap",
-        empData.posi_text + "/" + empData.dept_sap_short
+        empData.posi_text + " " + empData.dept_sap_short
       );
       setValue("isPeaEmployeeDriver", "1");
       setDriverLicenseNo(empData.annual_driver.driver_license_no);
@@ -239,7 +239,7 @@ const handleSelectTypes = (typeName: string) => {
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
         driverEmpPosition: empData.posi_text,
-        driverDeptSap: empData.posi_text + "/" + empData.dept_sap_short,
+        driverDeptSap: empData.posi_text + " " + empData.dept_sap_short,
         isPeaEmployeeDriver: "1",
       });
     }
@@ -290,17 +290,19 @@ const handleSelectTypes = (typeName: string) => {
             );
             if (formData.vehicleUserEmpId === vehicleUserData[0]?.emp_id) {
               setValue("driverMobileContact", formData.telMobile);
+              setValue("driverInternalContact", formData.telInternal);
             } else {
               setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
+                  setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
             }
-            setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
+        
 
             setValue("driverEmpID", vehicleUserData[0]?.emp_id);
             setValue("driverEmpName", vehicleUserData[0]?.full_name);
             setValue(
               "driverDeptSap",
               vehicleUserData[0]?.posi_text +
-                "/" +
+                " " +
                 vehicleUserData[0]?.dept_sap_short
             );
 
@@ -392,9 +394,9 @@ const handleSelectTypes = (typeName: string) => {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a>
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item">
                     <Link href="request-list">คำขอใช้ยานพาหนะ</Link>

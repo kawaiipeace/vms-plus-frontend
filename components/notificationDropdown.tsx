@@ -121,7 +121,7 @@ export default function NotificationDropdown() {
               )} */}
             </div>
           </div>
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto noti-main">
             {notifications.length === 0 ? (
               <div className="px-4 py-6 text-center text-sm text-gray-500 noti-main">
                 No notifications
@@ -130,7 +130,7 @@ export default function NotificationDropdown() {
               notifications.map((notification) => (
                 <div
                   key={notification.trn_notify_uid}
-                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer noti-item ${
+                  className={`px-4 py-3 hover:bg-gray-800 cursor-pointer noti-item ${
                     !notification.is_read ? "bg-blue-50" : ""
                   }`}
                   onClick={() => {

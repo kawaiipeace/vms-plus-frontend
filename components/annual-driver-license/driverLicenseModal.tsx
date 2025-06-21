@@ -5,6 +5,7 @@ import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import DriverLicenseDetailModal from "./driverLicenseDetailModal";
+import Link from "next/link";
 
 interface Props {
   requestData?: DriverLicenseCardType;
@@ -226,7 +227,7 @@ const DriverLicenseModal = forwardRef<
               <div className="flex justify-between w-full gap-3 items-center">
                 <div className="cursor-pointer">
                   {requestData?.next_license_status === "อนุมัติแล้ว" ? (
-                    <a
+                    <Link
                       href="#"
                       className="flex gap-2 items-center"
                       onClick={() => {
@@ -247,9 +248,9 @@ const DriverLicenseModal = forwardRef<
                       >
                         {requestData.next_license_status}
                       </div>
-                    </a>
+                    </Link>
                   ) : requestData?.next_license_status === "หมดอายุ" ? (
-                    <a
+                    <Link
                       href="#"
                       className="flex gap-2 items-center"
                       onClick={() => {
@@ -270,9 +271,9 @@ const DriverLicenseModal = forwardRef<
                       >
                         {requestData.next_license_status}
                       </div>
-                    </a>
+                    </Link>
                   ) : requestData?.next_license_status === "มีผลปีถัดไป" ? (
-                    <a
+                    <Link
                       href="#"
                       className="flex gap-2 items-center"
                       onClick={() => {
@@ -287,9 +288,9 @@ const DriverLicenseModal = forwardRef<
                       <div className="badge badge-success">
                         {requestData.next_license_status}
                       </div>
-                    </a>
+                    </Link>
                   ) : requestData?.next_license_status === "ตีกลับ" ? (
-                    <a
+                    <Link
                       href="#"
                       className="flex gap-2 items-center"
                       onClick={() => {
@@ -304,9 +305,9 @@ const DriverLicenseModal = forwardRef<
                       <div className="badge badge-warning">
                         {requestData.next_license_status}
                       </div>
-                    </a>
+                    </Link>
                   ) : requestData?.next_license_status === "รออนุมัติ" ? (
-                    <a
+                    <Link
                       href="#"
                       className="flex gap-2 items-center"
                       onClick={() => {
@@ -321,9 +322,9 @@ const DriverLicenseModal = forwardRef<
                       <div className="badge badge-info">
                         {requestData.next_license_status}
                       </div>
-                    </a>
+                    </Link>
                   ) : requestData?.next_license_status === "ยกเลิก" ? (
-                    <a
+                    <Link
                       href="#"
                       className="flex gap-2 items-center"
                       onClick={() => {
@@ -338,10 +339,10 @@ const DriverLicenseModal = forwardRef<
                       <div className="badge badge-info">
                         {requestData.next_license_status}
                       </div>
-                    </a>
+                    </Link>
                   ) : (
                     requestData?.next_license_status === "ไม่มี" && (
-                      <a
+                      <Link
                         href="#"
                         onClick={() => {
                           modalRef.current?.close();
@@ -352,7 +353,7 @@ const DriverLicenseModal = forwardRef<
                         <span className="text-brand-900 text-sm">
                           ขออนุมัติประจำปี {requestData?.next_annual_yyyy}
                         </span>
-                      </a>
+                      </Link>
                     )
                   )}
                 </div>

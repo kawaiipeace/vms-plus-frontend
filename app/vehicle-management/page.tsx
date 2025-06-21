@@ -4,17 +4,18 @@ import Header from "@/components/header";
 import SideBar from "@/components/sideBar";
 import VehicleManagementTabs from "@/components/tabs/vehicleManagementTabs";
 import { useSidebar } from "@/contexts/sidebarContext";
+import Link from "next/link";
 
 const Breadcrumbs = () => (
     <div className="breadcrumbs text-sm">
         <ul>
             <li className="breadcrumb-item">
-                <a href="/">
+                <Link href="/">
                     <i className="material-symbols-outlined">home</i>
-                </a>
+                </Link>
             </li>
             <li className="breadcrumb-item active">
-                <a href="/">ข้อมูลยานพาหนะ</a>
+                <Link href="/">ข้อมูลยานพาหนะ</Link>
             </li>
         </ul>
     </div>

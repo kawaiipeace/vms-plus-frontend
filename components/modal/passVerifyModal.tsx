@@ -73,7 +73,7 @@ const PassVerifyModal = forwardRef<
             );
   
             if (defaultUser) {
-              const text = defaultUser.posi_text+"/"+defaultUser.dept_sap_short;
+              const text = defaultUser.posi_text+" "+defaultUser.dept_sap_short;
               setSelectedUserDept(text);
             }
           }
@@ -95,7 +95,7 @@ const PassVerifyModal = forwardRef<
     );
 
     if (empData) {
-      setSelectedUserDept(empData.posi_text+"/"+empData.dept_sap_short || "");
+      setSelectedUserDept(empData.posi_text+" "+empData.dept_sap_short || "");
     }
   };
 

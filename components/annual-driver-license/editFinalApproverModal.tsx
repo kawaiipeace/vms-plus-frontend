@@ -120,7 +120,7 @@ const EditFinalApproverModal = forwardRef<
             setValue(
               "position",
               defaultApprover.posi_text +
-                "/" +
+                " " +
                 defaultApprover.dept_sap_short || ""
             );
           }

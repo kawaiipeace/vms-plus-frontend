@@ -58,9 +58,9 @@ const DriverDetail = () => {
               <div className="breadcrumbs text-sm">
                 <ul>
                   <li className="breadcrumb-item">
-                    <a>
+                    <Link href="/">
                       <i className="material-symbols-outlined">home</i>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumb-item active" aria-current="page">
                     <Link href="/vehicle-in-use/driver">งานของฉัน</Link>

@@ -13,7 +13,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ image, onDelete }) => {
         className="flex items-center justify-center p-3 rounded-full bg-gray-100 w-[40px] h-[40px] absolute top-3 right-3 cursor-pointer z-10"
         onClick={onDelete}
       >
-        <i className="material-symbols-outlined">delete</i>
+        <i className="material-symbols-outlined in-circle-icon">delete</i>
       </div>
       <div className="relative w-full h-[300px] flex items-center justify-center">
         {/* <Image
@@ -23,7 +23,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ image, onDelete }) => {
           fill
         /> */}
         <img
-          className="max-w-full max-h-full object-contain"
+          className="max-w-full max-h-full object-contain h-full"
           src={typeof image === "string" ? image : URL.createObjectURL(image)}
           alt="Preview"
         />

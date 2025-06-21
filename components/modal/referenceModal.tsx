@@ -74,22 +74,30 @@ const ReferenceModal = forwardRef<
     }
   }, [requestData, reset]);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    if (!file) return;
+const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0] || null;
+  if (!file) return;
 
-    try {
-      const response = await uploadFile(file);
-      setFileValue(response.file_url);
-      setFileName(shortenFilename(response.file_url));
-      setFileError("");
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message;
-      setFileError(errorMessage);
-      setFileValue("");
-      setFileName("อัพโหลดเอกสารแนบ");
-    }
-  };
+  // Check if file type is not PDF
+  if (file.type !== "application/pdf") {
+    setFileError("กรุณาเลือกไฟล์ PDF เท่านั้น");
+    setFileValue("");
+    setFileName("อัพโหลดเอกสารแนบ");
+    return;
+  }
+
+  try {
+    const response = await uploadFile(file);
+    setFileValue(response.file_url);
+    setFileName(shortenFilename(response.file_url));
+    setFileError("");
+  } catch (error: any) {
+    const errorMessage = error?.response?.data?.message || "ไม่สามารถอัพโหลดไฟล์ได้";
+    setFileError(errorMessage);
+    setFileValue("");
+    setFileName("อัพโหลดเอกสารแนบ");
+  }
+};
 
   const onSubmit = async (data: any) => {
     if (requestData) {

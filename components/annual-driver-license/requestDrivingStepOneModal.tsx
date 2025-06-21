@@ -595,7 +595,7 @@ const onSubmit = (formData: ValueFormStep1) => {
                           }}
                         />
                       </div>
-                      <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
+                      <div className="image-preview flex flex-wrap gap-3 w-full md:!w-[50%]">
                         {watch("licenseImages")?.map(
                           (
                             image: { file_url: string | File },

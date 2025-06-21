@@ -168,7 +168,7 @@ const ReturnEditCarModal = forwardRef<
                       {images.length < 1 && (
                         <ImageUpload onImageChange={handleImageChange} />
                       )}
-                      <div className="image-preview flex flex-wrap gap-3 !w-[50%]">
+                      <div className="image-preview flex flex-wrap gap-3 w-full w-full w-full md:!w-[50%]">
                         {images.map((image, index) =>
                           image.file_url ? (
                             <ImagePreview
