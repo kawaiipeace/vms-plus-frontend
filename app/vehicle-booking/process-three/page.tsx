@@ -225,7 +225,7 @@ const handleSelectTypes = (typeName: string) => {
       setValue("driverEmpName", empData.full_name);
       setValue(
         "driverDeptSap",
-        empData.posi_text + "/" + empData.dept_sap_short
+        empData.posi_text + " " + empData.dept_sap_short
       );
       setValue("isPeaEmployeeDriver", "1");
       setDriverLicenseNo(empData.annual_driver.driver_license_no);
@@ -239,7 +239,7 @@ const handleSelectTypes = (typeName: string) => {
         driverEmpID: empData.emp_id,
         driverEmpName: empData.full_name,
         driverEmpPosition: empData.posi_text,
-        driverDeptSap: empData.posi_text + "/" + empData.dept_sap_short,
+        driverDeptSap: empData.posi_text + " " + empData.dept_sap_short,
         isPeaEmployeeDriver: "1",
       });
     }

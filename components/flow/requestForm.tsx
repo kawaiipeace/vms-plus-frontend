@@ -212,7 +212,7 @@ export default function RequestForm() {
               setValue("telMobile", vehicleUserData[0].tel_mobile);
               setValue(
                 "deptSapShort",
-                `${vehicleUserData[0].posi_text}/${vehicleUserData[0].dept_sap_short}`
+                `${vehicleUserData[0].posi_text} ${vehicleUserData[0].dept_sap_short}`
               );
               setValue("deptSap", vehicleUserData[0].dept_sap);
               setValue("userImageUrl", vehicleUserData[0].image_url);
