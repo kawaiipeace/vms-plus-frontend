@@ -81,10 +81,10 @@ const VEHICLE_BOOKING_STATUS = [
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
   <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
     <div className="flex gap-4 items-center">
-      <i className="material-symbols-outlined text-gray-500">filter_list</i>
+      <i className="material-symbols-outlined text-gray-500 text-color">filter_list</i>
       <div className="flex flex-col">
         <span className="text-xl font-bold">ตัวกรอง</span>
-        <span className="text-gray-500 text-sm">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</span>
+        <span className="text-gray-500 text-sm text-color">กรองข้อมูลให้แสดงเฉพาะข้อมูลที่ต้องการ</span>
       </div>
     </div>
     <button onClick={onClose}>
@@ -307,13 +307,11 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, default
   ];
 
   const handleSubmitFilter = () => {
-
     onSubmitFilter?.(params);
     dialogRef.current?.close();
   };
 
   const handleClearFilter = () => {
-
     setParams({
       fuelType: "",
       vehicleType: "",
@@ -325,7 +323,6 @@ const FilterModal = forwardRef<FilterModalRef, Props>(({ onSubmitFilter, default
     });
   };
   const handleCancelFilter = () => {
-
     dialogRef.current?.close();
   };
 
