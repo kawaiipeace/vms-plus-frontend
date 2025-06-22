@@ -23,7 +23,7 @@ export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TD
       >
         <table className={`${style ?? "w-full"} dataTable`}>
           {/* Table Head */}
-          <thead className="bg-gray-200 sticky top-0 z-10">
+          <thead className="bg-gray-200 sticky top-0 !z-[0]">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="text-base font-semibold h-[56px]">
                 {headerGroup.headers.map((header) => (
