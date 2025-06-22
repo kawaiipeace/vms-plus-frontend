@@ -33,7 +33,7 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
   };
 
   const renderTableHead = () => (
-    <thead className="bg-white sticky top-[60px] !z-[0] shadow">
+    <thead className="bg-white sticky top-[60px] shadow">
       {table.getHeaderGroups().map((headerGroup) => (
         <tr key={headerGroup.id} className="text-sm sm:text-base font-semibold">
           {headerGroup.headers.map((header) => (
@@ -108,8 +108,8 @@ export function DataTable<TData>({ table, onRowClick }: DataTableProps<TData>) {
       {/* Wrapper scrollable container */}
       <div className="overflow-y-auto max-h-[600px]">
         <table className="min-w-full table-fixed border-collapse calendarTable no-mobile-card">
-          {renderTableHead()}
           {renderTableBody()}
+          {renderTableHead()}
         </table>
       </div>
     </div>
