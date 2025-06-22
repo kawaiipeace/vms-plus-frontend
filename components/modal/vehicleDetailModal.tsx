@@ -207,7 +207,8 @@ const VehicleDetailModel = forwardRef<
                         </div>
                         <div className="supporting-text-group">
                           <div className="supporting-text">
-                            {
+                            { vehicleDetail?.vehicle_department?.vehicle_user
+                                ?.posi_text + " " +
                               vehicleDetail?.vehicle_department?.vehicle_user
                                 ?.dept_sap_short
                             }
