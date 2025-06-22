@@ -14,7 +14,6 @@ import { TripStatus } from "@/utils/vehicle-constant";
 import { debounce } from "lodash";
 import { VehicleTimelineSearchParams } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import clsx from "clsx";
-import "../vehicle-management/styles/timeline.css";
 
 export default function VehicleTimeLine() {
     // ----- Setting Initial -----
