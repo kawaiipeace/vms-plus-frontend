@@ -254,12 +254,13 @@ const VehicleDetailModel = forwardRef<
               </div>
             )}
             <div className="form-card mt-5">
-              <div className="form-card-body form-card-inline items-center !bg-transparent text-left !p-0">
+            <div className="form-label mb-2 font-bold">หมายเหตุ</div>
+              <div className="form-card-body form-card-inline items-center text-left !py-2">
                 <div className="form-group form-plaintext form-users items-center">
                   <div className="col-span-12">
                     <div className="form-group form-plaintext">
                       <div className="form-plaintext-group">
-                        <div className="form-label">หมายเหตุ</div>
+                      
                         <div className="form-text">
                           {vehicleDetail?.vehicle_department?.remark}
                         </div>
