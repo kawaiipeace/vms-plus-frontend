@@ -151,7 +151,7 @@ export default function CustomSelectOnSearch({
             width={24}
             height={24}
           />
-          <span className=" text-object-search">{option.label}</span>
+          <span className="text-object-search">{option.label}</span>
         </div>
       );
     }
