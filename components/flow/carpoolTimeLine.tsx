@@ -273,7 +273,7 @@ export default function CarpoolTimeLine() {
   }, []);
 
   return (
-    <div>
+    <div className="px-4 sm:px6 lg:px8 py6">
       {/* <VehicleHeader /> */}
       <div className="page-section-header border-0 mt-5">
         <div className="page-header-left">
@@ -287,77 +287,73 @@ export default function CarpoolTimeLine() {
       </div>
 
       {/* <vehicleActions /> */}
-      <div className="flex justify-between items-center mb-4 gap-4">
-        <SearchInput
-          defaultValue={vehicleParams.search}
-          placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
-          onSearch={debouncedSetVehicleParams}
-        />
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+        <div className="w-full md:w-auto">
+          <SearchInput
+            defaultValue={vehicleParams.search}
+            placeholder="เลขทะเบียน, ยี่ห้อ, รุ่น"
+            onSearch={debouncedSetVehicleParams}
+          />
+        </div>
 
-        <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex gap-4 md:flex-row md:items-center">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex flex-wrap items-center gap-2">
-                {statusOptions.map(({ value, status }) => (
-                  <button key={value} onClick={() => toggleFilter(value)}>
-                    <VehicleStatus
-                      status={status}
-                      isActive={filterParams.includes(value)}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div className="flex flex-wrap justify-end items-start gap-4 w-full md:w-auto">
+          <div className="flex flex-wrap gap-2">
+            {statusOptions.map(({ value, status }) => (
+              <button key={value} onClick={() => toggleFilter(value)}>
+                <VehicleStatus
+                  status={status}
+                  isActive={filterParams.includes(value)}
+                />
+              </button>
+            ))}
           </div>
 
-          <div className="flex flex-wrap gap-2 justify-start md:justify-end">
-            <DateRangePicker
-              date={selectedRange}
-              onChange={(range) => {
-                setVehicleParams((prev) => ({
-                  ...prev,
-                  start_date: range?.from
-                    ? dayjs(range?.from).format("YYYY-MM-DD")
-                    : "",
-                  end_date: range?.to
-                    ? dayjs(range?.to).format("YYYY-MM-DD")
-                    : "",
-                }));
-                setDriverParams((prev) => ({
-                  ...prev,
-                  start_date: range?.from
-                    ? dayjs(range?.from).format("YYYY-MM-DD")
-                    : "",
-                  end_date: range?.to
-                    ? dayjs(range?.to).format("YYYY-MM-DD")
-                    : "",
-                }));
+          <DateRangePicker
+            date={selectedRange}
+            onChange={(range) => {
+              setVehicleParams((prev) => ({
+                ...prev,
+                start_date: range?.from
+                  ? dayjs(range?.from).format("YYYY-MM-DD")
+                  : "",
+                end_date: range?.to
+                  ? dayjs(range?.to).format("YYYY-MM-DD")
+                  : "",
+              }));
+              setDriverParams((prev) => ({
+                ...prev,
+                start_date: range?.from
+                  ? dayjs(range?.from).format("YYYY-MM-DD")
+                  : "",
+                end_date: range?.to
+                  ? dayjs(range?.to).format("YYYY-MM-DD")
+                  : "",
+              }));
 
-                setSelectedRange(range || undefined);
-              }}
-            />
-            <button
-              onClick={handleOpenVehicleFilterModal}
-              className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
-            >
-              <i className="material-symbols-outlined">filter_list</i>
-              <span className="text-base font-bold">ตัวกรอง</span>
-              <span className="badge badge-brand badge-outline rounded-[50%]">
-                {vehicleParams.is_active?.split(",").filter((e) => e !== "")
-                  .length +
-                  vehicleParams.ref_vehicle_status_code
-                    ?.split(",")
-                    .filter((e) => e !== "").length || 0}
-              </span>
-            </button>
+              setSelectedRange(range || undefined);
+            }}
+          />
+          <button
+            onClick={handleOpenVehicleFilterModal}
+            className="btn btn-secondary btn-filtermodal h-[40px] min-h-[40px]"
+          >
+            <i className="material-symbols-outlined">filter_list</i>
+            <span className="text-base font-bold">ตัวกรอง</span>
+            <span className="badge badge-brand badge-outline rounded-[50%]">
+              {vehicleParams.is_active?.split(",").filter((e) => e !== "")
+                .length +
+                vehicleParams.ref_vehicle_status_code
+                  ?.split(",")
+                  .filter((e) => e !== "").length || 0}
+            </span>
+          </button>
 
-            <button
-              onClick={toggleDropdown}
-              className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
-            >
-              <i className="material-symbols-outlined text-lg">view_column</i>
-            </button>
-          </div>
+          <button
+            onClick={toggleDropdown}
+            className="btn btn-secondary h-[40px] min-h-[40px] flex items-center justify-center relative"
+          >
+            <i className="material-symbols-outlined text-lg">view_column</i>
+          </button>
         </div>
       </div>
 
@@ -409,12 +405,14 @@ export default function CarpoolTimeLine() {
       </div>
 
       {/* <DriverActions /> */}
-      <div className="flex justify-between items-center mb-4 gap-4">
-        <SearchInput
-          defaultValue={driverParams.search}
-          placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
-          onSearch={debouncedSetDriverParams}
-        />
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+        <div className="w-full md:w-auto">
+          <SearchInput
+            defaultValue={driverParams.search}
+            placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
+            onSearch={debouncedSetDriverParams}
+          />
+        </div>
         <div className="flex gap-4 md:flex-row md:items-center md:justify-between">
           <button
             onClick={handleOpenDriverFilterModal}

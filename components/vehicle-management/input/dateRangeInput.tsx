@@ -4,6 +4,7 @@ import { useState } from 'react';
 import 'react-day-picker/dist/style.css';
 import { DateLongTH } from '@/utils/vehicle-management';
 import { th, enUS } from 'date-fns/locale';
+import "../styles/timeline.css";
 
 type Props = {
     date: DateRange | undefined;

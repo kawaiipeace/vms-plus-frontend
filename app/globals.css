@@ -83,8 +83,13 @@ img {
 }
 
 .dark-mode .noti-main {
-  background-color: #0c111d;
-  color: #cecfd2;
+  background-color: #0c111d !important;
+  color: #cecfd2 !important;
+}
+
+.light-mode .noti-main {
+  background-color: white;
+  color: black;
 }
 
 .dark-mode .alert.alert-success {
@@ -109,6 +114,15 @@ input.form-control {
   color: #333741 !important;
 }
 .dark-mode .noti-content {
+  background-color: #333741;
+  color: #cecfd2;
+}
+
+.light-mode .noti-item:hover{
+  background-color: #f2f4f7;
+}
+
+.dark-mode .noti-item:hover {
   background-color: #333741;
   color: #cecfd2;
 }
@@ -2596,14 +2610,8 @@ input.form-control {
 .menu li > a:focus,
 .menu li > button:active,
 .menu li > button:focus {
-  background-color: red !important;
+  background-color: inherit !important;
 }
-
-.menu li > a.active,
-.menu li > button.active {
-  background-color: red !important;
-}
-
 .dropdown-menu {
   border-radius: 0.5rem;
   border: 1px solid;

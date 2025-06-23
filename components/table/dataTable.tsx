@@ -9,32 +9,39 @@ interface DataTableProps<TData> {
   style?: string;
 }
 
-
-
-
 export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TData>) {
+  const rowHeight = 56; // px
+  const maxVisibleRows = 10;
+  const actualRows = table.getRowModel().rows.length;
+  const tableBodyHeight = Math.min(actualRows, maxVisibleRows) * rowHeight;
 
-  
   return (
-    <>
-      <div className="mt-5 overflow-x-auto rounded-none">
-        <table className={`${style ? style : "w-full"} dataTable`}>
+    <div className="mt-5 overflow-x-auto rounded-none">
+      <div
+        className="overflow-y-auto"
+        style={{ maxHeight: `${rowHeight * maxVisibleRows + 56}px` }} // + header height
+      >
+        <table className={`${style ?? "w-full"} dataTable`}>
           {/* Table Head */}
-          <thead className="bg-gray-200">
+          <thead className="bg-gray-200 sticky top-0 !z-[0]">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="text-base font-semibold">
+              <tr key={headerGroup.id} className="text-base font-semibold h-[56px]">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className="p-2 cursor-pointer select-none sticky top-0 z-[0] bg-gray-200 border-b border-gray-300"
+                    className="p-2 cursor-pointer select-none bg-gray-200 border-b border-gray-300"
                   >
                     <div className="flex items-center gap-3">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                       <span>
                         {{
                           asc: <i className="material-symbols-outlined text-black select-none">arrow_upward_alt</i>,
-                          desc: <i className="material-symbols-outlined text-black select-none">arrow_downward_alt</i>,
+                          desc: (
+                            <i className="material-symbols-outlined text-black select-none">arrow_downward_alt</i>
+                          ),
                         }[header.column.getIsSorted() as string] ||
                           (header.column.getCanSort() ? (
                             <i className="material-symbols-outlined select-none">import_export</i>
@@ -49,14 +56,13 @@ export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TD
 
           {/* Table Body */}
           <tbody>
-            {table.getRowModel().rows?.length ? (
+            {actualRows ? (
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
                   className={`hover:bg-base-200 ${onRowClick ? "cursor-pointer" : ""}`}
-                  onClick={() => {
-                    onRowClick?.(row.original);
-                  }}
+                  style={{ height: `${rowHeight}px` }}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-3 border-b">
@@ -82,6 +88,6 @@ export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TD
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,7 +1,9 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import VehicleDetailModel from "@/components/modal/vehicleDetailModal";
+import stationImageMap from "@/utils/stationImageMap";
 import Image from "next/image";
 import { useRef } from "react";
+import CarCardItem from "../carCardItem";
 
 interface Props {
   requestData?: RequestDetailType;
@@ -16,11 +18,14 @@ export default function VehicleDetailCard({ requestData }: Props) {
   if (!requestData) {
     return null;
   }
-  const images = [
-    "/assets/img/ptt.png",
-    "/assets/img/gas_3.svg",
-    "/assets/img/gas_2.svg",
-  ];
+  const stationNames =
+    requestData?.vehicle?.vehicle_department?.fleet_card_oil_stations
+      ?.split(",")
+      .map((s) => s.trim().toLowerCase()) || [];
+
+  const stationImages = stationNames
+    .map((name) => stationImageMap[name])
+    .filter(Boolean);
 
   return (
     <div className="card card-section-inline gap-4 flex-col">
@@ -50,14 +55,17 @@ export default function VehicleDetailCard({ requestData }: Props) {
                   : "-"}
               </div>
               <div className="card-subtitle">
-                {requestData?.vehicle?.vehicle_license_plate || "-"}  {requestData?.vehicle?.vehicle_license_plate_province_short || "-"}
+                {requestData?.vehicle?.vehicle_license_plate || "-"}{" "}
+                {requestData?.vehicle?.vehicle_license_plate_province_short ||
+                  "-"}
               </div>
               <div className="supporting-text-group">
                 <div className="supporting-text">
                   {requestData?.vehicle?.CarType || "-"}
                 </div>
                 <div className="supporting-text">
-                  {requestData?.vehicle?.vehicle_department?.vehicle_owner_dept_short || "-"}
+                  {requestData?.vehicle?.vehicle_department
+                    ?.vehicle_owner_dept_short || "-"}
                 </div>
               </div>
               <div className="md:hidden flex">
@@ -73,25 +81,26 @@ export default function VehicleDetailCard({ requestData }: Props) {
             <div className="card-item-group md:!grid !hidden">
               {requestData?.vehicle?.vehicle_department?.fleet_card_no && (
                 <div className="card-item col-span-2">
-                  <i className="material-symbols-outlined">credit_card</i>
-                  <span className="card-item-text">บัตรเติมน้ำมัน</span>
+                  {/* <i className="material-symbols-outlined">credit_card</i>
+                  <span className="card-item-text">บัตรเติมน้ำมัน</span> */}
                   <div className="flex gap-2 items-center flex-wrap">
-                    {images.map((image, index) => (
-                      <Image
-                        key={index}
-                        src={image}
-                        alt={`image-${index}`}
-                        width={16}
-                        height={16}
-                        className="rounded-full"
+                    {requestData?.vehicle?.vehicle_department
+                      ?.fleet_card_no && (
+                      <CarCardItem
+                        icon="credit_card"
+                        title="บัตรเติมน้ำมัน"
+                        images={stationImages.length > 0 ? stationImages : []}
+                        value=""
                       />
-                    ))}
+                    )}
                   </div>
                 </div>
               )}
               {requestData?.vehicle?.ref_fuel_type?.ref_fuel_type_name_th && (
                 <div className="card-item col-span-2">
-                  <i className="material-symbols-outlined icon-settings-fill-300-20">local_gas_station</i>
+                  <i className="material-symbols-outlined icon-settings-fill-300-20">
+                    local_gas_station
+                  </i>
                   <span className="card-item-text">
                     {requestData?.vehicle?.ref_fuel_type.ref_fuel_type_name_th}
                   </span>
@@ -99,16 +108,20 @@ export default function VehicleDetailCard({ requestData }: Props) {
               )}
               {requestData?.vehicle?.vehicle_gear && (
                 <div className="card-item col-span-2">
-                  <i className="material-symbols-outlined icon-settings-fill-300-20">airport_shuttle</i>
+                  <i className="material-symbols-outlined icon-settings-fill-300-20">
+                    airport_shuttle
+                  </i>
                   <span className="card-item-text">
-                  {requestData?.vehicle?.vehicle_department.owner_dept_name}
+                    {requestData?.vehicle?.vehicle_department.owner_dept_name}
                   </span>
                 </div>
               )}
               <div className="card-item col-span-2">
-                <i className="material-symbols-outlined icon-settings-fill-300-2">local_parking</i>
+                <i className="material-symbols-outlined icon-settings-fill-300-2">
+                  local_parking
+                </i>
                 <span className="card-item-text">
-                  {requestData?.parking_place} 
+                  {requestData?.parking_place}
                 </span>
               </div>
             </div>

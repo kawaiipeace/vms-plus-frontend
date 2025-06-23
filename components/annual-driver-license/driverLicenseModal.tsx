@@ -100,7 +100,7 @@ const DriverLicenseModal = forwardRef<
                     <p className="font-bold text-xl">
                       {profile?.first_name} {profile?.last_name}
                     </p>
-                    <p>{profile?.dept_sap_short}</p>
+                    <p>{profile?.posi_text + " " + profile?.dept_sap_short}</p>
                     {profile?.license_status === "อนุมัติแล้ว" ? (
                       <div className="badge badge-success">
                         {profile.license_status}

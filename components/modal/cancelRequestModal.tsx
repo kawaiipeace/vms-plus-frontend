@@ -137,7 +137,7 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
               router.push("/administrator/booking-final?cancel-req=success&request-id=" + data.result?.request_no);
             } else if (role === "key") {
               router.push(
-                `/vehicle-in-use/user/${id}?activeTab=${activeTab}&cancel-req=success&request-id=` +
+                `/vehicle-in-use/user/${id}?activeTab=รายละเอียดคำขอ&cancel-req=success&request-id=` +
                   data.result?.request_no
               );
             } else if (role === "adminKey") {

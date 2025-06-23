@@ -60,7 +60,7 @@ export default function UserInfoCard({
                       {vehicleUserData?.emp_id || "-"}
                     </div>
                     <div className="supporting-text">
-                      {vehicleUserData?.dept_sap_short || "-"}
+                      {vehicleUserData?.posi_text + " " +vehicleUserData?.dept_sap_short || "-"}
                     </div>
                   </>
                 )}
