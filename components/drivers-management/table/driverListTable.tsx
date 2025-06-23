@@ -168,9 +168,13 @@ const DriverListTable = ({
           <div className="text-left" data-name="ค้างคืน">
             <div className="flex items-center justify-center">
               {workType === 1 ? (
-                <Image src="/assets/img/graphic/right_icon.svg" alt="right" width={20} height={20} />
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-green-300 bg-green-100 text-green-700">
+                  <i className="material-symbols-outlined">Check</i>
+                </span>
               ) : (
-                <Image src="/assets/img/graphic/close_icon_red.svg" alt="close" width={20} height={20} />
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-red-300 bg-red-100 text-red-700">
+                  <i className="material-symbols-outlined">Close</i>
+                </span>
               )}
             </div>
           </div>
