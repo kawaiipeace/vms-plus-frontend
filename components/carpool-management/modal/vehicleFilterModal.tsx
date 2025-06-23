@@ -70,7 +70,7 @@ const ModalBody = ({
   setParams,
   params,
 }: ModalBodyProps) => {
-  const [selected, setSelected] = useState<CustomSelectOption>();
+  const [selected, setSelected] = useState<CustomSelectOption>({ label: "ทั้งหมด", value: "" });
   const [search, setSearch] = useState<string>("");
 
   const options = vehicleTypes
@@ -83,7 +83,7 @@ const ModalBody = ({
     ) as CustomSelectOption[];
 
   useEffect(() => {
-    if (!params.vehicel_car_type_detail) setSelected(undefined);
+    if (!params.vehicel_car_type_detail) setSelected({ label: "ทั้งหมด", value: "" });
   }, [params.vehicel_car_type_detail]);
 
   const onActiveChecked = (checked: boolean, id: string) => {
@@ -124,11 +124,14 @@ const ModalBody = ({
               options={options}
               value={selected}
               onChange={(value) => {
+                if(value.label === "") {
+                  value = { label: "ทั้งหมด", value: "" };
+                }
+
                 setSelected(value);
                 setParams({ ...params, vehicel_car_type_detail: value });
               }}
-              placeholder="ทั้งหมด"
-              enableSearchOnApi
+              enableSearchOnApi={true}
               onSearchInputChange={(value) => {
                 const search = value.trim().length >= 3 ? value : "";
                 setSearch(search);
