@@ -40,7 +40,7 @@ export default function DriverPassengerPeaInfoCard({ id, requestData, displayLoc
           </div>
           <div>
             <p className="font-bold">{name}</p>
-            <p className="font-light">{idDriver + " | " + position + "" + deptSap}</p>
+            <p className="font-light">{idDriver + " | " + position + " " + deptSap}</p>
           </div>
         </div>
         <div className="mt-3">

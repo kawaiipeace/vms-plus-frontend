@@ -299,7 +299,7 @@ export default function ArpproveFlow() {
           </button>
           <button
             onClick={addNewRequest}
-            className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
+            className="btn btn-primary h-[40px] min-h-[40px]"
           >
             <div className="flex items-center">
               <i className="material-symbols-outlined">add</i>

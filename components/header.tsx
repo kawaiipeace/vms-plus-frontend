@@ -79,9 +79,7 @@ export default function Header() {
     closeModal: () => void;
   } | null>(null);
 
-  useEffect(() => {
-
-  }, [profile]);
+  useEffect(() => {}, [profile]);
 
   const getDriverUserCard = async () => {
     try {
@@ -110,7 +108,10 @@ export default function Header() {
       checkDarkMode();
     });
 
-    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     return () => observer.disconnect();
   }, []);
@@ -120,7 +121,7 @@ export default function Header() {
       driverLicenseModalRef.current?.openModal();
       setPendingOpenModal(null);
     }
-        if (pendingOpenModal === "driverUp" && driverUser) {
+    if (pendingOpenModal === "driverUp" && driverUser) {
       driverLicenseUpModalRef.current?.openModal();
       setPendingOpenModal(null);
     }
@@ -132,7 +133,7 @@ export default function Header() {
       RequestDrivingStepOneModalNoBackRef.current?.openModal();
       setPendingOpenModal(null);
     }
-    
+
     if (
       pendingOpenModal === "detail" &&
       driverUser?.trn_request_annual_driver_uid
@@ -165,12 +166,11 @@ export default function Header() {
     await getDriverUserCard();
     setPendingOpenModal("driver");
   };
-  
-    const   handleOpenDriverLicenseUpModal = async () => {
+
+  const handleOpenDriverLicenseUpModal = async () => {
     await getDriverUserCard();
     setPendingOpenModal("driverUp");
   };
-
 
   const handleOpenRequestDrivingModal = async () => {
     await getDriverUserCard();
@@ -181,7 +181,6 @@ export default function Header() {
     await getDriverUserCard();
     setPendingOpenModal("requestnoback");
   };
-  
 
   const handleOpenRequestCreateReturnDrivingModal = async () => {
     await getDriverUserCard();
@@ -191,25 +190,27 @@ export default function Header() {
     setPendingOpenModal("request");
   };
 
- useEffect(() => {
-  if (toast.show) {
-    const refreshProfileAndLicDetail = async () => {
-      try {
-        const response = await fetchProfile();
-        setProfile(response.data);
-        if (driverUser?.trn_request_annual_driver_uid) {
-          const licDetail = await fetchRequestLicStatusDetail(driverUser.trn_request_annual_driver_uid);
-          if (licDetail) {
-            setLicRequestDetail(licDetail.data);
+  useEffect(() => {
+    if (toast.show) {
+      const refreshProfileAndLicDetail = async () => {
+        try {
+          const response = await fetchProfile();
+          setProfile(response.data);
+          if (driverUser?.trn_request_annual_driver_uid) {
+            const licDetail = await fetchRequestLicStatusDetail(
+              driverUser.trn_request_annual_driver_uid
+            );
+            if (licDetail) {
+              setLicRequestDetail(licDetail.data);
+            }
           }
+        } catch (error) {
+          console.error("Failed to refresh profile or license detail:", error);
         }
-      } catch (error) {
-        console.error("Failed to refresh profile or license detail:", error);
-      }
-    };
-    refreshProfileAndLicDetail();
-  }
-}, [toast.show, setProfile, driverUser]);
+      };
+      refreshProfileAndLicDetail();
+    }
+  }, [toast.show, setProfile, driverUser]);
 
   const handleOpenRequestDetailDrivingModal = async () => {
     try {
@@ -269,7 +270,7 @@ export default function Header() {
       if (response) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        
+
         const logoutUrl = response.data.logout_url;
         if (logoutUrl != "") {
           window.open(logoutUrl, "_blank");
@@ -289,7 +290,7 @@ export default function Header() {
           <div className="navbar-start">
             <div className="header-brand block md:hidden">
               <Link href="">
-              <Image
+                <Image
                   src={
                     isDarkMode
                       ? "/assets/img/brand-dark.svg"
@@ -320,28 +321,28 @@ export default function Header() {
 
             <div className="header-users">
               <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="">
+                <div tabIndex={0} role="button">
                   <Image
                     src={profile?.image_url || "/assets/img/avatar.svg"}
                     width={36}
                     height={36}
                     alt="User Avatar"
-                  ></Image>
+                  />
                 </div>
                 <ul
                   tabIndex={0}
                   className="menu dropdown-content space-y-2 bg-base-100 rounded-box !z-80 mt-4 w-[280px] p-2 shadow"
                 >
                   {profile && (
-                    <li className="nav-item">
-                      <div className="nav-link sidebar-users pointer-events-none">
+                    <li className="nav-item pointer-events-none !hover:bg-white dark:!hover:bg-gray-800">
+                      <div className="nav-link sidebar-users">
                         <div className="avatar avatar-sm">
                           <Image
                             src={profile?.image_url || "/assets/img/avatar.svg"}
                             width={36}
                             height={36}
                             alt="Profile Avatar"
-                          ></Image>
+                          />
                         </div>
                         <div className="sidebar-users-content">
                           <div className="sidebar-users-name">
@@ -356,146 +357,127 @@ export default function Header() {
                       </div>
                     </li>
                   )}
-                  <li className="nav-item dropdown-item">
-                    <div className="flex justify-between gap-2 items-center">
-                      {profile?.license_status === "อนุมัติแล้ว" ? (
-                        <>
-                          <Link
-                             href="#"
-                            className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenDriverLicenseModal}
-                          >
-                            <i className="material-symbols-outlined">id_card</i>
-                            <span className="nav-link-label">
-                              ขอทำหน้าที่ขับรถยนต์
-                            </span>
-                          </Link>
-                          <div className="badge badge-success">
-                            {profile.license_status}
-                          </div>
-                        </>
-                      ) : profile?.license_status === "หมดอายุ" ? (
-                        <>
-                          <Link
-                            href="#"
-                            className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenDriverLicenseModal}
-                          >
-                            <i className="material-symbols-outlined">id_card</i>
-                            <span className="nav-link-label">
-                              ขอทำหน้าที่ขับรถยนต์
-                            </span>
-                          </Link>
-                          <div className="badge badge-error">
-                            {profile.license_status}
-                          </div>
-                        </>
-                      ) : profile?.license_status === "มีผลปีถัดไป" ? (
+
+                  <li className="nav-item !hover:bg-white dark:!hover:bg-gray-800">
+                    {profile?.license_status === "อนุมัติแล้ว" ? (
+                      <Link
+                        href="#"
+                        className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                        onClick={handleOpenDriverLicenseModal}
+                      >
+                        <div className="flex items-center gap-1">
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </div>
+                        <div className="badge badge-success">
+                          {profile.license_status}
+                        </div>
+                      </Link>
+                    ) : profile?.license_status === "หมดอายุ" ? (
+                      <Link
+                        href="#"
+                        className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                        onClick={handleOpenDriverLicenseModal}
+                      >
+                        <div className="flex items-center gap-1">
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </div>
+                        <div className="badge badge-error">
+                          {profile.license_status}
+                        </div>
+                      </Link>
+                    ) : profile?.license_status === "มีผลปีถัดไป" ? (
+                      <Link
+                        href="#"
+                        className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                        onClick={() => {}}
+                      >
+                        <div className="flex items-center gap-1">
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </div>
                         <div className="badge badge-warning">
                           {profile.license_status}
                         </div>
-                      ) : profile?.license_status === "รออนุมัติ" ? (
-                        <>
-                          <Link
-                             href="#"
-                            className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenRequestDetailDrivingModal}
-                          >
+                      </Link>
+                    ) : profile?.license_status === "รออนุมัติ" ? (
+                      <Link
+                        href="#"
+                        className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                        onClick={handleOpenRequestDetailDrivingModal}
+                      >
+                        <div className="flex items-center gap-1">
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </div>
+                        <div className="badge badge-gray">
+                          {profile.license_status}
+                        </div>
+                      </Link>
+                    ) : profile?.license_status === "ตีกลับ" ? (
+                      <Link
+                        href="#"
+                        className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                        onClick={handleOpenRequestDetailDrivingModal}
+                      >
+                        <div className="flex items-center gap-1">
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </div>
+                        <div className="badge badge-warning">
+                          {profile.license_status}
+                        </div>
+                      </Link>
+                    ) : profile?.license_status ===
+                      "ใบอนุญาตทำหน้าที่ขับรถยนต์" ? (
+                      <Link
+                        href="#"
+                        className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                        onClick={handleOpenDriverLicenseUpModal}
+                      >
+                        <div className="flex items-center gap-1">
+                          <i className="material-symbols-outlined">id_card</i>
+                          <span className="nav-link-label">
+                            ขอทำหน้าที่ขับรถยนต์
+                          </span>
+                        </div>
+                      </Link>
+                    ) : (
+                      (profile?.license_status === "ไม่มี" ||
+                        profile?.license_status === "ยกเลิก") && (
+                        <Link
+                          href="#"
+                          className="nav-link toggle-mode flex justify-between items-center w-full gap-1"
+                          onClick={() => handleOpenRequestNoBackDrivingModal()}
+                        >
+                          <div className="flex items-center gap-1">
                             <i className="material-symbols-outlined">id_card</i>
                             <span className="nav-link-label">
                               ขอทำหน้าที่ขับรถยนต์
                             </span>
-                          </Link>
-                          <div className="badge badge-gray">
-                            {profile.license_status}
                           </div>
-                        </>
-                      ) : profile?.license_status === "รออนุมัติ" ? (
-                        <>
-                          <Link 
-                             href="#"
-                            className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenRequestDetailDrivingModal}
-                          >
-                            <i className="material-symbols-outlined">id_card</i>
-                            <span className="nav-link-label">
-                              ขอทำหน้าที่ขับรถยนต์
-                            </span>
-                          </Link>
-                          <div className="badge badge-gray">
-                            {profile.license_status}
+                          <div className="badge bg-brand-900 text-white">
+                            ไม่มี
                           </div>
-                        </>
-                      ) : profile?.license_status === "ตีกลับ" ? (
-                        <>
-                          <Link
-                             href="#"
-                            className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenRequestDetailDrivingModal}
-                          >
-                            <i className="material-symbols-outlined">id_card</i>
-                            <span className="nav-link-label">
-                              ขอทำหน้าที่ขับรถยนต์
-                            </span>
-                          </Link>
-                          <div className="badge badge-warning">
-                            {profile.license_status}
-                          </div>
-                        </>
-                      ) : profile?.license_status ===
-                        "ใบอนุญาตทำหน้าที่ขับรถยนต์" ? (
-                        <>
-                          <Link
-                            href="#"
-                            className="nav-link toggle-mode gap-1 flex items-center"
-                            onClick={handleOpenDriverLicenseUpModal}
-                          >
-                            <i className="material-symbols-outlined">id_card</i>
-                            <span className="nav-link-label">
-                              ขอทำหน้าที่ขับรถยนต์
-                            </span>
-                          </Link>
-                        </>
-                      ) : (
-                        (profile?.license_status === "ไม่มี" || profile?.license_status === "ยกเลิก") && (
-                          <>
-                            <Link
-                              href="#"
-                              className="nav-link toggle-mode gap-1 flex items-center"
-                              onClick={() =>
-                                handleOpenRequestNoBackDrivingModal()
-                              }
-                            >
-                              <i className="material-symbols-outlined">
-                                id_card
-                              </i>
-                              <span className="nav-link-label">
-                                ขอทำหน้าที่ขับรถยนต์
-                              </span>
-                              <div className="badge bg-brand-900 text-white">
-                                ไม่มี
-                              </div>
-                            </Link>
-                          </>
-                        )
-                      )}
-                    </div>
+                        </Link>
+                      )
+                    )}
                   </li>
-                  {/* <li className="nav-item">
-                  <a href="" className="nav-link">
-                    <i className="material-symbols-outlined">person_check</i>
-                    <span className="nav-link-label">มอบอำนาจอนุมัติ</span>
-                  </Link>
-                </li> */}
-                  {/* <li className="nav-item">
-                  <a className="nav-link toggle-lock">
-                    <i className="material-symbols-outlined">lock</i>
-                    <span className="nav-link-label">ล็อกหน้าจอ</span>
-                  </Link>
-                </li> */}
 
                   <hr />
-                  <li className="nav-item">
+
+                  <li className="nav-item !hover:bg-white dark:!hover:bg-gray-800">
                     <Link href="#" onClick={logOutFunc} className="nav-link">
                       <i className="material-symbols-outlined">logout</i>
                       <span className="nav-link-label">ออกจากระบบ</span>
