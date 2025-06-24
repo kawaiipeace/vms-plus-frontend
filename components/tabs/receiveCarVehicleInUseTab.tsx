@@ -136,7 +136,10 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่</div>
                           <div className="form-text">
-                            {convertToBuddhistDateTime(requestData?.pickup_datetime || "").date}
+                            {requestData?.pickup_datetime === "0001-01-01T00:00:00Z" ? "-" :
+                             convertToBuddhistDateTime(requestData?.pickup_datetime || "").date
+                          }
+                           
                           </div>
                         </div>
                       </div>
