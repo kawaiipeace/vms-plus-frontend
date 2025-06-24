@@ -138,7 +138,7 @@ export default function CustomSearchSelect({
         {enableSearch ? (
           <input
             ref={inputRef}
-            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md"
+            className="flex-1 bg-transparent outline-none border-0 px-0 py-0 h-full text-md text-object-search"
             value={inputText}
             placeholder={placeholder}
             disabled={disabled}

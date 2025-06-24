@@ -29,7 +29,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
   }));
 
   const [options, setOptions] = useState<SelectProps[]>([]);
-  const [selected, setSelected] = useState<SelectProps>();
+  const [selected, setSelected] = useState<SelectProps>({ label: "ทั้งหมด", value: "" });
   const [status, setStatus] = useState<string[]>([]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
 
   useEffect(() => {
     if (props.params.dept_sap === "") {
-      setSelected(undefined);
+      setSelected({ label: "ทั้งหมด", value: "" });
     }
     if (props.params.is_active === "") {
       setStatus([]);
@@ -119,12 +119,17 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
               <div className="form-group">
                 <label className="form-label">หน่วยงานที่ใช้บริการ</label>
                 <CustomSelectOnSearch
-                  w="100"
+                  w="md:w-full"
                   options={options}
                   value={selected}
-                  onChange={setSelected}
-                  placeholder="ทั้งหมด"
-                  enableSearchOnApi
+                  onChange={(value) => {
+                    if(value.label === "") {
+                      value = { label: "ทั้งหมด", value: ""};
+                    }
+
+                    setSelected(value);
+                  }}
+                  enableSearchOnApi={true}
                   onSearchInputChange={(value) => fetchDepartmentFunc(value)}
                 />
               </div>
@@ -200,7 +205,7 @@ const FilterCarpoolModal = forwardRef((props: Props, ref) => {
             <button
               className="btn btn-ghost"
               onClick={() => {
-                setSelected(undefined);
+                setSelected({ label: "ทั้งหมด", value: "" });
                 setStatus([]);
               }}
             >
