@@ -35,6 +35,18 @@ img {
   image-rendering: crisp-edges; /* Standard */
 }
 
+:root, .light-mode {
+  --background: #ffffff;
+  --text: #000000;
+  /* other light mode variables */
+}
+
+.dark-mode {
+  --background: #000000;
+  --text: #ffffff;
+  /* other dark mode variables */
+}
+
 
 
 @media (max-width: 768px) {
