@@ -106,7 +106,7 @@ export const driverDelete = async (params: DeleteDriverParams) => {
   // console.log(localStorage.getItem("accessToken"));
   try {
     // const response = await axiosInstance.delete("driver-management/delete-driver", { params });
-    const response = await axios.delete("http://pntdev.ddns.net:28084/api/driver-management/delete-driver", {
+    const response = await axios.delete("http://pntdev.ddns.net:18080/api/driver-management/delete-driver", {
       data: params,
       headers: {
         Accept: "application/json",
