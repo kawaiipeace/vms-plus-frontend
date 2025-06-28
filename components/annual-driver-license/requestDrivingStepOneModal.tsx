@@ -25,6 +25,7 @@ import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
 import ImageUpload from "../imageUpload";
 import { convertToISO } from "@/utils/convertToISO";
+import FormHelper from "../formHelper";
 
 export interface ValueFormStep1 {
   driverLicenseType: any;
@@ -200,11 +201,11 @@ const RequestDrivingStepOneModal = forwardRef<
     // licenseExpiryDate: licRequestDetail
     //   ? convertToThaiDate(licRequestDetail?.driver_license_expire_date)
     //   : "",
-    licenseExpiryDate:
-      licRequestDetail ?
-        convertToBuddhistDateTime(
+    licenseExpiryDate: licRequestDetail
+      ? convertToBuddhistDateTime(
           licRequestDetail?.driver_license_expire_date || ""
-        ).date : "",
+        ).date
+      : "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
@@ -270,7 +271,6 @@ const RequestDrivingStepOneModal = forwardRef<
   ]);
 
   useEffect(() => {
-
     const fetchData = async () => {
       try {
         const response = await fetchDriverLicenseType();
@@ -291,7 +291,6 @@ const RequestDrivingStepOneModal = forwardRef<
             ),
           ];
           setCostTypeOptions(costTypeArr);
-
         }
         const responseVehicle = await fetchDriverCertificateType();
         if (responseVehicle.status === 200) {
@@ -373,30 +372,30 @@ const RequestDrivingStepOneModal = forwardRef<
 
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
   const currentBuddhistYear = dayjs().year() + 543;
-const onSubmit = (formData: ValueFormStep1) => {
-  // Convert date fields to ISO string using your utility
-  const licenseExpiryDateISO = formData.licenseExpiryDate
-    ? convertToISO(formData.licenseExpiryDate,"00:00")
-    : "";
-  const trainingDateISO = formData.trainingDate
-    ? convertToISO(formData.trainingDate,"00:00")
-    : "";
-  const trainingEndDateISO = formData.trainingEndDate
-    ? convertToISO(formData.trainingEndDate,"00:00")
-    : "";
+  const onSubmit = (formData: ValueFormStep1) => {
+    // Convert date fields to ISO string using your utility
+    const licenseExpiryDateISO = formData.licenseExpiryDate
+      ? convertToISO(formData.licenseExpiryDate, "00:00")
+      : "";
+    const trainingDateISO = formData.trainingDate
+      ? convertToISO(formData.trainingDate, "00:00")
+      : "";
+    const trainingEndDateISO = formData.trainingEndDate
+      ? convertToISO(formData.trainingEndDate, "00:00")
+      : "";
 
-  const submitData = {
-    ...formData,
-    licenseExpiryDate: licenseExpiryDateISO,
-    trainingDate: trainingDateISO,
-    trainingEndDate: trainingEndDateISO,
+    const submitData = {
+      ...formData,
+      licenseExpiryDate: licenseExpiryDateISO,
+      trainingDate: trainingDateISO,
+      trainingEndDate: trainingEndDateISO,
+    };
+
+    if (stepOneSubmit) {
+      stepOneSubmit(submitData);
+    }
+    handleCloseModal();
   };
-
-  if (stepOneSubmit) {
-    stepOneSubmit(submitData);
-  }
-  handleCloseModal();
-};
 
   return (
     <>
@@ -565,7 +564,10 @@ const onSubmit = (formData: ValueFormStep1) => {
                               <DatePicker
                                 placeholder={"ระบุวันที่"}
                                 onChange={field.onChange}
-                                defaultValue={convertToBuddhistDateTime(field.value || "").date}
+                                defaultValue={
+                                  convertToBuddhistDateTime(field.value || "")
+                                    .date
+                                }
                               />
                             )}
                           />
@@ -762,6 +764,26 @@ const onSubmit = (formData: ValueFormStep1) => {
                                 {errors.trainingEndDate.message}
                               </div>
                             )}
+                            {/* Add this helper text */}
+                            { requestData?.annual_yyyy !== 0 ?
+                        
+                          requestData?.annual_yyyy !==
+                          new Date().getFullYear() &&
+                          watch("trainingEndDate") &&
+                          new Date(
+                            watch("trainingEndDate")
+                          ).getFullYear() !== requestData?.annual_yyyy && (
+                            <FormHelper
+                              text={
+                                "วันที่สิ้นอายุควรอยู่ในปี " +
+                                requestData?.annual_yyyy
+                              }
+                            />
+                        )
+                            
+                         
+                            : ""
+                              }
                           </div>
                         </div>
 
