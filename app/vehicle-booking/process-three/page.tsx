@@ -157,17 +157,17 @@ export default function ProcessThree() {
 
   const allValid = licenseValid && annualValid;
 
-const handleSelectTypes = (typeName: string) => {
-  setSelectedDriverType(typeName);
-  setValue("isPeaEmployeeDriver", typeName === "พนักงาน กฟภ." ? "1" : "0");
+  const handleSelectTypes = (typeName: string) => {
+    setSelectedDriverType(typeName);
+    setValue("isPeaEmployeeDriver", typeName === "พนักงาน กฟภ." ? "1" : "0");
 
-  updateFormData({
-    isPeaEmployeeDriver: typeName === "พนักงาน กฟภ." ? "1" : "0",
-  });
-  if (typeName === "พนักงานขับรถ" && formData.isAdminChooseDriver) {
-    driverAppointmentRef.current?.openModal();
-  }
-};
+    updateFormData({
+      isPeaEmployeeDriver: typeName === "พนักงาน กฟภ." ? "1" : "0",
+    });
+    if (typeName === "พนักงานขับรถ" && formData.isAdminChooseDriver) {
+      driverAppointmentRef.current?.openModal();
+    }
+  };
 
   useEffect(() => {
     const fetchDriverData = async () => {
@@ -217,7 +217,6 @@ const handleSelectTypes = (typeName: string) => {
       (user: { emp_id: string }) => user.emp_id === selectedOption.value
     );
 
-
     if (empData) {
       setValue("driverInternalContact", empData.tel_internal);
       setValue("driverMobileContact", empData.tel_mobile);
@@ -258,7 +257,7 @@ const handleSelectTypes = (typeName: string) => {
         if (response) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
- 
+
           const driverOptionsArray = vehicleUserData.map(
             (user: {
               emp_id: string;
@@ -293,9 +292,11 @@ const handleSelectTypes = (typeName: string) => {
               setValue("driverInternalContact", formData.telInternal);
             } else {
               setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
-                  setValue("driverInternalContact", vehicleUserData[0]?.tel_internal);
+              setValue(
+                "driverInternalContact",
+                vehicleUserData[0]?.tel_internal
+              );
             }
-        
 
             setValue("driverEmpID", vehicleUserData[0]?.emp_id);
             setValue("driverEmpName", vehicleUserData[0]?.full_name);
@@ -305,7 +306,6 @@ const handleSelectTypes = (typeName: string) => {
                 " " +
                 vehicleUserData[0]?.dept_sap_short
             );
-
           }
 
           setSelectedVehicleUserOption(selectedDriverOption);
@@ -440,7 +440,7 @@ const handleSelectTypes = (typeName: string) => {
                         label="พนักงาน กฟภ."
                         value="พนักงาน กฟภ."
                         selectedValue={selectedDriverType}
-                       setSelectedValue={() =>
+                        setSelectedValue={() =>
                           handleSelectTypes("พนักงาน กฟภ.")
                         }
                       />
@@ -536,22 +536,22 @@ const handleSelectTypes = (typeName: string) => {
                             className="form-control"
                             {...register("driverInternalContact")}
                             placeholder="ระบุเบอร์ภายใน"
-                               onKeyDown={(e) => {
-                          if (
-                            !/[0-9]/.test(e.key) &&
-                            ![
-                              "Backspace",
-                              "Delete",
-                              "Tab",
-                              "ArrowLeft",
-                              "ArrowRight",
-                              "Home",
-                              "End",
-                            ].includes(e.key)
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
+                            onKeyDown={(e) => {
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                ![
+                                  "Backspace",
+                                  "Delete",
+                                  "Tab",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Home",
+                                  "End",
+                                ].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                         </div>
                       </div>
@@ -565,22 +565,22 @@ const handleSelectTypes = (typeName: string) => {
                           className="form-control"
                           {...register("driverMobileContact")}
                           placeholder="ระบุเบอร์ภายใน"
-                             onKeyDown={(e) => {
-                          if (
-                            !/[0-9]/.test(e.key) &&
-                            ![
-                              "Backspace",
-                              "Delete",
-                              "Tab",
-                              "ArrowLeft",
-                              "ArrowRight",
-                              "Home",
-                              "End",
-                            ].includes(e.key)
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
+                          onKeyDown={(e) => {
+                            if (
+                              !/[0-9]/.test(e.key) &&
+                              ![
+                                "Backspace",
+                                "Delete",
+                                "Tab",
+                                "ArrowLeft",
+                                "ArrowRight",
+                                "Home",
+                                "End",
+                              ].includes(e.key)
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
                         />
                       </div>
                     </div>
@@ -644,7 +644,11 @@ const handleSelectTypes = (typeName: string) => {
                                 เลือกพนักงานขับรถ
                               </span>
                               <span className="badge badge-outline badge-gray page-title-status">
-                                ว่าง {filteredDrivers.length} คน
+                                {filteredDrivers.length > 0 ? (
+                                  <>ว่าง {filteredDrivers.length} คน</>
+                                ) : (
+                                  "ไม่พบข้อมูล"
+                                )}
                               </span>
                             </div>
                           </div>
