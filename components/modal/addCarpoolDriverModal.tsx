@@ -19,6 +19,7 @@ import ToastCustom from "../toastCustom";
 interface Props {
   id: string;
   setRefetch: (value: boolean) => void;
+  setLastDeleted: (value: boolean) => void;
 }
 
 interface ToastProps {
@@ -30,7 +31,7 @@ interface ToastProps {
 const AddCarpoolDriverModal = forwardRef<
   { openModal: () => void; closeModal: () => void }, // Ref type
   Props
->(({ setRefetch }, ref) => {
+>(({ setRefetch, setLastDeleted }, ref) => {
   // Destructure `process` from props
   const id = useSearchParams().get("id");
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -134,6 +135,7 @@ const AddCarpoolDriverModal = forwardRef<
         }));
         const response = await postCarpoolDriverCreate(data);
         if (response.request.status === 201) {
+          setLastDeleted(false);
           setRefetch(true);
           modalRef.current?.close();
           setToast({
