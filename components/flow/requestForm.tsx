@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelectOnSearch from "@/components/customSelectOnSearch";
+import dayjs from "dayjs";
 
 const schema = yup
   .object()
@@ -788,10 +789,11 @@ export default function RequestForm() {
                         </span>
                       </div>
 
+
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
-                        minDate={new Date().toISOString().split("T")[0]}
+                        minDate={dayjs().format("YYYY-MM-DD")}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>

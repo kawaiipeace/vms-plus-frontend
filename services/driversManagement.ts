@@ -1,5 +1,5 @@
 import axiosInstance from "@/utils/axiosInstance";
-import axios from "axios";
+// import axios from "axios";
 import {
   DriversManagementParams,
   DriverCreateDetails,
@@ -105,16 +105,7 @@ export const driverDelete = async (params: DeleteDriverParams) => {
   // console.log("params", params);
   // console.log(localStorage.getItem("accessToken"));
   try {
-    // const response = await axiosInstance.delete("driver-management/delete-driver", { params });
-    const response = await axios.delete("http://pntdev.ddns.net:28084/api/driver-management/delete-driver", {
-      data: params,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-ApiKey": "2c5SF8BDhWKzdTY5MIFXEh9PummQMhK8w2TIUobJnYbAxaUmYo1sYTc2Hwo3xNWj",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    });
+    const response = await axiosInstance.delete("driver-management/delete-driver", { data: params });
     return response;
   } catch (error) {
     throw error;
