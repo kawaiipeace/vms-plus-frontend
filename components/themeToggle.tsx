@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-export default function ThemeToggle(){
+export default function ThemeToggle() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-
     const storedTheme = localStorage.getItem("theme");
     if (storedTheme === "dark-mode") {
       setIsDarkMode(true);
@@ -17,17 +16,21 @@ export default function ThemeToggle(){
   }, []);
 
   const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
     document.body.classList.toggle("dark-mode");
     // Store the user's preference in localStorage
-    localStorage.setItem("theme", isDarkMode ? "light-mode" : "dark-mode");
+    localStorage.setItem("theme", newDarkMode ? "dark-mode" : "light-mode");
   };
 
   return (
-    <button onClick={toggleTheme} className={`btn btn-tertiary btn-icon border-none shadow-none toggle-mode relative theme-toggle`}>
-    <i className="material-symbols-outlined">light_mode</i> 
-  </button>
+    <button 
+      onClick={toggleTheme} 
+      className={`btn btn-tertiary btn-icon border-none shadow-none toggle-mode relative theme-toggle`}
+    >
+      <i className="material-symbols-outlined">
+        {isDarkMode ? "dark_mode" : "light_mode"}
+      </i> 
+    </button>
   );
 };
-
-
