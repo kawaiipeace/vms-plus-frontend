@@ -2596,12 +2596,12 @@ input.form-control {
 .menu li > a:focus,
 .menu li > button:active,
 .menu li > button:focus {
-  background-color: red !important;
+  background-color: inherit !important;
 }
 
 .menu li > a.active,
 .menu li > button.active {
-  background-color: red !important;
+  background-color: inherit !important;
 }
 
 .dropdown-menu {
