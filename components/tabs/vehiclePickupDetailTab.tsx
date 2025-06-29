@@ -46,8 +46,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     page: 1,
     limit: 10,
   });
-  const [pagination, setPagination] =
-    useState<PaginationType>(defaultPagination);
+  const [pagination, setPagination] = useState<PaginationType>(defaultPagination);
 
   const handlePageChange = (newPage: number) => {
     setParams((prevParams) => ({
@@ -57,8 +56,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prevParams) => ({
       ...prevParams,
       limit,
@@ -95,7 +93,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       fetchRequestDetailfunc();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params, returnedData, returnedImage, returnedCar, cancelReq]);
+  }, [params, returnedData, returnedImage, returnedCar, cancelReq, active]);
 
   const createQueryString = useCallback(
     (value: string) => {
@@ -128,13 +126,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
       },
       {
         label: "การรับยานพาหนะ",
-        content: (
-          <ReceiveCarVehicleInUseTab
-            requestId={requestId}
-            role="user"
-            displayOn="vehicle-in-use"
-          />
-        ),
+        content: <ReceiveCarVehicleInUseTab requestId={requestId} role="user" displayOn="vehicle-in-use" />,
         constent: "",
         badge: "",
       },
@@ -142,11 +134,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "ข้อมูลการเดินทาง",
         content: (
           <>
-            <RecordTravelTab
-              requestId={requestId}
-              data={requestData}
-              role="userRecordTravel"
-            />
+            <RecordTravelTab requestId={requestId} data={requestData} role="userRecordTravel" />
           </>
         ),
         constent: "",
@@ -156,11 +144,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การเติมเชื้อเพลิง",
         content: (
           <>
-            <RecordFuelTab
-              requestId={requestId}
-              role="recordFuel"
-              requestData={requestData}
-            />
+            <RecordFuelTab requestId={requestId} role="recordFuel" requestData={requestData} />
           </>
         ),
         constent: "",
@@ -170,11 +154,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
         label: "การคืนยานพาหนะ",
         content: (
           <>
-            <ReturnCarTab
-              displayOn="userTabs"
-              useBy={"userTabs"}
-              requestData={requestData}
-            />
+            <ReturnCarTab displayOn="userTabs" useBy={"userTabs"} requestData={requestData} />
           </>
         ),
         constent: "",
@@ -199,10 +179,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
     ],
     [dataRequest, requestData, requestId, params, pagination]
   ).filter((tab) => {
-    if (
-      tab.label === "การนัดหมายเดินทาง" &&
-      requestData?.is_pea_employee_driver === "1"
-    ) {
+    if (tab.label === "การนัดหมายเดินทาง" && requestData?.is_pea_employee_driver === "1") {
       return false;
     }
     return true;
@@ -231,9 +208,7 @@ export default function VehiclePickupDetailTabs({ requestId }: Props) {
           >
             <div className="flex gap-2 items-center">
               {tab.label}
-              {tab.badge && (
-                <span className="badge badge-brand badge-pill-outline">4</span>
-              )}{" "}
+              {tab.badge && <span className="badge badge-brand badge-pill-outline">4</span>}{" "}
             </div>
           </button>
         ))}

@@ -66,7 +66,6 @@ const DriverExportReportModal = forwardRef<
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-
       validationSchema.validateSync(formData, { abortEarly: false });
       const selectedRowValues: string[] = [];
       Object.keys(selectedRow).forEach((key) => {
@@ -209,9 +208,15 @@ const DriverExportReportModal = forwardRef<
                           <div className="w-full flex rounded-2xl  items-stretch">
                             <Image src="/assets/img/empty/driver.svg" alt="" width={100} height={100} />
                             <div className="text-left">
-                              <h5 className="text-[#344054] font-semibold pl-4">ประวัติการทำงานของพนักงานขับรถ</h5>
-                              <p className="text-[#667085] font-semibold text-sm pl-4">ดาวน์โหลดไฟล์ .XLSX</p>
-                              <p className="text-[#667085] text-sm pl-4">เลือก {Object.keys(selectedRow).length} คน</p>
+                              <h5 className="text-[#344054] font-semibold pl-4 text-color">
+                                ประวัติการทำงานของพนักงานขับรถ
+                              </h5>
+                              <p className="text-[#667085] font-semibold text-sm pl-4 text-color">
+                                ดาวน์โหลดไฟล์ .XLSX
+                              </p>
+                              <p className="text-[#667085] text-sm pl-4 text-color">
+                                เลือก {Object.keys(selectedRow).length} คน
+                              </p>
                             </div>
                             <div className="ml-auto">
                               <button type="submit">

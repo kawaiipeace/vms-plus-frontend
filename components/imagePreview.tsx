@@ -15,7 +15,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ image, onDelete }) => {
       >
         <i className="material-symbols-outlined in-circle-icon">delete</i>
       </div>
-      <div className="relative w-full h-[300px] flex items-center justify-center">
+      <div className="relative w-full h-[200px] flex items-center justify-center">
         {/* <Image
           className="max-w-full max-h-full object-contain"
           src={typeof image === "string" ? image : URL.createObjectURL(image)}

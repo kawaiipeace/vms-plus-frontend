@@ -106,7 +106,7 @@ export default function NotificationDropdown() {
 
       {isOpen && (
         <div className="absolute noti-main right-0 mt-2 w-80 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-          <div className="border-b border-gray-200 px-4 py-3">
+          <div className="px-4 py-3 noti-main">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold">
                 All notifications
@@ -130,8 +130,8 @@ export default function NotificationDropdown() {
               notifications.map((notification) => (
                 <div
                   key={notification.trn_notify_uid}
-                  className={`px-4 py-3 hover:bg-gray-800 cursor-pointer noti-item ${
-                    !notification.is_read ? "bg-blue-50" : ""
+                  className={`px-4 py-3 cursor-pointer noti-item ${
+                    !notification.is_read ? "bg-gray-50" : ""
                   }`}
                   onClick={() => {
                     if (notification.notify_url) {

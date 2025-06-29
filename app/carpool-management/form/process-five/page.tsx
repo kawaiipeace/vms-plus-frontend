@@ -22,12 +22,13 @@ import {
 import CarpoolManagementTabs from "@/components/tabs/carpoolManagemntTabs";
 
 export default function CarpoolProcessFive() {
+  const router = useRouter();
   const { isPinned } = useSidebar();
   const id = useSearchParams().get("id");
   const name = useSearchParams().get("name");
   const active = useSearchParams().get("active");
   const [refetch, setRefetch] = useState(false);
-  const router = useRouter();
+  const [lastDeleted, setLastDeleted] = useState(false);
 
   const { formData } = useFormContext();
 
@@ -58,6 +59,12 @@ export default function CarpoolProcessFive() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
+
+  useEffect(() => {
+    if (lastDeleted) {
+      setData([]);
+    }
+  }, [lastDeleted]);
 
   useEffect(() => {
     if (id) {
@@ -271,6 +278,7 @@ export default function CarpoolProcessFive() {
                   defaultData={dataTable}
                   pagination={pagination}
                   setRefetch={setRefetch}
+                  setLastDeleted={setLastDeleted}
                 />
 
                 <PaginationControls
@@ -337,6 +345,7 @@ export default function CarpoolProcessFive() {
               ref={addCarpoolDriverModalRef}
               id={""}
               setRefetch={setRefetch}
+              setLastDeleted={setLastDeleted}
             />
 
             <ConfirmCreateCarpoolModal

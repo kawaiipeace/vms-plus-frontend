@@ -581,6 +581,14 @@ const DriverForm = () => {
                       value={formData.driverIdentificationNo}
                       onChange={handleInputChange}
                       maxLength={13}
+                      onKeyDown={(e) => {
+                        if (
+                          !/[0-9]/.test(e.key) &&
+                          !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </div>
                   {formErrors.driverIdentificationNo && <FormHelper text={String(formErrors.driverIdentificationNo)} />}

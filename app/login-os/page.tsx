@@ -60,6 +60,11 @@ export default function LoginOS() {
         Cookies.set("phone", data.phone);
         sessionStorage.setItem("otpID", otpID);
         sessionStorage.setItem("refCode", response.data.refCode);
+
+        if (response.data.token) {
+          Cookies.set("token", response.data.token); 
+        }
+
         router.push(`/login-authen`);
       }
     } catch (error: any) {
