@@ -436,7 +436,11 @@ export default function ProcessTwo() {
                         ข้อมูลผู้ใช้ยานพาหนะ
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
-                        ว่าง {filteredVehicleCards.length} คัน
+                             {filteredVehicleCards.length > 0 ? (
+                                  <>ว่าง {filteredVehicleCards.length} คัน</>
+                                ) : (
+                                  "ไม่พบข้อมูล"
+                                )}
                       </span>
                     </div>
                     <div className="page-desc">
