@@ -2,6 +2,7 @@ import { VehicleMasType } from "@/app/types/vehicle-detail-type";
 import CarCardItem from "@/components/carCardItem";
 import ImgSlider from "@/components/imgSlider";
 import { getCarpoolVehicleDetails } from "@/services/carpoolManagement";
+import stationImageMap from "@/utils/stationImageMap";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import {
@@ -48,6 +49,17 @@ const VehicleDetailCarpoolModel = forwardRef<
       fetchVehicleDetailData();
     }
   }, [vehicleId, ref]);
+
+    const stationNames =
+    vehicleDetail?.vehicle_department?.fleet_card_oil_stations
+      ?.split(",")
+      .map((s) => s.trim().toLowerCase()) || [];
+
+
+    const stationImages = stationNames
+    .map((name) => stationImageMap[name])
+    .filter(Boolean); // Remove undefined if a station name isn't mapped
+
 
   // Image Handling
   const imageUrls = vehicleDetail?.vehicle_imgs;
@@ -115,15 +127,9 @@ const VehicleDetailCarpoolModel = forwardRef<
                 <CarCardItem
                   icon="credit_card"
                   title="บัตรเติมน้ำมัน"
-                  images={[
-                    "/assets/img/ptt.png",
-                    "/assets/img/gas_3.svg",
-                    "/assets/img/gas_2.svg",
-                  ]}
+                  images={stationImages.length > 0 ? stationImages : []}
                   value={`${
-                    vehicleDetail?.fleet_card_no
-                      ? vehicleDetail?.fleet_card_no
-                      : "ไม่มี"
+                    vehicleDetail?.vehicle_department?.fleet_card_no ?? "-"
                   }`}
                 />
                 <CarCardItem
@@ -201,38 +207,35 @@ const VehicleDetailCarpoolModel = forwardRef<
                     </div>
                     <div className="form-card-right align-self-center">
                       <div className="flex flex-wrap gap-4">
-                        
-                          <div className="col-span-12 md:col-span-6">
-                            <div className="form-group form-plaintext">
-                              <i className="material-symbols-outlined">
-                                smartphone
-                              </i>
-                              <div className="form-plaintext-group">
-                                <div className="form-text text-nowrap">
-                                  {
-                                    vehicleDetail?.vehicle_department
-                                      ?.vehicle_user?.tel_mobile
-                                  }
-                                </div>
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">
+                              smartphone
+                            </i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowrap">
+                                {
+                                  vehicleDetail?.vehicle_department
+                                    ?.vehicle_user?.tel_mobile
+                                }
                               </div>
                             </div>
                           </div>
-                       
-                     
-                          <div className="col-span-12 md:col-span-6">
-                            <div className="form-group form-plaintext">
-                              <i className="material-symbols-outlined">call</i>
-                              <div className="form-plaintext-group">
-                                <div className="form-text text-nowra">
-                                  {
-                                    vehicleDetail?.vehicle_department
-                                      ?.vehicle_user?.tel_internal
-                                  }
-                                </div>
+                        </div>
+
+                        <div className="col-span-12 md:col-span-6">
+                          <div className="form-group form-plaintext">
+                            <i className="material-symbols-outlined">call</i>
+                            <div className="form-plaintext-group">
+                              <div className="form-text text-nowra">
+                                {
+                                  vehicleDetail?.vehicle_department
+                                    ?.vehicle_user?.tel_internal
+                                }
                               </div>
                             </div>
                           </div>
-                      
+                        </div>
                       </div>
                     </div>
                   </div>
