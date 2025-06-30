@@ -201,11 +201,15 @@ const RequestDrivingStepOneModal = forwardRef<
     // licenseExpiryDate: licRequestDetail
     //   ? convertToThaiDate(licRequestDetail?.driver_license_expire_date)
     //   : "",
-    licenseExpiryDate: licRequestDetail
-      ? convertToBuddhistDateTime(
-          licRequestDetail?.driver_license_expire_date || ""
-        ).date
-      : "",
+    // licenseExpiryDate: licRequestDetail
+    //   ? convertToBuddhistDateTime(
+    //       licRequestDetail?.driver_license_expire_date || ""
+    //     ).date
+    //   : "",
+      licenseExpiryDate:
+      licRequestDetail?.driver_license_expire_date ||
+      requestData?.driver_license?.driver_license_end_date ||
+      "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
       : requestData?.driver_license?.driver_license_img
@@ -776,7 +780,7 @@ const RequestDrivingStepOneModal = forwardRef<
                             <FormHelper
                               text={
                                 "วันที่สิ้นอายุควรอยู่ในปี " +
-                                requestData?.annual_yyyy
+                                requestData?.next_annual_yyyy
                               }
                             />
                         )

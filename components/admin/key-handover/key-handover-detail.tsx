@@ -141,14 +141,14 @@ export default function KeyHandoverDetail({
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ไปรับกุญแจ</div>
-              {editable && (
+              {/* {editable && (
                 <button
                   className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                   onClick={() => keyPickupEditModalRef.current?.openModal()}
                 >
                   แก้ไข
                 </button>
-              )}
+              )} */}
             </div>
 
             <KeyUserPickupCard requestData={requestData} />
