@@ -6,6 +6,15 @@ USER root
 # Copy application source code
 COPY . . 
 
+RUN mkdir -p public/env && \
+
+    echo 'window.__ENV__ = {};' > public/env/env-config.js
+
+RUN chmod +x ./entrypoint.sh
+
+RUN pnpm build && \
+    rm -rf node_modules/.cache
+
 # Install dependencies in production mode with frozen lockfile
 RUN pnpm install --frozen-lockfile --prefer-offline 
 
@@ -18,9 +27,7 @@ RUN pnpm prune --prod
 
 # Production Stage
 FROM node:20-alpine
-
 WORKDIR /app
-
 ENV NODE_ENV=production
 
 # Copy built files from builder stage
