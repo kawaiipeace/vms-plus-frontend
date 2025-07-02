@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import CustomSearchSelect from "@/components/customSelectSerch";
+import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 
 import {
   DriverCreate,
@@ -463,6 +464,24 @@ const DriverForm = () => {
     setDriverDepartmentOptions2(selectedOption as { value: string; label: string });
   };
 
+  const fetchDriverDepartment = async (search?: string) => {
+    try {
+      const response = await listDriverDepartment(search || undefined);
+      const driverDepartmentData = response.data.map(
+        (item: { dept_sap: string; dept_short: string; dept_full: string }) => {
+          return {
+            value: item.dept_sap,
+            label: item.dept_short,
+            desc: item.dept_full,
+          };
+        }
+      );
+      setDriverDepartmentList(driverDepartmentData);
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  };
+
   return (
     <>
       <form className="form" onSubmit={handleSubmit}>
@@ -653,21 +672,22 @@ const DriverForm = () => {
                 <div className="form-group">
                   <label className="form-label">หน่วยงานผู้ว่าจ้าง</label>
                   {/* {formData.driverEmployingAgency} */}
-                  {/* <CustomSelect
-                    w="w-full"
-                    options={driverDepartmentList}
-                    value={
-                      driverDepartmentList.find((option) => option.value === formData.driverEmployingAgency) || null
-                    }
-                    onChange={(selected) => setFormData((prev) => ({ ...prev, driverEmployingAgency: selected.value }))}
-                  /> */}
-                  <CustomSearchSelect
+                  {/* <CustomSearchSelect
                     w="md:w-full"
                     options={driverDepartmentList}
                     value={driverDepartmentOptions}
                     enableSearch
                     showDescriptions
                     onChange={handleDriverDepartmentChange}
+                  /> */}
+                  <CustomSelectOnSearch
+                    w="md:w-full"
+                    options={driverDepartmentList}
+                    value={driverDepartmentOptions}
+                    showDescriptions
+                    enableSearchOnApi
+                    onChange={handleDriverDepartmentChange}
+                    onSearchInputChange={(value) => fetchDriverDepartment(value)}
                   />
                   {formErrors.driverEmployingAgency && <FormHelper text={String(formErrors.driverEmployingAgency)} />}
                 </div>
@@ -711,13 +731,14 @@ const DriverForm = () => {
                     value={driverDepartmentList.find((option) => option.value === formData.driverDepartment) || null}
                     onChange={(selected) => setFormData((prev) => ({ ...prev, driverDepartment: selected.value }))}
                   /> */}
-                  <CustomSearchSelect
+                  <CustomSelectOnSearch
                     w="md:w-full"
                     options={driverDepartmentList}
                     value={driverDepartmentOptions2}
-                    enableSearch
                     showDescriptions
+                    enableSearchOnApi
                     onChange={handleDriverDepartmentChange2}
+                    onSearchInputChange={(value) => fetchDriverDepartment(value)}
                   />
                   {formErrors.driverDepartment && <FormHelper text={String(formErrors.driverDepartment)} />}
                 </div>
