@@ -3,7 +3,13 @@ import { useFormContext } from "@/contexts/requestFormContext";
 import { fetchUserApproverUsers } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "../customSelect";
@@ -20,7 +26,10 @@ const schema = yup.object().shape({
   approvedRequestEmpName: yup.string(),
 });
 
-const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void }, Props>(({ onUpdate }, ref) => {
+const ApproverModal = forwardRef<
+  { openModal: () => void; closeModal: () => void },
+  Props
+>(({ onUpdate }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const { formData, updateFormData } = useFormContext();
 
@@ -29,12 +38,18 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
     resolver: yupResolver(schema),
   });
 
-  const [driverOptions, setDriverOptions] = useState<{ value: string; label: string }[]>([]);
+  const [driverOptions, setDriverOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [costName, setCostName] = useState<string>("");
 
-  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(driverOptions[0]);
+  const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
+    driverOptions[0]
+  );
 
-  const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>([]);
+  const [vehicleUserDatas, setVehicleUserDatas] = useState<ApproverUserType[]>(
+    []
+  );
 
   useImperativeHandle(ref, () => ({
     openModal: () => modalRef.current?.showModal(),
@@ -43,23 +58,25 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
 
   useEffect(() => {
     const fetchApprover = async () => {
-      
       try {
         const response = await fetchUserApproverUsers();
         if (response.status === 200) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
 
-          const driverOptionsArray = vehicleUserData.map((user: ApproverUserType) => ({
-            value: user.emp_id,
-            label: `${user.full_name} (${user.emp_id})`,
-          }));
+          const driverOptionsArray = vehicleUserData.map(
+            (user: ApproverUserType) => ({
+              value: user.emp_id,
+              label: `${user.full_name} (${user.emp_id})`,
+            })
+          );
 
           setDriverOptions(driverOptionsArray);
 
           // Find selected user based on formData.approvedRequestEmpId
           const selectedUser = vehicleUserData.find(
-            (user: ApproverUserType) => user.emp_id === formData.approvedRequestEmpId
+            (user: ApproverUserType) =>
+              user.emp_id === formData.approvedRequestEmpId
           );
 
           if (selectedUser) {
@@ -68,10 +85,14 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
               label: `${selectedUser.full_name} (${selectedUser.emp_id})`,
             });
 
-            setCostName(selectedUser.dept_sap_short +"/"+selectedUser.posi_text); // Set costName
+            setCostName(selectedUser.posi_text) +
+              "/" +
+              selectedUser.dept_sap_short; // Set costName
           } else {
             setSelectedVehicleUserOption(driverOptionsArray[0]);
-            setCostName(driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || "");
+            setCostName(
+              driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || ""
+            );
           }
         }
       } catch (error) {
@@ -83,7 +104,9 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
   }, []);
 
   const onSubmit = (data: any) => {
-    const selectedUser = vehicleUserDatas.find((user) => user.emp_id === selectedVehicleUserOption?.value);
+    const selectedUser = vehicleUserDatas.find(
+      (user) => user.emp_id === selectedVehicleUserOption?.value
+    );
     if (onUpdate)
       onUpdate({
         ...data,
@@ -133,8 +156,12 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
                   options={driverOptions}
                   value={selectedVehicleUserOption}
                   onChange={(option) => {
-                    setSelectedVehicleUserOption(option as { value: string; label: string });
-                    const selectedUser = vehicleUserDatas.find((user) => user.emp_id === option.value);
+                    setSelectedVehicleUserOption(
+                      option as { value: string; label: string }
+                    );
+                    const selectedUser = vehicleUserDatas.find(
+                      (user) => user.emp_id === option.value
+                    );
                     setCostName(selectedUser?.dept_sap || ""); // Update costName when selecting an option
                   }}
                 />
@@ -147,10 +174,18 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
                 <div className="input-group is-readonly">
                   <div className="input-group-prepend">
                     <span className="input-group-text">
-                      <i className="material-symbols-outlined">business_center</i>
+                      <i className="material-symbols-outlined">
+                        business_center
+                      </i>
                     </span>
                   </div>
-                  <input type="text" className="form-control" value={costName} placeholder="" readOnly />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={costName}
+                    placeholder=""
+                    readOnly
+                  />
                 </div>
               </div>
             </div>
