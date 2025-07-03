@@ -271,8 +271,6 @@ const RecordTravelAddModal = forwardRef<
           ),
         };
 
-
-
         if (status) {
           const res =
             role === "recordFuel"
@@ -514,14 +512,24 @@ const RecordTravelAddModal = forwardRef<
                               placeholder="ระบุราคาต่อลิตร"
                               value={valueForm.price_per_liter}
                               onChange={(e) =>
-                                setValueForm((val) => ({
-                                  ...val,
-                                  price_per_liter: e.target.value,
-                                  sum_price: (
-                                    Number(e.target.value) *
-                                    Number(val.sum_liter || 0)
-                                  ).toFixed(2),
-                                }))
+                                setValueForm((val) => {
+                                  const sum_liter = val.sum_price
+                                    ? (
+                                        Number(val.sum_price) /
+                                        Number(e.target.value)
+                                      ).toFixed(2)
+                                    : "0.00";
+                                  return {
+                                    ...val,
+                                    price_per_liter: Number(
+                                      e.target.value
+                                    ).toFixed(2),
+                                    sum_liter,
+                                    sum_price: (
+                                      Number(e.target.value) * Number(sum_liter)
+                                    ).toFixed(2),
+                                  };
+                                })
                               }
                             />
                           </div>
@@ -536,16 +544,17 @@ const RecordTravelAddModal = forwardRef<
                               className="form-control"
                               placeholder="ระบุจำนวนลิตร"
                               value={valueForm.sum_liter}
-                              onChange={(e) =>
-                                setValueForm((val) => ({
-                                  ...val,
-                                  sum_liter: e.target.value,
-                                  sum_price: (
-                                    Number(val.price_per_liter || 0) *
-                                    Number(e.target.value)
-                                  ).toFixed(2),
-                                }))
-                              }
+                              disabled
+                              // onChange={(e) =>
+                              //   setValueForm((val) => ({
+                              //     ...val,
+                              //     sum_liter: e.target.value,
+                              //     sum_price: (
+                              //       Number(val.price_per_liter || 0) *
+                              //       Number(e.target.value)
+                              //     ).toFixed(2),
+                              //   }))
+                              // }
                             />
                           </div>
                         </div>
@@ -560,12 +569,21 @@ const RecordTravelAddModal = forwardRef<
                             className="form-control"
                             placeholder="ระบุยอดรวมชำระ"
                             value={valueForm.sum_price}
-                            onChange={(e) =>
-                              setValueForm((val) => ({
-                                ...val,
-                                sum_price: e.target.value,
-                              }))
-                            }
+                            onChange={(e) => {
+                              setValueForm((val) => {
+                                const sum_liter = val.price_per_liter
+                                  ? (
+                                      Number(e.target.value) /
+                                      Number(val.price_per_liter)
+                                    ).toFixed(2)
+                                  : "0.00";
+                                return {
+                                  ...val,
+                                  sum_liter,
+                                  sum_price: Number(e.target.value).toFixed(2),
+                                };
+                              });
+                            }}
                           />
                         </div>
                         <p className="text-sm text-left mt-3">
