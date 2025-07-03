@@ -14,7 +14,7 @@ const UploadFilePreview = ({ file, onDeleteFile }: { file: UploadFilePreviewProp
         <i className="material-symbols-outlined text-[#667085]">draft</i>
       </div>
       <div>
-        <h5 className="text-[#344054] font-semibold text-sm pl-4">{file.file_name}</h5>
+        <h5 className="text-[#344054] font-semibold text-sm pl-4 break-all">{file.file_name}</h5>
       </div>
       <div className="ml-auto flex gap-2">
         <button

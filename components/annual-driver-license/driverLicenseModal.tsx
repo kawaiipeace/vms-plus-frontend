@@ -6,6 +6,7 @@ import Image from "next/image";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import DriverLicenseDetailModal from "./driverLicenseDetailModal";
 import Link from "next/link";
+import AlertCustom from "../alertCustom";
 
 interface Props {
   requestData?: DriverLicenseCardType;
@@ -222,7 +223,12 @@ const DriverLicenseModal = forwardRef<
               </div>
             </div>
           </div>
+    
           <div className="modal-footer sticky bottom-0 gap-3 mt-0 w-full p-5 pt-0">
+            {/* <div className="mb-4">
+            <AlertCustom title="พนักงานคนนี้ถูกให้ออก" desc="เลขมท : มท123(กอพ.1)" icon="cancel" />
+            </div> */} 
+
             {profile?.license_status_code === "30" && (
               <div className="flex justify-between w-full gap-3 items-center">
                 <div className="cursor-pointer">

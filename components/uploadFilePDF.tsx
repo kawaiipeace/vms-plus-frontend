@@ -28,10 +28,10 @@ const UploadFilePDF: React.FC<ImageUploadProps> = ({ onImageChange }) => {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (!file) return;
-    const allowedTypes = ["application/pdf"];
+    const allowedTypes = ["application/pdf", "image/png", "image/jpeg", "image/gif"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("Only PDF files are allowed.");
+      alert("Only PDF, PNG, JPG, and GIF files are allowed.");
       e.target.value = "";
       return;
     }
@@ -60,10 +60,10 @@ const UploadFilePDF: React.FC<ImageUploadProps> = ({ onImageChange }) => {
     const file = e.dataTransfer.files?.[0] || null;
     if (!file) return;
 
-    const allowedTypes = ["application/pdf"];
+    const allowedTypes = ["application/pdf", "image/png", "image/jpeg", "image/gif"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("Only PDF files are allowed.");
+      alert("Only PDF, PNG, JPG, and GIF files are allowed.");
       return;
     }
 
@@ -87,9 +87,15 @@ const UploadFilePDF: React.FC<ImageUploadProps> = ({ onImageChange }) => {
           <p>
             <span className="text-[#A80689] font-bold">คลิกเพื่อเลือกไฟล์</span> หรือลากไฟล์มาวางบริเวณนี้
           </p>
-          <p className="image-upload-formats">PDF</p>
+          <p className="image-upload-formats">PDF, PNG, JPG, and GIF</p>
         </div>
-        <input type="file" multiple onChange={handleImageChange} className="image-upload-input" accept=".pdf" />
+        <input
+          type="file"
+          multiple
+          onChange={handleImageChange}
+          className="image-upload-input"
+          accept=".pdf,.png,.jpg,.jpeg,.gif"
+        />
       </label>
     </div>
   );
