@@ -86,7 +86,7 @@ const ApproverModal = forwardRef<
             });
 
             setCostName(selectedUser.posi_text) +
-              "/" +
+              " " +
               selectedUser.dept_sap_short; // Set costName
           } else {
             setSelectedVehicleUserOption(driverOptionsArray[0]);
