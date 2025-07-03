@@ -94,6 +94,7 @@ const RecordTravelTab = ({
   const [requestData, setRequestData] = useState<RecordTravelTabProps[]>([]);
   const [params, setParams] = useState({ search: "" });
   const [editData, setEditData] = useState<RecordTravelTabProps | undefined>();
+  const [isEdit, setIsEdit] = useState(false);
 
   const recordTravelAddModalRef = useRef<{
     openModal: () => void;
@@ -109,6 +110,13 @@ const RecordTravelTab = ({
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
+
+  useEffect(() => {
+    if (isEdit) {
+      setIsEdit(false);
+      recordTravelEditModalRef.current?.openModal();
+    }
+  }, [isEdit]);
 
   const fetchUserTravelDetailsFunc = useCallback(
     async () => {
@@ -430,7 +438,7 @@ const RecordTravelTab = ({
                   isAddAndEdit
                     ? (dataItem: RecordTravelTabProps) => {
                         setEditData(dataItem);
-                        recordTravelEditModalRef.current?.openModal();
+                        setIsEdit(true);
                       }
                     : undefined
                 }
