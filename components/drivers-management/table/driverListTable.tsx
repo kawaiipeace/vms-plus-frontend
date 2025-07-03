@@ -190,7 +190,7 @@ const DriverListTable = ({
       ),
       cell: ({ row }) => {
         const date = (row.original as DriverListTableProps).driver_license_end_date;
-        const formattedDate = date ? dayjs(date).format("DD/MM/YYYY") : "ไม่ระบุ";
+        const formattedDate = date ? dayjs(date).add(543, "year").format("DD/MM/YYYY") : "ไม่ระบุ";
         return (
           <div className="text-left" data-name="วันที่ใบขับขี่หมดอายุ">
             <div className="text-center">{formattedDate}</div>
@@ -208,7 +208,7 @@ const DriverListTable = ({
       ),
       cell: ({ row }) => {
         const date = (row.original as DriverListTableProps).approved_job_driver_end_date;
-        const formattedDate = date ? dayjs(date).format("DD/MM/YYYY") : "ไม่ระบุ";
+        const formattedDate = date ? dayjs(date).add(543, "year").format("DD/MM/YYYY") : "ไม่ระบุ";
         return (
           <div className="text-left" data-name="วันที่สิ้นสุดปฏิบัติงาน">
             <div className="text-center">{formattedDate === "01/01/0001" ? "" : formattedDate}</div>
