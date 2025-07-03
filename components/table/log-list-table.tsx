@@ -1,15 +1,17 @@
+import React, { useEffect, useState } from "react";
 import { LogType } from "@/app/types/log-type";
 import { DataTable } from "@/components/table/dataTable";
-import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import {
   ColumnDef,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import { useRouter } from "next/navigation";
 
 interface PaginationType {
   limit: number;
@@ -23,16 +25,26 @@ interface Props {
   pagination: PaginationType;
 }
 
-export default function LogListTable({ defaultData, pagination }: Props) {
-  const [isLoading, setIsLoading] = useState(true);
+export default function FirstApproverListTable({
+  defaultData,
+  pagination,
+}: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Set pagination from props
+  const [paginationState, setPagination] = useState<PaginationState>({
+    pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
+    pageSize: pagination.limit,
+  });
 
   const requestListColumns: ColumnDef<LogType>[] = [
     {
       accessorKey: "log_request_action_datetime",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
-          <div className="text-center">วันที่ / เวลา</div>
+          <div className="text-center">เลขที่คำขอ</div>
         </div>
       ),
       enableSorting: true,
@@ -41,18 +53,31 @@ export default function LogListTable({ defaultData, pagination }: Props) {
           row.original.log_request_action_datetime
         );
         return (
-          <div className="text-left">
+          <div className="text-left" data-name="วันที่ / เวลา">
+          <div className="flex flex-col">
+            <div className="text-left">
             {startDateTime.date + " " + startDateTime.time}
+            </div>
+              {/* <div className="text-color-secondary text-xs">
+              {row.original.vehicle_department_dept_sap_short}
+            </div> */}
           </div>
+        </div>
         );
       },
     },
     {
       accessorKey: "action_by_fullname",
-      header: () => <div className="text-left">ผู้ดำเนินการ</div>,
+      header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-left">{row.original.action_by_fullname}</div>
+        <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
+        <div className="flex flex-col">
+          <div className="text-left">
+          {row.original.action_by_fullname}
+          </div>
+        </div>
+      </div>
       ),
     },
     {
@@ -60,19 +85,27 @@ export default function LogListTable({ defaultData, pagination }: Props) {
       header: () => <div className="text-center">ตำแหน่ง/สังกัด</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-left">
+        <div className="text-left" data-name="ตำแหน่ง/สังกัด">
+        <div className="flex flex-col">
+          <div className="text-left">
           {row.original.action_by_position +
             " " +
             row.original.action_by_department}
+          </div>
         </div>
+      </div>
       ),
     },
     {
-      accessorKey: "status",
+      accessorKey: "action_detail",
       header: () => <div className="text-center">รายละเอียด</div>,
       enableSorting: false,
       cell: ({ row }) => (
+        <div className="text-left" data-name="รายละเอียด">
+        <div className="flex flex-col">
         <div className="text-left">{row.original.action_detail}</div>
+      </div>
+      </div>
       ),
     },
     {
@@ -80,7 +113,9 @@ export default function LogListTable({ defaultData, pagination }: Props) {
       header: () => <div className="text-center">หมายเหตุ</div>,
       enableSorting: false,
       cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
+        <div className="text-left" data-name="หมายเหตุ">
+          {getValue() as string}
+        </div>
       ),
     },
   ];
@@ -92,18 +127,19 @@ export default function LogListTable({ defaultData, pagination }: Props) {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
-    manualPagination: true,
+    onPaginationChange: setPagination,
     state: {
       sorting,
-      pagination: {
-        pageIndex: pagination.page - 1,
-        pageSize: pagination.limit,
-      },
+      pagination: paginationState,
     },
     defaultColumn: {
       enableSorting: false,
     },
   });
+
+  useEffect(() => {
+    
+  }, [pagination]);
 
   useEffect(() => {
     setIsLoading(false);

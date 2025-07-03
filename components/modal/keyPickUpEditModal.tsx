@@ -284,7 +284,7 @@ const KeyPickUpEditModal = forwardRef<
         </div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="modal-body overflow-y-auto">
-            <div className="form-section">
+            {/* <div className="form-section">
               <div className="form-group">
                 <div className="custom-group flex md:flex-row flex-col !gap-0 space-y-0 space-x-2">
                   <RadioButton
@@ -315,9 +315,8 @@ const KeyPickUpEditModal = forwardRef<
                     }
                   />
                 </div>
-                {/* <!-- <span className="form-helper">Helper</span> --> */}
               </div>
-            </div>
+            </div> */}
 
             {selectedUserType == "พนักงาน กฟภ." ? (
               <div className="grid grid-cols-12 gap-4 mt-3">
@@ -545,7 +544,7 @@ const KeyPickUpEditModal = forwardRef<
               </div>
             ) : (
               <div className="col-span-12">
-                <div className="form-card w-full mt-5">
+                <div className="form-card w-full">
                   <div className="form-card-body">
                     <div className="form-group form-plaintext form-users">
                       <Image

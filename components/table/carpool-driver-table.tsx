@@ -39,6 +39,7 @@ interface Props {
   defaultData: any[];
   pagination: PaginationType;
   setRefetch: (value: boolean) => void;
+  setLastDeleted: (value: boolean) => void;
 }
 
 interface ToastProps {
@@ -51,6 +52,7 @@ export default function CarpoolDriverTable({
   defaultData,
   pagination,
   setRefetch,
+  setLastDeleted,
 }: Props) {
   const id = useSearchParams().get("id");
   const active = useSearchParams().get("active");
@@ -90,7 +92,13 @@ export default function CarpoolDriverTable({
           const response = await deleteCarpoolDriver(deleteId);
           if (response.request.status === 200) {
             setDeleteId(undefined);
-            setRefetch(true);
+            if (defaultData.length === 1) {
+              setTimeout(() => {
+                setLastDeleted(true);
+              }, 500);
+            } else {
+              setRefetch(true);
+            }
             cancelCreateModalRef.current?.closeModal();
             setToast({
               title: "ลบพนักงานขับรถสำเร็จ",
