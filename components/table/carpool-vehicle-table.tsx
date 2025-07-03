@@ -540,6 +540,7 @@ export default function CarpoolVehicleTable({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
+    manualPagination: true,
     state: {
       sorting,
       pagination: paginationState,
