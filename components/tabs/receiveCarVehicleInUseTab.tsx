@@ -19,7 +19,12 @@ interface ReceiveCarVehicleInUseTabProps {
   role?: string;
 }
 
-const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: ReceiveCarVehicleInUseTabProps) => {
+const ReceiveCarVehicleInUseTab = ({
+  requestId,
+  edit,
+  displayOn,
+  role,
+}: ReceiveCarVehicleInUseTabProps) => {
   const receiveCarVehicleModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -119,7 +124,9 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                   <div className="form-section-header-actions">
                     <button
                       className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
-                      onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+                      onClick={() =>
+                        receiveCarVehicleModalRef.current?.openModal()
+                      }
                     >
                       แก้ไข
                     </button>
@@ -132,14 +139,18 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                   <div className="grid grid-cols-2">
                     <div>
                       <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">calendar_month</i>
+                        <i className="material-symbols-outlined">
+                          calendar_month
+                        </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่</div>
                           <div className="form-text">
-                            {requestData?.pickup_datetime === "0001-01-01T00:00:00Z" ? "-" :
-                             convertToBuddhistDateTime(requestData?.pickup_datetime || "").date
-                          }
-                           
+                            {requestData?.pickup_datetime ===
+                            "0001-01-01T00:00:00Z"
+                              ? "-"
+                              : convertToBuddhistDateTime(
+                                  requestData?.pickup_datetime || ""
+                                ).date}
                           </div>
                         </div>
                       </div>
@@ -150,7 +161,11 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                         <div className="form-plaintext-group">
                           <div className="form-label">เวลา</div>
                           <div className="form-text">
-                            {convertToBuddhistDateTime(requestData?.pickup_datetime || "").time}
+                            {
+                              convertToBuddhistDateTime(
+                                requestData?.pickup_datetime || ""
+                              ).time
+                            }
                           </div>
                         </div>
                       </div>
@@ -159,19 +174,27 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                   <div className="grid grid-cols-2">
                     <div>
                       <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">search_activity</i>
+                        <i className="material-symbols-outlined">
+                          search_activity
+                        </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">เลขไมล์</div>
-                          <div className="form-text">{requestData?.mile_start}</div>
+                          <div className="form-text">
+                            {requestData?.mile_start}
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div>
                       <div className="form-group form-plaintext">
-                        <i className="material-symbols-outlined">local_gas_station</i>
+                        <i className="material-symbols-outlined">
+                          local_gas_station
+                        </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">ปริมาณเชื้อเพลิง</div>
-                          <div className="form-text">{requestData?.fuel_start}</div>
+                          <div className="form-text">
+                            {requestData?.fuel_start}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -182,7 +205,9 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                         <i className="material-symbols-outlined">news</i>
                         <div className="form-plaintext-group">
                           <div className="form-label">หมายเหตุ</div>
-                          <div className="form-text">{requestData?.received_vehicle_remark}</div>
+                          <div className="form-text">
+                            {requestData?.received_vehicle_remark}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -200,7 +225,9 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                     <div className="form-section-header-actions">
                       <button
                         className="btn bg-transparent border-none shadow-none hover:bg-transparent text-[#A80689]"
-                        onClick={() => returnCarAddStep2ModalRef.current?.openModal()}
+                        onClick={() =>
+                          returnCarAddStep2ModalRef.current?.openModal()
+                        }
                       >
                         แก้ไข
                       </button>
@@ -209,7 +236,11 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                 </div>
 
                 <ImagesCarCard
-                  images={requestData?.vehicle_images_received?.map((image) => image.vehicle_img_file || "") || []}
+                  images={
+                    requestData?.vehicle_images_received?.map(
+                      (image) => image.vehicle_img_file || ""
+                    ) || []
+                  }
                 />
               </div>
             )}
@@ -230,12 +261,18 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
                     <div className="col-span-12 md:col-span-6">
                       {displayOn === "vehicle-in-use" ? (
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">local_parking</i>
-                          <div className="form-text">{requestData?.pickup_place}</div>
+                          <i className="material-symbols-outlined">
+                            local_parking
+                          </i>
+                          <div className="form-text">
+                            {requestData?.parking_place}
+                          </div>
                         </div>
                       ) : (
                         <div className="form-group form-plaintext">
-                          <i className="material-symbols-outlined">calendar_month</i>
+                          <i className="material-symbols-outlined">
+                            calendar_month
+                          </i>
                           <div className="form-plaintext-group">
                             <div className="form-label">วันที่และเวลา</div>
                             <div className="form-text">01/01/2567 08:30</div>
@@ -256,7 +293,10 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
               </div>
 
               {displayOn === "vehicle-in-use" ? (
-                <DriverPassengerPeaInfoCard id={requestData?.vehicle_user_emp_id || ""} requestData={requestData} />
+                <DriverPassengerPeaInfoCard
+                  id={requestData?.vehicle_user_emp_id || ""}
+                  requestData={requestData}
+                />
               ) : (
                 <UserInfoCard UserType="outsource" displayBtnMore={true} />
               )}
@@ -266,7 +306,10 @@ const ReceiveCarVehicleInUseTab = ({ requestId, edit, displayOn, role }: Receive
         {(requestData?.ref_request_status_name === "รอรับยานพาหนะ" ||
           requestData?.ref_request_status_name === "ตีกลับยานพาหนะ") &&
           displayOn !== "admin" && (
-            <button className="btn btn-primary w-full" onClick={() => receiveCarVehicleModalRef.current?.openModal()}>
+            <button
+              className="btn btn-primary w-full"
+              onClick={() => receiveCarVehicleModalRef.current?.openModal()}
+            >
               รับยานพาหนะ
             </button>
           )}

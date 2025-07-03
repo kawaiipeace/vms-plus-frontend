@@ -73,7 +73,7 @@ export default function Home() {
             />
             <div className="login-brand-title">ระบบจัดการยานพาหนะ VMS Plus</div>
             <div className="login-brand-subtitle">
-              เรื่องเดินทางไม่ใช่ปัญหา ยืมรถสะดวก ง่าย เร็ว ทันใจ (Version 1.2)
+              เรื่องเดินทางไม่ใช่ปัญหา ยืมรถสะดวก ง่าย เร็ว ทันใจ (Version 1.3)
             </div>
       
           </div>
