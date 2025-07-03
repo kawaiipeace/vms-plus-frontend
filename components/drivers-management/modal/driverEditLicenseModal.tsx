@@ -121,7 +121,6 @@ const DriverEditLicenseModal = forwardRef<
         mas_driver_uid: driverInfo?.mas_driver_uid || "",
       };
 
-
       try {
         const response = await driverUpdateLicenseDetails({ params });
         if (response.status === 200) {
@@ -179,6 +178,10 @@ const DriverEditLicenseModal = forwardRef<
     setFormData((prevData) => ({
       ...prevData,
       driverLicenseEndDate: dateStrISO,
+    }));
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      driverLicenseEndDate: "",
     }));
   };
 

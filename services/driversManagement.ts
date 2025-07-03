@@ -81,9 +81,9 @@ export const DriverCreate = async (params: DriverCreateDetails) => {
   }
 };
 
-export const listDriverDepartment = async () => {
+export const listDriverDepartment = async (search?: string) => {
   try {
-    const response = await axiosInstance.get("mas/driver-departments");
+    const response = await axiosInstance.get(`mas/driver-departments`, { params: { search } });
     return response;
   } catch (error) {
     throw error;

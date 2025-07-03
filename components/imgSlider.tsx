@@ -39,7 +39,7 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
       </div>
 
       {/* Navigation Arrows */}
-      <div className="absolute slick-arrow left-[2rem] top-2/4 transform -translate-y-1/3">
+      {/* <div className="absolute slick-arrow left-[2rem] top-2/4 transform -translate-y-1/3">
         <Link
           href={`#slide${id}${activeIndex === 0 ? images.length : activeIndex}`}
           className="btn w-[40px] h-[40px] rounded-full min-h-0"
@@ -47,7 +47,7 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
         >
           <i className="material-symbols-outlined icon-settings-400-20">keyboard_arrow_left</i>
         </Link>
-      </div>
+      </div> */}
       <div className="absolute slick-arrow right-[2rem] top-2/4 transform -translate-y-1/3">
         <Link
           href={`#slide${id}${((activeIndex + 1) % images.length) + 1}`}

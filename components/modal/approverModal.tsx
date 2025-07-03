@@ -68,7 +68,7 @@ const ApproverModal = forwardRef<{ openModal: () => void; closeModal: () => void
               label: `${selectedUser.full_name} (${selectedUser.emp_id})`,
             });
 
-            setCostName(selectedUser.dept_sap_short); // Set costName
+            setCostName(selectedUser.dept_sap_short +"/"+selectedUser.posi_text); // Set costName
           } else {
             setSelectedVehicleUserOption(driverOptionsArray[0]);
             setCostName(driverOptionsArray[0]?.label.split("(")[1]?.replace(")", "") || "");

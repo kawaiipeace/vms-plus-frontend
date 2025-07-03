@@ -134,7 +134,7 @@ export default function RequestForm() {
 
   useEffect(() => {
     fetchCostTypeRequest(profile?.emp_id || "");
-  }, []);
+  }, [profile]);
 
   const fetchCostTypeRequest = async (id: string) => {
     console.log("cost", id);
@@ -207,9 +207,10 @@ export default function RequestForm() {
               value: vehicleUserData[0]?.emp_id,
               label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
             };
-
+       
             if (vehicleUserData) {
-              if (!formData) {
+              if (!formData || Object.keys(formData).length === 0) {
+
                 setValue("telInternal", vehicleUserData[0].tel_internal);
                 setValue("telMobile", vehicleUserData[0].tel_mobile);
               }
@@ -488,58 +489,39 @@ export default function RequestForm() {
   };
 
   const handleCostCenterSearch = async (search: string) => {
+    console.log('search', search);
+    
+    // Return early if search term is too short
     if (search.trim().length < 3) {
-      setLoadingCostCenter(true);
-      try {
-        const response = await fetchCostCenter(search);
-        if (response.status === 200) {
-          const costCenterData = response.data;
-          setCostCenterDatas(costCenterData);
-          const costCenterArr = [
-            ...costCenterData.map((cost: { cost_center: string }) => ({
-              value: cost.cost_center,
-              label: cost.cost_center,
-            })),
-          ];
-
-          setCostCenterOptions(costCenterArr);
-        } else {
-          setCostCenterOptions([]);
-        }
-      } catch (error) {
-        setCostCenterOptions([]);
-        console.error("Error resetting options:", error);
-      } finally {
-        setLoadingCostCenter(false);
-      }
+      setCostCenterOptions([]);
+      setLoadingCostCenter(false);
       return;
     }
-
+  
     setLoadingCostCenter(true);
-    // try {
-    //   const response = await fetchVehicleUsers(search);
-    //   if (response.status === 200) {
-    //     const vehicleUserData = response.data;
-    //     const driverOptionsArray = vehicleUserData.map(
-    //       (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
-    //         value: user.emp_id,
-    //         label: `${user.full_name} (${user.emp_id})`,
-    //       })
-    //     );
-    //     setDriverOptions(driverOptionsArray);
-    //   } else {
-    //     setDriverOptions([]);
-    //   }
-    // } catch (error) {
-    //   if ((error as Error).name !== "AbortError") {
-    //     setDriverOptions([]);
-    //     console.error("Search failed:", error);
-    //   }
-    // } finally {
-    //   setLoadingDrivers(false);
-    // }
+    try {
+      const response = await fetchCostCenter(search);
+      if (response.status === 200) {
+        const costCenterData = response.data;
+        setCostCenterDatas(costCenterData);
+        const costCenterArr = [
+          ...costCenterData.map((cost: { cost_center: string }) => ({
+            value: cost.cost_center,
+            label: cost.cost_center,
+          })),
+        ];
+        console.log('cost', costCenterData);
+        setCostCenterOptions(costCenterArr);
+      } else {
+        setCostCenterOptions([]);
+      }
+    } catch (error) {
+      setCostCenterOptions([]);
+      console.error("Error searching cost centers:", error);
+    } finally {
+      setLoadingCostCenter(false);
+    }
   };
-
   const onSubmit = (data: any) => {
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
@@ -792,7 +774,7 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={convertToThaiDate(formData.startDate)}
+                        defaultValue={formData.startDate ? convertToThaiDate(formData.startDate) : convertToThaiDate(dayjs().format("YYYY-MM-DD"))}
                         minDate={dayjs().format("YYYY-MM-DD")}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
