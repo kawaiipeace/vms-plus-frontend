@@ -18,7 +18,7 @@ import {
 import { convertToISO } from "@/utils/convertToISO";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Carpool {
   mas_carpool_uid: string;
@@ -54,7 +54,6 @@ interface PaginationInterface {
   page: number;
   total: number;
   totalPages: number;
-  totalGroups: number;
 }
 
 interface FormData {
@@ -78,7 +77,6 @@ export default function ProcessTwo() {
     page: 1,
     total: 0,
     totalPages: 0,
-    totalGroups: 0,
   });
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const { isPinned } = useSidebar();
@@ -94,6 +92,8 @@ export default function ProcessTwo() {
     page: 1,
     limit: 10,
   });
+
+  
 
   const [vehicleCatOptions, setVehicleCatOptions] = useState<
     { value: string; label: string }[]
@@ -111,7 +111,6 @@ export default function ProcessTwo() {
     value: string;
     label: string;
   }>({ value: "", label: "ทุกประเภทยานพาหนะ" });
-  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     const processOneStatus = localStorage.getItem("processOne");
@@ -120,54 +119,24 @@ export default function ProcessTwo() {
     }
   }, []);
 
+  const searchInputRef = useRef<HTMLInputElement>(null); // Add this ref
+
+  // Add this effect to focus the input after data loads
+  useEffect(() => {
+    if (!loading && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [loading]);
+
   const applyFilters = () => {
-    let filtered = [...allVehicleCards];
-
-    // Apply search filter
-    if (params.search) {
-      const searchLower = params.search.toLowerCase();
-      filtered = filtered.filter(card => {
-        if ('vehicle_license_plate' in card) {
-          // Vehicle card
-          return (
-            card.vehicle_license_plate.toLowerCase().includes(searchLower) ||
-            card.vehicle_brand_name.toLowerCase().includes(searchLower) ||
-            card.vehicle_model_name.toLowerCase().includes(searchLower)
-          );
-        } else {
-          // Carpool card
-          return card.carpool_name.toLowerCase().includes(searchLower)
-        }
-      });
-    }
-
-    // Apply organization filter
-    if (params.vehicle_owner_dept) {
-      filtered = filtered.filter(card => 
-        'vehicle_owner_dept_sap' in card && 
-        card.vehicle_owner_dept_sap === params.vehicle_owner_dept
-      );
-    }
-
-    // Apply vehicle type filter
-    if (params.category_code) {
-      filtered = filtered.filter(card => 
-        'car_type' in card && 
-        card.car_type === params.category_code
-      );
-    }
-
-    setFilteredVehicleCards(filtered);
-    setPaginationData(prev => ({
+    setParams(prev => ({
       ...prev,
-      total: filtered.length,
-      totalPages: Math.ceil(filtered.length / prev.limit)
+      search: searchInput,
+      vehicle_owner_dept: selectedOrgOption.value,
+      category_code: selectedVehicleOption.value,
+      page: 1 // Reset to first page when filters change
     }));
   };
-
-  useEffect(() => {
-    applyFilters();
-  }, [params.search, params.vehicle_owner_dept, params.category_code, allVehicleCards]);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -181,18 +150,18 @@ export default function ProcessTwo() {
             fetchSearchVehicles({
               ...params,
               emp_id: profile.emp_id,
-              start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
-              end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
+              start_date: convertToISO(String(formData.startDate), String(formData.timeStart)),
+              end_date: convertToISO(String(formData.endDate), String(formData.timeEnd)),
             }),
             fetchVehicleCarTypes({
               emp_id: profile.emp_id,
-              start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
-              end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
+              start_date: convertToISO(String(formData.startDate), String(formData.timeStart)),
+              end_date: convertToISO(String(formData.endDate), String(formData.timeEnd)),
             }),
             fetchVehicleDepartmentTypes({
               emp_id: profile.emp_id,
-              start_date: convertToISO(String(formData.startDate),String(formData.timeStart)),
-              end_date: convertToISO(String(formData.endDate),String(formData.timeEnd)),
+              start_date: convertToISO(String(formData.startDate), String(formData.timeStart)),
+              end_date: convertToISO(String(formData.endDate), String(formData.timeEnd)),
             }),
           ]);
 
@@ -202,7 +171,13 @@ export default function ProcessTwo() {
             ...(vehiclesResponse.data.vehicles || []),
           ];
           setAllVehicleCards(allCards);
-          setPaginationData(vehiclesResponse.data.pagination);
+          setFilteredVehicleCards(allCards);
+          setPaginationData({
+            limit: vehiclesResponse.data.pagination.limit,
+            page: vehiclesResponse.data.pagination.page,
+            total: vehiclesResponse.data.pagination.total,
+            totalPages: vehiclesResponse.data.pagination.totalPages,
+          });
         }
 
         if (carTypesResponse.status === 200) {
@@ -248,6 +223,11 @@ export default function ProcessTwo() {
     formData.timeStart,
     formData.endDate,
     formData.timeEnd,
+    params.page,
+    params.limit,
+    params.search,
+    params.vehicle_owner_dept,
+    params.category_code
   ]);
 
   const handleVehicleSelect = (value: string) => {
@@ -323,39 +303,63 @@ export default function ProcessTwo() {
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    setParams(prev => ({ ...prev, search: value, page: 1 }));
+    setSearchInput(e.target.value);
+
   };
+
+  const useDebounce = (value: string, delay: number, minLength: number = 0) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        if (value.length >= minLength || value.length === 0) {
+          setDebouncedValue(value);
+        }
+      }, delay);
+  
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay, minLength]);
+  
+    return debouncedValue;
+  };
+
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearchInput = useDebounce(searchInput, 200, 3); 
+
+  useEffect(() => {
+    setParams(prev => ({
+      ...prev,
+      search: debouncedSearchInput,
+      page: 1
+    }));
+  }, [debouncedSearchInput]);
+  
 
   const handleOrgChange = async (selectedOption: CustomSelectOption) => {
     setSelectedOrgOption(selectedOption as { value: string; label: string });
     setParams(prev => ({
       ...prev,
       vehicle_owner_dept: selectedOption.value,
-      page: 1,
+      page: 1
     }));
   };
-
+  
+  const handleVehicleTypeChange = async (selectedOption: CustomSelectOption) => {
+    setSelectedVehicleOption(selectedOption as { value: string; label: string });
+    setParams(prev => ({
+      ...prev,
+      category_code: selectedOption.value,
+      page: 1
+    }));
+  };
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams(prev => ({
       ...prev,
       limit,
-      page: 1,
-    }));
-  };
-
-  const handleVehicleTypeChange = async (
-    selectedOption: CustomSelectOption
-  ) => {
-    setSelectedVehicleOption(
-      selectedOption as { value: string; label: string }
-    );
-    setParams(prev => ({
-      ...prev,
-      category_code: selectedOption.value,
       page: 1,
     }));
   };
@@ -383,11 +387,6 @@ export default function ProcessTwo() {
       </div>
     );
   }
-
-  // Calculate paginated results
-  const startIndex = (params.page - 1) * params.limit;
-  const endIndex = startIndex + params.limit;
-  const paginatedResults = filteredVehicleCards.slice(startIndex, endIndex);
 
   return (
     <div className="main-container">
@@ -457,12 +456,23 @@ export default function ProcessTwo() {
                       </span>
                     </div>
                     <input
+                       ref={searchInputRef}
                       type="text"
                       className="form-control dt-search-input"
                       value={searchInput}
                       onChange={handleSearchChange}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && searchInput.length >= 3) {
+                          setParams(prev => ({
+                            ...prev,
+                            search: searchInput,
+                            page: 1
+                          }));
+                        }
+                      }}
                       placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
                     />
+         
                   </div>
 
                   <div className="search-filter w-12/12 md:w-6/12 sm:gap-4 flex md:justify-end">
@@ -484,7 +494,7 @@ export default function ProcessTwo() {
                 {filteredVehicleCards.length > 0 ? (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-5 w-full">
-                      {paginatedResults.map((card) => {
+                      {filteredVehicleCards.map((card) => {
                         if ("ref_carpool_choose_car" in card) {
                           const carpool = card;
                           return (
@@ -548,18 +558,16 @@ export default function ProcessTwo() {
                       })}
                     </div>
 
-                    {paginationData.totalPages > 1 && (
-                      <PaginationControls
-                        pagination={{
-                          limit: params.limit,
-                          page: params.page,
-                          totalPages: Math.ceil(filteredVehicleCards.length / params.limit),
-                          total: filteredVehicleCards.length,
-                        }}
-                        onPageChange={handlePageChange}
-                        onPageSizeChange={handlePageSizeChange}
-                      />
-                    )}
+                    <PaginationControls
+                      pagination={{
+                        limit: params.limit,
+                        page: params.page,
+                        totalPages: paginationData.totalPages,
+                        total: paginationData.total,
+                      }}
+                      onPageChange={handlePageChange}
+                      onPageSizeChange={handlePageSizeChange}
+                    />
                   </>
                 ) : (
                   <ZeroRecord

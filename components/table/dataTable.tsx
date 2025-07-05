@@ -61,7 +61,7 @@ export function DataTable<TData>({ table, onRowClick, style }: DataTableProps<TD
                 <tr
                   key={row.id}
                   className={`hover:bg-base-200 ${onRowClick ? "cursor-pointer" : ""}`}
-                  style={{ height: `${rowHeight}px` }}
+                  // style={{ height: `${rowHeight}px` }}
                   onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
