@@ -18,7 +18,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -52,7 +52,6 @@ export default function ProcessThree() {
   const router = useRouter();
   const [drivers, setDrivers] = useState([]);
   const [filteredDrivers, setFilteredDrivers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUser[]>([]);
   const { isPinned } = useSidebar();
   const [driverLicenseNo, setDriverLicenseNo] = useState("");
@@ -68,8 +67,7 @@ export default function ProcessThree() {
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [selectedVehiclePoolId, setSelectedVehiclePoolId] =
-    useState<string>("");
+  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string>("");
   const { profile } = useProfile();
 
   const driverAppointmentRef = useRef<{
@@ -84,11 +82,13 @@ export default function ProcessThree() {
       masCarpoolDriverUid: vehiclePoolId,
     });
   };
-  const [params] = useState({
+
+  const [params, setParams] = useState({
     name: "",
     page: 1,
     limit: 10,
   });
+
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState<{
     value: string;
     label: string;
@@ -97,16 +97,10 @@ export default function ProcessThree() {
   const [licenseValid, setLicenseValid] = useState(false);
   const [annualValid, setAnnualValid] = useState(false);
   const [appointValid, setAppointValid] = useState(false);
+  const [allDriver, setAllDriver] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    const filtered = drivers.filter((driver: any) =>
-      driver.driver_name.includes(value)
-    );
-    setFilteredDrivers(filtered);
-  };
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleAppointmentSubmit = () => {
     setAppointValid(true);
@@ -128,7 +122,7 @@ export default function ProcessThree() {
         setSelectedDriverType("พนักงานขับรถ");
       }
     }
-  }, [formData]);
+  }, [formData, router]);
 
   useEffect(() => {
     if (formData.isAdminChooseDriver) {
@@ -138,6 +132,7 @@ export default function ProcessThree() {
 
   useEffect(() => {
     if (appointValid) {
+      // Handle appointment validation logic
     }
   }, [appointValid]);
 
@@ -170,8 +165,9 @@ export default function ProcessThree() {
   };
 
   useEffect(() => {
-    const fetchDriverData = async () => {
+    const fetchDrivers = async () => {
       try {
+        setLoadingDrivers(true);
         const response = await fetchSearchDrivers({
           ...params,
           emp_id: profile?.emp_id,
@@ -179,21 +175,25 @@ export default function ProcessThree() {
           end_date: `${formData.endDate} ${formData.timeEnd}`,
           mas_carpool_uid: formData.masCarpoolUid || "",
         });
+        
         if (response.status === 200) {
           setDrivers(response.data.drivers);
           setFilteredDrivers(response.data.drivers);
+          setAllDriver(response.data.pagination.total);
         }
       } catch (error) {
-        console.error("Error fetching requests:", error);
+        console.error("Error fetching drivers:", error);
+        setDrivers([]);
+        setFilteredDrivers([]);
+      } finally {
+        setLoadingDrivers(false);
       }
     };
+  
+    fetchDrivers();
+  }, [params, profile, formData]);
 
-    fetchDriverData();
-  }, []);
-
-  const handleVehicleUserChange = async (
-    selectedOption: CustomSelectOption
-  ) => {
+  const handleVehicleUserChange = async (selectedOption: CustomSelectOption) => {
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
@@ -244,6 +244,52 @@ export default function ProcessThree() {
       });
     }
   };
+
+  const { register, setValue } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+    defaultValues: {
+      driverDeptSap: formData.driverDeptSap || "",
+      driverInternalContact: formData.driverInternalContact || "",
+      driverMobileContact: formData.driverMobileContact || "",
+    },
+  });
+
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+
+  };
+
+  const useDebounce = (value: string, delay: number, minLength: number = 0) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        if (value.length >= minLength || value.length === 0) {
+          setDebouncedValue(value);
+        }
+      }, delay);
+  
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay, minLength]);
+  
+    return debouncedValue;
+  };
+
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearchInput = useDebounce(searchInput, 200, 3); 
+
+  useEffect(() => {
+    setParams(prev => ({
+      ...prev,
+      name: debouncedSearchInput,
+      page: 1
+    }));
+  }, [debouncedSearchInput]);
+  
 
   useEffect(() => {
     if (!formData.isPeaEmployeeDriver) {
@@ -316,9 +362,7 @@ export default function ProcessThree() {
       }
     };
     fetchDefaultData();
-
-    // setSelectedVehicleUserOption(selectedDriverOption);
-  }, [formData, profile]);
+  }, [formData, profile, setValue]);
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
@@ -327,27 +371,20 @@ export default function ProcessThree() {
       masCarpoolDriverUid: mas_driver_uid,
     });
   };
+
   const next = () => {
     localStorage.setItem("processThree", "Done");
     router.push("process-four");
   };
 
-  const { register, setValue } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(schema),
-    defaultValues: {
-      driverDeptSap: formData.driverDeptSap || "",
-      driverInternalContact: formData.driverInternalContact || "",
-      driverMobileContact: formData.driverMobileContact || "",
-    },
-  });
 
-  const handleDriverSearch = async (search: string) => {
+
+  const handleDriverSearch = useCallback(async (search: string) => {
     const trimmed = search.trim();
 
     if (trimmed.length < 3) {
       setDriverOptions([]);
-      setVehicleUserDatas([]); // Clear vehicleUserDatas if search is too short
+      setVehicleUserDatas([]);
       setLoadingDrivers(false);
       return;
     }
@@ -357,7 +394,7 @@ export default function ProcessThree() {
       const response = await fetchUserDrivers(trimmed);
       if (response && Array.isArray(response.data)) {
         const vehicleUserData = response.data;
-        setVehicleUserDatas(vehicleUserData); // <-- Update here!
+        setVehicleUserDatas(vehicleUserData);
         setDriverOptions(
           vehicleUserData.map(
             (user: { emp_id: string; full_name: string }) => ({
@@ -377,7 +414,7 @@ export default function ProcessThree() {
     } finally {
       setLoadingDrivers(false);
     }
-  };
+  }, []);
 
   return (
     <div>
@@ -411,7 +448,6 @@ export default function ProcessThree() {
               <div className="page-group-header">
                 <div className="page-title">
                   <span className="page-title-label">สร้างคำขอใช้ยานพาหนะ</span>
-                  {/* <!-- <span className="badge badge-outline badge-gray">95 กลุ่ม</span> --> */}
                 </div>
               </div>
             </div>
@@ -456,7 +492,6 @@ export default function ProcessThree() {
                         }
                       />
                     </div>
-                    {/* <!-- <span className="form-helper">Helper</span> --> */}
                   </div>
                 </div>
 
@@ -663,14 +698,37 @@ export default function ProcessThree() {
                               </i>
                             </span>
                           </div>
-                          <input
+                          {/* <input
+                            ref={searchInputRef}
+                            key="driver-search-input"
                             type="text"
                             id="myInputTextField"
                             value={searchTerm}
                             onChange={handleSearch}
                             className="form-control dt-search-input"
                             placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                          />
+                            disabled={loadingDrivers}
+                            autoFocus
+                          /> */}
+
+<input
+                       ref={searchInputRef}
+                      type="text"
+                      className="form-control dt-search-input"
+                      value={searchInput}
+                      onChange={handleSearchChange}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && searchInput.length >= 3) {
+                          setParams(prev => ({
+                            ...prev,
+                            search: searchInput,
+                            page: 1
+                          }));
+                        }
+                      }}
+                      placeholder="ค้นหาชื่อพนักงานขับรถ.."
+                    />
+         
                         </div>
 
                         {filteredDrivers.length > 0 ? (
@@ -711,7 +769,7 @@ export default function ProcessThree() {
                           />
                         )}
                       </>
-                      {drivers.length <= 0 && (
+                      {allDriver <= 0 && (
                         <EmptyDriver
                           imgSrc="/assets/img/empty/empty_driver.svg"
                           title="ไม่พบพนักงานขับรถ"
