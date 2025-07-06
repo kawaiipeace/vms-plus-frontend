@@ -128,15 +128,6 @@ export default function ProcessTwo() {
     }
   }, [loading]);
 
-  const applyFilters = () => {
-    setParams(prev => ({
-      ...prev,
-      search: searchInput,
-      vehicle_owner_dept: selectedOrgOption.value,
-      category_code: selectedVehicleOption.value,
-      page: 1 // Reset to first page when filters change
-    }));
-  };
 
   useEffect(() => {
     const fetchAllData = async () => {

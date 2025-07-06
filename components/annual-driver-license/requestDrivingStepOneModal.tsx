@@ -206,9 +206,11 @@ const RequestDrivingStepOneModal = forwardRef<
     //       licRequestDetail?.driver_license_expire_date || ""
     //     ).date
     //   : "",
-      licenseExpiryDate:
+    licenseExpiryDate:
       licRequestDetail?.driver_license_expire_date ||
-      requestData?.driver_license?.driver_license_end_date ||
+      (requestData?.driver_license?.driver_license_end_date !==
+        "0001-01-01T00:00:00Z" &&
+        requestData?.driver_license?.driver_license_end_date) ||
       "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
@@ -769,25 +771,22 @@ const RequestDrivingStepOneModal = forwardRef<
                               </div>
                             )}
                             {/* Add this helper text */}
-                            { requestData?.annual_yyyy !== 0 ?
-                        
-                          requestData?.annual_yyyy !==
-                          new Date().getFullYear() &&
-                          watch("trainingEndDate") &&
-                          new Date(
-                            watch("trainingEndDate")
-                          ).getFullYear() !== requestData?.annual_yyyy && (
-                            <FormHelper
-                              text={
-                                "วันที่สิ้นอายุควรอยู่ในปี " +
-                                requestData?.next_annual_yyyy
-                              }
-                            />
-                        )
-                            
-                         
-                            : ""
-                              }
+                            {requestData?.annual_yyyy !== 0
+                              ? requestData?.annual_yyyy !==
+                                  new Date().getFullYear() &&
+                                watch("trainingEndDate") &&
+                                new Date(
+                                  watch("trainingEndDate")
+                                ).getFullYear() !==
+                                  requestData?.annual_yyyy && (
+                                  <FormHelper
+                                    text={
+                                      "วันที่สิ้นอายุควรอยู่ในปี " +
+                                      requestData?.next_annual_yyyy
+                                    }
+                                  />
+                                )
+                              : ""}
                           </div>
                         </div>
 
