@@ -55,26 +55,23 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         disableMobile: true,
         static: window.innerWidth <= 768,
         positionElement: inputRef.current,
-        parseDate: (datestr: string, format: string) => {
-          if (!datestr) return new Date(NaN);
-          if (datestr.includes("-")) {
+        parseDate: (datestr: string, _format: string) => {
+          if (!datestr || datestr.includes("-")) {
             return new Date(datestr);
           }
-          const [d, m, y] = datestr.split("/").map(s => s.trim());
-          let yearNum = Number(y);
-          if (yearNum > 2500) yearNum -= 543;
-          return new Date(yearNum, Number(m) - 1, Number(d));
+          const parsed = parseDate(datestr);
+          return parsed ?? new Date(NaN);
         },
         formatDate: (date, _format, _locale) => {
-          // Always display Buddhist year
           const d = String(date.getDate()).padStart(2, "0");
           const m = String(date.getMonth() + 1).padStart(2, "0");
           const y = date.getFullYear() + 543;
           return `${d}/${m}/${y}`;
         },
         defaultDate: defaultValue ? parseDate(convertToGregorian(defaultValue)) : undefined,
-        minDate: minDate,
-        maxDate: maxDate,
+        minDate,
+        maxDate,
+
         onChange: (selectedDates, _dateStr, instance) => {
           const selected = selectedDates?.[0];
           if (!selected) return;
@@ -82,45 +79,64 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           onChange?.(localDate);
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+
         onReady: (_dates, dateStr, instance) => {
           patchBuddhistInput(instance, dateStr);
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+
         onMonthChange: (_dates, _dateStr, instance) => {
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+
         onYearChange: (_dates, _dateStr, instance) => {
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+
         onValueUpdate: (_dates, _dateStr, instance) => {
+          validateAndClearIfInvalid(instance);
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+
         onOpen: (_dates, _dateStr, instance) => {
-           document.querySelectorAll(".flatpickr-calendar").forEach((el) => {
-      el.classList.add("flatpickr-center-mobile");
-    });
+          document.querySelectorAll(".flatpickr-calendar").forEach(el => {
+            el.classList.add("flatpickr-center-mobile");
+          });
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "hidden";
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-        onClose: () => {
+
+        onClose: (_dates, _dateStr, instance) => {
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "";
+          validateAndClearIfInvalid(instance);
         },
       });
 
       flatpickrInstance.current = instance;
+
       return () => {
         flatpickrInstance.current?.destroy();
         instance.destroy();
       };
     }, [defaultValue, minDate, maxDate]);
 
-    // Patch the calendar year header and selector input to always display Buddhist year
+    const validateAndClearIfInvalid = (instance: FlatpickrInstance) => {
+      const input = instance.input;
+      const value = input?.value ?? "";
+      const parts = value.split("/").map(s => s.trim());
+      const year = parts[2];
+
+      if (parts.length !== 3 || !year || year.length < 4 || isNaN(Number(year))) {
+        instance.clear();
+        if (input) input.value = "";
+      }
+    };
+
     const updateCalendarYear = (instance: FlatpickrInstance) => {
       const container = instance.calendarContainer;
       if (!container) return;
-      // Patch text year (header)
       const yearEls = container.querySelectorAll<HTMLElement>(".cur-year, .numInput.cur-year");
       yearEls.forEach(el => {
         let y: number;
@@ -134,10 +150,8 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       });
     };
 
-    // Patch the input field for Buddhist year after ready
     const patchBuddhistInput = (instance: FlatpickrInstance, dateStr: string) => {
-      if (!instance.input) return;
-      if (!dateStr) return;
+      if (!instance.input || !dateStr) return;
       const [d, m, y] = dateStr.split("/");
       let buddhistYear = y;
       if (y && parseInt(y, 10) < 2500) {
@@ -153,24 +167,18 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       return `${d}/${m}/${gregorian}`;
     };
 
-    // Smoother, forgiving parseDate function
     const parseDate = (dmy: string): Date | undefined => {
-      if (!dmy) return undefined;
       const parts = dmy.split("/").map(part => part.trim());
       if (parts.length !== 3) return undefined;
-      let [d, m, y] = parts;
-      d = d.padStart(2, "0");
-      m = m.padStart(2, "0");
+
+      const [d, m, y] = parts;
+      if (!d || !m || !y || y.length < 4 || isNaN(Number(y))) return undefined;
+
       let year = Number(y);
-      // Handle Buddhist year
-      if (year < 1000) year += 543;
-      // Handle 2-digit years (optional: adjust logic as needed)
-      if (y.length === 2) {
-        year = Number(y) > 50 ? 1900 + Number(y) : 2000 + Number(y);
-      }
+      if (year > 2500) year -= 543;
+
       const day = Number(d);
       const month = Number(m);
-      if (!day || !month || !year) return undefined;
       const date = new Date(year, month - 1, day);
       return isNaN(date.getTime()) ? undefined : date;
     };
