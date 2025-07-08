@@ -152,7 +152,7 @@ export default function CarpoolManagementTable({
               data-tip="ดูรายละเอียด"
               onClick={() =>
                 router.push(
-                  "/carpool-management/form/process-one?id=" +
+                  "/carpool-management/form/calendar?id=" +
                     row.original.mas_carpool_uid +
                     "&name=" +
                     row.original.carpool_name +

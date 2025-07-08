@@ -126,7 +126,7 @@ export default function CustomMultiSelect({
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="border-none focus-visible:outline-none"
+              className="border-none focus-visible:outline-none bg-transparent"
             />
           ) : value?.length ? (
             ""
