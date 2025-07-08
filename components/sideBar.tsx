@@ -142,17 +142,17 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ข้อมูลพนักงานขับรถ",
           link: "/drivers-management",
-          roles: ["admin-super", "admin-region", "admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-dept","admin-approval"],
         },
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-super", "admin-region", "admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-dept","admin-approval"],
         },
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super", "admin-region", "admin-carpool"],
+          roles: ["admin-super", "admin-region", "admin-dept","admin-approval"],
         },
         // {
         //   title: "ข้อมูล Fleet card",
