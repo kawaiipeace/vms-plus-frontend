@@ -442,7 +442,7 @@ export default function ProcessTwo() {
                   <div className="page-header-left">
                     <div className="page-title">
                       <span className="page-title-label">
-                        ข้อมูลผู้ใช้ยานพาหนะ
+                        ค้นหายานพาหนะ
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
                         {filteredVehicleCards.length > 0 ? (

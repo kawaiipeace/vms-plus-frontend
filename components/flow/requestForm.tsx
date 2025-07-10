@@ -604,7 +604,13 @@ export default function RequestForm() {
                       ผู้ใช้ยานพาหนะ
                       <Tooltip
                         title="ผู้ใช้ยานพาหนะคือ?"
-                        content="คือคนที่รับผิดชอบยานพาหนะในการเดินทางครั้งนี้ มีหน้าที่ในการกรอกเลขไมล์และ เบิกค่าน้ำมัน"
+                        content={
+                          <>
+                            คือคนที่รับผิดชอบยานพาหนะในการเดินทางครั้งนี้ <br />
+                            มีหน้าที่ในการกรอกเลขไมล์และ เบิกค่าน้ำมัน
+                          </>
+                        }
+                        
                         position="right"
                       >
                         <i className="material-symbols-outlined">info</i>
@@ -1076,7 +1082,8 @@ export default function RequestForm() {
                         </div>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control pointer-events-none"
+                          disabled
                           {...register("costCenter")}
                         />
                       </div>
@@ -1093,6 +1100,7 @@ export default function RequestForm() {
                         options={costCenterOptions}
                         value={selectedCostCenterOption}
                         onChange={handleCostCenterChange}
+                        placeholder={"เลือกศูนย์ต้นทุน"}
                         onSearchInputChange={handleCostCenterSearch}
                         loading={loadingCostCenter}
                         enableSearchOnApi={true}
