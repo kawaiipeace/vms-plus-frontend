@@ -50,7 +50,7 @@ export default function CarDetailCard({
     <div className="card card-section-inline gap-4 flex-col">
       <div className="card-body">
         <div className="card-body-inline">
-          <div className="img img-square w-full h-[239px] rounded-md overflow-hidden">
+          <div className="img img-square w-full md:h-[239px] h-[120px] rounded-md overflow-hidden">
             <Image
               src={
                 (vehicle?.vehicle_imgs && vehicle?.vehicle_imgs[0]) ||

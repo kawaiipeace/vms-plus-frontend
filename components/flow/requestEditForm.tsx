@@ -244,7 +244,7 @@ export default function RequestEditForm({
                 <div className="form-group form-plaintext form-users">
                   <Image
                     src={updatedFormData.userImageUrl || "/assets/img/avatar.svg"}
-                    className="avatar avatar-md"
+                    className="avatar avatar-md object-cover object-top"
                     width={100}
                     height={100}
                     alt=""

@@ -218,7 +218,7 @@ export default function RequestDetailForm({
                             requestData?.driver_license_img ||
                             "/assets/img/ex_driver_license.png"
                           }
-                          className="w-full"
+                          className="w-full object-contain"
                           width={300}
                           height={200}
                           alt="Driver License"
@@ -337,7 +337,7 @@ export default function RequestDetailForm({
                               requestData?.driver_certificate_img ||
                               "/assets/img/ex_certificate.png"
                             }
-                            className="w-full"
+                            className="w-full object-contain"
                             width={300}
                             height={200}
                             alt="Driver Certificate"
