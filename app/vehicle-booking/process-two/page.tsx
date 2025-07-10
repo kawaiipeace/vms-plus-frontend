@@ -459,7 +459,7 @@ export default function ProcessTwo() {
                 </div>
 
                 <div className="search-section flex justify-between">
-                  <div className="input-group input-group-search w-6/12">
+                  <div className="input-group input-group-search md:w-6/12 w-full">
                     <div className="input-group-prepend">
                       <span className="input-group-text search-ico-info">
                         <i className="material-symbols-outlined">search</i>

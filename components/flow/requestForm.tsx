@@ -780,8 +780,7 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={formData.startDate ? convertToThaiDate(formData.startDate) : convertToThaiDate(dayjs().format("YYYY-MM-DD"))}
-                        minDate={dayjs().format("YYYY-MM-DD")}
+                        defaultValue={convertToThaiDate(formData.startDate)}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -800,7 +799,7 @@ export default function RequestForm() {
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
                         defaultValue={
-                          formData.timeEnd ? formData.timeEnd : "8:30"
+                          formData.timeStart ? formData.timeStart : "8:30"
                         }
                         onChange={(dateStr) => {
                           setValue("timeStart", dateStr);
