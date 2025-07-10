@@ -922,7 +922,7 @@ input.form-control {
   gap: 0.25rem;
   display: inline-flex;
   align-items: center;
-  height: 24px;
+  height: fit-content;
 }
 
 .badge.badge-border-none {

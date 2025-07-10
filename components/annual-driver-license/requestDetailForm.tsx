@@ -181,7 +181,7 @@ export default function RequestDetailForm({
                     <div className="form-group form-plaintext">
                       <i className="material-symbols-outlined">id_card</i>
                       <div className="form-plaintext-group">
-                        <div className="form-label">เลขที่ใบอนุญาต</div>
+                        <div className="form-label">เลขที่ใบขับขี่</div>
                         <div className="form-text">
                           {requestData?.driver_license_no}
                         </div>
