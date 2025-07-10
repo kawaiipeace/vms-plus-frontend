@@ -52,6 +52,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         allowInput: true,
         altFormat: "d/m/Y",
         dateFormat: "Y-m-d",
+        position: "auto left",
         disableMobile: true,
         static: window.innerWidth <= 768,
         positionElement: inputRef.current,
@@ -93,10 +94,14 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
 
-        onValueUpdate: (_dates, _dateStr, instance) => {
+        onValueUpdate: (_dates, dateStr, instance) => {
           validateAndClearIfInvalid(instance);
+          if (dateStr) {
+            patchBuddhistInput(instance, dateStr);
+          }
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+    
 
         onOpen: (_dates, _dateStr, instance) => {
           document.querySelectorAll(".flatpickr-calendar").forEach(el => {
@@ -126,11 +131,37 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       const input = instance.input;
       const value = input?.value ?? "";
       const parts = value.split("/").map(s => s.trim());
-      const year = parts[2];
-
-      if (parts.length !== 3 || !year || year.length < 4 || isNaN(Number(year))) {
+      
+      if (parts.length !== 3) {
         instance.clear();
         if (input) input.value = "";
+        return;
+      }
+
+      const [d, m, y] = parts;
+      const day = parseInt(d, 10);
+      const month = parseInt(m, 10);
+      const year = parseInt(y, 10);
+
+      // Validate day (1-31)
+      if (isNaN(day) || day < 1 || day > 31) {
+        instance.clear();
+        if (input) input.value = "";
+        return;
+      }
+
+      // Validate month (1-12)
+      if (isNaN(month) || month < 1 || month > 12) {
+        instance.clear();
+        if (input) input.value = "";
+        return;
+      }
+
+      // Validate year (must be at least 1000 in Buddhist or Gregorian)
+      if (isNaN(year) || (year < 1000 && (year + 543) < 1000)) {
+        instance.clear();
+        if (input) input.value = "";
+        return;
       }
     };
 
@@ -154,8 +185,9 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       if (!instance.input || !dateStr) return;
       const [d, m, y] = dateStr.split("/");
       let buddhistYear = y;
-      if (y && parseInt(y, 10) < 2500) {
-        buddhistYear = (parseInt(y, 10) + 543).toString();
+      if (y && parseInt(y, 10)) {
+        const yearNum = parseInt(y, 10);
+        buddhistYear = yearNum < 2500 ? (yearNum + 543).toString() : y;
       }
       instance.input.value = [d, m, buddhistYear].join("/");
     };

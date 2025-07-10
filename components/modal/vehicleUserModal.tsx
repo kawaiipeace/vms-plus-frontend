@@ -14,6 +14,7 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminUpdateVehicleUser } from "@/services/bookingAdmin";
 import { FormDataType } from "@/app/types/form-data-type";
+import ToastCustom from "../toastCustom";
 
 interface VehicleUserModalProps {
   process: string;
@@ -131,6 +132,7 @@ const VehicleUserModal = forwardRef<
       data.telMobile = data.mobilePhone;
       updateFormData(data);
       modalRef.current?.close();
+      
     }
   };
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());

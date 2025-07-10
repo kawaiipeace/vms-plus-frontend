@@ -604,7 +604,13 @@ export default function RequestForm() {
                       ผู้ใช้ยานพาหนะ
                       <Tooltip
                         title="ผู้ใช้ยานพาหนะคือ?"
-                        content="คือคนที่รับผิดชอบยานพาหนะในการเดินทางครั้งนี้ มีหน้าที่ในการกรอกเลขไมล์และ เบิกค่าน้ำมัน"
+                        content={
+                          <>
+                            คือคนที่รับผิดชอบยานพาหนะในการเดินทางครั้งนี้ <br />
+                            มีหน้าที่ในการกรอกเลขไมล์และ เบิกค่าน้ำมัน
+                          </>
+                        }
+                        
                         position="right"
                       >
                         <i className="material-symbols-outlined">info</i>
@@ -774,8 +780,7 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={formData.startDate ? convertToThaiDate(formData.startDate) : convertToThaiDate(dayjs().format("YYYY-MM-DD"))}
-                        minDate={dayjs().format("YYYY-MM-DD")}
+                        defaultValue={convertToThaiDate(formData.startDate)}
                         onChange={(dateStr) => setValue("startDate", dateStr)}
                       />
                     </div>
@@ -794,7 +799,7 @@ export default function RequestForm() {
                       <TimePicker
                         placeholder="ระบุเวลาที่ออกเดินทาง"
                         defaultValue={
-                          formData.timeEnd ? formData.timeEnd : "8:30"
+                          formData.timeStart ? formData.timeStart : "8:30"
                         }
                         onChange={(dateStr) => {
                           setValue("timeStart", dateStr);
@@ -1070,13 +1075,14 @@ export default function RequestForm() {
                         <div className="input-group-prepend">
                           <span className="input-group-text">
                             <i className="material-symbols-outlined">
-                            business_center
+                            account_balance
                             </i>
                           </span>
                         </div>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control pointer-events-none"
+                          disabled
                           {...register("costCenter")}
                         />
                       </div>
@@ -1088,11 +1094,12 @@ export default function RequestForm() {
                     <div className="form-group">
                       <label className="form-label">ศูนย์ต้นทุน</label>
                       <CustomSelectOnSearch
-                        iconName="business_center"
+                        iconName="account_balance"
                         w="w-full"
                         options={costCenterOptions}
                         value={selectedCostCenterOption}
                         onChange={handleCostCenterChange}
+                        placeholder={"เลือกศูนย์ต้นทุน"}
                         onSearchInputChange={handleCostCenterSearch}
                         loading={loadingCostCenter}
                         enableSearchOnApi={true}

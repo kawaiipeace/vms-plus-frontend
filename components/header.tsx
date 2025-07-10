@@ -449,7 +449,7 @@ export default function Header() {
                         <div className="flex items-center gap-1">
                           <i className="material-symbols-outlined">id_card</i>
                           <span className="nav-link-label">
-                            ขอทำหน้าที่ขับรถยนต์
+                             ใบอนุญาตทำหน้าที่ขับรถยนต์
                           </span>
                         </div>
                       </Link>
@@ -464,7 +464,7 @@ export default function Header() {
                           <div className="flex items-center gap-1">
                             <i className="material-symbols-outlined">id_card</i>
                             <span className="nav-link-label">
-                              ขอทำหน้าที่ขับรถยนต์
+                               ขอทำหน้าที่ขับรถยนต์
                             </span>
                           </div>
                           <div className="badge bg-brand-900 text-white">

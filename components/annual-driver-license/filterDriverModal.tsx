@@ -78,7 +78,7 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
 
     const [selectedVehicleOption, setSelectedVehicleOption] = useState<CustomSelectOption>({
       value: "",
-      label: "ทั้งหมด",
+      label: "เลือกปี",
     });
 
     useEffect(() => {
@@ -264,7 +264,7 @@ const FilterDriverModal = forwardRef<{ openModal: () => void; closeModal: () => 
                           </div>
                           <DatePicker
                             ref={startDatePickerRef}
-                            placeholder={"ระบุช่วงวันที่สร้างคำของ"}
+                            placeholder={"ระบุช่วงวันที่สร้างคำขอ"}
                             onChange={handleStartDateChange}
                             defaultValue={selectedStartDate || ""}
                           />

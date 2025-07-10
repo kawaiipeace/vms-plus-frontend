@@ -228,7 +228,7 @@ const CancelRequestModal = forwardRef<{ openModal: () => void; closeModal: () =>
                     <input
                       type="text"
                       className="form-control"
-                      placeholder={placeholder}
+                      placeholder={placeholder || "โปรดระบุเหตุผลที่ยกเลิกคำขอ"}
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                     />
