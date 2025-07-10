@@ -1070,7 +1070,7 @@ export default function RequestForm() {
                         <div className="input-group-prepend">
                           <span className="input-group-text">
                             <i className="material-symbols-outlined">
-                            business_center
+                            account_balance
                             </i>
                           </span>
                         </div>
@@ -1088,7 +1088,7 @@ export default function RequestForm() {
                     <div className="form-group">
                       <label className="form-label">ศูนย์ต้นทุน</label>
                       <CustomSelectOnSearch
-                        iconName="business_center"
+                        iconName="account_balance"
                         w="w-full"
                         options={costCenterOptions}
                         value={selectedCostCenterOption}
