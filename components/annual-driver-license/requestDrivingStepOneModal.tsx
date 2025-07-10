@@ -566,16 +566,28 @@ const RequestDrivingStepOneModal = forwardRef<
                           <Controller
                             name="licenseExpiryDate"
                             control={control}
-                            render={({ field }) => (
-                              <DatePicker
-                                placeholder={"ระบุวันที่"}
-                                onChange={field.onChange}
-                                defaultValue={
-                                  convertToBuddhistDateTime(field.value || "")
-                                    .date
-                                }
-                              />
-                            )}
+                            render={({ field }) => {
+                              // Calculate minDate based on next_annual_yyyy
+                              const minDate =
+                                requestData?.next_annual_yyyy &&
+                                requestData.next_annual_yyyy !== 0
+                                  ? `${
+                                      requestData.next_annual_yyyy - 543
+                                    }-01-01` // Convert Buddhist year to Gregorian
+                                  : "";
+
+                              return (
+                                <DatePicker
+                                  placeholder={"ระบุวันที่"}
+                                  onChange={field.onChange}
+                                  minDate={minDate}
+                                  defaultValue={
+                                    convertToBuddhistDateTime(field.value || "")
+                                      .date
+                                  }
+                                />
+                              );
+                            }}
                           />
                         </div>
                         {errors.licenseExpiryDate && (
