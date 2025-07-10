@@ -387,15 +387,16 @@ const RequestDrivingStepOneModal = forwardRef<
     // Convert date fields to ISO string using your utility
     const isISOFormat = (dateString: string): boolean => {
       // Regex to match ISO 8601 format (e.g., 2026-02-06T07:00:00Z)
-      const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/;
+      const isoRegex =
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/;
       return isoRegex.test(dateString);
     };
 
- const licenseExpiryDateISO = formData.licenseExpiryDate
-  ? isISOFormat(formData.licenseExpiryDate)
-    ? formData.licenseExpiryDate // Already in ISO format, use as-is
-    : convertToISO(formData.licenseExpiryDate, "00:00") // Convert if not in ISO format
-  : "";
+    const licenseExpiryDateISO = formData.licenseExpiryDate
+      ? isISOFormat(formData.licenseExpiryDate)
+        ? formData.licenseExpiryDate // Already in ISO format, use as-is
+        : convertToISO(formData.licenseExpiryDate, "00:00") // Convert if not in ISO format
+      : "";
     const trainingDateISO = formData.trainingDate
       ? convertToISO(formData.trainingDate, "00:00")
       : "";
@@ -605,7 +606,6 @@ const RequestDrivingStepOneModal = forwardRef<
                             }}
                           />
                         </div>
-                      
                       </div>
                     </div>
 
