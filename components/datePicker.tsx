@@ -52,6 +52,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         allowInput: true,
         altFormat: "d/m/Y",
         dateFormat: "Y-m-d",
+        position: "auto left",
         disableMobile: true,
         static: window.innerWidth <= 768,
         positionElement: inputRef.current,
@@ -100,6 +101,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           }
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
+    
 
         onOpen: (_dates, _dateStr, instance) => {
           document.querySelectorAll(".flatpickr-calendar").forEach(el => {
