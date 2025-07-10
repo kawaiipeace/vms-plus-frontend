@@ -19,7 +19,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
@@ -275,6 +275,11 @@ const RequestDrivingStepOneModal = forwardRef<
     requestData,
     licRequestDetail,
   ]);
+
+  const selectedYear = useWatch({
+    control,
+    name: "year",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -564,31 +569,32 @@ const RequestDrivingStepOneModal = forwardRef<
                             </span>
                           </div>
                           <Controller
-                            name="licenseExpiryDate"
-                            control={control}
-                            render={({ field }) => {
-                              // Calculate minDate based on next_annual_yyyy
-                              const minDate =
-                                requestData?.next_annual_yyyy &&
-                                requestData.next_annual_yyyy !== 0
-                                  ? `${
-                                      requestData.next_annual_yyyy - 543
-                                    }-01-01` // Convert Buddhist year to Gregorian
-                                  : "";
+  name="licenseExpiryDate"
+  control={control}
+  render={({ field }) => {
+    const selectedYear = useWatch({
+      control,
+      name: "year",
+    });
 
-                              return (
-                                <DatePicker
-                                  placeholder={"ระบุวันที่"}
-                                  onChange={field.onChange}
-                                  minDate={minDate}
-                                  defaultValue={
-                                    convertToBuddhistDateTime(field.value || "")
-                                      .date
-                                  }
-                                />
-                              );
-                            }}
-                          />
+    // Convert Buddhist year to Gregorian
+    const minDate =
+      selectedYear && !isNaN(Number(selectedYear))
+        ? `${Number(selectedYear) - 543}-01-01`
+        : "";
+
+    return (
+      <DatePicker
+        placeholder={"ระบุวันที่"}
+        onChange={field.onChange}
+        minDate={minDate}
+        defaultValue={
+          convertToBuddhistDateTime(field.value || "").date
+        }
+      />
+    );
+  }}
+/>
                         </div>
                         {errors.licenseExpiryDate && (
                           <div className="text-error text-xs mt-1">
