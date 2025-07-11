@@ -586,9 +586,9 @@ const RecordTravelAddModal = forwardRef<
                             }}
                           />
                         </div>
-                        <p className="text-sm text-left mt-3">
-                          รวมภาษี{" "}
-                          {(Number(valueForm.sum_price) * (7 / 107)).toFixed(2)}{" "}
+                        <p className="text-sm text-left text-color-secondary mt-3">
+                          รวมภาษี
+                          {" "+(Number(valueForm.sum_price) * (7 / 107)).toFixed(2) + " "}{" "}
                           บาท (7%)
                         </p>
                       </div>

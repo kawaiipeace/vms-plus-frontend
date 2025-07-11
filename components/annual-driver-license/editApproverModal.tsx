@@ -62,7 +62,7 @@ const EditApproverModal = forwardRef<
   ) => {
     setSelectedVehicleUserOption(selectedOption);
     if (selectedOption) {
-      setValue("position", selectedOption.posi_text || "");
+      setValue("position", selectedOption.posi_text +" "+ selectedOption.dept_sap_short || "");
       // setValue("name", selectedOption.full_name || selectedOption.label || "");
     } else {
       setValue("position", "");
