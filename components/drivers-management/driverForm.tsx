@@ -1,5 +1,5 @@
 import DatePicker from "@/components/datePicker";
-import CustomSelect from "@/components/drivers-management/customSelect";
+import CustomSelect from "@/components/customSelect";
 import UploadFilePreview from "@/components/drivers-management/uploadFilePreview";
 import FormHelper from "@/components/formHelper";
 import ImagePreview from "@/components/imagePreview";
@@ -78,11 +78,11 @@ const DriverForm = () => {
   const [filePDF2, setFilePDF2] = useState<UploadFileType2[]>([]);
   const [driverDepartmentOptions, setDriverDepartmentOptions] = useState<CustomSelectOption>({
     value: "",
-    label: "ทั้งหมด",
+    label: "เลือกหน่วยงาน",
   });
   const [driverDepartmentOptions2, setDriverDepartmentOptions2] = useState<CustomSelectOption>({
     value: "",
-    label: "ทั้งหมด",
+    label: "เลือกหน่วยงาน",
   });
   const [formData, setFormData] = useState({
     driverImage: profileImage?.file_url || "",
@@ -145,9 +145,9 @@ const DriverForm = () => {
     driverNickname: Yup.string().required("กรุณาระบุชื่อเล่น"),
     driverContactNumber: Yup.string()
       .matches(/^(^$|[0-9]+)$/, "กรุณาระบุเฉพาะตัวเลข")
-      // .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
-      // .max(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
-      // .min(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .max(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .min(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
       .optional()
       .nonNullable(),
     driverBirthdate: Yup.string().required("กรุณาเลือกวันเกิด"),
@@ -193,7 +193,7 @@ const DriverForm = () => {
           return {
             value: item.ref_driver_license_type_code,
             label: item.ref_driver_license_type_name,
-            labelDetail: item.ref_driver_license_type_desc,
+            desc: item.ref_driver_license_type_desc,
           };
         });
         // console.log(driverLicenseData);
@@ -533,7 +533,7 @@ const DriverForm = () => {
               </div>
               <div className="mt-3">
                 <div className="form-group">
-                  <label className="form-label">เบอร์ติดต่อ (ถ้ามี)</label>
+                  <label className="form-label">เบอร์ติดต่อ</label>
                   {/* {formData.driverContactNumber} */}
                   <div className={`input-group`}>
                     <input
@@ -543,7 +543,23 @@ const DriverForm = () => {
                       placeholder="ระบุเบอร์ติดต่อ"
                       value={formData.driverContactNumber}
                       onChange={handleInputChange}
-                      maxLength={10}
+                      onFocus={(e) => {
+                        e.target.value = e.target.value.replace(/-/g, "");
+                        e.target.maxLength = 10;
+                      }}
+                      onBlur={(e) => {
+                        const formattedValue = e.target.value.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+                        e.target.value = formattedValue;
+                      }}
+                      maxLength={12}
+                      onKeyDown={(e) => {
+                        if (
+                          !/[0-9]/.test(e.key) &&
+                          !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </div>
                   {formErrors.driverContactNumber && <FormHelper text={String(formErrors.driverContactNumber)} />}
@@ -658,7 +674,7 @@ const DriverForm = () => {
                       type="text"
                       name="driverContractNo"
                       className="form-control"
-                      placeholder="เลขที่สัญญาจ้าง"
+                      placeholder="ระบุเลขที่สัญญาจ้าง"
                       value={formData.driverContractNo}
                       onChange={handleInputChange}
                     />
@@ -711,7 +727,7 @@ const DriverForm = () => {
                     type="text"
                     name="driverContractorCompany"
                     className="form-control"
-                    placeholder="บริษัทผู้รับจ้าง"
+                    placeholder="เลือกบริษัท"
                     value={formData.driverContractorCompany}
                     onChange={handleInputChange}
                   />
@@ -856,6 +872,8 @@ const DriverForm = () => {
                     options={driverLicenseList}
                     value={driverLicenseList.find((option) => option.value === formData.driverLicenseType) || null}
                     onChange={(selected) => setFormData((prev) => ({ ...prev, driverLicenseType: selected.value }))}
+                    showDescriptions
+                    placeholder="เลือกประเภทใบขับขี่"
                   />
                   {formErrors.driverLicenseType && <FormHelper text={String(formErrors.driverLicenseType)} />}
                 </div>
@@ -873,7 +891,15 @@ const DriverForm = () => {
                       placeholder="ระบุเลขที่ใบขับขี่"
                       value={formData.driverLicenseNo}
                       onChange={handleInputChange}
-                      // maxLength={8}
+                      maxLength={8}
+                      onKeyDown={(e) => {
+                        if (
+                          !/[0-9]/.test(e.key) &&
+                          !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </div>
                   {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}
@@ -963,7 +989,7 @@ const DriverForm = () => {
               <div className="flex-1">
                 <div className="form-group">
                   <label className="form-label md:min-h-[48px] min-[1600px]:min-h-0">
-                    รูปใบรับรองการอบรม,บัตรประชาชน, ทะเบียนบ้าน ฯลฯ
+                    รูปใบรับรองการอบรม,บัตรประชาชน, ทะเบียนบ้าน ฯลฯ (ถ้ามี)
                   </label>
                   <UploadFilePDF onImageChange={handleFileChange2} />
                   <div className="flex flex-col gap-3 mt-3">

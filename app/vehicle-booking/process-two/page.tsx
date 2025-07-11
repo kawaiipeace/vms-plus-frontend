@@ -69,7 +69,9 @@ interface FormData {
 export default function ProcessTwo() {
   const router = useRouter();
   const [allVehicleCards, setAllVehicleCards] = useState<VehicleCard[]>([]);
-  const [filteredVehicleCards, setFilteredVehicleCards] = useState<VehicleCard[]>([]);
+  const [filteredVehicleCards, setFilteredVehicleCards] = useState<
+    VehicleCard[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const { formData, updateFormData } = useFormContext();
   const [paginationData, setPaginationData] = useState<PaginationInterface>({
@@ -92,8 +94,6 @@ export default function ProcessTwo() {
     page: 1,
     limit: 10,
   });
-
-  
 
   const [vehicleCatOptions, setVehicleCatOptions] = useState<
     { value: string; label: string }[]
@@ -128,16 +128,6 @@ export default function ProcessTwo() {
     }
   }, [loading]);
 
-  const applyFilters = () => {
-    setParams(prev => ({
-      ...prev,
-      search: searchInput,
-      vehicle_owner_dept: selectedOrgOption.value,
-      category_code: selectedVehicleOption.value,
-      page: 1 // Reset to first page when filters change
-    }));
-  };
-
   useEffect(() => {
     const fetchAllData = async () => {
       if (!profile?.emp_id) return;
@@ -150,18 +140,36 @@ export default function ProcessTwo() {
             fetchSearchVehicles({
               ...params,
               emp_id: profile.emp_id,
-              start_date: convertToISO(String(formData.startDate), String(formData.timeStart)),
-              end_date: convertToISO(String(formData.endDate), String(formData.timeEnd)),
+              start_date: convertToISO(
+                String(formData.startDate),
+                String(formData.timeStart)
+              ),
+              end_date: convertToISO(
+                String(formData.endDate),
+                String(formData.timeEnd)
+              ),
             }),
             fetchVehicleCarTypes({
               emp_id: profile.emp_id,
-              start_date: convertToISO(String(formData.startDate), String(formData.timeStart)),
-              end_date: convertToISO(String(formData.endDate), String(formData.timeEnd)),
+              start_date: convertToISO(
+                String(formData.startDate),
+                String(formData.timeStart)
+              ),
+              end_date: convertToISO(
+                String(formData.endDate),
+                String(formData.timeEnd)
+              ),
             }),
             fetchVehicleDepartmentTypes({
               emp_id: profile.emp_id,
-              start_date: convertToISO(String(formData.startDate), String(formData.timeStart)),
-              end_date: convertToISO(String(formData.endDate), String(formData.timeEnd)),
+              start_date: convertToISO(
+                String(formData.startDate),
+                String(formData.timeStart)
+              ),
+              end_date: convertToISO(
+                String(formData.endDate),
+                String(formData.timeEnd)
+              ),
             }),
           ]);
 
@@ -227,7 +235,7 @@ export default function ProcessTwo() {
     params.limit,
     params.search,
     params.vehicle_owner_dept,
-    params.category_code
+    params.category_code,
   ]);
 
   const handleVehicleSelect = (value: string) => {
@@ -304,60 +312,62 @@ export default function ProcessTwo() {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
-
   };
 
   const useDebounce = (value: string, delay: number, minLength: number = 0) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         if (value.length >= minLength || value.length === 0) {
           setDebouncedValue(value);
         }
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay, minLength]);
-  
+
     return debouncedValue;
   };
 
   const [searchInput, setSearchInput] = useState("");
-  const debouncedSearchInput = useDebounce(searchInput, 200, 3); 
+  const debouncedSearchInput = useDebounce(searchInput, 200, 3);
 
   useEffect(() => {
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       search: debouncedSearchInput,
-      page: 1
+      page: 1,
     }));
   }, [debouncedSearchInput]);
-  
 
   const handleOrgChange = async (selectedOption: CustomSelectOption) => {
     setSelectedOrgOption(selectedOption as { value: string; label: string });
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       vehicle_owner_dept: selectedOption.value,
-      page: 1
+      page: 1,
     }));
   };
-  
-  const handleVehicleTypeChange = async (selectedOption: CustomSelectOption) => {
-    setSelectedVehicleOption(selectedOption as { value: string; label: string });
-    setParams(prev => ({
+
+  const handleVehicleTypeChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
+    setSelectedVehicleOption(
+      selectedOption as { value: string; label: string }
+    );
+    setParams((prev) => ({
       ...prev,
       category_code: selectedOption.value,
-      page: 1
+      page: 1,
     }));
   };
   const handlePageSizeChange = (newLimit: string | number) => {
     const limit =
       typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       limit,
       page: 1,
@@ -365,7 +375,7 @@ export default function ProcessTwo() {
   };
 
   const handlePageChange = (page: number) => {
-    setParams(prev => ({ ...prev, page }));
+    setParams((prev) => ({ ...prev, page }));
   };
 
   if (loading) {
@@ -432,7 +442,7 @@ export default function ProcessTwo() {
                   <div className="page-header-left">
                     <div className="page-title">
                       <span className="page-title-label">
-                        ข้อมูลผู้ใช้ยานพาหนะ
+                        ค้นหายานพาหนะ
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
                              {filteredVehicleCards.length > 0 ? (
@@ -449,30 +459,29 @@ export default function ProcessTwo() {
                 </div>
 
                 <div className="search-section flex justify-between">
-                  <div className="input-group input-group-search w-6/12">
+                  <div className="input-group input-group-search md:w-6/12 w-full">
                     <div className="input-group-prepend">
                       <span className="input-group-text search-ico-info">
                         <i className="material-symbols-outlined">search</i>
                       </span>
                     </div>
                     <input
-                       ref={searchInputRef}
+                      ref={searchInputRef}
                       type="text"
                       className="form-control dt-search-input"
                       value={searchInput}
                       onChange={handleSearchChange}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter' && searchInput.length >= 3) {
-                          setParams(prev => ({
+                        if (e.key === "Enter" && searchInput.length >= 3) {
+                          setParams((prev) => ({
                             ...prev,
                             search: searchInput,
-                            page: 1
+                            page: 1,
                           }));
                         }
                       }}
                       placeholder="ค้นหาเลขทะเบียน, ยี่ห้อ"
                     />
-         
                   </div>
 
                   <div className="search-filter w-12/12 md:w-6/12 sm:gap-4 flex md:justify-end">

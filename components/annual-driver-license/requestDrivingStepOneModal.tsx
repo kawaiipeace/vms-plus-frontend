@@ -19,7 +19,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "../customSelect";
 import ImagePreview from "../imagePreview";
@@ -206,9 +206,11 @@ const RequestDrivingStepOneModal = forwardRef<
     //       licRequestDetail?.driver_license_expire_date || ""
     //     ).date
     //   : "",
-      licenseExpiryDate:
+    licenseExpiryDate:
       licRequestDetail?.driver_license_expire_date ||
-      requestData?.driver_license?.driver_license_end_date ||
+      (requestData?.driver_license?.driver_license_end_date !==
+        "0001-01-01T00:00:00Z" &&
+        requestData?.driver_license?.driver_license_end_date) ||
       "",
     licenseImages: licRequestDetail?.driver_license_img
       ? [{ file_url: licRequestDetail.driver_license_img }]
@@ -273,6 +275,11 @@ const RequestDrivingStepOneModal = forwardRef<
     requestData,
     licRequestDetail,
   ]);
+
+  const selectedYear = useWatch({
+    control,
+    name: "year",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -378,8 +385,17 @@ const RequestDrivingStepOneModal = forwardRef<
   const currentBuddhistYear = dayjs().year() + 543;
   const onSubmit = (formData: ValueFormStep1) => {
     // Convert date fields to ISO string using your utility
+    const isISOFormat = (dateString: string): boolean => {
+      // Regex to match ISO 8601 format (e.g., 2026-02-06T07:00:00Z)
+      const isoRegex =
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/;
+      return isoRegex.test(dateString);
+    };
+
     const licenseExpiryDateISO = formData.licenseExpiryDate
-      ? convertToISO(formData.licenseExpiryDate, "00:00")
+      ? isISOFormat(formData.licenseExpiryDate)
+        ? formData.licenseExpiryDate // Already in ISO format, use as-is
+        : convertToISO(formData.licenseExpiryDate, "00:00") // Convert if not in ISO format
       : "";
     const trainingDateISO = formData.trainingDate
       ? convertToISO(formData.trainingDate, "00:00")
@@ -564,23 +580,32 @@ const RequestDrivingStepOneModal = forwardRef<
                           <Controller
                             name="licenseExpiryDate"
                             control={control}
-                            render={({ field }) => (
-                              <DatePicker
-                                placeholder={"ระบุวันที่"}
-                                onChange={field.onChange}
-                                defaultValue={
-                                  convertToBuddhistDateTime(field.value || "")
-                                    .date
-                                }
-                              />
-                            )}
+                            render={({ field }) => {
+                              const selectedYear = useWatch({
+                                control,
+                                name: "year",
+                              });
+
+                              // Convert Buddhist year to Gregorian
+                              const minDate =
+                                selectedYear && !isNaN(Number(selectedYear))
+                                  ? `${Number(selectedYear) - 543}-01-01`
+                                  : "";
+
+                              return (
+                                <DatePicker
+                                  placeholder={"ระบุวันที่"}
+                                  onChange={field.onChange}
+                                  minDate={minDate}
+                                  defaultValue={
+                                    convertToBuddhistDateTime(field.value || "")
+                                      .date
+                                  }
+                                />
+                              );
+                            }}
                           />
                         </div>
-                        {errors.licenseExpiryDate && (
-                          <div className="text-error text-xs mt-1">
-                            {errors.licenseExpiryDate.message}
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -769,25 +794,22 @@ const RequestDrivingStepOneModal = forwardRef<
                               </div>
                             )}
                             {/* Add this helper text */}
-                            { requestData?.annual_yyyy !== 0 ?
-                        
-                          requestData?.annual_yyyy !==
-                          new Date().getFullYear() &&
-                          watch("trainingEndDate") &&
-                          new Date(
-                            watch("trainingEndDate")
-                          ).getFullYear() !== requestData?.annual_yyyy && (
-                            <FormHelper
-                              text={
-                                "วันที่สิ้นอายุควรอยู่ในปี " +
-                                requestData?.next_annual_yyyy
-                              }
-                            />
-                        )
-                            
-                         
-                            : ""
-                              }
+                            {requestData?.annual_yyyy !== 0
+                              ? requestData?.annual_yyyy !==
+                                  new Date().getFullYear() &&
+                                watch("trainingEndDate") &&
+                                new Date(
+                                  watch("trainingEndDate")
+                                ).getFullYear() !==
+                                  requestData?.annual_yyyy && (
+                                  <FormHelper
+                                    text={
+                                      "วันที่สิ้นอายุควรอยู่ในปี " +
+                                      requestData?.next_annual_yyyy
+                                    }
+                                  />
+                                )
+                              : ""}
                           </div>
                         </div>
 

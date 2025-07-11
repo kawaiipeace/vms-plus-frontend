@@ -20,16 +20,23 @@ import ChooseDriverCard from "@/components/card/chooseDriverCard";
 import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { convertToISO } from "@/utils/convertToISO";
+import ToastCustom from "../toastCustom";
 
 interface Props {
   approverCard?: boolean;
   keyPickUpCard?: boolean;
 }
 
+type ToastState = {
+  show: boolean;
+  title: string;
+  desc: React.ReactNode;
+  status: "success" | "error" | "warning" | "info";
+};
+
 export default function RequestEditForm({
   approverCard,
-}: // keyPickUpCard,
-Props) {
+}: Props) {
   const editDriverAppointmentModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -60,34 +67,103 @@ Props) {
   } | null>(null);
 
   const [updatedFormData, setUpdatedFormData] = useState<FormDataType>();
-
-  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetailType | null>(
-    null
-  );
-
+  const [vehicleDetail, setVehicleDetail] = useState<VehicleDetailType | null>(null);
   const [availableDriver, setAvailableDriver] = useState(0);
+  const [toast, setToast] = useState<ToastState>({
+    show: false,
+    title: "",
+    desc: "",
+    status: "success"
+  });
 
-  const handleModalUpdate = (updatedData: Partial<FormDataType>) => {
+  const handleModalUpdate = (updatedData: Partial<FormDataType>, modalType: string) => {
     setUpdatedFormData((prevData) => {
-      if (!prevData) return undefined; // Fix: Return undefined instead of null
-
+      if (!prevData) return undefined;
       return {
         ...prevData,
         ...updatedData,
       };
     });
+
+    // Set different toast messages based on which modal was updated
+    switch(modalType) {
+      case 'vehicleUser':
+        setToast({
+          show: true,
+          title: "แก้ไขข้อมูลผู้ใช้ยานพาหนะสำเร็จ",
+          desc: "ข้อมูลผู้ใช้ยานพาหนะถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      case 'journeyDetail':
+        setToast({
+          show: true,
+          title: "แก้ไขรายละเอียดการเดินทางสำเร็จ",
+          desc: "รายละเอียดการเดินทางถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      case 'driverAppointment':
+        setToast({
+          show: true,
+          title: "แก้ไขการนัดหมายพนักงานขับรถสำเร็จ",
+          desc: "ข้อมูลการนัดหมายพนักงานขับรถถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      case 'vehiclePick':
+        setToast({
+          show: true,
+          title: "แก้ไขข้อมูลประเภทยานพาหนะสำเร็จ",
+          desc: "ข้อมูลประเภทยานพาหนะถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      case 'reference':
+        setToast({
+          show: true,
+          title: "แก้ไขหนังสืออ้างอิงสำเร็จ",
+          desc: "ข้อมูลหนังสืออ้างอิงถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      case 'disbursement':
+        setToast({
+          show: true,
+          title: "แก้ไขการเบิกค่าใช้จ่ายสำเร็จ",
+          desc: "ข้อมูลการเบิกค่าใช้จ่ายถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      case 'approver':
+        setToast({
+          show: true,
+          title: "แก้ไขผู้อนุมัติสำเร็จ",
+          desc: "ข้อมูลผู้อนุมัติถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+        break;
+      default:
+        setToast({
+          show: true,
+          title: "อัพเดตข้อมูลสำเร็จ",
+          desc: "ข้อมูลถูกอัพเดตเรียบร้อยแล้ว",
+          status: "success"
+        });
+    }
   };
 
   useEffect(() => {
     const storedDataString = localStorage.getItem("formData");
 
     if (storedDataString) {
-      const parsedData = JSON.parse(storedDataString); // Parse the string
+      const parsedData = JSON.parse(storedDataString);
       setUpdatedFormData(parsedData);
-  if (
-  (parsedData.isAdminChooseVehicle && parsedData.isSystemChooseVehicle) ||
-  (parsedData.isAdminChooseVehicle !== "1" && parsedData.isSystemChooseVehicle !== "1")
-) {
+      
+      if (
+        (parsedData.isAdminChooseVehicle && parsedData.isSystemChooseVehicle) ||
+        (parsedData.isAdminChooseVehicle !== "1" && parsedData.isSystemChooseVehicle !== "1")
+      ) {
         const fetchVehicleDetailData = async () => {
           try {
             if (parsedData?.vehicleSelect) {
@@ -103,6 +179,7 @@ Props) {
 
         fetchVehicleDetailData();
       }
+      
       if (parsedData?.vehicleSelect) {
         const fetchVehicleInfoFunc = async () => {
           try {
@@ -135,14 +212,25 @@ Props) {
   }, []);
 
   if (!updatedFormData) return null;
+  
   return (
     <>
+      {toast.show && (
+        <ToastCustom
+          title={toast.title}
+          desc={<span>{toast.desc}</span>}
+          status={toast.status}
+          onClose={() => setToast(prev => ({...prev, show: false}))}
+        />
+      )}
+      
       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
+        {/* Left Column */}
         <div className="w-full row-start-2 md:col-start-1">
+          {/* Vehicle User Section */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ผู้ใช้ยานพาหนะ</div>
-
               <button
                 className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                 onClick={() => vehicleUserModalRef.current?.openModal()}
@@ -155,10 +243,8 @@ Props) {
               <div className="form-card-body form-card-inline">
                 <div className="form-group form-plaintext form-users">
                   <Image
-                    src={
-                      updatedFormData.userImageUrl || "/assets/img/avatar.svg"
-                    }
-                    className="avatar avatar-md"
+                    src={updatedFormData.userImageUrl || "/assets/img/avatar.svg"}
+                    className="avatar avatar-md object-cover object-top"
                     width={100}
                     height={100}
                     alt=""
@@ -172,11 +258,7 @@ Props) {
                         {updatedFormData.vehicleUserEmpId}
                       </div>
                       <div className="supporting-text">
-                       {
-  updatedFormData.deptSapShort
-    ? updatedFormData.deptSapShort.replace(/\//g, " ")
-    : ""
-}
+                        {updatedFormData.deptSapShort?.replace(/\//g, " ")}
                       </div>
                     </div>
                   </div>
@@ -199,7 +281,6 @@ Props) {
                         <i className="material-symbols-outlined">call</i>
                         <div className="form-plaintext-group">
                           <div className="form-text text-nowra">
-                            {" "}
                             {updatedFormData.telInternal}
                           </div>
                         </div>
@@ -211,12 +292,12 @@ Props) {
             </div>
           </div>
 
+          {/* Journey Details Section */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">
                 รายละเอียดการเดินทาง
               </div>
-
               <button
                 className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                 onClick={() => journeyDetailModalRef.current?.openModal()}
@@ -238,17 +319,15 @@ Props) {
             />
           </div>
 
+          {/* Driver Appointment Section */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">
                 การนัดหมายพนักงานขับรถ
               </div>
-
               <button
                 className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                onClick={() =>
-                  editDriverAppointmentModalRef.current?.openModal()
-                }
+                onClick={() => editDriverAppointmentModalRef.current?.openModal()}
               >
                 แก้ไข
               </button>
@@ -260,6 +339,7 @@ Props) {
             />
           </div>
 
+          {/* Reference Section */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
@@ -277,13 +357,12 @@ Props) {
             />
           </div>
 
+          {/* Disbursement Section */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">การเบิกค่าใช้จ่าย</div>
               <button
                 className="btn btn-tertiary-brand bg-transparent border-none shadow-none"
-                data-toggle="modal"
-                data-target="#editDisbursementModal"
                 onClick={() => disbursementModalRef.current?.openModal()}
               >
                 แก้ไข
@@ -302,7 +381,9 @@ Props) {
           </div>
         </div>
 
+        {/* Right Column */}
         <div className="col-span-1 row-start-1 md:row-start-2">
+          {/* Vehicle Section */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-header-title">ยานพาหนะ</div>
@@ -355,6 +436,7 @@ Props) {
                 </div>
               </div>
             )}
+
             {updatedFormData.isSystemChooseVehicle === "1" && (
               <div className="card card-section-inline mt-5 mb-5">
                 <div className="card-body card-body-inline">
@@ -379,13 +461,6 @@ Props) {
                           </div>
                         </div>
                       </div>
-
-                      {/* <button
-                        className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
-                        onClick={() => vehiclePickModalRef.current?.openModal()}
-                      >
-                        เลือกประเภทยานพาหนะ
-                      </button> */}
                     </div>
 
                     <div className="card-item-group d-flex">
@@ -411,23 +486,21 @@ Props) {
               )}
 
             {updatedFormData.isAdminChooseDriver === true && (
-              <>
-                <ChooseDriverCard
-                  number={availableDriver}
-                  requestData={updatedFormData}
-                />
-              </>
+              <ChooseDriverCard
+                number={availableDriver}
+                requestData={updatedFormData}
+              />
             )}
-         { updatedFormData?.isAdminChooseDriver === false && (
-            updatedFormData.isPeaEmployeeDriver === "1" ? (
-              <div className="mt-5">
-                <div className="form-section-header">
-                  <div className="form-section-header-title">ผู้ขับขี่</div>
+
+            {updatedFormData?.isAdminChooseDriver === false && (
+              updatedFormData.isPeaEmployeeDriver === "1" ? (
+                <div className="mt-5">
+                  <div className="form-section-header">
+                    <div className="form-section-header-title">ผู้ขับขี่</div>
+                  </div>
+                  <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
                 </div>
-                <DriverPeaInfoCard driverEmpID={updatedFormData.driverEmpID} />
-              </div>
-            ) : (
-           
+              ) : (
                 <div className="mt-5">
                   <div className="form-section-header">
                     <div className="form-section-header-title">ผู้ขับขี่</div>
@@ -441,6 +514,8 @@ Props) {
               )
             )}
           </div>
+
+          {/* Approver Section */}
           {approverCard && (
             <div className="form-section">
               <div className="form-section-header">
@@ -454,18 +529,18 @@ Props) {
                   แก้ไข
                 </button>
               </div>
-              {approverCard && (
-                <ApproverInfoCard
-                  emp_id={updatedFormData?.approvedRequestEmpId || ""}
-                />
-              )}
+              <ApproverInfoCard
+                emp_id={updatedFormData?.approvedRequestEmpId || ""}
+              />
             </div>
           )}
         </div>
       </div>
+
+      {/* Modals */}
       <EditDriverAppointmentModal
         ref={editDriverAppointmentModalRef}
-        onUpdate={handleModalUpdate}
+        onUpdate={(data) => handleModalUpdate(data, 'driverAppointment')}
       />
       <VehiclePickModel
         ref={vehiclePickModalRef}
@@ -477,23 +552,29 @@ Props) {
             : "ระบบเลือกยานพาหนะให้อัตโนมัติ"
         }
         desc={updatedFormData.carpoolName}
-        onUpdate={handleModalUpdate}
+        onUpdate={(data) => handleModalUpdate(data, 'vehiclePick')}
       />
       <JourneyDetailModal
         ref={journeyDetailModalRef}
-        onUpdate={handleModalUpdate}
+        onUpdate={(data) => handleModalUpdate(data, 'journeyDetail')}
       />
       <VehicleUserModal
         process="edit"
         ref={vehicleUserModalRef}
-        onUpdate={handleModalUpdate}
+        onUpdate={(data) => handleModalUpdate(data, 'vehicleUser')}
       />
-      <ReferenceModal ref={referenceModalRef} onUpdate={handleModalUpdate} />
+      <ReferenceModal 
+        ref={referenceModalRef} 
+        onUpdate={(data) => handleModalUpdate(data, 'reference')}
+      />
       <DisbursementModal
         ref={disbursementModalRef}
-        onUpdate={handleModalUpdate}
+        onUpdate={(data) => handleModalUpdate(data, 'disbursement')}
       />
-      <ApproverModal ref={approverModalRef} onUpdate={handleModalUpdate} />
+      <ApproverModal 
+        ref={approverModalRef} 
+        onUpdate={(data) => handleModalUpdate(data, 'approver')}
+      />
     </>
   );
 }

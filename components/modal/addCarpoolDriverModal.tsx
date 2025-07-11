@@ -41,6 +41,7 @@ const AddCarpoolDriverModal = forwardRef<
 
   const [search, setSearch] = useState<string>("");
   const [drivers, setDrivers] = useState<CarpoolDriver[]>([]);
+  const [olds, setOlds] = useState<CarpoolDriver[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
   const [paramsSearch, setParamsSearch] = useState<string>("");
   const [params, setParams] = useState({
@@ -65,6 +66,10 @@ const AddCarpoolDriverModal = forwardRef<
       const response = await getCarpoolDriver(params, id || undefined);
       const result = response.data;
       setDrivers(result.drivers);
+      const merge = [...result.drivers, ...olds].map((e) => JSON.stringify(e));
+      const not_dup = [...new Set(merge)];
+      const next = not_dup.map((e) => JSON.parse(e));
+      setOlds(next);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
@@ -157,7 +162,7 @@ const AddCarpoolDriverModal = forwardRef<
         }
       } else {
         const data = checked.map((item) => {
-          const driver = drivers.find((e) => e.mas_driver_uid === item);
+          const driver = olds.find((e) => e.mas_driver_uid === item);
           return {
             mas_driver_uid: item,
             driver_name: driver?.driver_name || "",

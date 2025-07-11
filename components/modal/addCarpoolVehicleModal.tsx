@@ -41,6 +41,7 @@ const AddCarpoolVehicleModal = forwardRef<
   const { formData, updateFormData } = useFormContext();
 
   const [vehicles, setVehicles] = useState<CarpoolVehicle[]>([]);
+  const [olds, setOlds] = useState<CarpoolVehicle[]>([]);
   const [checked, setChecked] = useState<string[]>([]);
   const [paramsSearch, setParamsSearch] = useState<string>("");
   const [params, setParams] = useState({
@@ -65,6 +66,10 @@ const AddCarpoolVehicleModal = forwardRef<
       const response = await getCarpoolVehicle(params, id || undefined);
       const result = response.data;
       setVehicles(result.vehicles);
+      const merge = [...result.vehicles, ...olds].map((e) => JSON.stringify(e));
+      const not_dup = [...new Set(merge)];
+      const next = not_dup.map((e) => JSON.parse(e));
+      setOlds(next);
     } catch (error) {
       console.error("Error fetching status data:", error);
     }
@@ -146,7 +151,7 @@ const AddCarpoolVehicleModal = forwardRef<
         }
       } else {
         const data = checked.map((item) => {
-          const vehicle = vehicles.find((e) => e.mas_vehicle_uid === item);
+          const vehicle = olds.find((e) => e.mas_vehicle_uid === item);
           return {
             mas_vehicle_uid: item,
             vehicle_license_plate: vehicle?.vehicle_license_plate || "",

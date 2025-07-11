@@ -14,7 +14,7 @@ export default function LicensePlateStat({ status, title, desc }: LicensePlateSt
         </i>
         <div className="card-content !gap-0">
           <div className="card-subtitle font-bold">{title}</div>
-          <div className="card-supporting-text text-sm">{desc}</div>
+          <div className="card-supporting-text text-sm text-color-secondary">{desc}</div>
         </div>
       </div>
     </>
