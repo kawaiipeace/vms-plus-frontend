@@ -76,7 +76,7 @@ export default function SideBar({ menuName }: SidebarProps) {
             // "level1-approval",
             // "admin-department",
             // "admin-carpool",
-            // "final-approval",
+            // "approval-department",
             //"approval-carpool",
             
             // "license-approval",
@@ -92,7 +92,10 @@ export default function SideBar({ menuName }: SidebarProps) {
           roles: [
             // "level1-approval",
             "level1-approval",
-            // "admin-approval",
+            // "admin-department",
+            // "admin-carpool",
+            // "approval-department",
+            // "approval-carpool",
             // "admin-dept",
             // "admin-super",
           ],
@@ -102,8 +105,11 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/administrator/booking-approver",
           roles: [
             "license-approval",
-            // "license-approval",
-            // "admin-approval",
+            // "license-confirm",
+            // "admin-department",
+            // "admin-carpool",
+            // "approval-department",
+            // "approval-carpool",
             // "admin-dept",
             // "admin-super",
           ],
@@ -129,7 +135,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "อนุมัติใช้ยานพาหนะ",
           link: "/administrator/booking-final",
-          roles: ["final-approval", "carpool-approval"],
+          roles: ["approval-department", "approval-carpool"],
         },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
