@@ -74,10 +74,14 @@ export default function SideBar({ menuName }: SidebarProps) {
           roles: [
             "vehicle-user",
             // "level1-approval",
-            // "admin-approval",
-            // "license-approval",
+            // "admin-department",
+            // "admin-carpool",
             // "final-approval",
-            // "admin-dept",
+            //"approval-carpool",
+            
+            // "license-approval",
+           
+            // "admin-department",
             // "admin-region",
             // "admin-super",
           ],
@@ -120,12 +124,12 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-approval"],
+          roles: ["admin-department", "admin-carpool"],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",
           link: "/administrator/booking-final",
-          roles: ["final-approval", "admin-super"],
+          roles: ["final-approval", "carpool-approval"],
         },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
@@ -142,17 +146,17 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ข้อมูลพนักงานขับรถ",
           link: "/drivers-management",
-          roles: ["admin-super", "admin-region", "admin-dept","admin-approval"],
+          roles: ["admin-super", "admin-region", "admin-department"],
         },
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-super", "admin-region", "admin-dept","admin-approval"],
+          roles: ["admin-super", "admin-region", "admin-department"],
         },
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super", "admin-region", "admin-dept","admin-approval"],
+          roles: ["admin-super", "admin-region", "admin-department"],
         },
         // {
         //   title: "ข้อมูล Fleet card",
