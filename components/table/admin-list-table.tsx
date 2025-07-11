@@ -171,7 +171,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
     },
     {
       accessorKey: "start_datetime",
-      header: () => <div className="text-center">วันที่เดินทาง</div>,
+      header: () => <div className="text-center">วันที่/เวลาเดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
@@ -181,7 +181,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
           row.original.end_datetime || ""
         );
         return (
-          <div className="text-left" data-name="วันที่เดินทาง">
+          <div className="text-left" data-name="วันที่/เวลาเดินทาง">
             <div className="flex flex-col">
               <div>{startDateTime.date + " - " + endDateTime.date}</div>
               <div className="text-color-secondary text-xs">
