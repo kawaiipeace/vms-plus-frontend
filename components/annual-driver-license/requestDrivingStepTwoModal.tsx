@@ -147,6 +147,7 @@ const RequestDrivingStepTwoModal = forwardRef<
     };
 
     const handleFinalApproverUpdate = (updatedApprover: VehicleUserType) => {
+      console.log('update',updatedApprover);
       setFinalApprovers(updatedApprover);
     };
 

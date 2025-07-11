@@ -304,7 +304,7 @@ const DriverViewProfilePage = () => {
                     <div className="badge badge-pill-outline badge-info whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
-                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
+                  ) : driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BlackList)" ? (
                     <div className="badge badge-pill-outline badge-neutral whitespace-nowrap">
                       {driverInfo?.driver_status?.ref_driver_status_desc}
                     </div>
@@ -326,7 +326,7 @@ const DriverViewProfilePage = () => {
                   </button>
                   {driverInfo?.driver_status?.ref_driver_status_desc === "หมดสัญญาจ้าง" ||
                   driverInfo?.driver_status?.ref_driver_status_desc === "ลาออก" ||
-                  driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" ? (
+                  driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BlackList)" ? (
                     <></>
                   ) : (
                     <>
@@ -383,7 +383,7 @@ const DriverViewProfilePage = () => {
                 />
               </div>
             )}
-            {driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BackList)" && (
+            {driverInfo?.driver_status?.ref_driver_status_desc === "ให้ออก(BlackList)" && (
               <div className="mb-5">
                 <AlertCustom title="พนักงานคนนี้ถูกให้ออก" desc="เลขมท : มท123(กอพ.1)" icon="cancel" />
               </div>

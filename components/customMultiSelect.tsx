@@ -126,7 +126,7 @@ export default function CustomMultiSelect({
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="border-none focus-visible:outline-none"
+              className="border-none focus-visible:outline-none bg-transparent"
             />
           ) : value?.length ? (
             ""
@@ -136,7 +136,7 @@ export default function CustomMultiSelect({
         </div>
 
         <div className="flex-shrink-0 w-8 text-right">
-          <i className="material-symbols-outlined">keyboard_arrow_down</i>
+          {/* <i className="material-symbols-outlined">keyboard_arrow_down</i> */}
         </div>
       </div>
 

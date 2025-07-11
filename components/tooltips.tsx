@@ -3,7 +3,7 @@ import { ReactNode, useState } from "react";
 
 interface TooltipProps {
   title: string;
-  content: string;
+  content: React.ReactNode;
   children: ReactNode;
   position?: "top" | "bottom" | "left" | "right";
 }

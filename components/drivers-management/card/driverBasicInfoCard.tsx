@@ -20,7 +20,7 @@ const DriverBasicInfoCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => 
                     {driverInfo?.driver_name} ({driverInfo?.driver_nickname})
                   </h5>
                   <div className="flex items-center gap-2">
-                    <span>{dayjs(driverInfo?.driver_birthdate).format("D/MM/BBBB")}</span>
+                    <span>{dayjs(driverInfo?.driver_birthdate).format("DD/MM/BBBB")}</span>
                     <span className="border-gray-300 border-l-[1px] block h-[16px]"></span>
                     <span>{driverInfo?.driver_identification_no}</span>
                   </div>
@@ -34,7 +34,7 @@ const DriverBasicInfoCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => 
                         <i className="material-symbols-outlined">hotel</i>
                         <div className="form-plaintext-group">
                           <div className="form-text text-nowrap">
-                            {driverInfo?.work_type === 1 ? "ค้างคืนได้" : "ไม่ค้างคืนได้"}
+                            {driverInfo?.work_type === 1 ? "ค้างคืนได้" : "ค้างคืนไม่ได้"}
                           </div>
                         </div>
                       </div>
@@ -44,7 +44,13 @@ const DriverBasicInfoCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => 
                       <div className="form-group form-plaintext">
                         <i className="material-symbols-outlined">smartphone</i>
                         <div className="form-plaintext-group">
-                          <div className="form-text text-nowrap">{driverInfo?.driver_contact_number}</div>
+                          <div className="form-text text-nowrap">
+                            {driverInfo?.driver_contact_number
+                              ? driverInfo.driver_contact_number
+                                  .replace(/-/g, "")
+                                  .replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3")
+                              : "-"}
+                          </div>
                         </div>
                       </div>
                     </div>

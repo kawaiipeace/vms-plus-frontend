@@ -1,5 +1,5 @@
 import DatePicker from "@/components/datePicker";
-import CustomSelect from "@/components/drivers-management/customSelect";
+import CustomSelect from "@/components/customSelect";
 import FormHelper from "@/components/formHelper";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import * as Yup from "yup";
@@ -51,10 +51,11 @@ const DriverEditLicenseModal = forwardRef<
 
   const driverLicenseSchema = Yup.object().shape({
     driverLicenseType: Yup.string().required("ประเภทใบขับขี่ไม่ถูกต้อง"),
-    driverLicenseNo: Yup.string().required("เลขที่ใบขับขี่ไม่ถูกต้อง"),
-    // .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
-    // .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
-    // .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
+    driverLicenseNo: Yup.string()
+      .required("เลขที่ใบขับขี่ไม่ถูกต้อง")
+      .length(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+      .min(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก")
+      .max(8, "กรุณาระบุเลขที่ใบขับขี่ 8 หลัก"),
     driverLicenseStartDate: Yup.string().required("วันที่ออกใบขับขี่ไม่ถูกต้อง"),
     driverLicenseEndDate: Yup.string().required("วันที่หมดอายุใบขับขี่ไม่ถูกต้อง"),
   });
@@ -96,7 +97,7 @@ const DriverEditLicenseModal = forwardRef<
           return {
             value: item.ref_driver_license_type_code,
             label: item.ref_driver_license_type_name,
-            labelDetail: item.ref_driver_license_type_desc,
+            desc: item.ref_driver_license_type_desc,
           };
         });
         // console.log(driverLicenseData);
@@ -203,7 +204,7 @@ const DriverEditLicenseModal = forwardRef<
             </div>
             <form className="form" onSubmit={handleSubmit}>
               <div className="modal-scroll-wrapper overflow-y-auto">
-                <div className="modal-body  text-center ">
+                <div className="modal-body">
                   <div className="form-section">
                     <div className="form-section-body">
                       <div className="grid md:grid-cols-2 gird-cols-1 gap-4">
@@ -219,6 +220,8 @@ const DriverEditLicenseModal = forwardRef<
                               onChange={(selected) =>
                                 setFormData((prev) => ({ ...prev, driverLicenseType: selected.value }))
                               }
+                              showDescriptions
+                              placeholder="เลือกประเภทใบขับขี่"
                             />
                             {formErrors.driverLicenseType && <FormHelper text={String(formErrors.driverLicenseType)} />}
                           </div>
@@ -234,7 +237,17 @@ const DriverEditLicenseModal = forwardRef<
                                 placeholder="เลขที่ใบขับขี่"
                                 value={formData.driverLicenseNo}
                                 onChange={handleInputChange}
-                                // maxLength={8}
+                                maxLength={8}
+                                onKeyDown={(e) => {
+                                  if (
+                                    !/[0-9]/.test(e.key) &&
+                                    !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(
+                                      e.key
+                                    )
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
                               />
                             </div>
                             {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />}

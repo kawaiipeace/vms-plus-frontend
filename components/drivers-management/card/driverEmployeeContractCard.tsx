@@ -124,8 +124,8 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                     {buddhistYear < 1980
                       ? dayjs(driverInfo?.approved_job_driver_start_date)
                           .year(dayjs(driverInfo?.approved_job_driver_start_date).year() + 1980)
-                          .format("D/MM/BBBB")
-                      : dayjs(driverInfo?.approved_job_driver_start_date).format("D/MM/BBBB")}
+                          .format("DD/MM/BBBB")
+                      : dayjs(driverInfo?.approved_job_driver_start_date).format("DD/MM/BBBB")}
                   </p>
                 </div>
               </div>
@@ -139,8 +139,8 @@ const DriverEmployeeContractCard = ({ driverInfo }: { driverInfo: DriverInfoType
                     {buddhistYear < 1980
                       ? dayjs(driverInfo?.approved_job_driver_end_date)
                           .year(dayjs(driverInfo?.approved_job_driver_end_date).year() + 1980)
-                          .format("D/MM/BBBB")
-                      : dayjs(driverInfo?.approved_job_driver_end_date).format("D/MM/BBBB")}
+                          .format("DD/MM/BBBB")
+                      : dayjs(driverInfo?.approved_job_driver_end_date).format("DD/MM/BBBB")}
                   </p>
                 </div>
               </div>
