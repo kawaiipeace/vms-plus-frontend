@@ -136,7 +136,7 @@ const DriverListTable = ({
       cell: ({ getValue, row }) => (
         <div className="text-left" data-name="ชื่อ - นามสกุล">
           <div className="text-left">
-            {getValue() as string} ({row?.original?.driver_nickname})
+            {getValue() as string} ({row?.original?.driver_nickname ? row.original.driver_nickname : "-"})
           </div>
         </div>
       ),
@@ -155,7 +155,18 @@ const DriverListTable = ({
       header: "เบอร์โทรศัพท์",
       cell: ({ getValue }) => (
         <div className="text-left" data-name="เบอร์โทรศัพท์">
-          <div className="text-center">{getValue() as string}</div>
+          {
+            // ตรวจสอบว่ามี - ในเบอร์โทรศัพท์หรือไม่ ถ้ามีให้เอาออกให้หมด แล้วจัดรูปแบบใหม่ให้เป็น xxx-xxx-xxxx
+            getValue() ? (
+              <div className="text-center">
+                {String(getValue())
+                  .replace(/-/g, "")
+                  .replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3")}
+              </div>
+            ) : (
+              <div className="text-center">-</div>
+            )
+          }
         </div>
       ),
     },
@@ -249,7 +260,7 @@ const DriverListTable = ({
                 <div className="badge badge-pill-outline badge-error whitespace-nowrap">{status}</div>
               ) : status === "สำรอง" ? (
                 <div className="badge badge-pill-outline badge-info whitespace-nowrap">{status}</div>
-              ) : status === "ให้ออก(BackList)" ? (
+              ) : status === "ให้ออก(BlackList)" ? (
                 <div className="badge badge-pill-outline badge-neutral whitespace-nowrap">{status}</div>
               ) : (
                 <div className="badge badge-pill-outline badge-success whitespace-nowrap">{status}</div>

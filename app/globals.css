@@ -51,9 +51,30 @@ img {
 
 @media (max-width: 768px) {
   .flatpickr-calendar.flatpickr-center-mobile {
-    left: auto !important;
-    right: 10px !important; /* Align to the right edge */
-    transform: none !important; /* Remove centering */
+    /* Reset positioning */
+    left: 50% !important;
+    right: auto !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    
+    /* Fixed dimensions */
+    width: 280px !important;
+    max-width: 90vw !important;
+    
+    /* Ensure visibility */
+    margin: 0 !important;
+    position: fixed !important;
+    z-index: 99999 !important;
+    
+    /* Remove arrow */
+    &:before, &:after {
+      display: none !important;
+    }
+  }
+  
+  /* Optional: Prevent page scrolling when calendar is open */
+  .flatpickr-open {
+    overflow: hidden !important;
   }
 }
 .avatar {
@@ -901,7 +922,7 @@ input.form-control {
   gap: 0.25rem;
   display: inline-flex;
   align-items: center;
-  height: 24px;
+  height: fit-content;
 }
 
 .badge.badge-border-none {
@@ -4870,6 +4891,8 @@ input.form-control {
 .journey-time .flatpickr-calendar.static.open {
   left: 2.3em;
 }
+
+
 
 @font-face {
   font-family: "Material Symbols Outlined";

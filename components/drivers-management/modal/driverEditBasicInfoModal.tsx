@@ -117,7 +117,6 @@ const DriverEditBasicInfoModal = forwardRef<
       } else {
         console.error("Error submitting form", response);
       }
-
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const errors: { [key: string]: string } = {};
@@ -239,9 +238,27 @@ const DriverEditBasicInfoModal = forwardRef<
                             name="contactNumber"
                             className="form-control"
                             placeholder="เบอร์ติดต่อ"
-                            value={formData.contactNumber}
+                            value={formData.contactNumber.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3")}
                             onChange={handleInputChange}
-                            maxLength={10}
+                            onFocus={(e) => {
+                              e.target.value = e.target.value.replace(/-/g, "");
+                              e.target.maxLength = 10;
+                            }}
+                            onBlur={(e) => {
+                              const formattedValue = e.target.value.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+                              e.target.value = formattedValue;
+                            }}
+                            maxLength={12}
+                            onKeyDown={(e) => {
+                              if (
+                                !/[0-9]/.test(e.key) &&
+                                !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(
+                                  e.key
+                                )
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                         </div>
                         {formErrors.contactNumber && <FormHelper text={String(formErrors.contactNumber)} />}

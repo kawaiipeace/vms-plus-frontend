@@ -8,8 +8,16 @@ interface DocumentListInfoProps {
 const DocumentListInfo = ({ driverInfo }: DocumentListInfoProps) => {
   return (
     <div className="flex flex-col">
-      {(driverInfo?.driver_documents?.length || 0) > 0 && (
+      {driverInfo?.driver_license?.mas_driver_license_uid && driverInfo?.driver_license?.driver_license_image && (
         <div>
+          <h5 className="text-[#475467] font-semibold mb-3">รูปใบขับขี่</h5>
+          <div className="flex flex-col gap-y-3">
+            <DocItem documentName="ใบขับขี่" documentUrl={driverInfo?.driver_license?.driver_license_image} />
+          </div>
+        </div>
+      )}
+      {(driverInfo?.driver_documents?.length || 0) > 0 && (
+        <div className="mt-5">
           <h5 className="text-[#475467] font-semibold mb-3">รูปใบรับรอง, บัตรประชาชน, ทะเบียนบ้าน ฯลฯ</h5>
           <div className="flex flex-col gap-y-3">
             {driverInfo?.driver_documents?.map((item) => (
@@ -19,14 +27,6 @@ const DocumentListInfo = ({ driverInfo }: DocumentListInfoProps) => {
                 documentUrl={item.driver_document_file}
               /> // Assuming DocItem takes an id prop
             ))}
-          </div>
-        </div>
-      )}
-      {driverInfo?.driver_license?.mas_driver_license_uid && driverInfo?.driver_license?.driver_license_image && (
-        <div className="mt-5">
-          <h5 className="text-[#475467] font-semibold mb-3">รูปใบขับขี่</h5>
-          <div className="flex flex-col gap-y-3">
-            <DocItem documentName="ใบขับขี่" documentUrl={driverInfo?.driver_license?.driver_license_image} />
           </div>
         </div>
       )}

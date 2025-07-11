@@ -181,7 +181,7 @@ export default function RequestDetailForm({
                     <div className="form-group form-plaintext">
                       <i className="material-symbols-outlined">id_card</i>
                       <div className="form-plaintext-group">
-                        <div className="form-label">เลขที่ใบอนุญาต</div>
+                        <div className="form-label">เลขที่ใบขับขี่</div>
                         <div className="form-text">
                           {requestData?.driver_license_no}
                         </div>
@@ -218,7 +218,7 @@ export default function RequestDetailForm({
                             requestData?.driver_license_img ||
                             "/assets/img/ex_driver_license.png"
                           }
-                          className="w-full"
+                          className="w-full object-contain"
                           width={300}
                           height={200}
                           alt="Driver License"
@@ -337,7 +337,7 @@ export default function RequestDetailForm({
                               requestData?.driver_certificate_img ||
                               "/assets/img/ex_certificate.png"
                             }
-                            className="w-full"
+                            className="w-full object-contain"
                             width={300}
                             height={200}
                             alt="Driver Certificate"
