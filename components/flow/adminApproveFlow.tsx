@@ -155,7 +155,6 @@ export default function AdminApproveFlow() {
   };
 
   const removeFilter = (filterType: string, filterValue: string) => {
-    console.log('fff');
     if (filterType === "status") {
       // Find the actual status code for this name
       const statusCode = summary.find(
