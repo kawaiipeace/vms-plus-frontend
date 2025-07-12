@@ -303,7 +303,7 @@ const AdminVehiclePickModal = forwardRef<
                 <div className="page-section-header border-0">
                   <div className="page-header-left">
                     <div className="page-title">
-                      <span className="page-title-label">เลือกยานพาหนะ</span>
+                      <span className="page-title-label">ผลการค้นหา</span>
                       <span className="badge badge-outline badge-gray page-title-status">
                         ว่าง {filteredVehicles.length} คัน
                       </span>

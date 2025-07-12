@@ -209,7 +209,7 @@ export default function PageHeaderFinal({ data, editable }: Props) {
         ref={fileBackRequestModalRef}
         title="ยืนยันตีกลับคำขอ"
         role="final"
-        desc="ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง"
+        desc={<>ระบบจะแจ้งเตือนผู้สร้างคำขอ ผู้ใช้ยานพาหนะ และผู้ขับขี่ <br></br> ให้ดำเนินการแก้ไขและส่งคำขอใหม่อีกครั้ง</>}
         placeholder="โปรดระบุเหตุผลที่ตีกลับ"
         confirmText="ตีกลับคำขอ"
       />

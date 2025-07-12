@@ -370,6 +370,7 @@ export default function ProcessThree() {
     updateFormData({
       masCarpoolDriverUid: mas_driver_uid,
     });
+    driverAppointmentRef.current?.openModal();
   };
 
   const next = () => {
@@ -731,8 +732,8 @@ export default function ProcessThree() {
                     />
          
                         </div>
-
-                        {filteredDrivers.length > 0 ? (
+                       { allDriver > 0 &&
+                        filteredDrivers.length > 0 ? (
                           <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
                             {filteredDrivers.map(
                               (driver: any, index: number) => (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation"; // <-- Import this if using Next.js 13+
+import { useSearchParams } from "next/navigation";
 import FirstApproveFlow from "@/components/flow/firstApproveFlow";
 import { fetchConfirmerMenus } from "@/services/bookingApprover";
 import { summaryType } from "@/app/types/request-list-type";
@@ -9,7 +9,7 @@ import DriverLicConfirmerFlow from "@/components/flow/driverLicConfirmerFlow";
 export default function ApproveVehicleConfirmerTabs() {
   const [statusData, setStatusData] = useState<summaryType[]>([]);
   const [activeTab, setActiveTab] = useState(0);
-  const searchParams = useSearchParams(); // <-- Get query params
+  const searchParams = useSearchParams(); 
 
   const activeTabLabel = decodeURIComponent(
     searchParams.get("activeTab") || ""

@@ -8,10 +8,11 @@ import "../styles/timeline.css";
 
 type Props = {
     date: DateRange | undefined;
+    placeholder?: string;
     onChange?: (range: DateRange | undefined) => void;
 };
 
-const DateRangePicker = ({ date, onChange }: Props) => {
+const DateRangePicker = ({ date, onChange, placeholder }: Props) => {
     const isTH = true; 
     const language = isTH ? th : enUS;
     const [range, setRange] = useState<DateRange | undefined>(date);
@@ -19,7 +20,7 @@ const DateRangePicker = ({ date, onChange }: Props) => {
 
     const formattedRange = range?.from && range?.to
         ? `${DateLongTH(range.from)} - ${DateLongTH(range.to)}`
-        : 'เลือกช่วงวันที่';
+        :  placeholder ? placeholder : 'เลือกช่วงวันที่';
 
     const handleSelectDate = (selectedRange: DateRange | undefined) => {
         if (selectedRange) {
