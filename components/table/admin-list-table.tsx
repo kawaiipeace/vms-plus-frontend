@@ -123,40 +123,44 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ขับขี่">
-          {row.original.can_choose_driver === true ? (
-            <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-[5rem] bg-white">
-              <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
-              <span className="text-color-secondary">รอเลือก</span>
+        {row.original.can_choose_driver === true ? (
+          <div className="border rounded-md px-2 py-1 text-sm flex gap-2 items-center w-[5rem] bg-white">
+            <div className="rounded-full w-[6px] h-[6px] bg-red-500"></div>
+            <span className="text-color-secondary">รอเลือก</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 flex-nowrap overflow-hidden">
+            <div className="w-[36px] h-[36px] flex-shrink-0">
+              {row.original.is_pea_employee_driver === 1 ? (
+                <Image
+                  src="/assets/img/avatar.svg"
+                  width={36}
+                  height={36}
+                  alt="User Avatar"
+                />
+              ) : (
+                <Image
+                  src="/assets/img/graphic/admin_select_driver_small.png"
+                  width={36}
+                  height={36}
+                  alt="User Avatar"
+                  className="rounded-full"
+                />
+              )}
             </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <div className="">
-                {row.original.is_pea_employee_driver === 1 ? (
-                  <Image
-                    src="/assets/img/avatar.svg"
-                    width={36}
-                    height={36}
-                    alt="User Avatar"
-                  ></Image>
-                ) : (
-                  <Image
-                    src="/assets/img/graphic/admin_select_driver_small.png"
-                    width={36}
-                    height={36}
-                    alt="User Avatar"
-                    className="rounded-full"
-                  ></Image>
-                )}{" "}
+            <div className="min-w-0 flex flex-col overflow-hidden">
+              <div className="text-left text-ellipsis whitespace-nowrap overflow-hidden">
+                {row.original.driver_name}
               </div>
-              <div>
-                <div className="text-left">{row.original.driver_name}</div>
-                <div className="text-color-secondary text-xs">
-                  {row.original.driver_dept_name}
-                </div>
+              <div className="text-color-secondary text-xs text-ellipsis whitespace-nowrap overflow-hidden">
+                {row.original.driver_dept_name}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
+      
+      
       ),
     },
     {
@@ -171,7 +175,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
     },
     {
       accessorKey: "start_datetime",
-      header: () => <div className="text-center">วันที่เดินทาง</div>,
+      header: () => <div className="text-center">วันที่/เวลาเดินทาง</div>,
       enableSorting: true,
       cell: ({ row }) => {
         const startDateTime = convertToBuddhistDateTime(
@@ -180,10 +184,22 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
         const endDateTime = convertToBuddhistDateTime(
           row.original.end_datetime || ""
         );
+        const isSameDate = startDateTime.date === endDateTime.date;
         return (
-          <div className="text-left" data-name="วันที่เดินทาง">
+          <div className="text-left" data-name="วันที่/เวลาเดินทาง">
             <div className="flex flex-col">
-              <div>{startDateTime.date + " - " + endDateTime.date}</div>
+            <div>
+                {isSameDate ? (
+                  <>
+                    {startDateTime.date} 
+                  </>
+                ) : (
+                  <>
+                    {startDateTime.date} - {" "}
+                    {endDateTime.date} 
+                  </>
+                )}
+              </div>
               <div className="text-color-secondary text-xs">
                 {" "}
                 {startDateTime.time + " - " + endDateTime.time} (

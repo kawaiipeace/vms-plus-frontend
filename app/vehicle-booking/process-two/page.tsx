@@ -53,6 +53,7 @@ interface PaginationInterface {
   limit: number;
   page: number;
   total: number;
+  totalGroups: number;
   totalPages: number;
 }
 
@@ -79,6 +80,7 @@ export default function ProcessTwo() {
     page: 1,
     total: 0,
     totalPages: 0,
+    totalGroups: 0,
   });
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const { isPinned } = useSidebar();
@@ -185,6 +187,7 @@ export default function ProcessTwo() {
             page: vehiclesResponse.data.pagination.page,
             total: vehiclesResponse.data.pagination.total,
             totalPages: vehiclesResponse.data.pagination.totalPages,
+            totalGroups: vehiclesResponse.data.pagination.totalGroups,
           });
         }
 
@@ -446,7 +449,7 @@ export default function ProcessTwo() {
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
                         {filteredVehicleCards.length > 0 ? (
-                          <>ว่าง {filteredVehicleCards.length} คัน</>
+                          <>ว่าง {filteredVehicleCards.length} คัน {paginationData.totalGroups} กลุ่ม</>
                         ) : (
                           "ไม่พบข้อมูล"
                         )}
