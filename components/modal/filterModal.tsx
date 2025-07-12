@@ -257,6 +257,7 @@ const handleResetFilters = () => {
                       <label className="form-label">วันที่เดินทาง</label>
                       <DateRangePicker
                         key={resetKey}
+                        placeholder={`ระบุช่วงวันที่เดินทาง`}
                         date={{
                           from: params.start_date
                             ? dayjs(params.start_date).toDate()

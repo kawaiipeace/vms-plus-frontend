@@ -145,10 +145,22 @@ export default function AdminVehiclePickupTable({
         const endDateTime = convertToBuddhistDateTime(
           row.original.end_datetime || ""
         );
+        const isSameDate = startDateTime.date === endDateTime.date;
         return (
           <div className="text-left" data-name="วันที่เดินทาง">
             <div className="flex flex-col">
-              <div>{startDateTime.date + " - " + endDateTime.date}</div>
+            <div>
+                {isSameDate ? (
+                  <>
+                    {startDateTime.date} 
+                  </>
+                ) : (
+                  <>
+                    {startDateTime.date} - {" "}
+                    {endDateTime.date} 
+                  </>
+                )}
+              </div>
               <div className="text-color-secondary text-xs">
                 {" "}
                 {endDateTime.time + " - " + startDateTime.time} (
