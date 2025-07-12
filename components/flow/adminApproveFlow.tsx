@@ -45,7 +45,7 @@ export default function AdminApproveFlow() {
   const [filterNames, setFilterNames] = useState<string[]>([]);
   const [filterDate, setFilterDate] = useState<string>("");
   const [loading, setLoading] = useState(true);
-    const [datePickerKey, setDatePickerKey] = useState(0); 
+  const [datePickerKey, setDatePickerKey] = useState(0);
   // Add this state to track the selected department
   const [selectedDepartment, setSelectedDepartment] = useState<{
     value: string;
@@ -67,6 +67,8 @@ export default function AdminApproveFlow() {
     }));
   };
   const [departmentLabel, setDepartmentLabel] = useState<string>("");
+  const [totalCount, setTotalCount] = useState(0);
+  const initialLoadRef = useRef(true);
   const statusConfig: { [key: string]: { iconName: string; status: string } } =
     {
       "30": { iconName: "schedule", status: "info" },
@@ -96,7 +98,6 @@ export default function AdminApproveFlow() {
       limit,
       page: 1, // Reset to the first page when page size changes
     }));
-
   };
 
   // Update the handleFilterSubmit function
@@ -153,44 +154,44 @@ export default function AdminApproveFlow() {
     }));
   };
 
-const removeFilter = (filterType: string, filterValue: string) => {
-  if (filterType === "status") {
-    // Find the actual status code for this name
-    const statusCode = summary.find(
-      item => item.ref_request_status_name === filterValue
-    )?.ref_request_status_code;
+  const removeFilter = (filterType: string, filterValue: string) => {
+    if (filterType === "status") {
+      // Find the actual status code for this name
+      const statusCode = summary.find(
+        (item) => item.ref_request_status_name === filterValue
+      )?.ref_request_status_code;
 
-    if (!statusCode) return; // Skip if no matching code found
+      if (!statusCode) return; // Skip if no matching code found
 
-    setFilterNames((prevFilterNames) =>
-      prevFilterNames.filter((name) => name !== filterValue)
-    );
+      setFilterNames((prevFilterNames) =>
+        prevFilterNames.filter((name) => name !== filterValue)
+      );
 
-    setParams((prevParams) => {
-      const updatedStatuses = prevParams.ref_request_status_code
-        .split(",")
-        .filter(code => code !== statusCode);
+      setParams((prevParams) => {
+        const updatedStatuses = prevParams.ref_request_status_code
+          .split(",")
+          .filter((code) => code !== statusCode);
 
-      setFilterNum(updatedStatuses.length + (filterDate ? 1 : 0));
+        setFilterNum(updatedStatuses.length + (filterDate ? 1 : 0));
 
-      return {
+        return {
+          ...prevParams,
+          ref_request_status_code: updatedStatuses.join(","),
+          page: 1,
+        };
+      });
+    } else if (filterType === "date") {
+      setFilterDate("");
+      setParams((prevParams) => ({
         ...prevParams,
-        ref_request_status_code: updatedStatuses.join(","),
+        startdate: "",
+        enddate: "",
         page: 1,
-      };
-    });
-  } else if (filterType === "date") {
-    setFilterDate("");
-    setParams((prevParams) => ({
-      ...prevParams,
-      startdate: "",
-      enddate: "",
-      page: 1,
-    }));
-    setFilterNum(filterNames.length);
-    setDatePickerKey((prev) => prev + 1);
-  }
-};
+      }));
+      setFilterNum(filterNames.length);
+      setDatePickerKey((prev) => prev + 1);
+    }
+  };
 
   // Update the handleClearAllFilters function
   const handleClearAllFilters = () => {
@@ -244,6 +245,10 @@ const removeFilter = (filterType: string, filterValue: string) => {
 
           setDataRequest(requestList);
           setSummary(summary);
+          if (initialLoadRef.current) {
+            setTotalCount(response.data.pagination.total);
+            initialLoadRef.current = false;
+          }
           setPagination({
             limit: params.limit,
             page: params.page,
@@ -261,9 +266,7 @@ const removeFilter = (filterType: string, filterValue: string) => {
     fetchRequestsData();
   }, [params]);
 
-  useEffect(() => {
-
-  }, [dataRequest]); // This will log whenever dataRequest changes
+  useEffect(() => {}, [dataRequest]); // This will log whenever dataRequest changes
 
   if (loading) {
     return <div className="mt-0 pt-0"></div>;
@@ -451,41 +454,37 @@ const removeFilter = (filterType: string, filterValue: string) => {
         </>
       )}
 
-      {pagination.total > 0 ? (
-        (filterNames.length > 0 ||
-          params.vehicle_owner_dept_sap ||
-          filterDate) && (
-          <ZeroRecord
-            imgSrc="/assets/img/empty/search_not_found.png"
-            title="ไม่พบข้อมูล"
-            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-            button="ล้างตัวกรอง"
-            displayBtn={true}
-            btnType="secondary"
-            useModal={handleClearAllFilters}
-          />
-        )
-      ) : (
+      {totalCount === 0 ? (
         <ZeroRecord
           imgSrc="/assets/img/graphic/empty.svg"
           title="ไม่มีคำขอใช้ยานพาหนะ"
           desc={
             <>
-              เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล<br></br>
+              เมื่อมีพนักงานขอใช้ยานพาหนะที่ท่านเป็นผู้ดูแล
+              <br />
               รายการคำขอจะแสดงที่นี่
             </>
           }
           displayBtn={false}
-          button={""}
+          button=""
         />
-      )}
+      ) : dataRequest?.length === 0 ? (
+        <ZeroRecord
+          imgSrc="/assets/img/empty/search_not_found.png"
+          title="ไม่พบข้อมูล"
+          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+          button="ล้างตัวกรอง"
+          displayBtn={true}
+          btnType="secondary"
+          useModal={handleClearAllFilters}
+        />
+      ) : null}
 
-    
       <FilterModal
         ref={filterModalRef}
         statusData={summary}
         department={true}
-         selectedStatuses={params.ref_request_status_code
+        selectedStatuses={params.ref_request_status_code
           .split(",")
           .filter(Boolean)}
         selectedDates={{
@@ -496,7 +495,6 @@ const removeFilter = (filterType: string, filterValue: string) => {
             ? dayjs(params.enddate).add(543, "year").format("YYYY-MM-DD")
             : "",
         }}
-        
         selectedDepartment={selectedDepartment}
         setSelectedDepartment={setSelectedDepartment}
         onSubmitFilter={handleFilterSubmit}

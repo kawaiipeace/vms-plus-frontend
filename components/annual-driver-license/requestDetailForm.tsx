@@ -36,7 +36,6 @@ export default function RequestDetailForm({
         response = await fetchFinalRequestDetail(requestId);
       }
 
-
       setRequestData(response.data);
     } catch (error) {
       console.error("Error fetching vehicle details:", error);
@@ -53,9 +52,7 @@ export default function RequestDetailForm({
     }
   }, [requestId]);
 
-  const handleDownload = () => {
-
-  };
+  const handleDownload = () => {};
 
   return (
     <>
@@ -64,6 +61,13 @@ export default function RequestDetailForm({
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
           desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
+        />
+      )}
+
+      {requestData?.ref_request_annual_driver_status_code === "90" && (
+        <AlertCustom
+          title="คำขอใช้ถูกยกเลิก"
+          desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
         />
       )}
 
@@ -363,7 +367,8 @@ export default function RequestDetailForm({
         <div className="col-span-1 row-start-1 md:row-start-2">
           <div className="form-section">
             {(requestData?.ref_request_annual_driver_status_code === "10" ||
-              requestData?.ref_request_annual_driver_status_code === "11") && (
+              requestData?.ref_request_annual_driver_status_code === "11" ||
+              requestData?.ref_request_annual_driver_status_code === "90") && (
               <DrivingRequestProgress
                 progressSteps={requestData?.progress_request_status}
                 title="ผู้ตรวจสอบ"

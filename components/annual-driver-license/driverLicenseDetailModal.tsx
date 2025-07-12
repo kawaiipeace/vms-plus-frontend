@@ -333,7 +333,7 @@ const DriverLicenseDetailModal = forwardRef<
                     <div className="col-span-12 md:col-span-6">
                       <div className="form-group form-plaintext">
                         <i className="material-symbols-outlined">
-                          calendar_month
+                        calendar_clock
                         </i>
                         <div className="form-plaintext-group">
                           <div className="form-label">วันที่สิ้นอายุ</div>
