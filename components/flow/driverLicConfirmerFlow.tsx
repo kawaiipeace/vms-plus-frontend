@@ -57,29 +57,36 @@ export default function DriverLicConfirmerFlow() {
 
   const [dataRequest, setDataRequest] = useState<DriverLicListType[]>([]);
   const [summary, setSummary] = useState<summaryDriverType[]>([]);
-  const [licenseTypeOptions, setLicenseTypeOptions] = useState<LicenseTypeOption[]>([]);
+  const [licenseTypeOptions, setLicenseTypeOptions] = useState<
+    LicenseTypeOption[]
+  >([]);
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const initialLoadRef = useRef(true);
 
   const filterModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
   } | null>(null);
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
-    "10": { iconName: "schedule", status: "info" },
-    "11": { iconName: "reply", status: "warning" },
-    "20": { iconName: "schedule", status: "info" },
-    "21": { iconName: "reply", status: "warning" },
-    "30": { iconName: "check", status: "success" },
-    "90": { iconName: "delete", status: "default" },
-  };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "10": { iconName: "schedule", status: "info" },
+      "11": { iconName: "reply", status: "warning" },
+      "20": { iconName: "schedule", status: "info" },
+      "21": { iconName: "reply", status: "warning" },
+      "30": { iconName: "check", status: "success" },
+      "90": { iconName: "delete", status: "default" },
+    };
 
   const handlePageChange = (newPage: number) => {
     setParams((prev) => ({ ...prev, page: newPage }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prev) => ({ ...prev, limit, page: 1 }));
   };
 
@@ -105,25 +112,32 @@ export default function DriverLicConfirmerFlow() {
 
   useEffect(() => {
     const fetchRequests = async () => {
+      setIsLoading(true);
       try {
         const apiParams = {
           ...params,
-          annual_yyyy: params.annual_yyyy ? (parseInt(params.annual_yyyy) - 543).toString() : "",
+          annual_yyyy: params.annual_yyyy
+            ? (parseInt(params.annual_yyyy) - 543).toString()
+            : "",
         };
 
         const response = await fetchDriverLicRequests(params);
 
-
-
         if (response.status === 200) {
           setDataRequest(response.data.requests);
-
           setSummary(response.data.summary);
+
+          if (initialLoadRef.current) {
+            setTotalCount(response.data.pagination.total);
+            initialLoadRef.current = false;
+          }
 
           setPagination(response.data.pagination);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -145,9 +159,10 @@ export default function DriverLicConfirmerFlow() {
   }) => {
     const newFilters: ActiveFilter[] = [];
 
-    // Status filters
     selectedStatuses.forEach((code) => {
-      const status = summary.find((s) => s.ref_request_annual_driver_status_code === code);
+      const status = summary.find(
+        (s) => s.ref_request_annual_driver_status_code === code
+      );
       if (status) {
         newFilters.push({
           type: "status",
@@ -157,7 +172,6 @@ export default function DriverLicConfirmerFlow() {
       }
     });
 
-    // License type filters
     licenseTypes.forEach((code) => {
       const licenseType = licenseTypeOptions.find((t) => t.value === code);
       if (licenseType) {
@@ -169,18 +183,16 @@ export default function DriverLicConfirmerFlow() {
       }
     });
 
-    // Date range filter
     if (selectedStartDate && selectedEndDate) {
       newFilters.push({
         type: "date",
         value: `${selectedStartDate}|${selectedEndDate}`,
-        displayName: `${dayjs(selectedStartDate).format("DD/MM/BBBB")} - ${dayjs(selectedEndDate).format(
+        displayName: `${dayjs(selectedStartDate).format(
           "DD/MM/BBBB"
-        )}`,
+        )} - ${dayjs(selectedEndDate).format("DD/MM/BBBB")}`,
       });
     }
 
-    // Year filter
     if (year) {
       newFilters.push({
         type: "year",
@@ -191,13 +203,16 @@ export default function DriverLicConfirmerFlow() {
 
     setActiveFilters(newFilters);
 
-    // Update API params
     setParams((prev) => ({
       ...prev,
       ref_request_annual_driver_status_code: selectedStatuses.join(","),
       ref_driver_license_type_code: licenseTypes.join(","),
-      start_created_request_datetime: selectedStartDate ? convertToISO(selectedStartDate, "00:00") : "",
-      end_driver_license_expire_date: selectedEndDate ? convertToISO(selectedEndDate, "00:00") : "",
+      start_created_request_datetime: selectedStartDate
+        ? convertToISO(selectedStartDate, "00:00")
+        : "",
+      end_driver_license_expire_date: selectedEndDate
+        ? convertToISO(selectedEndDate, "00:00")
+        : "",
       annual_yyyy: year,
       page: 1,
     }));
@@ -262,10 +277,14 @@ export default function DriverLicConfirmerFlow() {
       <div className="md:hidden block">
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
-            const config = statusConfig[item.ref_request_annual_driver_status_code];
+            const config =
+              statusConfig[item.ref_request_annual_driver_status_code];
             if (!config) return null;
             return (
-              <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_annual_driver_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
                   status={config.status as any}
@@ -282,10 +301,14 @@ export default function DriverLicConfirmerFlow() {
       <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
-            const config = statusConfig[item.ref_request_annual_driver_status_code];
+            const config =
+              statusConfig[item.ref_request_annual_driver_status_code];
             if (!config) return null;
             return (
-              <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_annual_driver_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
                   status={config.status as any}
@@ -312,7 +335,13 @@ export default function DriverLicConfirmerFlow() {
               className="form-control dt-search-input"
               placeholder="เลขที่คำขอ, ผู้ขออนุมัติ"
               value={params.search}
-              onChange={(e) => setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
+              onChange={(e) =>
+                setParams((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                  page: 1,
+                }))
+              }
             />
           </div>
         </div>
@@ -326,7 +355,9 @@ export default function DriverLicConfirmerFlow() {
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
               {activeFilters.length > 0 && (
-                <span className="badge badge-brand badge-outline rounded-[50%]">{activeFilters.length}</span>
+                <span className="badge badge-brand badge-outline rounded-[50%]">
+                  {activeFilters.length}
+                </span>
               )}
             </div>
           </button>
@@ -337,9 +368,15 @@ export default function DriverLicConfirmerFlow() {
       {activeFilters.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
           {activeFilters.map((filter, index) => (
-            <span key={index} className="badge badge-brand badge-outline rounded-sm flex items-center">
+            <span
+              key={index}
+              className="badge badge-brand badge-outline rounded-sm flex items-center"
+            >
               {filter.displayName}
-              <button onClick={() => removeFilter(index)} className="ml-1 focus:outline-none m-0 p-0 flex">
+              <button
+                onClick={() => removeFilter(index)}
+                className="ml-1 focus:outline-none m-0 p-0 flex"
+              >
                 <i className="material-symbols-outlined text-sm">close</i>
               </button>
             </span>
@@ -348,24 +385,44 @@ export default function DriverLicConfirmerFlow() {
       )}
 
       {/* Main content */}
-      {dataRequest?.length > 0 ? (
-        <>
-          <div className="mt-2">
-            <DriverLicConfirmerListTable defaultData={dataRequest} pagination={pagination} />
-          </div>
-          <PaginationControls
-            pagination={pagination}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      ) : totalCount > 0 ? (
+        dataRequest?.length > 0 ? (
+          <>
+            <div className="mt-2">
+              <DriverLicConfirmerListTable
+                defaultData={dataRequest}
+                pagination={pagination}
+              />
+            </div>
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </>
+        ) : (
+          <ZeroRecord
+            imgSrc="/assets/img/empty/search_not_found.png"
+            title="ไม่พบข้อมูล"
+            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+            button="ล้างตัวกรอง"
+            displayBtn={true}
+            btnType="secondary"
+            useModal={handleClearAllFilters}
           />
-        </>
+        )
       ) : (
         <ZeroRecord
           imgSrc="/assets/img/graphic/empty.svg"
           title="ไม่มีคำขออนุมัติ"
           desc={
             <>
-              เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br> รายการคำขอที่รออนุมัติจะแสดงที่นี่{" "}
+              เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br>{" "}
+              รายการคำขอที่รออนุมัติจะแสดงที่นี่{" "}
             </>
           }
           button="ล้างตัวกรอง"

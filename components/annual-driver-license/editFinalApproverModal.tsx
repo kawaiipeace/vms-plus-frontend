@@ -214,7 +214,7 @@ const EditFinalApproverModal = forwardRef<
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
               <div className="form-group">
-                <label className="form-label">ผู้อนุมัติ</label>
+                <label className="form-label">ผู้อนุมัติให้ทำหน้าที่ขับรถยนต์</label>
                 <CustomSelectApprover
                   iconName="person"
                   w="w-full"
