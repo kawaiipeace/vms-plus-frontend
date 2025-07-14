@@ -23,7 +23,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ image, onDelete }) => {
           fill
         /> */}
         <img
-          className="max-w-full max-h-full object-contain h-full"
+          className="object-contain object-top w-full"
           src={typeof image === "string" ? image : URL.createObjectURL(image)}
           alt="Preview"
         />

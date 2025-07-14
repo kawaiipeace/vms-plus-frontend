@@ -7,7 +7,7 @@ import SideBar from "@/components/sideBar";
 import { useParams } from "next/navigation";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import { firstApproverRequestDetail } from "@/services/bookingApprover";
-import PageHeaderFirst from "@/components/pageHeaderFirst";
+import PageHeaderConfirm from "@/components/page-header/pageHeaderConfirm";
 
 
 export default function RequestDetail() {
@@ -44,7 +44,7 @@ export default function RequestDetail() {
         >
           <Header />
           <div className="main-content-body">
-          {requestData && <PageHeaderFirst data={requestData} />}
+          {requestData && <PageHeaderConfirm data={requestData} />}
             <RequestDetailTabs requestId={request_id} />
           </div>
         </div>

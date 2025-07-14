@@ -9,6 +9,43 @@ export default function ProcessRequestCar({ step }: { step: number }) {
     setIsCollapsed((prev) => !prev);
   };
 
+  const getStepContent = (currentStep: number) => {
+    switch (currentStep) {
+      case 1:
+        return {
+          title: "รายละเอียดคำขอ",
+          nextText: "ถัดไป:",
+          nextLabel: "ค้นหายานพาหนะ"
+        };
+      case 2:
+        return {
+          title: "ค้นหายานพาหนะ",
+          nextText: "ถัดไป:",
+          nextLabel: "ข้อมูลผู้ขับขี่"
+        };
+      case 3:
+        return {
+          title: "ข้อมูลผู้ขับขี่",
+          nextText: "ถัดไป:",
+          nextLabel: "ยืนยันการสร้างคำขอ"
+        };
+      case 4:
+        return {
+          title: "ยืนยันการสร้างคำขอ",
+          nextText: "สร้างคำขอสำเร็จ",
+          nextLabel: ""
+        };
+      default:
+        return {
+          title: "รายละเอียดคำขอ",
+          nextText: "ถัดไป:",
+          nextLabel: "ค้นหายานพาหนะ"
+        };
+    }
+  };
+
+  const currentStepContent = getStepContent(step);
+
   return (
     <div className="progress-steps-container">
       <div className="block md:hidden">
@@ -33,13 +70,15 @@ export default function ProcessRequestCar({ step }: { step: number }) {
           </div>
           <div className="progress-steps-btn-content">
             <div className="progress-steps-btn-title">
-              รออนุมัติจากต้นสังกัด
+              {currentStepContent.title}
             </div>
             <div className="progress-steps-btn-text">
-              ถัดไป:{" "}
-              <span className="progress-steps-btn-label">
-                รอผู้ดูแลยานพาหนะตรวจสอบ
-              </span>
+              {currentStepContent.nextText}{" "}
+              {currentStepContent.nextLabel && (
+                <span className="progress-steps-btn-label">
+                  {currentStepContent.nextLabel}
+                </span>
+              )}
             </div>
           </div>
         </div>
