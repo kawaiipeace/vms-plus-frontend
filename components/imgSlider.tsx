@@ -24,7 +24,7 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
         >
           <div className="h-[22em] w-full overflow-hidden rounded-2xl">
             <Image
-              src={images[activeIndex] || "/assets/img/sample-car.jpg"}
+              src={images[activeIndex] || "/assets/img/sample-car.jpeg"}
               alt={`Image ${activeIndex + 1}`}
               width={1000}
               height={500}
