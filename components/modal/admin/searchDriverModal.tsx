@@ -166,7 +166,7 @@ const SearchDriverModal = forwardRef(
             </form>
           </div>
           {/* Ensure modal body takes remaining space */}
-          <div className="modal-body flex-1 overflow-y-auto">
+          <div className="modal-body flex-1 overflow-y-auto !min-h-[150px] h-auto">
             <div className={`row form-row ${!selected && "p-3"}`}>
               {selected && (
                 <div className="cover">
@@ -252,7 +252,7 @@ const SearchDriverModal = forwardRef(
                               {driverDetail?.driver_nickname})
                             </div>
                             <div className="text-sm text-gray-500">
-                              สังกัด {driverDetail?.driver_dept_sap}
+                              สังกัด {driverDetail?.vendor_name}
                             </div>
                           </div>
 

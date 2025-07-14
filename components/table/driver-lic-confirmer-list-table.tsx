@@ -38,6 +38,7 @@ export default function DriverLicConfirmerListTable({
     pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
     pageSize: pagination.limit,
   });
+ 
 
   const requestListColumns: ColumnDef<DriverLicListType>[] = [
     {
