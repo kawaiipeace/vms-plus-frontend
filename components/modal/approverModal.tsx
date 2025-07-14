@@ -162,7 +162,7 @@ const ApproverModal = forwardRef<
                     const selectedUser = vehicleUserDatas.find(
                       (user) => user.emp_id === option.value
                     );
-                    setCostName(selectedUser?.dept_sap || ""); // Update costName when selecting an option
+                    setCostName((selectedUser?.posi_text + " " + selectedUser?.dept_sap_short) || ""); // Update costName when selecting an option
                   }}
                 />
               </div>

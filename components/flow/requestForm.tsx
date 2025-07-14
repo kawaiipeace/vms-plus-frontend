@@ -36,10 +36,18 @@ const schema = yup
       .required("กรุณากรอกเบอร์โทรศัพท์"),
     workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
     purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
-    remark: yup.string(),
+    startDate: yup.string()
+    .required("กรุณาระบุวันที่เริ่มต้นเดินทาง")
+    .test('is-not-empty', 'กรุณาระบุวันที่เริ่มต้นเดินทาง', value => {
+      return Boolean(value && value.trim() !== '' && value !== null && value !== undefined);
+    }),
+    endDate: yup.string()
+    .required("กรุณาระบุวันที่สิ้นสุดเดินทาง")
+    .test('is-not-empty', 'กรุณาระบุวันที่สิ้นสุดเดินทาง', value => {
+      return Boolean(value && value.trim() !== '' && value !== null && value !== undefined);
+    }),
+    remark: yup.string().optional(),
     referenceNumber: yup.string(),
-    startDate: yup.string(),
-    endDate: yup.string(),
     refCostTypeCode: yup.string(),
     vehicleUserEmpPosition: yup.string(),
     timeStart: yup.string(),
@@ -371,6 +379,7 @@ export default function RequestForm() {
     register,
     handleSubmit,
     setValue,
+    trigger,
     watch,
     formState: { errors, isValid },
     reset,
@@ -409,6 +418,10 @@ export default function RequestForm() {
   // ADD: Require cost center for type 2
   const isCostCenterRequired =
     selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
+  
+  // Additional validation for dates
+  const isStartDateValid = startDate && startDate.trim() !== '';
+  const isEndDateValid = endDate && endDate.trim() !== '';
 
   useEffect(() => {
     if (formData.numberOfPassenger) {
@@ -779,10 +792,16 @@ export default function RequestForm() {
 
 
                       <DatePicker
-                        placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={convertToThaiDate(formData.startDate)}
-                        onChange={(dateStr) => setValue("startDate", dateStr)}
-                      />
+  placeholder="ระบุวันที่เริ่มต้นเดินทาง"
+  defaultValue={convertToThaiDate(formData.startDate)}
+  onChange={(dateStr) => {
+    const value = dateStr || ""; // Ensure empty string if cleared
+    setValue("startDate", value, { shouldValidate: true });
+    trigger("startDate");
+    trigger("endDate"); // Also trigger endDate validation
+  }}
+/>
+
                     </div>
                   </div>
                 </div>
@@ -823,11 +842,15 @@ export default function RequestForm() {
                       </div>
 
                       <DatePicker
-                        placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-                        defaultValue={convertToThaiDate(formData.endDate)}
-                        onChange={(dateStr) => setValue("endDate", dateStr)}
-                        minDate={startDate}
-                      />
+  placeholder="ระบุวันที่สิ้นสุดเดินทาง"
+  defaultValue={convertToThaiDate(formData.endDate)}
+  onChange={(dateStr) => {
+    const value = dateStr || ""; // Ensure empty string if cleared
+    setValue("endDate", value, { shouldValidate: true });
+    trigger("endDate");
+  }}
+  minDate={startDate}
+/>
                     </div>
                   </div>
                 </div>
@@ -1174,7 +1197,12 @@ export default function RequestForm() {
           <button
             type="submit"
             className="btn btn-primary"
-            disabled={!isValid || isCostCenterRequired}
+            disabled={
+              !isValid || 
+              isCostCenterRequired || 
+              !isStartDateValid || 
+              !isEndDateValid
+            }
           >
             ต่อไป
             <i className="material-symbols-outlined icon-settings-300-24">

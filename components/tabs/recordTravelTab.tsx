@@ -417,16 +417,18 @@ const RecordTravelTab = ({
               </div>
 
               {isAddAndEdit && (
-                <button
-                  className="btn btn-primary ml-auto"
-                  onClick={() => {
+                   <button
+                   onClick={() => {
                     setEditData(undefined);
                     recordTravelAddModalRef.current?.openModal();
                   }}
-                >
-                  <i className="material-symbols-outlined">add</i>
-                  เพิ่มข้อมูล
-                </button>
+                   className="btn btn-primary h-[40px] min-h-[40px] ml-auto"
+                 >
+                   <div className="flex items-center">
+                     <i className="material-symbols-outlined">add</i>
+                     เพิ่มข้อมูล
+                   </div>
+                 </button>
               )}
             </div>
             <div className="w-full mx-auto mt-3">

@@ -75,7 +75,11 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
 
         onChange: (selectedDates, _dateStr, instance) => {
           const selected = selectedDates?.[0];
-          if (!selected) return;
+          if (!selected) {
+            // When date is cleared, call onChange with empty string
+            onChange?.("");
+            return;
+          }
           const localDate = dayjs(selected).format("YYYY-MM-DD");
           onChange?.(localDate);
           requestAnimationFrame(() => updateCalendarYear(instance));
@@ -116,6 +120,10 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "";
           validateAndClearIfInvalid(instance);
+          // Ensure onChange is called if the input is empty after validation
+          if (!instance.input?.value) {
+            onChange?.("");
+          }
         },
       });
 
@@ -135,6 +143,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       if (parts.length !== 3) {
         instance.clear();
         if (input) input.value = "";
+        onChange?.("");
         return;
       }
 
@@ -147,6 +156,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       if (isNaN(day) || day < 1 || day > 31) {
         instance.clear();
         if (input) input.value = "";
+        onChange?.("");
         return;
       }
 
@@ -154,6 +164,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       if (isNaN(month) || month < 1 || month > 12) {
         instance.clear();
         if (input) input.value = "";
+        onChange?.("");
         return;
       }
 
@@ -161,6 +172,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       if (isNaN(year) || (year < 1000 && (year + 543) < 1000)) {
         instance.clear();
         if (input) input.value = "";
+        onChange?.("");
         return;
       }
     };
