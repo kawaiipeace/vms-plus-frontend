@@ -8,6 +8,7 @@ export interface Driver {
   driver_identification_no: string;
   driver_contact_number: string;
   driver_average_satisfaction_score: number;
+  vendor_name: string;
   driver_birthdate: string;
   age: string;
   status: string;

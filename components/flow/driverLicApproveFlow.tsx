@@ -4,7 +4,6 @@ import { DriverLicListType } from "@/app/types/driver-lic-list-type";
 import { summaryDriverType } from "@/app/types/request-list-type";
 import RequestStatusBox from "@/components/requestStatusBox";
 import ZeroRecord from "@/components/zeroRecord";
-import { fetchDriverLicRequests } from "@/services/driver";
 import { fetchDriverLicenseType } from "@/services/masterService";
 import { convertToISO } from "@/utils/convertToISO";
 import dayjs from "dayjs";
@@ -35,8 +34,6 @@ interface ActiveFilter {
   displayName: string;
 }
 
-
-
 export default function DriverLicApproveFlow() {
   const [params, setParams] = useState({
     search: "",
@@ -60,7 +57,9 @@ export default function DriverLicApproveFlow() {
 
   const [dataRequest, setDataRequest] = useState<DriverLicListType[]>([]);
   const [summary, setSummary] = useState<summaryDriverType[]>([]);
-  const [licenseTypeOptions, setLicenseTypeOptions] = useState<LicenseTypeOption[]>([]);
+  const [licenseTypeOptions, setLicenseTypeOptions] = useState<
+    LicenseTypeOption[]
+  >([]);
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
 
   const filterModalRef = useRef<{
@@ -68,21 +67,23 @@ export default function DriverLicApproveFlow() {
     closeModal: () => void;
   } | null>(null);
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
-    "10": { iconName: "schedule", status: "info" },
-    "11": { iconName: "reply", status: "warning" },
-    "20": { iconName: "schedule", status: "info" },
-    "21": { iconName: "reply", status: "warning" },
-    "30": { iconName: "check", status: "success" },
-    "90": { iconName: "delete", status: "default" },
-  };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } =
+    {
+      "10": { iconName: "schedule", status: "info" },
+      "11": { iconName: "reply", status: "warning" },
+      "20": { iconName: "schedule", status: "info" },
+      "21": { iconName: "reply", status: "warning" },
+      "30": { iconName: "check", status: "success" },
+      "90": { iconName: "delete", status: "default" },
+    };
 
   const handlePageChange = (newPage: number) => {
     setParams((prev) => ({ ...prev, page: newPage }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit =
+      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prev) => ({ ...prev, limit, page: 1 }));
   };
 
@@ -111,19 +112,18 @@ export default function DriverLicApproveFlow() {
       try {
         const apiParams = {
           ...params,
-          annual_yyyy: params.annual_yyyy ? (parseInt(params.annual_yyyy) - 543).toString() : "",
+          annual_yyyy: params.annual_yyyy
+            ? (parseInt(params.annual_yyyy) - 543).toString()
+            : "",
         };
 
         const response = await fetchFinalApproverRequests(params);
 
-
-
         if (response.status === 200) {
           setDataRequest(response.data.requests);
 
-
           setSummary(response.data.summary);
-   
+
           setPagination(response.data.pagination);
         }
       } catch (error) {
@@ -151,7 +151,9 @@ export default function DriverLicApproveFlow() {
 
     // Status filters
     selectedStatuses.forEach((code) => {
-      const status = summary.find((s) => s.ref_request_annual_driver_status_code === code);
+      const status = summary.find(
+        (s) => s.ref_request_annual_driver_status_code === code
+      );
       if (status) {
         newFilters.push({
           type: "status",
@@ -178,9 +180,9 @@ export default function DriverLicApproveFlow() {
       newFilters.push({
         type: "date",
         value: `${selectedStartDate}|${selectedEndDate}`,
-        displayName: `${dayjs(selectedStartDate).format("DD/MM/BBBB")} - ${dayjs(selectedEndDate).format(
+        displayName: `${dayjs(selectedStartDate).format(
           "DD/MM/BBBB"
-        )}`,
+        )} - ${dayjs(selectedEndDate).format("DD/MM/BBBB")}`,
       });
     }
 
@@ -200,8 +202,12 @@ export default function DriverLicApproveFlow() {
       ...prev,
       ref_request_annual_driver_status_code: selectedStatuses.join(","),
       ref_driver_license_type_code: licenseTypes.join(","),
-      start_created_request_datetime: selectedStartDate ? convertToISO(selectedStartDate, "00:00") : "",
-      end_driver_license_expire_date: selectedEndDate ? convertToISO(selectedEndDate, "00:00") : "",
+      start_created_request_datetime: selectedStartDate
+        ? convertToISO(selectedStartDate, "00:00")
+        : "",
+      end_driver_license_expire_date: selectedEndDate
+        ? convertToISO(selectedEndDate, "00:00")
+        : "",
       annual_yyyy: year,
       page: 1,
     }));
@@ -266,10 +272,14 @@ export default function DriverLicApproveFlow() {
       <div className="md:hidden block">
         <div className="flex overflow-x-auto gap-4 mb-4 no-scrollbar w-[100vw]">
           {summary.map((item) => {
-            const config = statusConfig[item.ref_request_annual_driver_status_code];
+            const config =
+              statusConfig[item.ref_request_annual_driver_status_code];
             if (!config) return null;
             return (
-              <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_annual_driver_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
                   status={config.status as any}
@@ -286,10 +296,14 @@ export default function DriverLicApproveFlow() {
       <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary.map((item) => {
-            const config = statusConfig[item.ref_request_annual_driver_status_code];
+            const config =
+              statusConfig[item.ref_request_annual_driver_status_code];
             if (!config) return null;
             return (
-              <div key={item.ref_request_annual_driver_status_code} className="min-w-[38%] flex-shrink-0">
+              <div
+                key={item.ref_request_annual_driver_status_code}
+                className="min-w-[38%] flex-shrink-0"
+              >
                 <RequestStatusBox
                   iconName={config.iconName}
                   status={config.status as any}
@@ -316,7 +330,13 @@ export default function DriverLicApproveFlow() {
               className="form-control dt-search-input"
               placeholder="เลขที่คำขอ, ผู้ขออนุมัติ"
               value={params.search}
-              onChange={(e) => setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }))}
+              onChange={(e) =>
+                setParams((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                  page: 1,
+                }))
+              }
             />
           </div>
         </div>
@@ -330,7 +350,9 @@ export default function DriverLicApproveFlow() {
               <i className="material-symbols-outlined">filter_list</i>
               ตัวกรอง
               {activeFilters.length > 0 && (
-                <span className="badge badge-brand badge-outline rounded-[50%]">{activeFilters.length}</span>
+                <span className="badge badge-brand badge-outline rounded-[50%]">
+                  {activeFilters.length}
+                </span>
               )}
             </div>
           </button>
@@ -341,9 +363,15 @@ export default function DriverLicApproveFlow() {
       {activeFilters.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
           {activeFilters.map((filter, index) => (
-            <span key={index} className="badge badge-brand badge-outline rounded-sm flex items-center">
+            <span
+              key={index}
+              className="badge badge-brand badge-outline rounded-sm flex items-center"
+            >
               {filter.displayName}
-              <button onClick={() => removeFilter(index)} className="ml-1 focus:outline-none m-0 p-0 flex">
+              <button
+                onClick={() => removeFilter(index)}
+                className="ml-1 focus:outline-none m-0 p-0 flex"
+              >
                 <i className="material-symbols-outlined text-sm">close</i>
               </button>
             </span>
@@ -355,7 +383,10 @@ export default function DriverLicApproveFlow() {
       {dataRequest?.length > 0 ? (
         <>
           <div className="mt-2">
-            <DriverLicApproverListTable defaultData={dataRequest} pagination={pagination} />
+            <DriverLicApproverListTable
+              defaultData={dataRequest}
+              pagination={pagination}
+            />
           </div>
           <PaginationControls
             pagination={pagination}
@@ -369,7 +400,8 @@ export default function DriverLicApproveFlow() {
           title="ไม่มีคำขออนุมัติ"
           desc={
             <>
-              เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br> รายการคำขอที่รออนุมัติจะแสดงที่นี่{" "}
+              เมื่อพนักงานในสังกัดขออนุมัติทำหน้าที่ขับรถยนต์ <br></br>{" "}
+              รายการคำขอที่รออนุมัติจะแสดงที่นี่{" "}
             </>
           }
           button="ล้างตัวกรอง"

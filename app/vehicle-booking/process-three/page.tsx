@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import PaginationControls from "@/components/table/pagination-control";
 
 interface VehicleUser {
   emp_id: string;
@@ -67,8 +68,17 @@ export default function ProcessThree() {
   const [driverOptions, setDriverOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [selectedVehiclePoolId, setSelectedVehiclePoolId] = useState<string>("");
+  const [selectedVehiclePoolId, setSelectedVehiclePoolId] =
+    useState<string>("");
   const { profile } = useProfile();
+
+  // 1. Add pagination state
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  });
 
   const driverAppointmentRef = useRef<{
     openModal: () => void;
@@ -164,6 +174,7 @@ export default function ProcessThree() {
     }
   };
 
+  // In the data fetching useEffect, always set filteredDrivers to the API result for the current page
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
@@ -175,25 +186,40 @@ export default function ProcessThree() {
           end_date: `${formData.endDate} ${formData.timeEnd}`,
           mas_carpool_uid: formData.masCarpoolUid || "",
         });
-        
         if (response.status === 200) {
-          setDrivers(response.data.drivers);
+          // Always set filteredDrivers to the API result for the current page
           setFilteredDrivers(response.data.drivers);
           setAllDriver(response.data.pagination.total);
+          setPagination({
+            page: response.data.pagination.page,
+            limit: response.data.pagination.limit,
+            total: response.data.pagination.total,
+            totalPages: response.data.pagination.totalPages,
+          });
         }
       } catch (error) {
         console.error("Error fetching drivers:", error);
-        setDrivers([]);
         setFilteredDrivers([]);
       } finally {
         setLoadingDrivers(false);
       }
     };
-  
     fetchDrivers();
   }, [params, profile, formData]);
 
-  const handleVehicleUserChange = async (selectedOption: CustomSelectOption) => {
+  // 3. Pagination handler
+  const handlePageChange = (newPage: number) => {
+    setParams(prev => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  // 4. Render PaginationControls below driver cards
+  // 5. Use the same empty state logic, but grid and pagination are now correct
+  const handleVehicleUserChange = async (
+    selectedOption: CustomSelectOption
+  ) => {
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
@@ -255,41 +281,38 @@ export default function ProcessThree() {
     },
   });
 
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
-
   };
 
   const useDebounce = (value: string, delay: number, minLength: number = 0) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         if (value.length >= minLength || value.length === 0) {
           setDebouncedValue(value);
         }
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay, minLength]);
-  
+
     return debouncedValue;
   };
 
   const [searchInput, setSearchInput] = useState("");
-  const debouncedSearchInput = useDebounce(searchInput, 200, 3); 
+  const debouncedSearchInput = useDebounce(searchInput, 200, 3);
 
   useEffect(() => {
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       name: debouncedSearchInput,
-      page: 1
+      page: 1,
     }));
   }, [debouncedSearchInput]);
-  
 
   useEffect(() => {
     if (!formData.isPeaEmployeeDriver) {
@@ -301,60 +324,58 @@ export default function ProcessThree() {
         const response = await fetchUserDrivers(
           formData?.driverEmpID ? formData?.driverEmpID : profile?.emp_id
         );
+        
         if (response) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
-
+    
           const driverOptionsArray = vehicleUserData.map(
-            (user: {
-              emp_id: string;
-              full_name: string;
-              dept_sap: string;
-            }) => ({
+            (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
               value: user.emp_id,
               label: `${user.full_name} (${user.emp_id})`,
             })
           );
           setDriverOptions(driverOptionsArray);
-
+    
           const selectedDriverOption = {
             value: vehicleUserData[0]?.emp_id,
             label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
           };
-
-          if (vehicleUserData) {
-            setValue("isPeaEmployeeDriver", "1");
-            setDriverLicenseNo(
-              vehicleUserData[0]?.annual_driver?.driver_license_no
-            );
-            setAnnualYear(vehicleUserData[0]?.annual_driver?.annual_yyyy);
-            setRequestAnnual(
-              vehicleUserData[0]?.annual_driver?.request_annual_driver_no
-            );
-            setLicenseExpDate(
-              vehicleUserData[0]?.annual_driver?.driver_license_expire_date
-            );
-            if (formData.vehicleUserEmpId === vehicleUserData[0]?.emp_id) {
-              setValue("driverMobileContact", formData.telMobile);
-              setValue("driverInternalContact", formData.telInternal);
-            } else {
-              setValue("driverMobileContact", vehicleUserData[0]?.tel_mobile);
-              setValue(
-                "driverInternalContact",
-                vehicleUserData[0]?.tel_internal
-              );
-            }
-
-            setValue("driverEmpID", vehicleUserData[0]?.emp_id);
-            setValue("driverEmpName", vehicleUserData[0]?.full_name);
-            setValue(
-              "driverDeptSap",
-              vehicleUserData[0]?.posi_text +
-                " " +
-                vehicleUserData[0]?.dept_sap_short
-            );
+    
+          if (vehicleUserData[0]) {
+            const driver = vehicleUserData[0];
+            const isSameDriver = formData.vehicleUserEmpId === driver.emp_id;
+            
+            // Prepare all form values
+            const formValues = {
+              isPeaEmployeeDriver: "1",
+              driverEmpID: driver.emp_id,
+              driverEmpName: driver.full_name,
+              driverDeptSap: `${driver.posi_text} ${driver.dept_sap_short}`,
+              driverMobileContact: isSameDriver ? formData.telMobile : driver.tel_mobile,
+              driverInternalContact: isSameDriver ? formData.telInternal : driver.tel_internal,
+            };
+    
+            // Set all form values at once
+            Object.entries(formValues).forEach(([key, value]) => {
+              setValue(key as keyof typeof formValues, value);
+            });
+            
+    
+            // Update other state
+            setDriverLicenseNo(driver?.annual_driver?.driver_license_no);
+            setAnnualYear(driver?.annual_driver?.annual_yyyy);
+            setRequestAnnual(driver?.annual_driver?.request_annual_driver_no);
+            setLicenseExpDate(driver?.annual_driver?.driver_license_expire_date);
+    
+            // Update form data
+            updateFormData({
+              ...formValues,
+              driverEmpPosition: driver.posi_text,
+              isPeaEmployeeDriver: "1",
+            });
           }
-
+    
           setSelectedVehicleUserOption(selectedDriverOption);
         }
       } catch (error) {
@@ -377,8 +398,6 @@ export default function ProcessThree() {
     localStorage.setItem("processThree", "Done");
     router.push("process-four");
   };
-
-
 
   const handleDriverSearch = useCallback(async (search: string) => {
     const trimmed = search.trim();
@@ -416,6 +435,22 @@ export default function ProcessThree() {
       setLoadingDrivers(false);
     }
   }, []);
+
+  const onPageChange = (newPage: number) => {
+    setParams(prev => ({
+      ...prev,
+      page: newPage,
+      ...(searchInput.length >= 3 ? { search: searchInput } : { search: "" }),
+    }));
+  };
+
+  const handlePageSizeChange = (newLimit: number) => {
+    setParams(prev => ({
+      ...prev,
+      limit: newLimit,
+      page: 1,
+    }));
+  };
 
   return (
     <div>
@@ -713,79 +748,87 @@ export default function ProcessThree() {
                             autoFocus
                           /> */}
 
-<input
-                       ref={searchInputRef}
-                      type="text"
-                      className="form-control dt-search-input"
-                      value={searchInput}
-                      onChange={handleSearchChange}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && searchInput.length >= 3) {
-                          setParams(prev => ({
-                            ...prev,
-                            search: searchInput,
-                            page: 1
-                          }));
-                        }
-                      }}
-                      placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                    />
-         
+                          <input
+                            ref={searchInputRef}
+                            type="text"
+                            className="form-control dt-search-input"
+                            value={searchInput}
+                            onChange={handleSearchChange}
+                            onKeyPress={(e) => {
+                              if (
+                                e.key === "Enter" &&
+                                searchInput.length >= 3
+                              ) {
+                                setParams((prev) => ({
+                                  ...prev,
+                                  search: searchInput,
+                                  page: 1,
+                                }));
+                              }
+                            }}
+                            placeholder="ค้นหาชื่อพนักงานขับรถ.."
+                          />
                         </div>
-                       { allDriver > 0 &&
-                        filteredDrivers.length > 0 ? (
-                          <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
-                            {filteredDrivers.map(
-                              (driver: any, index: number) => (
-                                <DriverCard
-                                  key={index}
-                                  id={driver.mas_driver_uid}
-                                  imgSrc={
-                                    driver.driver_image ||
-                                    "/assets/img/sample-driver.png"
-                                  }
-                                  name={driver.driver_name || ""}
-                                  nickname={driver.driver_nickname || ""}
-                                  company={driver?.vendor_name || ""}
-                                  rating={
-                                    driver.driver_average_satisfaction_score ||
-                                    "ยังไม่มีการให้คะแนน"
-                                  }
-                                  age={driver.age || "-"}
-                                  onVehicleSelect={handleVehicleSelection}
-                                  isSelected={
-                                    selectedVehiclePoolId ===
-                                    driver.mas_driver_uid
-                                  }
-                                />
-                              )
-                            )}
-                          </div>
-                        ) : (
+                        {allDriver <= 0 ? (
                           <EmptyDriver
                             imgSrc="/assets/img/empty/empty_driver.svg"
                             title="ไม่พบพนักงานขับรถ"
                             desc={
-                              <>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>
+                              <>
+                                ระบบไม่พบพนักงานขับรถในสังกัด <br />
+                                กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />
+                                ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                              </>
                             }
+                            button="ค้นหานอกสังกัด"
+                            onSelectDriver={setCarpoolId}
                           />
+                        ) : searchInput.length >= 3 && filteredDrivers.length === 0 ? (
+                          <EmptyDriver
+                            imgSrc="/assets/img/empty/empty_driver.svg"
+                            title="ไม่พบพนักงานขับรถ"
+                            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                          />
+                        ) : filteredDrivers.length === 0 ? (
+                          <div className="text-center text-gray-500 py-8">ไม่พบข้อมูล</div>
+                        ) : (
+                          <>
+                            <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
+                              {filteredDrivers.map(
+                                (driver: any, index: number) => (
+                                  <DriverCard
+                                    key={index}
+                                    id={driver.mas_driver_uid}
+                                    imgSrc={
+                                      driver.driver_image ||
+                                      "/assets/img/sample-driver.png"
+                                    }
+                                    name={driver.driver_name || ""}
+                                    nickname={driver.driver_nickname || ""}
+                                    company={driver?.vendor_name || ""}
+                                    rating={
+                                      driver.driver_average_satisfaction_score ||
+                                      "ยังไม่มีการให้คะแนน"
+                                    }
+                                    age={driver.age || "-"}
+                                    onVehicleSelect={handleVehicleSelection}
+                                    isSelected={
+                                      selectedVehiclePoolId ===
+                                      driver.mas_driver_uid
+                                    }
+                                  />
+                                )
+                              )}
+                            </div>
+                            {/* 4. PaginationControls */}
+                            <PaginationControls
+                              pagination={pagination}
+                              onPageChange={handlePageChange}
+                              onPageSizeChange={handlePageSizeChange}
+                            />
+                          </>
                         )}
                       </>
-                      {allDriver <= 0 && (
-                        <EmptyDriver
-                          imgSrc="/assets/img/empty/empty_driver.svg"
-                          title="ไม่พบพนักงานขับรถ"
-                          desc={
-                            <>
-                              ระบบไม่พบพนักงานขับรถในสังกัด <br />{" "}
-                              กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />{" "}
-                              ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                            </>
-                          }
-                          button="ค้นหานอกสังกัด"
-                          onSelectDriver={setCarpoolId}
-                        />
-                      )}
                     </>
                   )}
                 </div>
