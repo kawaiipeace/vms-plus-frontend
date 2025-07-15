@@ -57,9 +57,7 @@ export default function DriverLicConfirmerFlow() {
 
   const [dataRequest, setDataRequest] = useState<DriverLicListType[]>([]);
   const [summary, setSummary] = useState<summaryDriverType[]>([]);
-  const [licenseTypeOptions, setLicenseTypeOptions] = useState<
-    LicenseTypeOption[]
-  >([]);
+  const [licenseTypeOptions, setLicenseTypeOptions] = useState<LicenseTypeOption[]>([]);
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,23 +68,21 @@ export default function DriverLicConfirmerFlow() {
     closeModal: () => void;
   } | null>(null);
 
-  const statusConfig: { [key: string]: { iconName: string; status: string } } =
-    {
-      "10": { iconName: "schedule", status: "info" },
-      "11": { iconName: "reply", status: "warning" },
-      "20": { iconName: "schedule", status: "info" },
-      "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "check", status: "success" },
-      "90": { iconName: "delete", status: "default" },
-    };
+  const statusConfig: { [key: string]: { iconName: string; status: string } } = {
+    "10": { iconName: "schedule", status: "info" },
+    "11": { iconName: "reply", status: "warning" },
+    "20": { iconName: "schedule", status: "info" },
+    "21": { iconName: "reply", status: "warning" },
+    "30": { iconName: "check", status: "success" },
+    "90": { iconName: "delete", status: "default" },
+  };
 
   const handlePageChange = (newPage: number) => {
-    setParams((prev) => ({ ...prev, page: newPage }));
+    setParams((prev) => ({ ...prev, page: Number(newPage) }));
   };
 
   const handlePageSizeChange = (newLimit: string | number) => {
-    const limit =
-      typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
+    const limit = typeof newLimit === "string" ? parseInt(newLimit, 10) : newLimit;
     setParams((prev) => ({ ...prev, limit, page: 1 }));
   };
 
@@ -121,21 +117,39 @@ export default function DriverLicConfirmerFlow() {
             : "",
         };
 
-        const response = await fetchDriverLicRequests(params);
+   
+        const response = await fetchDriverLicRequests(apiParams);
+        console.log("API Response:", response.data); // Debug log
 
         if (response.status === 200) {
-          setDataRequest(response.data.requests);
-          setSummary(response.data.summary);
+          console.log("Params sent:", apiParams);
+          console.log("API response:", response.data);
+          console.log("Requests:", response.data.requests);
+          console.log("Pagination:", response.data.pagination);
+  
+          setDataRequest(response.data.requests || []);
+          setSummary(response.data.summary || []);
 
-          if (initialLoadRef.current) {
-            setTotalCount(response.data.pagination.total);
-            initialLoadRef.current = false;
-          }
+          const newPagination = {
+            limit: Number(response.data.pagination?.limit) || 10,
+            page: Number(response.data.pagination?.page) || 1,
+            total: Number(response.data.pagination?.total) || 0,
+            totalPages: Number(response.data.pagination?.totalPages) || 0,
+          };
 
-          setPagination(response.data.pagination);
+          setPagination(newPagination);
+          setTotalCount(newPagination.total);
         }
       } catch (error) {
         console.error("Error fetching requests:", error);
+        setDataRequest([]);
+        setPagination({
+          limit: 10,
+          page: 1,
+          total: 0,
+          totalPages: 0,
+        });
+        setTotalCount(0);
       } finally {
         setIsLoading(false);
       }
@@ -390,7 +404,7 @@ export default function DriverLicConfirmerFlow() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
       ) : totalCount > 0 ? (
-        dataRequest?.length > 0 ? (
+        dataRequest.length > 0 ? (
           <>
             <div className="mt-2">
               <DriverLicConfirmerListTable

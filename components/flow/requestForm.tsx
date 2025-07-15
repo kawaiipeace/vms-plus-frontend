@@ -265,13 +265,19 @@ export default function RequestForm() {
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
+    // Clear all driver-related fields first
     setValue("telInternal", "");
     setValue("telMobile", "");
     setValue("deptSapShort", "");
     setValue("vehicleUserEmpPosition", "");
+    setValue("deptSap", "");
+    setValue("userImageUrl", "");
 
     if (selectedOption.value === "") {
       setSelectedVehicleUserOption(null);
+      // Trigger form validation after clearing
+      await trigger(["telInternal", "telMobile", "deptSapShort", "vehicleUserEmpPosition"]);
+      return;
     } else {
       setSelectedVehicleUserOption(
         selectedOption as { value: string; label: string }
@@ -287,6 +293,10 @@ export default function RequestForm() {
       setValue("telMobile", "");
       setValue("deptSapShort", "");
       setValue("vehicleUserEmpPosition", "");
+      setValue("deptSap", "");
+      setValue("userImageUrl", "");
+      // Trigger form validation after clearing
+      await trigger(["telInternal", "telMobile", "deptSapShort", "vehicleUserEmpPosition"]);
       return;
     }
 
@@ -305,6 +315,9 @@ export default function RequestForm() {
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
       setValue("vehicleUserEmpPosition", empData.posi_text || "");
+      
+      // Trigger form validation after setting values
+      await trigger(["telInternal", "telMobile", "deptSapShort", "vehicleUserEmpPosition"]);
     }
   };
 

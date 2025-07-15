@@ -18,24 +18,20 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
   return (
     <div className="relative">
       <div className="carousel w-full rounded-lg overflow-hidden h-[356px]">
-        {images.map((src, index) => (
-          <div
-            key={index}
-            id={`slide${id}${index + 1}`}
-            className={`carousel-item relative w-full flex-wrap flex-col ${index === activeIndex ? "active" : ""}`}
-          >
-            <div className="h-[22em] w-full overflow-hidden rounded-2xl">
-              <Image
-                src={src || ""}
-                alt={`Image ${index + 1}`}
-                width={1000}
-                height={500}
-                className="object-cover min-h-full w-full"
-              />
-            </div>
-            {/* <div className="w-full text-center py-2">หน้าปัดเรือนไมล์</div> */}
+        <div
+          id={`slide${id}${activeIndex + 1}`}
+          className="carousel-item relative w-full flex-wrap flex-col active"
+        >
+          <div className="h-[22em] w-full overflow-hidden rounded-2xl">
+            <Image
+              src={images[activeIndex] || "/assets/img/sample-car.jpeg"}
+              alt={`Image ${activeIndex + 1}`}
+              width={1000}
+              height={500}
+              className="object-cover min-h-full w-full"
+            />
           </div>
-        ))}
+        </div>
       </div>
 
       {/* Navigation Arrows */}
