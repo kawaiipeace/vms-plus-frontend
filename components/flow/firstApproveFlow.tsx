@@ -40,7 +40,6 @@ export default function FirstApproveFlow() {
   const [summary, setSummary] = useState<summaryType[]>([]);
   const [filterNum, setFilterNum] = useState(0);
   const [filterNames, setFilterNames] = useState<string[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [filterDate, setFilterDate] = useState<string>("");
   const filterModalRef = useRef<{
     openModal: () => void;
@@ -164,7 +163,6 @@ export default function FirstApproveFlow() {
 
           setDataRequest(requestList);
           setSummary(summary);
-          setTotalCount(total);
           setPagination({
             limit: params.limit,
             page: params.page,

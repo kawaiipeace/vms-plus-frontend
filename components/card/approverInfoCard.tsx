@@ -37,7 +37,7 @@ export default function ApproverInfoCard({
         <div className="card-body-inline">
           <div className="img img-square img-avatar flex-grow-1 align-self-start">
             <Image
-              src={approverData?.image_url || "/assets/image/sample-avatar.png"}
+              src={approverData?.image_url || "/assets/img/sample-avatar.png"}
               className="rounded-md"
               width={100}
               height={100}
