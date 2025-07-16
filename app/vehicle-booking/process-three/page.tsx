@@ -163,16 +163,31 @@ export default function ProcessThree() {
   const allValid = licenseValid && annualValid;
 
   const handleSelectTypes = (typeName: string) => {
+    // Clear any previous selections when switching types
+    if (typeName === "พนักงานขับรถ") {
+      setSelectedVehiclePoolId("");
+      setValue("masCarpoolDriverUid", "");
+      updateFormData({
+        masCarpoolDriverUid: "",
+      });
+    }
+  
     setSelectedDriverType(typeName);
-    setValue("isPeaEmployeeDriver", typeName === "พนักงาน กฟภ." ? "1" : "0");
-
+    const isPeaEmployee = typeName === "พนักงาน กฟภ." ? "1" : "0";
+    
+    setValue("isPeaEmployeeDriver", isPeaEmployee);
     updateFormData({
-      isPeaEmployeeDriver: typeName === "พนักงาน กฟภ." ? "1" : "0",
+      isPeaEmployeeDriver: isPeaEmployee,
     });
+  
     if (typeName === "พนักงานขับรถ" && formData.isAdminChooseDriver) {
       driverAppointmentRef.current?.openModal();
     }
   };
+
+  useEffect(() => {
+    console.log("Driver type changed to:", selectedDriverType);
+  }, [selectedDriverType]);
 
   // In the data fetching useEffect, always set filteredDrivers to the API result for the current page
   useEffect(() => {
@@ -220,6 +235,7 @@ export default function ProcessThree() {
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
+    console.log('test');
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
@@ -315,9 +331,9 @@ export default function ProcessThree() {
   }, [debouncedSearchInput]);
 
   useEffect(() => {
-    if (!formData.isPeaEmployeeDriver) {
-      setSelectedDriverType("พนักงาน กฟภ.");
-    }
+    // if (!formData.isPeaEmployeeDriver) {
+    //   setSelectedDriverType("พนักงาน กฟภ.");
+    // }
 
     const fetchDefaultData = async () => {
       try {
@@ -383,7 +399,7 @@ export default function ProcessThree() {
       }
     };
     fetchDefaultData();
-  }, [formData, profile, setValue]);
+  }, [profile, setValue]);
 
   const setCarpoolId = (mas_driver_uid: string) => {
     setMasDriverUid(mas_driver_uid);
