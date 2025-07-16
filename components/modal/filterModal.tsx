@@ -41,7 +41,7 @@ const FilterModal = forwardRef<
 }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(propSelectedStatuses);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [vehicleCatOptions, setVehicleCatOptions] = useState<CustomSelectOption[]>([]);
   const [resetKey, setResetKey] = useState(0);
 
@@ -59,9 +59,8 @@ const FilterModal = forwardRef<
 
   
 
-  // Sync internal state with props
   useEffect(() => {
-    setSelectedStatuses(propSelectedStatuses);
+    setSelectedStatuses(propSelectedStatuses || []);
   }, [propSelectedStatuses]);
 
   useEffect(() => {

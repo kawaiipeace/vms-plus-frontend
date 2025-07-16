@@ -23,7 +23,7 @@ export default function ArpproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
-    ref_request_status_code: "20,21,30,31,40,41,50,51,60,70,71",
+    ref_request_status_code: "",
     order_by: "request_no",
     order_dir: "desc",
     startdate: "",
