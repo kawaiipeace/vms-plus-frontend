@@ -194,14 +194,23 @@ export default function ProcessThree() {
     const fetchDrivers = async () => {
       try {
         setLoadingDrivers(true);
-        const response = await fetchSearchDrivers({
+        const queryParams: Record<string, any> = {
           ...params,
           emp_id: profile?.emp_id,
-          start_date: `${formData.startDate} ${formData.timeStart}`,
+          start_date:  `${formData.startDate} ${formData.timeStart}`,
           end_date: `${formData.endDate} ${formData.timeEnd}`,
-          mas_carpool_uid: formData.masCarpoolUid || "",
-          mas_vehicle_uid: formData.masVehicleUid || "",
-        });
+        };
+        
+  
+        if (formData.masCarpoolUid) {
+          queryParams.mas_carpool_uid = formData.masCarpoolUid;
+        }
+  
+        if (formData.masVehicleUid) {
+          queryParams.mas_vehicle_uid = formData.masVehicleUid;
+        }
+  
+        const response = await fetchSearchDrivers(queryParams);
         if (response.status === 200) {
           // Always set filteredDrivers to the API result for the current page
           setFilteredDrivers(response.data.drivers);
