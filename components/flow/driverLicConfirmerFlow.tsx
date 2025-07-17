@@ -61,6 +61,8 @@ export default function DriverLicConfirmerFlow() {
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  
   const initialLoadRef = useRef(true);
 
   const filterModalRef = useRef<{
