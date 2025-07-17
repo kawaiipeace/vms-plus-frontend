@@ -200,6 +200,7 @@ export default function ProcessThree() {
           start_date: `${formData.startDate} ${formData.timeStart}`,
           end_date: `${formData.endDate} ${formData.timeEnd}`,
           mas_carpool_uid: formData.masCarpoolUid || "",
+          mas_vehicle_uid: formData.masVehicleUid || "",
         });
         if (response.status === 200) {
           // Always set filteredDrivers to the API result for the current page
