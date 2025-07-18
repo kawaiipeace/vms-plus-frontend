@@ -18,6 +18,7 @@ import { RequestListType } from "@/app/types/request-list-type";
 import { driversMamagement, updateDriverStatus } from "@/services/driversManagement";
 import DriverDeleteModal from "../modal/driverDeleteModal";
 import VehicleNoData from "@/components/vehicle-management/noData";
+import { useProfile } from "@/contexts/profileContext";
 
 interface PaginationType {
   limit: number;
@@ -48,6 +49,12 @@ function ToastCustomComponent({ type }: { type: { text: string; value?: string }
 }
 
 const DriversListTab = () => {
+  const { profile } = useProfile();
+
+  const roles = profile?.roles;
+
+  const cantCreateDriver = ["admin-department"].some((role) => roles?.includes(role));
+
   const [params, setParams] = useState({
     search: "",
     driver_dept_sap_work: "",
@@ -325,13 +332,17 @@ const DriversListTab = () => {
               <span className="badge badge-brand badge-outline rounded-[50%]">{Object.keys(selectedRow).length}</span>
             )}
           </button>
-          <button
-            className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
-            onClick={() => createDriverManagementModalRef.current?.openModal()}
-          >
-            <i className="material-symbols-outlined">add</i>
-            สร้างข้อมูล
-          </button>
+          {cantCreateDriver ? (
+            <></>
+          ) : (
+            <button
+              className="btn btn-primary h-[40px] min-h-[40px] hidden md:block"
+              onClick={() => createDriverManagementModalRef.current?.openModal()}
+            >
+              <i className="material-symbols-outlined">add</i>
+              สร้างข้อมูล
+            </button>
+          )}
         </div>
       </div>
       {data.length !== 0 ? (
@@ -353,6 +364,7 @@ const DriversListTab = () => {
               onUpdateStatusDriver={handleUpdateStatusDriver}
               handleDeleteDriver={handleDeleteDriver}
               handleUpdateSelectedRow={handleUpdateSelectedRow}
+              cantCreateDriver={cantCreateDriver}
             />
           </div>
           <PaginationControls

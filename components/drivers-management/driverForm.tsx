@@ -485,6 +485,7 @@ const DriverForm = () => {
   return (
     <>
       <form className="form" onSubmit={handleSubmit}>
+        {/* <div className="break-all">{JSON.stringify(formData)}</div> */}
         <div className="page-section-header border-0 mt-5">
           <div className="page-header-left">
             <div className="page-title">
