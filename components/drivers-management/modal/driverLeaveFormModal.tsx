@@ -503,9 +503,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                                 item.leave_time_type_name?.includes("เต็มวัน") ||
                                 item.leave_time_type_name?.includes("ทั้งวัน");
 
-                              const isDisabled = Boolean(
-                                (isDifferentDays && !isFullDayOption) || (isSameDay && isFullDayOption)
-                              );
+                              const isDisabled = Boolean(isDifferentDays && !isFullDayOption);
                               return (
                                 <div key={index} className="form-group">
                                   <RadioButton
