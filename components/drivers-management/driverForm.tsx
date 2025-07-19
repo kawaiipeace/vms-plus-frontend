@@ -346,6 +346,33 @@ const DriverForm = () => {
     }
   };
 
+  const getMaxBirthdateInThai = (): string => {
+    const today = new Date();
+    const maxBirthYear = today.getFullYear() - 18;
+    const maxBirthdate = new Date(maxBirthYear, today.getMonth(), today.getDate());
+
+    // แปลงเป็นรูปแบบไทย (วัน/เดือน/ปีพุทธศักราช)
+    const day = String(maxBirthdate.getDate()).padStart(2, "0");
+    const month = String(maxBirthdate.getMonth() + 1).padStart(2, "0");
+    const year = maxBirthdate.getFullYear() + 543; // เพิ่ม 543 เพื่อแปลงเป็นปีพุทธศักราช
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const convertBuddhistToChristian = (dateStr: string): Date => {
+    if (!dateStr) return new Date();
+
+    // แยกวันที่ออกจากรูปแบบ ISO หรือรูปแบบอื่นๆ
+    const date = new Date(dateStr);
+
+    // ถ้าปีมากกว่า 2500 แสดงว่าเป็นปีพุทธศักราช ต้องลบ 543
+    if (date.getFullYear() > 2500) {
+      date.setFullYear(date.getFullYear() - 543);
+    }
+
+    return date;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -359,6 +386,7 @@ const DriverForm = () => {
   // };
 
   const handleChangeBirthdate = (dateStr: string) => {
+    if (!dateStr) return;
     const dateStrISO = convertToISO8601(dateStr);
     setFormData((prevData) => ({
       ...prevData,
@@ -580,6 +608,7 @@ const DriverForm = () => {
                       placeholder="เลือกวันเกิด"
                       defaultValue={convertToThaiDate(formData.driverBirthdate)}
                       onChange={(dateStr) => handleChangeBirthdate(dateStr)}
+                      maxDate={getMaxBirthdateInThai()}
                     />
                   </div>
                   {formErrors.driverBirthdate && <FormHelper text={String(formErrors.driverBirthdate)} />}
@@ -955,6 +984,124 @@ const DriverForm = () => {
               </div>
             </div>
           </div>
+
+          {(formData.driverLicenseType === "2+" || formData.driverLicenseType === "3+") && (
+            <>
+              <div className="grid grid-cols-12 gap-4 mt-5">
+                <div className="col-span-12 md:col-span-6">
+                  <div>
+                    <div className="form-group">
+                      <label className="form-label">ชื่อหลักสูตร</label>
+                      <div className={`input-group`}>
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">developer_guide</i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          name="driverLicenseNo"
+                          className="form-control"
+                          placeholder="ระบุชื่อหลักสูตร"
+                          value={""}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-12 md:col-span-3">
+                  <div>
+                    <div className="form-group">
+                      <label className="form-label">เลขที่ใบรับรอง</label>
+                      <div className={`input-group`}>
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">news</i>
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          name="driverLicenseNo"
+                          className="form-control"
+                          placeholder="ระบุเลขที่ใบรับรอง"
+                          value={""}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-12 md:col-span-3">
+                  <div>
+                    <div className="form-group">
+                      <label className="form-label">ประเภทยานพาหนะ</label>
+                      <CustomSelect
+                        iconName="front_loader"
+                        w="w-full"
+                        options={driverLicenseList}
+                        value={driverLicenseList.find((option) => option.value === formData.driverLicenseType) || null}
+                        onChange={(selected) => setFormData((prev) => ({ ...prev, driverLicenseType: selected.value }))}
+                        showDescriptions
+                        placeholder="กรุณาเลือก"
+                      />
+                      {/* {formErrors.driverLicenseType && <FormHelper text={String(formErrors.driverLicenseType)} />} */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-12 gap-4 mt-5">
+                <div className="col-span-12 md:col-span-3">
+                  <div>
+                    <div className="form-group">
+                      <label className="form-label">วันที่อบรม</label>
+                      <div className={`input-group flatpickr`}>
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">calendar_month</i>
+                          </span>
+                        </div>
+                        <DatePicker
+                          placeholder="ระบบวันที่"
+                          defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
+                          onChange={(dateStr) => {
+                            // handleChangeDriverLicenseStartDate(dateStr);
+                            // setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
+                          }}
+                        />
+                      </div>
+                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-12 md:col-span-3">
+                  <div>
+                    <div className="form-group">
+                      <label className="form-label">วันที่สิ้นอายุ</label>
+                      <div className={`input-group flatpickr`}>
+                        <div className="input-group-prepend">
+                          <span className="input-group-text">
+                            <i className="material-symbols-outlined">calendar_month</i>
+                          </span>
+                        </div>
+                        <DatePicker
+                          placeholder="ระบบวันที่"
+                          defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
+                          onChange={(dateStr) => {
+                            // handleChangeDriverLicenseStartDate(dateStr);
+                            // setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
+                          }}
+                        />
+                      </div>
+                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <div className="page-section-header border-0 mt-5">
           <div className="page-header-left">

@@ -53,7 +53,7 @@ const DriversListTab = () => {
 
   const roles = profile?.roles;
 
-  const cantCreateDriver = ["admin-department"].some((role) => roles?.includes(role));
+  const cantCreateDriver = ["admin-departments"].some((role) => roles?.includes(role));
 
   const [params, setParams] = useState({
     search: "",
