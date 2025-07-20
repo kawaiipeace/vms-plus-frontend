@@ -195,7 +195,7 @@ export default function RequestListTable({
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับยานพาหนะ" ? (
+            ) : (value === "ตีกลับยานพาหนะ" || value === "รออนุมัติ" || value === "รอตรวจสอบ") ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
               </span>

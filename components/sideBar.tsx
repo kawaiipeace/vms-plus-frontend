@@ -71,23 +71,17 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "คำขอใช้ยานพาหนะ",
           link: "/vehicle-booking/request-list",
-          roles: [
-            "vehicle-user",
-          ],
+          roles: ["vehicle-user"],
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-confirmer",
-          roles: [
-            "level1-approval",
-          ],
+          roles: ["level1-approval", "license-approval"],
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-approver",
-          roles: [
-            "license-approval",
-          ],
+          roles: ["license-approval"],
         },
 
         {
@@ -105,7 +99,12 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-approval","admin-super", "admin-carpool", "approval-carpool"],
+          roles: [
+            "admin-approval",
+            "admin-super",
+            "admin-carpool",
+            "approval-carpool",
+          ],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",
@@ -127,12 +126,12 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ข้อมูลพนักงานขับรถ",
           link: "/drivers-management",
-          roles: ["admin-super", "admin-region", "admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-department"],
         },
         {
           title: "ข้อมูลยานพาหนะ",
           link: "/vehicle-management",
-          roles: ["admin-super", "admin-region", "admin-dept"],
+          roles: ["admin-super", "admin-region", "admin-department"],
         },
         {
           title: "กลุ่มยานพาหนะ",

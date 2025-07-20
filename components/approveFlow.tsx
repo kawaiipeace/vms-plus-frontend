@@ -65,9 +65,9 @@ export default function ArpproveFlow() {
     {
       "20": { iconName: "schedule", status: "info" },
       "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "schedule", status: "info" },
+      "30": { iconName: "schedule", status: "warning" },
       "31": { iconName: "schedule", status: "info" },
-      "40": { iconName: "schedule", status: "info" },
+      "40": { iconName: "schedule", status: "warning" },
       "41": { iconName: "schedule", status: "info" },
       "50": { iconName: "key", status: "info" },
       "51": { iconName: "directions_car", status: "info" },
