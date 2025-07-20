@@ -49,22 +49,22 @@ interface Props {
 
 interface ValueForm {
   mile: string;
-  price_per_liter: string;
+  price_per_liter: number;
   ref_fuel_type_id: CustomSelectOption;
   ref_oil_station_brand_id: CustomSelectOption;
-  sum_liter: string;
-  sum_price: string;
+  sum_liter: number;
+  sum_price: number;
   tax_invoice_date: string;
   tax_invoice_no: string;
 }
 
 const initialFormState: ValueForm = {
   mile: "",
-  price_per_liter: "",
+  price_per_liter: 0,
   ref_fuel_type_id: { value: "", label: "" },
   ref_oil_station_brand_id: { value: "", label: "" },
-  sum_liter: "",
-  sum_price: "",
+  sum_liter: 0,
+  sum_price: 0,
   tax_invoice_date: "",
   tax_invoice_no: "",
 };
@@ -143,7 +143,7 @@ const RecordTravelAddModal = forwardRef<
 
       setValueForm({
         mile: dataItem.mile?.toString() || "",
-        price_per_liter: dataItem.price_per_liter?.toString() || "",
+        price_per_liter: dataItem.price_per_liter || 0,
         ref_fuel_type_id: {
           value: dataItem.ref_fuel_type_id?.toString() || "",
           label: ref_fuel_type_id?.ref_fuel_type_name_th || "",
@@ -153,8 +153,8 @@ const RecordTravelAddModal = forwardRef<
           label: ref_oil_station_brand_id?.ref_oil_station_brand_name_th || "",
           imageUrl: imageSrc,
         },
-        sum_liter: dataItem.sum_liter?.toString() || "",
-        sum_price: dataItem.sum_price?.toString() || "",
+        sum_liter: dataItem.sum_liter || 0,
+        sum_price: dataItem.sum_price || 0,
         tax_invoice_date:
           convertToBuddhistDateTime(dataItem?.tax_invoice_date).date || "",
         tax_invoice_no: dataItem?.tax_invoice_no || "",
@@ -514,20 +514,25 @@ const RecordTravelAddModal = forwardRef<
                               onChange={(e) =>
                                 setValueForm((val) => {
                                   const sum_liter = val.sum_price
-                                    ? (
-                                        Number(val.sum_price) /
-                                        Number(e.target.value)
-                                      ).toFixed(2)
-                                    : "0.00";
+                                    ? Number(
+                                        (
+                                          Number(val.sum_price) /
+                                          Number(e.target.value)
+                                        ).toFixed(2)
+                                      )
+                                    : Number("0.00");
                                   return {
                                     ...val,
                                     price_per_liter: Number(
-                                      e.target.value
-                                    ).toFixed(2),
+                                      Number(e.target.value).toFixed(2)
+                                    ),
                                     sum_liter,
-                                    sum_price: (
-                                      Number(e.target.value) * Number(sum_liter)
-                                    ).toFixed(2),
+                                    sum_price: Number(
+                                      Number(
+                                        Number(e.target.value) *
+                                          Number(sum_liter)
+                                      ).toFixed(2)
+                                    ),
                                   };
                                 })
                               }
@@ -538,10 +543,10 @@ const RecordTravelAddModal = forwardRef<
                       <div>
                         <div className="form-group">
                           <label className="form-label">จำนวนลิตร</label>
-                          <div className="input-group">
+                          <div className="input-group !p-0">
                             <input
                               type="number"
-                              className="form-control"
+                              className="form-control !px-3"
                               placeholder="ระบุจำนวนลิตร"
                               value={valueForm.sum_liter}
                               disabled
@@ -572,15 +577,19 @@ const RecordTravelAddModal = forwardRef<
                             onChange={(e) => {
                               setValueForm((val) => {
                                 const sum_liter = val.price_per_liter
-                                  ? (
-                                      Number(e.target.value) /
-                                      Number(val.price_per_liter)
-                                    ).toFixed(2)
-                                  : "0.00";
+                                  ? Number(
+                                      (
+                                        Number(e.target.value) /
+                                        Number(val.price_per_liter)
+                                      ).toFixed(2)
+                                    )
+                                  : Number("0.00");
                                 return {
                                   ...val,
                                   sum_liter,
-                                  sum_price: Number(e.target.value).toFixed(2),
+                                  sum_price: Number(
+                                    Number(e.target.value).toFixed(2)
+                                  ),
                                 };
                               });
                             }}
@@ -588,7 +597,11 @@ const RecordTravelAddModal = forwardRef<
                         </div>
                         <p className="text-sm text-left text-color-secondary mt-3">
                           รวมภาษี
-                          {" "+(Number(valueForm.sum_price) * (7 / 107)).toFixed(2) + " "}{" "}
+                          {" " +
+                            (Number(valueForm.sum_price) * (7 / 107)).toFixed(
+                              2
+                            ) +
+                            " "}{" "}
                           บาท (7%)
                         </p>
                       </div>
