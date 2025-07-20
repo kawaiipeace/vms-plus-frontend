@@ -1,3 +1,4 @@
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useRef } from "react";
@@ -52,7 +53,7 @@ const CallToDriverModal = forwardRef<
                 </div>
                 <div>
                   <h6 className="font-bold text-xl">{name || "-"}</h6>
-                  <p className="text-xl">{phone || "-"}</p>
+                  <p className="text-xl">{ formatPhoneNumber(phone) || "-"}</p>
                 </div>
               </div>
             </div>

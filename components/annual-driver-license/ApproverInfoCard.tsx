@@ -1,3 +1,4 @@
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import Image from "next/image";
 
 interface UserType {
@@ -49,7 +50,7 @@ export default function ApproverInfoCard({
                   <i className="material-symbols-outlined">smartphone</i>
                   <div className="form-plaintext-group">
                     <div className="form-text text-nowrap">
-                      {user?.tel_mobile}
+                      {formatPhoneNumber(user?.tel_mobile || "")}
                     </div>
                   </div>
                 </div>

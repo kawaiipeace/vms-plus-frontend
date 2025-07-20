@@ -12,6 +12,7 @@ import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { fetchVehicleDetail } from "@/services/masterService";
 import useSwipeDown from "@/utils/swipeDown";
 import { adminUpdateVehicle } from "@/services/bookingAdmin";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 interface Props {
   onSelect?: (vehicle: string) => void;
   vehicleId: string;
@@ -253,8 +254,8 @@ const VehicleDetailModel = forwardRef<VehicleDetailModelRef, Props>(
                                 <div className="form-plaintext-group">
                                   <div className="form-text text-nowrap">
                                     {
-                                      vehicleDetail?.vehicle_department
-                                        ?.vehicle_user?.tel_mobile
+                                      formatPhoneNumber(vehicleDetail?.vehicle_department
+                                        ?.vehicle_user?.tel_mobile)
                                     }
                                   </div>
                                 </div>
