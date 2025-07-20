@@ -73,24 +73,13 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/vehicle-booking/request-list",
           roles: [
             "vehicle-user",
-            // "level1-approval",
-            // "admin-approval",
-            // "license-approval",
-            // "final-approval",
-            // "admin-dept",
-            // "admin-region",
-            // "admin-super",
           ],
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-confirmer",
           roles: [
-            // "level1-approval",
             "level1-approval",
-            // "admin-approval",
-            // "admin-dept",
-            // "admin-super",
           ],
         },
         {
@@ -98,10 +87,6 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/administrator/booking-approver",
           roles: [
             "license-approval",
-            // "license-approval",
-            // "admin-approval",
-            // "admin-dept",
-            // "admin-super",
           ],
         },
 
@@ -120,7 +105,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-approval"],
+          roles: ["admin-approval","admin-super", "admin-carpool", "approval-carpool"],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",

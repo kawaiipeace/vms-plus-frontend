@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { Carpool } from "@/app/types/carpool-management-type";
 import { useRouter } from "next/navigation";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface PaginationType {
   limit: number;
@@ -85,6 +86,13 @@ export default function CarpoolManagementTable({
           <div className="text-center">เบอร์ติดต่อ</div>
         </div>
       ),
+      cell: ({ row }) => {
+        return (
+          <div className="text-left" data-name="เบอร์ติดต่อ">
+            {formatPhoneNumber(row.original.carpool_contact_number)}
+          </div>
+        );
+      },
       enableSorting: false,
     },
     {

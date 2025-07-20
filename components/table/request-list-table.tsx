@@ -174,16 +174,9 @@ export default function RequestListTable({
         );
       },
     },
-        {
-      accessorKey: "details",
-      header: () => <div className="text-left">รายละเอียด</div>,
-      enableSorting: true,
-      cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
-      ),
-    },
+
     {
-      accessorKey: "detail",
+      accessorKey: "action_detail",
       header: () => <div className="text-left">รายละเอียด</div>,
       enableSorting: false,
       cell: ({ getValue }) => (

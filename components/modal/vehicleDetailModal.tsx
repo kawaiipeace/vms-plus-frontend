@@ -2,6 +2,7 @@ import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import CarCardItem from "@/components/carCardItem";
 import ImgSlider from "@/components/imgSlider";
 import { fetchVehicleDetail } from "@/services/masterService";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
 import {
@@ -226,8 +227,8 @@ const VehicleDetailModel = forwardRef<
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
                                 {
-                                  vehicleDetail?.vehicle_department
-                                    ?.vehicle_user?.tel_mobile
+                                  formatPhoneNumber(vehicleDetail?.vehicle_department
+                                    ?.vehicle_user?.tel_mobile)
                                 }
                               </div>
                             </div>
