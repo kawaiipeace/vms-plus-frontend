@@ -18,6 +18,7 @@ import {
   listDriverLicense,
   // listDriverVendors,
   listUseByOtherRadio,
+  driverCertificateTypeRef,
 } from "@/services/driversManagement";
 import { convertToISO8601, convertToThaiDate } from "@/utils/driver-management";
 
@@ -84,12 +85,20 @@ const DriverForm = () => {
     value: "",
     label: "เลือกหน่วยงาน",
   });
+  const [driverCertificateTypeList, setDriverCertificateTypeList] = useState<CustomSelectOption[]>([]);
   const [formData, setFormData] = useState({
     driverImage: profileImage?.file_url || "",
     driverName: "",
     driverNickname: "",
     driverContactNumber: "",
     driverBirthdate: "",
+    driverCertificate: {
+      driver_certificate_no: "",
+      driver_certificate_name: "",
+      driver_certificate_issue_date: "",
+      driver_certificate_expire_date: "",
+      ref_driver_certificate_type_code: "",
+    },
     driverIdentificationNo: "",
     driverOverNightStay: overNightStay,
     driverContractNo: "",
@@ -117,6 +126,13 @@ const DriverForm = () => {
     driverNickname: "",
     driverContactNumber: "",
     driverBirthdate: "",
+    driverCertificate: {
+      driver_certificate_no: "",
+      driver_certificate_name: "",
+      driver_certificate_issue_date: "",
+      driver_certificate_expire_date: "",
+      ref_driver_certificate_type_code: "",
+    },
     driverIdentificationNo: "",
     driverOverNightStay: "",
     driverContractNo: "",
@@ -144,10 +160,10 @@ const DriverForm = () => {
     driverName: Yup.string().required("กรุณาระบุชื่อ-นามสกุล"),
     driverNickname: Yup.string().required("กรุณาระบุชื่อเล่น"),
     driverContactNumber: Yup.string()
-      .matches(/^(^$|[0-9]+)$/, "กรุณาระบุเฉพาะตัวเลข")
-      .length(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
-      .max(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
-      .min(10, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .matches(/^(\d{3}-\d{3}-\d{4}|^$)$/, "กรุณาระบุเฉพาะตัวเลข")
+      .length(12, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .max(12, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
+      .min(12, "กรุณาระบุเบอร์ติดต่อ 10 หลัก")
       .optional()
       .nonNullable(),
     driverBirthdate: Yup.string().required("กรุณาเลือกวันเกิด"),
@@ -174,6 +190,33 @@ const DriverForm = () => {
     driverLicenseStartDate: Yup.string().required("กรุณาเลือกวันที่ออกใบขับขี่"),
     driverLicenseEndDate: Yup.string().required("กรุณาเลือกวันที่หมดอายุใบขับขี่"),
     driverLicensePDF: Yup.string().required("กรุณาอัพโหลดใบขับขี่"),
+    driverCertificate: Yup.object().shape({
+      driver_certificate_no: Yup.string().when("$driverLicenseType", {
+        is: (value: string) => value === "2+" || value === "3+",
+        then: () => Yup.string().required("กรุณาระบุเลขที่ใบรับรอง"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
+      driver_certificate_name: Yup.string().when("$driverLicenseType", {
+        is: (value: string) => value === "2+" || value === "3+",
+        then: () => Yup.string().required("กรุณาระบุชื่อหลักสูตร"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
+      driver_certificate_issue_date: Yup.string().when("$driverLicenseType", {
+        is: (value: string) => value === "2+" || value === "3+",
+        then: () => Yup.string().required("กรุณาเลือกวันที่อบรม"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
+      driver_certificate_expire_date: Yup.string().when("$driverLicenseType", {
+        is: (value: string) => value === "2+" || value === "3+",
+        then: () => Yup.string().required("กรุณาเลือกวันที่สิ้นอายุ"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
+      ref_driver_certificate_type_code: Yup.string().when("$driverLicenseType", {
+        is: (value: string) => value === "2+" || value === "3+",
+        then: () => Yup.string().required("กรุณาเลือกประเภทยานพาหนะ"),
+        otherwise: () => Yup.string().notRequired(),
+      }),
+    }),
   });
 
   useEffect(() => {
@@ -222,6 +265,22 @@ const DriverForm = () => {
       }
     };
 
+    const fetchDriverCertificateType = async () => {
+      try {
+        const response = await driverCertificateTypeRef();
+        const driverCertificateData: CustomSelectOption[] = response.data.map((item: any) => {
+          return {
+            value: String(item.ref_driver_certificate_type_code),
+            label: item.ref_driver_certificate_type_name,
+            desc: item.ref_driver_certificate_type_desc,
+          };
+        });
+        setDriverCertificateTypeList(driverCertificateData);
+      } catch (error) {
+        console.error("Error fetching driver certificate type data:", error);
+      }
+    };
+
     // const fetchDriverVendors = async () => {
     //   try {
     //     const response = await listDriverVendors();
@@ -241,6 +300,7 @@ const DriverForm = () => {
     fetchUseByOtherRadio();
     fetchDriverLicense();
     fetchDriverDepartment();
+    fetchDriverCertificateType();
     // fetchDriverVendors();
   }, []);
 
@@ -266,7 +326,10 @@ const DriverForm = () => {
     e.preventDefault();
 
     try {
-      await driverFormSchema.validate(formData, { abortEarly: false });
+      await driverFormSchema.validate(formData, {
+        abortEarly: false,
+        context: { driverLicenseType: formData.driverLicenseType },
+      });
       const doc = filePDF2.map((file, index) => ({
         driver_document_file: file.file_url,
         driver_document_name: file.file_name,
@@ -277,7 +340,14 @@ const DriverForm = () => {
         approved_job_driver_start_date: formData.driverContractStartDate,
         contract_no: formData.driverContractNo,
         driver_birthdate: formData.driverBirthdate,
-        driver_contact_number: formData.driverContactNumber,
+        driver_certificate: {
+          driver_certificate_expire_date: formData.driverCertificate.driver_certificate_expire_date,
+          driver_certificate_issue_date: formData.driverCertificate.driver_certificate_issue_date,
+          driver_certificate_name: formData.driverCertificate.driver_certificate_name,
+          driver_certificate_no: formData.driverCertificate.driver_certificate_no,
+          ref_driver_certificate_type_code: formData.driverCertificate.ref_driver_certificate_type_code,
+        },
+        driver_contact_number: formData.driverContactNumber.replace(/-/g, ""),
         driver_dept_sap_hire: formData.driverEmployingAgency,
         driver_dept_sap_work: formData.driverDepartment,
         driver_documents: [...doc],
@@ -310,13 +380,20 @@ const DriverForm = () => {
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        const errors: { [key: string]: string } = {};
+        const errors: any = {};
         setFormErrors({
           driverImage: "",
           driverName: "",
           driverNickname: "",
           driverContactNumber: "",
           driverBirthdate: "",
+          driverCertificate: {
+            driver_certificate_no: "",
+            driver_certificate_name: "",
+            driver_certificate_issue_date: "",
+            driver_certificate_expire_date: "",
+            ref_driver_certificate_type_code: "",
+          },
           driverIdentificationNo: "",
           driverOverNightStay: "",
           driverContractNo: "",
@@ -333,9 +410,22 @@ const DriverForm = () => {
           driverLicenseEndDate: "",
           driverLicensePDF: "",
         }); // Clear errors if validation passes
+        // Process validation errors
         error.inner.forEach((err) => {
           if (err.path) {
-            errors[err.path] = err.message;
+            // Handle nested paths like "driverCertificate.driver_certificate_no"
+            const pathParts = err.path.split(".");
+            if (pathParts.length === 1) {
+              // Simple field error
+              errors[err.path] = err.message;
+            } else if (pathParts.length === 2) {
+              // Nested field error
+              const [parentField, childField] = pathParts;
+              if (!errors[parentField]) {
+                errors[parentField] = {};
+              }
+              errors[parentField][childField] = err.message;
+            }
           }
         });
         setFormErrors((prevErrors) => ({
@@ -378,6 +468,17 @@ const DriverForm = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleInputChangeCertificate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      driverCertificate: {
+        ...prevData.driverCertificate,
+        [name]: value,
+      },
     }));
   };
 
@@ -510,6 +611,26 @@ const DriverForm = () => {
     }
   };
 
+  const handleChangeDriverCertificateIssue = (field: string, value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      driverCertificate: {
+        ...prevData.driverCertificate,
+        [field]: convertToISO8601(value),
+      },
+    }));
+  };
+
+  const handleChangeDriverCertificateExpire = (field: string, value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      driverCertificate: {
+        ...prevData.driverCertificate,
+        [field]: convertToISO8601(value),
+      },
+    }));
+  };
+
   return (
     <>
       <form className="form" onSubmit={handleSubmit}>
@@ -579,6 +700,10 @@ const DriverForm = () => {
                       onBlur={(e) => {
                         const formattedValue = e.target.value.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
                         e.target.value = formattedValue;
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          driverContactNumber: formattedValue,
+                        }));
                       }}
                       maxLength={12}
                       onKeyDown={(e) => {
@@ -1000,14 +1125,16 @@ const DriverForm = () => {
                         </div>
                         <input
                           type="text"
-                          name="driverLicenseNo"
+                          name="driver_certificate_name"
                           className="form-control"
                           placeholder="ระบุชื่อหลักสูตร"
-                          value={""}
-                          onChange={handleInputChange}
+                          value={formData.driverCertificate.driver_certificate_name}
+                          onChange={handleInputChangeCertificate}
                         />
                       </div>
-                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                      {formErrors.driverCertificate.driver_certificate_name && (
+                        <FormHelper text={String(formErrors.driverCertificate.driver_certificate_name)} />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1023,14 +1150,16 @@ const DriverForm = () => {
                         </div>
                         <input
                           type="text"
-                          name="driverLicenseNo"
+                          name="driver_certificate_no"
                           className="form-control"
                           placeholder="ระบุเลขที่ใบรับรอง"
-                          value={""}
-                          onChange={handleInputChange}
+                          value={formData.driverCertificate.driver_certificate_no}
+                          onChange={handleInputChangeCertificate}
                         />
                       </div>
-                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                      {formErrors.driverCertificate.driver_certificate_no && (
+                        <FormHelper text={String(formErrors.driverCertificate.driver_certificate_no)} />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1041,13 +1170,27 @@ const DriverForm = () => {
                       <CustomSelect
                         iconName="front_loader"
                         w="w-full"
-                        options={driverLicenseList}
-                        value={driverLicenseList.find((option) => option.value === formData.driverLicenseType) || null}
-                        onChange={(selected) => setFormData((prev) => ({ ...prev, driverLicenseType: selected.value }))}
+                        options={driverCertificateTypeList}
+                        value={
+                          driverCertificateTypeList.find(
+                            (option) => option.value === formData.driverCertificate.ref_driver_certificate_type_code
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            driverCertificate: {
+                              ...prev.driverCertificate,
+                              ref_driver_certificate_type_code: String(selected.value),
+                            },
+                          }))
+                        }
                         showDescriptions
                         placeholder="กรุณาเลือก"
                       />
-                      {/* {formErrors.driverLicenseType && <FormHelper text={String(formErrors.driverLicenseType)} />} */}
+                      {formErrors.driverCertificate.ref_driver_certificate_type_code && (
+                        <FormHelper text={String(formErrors.driverCertificate.ref_driver_certificate_type_code)} />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1065,14 +1208,17 @@ const DriverForm = () => {
                         </div>
                         <DatePicker
                           placeholder="ระบบวันที่"
-                          defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
+                          defaultValue={convertToThaiDate(formData.driverCertificate.driver_certificate_issue_date)}
                           onChange={(dateStr) => {
                             // handleChangeDriverLicenseStartDate(dateStr);
                             // setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
+                            handleChangeDriverCertificateIssue("driver_certificate_issue_date", dateStr);
                           }}
                         />
                       </div>
-                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                      {formErrors.driverCertificate.driver_certificate_issue_date && (
+                        <FormHelper text={String(formErrors.driverCertificate.driver_certificate_issue_date)} />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1088,14 +1234,17 @@ const DriverForm = () => {
                         </div>
                         <DatePicker
                           placeholder="ระบบวันที่"
-                          defaultValue={convertToThaiDate(formData.driverLicenseStartDate)}
+                          defaultValue={convertToThaiDate(formData.driverCertificate.driver_certificate_expire_date)}
                           onChange={(dateStr) => {
                             // handleChangeDriverLicenseStartDate(dateStr);
                             // setFormData((prev) => ({ ...prev, driverLicenseEndDate: "" }));
+                            handleChangeDriverCertificateExpire("driver_certificate_expire_date", dateStr);
                           }}
                         />
                       </div>
-                      {/* {formErrors.driverLicenseNo && <FormHelper text={String(formErrors.driverLicenseNo)} />} */}
+                      {formErrors.driverCertificate.driver_certificate_expire_date && (
+                        <FormHelper text={String(formErrors.driverCertificate.driver_certificate_expire_date)} />
+                      )}
                     </div>
                   </div>
                 </div>
