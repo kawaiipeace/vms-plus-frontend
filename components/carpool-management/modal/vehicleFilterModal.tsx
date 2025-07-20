@@ -50,7 +50,11 @@ const VEHICLE_ACTIVE = [
 const ModalHeader = ({ onClose }: { onClose: () => void }) => (
   <div className="modal-header flex justify-between items-center bg-white p-6 border-b border-gray-300">
     <div className="flex gap-4 items-center">
-      <i className="material-symbols-outlined text-gray-500">filter_list</i>
+      <div className="featured-ico featured-ico-gray">
+        <i className="material-symbols-outlined icon-settings-400-24">
+          filter_list
+        </i>
+      </div>
       <div className="flex flex-col">
         <span className="text-xl font-bold">ตัวกรอง</span>
         <span className="text-gray-500 text-sm">
@@ -70,7 +74,10 @@ const ModalBody = ({
   setParams,
   params,
 }: ModalBodyProps) => {
-  const [selected, setSelected] = useState<CustomSelectOption>({ label: "ทั้งหมด", value: "" });
+  const [selected, setSelected] = useState<CustomSelectOption>({
+    label: "ทั้งหมด",
+    value: "",
+  });
   const [search, setSearch] = useState<string>("");
 
   const options = vehicleTypes
@@ -83,7 +90,8 @@ const ModalBody = ({
     ) as CustomSelectOption[];
 
   useEffect(() => {
-    if (!params.vehicel_car_type_detail) setSelected({ label: "ทั้งหมด", value: "" });
+    if (!params.vehicel_car_type_detail)
+      setSelected({ label: "ทั้งหมด", value: "" });
   }, [params.vehicel_car_type_detail]);
 
   const onActiveChecked = (checked: boolean, id: string) => {
@@ -124,7 +132,7 @@ const ModalBody = ({
               options={options}
               value={selected}
               onChange={(value) => {
-                if(value.label === "") {
+                if (value.label === "") {
                   value = { label: "ทั้งหมด", value: "" };
                 }
 
