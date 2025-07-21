@@ -52,20 +52,10 @@ const ExampleFuelStringImageModal = forwardRef<
             <div className="w-full">
               {/* <ImgSlider
                 id="0"
-                images={imageEx.map((item) =>
-                  item.replace(
-                    "https://vmsplus-dev.pea.co.th",
-                    "http://pntdev.ddns.net:18080"
-                  )
-                )}
+                images={imageEx}
               /> */}
               <Image
-                src={
-                  imageEx?.[0]?.replace(
-                    "https://vmsplus-dev.pea.co.th",
-                    "http://pntdev.ddns.net:18080"
-                  ) || "/assets/img/sample-car.jpeg"
-                }
+                src={imageEx?.[0] || "/assets/img/sample-car.jpeg"}
                 alt={`Image`}
                 width={1000}
                 height={500}
@@ -100,12 +90,7 @@ const ExampleFuelStringImageModal = forwardRef<
       >
         <div className="relative w-[1000px] h-[600px]">
           <Image
-            src={
-              imageEx?.[0]?.replace(
-                "https://vmsplus-dev.pea.co.th",
-                "http://pntdev.ddns.net:18080"
-              ) || "/assets/img/sample-car.jpeg"
-            }
+            src={imageEx?.[0] || "/assets/img/sample-car.jpeg"}
             alt="Full Preview"
             fill
             unoptimized
