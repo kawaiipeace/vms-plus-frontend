@@ -22,13 +22,13 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
           id={`slide${id}${activeIndex + 1}`}
           className="carousel-item relative w-full flex-wrap flex-col active"
         >
-          <div className="h-[22em] w-full overflow-hidden rounded-2xl">
+          <div className="h-[22em] w-full rounded-2xl">
             <Image
               src={images[activeIndex] || "/assets/img/sample-car.jpeg"}
               alt={`Image ${activeIndex + 1}`}
               width={1000}
               height={500}
-              className="object-cover min-h-full w-full object-top"
+              className="object-contain min-h-full h-full min-w-full w-full"
             />
           </div>
         </div>
