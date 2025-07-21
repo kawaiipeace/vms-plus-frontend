@@ -239,6 +239,7 @@ const FilterConfirmerModal = forwardRef<
                                               : [
                                                   "ตีกลับยานพาหนะ",
                                                   "รอตรวจสอบ",
+                                                  "ตีกลับ",
                                                 ].includes(
                                                   statusItem.ref_request_status_name
                                                 )

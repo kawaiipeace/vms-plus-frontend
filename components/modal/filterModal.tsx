@@ -240,6 +240,7 @@ const FilterModal = forwardRef<
                                                   "ตีกลับยานพาหนะ",
                                                   "รออนุมัติ",
                                                   "รอตรวจสอบ",
+                                                  "ตีกลับ"
                                                 ].includes(
                                                   statusItem.ref_request_status_name
                                                 )
