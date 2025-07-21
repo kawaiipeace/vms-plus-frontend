@@ -36,16 +36,22 @@ const schema = yup
       .required("กรุณากรอกเบอร์โทรศัพท์"),
     workPlace: yup.string().required("กรุณาระบุสถานที่ปฎิบัติงาน"),
     purpose: yup.string().required("กรุณาระบุวัตถุประสงค์"),
-    startDate: yup.string()
-    .required("กรุณาระบุวันที่เริ่มต้นเดินทาง")
-    .test('is-not-empty', 'กรุณาระบุวันที่เริ่มต้นเดินทาง', value => {
-      return Boolean(value && value.trim() !== '' && value !== null && value !== undefined);
-    }),
-    endDate: yup.string()
-    .required("กรุณาระบุวันที่สิ้นสุดเดินทาง")
-    .test('is-not-empty', 'กรุณาระบุวันที่สิ้นสุดเดินทาง', value => {
-      return Boolean(value && value.trim() !== '' && value !== null && value !== undefined);
-    }),
+    startDate: yup
+      .string()
+      .required("กรุณาระบุวันที่เริ่มต้นเดินทาง")
+      .test("is-not-empty", "กรุณาระบุวันที่เริ่มต้นเดินทาง", (value) => {
+        return Boolean(
+          value && value.trim() !== "" && value !== null && value !== undefined
+        );
+      }),
+    endDate: yup
+      .string()
+      .required("กรุณาระบุวันที่สิ้นสุดเดินทาง")
+      .test("is-not-empty", "กรุณาระบุวันที่สิ้นสุดเดินทาง", (value) => {
+        return Boolean(
+          value && value.trim() !== "" && value !== null && value !== undefined
+        );
+      }),
     remark: yup.string().optional(),
     referenceNumber: yup.string(),
     refCostTypeCode: yup.string(),
@@ -215,10 +221,9 @@ export default function RequestForm() {
               value: vehicleUserData[0]?.emp_id,
               label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
             };
-       
+
             if (vehicleUserData) {
               if (!formData || Object.keys(formData).length === 0) {
-
                 setValue("telInternal", vehicleUserData[0].tel_internal);
                 setValue("telMobile", vehicleUserData[0].tel_mobile);
               }
@@ -276,7 +281,12 @@ export default function RequestForm() {
     if (selectedOption.value === "") {
       setSelectedVehicleUserOption(null);
       // Trigger form validation after clearing
-      await trigger(["telInternal", "telMobile", "deptSapShort", "vehicleUserEmpPosition"]);
+      await trigger([
+        "telInternal",
+        "telMobile",
+        "deptSapShort",
+        "vehicleUserEmpPosition",
+      ]);
       return;
     } else {
       setSelectedVehicleUserOption(
@@ -296,7 +306,12 @@ export default function RequestForm() {
       setValue("deptSap", "");
       setValue("userImageUrl", "");
       // Trigger form validation after clearing
-      await trigger(["telInternal", "telMobile", "deptSapShort", "vehicleUserEmpPosition"]);
+      await trigger([
+        "telInternal",
+        "telMobile",
+        "deptSapShort",
+        "vehicleUserEmpPosition",
+      ]);
       return;
     }
 
@@ -315,9 +330,14 @@ export default function RequestForm() {
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
       setValue("vehicleUserEmpPosition", empData.posi_text || "");
-      
+
       // Trigger form validation after setting values
-      await trigger(["telInternal", "telMobile", "deptSapShort", "vehicleUserEmpPosition"]);
+      await trigger([
+        "telInternal",
+        "telMobile",
+        "deptSapShort",
+        "vehicleUserEmpPosition",
+      ]);
     }
   };
 
@@ -431,10 +451,10 @@ export default function RequestForm() {
   // ADD: Require cost center for type 2
   const isCostCenterRequired =
     selectedCostTypeOption?.value === "2" && !selectedCostCenterOption;
-  
+
   // Additional validation for dates
-  const isStartDateValid = startDate && startDate.trim() !== '';
-  const isEndDateValid = endDate && endDate.trim() !== '';
+  const isStartDateValid = startDate && startDate.trim() !== "";
+  const isEndDateValid = endDate && endDate.trim() !== "";
 
   useEffect(() => {
     if (formData.numberOfPassenger) {
@@ -515,15 +535,15 @@ export default function RequestForm() {
   };
 
   const handleCostCenterSearch = async (search: string) => {
-    console.log('search', search);
-    
+    console.log("search", search);
+
     // Return early if search term is too short
     if (search.trim().length < 3) {
       setCostCenterOptions([]);
       setLoadingCostCenter(false);
       return;
     }
-  
+
     setLoadingCostCenter(true);
     try {
       const response = await fetchCostCenter(search);
@@ -536,7 +556,7 @@ export default function RequestForm() {
             label: cost.cost_center,
           })),
         ];
-        console.log('cost', costCenterData);
+        console.log("cost", costCenterData);
         setCostCenterOptions(costCenterArr);
       } else {
         setCostCenterOptions([]);
@@ -636,7 +656,6 @@ export default function RequestForm() {
                             มีหน้าที่ในการกรอกเลขไมล์และ เบิกค่าน้ำมัน
                           </>
                         }
-                        
                         position="right"
                       >
                         <i className="material-symbols-outlined">info</i>
@@ -803,18 +822,18 @@ export default function RequestForm() {
                         </span>
                       </div>
 
-
                       <DatePicker
-  placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-  defaultValue={convertToThaiDate(formData.startDate)}
-  onChange={(dateStr) => {
-    const value = dateStr || ""; // Ensure empty string if cleared
-    setValue("startDate", value, { shouldValidate: true });
-    trigger("startDate");
-    trigger("endDate"); // Also trigger endDate validation
-  }}
-/>
-
+                        placeholder="ระบุวันที่เริ่มต้นเดินทาง"
+                        defaultValue={convertToThaiDate(formData.startDate)}
+                        onChange={(dateStr) => {
+                          const value = dateStr || ""; // Ensure empty string if cleared
+                          setValue("startDate", value, {
+                            shouldValidate: true,
+                          });
+                          trigger("startDate");
+                          trigger("endDate"); // Also trigger endDate validation
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -855,15 +874,15 @@ export default function RequestForm() {
                       </div>
 
                       <DatePicker
-  placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-  defaultValue={convertToThaiDate(formData.endDate)}
-  onChange={(dateStr) => {
-    const value = dateStr || ""; // Ensure empty string if cleared
-    setValue("endDate", value, { shouldValidate: true });
-    trigger("endDate");
-  }}
-  minDate={startDate}
-/>
+                        placeholder="ระบุวันที่สิ้นสุดเดินทาง"
+                        defaultValue={convertToThaiDate(formData.endDate)}
+                        onChange={(dateStr) => {
+                          const value = dateStr || ""; // Ensure empty string if cleared
+                          setValue("endDate", value, { shouldValidate: true });
+                          trigger("endDate");
+                        }}
+                        minDate={startDate}
+                      />
                     </div>
                   </div>
                 </div>
@@ -1047,7 +1066,14 @@ export default function RequestForm() {
                         )}
                       </div>
                     </div>
-                    {fileError && <FormHelper text={fileError} />}
+
+                    {fileError ? (
+                      <FormHelper text={fileError} />
+                    ) : (
+                      <span className="form-helper">
+                        รองรับไฟล์ประเภท pdf เท่านั้นขนาดไม่เกิน 20 MB
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -1111,7 +1137,7 @@ export default function RequestForm() {
                         <div className="input-group-prepend">
                           <span className="input-group-text">
                             <i className="material-symbols-outlined">
-                            account_balance
+                              account_balance
                             </i>
                           </span>
                         </div>
@@ -1211,9 +1237,9 @@ export default function RequestForm() {
             type="submit"
             className="btn btn-primary"
             disabled={
-              !isValid || 
-              isCostCenterRequired || 
-              !isStartDateValid || 
+              !isValid ||
+              isCostCenterRequired ||
+              !isStartDateValid ||
               !isEndDateValid
             }
           >

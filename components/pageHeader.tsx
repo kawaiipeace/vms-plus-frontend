@@ -91,6 +91,10 @@ export default function PageHeader({ data }: Props) {
               <span className="badge badge-pill-outline badge-gray">
                 {data?.ref_request_status_name}
               </span>
+            ) : (data?.ref_request_status_name === "รอตรวจสอบ" || data?.ref_request_status_name === "รออนุมัติ") ? (
+              <span className="badge badge-pill-outline badge-warning">
+                {data?.ref_request_status_name}
+              </span>
             ) : (data?.ref_request_status_name === "คืนยานพาหนะไม่สำเร็จ" || data?.ref_request_status_name === "ถูกตีกลับ") ? (
               <span className="badge badge-pill-outline badge-error">
                 {data?.ref_request_status_name}

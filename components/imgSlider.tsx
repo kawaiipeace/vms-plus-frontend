@@ -28,7 +28,7 @@ export default function ImgSlider({ id, images }: ImgSliderProps) {
               alt={`Image ${activeIndex + 1}`}
               width={1000}
               height={500}
-              className="object-cover min-h-full w-full"
+              className="object-cover min-h-full w-full object-top"
             />
           </div>
         </div>

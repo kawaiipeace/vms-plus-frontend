@@ -174,16 +174,9 @@ export default function RequestListTable({
         );
       },
     },
-        {
-      accessorKey: "details",
-      header: () => <div className="text-left">รายละเอียด</div>,
-      enableSorting: true,
-      cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
-      ),
-    },
+
     {
-      accessorKey: "detail",
+      accessorKey: "action_detail",
       header: () => <div className="text-left">รายละเอียด</div>,
       enableSorting: false,
       cell: ({ getValue }) => (
@@ -202,7 +195,7 @@ export default function RequestListTable({
               <span className="badge badge-pill-outline badge-error whitespace-nowrap">
                 {value as React.ReactNode}
               </span>
-            ) : value === "ตีกลับยานพาหนะ" ? (
+            ) : (value === "ตีกลับยานพาหนะ" || value === "รออนุมัติ" || value === "รอตรวจสอบ") ? (
               <span className="badge badge-pill-outline badge-warning whitespace-nowrap">
                 {value as React.ReactNode}
               </span>

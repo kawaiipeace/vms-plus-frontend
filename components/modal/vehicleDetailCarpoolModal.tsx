@@ -2,6 +2,7 @@ import { VehicleMasType } from "@/app/types/vehicle-detail-type";
 import CarCardItem from "@/components/carCardItem";
 import ImgSlider from "@/components/imgSlider";
 import { getCarpoolVehicleDetails } from "@/services/carpoolManagement";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import stationImageMap from "@/utils/stationImageMap";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
@@ -215,8 +216,8 @@ const VehicleDetailCarpoolModel = forwardRef<
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
                                 {
-                                  vehicleDetail?.vehicle_department
-                                    ?.vehicle_user?.tel_mobile
+                                  formatPhoneNumber(vehicleDetail?.vehicle_department
+                                    ?.vehicle_user?.tel_mobile)
                                 }
                               </div>
                             </div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import PeaDriverInfoModal from "../modal/peaDriverInfoModal";
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface DriverInfoProps {
   userKeyPickup?: boolean;
@@ -92,7 +93,7 @@ export default function DriverPeaInfoCard({
                 <div className="card-item">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                    <span className="supporting-text">{driver?.tel_mobile ?? "-"}</span>
+                    <span className="supporting-text">{formatPhoneNumber(driver?.tel_mobile || "") ?? "-"}</span>
                   </span>
                 </div>
              
