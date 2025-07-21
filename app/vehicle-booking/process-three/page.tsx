@@ -22,6 +22,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import PaginationControls from "@/components/table/pagination-control";
+import { toISODateTime } from "@/utils/toIsoFormat";
 
 interface VehicleUser {
   emp_id: string;
@@ -197,8 +198,8 @@ export default function ProcessThree() {
         const queryParams: Record<string, any> = {
           ...params,
           emp_id: profile?.emp_id,
-          start_date:  `${formData.startDate} ${formData.timeStart}`,
-          end_date: `${formData.endDate} ${formData.timeEnd}`,
+          start_date:  toISODateTime(formData.startDate || "",formData.timeStart || ""),
+          end_date: toISODateTime(formData.endDate || "",formData.timeEnd || ""),
         };
         
   
