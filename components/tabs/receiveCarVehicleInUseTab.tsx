@@ -326,7 +326,7 @@ const ReceiveCarVehicleInUseTab = ({
       </div>
 
       <ReceiveCarVehicleModal
-        onSubmit={handleSubmit}
+        onSubmit={edit ? handleSubmit : undefined}
         status={edit}
         ref={receiveCarVehicleModalRef}
         requestData={requestData}

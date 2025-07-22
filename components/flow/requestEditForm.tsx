@@ -21,6 +21,7 @@ import { fetchVehicleDetail, fetchVehicleInfo } from "@/services/masterService";
 import { VehicleDetailType } from "@/app/types/vehicle-detail-type";
 import { convertToISO } from "@/utils/convertToISO";
 import ToastCustom from "../toastCustom";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface Props {
   approverCard?: boolean;
@@ -270,7 +271,7 @@ export default function RequestEditForm({
                         <i className="material-symbols-outlined">smartphone</i>
                         <div className="form-plaintext-group">
                           <div className="form-text text-nowrap">
-                            {updatedFormData.telMobile}
+                            {formatPhoneNumber(updatedFormData.telMobile || "")}
                           </div>
                         </div>
                       </div>

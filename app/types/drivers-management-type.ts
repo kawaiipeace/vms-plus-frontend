@@ -45,6 +45,19 @@ export interface DriverInfoType {
   driver_contact_number?: string;
   driver_identification_no?: string;
   driver_birthdate?: string;
+  driver_certificate?: {
+    mas_driver_certificate_uid?: string;
+    driver_certificate_expire_date?: string;
+    driver_certificate_issue_date?: string;
+    driver_certificate_name?: string;
+    driver_certificate_no?: string;
+    ref_driver_certificate_type_code?: string;
+    ref_driver_certificate_type?: {
+      ref_driver_certificate_type_code?: number;
+      ref_driver_certificate_type_name?: string;
+      ref_driver_certificate_type_desc?: string;
+    };
+  };
   work_type?: number;
   contract_no?: string;
   driver_dept_sap_hire?: string;
@@ -138,6 +151,13 @@ export interface DriverUpdateLicenseDetails {
   driver_license_start_date: string;
   mas_driver_uid: string;
   ref_driver_license_type_code: string;
+  driver_certificate?: {
+    driver_certificate_expire_date?: string;
+    driver_certificate_issue_date?: string;
+    driver_certificate_name?: string;
+    driver_certificate_no?: string;
+    ref_driver_certificate_type_code?: string;
+  };
 }
 
 export interface DriverReplacementDetails {
