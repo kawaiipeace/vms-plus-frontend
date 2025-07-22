@@ -1,6 +1,4 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import FilterModal from "@/components/modal/filterModal";
-// import FilterSortModal from "@/components/modal/filterSortModal";
 import RequestStatusBox from "@/components/requestStatusBox";
 import AdminListTable from "@/components/table/admin-list-table";
 import PaginationControls from "@/components/table/pagination-control";
@@ -9,6 +7,7 @@ import { fetchRequests } from "@/services/bookingAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
+import FilterAdminListModal from "../modal/filterAdminListModal";
 
 interface PaginationType {
   limit: number;
@@ -73,7 +72,7 @@ export default function AdminApproveFlow() {
     {
       "30": { iconName: "schedule", status: "info" },
       "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
+      "40": { iconName: "schedule", status: "info" },
       "41": { iconName: "check", status: "success" },
       "50": { iconName: "vpn_key", status: "info" },
       "51": { iconName: "vpn_key", status: "info" },
@@ -480,7 +479,7 @@ export default function AdminApproveFlow() {
         />
       ) : null}
 
-      <FilterModal
+      <FilterAdminListModal
         ref={filterModalRef}
         statusData={summary}
         department={true}
