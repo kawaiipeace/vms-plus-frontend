@@ -40,11 +40,9 @@ const schema = yup.object().shape({
         .min(1, "กรุณาระบุกลุ่มยานพาหนะที่ใช้บริการ"),
     otherwise: (schema) => schema.notRequired(),
   }),
-  carpool_contact_number: yup
-    .string()
-    .required("กรุณาระบุเบอร์ติดต่อ")
-    .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
-    .required("กรุณากรอกเบอร์ติดต่อ"),
+  carpool_contact_number: yup.string().required("กรุณาระบุเบอร์ติดต่อ"),
+  // .matches(/^\d{10}$/, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
+  // .required("กรุณากรอกเบอร์ติดต่อ"),
   carpool_contact_place: yup.string().required("กรุณาระบุสถานที่ติดต่อ"),
   carpool_name: yup.string().required("กรุณาระบุชื่อกลุ่ม"),
   ref_carpool_choose_car_id: yup

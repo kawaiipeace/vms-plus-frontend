@@ -222,12 +222,6 @@ const TravelCardModal = forwardRef<
           <Suspense fallback={<div></div>}>
             <RequestListContent />
           </Suspense>
-          <ToastCustom
-            title="สร้างคำขอใช้ยานพาหนะสำเร็จ"
-            desc=""
-            status="success"
-            styleText="!mx-auto"
-          />
         </div>
       </div>
     </dialog>
