@@ -7,7 +7,7 @@ import { fetchRequests } from "@/services/bookingAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
-import FilterConfirmerModal from "../modal/filterConfirmerModal";
+import FilterAdminListModal from "../modal/filterAdminListModal";
 
 interface PaginationType {
   limit: number;
@@ -72,7 +72,7 @@ export default function AdminApproveFlow() {
     {
       "30": { iconName: "schedule", status: "info" },
       "31": { iconName: "reply", status: "warning" },
-      "40": { iconName: "check", status: "success" },
+      "40": { iconName: "schedule", status: "info" },
       "41": { iconName: "check", status: "success" },
       "50": { iconName: "vpn_key", status: "info" },
       "51": { iconName: "vpn_key", status: "info" },
@@ -479,7 +479,7 @@ export default function AdminApproveFlow() {
         />
       ) : null}
 
-      <FilterConfirmerModal
+      <FilterAdminListModal
         ref={filterModalRef}
         statusData={summary}
         department={true}
