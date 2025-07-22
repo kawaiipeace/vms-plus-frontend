@@ -40,19 +40,21 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
       leave_end_date: "",
       leave_reason: "",
       leave_start_date: "",
-      leave_time_type_code: 1,
+      leave_time_type_code: 0,
+      mas_driver_uid: driverInfo?.mas_driver_uid,
       replacement_driver_uid: "",
-      leave_start_timeStart: "8:30",
-      leave_start_timeEnd: "8:30",
+      // leave_start_timeStart: "8:30",
+      // leave_start_timeEnd: "8:30",
     });
     const [formErrors, setFormErrors] = useState({
       leave_end_date: "",
       leave_reason: "",
       leave_start_date: "",
       leave_time_type_code: "",
+      mas_driver_uid: "",
       replacement_driver_uid: "",
-      leave_start_timeStart: "",
-      leave_start_timeEnd: "",
+      // leave_start_timeStart: "",
+      // leave_start_timeEnd: "",
     });
 
     const validationSchema = Yup.object().shape({
@@ -115,7 +117,97 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
 
     useEffect(() => {
       handleLeaveTimeCheck(formData);
-    }, [formData]);
+
+      // Check if start and end dates are different days
+      if (formData.leave_start_date && formData.leave_end_date) {
+        const startDate = new Date(formData.leave_start_date).toDateString();
+        const endDate = new Date(formData.leave_end_date).toDateString();
+
+        if (startDate !== endDate) {
+          // Find the "full day" option (assuming it's the one with highest code or specific name)
+          const fullDayOption = leaveTimeList.find(
+            (item) => item.leave_time_type_name?.includes("เต็มวัน") || item.leave_time_type_name?.includes("ทั้งวัน")
+          );
+
+          if (fullDayOption) {
+            setFormData((prev) => ({
+              ...prev,
+              leave_time_type_code: fullDayOption.leave_time_type_code as number,
+            }));
+          } else if (startDate === endDate) {
+            // Clear selection if currently selected is full day option (for same day)
+            const currentSelection = leaveTimeList.find(
+              (item) => item.leave_time_type_code === formData.leave_time_type_code
+            );
+            const isCurrentFullDay =
+              currentSelection?.leave_time_type_name?.includes("เต็มวัน") ||
+              currentSelection?.leave_time_type_name?.includes("ทั้งวัน");
+
+            if (isCurrentFullDay) {
+              setFormData((prev) => ({
+                ...prev,
+                leave_time_type_code: 0,
+              }));
+            }
+          }
+        }
+      }
+    }, [formData.leave_start_date, formData.leave_end_date, formData.replacement_driver_uid, leaveTimeList]);
+
+    useEffect(() => {
+      // Auto set time when any option is selected
+      const selectedOption = leaveTimeList.find((item) => item.leave_time_type_code === formData.leave_time_type_code);
+
+      const isFullDayOption =
+        selectedOption?.leave_time_type_name?.includes("เต็มวัน") ||
+        selectedOption?.leave_time_type_name?.includes("ทั้งวัน");
+
+      const isMorningHalfOption = selectedOption?.leave_time_type_name?.includes("ครึ่งวันเช้า");
+
+      const isAfternoonHalfOption = selectedOption?.leave_time_type_name?.includes("ครึ่งวันบ่าย");
+
+      if (
+        (isFullDayOption || isMorningHalfOption || isAfternoonHalfOption) &&
+        formData.leave_start_date &&
+        formData.leave_end_date
+      ) {
+        const startDate = new Date(formData.leave_start_date);
+        const endDate = new Date(formData.leave_end_date);
+
+        let shouldUpdate = false;
+
+        if (isFullDayOption) {
+          // Check if not already set to full day times
+          if (startDate.getUTCHours() !== 8 || endDate.getUTCHours() !== 16) {
+            startDate.setUTCHours(8, 0, 0, 0);
+            endDate.setUTCHours(16, 0, 0, 0);
+            shouldUpdate = true;
+          }
+        } else if (isMorningHalfOption) {
+          // Check if not already set to morning half times
+          if (startDate.getUTCHours() !== 8 || endDate.getUTCHours() !== 12) {
+            startDate.setUTCHours(8, 0, 0, 0);
+            endDate.setUTCHours(12, 0, 0, 0);
+            shouldUpdate = true;
+          }
+        } else if (isAfternoonHalfOption) {
+          // Check if not already set to afternoon half times
+          if (startDate.getUTCHours() !== 12 || endDate.getUTCHours() !== 16) {
+            startDate.setUTCHours(12, 0, 0, 0);
+            endDate.setUTCHours(16, 0, 0, 0);
+            shouldUpdate = true;
+          }
+        }
+
+        if (shouldUpdate) {
+          setFormData((prev) => ({
+            ...prev,
+            leave_start_date: startDate.toISOString().replace(".000Z", "Z"),
+            leave_end_date: endDate.toISOString().replace(".000Z", "Z"),
+          }));
+        }
+      }
+    }, [formData.leave_time_type_code, formData.leave_end_date, leaveTimeList]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -174,6 +266,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
       setFormData((prevData) => ({
         ...prevData,
         leave_start_date: dateStrISO,
+        leave_time_type_code: 0,
       }));
 
       setDisableStartDate(thaiDate);
@@ -187,11 +280,58 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
       }));
     };
 
+    // const handleChangeLeaveTime = (value: string) => {
+    //   setFormData((prevData) => ({
+    //     ...prevData,
+    //     leave_time_type_code: Number(value),
+    //   }));
+    // };
+
     const handleChangeLeaveTime = (value: string) => {
-      setFormData((prevData) => ({
-        ...prevData,
-        leave_time_type_code: Number(value),
-      }));
+      const selectedOption = leaveTimeList.find((item) => item.leave_time_type_code === Number(value));
+
+      const isFullDayOption =
+        selectedOption?.leave_time_type_name?.includes("เต็มวัน") ||
+        selectedOption?.leave_time_type_name?.includes("ทั้งวัน");
+
+      const isMorningHalfOption = selectedOption?.leave_time_type_name?.includes("ครึ่งวันเช้า");
+
+      const isAfternoonHalfOption = selectedOption?.leave_time_type_name?.includes("ครึ่งวันบ่าย");
+
+      setFormData((prevData) => {
+        let updatedData = {
+          ...prevData,
+          leave_time_type_code: Number(value),
+        };
+
+        // Set times based on the selected option
+        if (prevData.leave_start_date && prevData.leave_end_date) {
+          const startDate = new Date(prevData.leave_start_date);
+          const endDate = new Date(prevData.leave_end_date);
+
+          if (isFullDayOption) {
+            // Full day: 08:00:00 - 16:00:00
+            startDate.setUTCHours(8, 0, 0, 0);
+            endDate.setUTCHours(16, 0, 0, 0);
+          } else if (isMorningHalfOption) {
+            // Morning half: 08:00:00 - 12:00:00
+            startDate.setUTCHours(8, 0, 0, 0);
+            endDate.setUTCHours(12, 0, 0, 0);
+          } else if (isAfternoonHalfOption) {
+            // Afternoon half: 12:00:00 - 16:00:00
+            startDate.setUTCHours(12, 0, 0, 0);
+            endDate.setUTCHours(16, 0, 0, 0);
+          }
+
+          updatedData = {
+            ...updatedData,
+            leave_start_date: startDate.toISOString().replace(".000Z", "Z"),
+            leave_end_date: endDate.toISOString().replace(".000Z", "Z"),
+          };
+        }
+
+        return updatedData;
+      });
     };
 
     const handleLeaveTimeCheck = (data: {
@@ -232,6 +372,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
               </div>
               <form className="form" onSubmit={handleSubmit}>
                 <div className="modal-body">
+                  {/* <div className="break-all">{JSON.stringify(formData)}</div> */}
                   <div className="form-section">
                     <div className="form-section-body">
                       <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
@@ -249,7 +390,7 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                                 defaultValue={convertToThaiDate(formData.leave_start_date)}
                                 onChange={(dateStr) => {
                                   handleChangeLeaveStartDate(dateStr);
-                                  setFormData((prev) => ({ ...prev, leave_end_date: "" }));
+                                  setFormData((prev) => ({ ...prev, leave_end_date: "", leave_time_type_code: 0 }));
                                 }}
                               />
                             </div>
@@ -257,6 +398,29 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                           </div>
                         </div>
                         <div className="w-full">
+                          <div className="form-group">
+                            <label className="form-label">วันที่สิ้นสุดลา</label>
+                            <div className={`input-group`}>
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <i className="material-symbols-outlined">calendar_month</i>
+                                </span>
+                              </div>
+                              <DatePicker
+                                key={disableStartDate || "default"}
+                                placeholder="วันที่สิ้นสุดลา"
+                                defaultValue={convertToThaiDate(formData.leave_end_date)}
+                                onChange={(dateStr) => {
+                                  handleChangeLeaveEndDate(dateStr);
+                                }}
+                                minDate={disableStartDate ? disableStartDate : undefined}
+                                // disabled={disableStartDate ? false : true}
+                              />
+                            </div>
+                            {formErrors.leave_start_date && <FormHelper text={String(formErrors.leave_start_date)} />}
+                          </div>
+                        </div>
+                        {/* <div className="w-full">
                           <div className="form-group">
                             <label className="form-label">&nbsp;</label>
                             <div className={`input-group`}>
@@ -274,9 +438,9 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                               />
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
-                      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mt-3">
+                      {/* <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mt-3">
                         <div className="w-full">
                           <div className="form-group">
                             <label className="form-label">วันที่สิ้นสุดลา</label>
@@ -317,27 +481,47 @@ const DriverLeaveFormModal = forwardRef<{ openModal: () => void; closeModal: () 
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="w-full grid grid-cols-1 mt-3">
-                        {/* <div className="form-group">
+                        <div className="form-group">
                           <label className="form-label">ช่วงเวลา</label>
                           <div className="flex flex-wrap gap-4">
-                            {leaveTimeList.map((item, index) => (
-                              <div key={index} className="form-group">
-                                <RadioButton
-                                  name="leaveTimeType"
-                                  value={`${item.leave_time_type_code}`}
-                                  label={item.leave_time_type_name ?? ""}
-                                  selectedValue={`${formData.leave_time_type_code}`}
-                                  setSelectedValue={handleChangeLeaveTime}
-                                />
-                              </div>
-                            ))}
+                            {leaveTimeList.map((item, index) => {
+                              const isDifferentDays =
+                                formData.leave_start_date &&
+                                formData.leave_end_date &&
+                                new Date(formData.leave_start_date).toDateString() !==
+                                  new Date(formData.leave_end_date).toDateString();
+
+                              const isSameDay =
+                                formData.leave_start_date &&
+                                formData.leave_end_date &&
+                                new Date(formData.leave_start_date).toDateString() ===
+                                  new Date(formData.leave_end_date).toDateString();
+
+                              const isFullDayOption =
+                                item.leave_time_type_name?.includes("เต็มวัน") ||
+                                item.leave_time_type_name?.includes("ทั้งวัน");
+
+                              const isDisabled = Boolean(isDifferentDays && !isFullDayOption);
+                              return (
+                                <div key={index} className="form-group">
+                                  <RadioButton
+                                    name="leaveTimeType"
+                                    value={`${item.leave_time_type_code}`}
+                                    label={item.leave_time_type_name ?? ""}
+                                    selectedValue={`${formData.leave_time_type_code}`}
+                                    setSelectedValue={isDisabled ? () => {} : handleChangeLeaveTime}
+                                    disabled={isDisabled}
+                                  />
+                                </div>
+                              );
+                            })}
                             {formErrors.leave_time_type_code && (
                               <FormHelper text={String(formErrors.leave_time_type_code)} />
                             )}
                           </div>
-                        </div> */}
+                        </div>
                         <div className="w-full grid grid-cols-1">
                           <div className="w-full">
                             <div className="form-group">

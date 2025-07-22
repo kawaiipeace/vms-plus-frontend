@@ -3,6 +3,7 @@ import Image from "next/image";
 import DriverInfoModal from "@/components/modal/driverInfoModal";
 import { VehicleUserType } from "@/app/types/vehicle-user-type";
 import CallToDriverModal from "../modal/callToDriverModal";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface UserInfoCardProps {
   UserType?: string;
@@ -72,7 +73,7 @@ export default function UserInfoCard({
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                    {vehicleUserData?.tel_mobile || "-"}
+                    { formatPhoneNumber(vehicleUserData?.tel_mobile || "")|| "-"}
                   </span>
                 </div>
                 {UserType != "outsource" && (
@@ -100,7 +101,7 @@ export default function UserInfoCard({
                 <div className="card-item w-full">
                   <i className="material-symbols-outlined">smartphone</i>
                   <span className="card-item-text">
-                    {vehicleUserData?.tel_mobile || "-"}
+                    { formatPhoneNumber(vehicleUserData?.tel_mobile || "")|| "-"}
                   </span>
                 </div>
                 {UserType != "outsource" && (

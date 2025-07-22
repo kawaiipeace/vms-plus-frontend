@@ -393,6 +393,7 @@ const DriverEditInfoModal = forwardRef<{ openModal: () => void; closeModal: () =
               <form className="form" onSubmit={handleSubmit}>
                 <div className="modal-scroll-wrapper overflow-y-auto max-h-[70vh] h-[60vh] ">
                   <div className="modal-body h-[60vh] max-h-[60vh]">
+                    {/* <div className="break-all">{JSON.stringify(formData)}</div> */}
                     <div className="form-section">
                       <div className="form-section-body">
                         <div className="grid md:grid-cols-2 gird-cols-1 gap-4">

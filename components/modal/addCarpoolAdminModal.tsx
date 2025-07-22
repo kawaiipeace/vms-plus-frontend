@@ -330,15 +330,22 @@ const AddCarpoolAdminModal = forwardRef<
   };
 
   const selectAdmin = (option: CustomSelectOption) => {
-    setAdminSelected(option);
-    const admin = admins.find((item) => item.emp_id === option.value);
+    if (option.value === "") {
+      setAdminSelected(undefined);
+      setDeptSapShort("");
+      setInternalContactNumber("");
+      setMobileContactNumber("");
+    } else {
+      setAdminSelected(option);
+      const admin = admins.find((item) => item.emp_id === option.value);
 
-    const internal = admin?.tel_internal;
-    const mobile = admin?.tel_mobile;
-    setInternalContactNumber(internal);
-    setMobileContactNumber(mobile);
-    if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
-    setDeptSapShort(admin?.posi_text + " " + admin?.dept_sap_short);
+      const internal = admin?.tel_internal;
+      const mobile = admin?.tel_mobile;
+      setInternalContactNumber(internal);
+      setMobileContactNumber(mobile);
+      if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
+      setDeptSapShort(admin?.posi_text + " " + admin?.dept_sap_short);
+    }
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());

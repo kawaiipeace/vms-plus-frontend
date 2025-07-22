@@ -23,7 +23,7 @@ export default function ArpproveFlow() {
   const [params, setParams] = useState({
     search: "",
     vehicle_owner_dept: "",
-    ref_request_status_code: "20,21,30,31,40,41,50,51,60,70,71",
+    ref_request_status_code: "",
     order_by: "request_no",
     order_dir: "desc",
     startdate: "",
@@ -65,9 +65,9 @@ export default function ArpproveFlow() {
     {
       "20": { iconName: "schedule", status: "info" },
       "21": { iconName: "reply", status: "warning" },
-      "30": { iconName: "schedule", status: "info" },
+      "30": { iconName: "schedule", status: "warning" },
       "31": { iconName: "schedule", status: "info" },
-      "40": { iconName: "schedule", status: "info" },
+      "40": { iconName: "schedule", status: "warning" },
       "41": { iconName: "schedule", status: "info" },
       "50": { iconName: "key", status: "info" },
       "51": { iconName: "directions_car", status: "info" },

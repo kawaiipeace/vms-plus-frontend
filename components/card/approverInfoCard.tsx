@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { fetchUserApproverUsers } from "@/services/masterService";
 import { ApproverUserType } from "@/app/types/approve-user-type";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface Props {
   emp_id: string;
@@ -55,7 +56,7 @@ export default function ApproverInfoCard({
             <div className="card-item-group md:!grid-cols-2 !grid-cols-1">
               <div className="card-item w-full">
                 <i className="material-symbols-outlined">smartphone</i>
-                <span className="card-item-text">{approverData?.tel_mobile}</span>
+                <span className="card-item-text">{formatPhoneNumber(approverData?.tel_mobile || "")}</span>
               </div>
             
                 <div className="card-item w-full">

@@ -1,11 +1,11 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "@/components/requestStatusBox";
 import FirstApproverListTable from "@/components/table/first-approver-list-table";
 import ZeroRecord from "@/components/zeroRecord";
 import { firstApproverRequests } from "@/services/bookingApprover";
 import { useEffect, useRef, useState } from "react";
 import PaginationControls from "../table/pagination-control";
+import FilterConfirmerModal from "../modal/filterConfirmerModal";
 
 interface PaginationType {
   limit: number;
@@ -313,7 +313,7 @@ export default function FirstApproveFlow() {
           />
         ))
       )}
-          <FilterModal
+          <FilterConfirmerModal
         ref={filterModalRef}
         statusData={summary}
         selectedStatuses={params.ref_request_status_code

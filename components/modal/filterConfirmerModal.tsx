@@ -31,7 +31,7 @@ interface Props {
   }) => void;
 }
 
-const FilterModal = forwardRef<
+const FilterConfirmerModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
 >(
@@ -238,7 +238,6 @@ const FilterModal = forwardRef<
                                               ? "badge-success"
                                               : [
                                                   "ตีกลับยานพาหนะ",
-                                                  "รออนุมัติ",
                                                   "รอตรวจสอบ",
                                                 ].includes(
                                                   statusItem.ref_request_status_name
@@ -339,5 +338,5 @@ const FilterModal = forwardRef<
   }
 );
 
-FilterModal.displayName = "FilterModal";
-export default FilterModal;
+FilterConfirmerModal.displayName = "FilterConfirmerModal";
+export default FilterConfirmerModal;

@@ -253,3 +253,12 @@ export const getDriverTimeline = async (params: {
     throw error;
   }
 };
+
+export const driverCertificateTypeRef = async () => {
+  try {
+    const response = await axiosInstance.get("ref/driver-certificate-type");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
