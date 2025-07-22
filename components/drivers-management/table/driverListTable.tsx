@@ -57,6 +57,7 @@ interface Props {
   onUpdateStatusDriver?: (driverId: string, isActive: string) => void;
   handleDeleteDriver?: (driverName: string, driverUid: string, driverInfo: any) => void;
   handleUpdateSelectedRow?: (selectedRow: Record<string, string | undefined>) => void;
+  cantCreateDriver?: boolean; // New prop to control create button visibility
 }
 
 function IndeterminateCheckbox({
@@ -87,6 +88,7 @@ const DriverListTable = ({
   onUpdateStatusDriver,
   handleDeleteDriver,
   handleUpdateSelectedRow,
+  cantCreateDriver = false, // New prop to control create button visibility
 }: Props) => {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -315,20 +317,22 @@ const DriverListTable = ({
               >
                 <i className="material-symbols-outlined">quick_reference_all</i>
               </button>
-              <button
-                className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
-                data-tip="ลบ"
-                onClick={() =>
-                  handleDeleteDriver &&
-                  handleDeleteDriver(
-                    (row.original as DriverListTableProps).driver_name ?? "",
-                    (row.original as DriverListTableProps).mas_driver_uid ?? "",
-                    row.original as DriverListTableProps
-                  )
-                }
-              >
-                <i className="material-symbols-outlined">delete</i>
-              </button>
+              {!cantCreateDriver && (
+                <button
+                  className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-top"
+                  data-tip="ลบ"
+                  onClick={() =>
+                    handleDeleteDriver &&
+                    handleDeleteDriver(
+                      (row.original as DriverListTableProps).driver_name ?? "",
+                      (row.original as DriverListTableProps).mas_driver_uid ?? "",
+                      row.original as DriverListTableProps
+                    )
+                  }
+                >
+                  <i className="material-symbols-outlined">delete</i>
+                </button>
+              )}
             </div>
           </>
         );

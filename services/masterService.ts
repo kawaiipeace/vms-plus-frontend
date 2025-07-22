@@ -176,6 +176,7 @@ export const fetchSearchDrivers = async (params: {
   start_date?: string;
   end_date?: string;
   mas_carpool_uid?: string;
+  mas_vehicle_uid?: string;
 }) => {
   try {
     const response = await axiosInstance.get("driver/search-booking", { params });

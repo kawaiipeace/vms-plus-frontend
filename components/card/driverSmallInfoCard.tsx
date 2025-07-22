@@ -7,6 +7,7 @@ import AdminDriverPickModal from "../modal/adminDriverPickModal";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import ChooseDriverCard from "./chooseDriverCard";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface DriverSmallInfoCardProps {
   userKeyPickup?: boolean;
@@ -117,7 +118,7 @@ export default function DriverSmallInfoCard({
                     <div className="card-item">
                       <i className="material-symbols-outlined">smartphone</i>
                       <span className="card-item-text">
-                        {driver.driver_contact_number}
+                        {formatPhoneNumber(driver.driver_contact_number || "")}
                       </span>
                     </div>
                   ) : (

@@ -14,6 +14,7 @@ import DriverAppointmentModal from "@/components/modal/driverAppointmentModal";
 import useSwipeDown from "@/utils/swipeDown";
 import { UpdateDriverType } from "@/app/types/form-data-type";
 import { adminUpdateDriver } from "@/services/bookingAdmin";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface Props {
   onSelectDrivers?: (mas_driver_uid: string) => void;
@@ -321,7 +322,7 @@ const SearchDriverModal = forwardRef(
                                       <td className="text-right">
                                         {trip.vehicle_user.full_name} <br />
                                         <sub>
-                                          {trip.vehicle_user.tel_mobile},{" "}
+                                          { formatPhoneNumber(trip.vehicle_user.tel_mobile)},{" "}
                                           {trip.vehicle_user.tel_internal}
                                         </sub>
                                       </td>

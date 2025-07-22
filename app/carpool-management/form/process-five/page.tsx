@@ -73,6 +73,20 @@ export default function CarpoolProcessFive() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (data.length === 0 && pagination.page > 1) {
+      fetchCarpoolDriverSearchFunc({
+        ...pagination,
+        page: pagination.page - 1,
+      });
+      setPagination({
+        ...pagination,
+        page: pagination.page - 1,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   const fetchCarpoolDriverSearchFunc = async (newPagination?: any) => {
     try {
       const response = await getCarpoolDriverSearch(id || "", {

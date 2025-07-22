@@ -1,5 +1,6 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import CallToDriverModal from "@/components/modal/callToDriverModal";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import Image from "next/image";
 import { useRef } from "react";
 
@@ -53,7 +54,7 @@ export default function DriverPassengerPeaInfoCard({ id, requestData, displayLoc
           <div className="grid grid-cols-4 gap-3">
             <div className="flex items-center col-span-3">
               <i className="material-symbols-outlined mr-2 text-[#A80689]">smartphone</i>
-              <p> {contactNumber}</p>
+              <p> {formatPhoneNumber(contactNumber || "")}</p>
             </div>
             <div className="col-span-1">
               <button className="btn btn-primary" onClick={() => callToDriverModalRef.current?.openModal()}>

@@ -22,6 +22,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import PaginationControls from "@/components/table/pagination-control";
+import { toISODateTime } from "@/utils/toIsoFormat";
 
 interface VehicleUser {
   emp_id: string;
@@ -194,13 +195,23 @@ export default function ProcessThree() {
     const fetchDrivers = async () => {
       try {
         setLoadingDrivers(true);
-        const response = await fetchSearchDrivers({
+        const queryParams: Record<string, any> = {
           ...params,
           emp_id: profile?.emp_id,
-          start_date: `${formData.startDate} ${formData.timeStart}`,
-          end_date: `${formData.endDate} ${formData.timeEnd}`,
-          mas_carpool_uid: formData.masCarpoolUid || "",
-        });
+          start_date:  toISODateTime(formData.startDate || "",formData.timeStart || ""),
+          end_date: toISODateTime(formData.endDate || "",formData.timeEnd || ""),
+        };
+        
+  
+        if (formData.masCarpoolUid) {
+          queryParams.mas_carpool_uid = formData.masCarpoolUid;
+        }
+  
+        if (formData.masVehicleUid) {
+          queryParams.mas_vehicle_uid = formData.masVehicleUid;
+        }
+  
+        const response = await fetchSearchDrivers(queryParams);
         if (response.status === 200) {
           // Always set filteredDrivers to the API result for the current page
           setFilteredDrivers(response.data.drivers);

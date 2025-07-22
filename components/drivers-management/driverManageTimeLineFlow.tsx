@@ -115,7 +115,6 @@ export default function VehicleTimeLine() {
     let countFilters = 0;
     const fetchData = async () => {
       try {
-
         const response = await getDriverTimeline(params);
         setDataRequest(response.data.drivers);
         setLastMonth(response.data.last_month);
@@ -194,7 +193,7 @@ export default function VehicleTimeLine() {
           placeholder="ชื่อ-นามสกุล, ชื่อเล่น, สังกัด"
           onSearch={(value) => debouncedSetParams(value)}
         />
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-end items-start gap-4 w-full md:w-auto">
           <div className="flex gap-4 md:flex-row md:items-center">
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -278,15 +277,10 @@ export default function VehicleTimeLine() {
 
 const DropdownMenu = ({ dropdownRef, selectedOption, handleSelect }: any) => (
   <div
-    className={clsx(
-      "absolute right-0 mt-2 w-64 z-50",
-      "rounded-xl shadow",
-      "option-modal"
-    )}
+    className={clsx("absolute right-0 mt-2 w-64 z-50", "rounded-xl shadow", "option-modal")}
     role="menu"
     ref={dropdownRef}
   >
-
     {["all", "first"].map((option) => {
       const isSelected = selectedOption === option;
       const label = option === "all" ? "แสดงทุกคอลัมน์" : "แสดงเฉพาะคอลัมน์แรก";
@@ -296,11 +290,7 @@ const DropdownMenu = ({ dropdownRef, selectedOption, handleSelect }: any) => (
           key={option}
           onClick={() => handleSelect(option)}
           role="menuitem"
-          className={clsx(
-            "flex items-center w-full text-sm text-left",
-            "px-4 py-2",
-            "option-modal-select"
-          )}
+          className={clsx("flex items-center w-full text-sm text-left", "px-4 py-2", "option-modal-select")}
         >
           {isSelected ? (
             <i className="material-symbols-outlined text-blue-600 mr-2">check</i>

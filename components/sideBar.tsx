@@ -71,48 +71,17 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "คำขอใช้ยานพาหนะ",
           link: "/vehicle-booking/request-list",
-          roles: [
-            "vehicle-user",
-            // "level1-approval",
-            // "admin-department",
-            // "admin-carpool",
-            // "approval-department",
-            //"approval-carpool",
-            
-            // "license-approval",
-           
-            // "admin-department",
-            // "admin-region",
-            // "admin-super",
-          ],
+          roles: ["vehicle-user"],
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-confirmer",
-          roles: [
-            // "level1-approval",
-            "level1-approval",
-            // "admin-department",
-            // "admin-carpool",
-            // "approval-department",
-            // "approval-carpool",
-            // "admin-dept",
-            // "admin-super",
-          ],
+          roles: ["level1-approval", "license-approval"],
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-approver",
-          roles: [
-            "license-approval",
-            // "license-confirm",
-            // "admin-department",
-            // "admin-carpool",
-            // "approval-department",
-            // "approval-carpool",
-            // "admin-dept",
-            // "admin-super",
-          ],
+          roles: ["license-approval"],
         },
 
         {
@@ -130,7 +99,12 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
-          roles: ["admin-department", "admin-carpool"],
+          roles: [
+            "admin-approval",
+            "admin-super",
+            "admin-carpool",
+            "approval-carpool",
+          ],
         },
         {
           title: "อนุมัติใช้ยานพาหนะ",

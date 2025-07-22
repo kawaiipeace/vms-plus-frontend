@@ -33,12 +33,10 @@ export default function DriverLicConfirmerListTable({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  // Set pagination from props
-  const [paginationState, setPagination] = useState<PaginationState>({
-    pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
+  const paginationState = {
+    pageIndex: pagination.page - 1, // Convert to 0-based index
     pageSize: pagination.limit,
-  });
- 
+  };
 
   const requestListColumns: ColumnDef<DriverLicListType>[] = [
     {
@@ -203,11 +201,12 @@ export default function DriverLicConfirmerListTable({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    manualPagination: true, // Add this line
     state: {
       sorting,
       pagination: paginationState,
     },
+    pageCount: pagination.totalPages, // Add this line
     defaultColumn: {
       enableSorting: false,
     },

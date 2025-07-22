@@ -80,6 +80,13 @@ export interface DriverCreateDetails {
   approved_job_driver_start_date: string;
   contract_no: string;
   driver_birthdate: string;
+  driver_certificate?: {
+    driver_certificate_expire_date?: string;
+    driver_certificate_issue_date?: string;
+    driver_certificate_name?: string;
+    driver_certificate_no?: string;
+    ref_driver_certificate_type_code?: string;
+  };
   driver_contact_number: string;
   driver_dept_sap_hire: string;
   driver_dept_sap_work: string;
