@@ -118,6 +118,10 @@ export default function ProcessThree() {
   };
 
   useEffect(() => {
+      console.log('form',formData.timeStart);
+  },[]);
+
+  useEffect(() => {
     if (formData.masCarpoolDriverUid) {
       setSelectedVehiclePoolId(formData.masCarpoolDriverUid);
     }
