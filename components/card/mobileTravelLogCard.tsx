@@ -20,6 +20,7 @@ interface MobileWaitForKeyCardProps {
   pickupTime: string;
   parkingLocation?: string;
   isDriverPEA?: boolean;
+  canScoreButton?: boolean;
 }
 
 export default function MobileTravelLogCard({
@@ -35,6 +36,7 @@ export default function MobileTravelLogCard({
   pickupTime,
   parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
   isDriverPEA,
+  canScoreButton,
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
   const [requestData, setRequestData] = useState<RequestDetailType>();
@@ -82,46 +84,46 @@ export default function MobileTravelLogCard({
     return today > pickup;
   }, [pickupDate]);
 
-  const shouldShowRatingButton = useMemo(() => {
-    const today = new Date();
-    const nowHour = today.getHours();
-    const stDate = new Date(startDate);
-    const enDate = new Date(endDate);
+  // const shouldShowRatingButton = useMemo(() => {
+  //   const today = new Date();
+  //   const nowHour = today.getHours();
+  //   const stDate = new Date(startDate);
+  //   const enDate = new Date(endDate);
 
-    const dayIsHaftMorning =
-      stDate.getDate() === enDate.getDate() &&
-      stDate.getMonth() === enDate.getMonth() &&
-      stDate.getFullYear() === enDate.getFullYear() &&
-      enDate.getHours() < 12;
+  //   const dayIsHaftMorning =
+  //     stDate.getDate() === enDate.getDate() &&
+  //     stDate.getMonth() === enDate.getMonth() &&
+  //     stDate.getFullYear() === enDate.getFullYear() &&
+  //     enDate.getHours() < 12;
 
-    const dayIsHalfAfternoon =
-      stDate.getDate() === enDate.getDate() &&
-      stDate.getMonth() === enDate.getMonth() &&
-      stDate.getFullYear() === enDate.getFullYear() &&
-      stDate.getHours() > 12 &&
-      enDate.getHours() < 16;
+  //   const dayIsHalfAfternoon =
+  //     stDate.getDate() === enDate.getDate() &&
+  //     stDate.getMonth() === enDate.getMonth() &&
+  //     stDate.getFullYear() === enDate.getFullYear() &&
+  //     stDate.getHours() > 12 &&
+  //     enDate.getHours() < 16;
 
-    const dayIsFull =
-      stDate.getDate() === enDate.getDate() &&
-      stDate.getMonth() === enDate.getMonth() &&
-      stDate.getFullYear() === enDate.getFullYear() &&
-      stDate.getHours() < 12 &&
-      enDate.getHours() >= 12;
+  //   const dayIsFull =
+  //     stDate.getDate() === enDate.getDate() &&
+  //     stDate.getMonth() === enDate.getMonth() &&
+  //     stDate.getFullYear() === enDate.getFullYear() &&
+  //     stDate.getHours() < 12 &&
+  //     enDate.getHours() >= 12;
 
-    const isAfterTravel =
-      today.getDate() > enDate.getDate() ||
-      (today.getDate() === enDate.getDate() && today.getHours() >= 12);
+  //   const isAfterTravel =
+  //     today.getDate() > enDate.getDate() ||
+  //     (today.getDate() === enDate.getDate() && today.getHours() >= 12);
 
-    if (!isDriverPEA) {
-      return (
-        (dayIsHaftMorning && nowHour >= 12) ||
-        (dayIsHalfAfternoon && nowHour >= 16) ||
-        (dayIsFull && isAfterTravel)
-      );
-    }
+  //   if (!isDriverPEA) {
+  //     return (
+  //       (dayIsHaftMorning && nowHour >= 12) ||
+  //       (dayIsHalfAfternoon && nowHour >= 16) ||
+  //       (dayIsFull && isAfterTravel)
+  //     );
+  //   }
 
-    return false;
-  }, [endDate, isDriverPEA, startDate]);
+  //   return false;
+  // }, [endDate, isDriverPEA, startDate]);
 
   return (
     <div>
@@ -205,7 +207,7 @@ export default function MobileTravelLogCard({
               >
                 บัตรเดินทาง
               </button>
-            ) : !shouldShowRatingButton && !isPickupDatePassed ? (
+            ) : !canScoreButton ? (
               <button
                 className="btn btn-secondary flex-1"
                 onClick={(e) => {
