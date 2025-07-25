@@ -250,7 +250,6 @@ export default function ProcessThree() {
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
-    console.log('test');
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
@@ -749,7 +748,7 @@ export default function ProcessThree() {
                               </span>
                               <span className="badge badge-outline badge-gray page-title-status">
                                 {filteredDrivers.length > 0 ? (
-                                  <>ว่าง {filteredDrivers.length} คน</>
+                                  <>ว่าง {pagination.total} คน</>
                                 ) : (
                                   "ไม่พบข้อมูล"
                                 )}
