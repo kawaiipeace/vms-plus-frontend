@@ -39,6 +39,17 @@ export const createRequest = async (data: any) => {
   }
 };
 
+export const downloadExports = async () => {
+  try {
+    const response = await axiosInstance.get("booking-user/export-requests");
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
 export const cancelRequest = async (data: CanceledRequestType) => {
   try {
     const response = await axiosInstance.put("booking-user/update-canceled", data);

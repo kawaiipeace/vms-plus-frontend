@@ -2,7 +2,7 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
 import FilterModal from "@/components/modal/filterModal";
 import RequestListTable from "@/components/table/request-list-table";
-import { requests } from "@/services/bookingUser";
+import { downloadExports, requests } from "@/services/bookingUser";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -173,6 +173,24 @@ export default function ArpproveFlow() {
     }
   };
 
+  const downloadReport = async () => {
+    const response = await downloadExports();
+      // console.log("Download report response:", response);
+      if (response.status === 200) {
+        const blob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Request_Reports.xlsx"; // Set the desired file name
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      }
+  };
+
   const handleClearAllFilters = () => {
     setParams({
       search: "",
@@ -295,6 +313,15 @@ export default function ArpproveFlow() {
               <span className="badge badge-brand badge-outline rounded-[50%]">
                 {filterNum}
               </span>
+            </div>
+          </button>
+          <button
+            onClick={downloadReport}
+            className="btn btn-secondary h-[40px] min-h-[40px]"
+          >
+            <div className="flex items-center">
+              <i className="material-symbols-outlined">download</i>
+              รายงาน
             </div>
           </button>
           <button

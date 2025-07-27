@@ -49,7 +49,7 @@ export default function CarDetailInsCard({ requestData }: CarDetailCardProps) {
               {/* Fuel refill */}
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">local_gas_station</i>
-                <div className="card-item-text w-full !flex justify-between">เติมเชื้อเพลิงง <span className="text-color-secondary"> {requestData?.add_fuels_count} ครั้ง</span></div>
+                <div className="card-item-text w-full !flex justify-between">เติมเชื้อเพลิง <span className="text-color-secondary"> {requestData?.add_fuels_count} ครั้ง</span></div>
               </div>
               
               {/* Trip log */}
