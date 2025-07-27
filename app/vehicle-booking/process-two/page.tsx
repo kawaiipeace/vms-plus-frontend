@@ -449,7 +449,7 @@ export default function ProcessTwo() {
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
                         {filteredVehicleCards.length > 0 ? (
-                          <>ว่าง {filteredVehicleCards.length} คัน {paginationData.totalGroups} กลุ่ม</>
+                          <>ว่าง {paginationData.total} คัน {paginationData.totalGroups} กลุ่ม</>
                         ) : (
                           "ไม่พบข้อมูล"
                         )}
