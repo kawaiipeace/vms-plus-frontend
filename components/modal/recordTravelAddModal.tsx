@@ -133,9 +133,8 @@ const RecordTravelAddModal = forwardRef<
   }, [dataItem, status, openModal]);
 
   const handleSubmit = () => {
-    // Create a copy of current state for logging
+
     const currentValues = { ...value };
-    console.log("Submitting form with values:", currentValues);
 
     if (
       !currentValues.startDate ||
@@ -147,7 +146,6 @@ const RecordTravelAddModal = forwardRef<
       !currentValues.startMile ||
       !currentValues.endMile
     ) {
-      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
       return;
     }
 
@@ -157,9 +155,9 @@ const RecordTravelAddModal = forwardRef<
           trip_departure_place: currentValues.startLocation,
           trip_destination_place: currentValues.endLocation,
           trip_detail: currentValues.detail || "",
-          trip_end_datetime: convertToISO(currentValues.endDate, currentValues.endTime),
+          trip_end_datetime: convertToISO(currentValues.endDate || "", currentValues.endTime || ""),
           trip_end_miles: Number(currentValues.endMile),
-          trip_start_datetime: convertToISO(currentValues.startDate, currentValues.startTime),
+          trip_start_datetime: convertToISO(currentValues.startDate || "", currentValues.startTime || ""),
           trip_start_miles: Number(currentValues.startMile),
           trn_request_uid: requestId,
         };
