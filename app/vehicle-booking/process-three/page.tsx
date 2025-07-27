@@ -162,10 +162,10 @@ export default function ProcessThree() {
     if (typeName === "พนักงานขับรถ") {
       setSelectedVehiclePoolId("");
       setValue("masCarpoolDriverUid", "");
-      updateFormData({
-        masCarpoolDriverUid: "",
-        // isAdminChooseDriver: false,
-      });
+      // updateFormData({
+      //   masCarpoolDriverUid: "",
+      //   // isAdminChooseDriver: false,
+      // });
     }
 
     setSelectedDriverType(typeName);
