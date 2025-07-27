@@ -127,13 +127,13 @@ export default function ProcessThree() {
     setLoading(false);
     
     // Modified this part to prioritize isAdminChooseDriver
-    if (formData.isAdminChooseDriver === true) {
+    if (formData.isAdminChooseDriver === true || formData.isSystemChooseDriver === true) {
       setSelectedDriverType("พนักงานขับรถ");
       driverAppointmentRef.current?.openModal();
     } else if (formData.isPeaEmployeeDriver) {
       setSelectedDriverType(formData.isPeaEmployeeDriver === "1" ? "พนักงาน กฟภ." : "พนักงานขับรถ");
     }
-  }, [formData.masCarpoolDriverUid,formData.isAdminChooseDriver,formData.isPeaEmployeeDriver, router]);
+  }, [formData.masCarpoolDriverUid,formData.isAdminChooseDriver,formData.isSystemChooseDriver,formData.isPeaEmployeeDriver, router]);
 
   useEffect(() => {
     if (appointValid) {
@@ -164,7 +164,7 @@ export default function ProcessThree() {
       setValue("masCarpoolDriverUid", "");
       updateFormData({
         masCarpoolDriverUid: "",
-        isAdminChooseDriver: false,
+        // isAdminChooseDriver: false,
       });
     }
 
@@ -172,12 +172,12 @@ export default function ProcessThree() {
     const isPeaEmployee = typeName === "พนักงาน กฟภ." ? "1" : "0";
     
     setValue("isPeaEmployeeDriver", isPeaEmployee);
-    updateFormData({
-      isPeaEmployeeDriver: isPeaEmployee,
-      isAdminChooseDriver: typeName === "พนักงานขับรถ",
-    });
+    // updateFormData({
+    //   isPeaEmployeeDriver: isPeaEmployee,
+    //   isAdminChooseDriver: typeName === "พนักงานขับรถ",
+    // });
 
-    if (typeName === "พนักงานขับรถ" && formData.isAdminChooseDriver) {
+    if (typeName === "พนักงานขับรถ" && (formData.isAdminChooseDriver || formData.isSystemChooseDriver)) {
       driverAppointmentRef.current?.openModal();
     }
   };
@@ -702,7 +702,7 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                  {!formData.isAdminChooseDriver && (
+                  {(!formData.isAdminChooseDriver && !formData.isSystemChooseDriver) && (
                     <>
                       <div className="page-section-header border-0">
                         <div className="page-header-left">

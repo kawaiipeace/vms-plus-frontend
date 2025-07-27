@@ -25,6 +25,7 @@ export interface FormDataType {
   isAdminChooseDriver?: boolean;
   isSystemChooseVehicle?: string;
   isAdminChooseVehicle?: string;
+  isSystemChooseDriver?: boolean;
   isDriverNeed?: string;
   isHaveSubRequest?: string;
   isPeaEmployeeDriver?: string;
