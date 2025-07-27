@@ -120,6 +120,7 @@ const LicenseCardModal = forwardRef<
               </div>
               <div className="flex justify-start col-span-12">
                 <div className="text-left">
+                  <p className="font-bold text-lg">ใบอนุญาตนำรถออกจาก กฟภ.</p>
                   <p className="font-bold text-3xl">
                     {data?.vehicle_license_plate || "-"}
                   </p>

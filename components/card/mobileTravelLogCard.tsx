@@ -21,6 +21,7 @@ interface MobileWaitForKeyCardProps {
   parkingLocation?: string;
   isDriverPEA?: boolean;
   canScoreButton?: boolean;
+  showTravelCard?: boolean;
 }
 
 export default function MobileTravelLogCard({
@@ -37,6 +38,7 @@ export default function MobileTravelLogCard({
   parkingLocation = "ล็อคที่ 5A ชั้น 2B อาคาร LED",
   isDriverPEA,
   canScoreButton,
+  showTravelCard
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
   const [requestData, setRequestData] = useState<RequestDetailType>();
@@ -208,7 +210,18 @@ export default function MobileTravelLogCard({
                 บัตรเดินทาง
               </button>
             ) : !canScoreButton ? (
+              (showTravelCard) ? (
               <button
+                className="btn btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  licenseCardModalRef.current?.openModal();
+                }}
+              >
+                ใบอนุญาตนำรถออก
+              </button>
+              ) : (
+                <button
                 className="btn btn-secondary flex-1"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -219,6 +232,7 @@ export default function MobileTravelLogCard({
               >
                 ดูนัดหมาย
               </button>
+              )
             ) : (
               <button
                 className="btn btn-secondary flex-1"

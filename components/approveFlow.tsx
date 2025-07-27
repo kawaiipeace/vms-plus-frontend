@@ -227,7 +227,7 @@ export default function ArpproveFlow() {
 
   return (
     <>
-      <div className="hidden md:block">
+      {/* <div className="hidden md:block">
         <div className="grid grid-cols-4 gap-4 mb-4">
           {summary !== null && (
             <>
@@ -257,7 +257,7 @@ export default function ArpproveFlow() {
             </>
           )}
         </div>
-      </div>
+      </div> */}
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mt-5">
         <div className="block md:w-[25%] w-full">
