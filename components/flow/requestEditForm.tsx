@@ -493,6 +493,14 @@ export default function RequestEditForm({
               />
             )}
 
+              {updatedFormData.isSystemChooseDriver === true && (
+              <ChooseDriverCard
+                topic="ระบบเลือกพนักงานขับรถให้อัตโนมัติ"
+                number={availableDriver}
+                requestData={updatedFormData}
+              />
+            )}
+
             {updatedFormData?.isAdminChooseDriver === false && (
               updatedFormData.isPeaEmployeeDriver === "1" ? (
                 <div className="mt-5">

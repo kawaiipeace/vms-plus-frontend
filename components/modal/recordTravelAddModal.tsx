@@ -74,6 +74,11 @@ const RecordTravelAddModal = forwardRef<
 
   const [openModal, setOpenModal] = useState(false);
 
+  // Debug useEffect to log value changes
+  useEffect(() => {
+    console.log("Form values updated:", value);
+  }, [value]);
+
   useImperativeHandle(ref, () => ({
     openModal: () => {
       modalRef.current?.showModal();
@@ -87,7 +92,7 @@ const RecordTravelAddModal = forwardRef<
 
   const handleCloseModal = () => {
     modalRef.current?.close();
-    setOpenModal(false); // Update state to reflect modal is closed
+    setOpenModal(false);
   };
 
   useEffect(() => {
@@ -128,112 +133,99 @@ const RecordTravelAddModal = forwardRef<
   }, [dataItem, status, openModal]);
 
   const handleSubmit = () => {
-    const {
-      startDate,
-      startTime,
-      endDate,
-      endTime,
-      startLocation,
-      endLocation,
-      startMile,
-      endMile,
-      detail,
-    } = value || {};
+
+    const currentValues = { ...value };
 
     if (
-      startDate &&
-      startTime &&
-      endDate &&
-      endTime &&
-      startLocation &&
-      endLocation &&
-      startMile &&
-      endMile
+      !currentValues.startDate ||
+      !currentValues.startTime ||
+      !currentValues.endDate ||
+      !currentValues.endTime ||
+      !currentValues.startLocation ||
+      !currentValues.endLocation ||
+      !currentValues.startMile ||
+      !currentValues.endMile
     ) {
-      const submitForm = async () => {
-        try {
-          const payload = {
-            trip_departure_place: startLocation,
-            trip_destination_place: endLocation,
-            trip_detail: detail || "",
-            trip_end_datetime: convertToISO(endDate, endTime),
-            trip_end_miles: Number(endMile),
-            trip_start_datetime: convertToISO(startDate, startTime),
-            trip_start_miles: Number(startMile),
-            trn_request_uid: requestId,
-          };
-
-          if (status) {
-            const res =
-              role === "userRecordTravel" || role === "user"
-                ? await UserUpdateTravelDetail(
-                    dataItem?.trn_trip_detail_uid || "",
-                    payload
-                  )
-                : role === "admin"
-                ? await adminUpdateTravelDetail(
-                    dataItem?.trn_trip_detail_uid || "",
-                    payload
-                  )
-                : await driverUpdateTravelDetail(
-                    dataItem?.trn_trip_detail_uid || "",
-                    payload
-                  );
-            const data = res.data;
-            if (data) {
-              handleCloseModal();
-
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              role === "userRecordTravel" || role === "user"
-                ? router.push(
-                    pathName +
-                      `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  )
-                : role === "admin"
-                ? router.push(
-                    pathName +
-                      `?activeTab=ข้อมูลการเดินทาง&update-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  )
-                : router.push(
-                    pathName +
-                      `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  );
-            }
-          } else {
-            const res =
-              role === "userRecordTravel" || role === "user"
-                ? await UserCreateTravelDetail(payload)
-                : role === "admin"
-                ? await adminCreateTravelDetail(payload)
-                : await driverCreateTravelDetail(payload);
-            const data = res.data;
-            if (data) {
-              handleCloseModal();
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              role === "userRecordTravel" || role === "user"
-                ? router.push(
-                    pathName +
-                      `?activeTab=${activeTab}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  )
-                : role === "admin"
-                ? router.push(
-                    pathName +
-                      `?activeTab=ข้อมูลการเดินทาง&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  )
-                : router.push(
-                    pathName +
-                      `?progressType=${progressType}&create-travel-req=success&date-time=${data.data?.trip_start_datetime}`
-                  );
-            }
-          }
-        } catch (error) {
-          console.error("Error submitting form:", error);
-        }
-      };
-
-      submitForm();
+      return;
     }
+
+    const submitForm = async () => {
+      try {
+        const payload = {
+          trip_departure_place: currentValues.startLocation,
+          trip_destination_place: currentValues.endLocation,
+          trip_detail: currentValues.detail || "",
+          trip_end_datetime: convertToISO(currentValues.endDate || "", currentValues.endTime || ""),
+          trip_end_miles: Number(currentValues.endMile),
+          trip_start_datetime: convertToISO(currentValues.startDate || "", currentValues.startTime || ""),
+          trip_start_miles: Number(currentValues.startMile),
+          trn_request_uid: requestId,
+        };
+
+        console.log("Payload being sent:", payload);
+
+        if (status) {
+          // Update existing travel detail
+          const res =
+            role === "userRecordTravel" || role === "user"
+              ? await UserUpdateTravelDetail(
+                  dataItem?.trn_trip_detail_uid || "",
+                  payload
+                )
+              : role === "admin"
+              ? await adminUpdateTravelDetail(
+                  dataItem?.trn_trip_detail_uid || "",
+                  payload
+                )
+              : await driverUpdateTravelDetail(
+                  dataItem?.trn_trip_detail_uid || "",
+                  payload
+                );
+
+          if (res.data) {
+            handleCloseModal();
+            const redirectPath =
+              role === "userRecordTravel" || role === "user"
+                ? pathName +
+                  `?activeTab=${activeTab}&create-travel-req=success&date-time=${res.data.data?.trip_start_datetime}`
+                : role === "admin"
+                ? pathName +
+                  `?activeTab=ข้อมูลการเดินทาง&update-travel-req=success&date-time=${res.data.data?.trip_start_datetime}`
+                : pathName +
+                  `?progressType=${progressType}&create-travel-req=success&date-time=${res.data.data?.trip_start_datetime}`;
+            router.push(redirectPath);
+          }
+        } else {
+          // Create new travel detail
+          const res =
+            role === "userRecordTravel" || role === "user"
+              ? await UserCreateTravelDetail(payload)
+              : role === "admin"
+              ? await adminCreateTravelDetail(payload)
+              : await driverCreateTravelDetail(payload);
+
+          if (res.data) {
+            handleCloseModal();
+            const redirectPath =
+              role === "userRecordTravel" || role === "user"
+                ? pathName +
+                  `?activeTab=${activeTab}&create-travel-req=success&date-time=${res.data.data?.trip_start_datetime}`
+                : role === "admin"
+                ? pathName +
+                  `?activeTab=ข้อมูลการเดินทาง&create-travel-req=success&date-time=${res.data.data?.trip_start_datetime}`
+                : pathName +
+                  `?progressType=${progressType}&create-travel-req=success&date-time=${res.data.data?.trip_start_datetime}`;
+            router.push(redirectPath);
+          }
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
+    };
+
+    submitForm();
   };
+
   const swipeDownHandlers = useSwipeDown(handleCloseModal);
 
   return (
@@ -286,10 +278,10 @@ const RecordTravelAddModal = forwardRef<
                             placeholder={"ระบุวันที่จากต้นทาง"}
                             minDate={dayjs().format("DD/MM/YYYY")}
                             onChange={(dateStr) =>
-                              setValue({
-                                ...value,
+                              setValue((prev) => ({
+                                ...prev,
                                 startDate: dateStr,
-                              })
+                              }))
                             }
                             ref={startPickerRef}
                             defaultValue={
@@ -316,11 +308,11 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <TimePicker
                             placeholder="ระบุเวลาจากต้นทาง"
-                            onChange={(dateStr) => {
-                              setValue({
-                                ...value,
-                                startTime: dateStr,
-                              });
+                            onChange={(timeStr) => {
+                              setValue((prev) => ({
+                                ...prev,
+                                startTime: timeStr, // Fixed: Changed from endTime to startTime
+                              }))
                             }}
                             defaultValue={
                               value?.startTime ||
@@ -346,7 +338,10 @@ const RecordTravelAddModal = forwardRef<
                           <DatePicker
                             placeholder={"ระบุวันที่ถึงปลายทาง"}
                             onChange={(dateStr) =>
-                              setValue({ ...value, endDate: dateStr })
+                              setValue((prev) => ({
+                                ...prev,
+                                endDate: dateStr,
+                              }))
                             }
                             minDate={value.startDate}
                             ref={endPickerRef}
@@ -369,8 +364,11 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <TimePicker
                             placeholder="ระบุเวลาถึงปลายทาง"
-                            onChange={(dateStr) =>
-                              setValue({ ...value, endTime: dateStr })
+                            onChange={(timeStr) =>
+                              setValue((prev) => ({
+                                ...prev,
+                                endTime: timeStr,
+                              }))
                             }
                             minTime={
                               dayjs(value.startDate).isSame(

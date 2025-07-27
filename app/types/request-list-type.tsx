@@ -38,6 +38,7 @@ export type RequestListType = Partial<{
   mas_driver_uid: string;
 
   can_score_button: boolean;
+  can_travel_card_button: boolean;
 }>;
 
 export interface summaryType {
