@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -380,7 +381,7 @@ const DriverDetailContent = ({
               }
               time={
                 data?.accepted_vehicle_datetime
-                  ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                  ? convertToBuddhistDateTime(data?.accepted_vehicle_datetime).time
                   : "-"
               }
               mile_end={data?.mile_end?.toString() || "-"}
