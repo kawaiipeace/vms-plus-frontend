@@ -26,6 +26,7 @@ export default function RequestListTable({
 
   const dates = useGenerateDates(params);
   const dataTransform = useMemo(() => transformApiToTableData(dataRequest, dates), [dataRequest, dates]);
+  // console.log('dataTransform', dataTransform)
 
   const columnHelper = createColumnHelper<VehicleTimelineListTableData>();
   const handleOpenDetailModal = () => vehicleTimelineDetailRef.current?.open();

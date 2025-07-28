@@ -25,6 +25,7 @@ interface Carpool {
   carpool_name: string;
   ref_carpool_choose_car_id: number;
   is_admin_choose_driver?: boolean;
+  is_system_choose_driver?: boolean;
   ref_carpool_choose_car: {
     ref_carpool_choose_car_id: number;
     type_of_choose_car: string;
@@ -44,6 +45,7 @@ interface Vehicle {
   seat: number;
   vehicle_owner_dept_short: string;
   is_admin_choose_driver?: boolean;
+  is_system_choose_driver?: boolean;
   fleet_card_no?: string;
 }
 
@@ -61,6 +63,7 @@ interface FormData {
   isAdminChooseVehicle?: string;
   isSystemChooseVehicle?: string;
   isAdminChooseDriver?: boolean;
+  isSystemChooseDriver?: boolean;
   vehicleSelect?: string;
   carpoolName?: string;
   masCarpoolUid?: string;
@@ -258,6 +261,8 @@ export default function ProcessTwo() {
 
       updatedData.isAdminChooseDriver =
         selectedVehicleObj?.is_admin_choose_driver;
+        updatedData.isSystemChooseDriver =
+        selectedVehicleObj?.is_system_choose_driver;
       updatedData.masCarpoolUid = "";
       updatedData.carpoolName = "";
       updatedData.masVehicleUid = value;
@@ -295,6 +300,7 @@ export default function ProcessTwo() {
     if (selectedCarpool) {
       updatedData.carpoolName = selectedCarpool.carpool_name;
       updatedData.isAdminChooseDriver = selectedCarpool?.is_admin_choose_driver;
+      updatedData.isSystemChooseDriver = selectedCarpool?.is_system_choose_driver;
       updatedData.isSystemChooseVehicle =
         selectedCarpool.ref_carpool_choose_car_id === 3 ? "1" : "0";
       updatedData.isAdminChooseVehicle =
@@ -305,7 +311,7 @@ export default function ProcessTwo() {
 
     updateFormData(updatedData);
 
-    if (selectedCarpool?.is_admin_choose_driver === true) {
+    if (selectedCarpool?.is_admin_choose_driver === true || selectedCarpool?.is_system_choose_driver === true ) {
       router.push("process-four");
     }
 
@@ -449,7 +455,7 @@ export default function ProcessTwo() {
                       </span>
                       <span className="badge badge-outline badge-gray page-title-status">
                         {filteredVehicleCards.length > 0 ? (
-                          <>ว่าง {filteredVehicleCards.length} คัน {paginationData.totalGroups} กลุ่ม</>
+                          <>ว่าง {paginationData.total} คัน {paginationData.totalGroups} กลุ่ม</>
                         ) : (
                           "ไม่พบข้อมูล"
                         )}

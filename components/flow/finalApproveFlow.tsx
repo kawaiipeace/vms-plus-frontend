@@ -1,5 +1,4 @@
 import { RequestListType, summaryType } from "@/app/types/request-list-type";
-import FilterModal from "@/components/modal/filterModal";
 import RequestStatusBox from "@/components/requestStatusBox";
 import FinalListTable from "@/components/table/final-list-table";
 import PaginationControls from "@/components/table/pagination-control";
@@ -7,6 +6,7 @@ import ZeroRecord from "@/components/zeroRecord";
 import { fetchRequests } from "@/services/bookingFinal";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
+import FilterFinalModal from "../modal/filterFinalModal";
 
 interface PaginationType {
   limit: number;
@@ -411,7 +411,7 @@ export default function FinalApproveFlow() {
         />
       )}
 
-      <FilterModal
+      <FilterFinalModal
         ref={filterModalRef}
         statusData={summary}
         selectedStatuses={params.ref_request_status_code
