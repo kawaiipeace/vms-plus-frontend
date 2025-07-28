@@ -162,20 +162,20 @@ export default function ProcessThree() {
     if (typeName === "พนักงานขับรถ") {
       setSelectedVehiclePoolId("");
       setValue("masCarpoolDriverUid", "");
-      // updateFormData({
-      //   masCarpoolDriverUid: "",
-      //   // isAdminChooseDriver: false,
-      // });
+      updateFormData({
+        masCarpoolDriverUid: "",
+        // isAdminChooseDriver: false,
+      });
     }
 
     setSelectedDriverType(typeName);
     const isPeaEmployee = typeName === "พนักงาน กฟภ." ? "1" : "0";
     
     setValue("isPeaEmployeeDriver", isPeaEmployee);
-    // updateFormData({
-    //   isPeaEmployeeDriver: isPeaEmployee,
-    //   isAdminChooseDriver: typeName === "พนักงานขับรถ",
-    // });
+    updateFormData({
+      isPeaEmployeeDriver: isPeaEmployee,
+      // isAdminChooseDriver: typeName === "พนักงานขับรถ",
+    });
 
     if (typeName === "พนักงานขับรถ" && (formData.isAdminChooseDriver || formData.isSystemChooseDriver)) {
       driverAppointmentRef.current?.openModal();
