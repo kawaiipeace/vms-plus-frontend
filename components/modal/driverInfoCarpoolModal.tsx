@@ -172,7 +172,7 @@ const DriverInfoCarpoolModal = forwardRef<
                               <div className="form-text text-nowrap">
                                 {!vehicleUserData?.ref_driver_status_code
                                   ? "-"
-                                  : vehicleUserData?.ref_driver_status_code ===
+                                  : String(vehicleUserData?.ref_driver_status_code) ===
                                     "1"
                                   ? "ค้างคืนได้"
                                   : "ไม่ค้างคืนได้"}
