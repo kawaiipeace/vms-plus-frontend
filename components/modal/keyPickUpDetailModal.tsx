@@ -214,7 +214,7 @@ const KeyPickupDetailModal = forwardRef<
                         <div className="form-plaintext-group align-self-center">
                           <div className="form-label">{name}</div>
                           <div className="supporting-text-group">
-                            <div className="supporting-text">{deptSap}</div>
+                            {/* <div className="supporting-text">{deptSap}</div> */}
                             <div className="supporting-text">
                               {" "}
                               {deptSapShort}
