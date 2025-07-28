@@ -15,7 +15,7 @@ import RecordTravelTab from "@/components/tabs/recordTravelTab";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
+// import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
 
 interface DriverDetailContentProps {
@@ -248,9 +248,16 @@ const DriverDetailContent = ({
                     <p>ผู้โดยสาร</p>
                   </div>
                 </div>
-                <DriverPassengerInfoCard
+                {/* <DriverPassengerInfoCard
                   id={data?.trn_request_uid}
                   requestData={data}
+                /> */}
+                <UserInfoCard
+                  displayOn="driver"
+                  displayBtnMore={true}
+                  vehicleUserData={
+                    data?.vehicle?.vehicle_department?.vehicle_user
+                  }
                 />
               </div>
             </div>
