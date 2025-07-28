@@ -33,6 +33,8 @@ interface Props {
   role?: string;
   requestId?: string;
   dataItem?: RecordTravelTabProps;
+  pickupPlace?: string;
+  workPlace?: string;
 }
 
 export interface RecordTravelValueType {
@@ -50,7 +52,7 @@ export interface RecordTravelValueType {
 const RecordTravelAddModal = forwardRef<
   { openModal: () => void; closeModal: () => void },
   Props
->(({ status, role, requestId, dataItem }, ref) => {
+>(({ status, role, requestId, dataItem, pickupPlace, workPlace }, ref) => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -110,7 +112,7 @@ const RecordTravelAddModal = forwardRef<
         startLocation: dataItem?.trip_departure_place,
         endLocation: dataItem?.trip_destination_place,
         startMile: String(dataItem?.trip_start_miles),
-        endMile: String(dataItem?.trip_end_miles),
+        endMile: String(dataItem?.trip_start_miles),
         detail: dataItem?.trip_detail,
       });
       startPickerRef.current?.setValue?.(startDate.date);
@@ -119,14 +121,16 @@ const RecordTravelAddModal = forwardRef<
       setValue({
         startDate: dayjs().format("YYYY-MM-DD"),
         startTime: dayjs().hour(8).minute(30).format("HH:mm"),
-        endDate: "",
-        endTime: "",
-        startLocation: "",
-        endLocation: "",
+        endDate: dayjs().format("YYYY-MM-DD"),
+        endTime: dayjs().hour(8).minute(30).format("HH:mm"),
+        startLocation: pickupPlace,
+        endLocation: workPlace,
         startMile: dataItem?.trip_start_miles
           ? dataItem?.trip_start_miles.toString()
           : "",
-        endMile: "",
+        endMile: dataItem?.trip_start_miles
+        ? dataItem?.trip_start_miles.toString()
+        : "",
         detail: "",
       });
     }
@@ -337,13 +341,16 @@ const RecordTravelAddModal = forwardRef<
                           </div>
                           <DatePicker
                             placeholder={"ระบุวันที่ถึงปลายทาง"}
+                            defaultValue={dayjs().format("DD/MM/YYYY")}
                             onChange={(dateStr) =>
                               setValue((prev) => ({
                                 ...prev,
                                 endDate: dateStr,
                               }))
                             }
-                            minDate={value.startDate}
+                            minDate={value.startDate
+                              ? convertToThaiDate(value.startDate)
+                              : dayjs().format("DD/MM/YYYY")}
                             ref={endPickerRef}
                           />
                         </div>

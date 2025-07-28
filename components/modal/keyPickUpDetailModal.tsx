@@ -187,7 +187,7 @@ const KeyPickupDetailModal = forwardRef<
                     <div className="form-section-header-title">
                       {role === "driver" ? "ผู้รับกุญแจ" : "ผู้ไปรับกุญแจ"}
                     </div>
-                    {/* {role !== "driver" && (
+                     {role !== "driver" && (
                       <button
                         className="btn btn-tertiary-brand bg-transparent shadow-none border-none"
                         onClick={() => {
@@ -199,7 +199,7 @@ const KeyPickupDetailModal = forwardRef<
                       >
                         แก้ไข
                       </button>
-                    )} */}
+                    )} 
                   </div>
                   <div className="form-card w-full">
                     <div className="form-card-body">
