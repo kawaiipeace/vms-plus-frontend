@@ -13,10 +13,7 @@ export const BASE_STATUS_COLORS = {
   gray: { border: "gray-300", bg: "gray-100", text: "gray-700" },
 } as const;
 
-export const STATUS_COLOR_GROUPS: Record<
-  keyof typeof BASE_STATUS_COLORS,
-  string[]
-> = {
+export const STATUS_COLOR_GROUPS: Record<keyof typeof BASE_STATUS_COLORS, string[]> = {
   green: ["ปกติ", "เสร็จสิ้น"],
   orange: ["บำรุงรักษา", "รออนุมัติ"],
   blue: ["ใช้ชั่วคราว", "ระหว่างโอน", "ค้างแรม"],
@@ -24,27 +21,48 @@ export const STATUS_COLOR_GROUPS: Record<
   gray: ["สิ้นสุดสัญญา"],
 };
 
-export const STATUS_CLASS_MAP: Record<string, string> = Object.entries(
-  STATUS_COLOR_GROUPS
-).reduce((acc, [color, statuses]) => {
-  const colorSet = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
-  const classes = `border-[${colorSet.border}] bg-[${colorSet.bg}] text-[${colorSet.text}]`;
-  statuses.forEach((status) => {
-    acc[status] = classes;
-  });
-  return acc;
-}, {} as Record<string, string>);
+// export const STATUS_CLASS_MAP: Record<string, string> = Object.entries(STATUS_COLOR_GROUPS).reduce(
+//   (acc, [color, statuses]) => {
+//     const colorSet = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
+//     const classes = `border-[${colorSet.border}] bg-[${colorSet.bg}] text-[${colorSet.text}]`;
+//     statuses.forEach((status) => {
+//       acc[status] = classes;
+//     });
+//     return acc;
+//   },
+//   {} as Record<string, string>
+// );
 
-export const STATUS_DETAIL_MAP: Record<
-  string,
-  (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]
-> = Object.entries(STATUS_COLOR_GROUPS).reduce((acc, [color, statuses]) => {
-  const detail = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
-  statuses.forEach((status) => {
-    acc[status] = detail;
-  });
-  return acc;
-}, {} as Record<string, (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]>);
+// export const STATUS_DETAIL_MAP: Record<string, (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]> =
+//   Object.entries(STATUS_COLOR_GROUPS).reduce((acc, [color, statuses]) => {
+//     const detail = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
+//     statuses.forEach((status) => {
+//       acc[status] = detail;
+//     });
+//     return acc;
+//   }, {} as Record<string, (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]>);
+
+const buildStatusMap = <T>(
+  colorGroups: Record<string, string[]>,
+  colorValues: Record<string, T>,
+  buildValue: (color: string, value: T) => any
+) =>
+  Object.entries(colorGroups).reduce((acc, [color, statuses]) => {
+    const value = colorValues[color];
+    statuses.forEach((status) => {
+      acc[status] = buildValue(color, value);
+    });
+    return acc;
+  }, {} as Record<string, any>);
+
+export const STATUS_CLASS_MAP: Record<string, string> = buildStatusMap(
+  STATUS_COLOR_GROUPS,
+  BASE_STATUS_COLORS,
+  (color, colorSet) => `border-[${colorSet.border}] bg-[${colorSet.bg}] text-[${colorSet.text}]`
+);
+
+export const STATUS_DETAIL_MAP: Record<string, (typeof BASE_STATUS_COLORS)[keyof typeof BASE_STATUS_COLORS]> =
+  buildStatusMap(STATUS_COLOR_GROUPS, BASE_STATUS_COLORS, (_, colorSet) => colorSet);
 
 export const imgPath = new Map([
   ["รออนุมัติ", "/assets/img/vehicle/pending_approval.svg"],
@@ -53,10 +71,7 @@ export const imgPath = new Map([
   ["เสร็จสิ้น", "/assets/img/vehicle/completed.svg"],
 ]);
 
-export function transformVehicleApiToTableData(
-  rawData: any,
-  dates: any[]
-): VehicleTimelineTransformData[] {
+export function transformVehicleApiToTableData(rawData: any, dates: any[]): VehicleTimelineTransformData[] {
   const vehicles: any[] = rawData ?? [];
 
   const createEmptyTimeline = () =>
@@ -79,17 +94,14 @@ export function transformVehicleApiToTableData(
         userName: request.vehicle_user_emp_name ?? "นายไข่ สนาม",
         userDeptShortName: request.vehicle_user_dept_name_short ?? "ฝ่ายขนส่ง",
         userPosition: request.vehicle_user_position ?? "พนักงานขับรถ",
-        userContactNumber:
-          request.car_user_mobile_contact_number ?? "0912345678",
-        userContactInternalNumber:
-          request.car_user_internal_contact_number ?? "1234",
+        userContactNumber: request.car_user_mobile_contact_number ?? "0912345678",
+        userContactInternalNumber: request.car_user_internal_contact_number ?? "1234",
       };
 
       driverDetail = {
         driverName: request.driver?.driver_name ?? "",
         licensePlate: vehicle.vehicle_license_plate ?? "",
-        licensePlateProvinceShort:
-          vehicle.vehicle_license_plate_province_short ?? "",
+        licensePlateProvinceShort: vehicle.vehicle_license_plate_province_short ?? "",
       };
 
       request.trip_details.forEach((trip: any) => {
@@ -98,9 +110,7 @@ export function transformVehicleApiToTableData(
         const duration = Math.max(end.diff(start, "day") + 1, 1);
 
         for (let i = 0; i < duration; i++) {
-          const currentDateKey = `${start.add(i, "day").date()}_${
-            start.month() + 1
-          }_${start.year()}`;
+          const currentDateKey = `${start.add(i, "day").date()}_${start.month() + 1}_${start.year()}`;
           if (!timeline[`day_${currentDateKey}`]) continue;
 
           timeline[`day_${currentDateKey}`].push({
@@ -122,8 +132,7 @@ export function transformVehicleApiToTableData(
 
     return {
       vehicleLicensePlate: vehicle.vehicle_license_plate,
-      vehicleLicensePlateProvinceShort:
-        vehicle.vehicle_license_plate_province_short,
+      vehicleLicensePlateProvinceShort: vehicle.vehicle_license_plate_province_short,
       vehicleBrandModel: vehicle.vehicle_model_name,
       vehicleBrandName: vehicle.vehicle_brand_name,
       vehicleType: vehicle.vehicle_car_type_detail,
@@ -144,10 +153,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
       end_date: endDate,
     });
     const holidayMap = new Map(
-      response.map((item: any) => [
-        dayjs(item.mas_holidays_date).format("YYYY/MM/DD"),
-        item.mas_holidays_detail,
-      ])
+      response.map((item: any) => [dayjs(item.mas_holidays_date).format("YYYY/MM/DD"), item.mas_holidays_detail])
     );
 
     const dates = [];
@@ -187,37 +193,30 @@ export const DateLongTH = (date: Date) => {
   return `${day}/${month}/${year}`;
 };
 
-export const convertDateToLongTH = (
-  date: Date,
-  format?: string,
-  locale?: string
-) => {
-  const dateLocale = locale ? dayjs(date).locale("th") : dayjs(date);
-  if (format === "full") {
-    return `${dateLocale.format("D MMMM")} ${dateLocale.year() + 543}`;
-  } else if (format === "DD/MM/YYYY") {
-    return `${dateLocale.format("DD/MM/")}${dateLocale.year() + 543}`;
-  }
+export const convertDateToLongTH = (date: Date, format?: string, locale: string = "th"): string => {
+  const localizedDate = dayjs(date).tz("Asia/Bangkok").locale(locale);
+  const buddhistYear = localizedDate.year() + 543;
 
-  return `${dateLocale.format("D MMM")} ${dateLocale.year() + 543}`;
+  if (format === "full") {
+    return `${localizedDate.format("D MMMM")} ${buddhistYear}`;
+  }
+  if (format === "DD/MM/YYYY") {
+    return `${localizedDate.format("DD/MM/")}${buddhistYear}`;
+  }
+  return `${localizedDate.format("D MMM")} ${buddhistYear}`;
 };
 
-export function transformDriverApiToTableData(
-  rawData: any,
-  dates: any[]
-): DriverTimelineTransformData[] {
-  const createEmptyTimeline = () => {
-    const timeline: Record<string, any[]> = {};
-    for (let i = 1; i <= dates.length; i++) {
-      timeline[dates[i - 1].key] = [];
-    }
+const createEmptyTimeline = (dates: any[]) =>
+  dates.reduce((timeline: Record<string, any[]>, date: any) => {
+    timeline[date.key] = [];
     return timeline;
-  };
+  }, {});
 
+export function transformDriverApiToTableData(rawData: any, dates: any[]): DriverTimelineTransformData[] {
   const drivers: any[] = rawData ?? [];
 
   return drivers.map((driver) => {
-    const timeline = createEmptyTimeline();
+    const timeline = createEmptyTimeline(dates);
     let latestStatus = "";
     let carUserDetail: Record<string, string> = {};
     let driverDetail: Record<string, string> = {};
@@ -232,8 +231,7 @@ export function transformDriverApiToTableData(
         userDeptShortName: req.vehicle_user_dept_name_short ?? "ฝ่ายขนส่ง",
         userPosition: req.vehicle_user_position ?? "พนักงานขับรถ",
         userContactNumber: req.car_user_mobile_contact_number ?? "0912345678",
-        userContactInternalNumber:
-          req.car_user_internal_contact_number ?? "1234",
+        userContactInternalNumber: req.car_user_internal_contact_number ?? "1234",
       };
       // carUserDetail.userName = req.vehicle_user_emp_name || "นายไข่ สนาม";
       // carUserDetail.userContactNumber = req.car_user_mobile_contact_number || "0912345678";
@@ -242,24 +240,21 @@ export function transformDriverApiToTableData(
       driverDetail = {
         driverName: driver?.driver_name ?? "",
         licensePlate: req.vehicle_license_plate ?? "",
-        licensePlateProvinceShort:
-          req.vehicle_license_plate_province_short ?? "",
+        licensePlateProvinceShort: req.vehicle_license_plate_province_short ?? "",
       };
       // driverDetail.driverName = driver.driver_name;
       // driverDetail.licensePlate = "";
 
       req.trip_details?.forEach((trip: any) => {
-        const start = dayjs(trip.trip_start_datetime);
-        const end = dayjs(trip.trip_end_datetime);
+        const start = dayjs.utc(trip.trip_start_datetime);
+        const end = dayjs.utc(trip.trip_end_datetime);
         const duration = Math.max(end.diff(start, "day") + 1, 1);
 
         for (let i = 0; i < duration; i++) {
-          const currentDateKey = `${start.add(i, "day").date()}_${
-            start.month() + 1
-          }_${start.year()}`;
-          if (!timeline[`day_${currentDateKey}`]) continue;
+          const currentDateKey = `day_${start.add(i, "day").date()}_${start.month() + 1}_${start.year()}`;
+          if (!timeline[currentDateKey]) continue;
 
-          timeline[`day_${currentDateKey}`].push({
+          timeline[currentDateKey].push({
             tripDetailId: trip.trn_trip_detail_uid,
             startDate: start,
             endDate: end,
@@ -273,22 +268,6 @@ export function transformDriverApiToTableData(
             driverDetail,
           });
         }
-        // const start = dayjs(trip.trip_start_datetime);
-        // const end = dayjs(trip.trip_end_datetime);
-        // const dayStart = start.date();
-        // const dayEnd = end.date();
-        // const duration = Math.max(dayEnd - dayStart + 1, 1);
-        // const destinationPlace = trip.trip_destination_place;
-
-        // timeline[`day_${start.format("D_M_YYYY")}`]?.push({
-        //   tripDetailId: trip.trn_trip_detail_uid,
-        //   destinationPlace: destinationPlace,
-        //   startTime: start.format("HH:mm"),
-        //   duration: duration.toString(),
-        //   status: status,
-        //   carUserDetail: carUserDetail,
-        //   driverDetail: driverDetail,
-        // });
       });
     });
 
