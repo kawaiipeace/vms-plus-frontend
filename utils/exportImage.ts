@@ -28,13 +28,21 @@ export async function exportElementAsImage(
     const originalOverflow = element.style.overflow;
     element.style.overflow = "visible";
 
+    const el = document.querySelector(".export-img") as HTMLElement;
+    const parent = el.offsetParent as HTMLElement;
+
+    const elRect = el.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+
+    const leftOffset = elRect.left - parentRect.left;
+    const rightOffset = parentRect.right - elRect.right;
+
     const dataUrl = await toPng(element, {
       cacheBust: true,
-      width: element.scrollWidth,
-      height: element.scrollHeight,
+      width: element.offsetWidth + (leftOffset + rightOffset / 2),
+      height: element.offsetHeight,
       pixelRatio: 3,
     });
-    
 
     // Restore original styles
     element.style.overflow = originalOverflow;

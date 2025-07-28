@@ -61,36 +61,36 @@ const ReceiveCarSuccessModal = forwardRef<
                 : "ในวันเดินทาง คุณต้องนำบัตรเดินทางไปแสดง กับเจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยาม ก่อนออกจาก กฟภ."}
             </div>
             <div className="modal-footer mt-5 grid grid-cols-1 gap-3">
-              {role === "admin" ? (
-                <>
-                  <div className="flex w-full gap-2">
-                    <div className="flex-1">
-                      <button
-                        type="button"
-                        className="btn btn-secondary !w-full"
-                        onClick={() => {
-                          modalRef.current?.close();
-                        }}
-                      >
-                        ไว้ภายหลัง
-                      </button>
-                    </div>
-                    <div className="flex-1">
-                      <button
-                        type="button"
-                        className="btn btn-primary !w-full"
-                        onClick={() => {
-                          licenseCardModalRef.current?.openModal();
-                          modalRef.current?.close();
-                        }}
-                      >
-                        แสดงใบอนุญาต
-                      </button>
-                    </div>
+              {/* {role === "admin" ? ( */}
+              <>
+                <div className="flex w-full gap-2">
+                  <div className="flex-1">
+                    <button
+                      type="button"
+                      className="btn btn-secondary !w-full"
+                      onClick={() => {
+                        modalRef.current?.close();
+                      }}
+                    >
+                      ไว้ภายหลัง
+                    </button>
                   </div>
-                </>
-              ) : (
-                <>
+                  <div className="flex-1">
+                    <button
+                      type="button"
+                      className="btn btn-primary !w-full"
+                      onClick={() => {
+                        licenseCardModalRef.current?.openModal();
+                        modalRef.current?.close();
+                      }}
+                    >
+                      แสดงใบอนุญาต
+                    </button>
+                  </div>
+                </div>
+              </>
+              {/* ) : ( */}
+              {/* <>
                   <button
                     type="button"
                     className="btn btn-primary col-span-1"
@@ -101,8 +101,8 @@ const ReceiveCarSuccessModal = forwardRef<
                   >
                     แสดงบัตรเดินทาง
                   </button>
-                </>
-              )}
+                </> */}
+              {/* )} */}
             </div>
           </div>
         </div>

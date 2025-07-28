@@ -101,12 +101,17 @@ export default function DriverCard({
             </button>
           )}
           <button
-            className={`btn btn-primary ${
-              seeDetail === true ? "w-[50%]" : "w-full"
-            }`}
+          className={`btn ${isSelected ? "btn-success" : "btn-primary"} ${
+            seeDetail ? "w-[50%]" : "w-full"
+          }`}
             onClick={() => driverAppointmentRef.current?.openModal()}
           >
-            เลือก
+            <span className="text-white flex items-center gap-1">
+              {isSelected &&  <i className="material-symbols-outlined">
+                check
+              </i>}
+              {isSelected ? "เลือกคนนี้" : "เลือก"}
+            </span>
           </button>
         </div>
       </div>

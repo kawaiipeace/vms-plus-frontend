@@ -7,12 +7,13 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 interface Props {
   chooseDriver?: boolean;
   number?: number;
+  topic?: string;
   requestData?: RequestDetailType;
   reqId?: string;
   onChooseDriver?: () => void;
 }
 
-export default function ChooseDriverCard({ chooseDriver, number, reqId, requestData , onChooseDriver }: Props) {
+export default function ChooseDriverCard({ chooseDriver, number, reqId, requestData, topic = "ผู้ดูแลเลือกพนักงานขับรถให้" , onChooseDriver }: Props) {
   const adminDriverPickModalRef = useRef<{
     openModal: () => void;
     closeModal: () => void;
@@ -56,7 +57,7 @@ export default function ChooseDriverCard({ chooseDriver, number, reqId, requestD
         </div>
         <div className="card-content">
           <div className="card-content-top">
-            <div className="card-title">ผู้ดูแลเลือกพนักงานขับรถให้</div>
+            <div className="card-title">{topic}</div>
             <div className="supporting-text-group">
                  <div className="supporting-text">{requestData?.carpool_name}</div>
             </div>

@@ -77,6 +77,7 @@ const nextStep = async () => {
       is_system_choose_vehicle: latestFormData.isSystemChooseVehicle || "0",
       pm_order_no: latestFormData.pmOrderNo || "",
       wbs_no: latestFormData.wbsNumber || "",
+      network_no: latestFormData.networkNo || "",
       activity_no: latestFormData.activityNo || "",
       cost_center: latestFormData.costCenter || "",
       mas_carpool_driver_uid: latestFormData.masCarpoolDriverUid || null,

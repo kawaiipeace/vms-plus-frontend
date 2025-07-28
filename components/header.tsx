@@ -346,7 +346,7 @@ export default function Header() {
                         </div>
                         <div className="sidebar-users-content">
                           <div className="sidebar-users-name">
-                            {profile.first_name} {profile.last_name}
+                            {profile.full_name}
                           </div>
                           <div className="sidebar-users-position">
                             รหัสพนักงาน : {profile.emp_id} <br />

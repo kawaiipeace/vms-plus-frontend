@@ -25,42 +25,48 @@ export const STATUS_COLOR_GROUPS: Record<keyof typeof BASE_STATUS_COLORS, string
   gray: ['สิ้นสุดสัญญา'],
 };
 
-export const STATUS_CLASS_MAP: Record<string, string> = Object.entries(STATUS_COLOR_GROUPS).reduce((acc, [color, statuses]) => {
-  const colorSet = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
-  const classes = `border-[${colorSet.border}] bg-[${colorSet.bg}] text-[${colorSet.text}]`;
+const buildStatusMap = <T>(
+  colorGroups: Record<string, string[]>,
+  colorValues: Record<string, T>,
+  buildValue: (color: string, value: T) => any
+) => Object.entries(colorGroups).reduce((acc, [color, statuses]) => {
+  const value = colorValues[color];
   statuses.forEach(status => {
-    acc[status] = classes;
+    acc[status] = buildValue(color, value);
   });
   return acc;
-}, {} as Record<string, string>);
+}, {} as Record<string, any>);
 
-export const STATUS_DETAIL_MAP: Record<string, typeof BASE_STATUS_COLORS[keyof typeof BASE_STATUS_COLORS]> =
-  Object.entries(STATUS_COLOR_GROUPS).reduce((acc, [color, statuses]) => {
-    const detail = BASE_STATUS_COLORS[color as keyof typeof BASE_STATUS_COLORS];
-    statuses.forEach(status => {
-      acc[status] = detail;
-    });
-    return acc;
-  }, {} as Record<string, typeof BASE_STATUS_COLORS[keyof typeof BASE_STATUS_COLORS]>);
+export const STATUS_CLASS_MAP: Record<string, string> = buildStatusMap(
+  STATUS_COLOR_GROUPS,
+  BASE_STATUS_COLORS,
+  (color, colorSet) => `border-[${colorSet.border}] bg-[${colorSet.bg}] text-[${colorSet.text}]`
+);
 
-export const imgPath = new Map([
+export const STATUS_DETAIL_MAP: Record<string, typeof BASE_STATUS_COLORS[keyof typeof BASE_STATUS_COLORS]> = buildStatusMap(
+  STATUS_COLOR_GROUPS,
+  BASE_STATUS_COLORS,
+  (_, colorSet) => colorSet
+);
+
+export const imgPath = new Map<string, string>([
   ["รออนุมัติ", "/assets/img/vehicle/pending_approval.svg"],
   ["ไป - กลับ", "/assets/img/vehicle/completed.svg"],
   ["ค้างแรม", "/assets/img/vehicle/with_overnight_stay.svg"],
   ["เสร็จสิ้น", "/assets/img/vehicle/completed.svg"],
 ]);
 
+const createEmptyTimeline = (dates: any[]) =>
+  dates.reduce((timeline: Record<string, any[]>, date: any) => {
+    timeline[date.key] = [];
+    return timeline;
+  }, {});
+
 export function transformApiToTableData(rawData: any, dates: any[]): VehicleTimelineTransformData[] {
   const vehicles: any[] = rawData ?? [];
 
-  const createEmptyTimeline = () =>
-    dates.reduce((timeline: Record<string, any[]>, date: any) => {
-      timeline[date.key] = [];
-      return timeline;
-    }, {});
-
   return vehicles.map(vehicle => {
-    const timeline = createEmptyTimeline();
+    const timeline = createEmptyTimeline(dates);
     let latestStatus = '';
     let carUserDetail: Record<string, string> = {};
     let driverDetail: Record<string, string> = {};
@@ -84,16 +90,15 @@ export function transformApiToTableData(rawData: any, dates: any[]): VehicleTime
       };
 
       request.trip_details.forEach((trip: any) => {
-        const start = dayjs(trip.trip_start_datetime);
-        const end = dayjs(trip.trip_end_datetime);
+        const start = dayjs.utc(trip.trip_start_datetime);
+        const end = dayjs.utc(trip.trip_end_datetime);
         const duration = Math.max(end.diff(start, 'day') + 1, 1);
 
-
         for (let i = 0; i < duration; i++) {
-          const currentDateKey = `${start.add(i, 'day').date()}_${start.month() + 1}_${start.year()}`;
-          if (!timeline[`day_${currentDateKey}`]) continue;
+          const currentDateKey = `day_${start.add(i, 'day').date()}_${start.month() + 1}_${start.year()}`;
+          if (!timeline[currentDateKey]) continue;
 
-          timeline[`day_${currentDateKey}`].push({
+          timeline[currentDateKey].push({
             tripDetailId: trip.trn_trip_detail_uid,
             startDate: start,
             endDate: end,
@@ -127,7 +132,6 @@ export function transformApiToTableData(rawData: any, dates: any[]): VehicleTime
 
 export async function generateDateObjects(startDate: string, endDate: string) {
   try {
-    // Handle Holiday API call
     const response = await getHoliday({ start_date: startDate, end_date: endDate });
     const holidayMap = new Map(
       response.map((item: any) => [
@@ -142,7 +146,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
 
     while (start.isBefore(end) || start.isSame(end)) {
       const formattedDate = start.format("YYYY/MM/DD");
-      const date = {
+      dates.push({
         key: `day_${start.date()}_${start.month() + 1}_${start.year()}`,
         date: formattedDate,
         day: start.date(),
@@ -151,9 +155,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
         fullYear: (start.year() + 543).toString(),
         weekday: start.format("ddd"),
         holiday: holidayMap.get(formattedDate) ?? null,
-      };
-      dates.push(date);
-
+      });
       start = start.add(1, "day");
     }
 
@@ -166,11 +168,7 @@ export async function generateDateObjects(startDate: string, endDate: string) {
 
 export const DateLongTH = (date: Date) => {
   const thDate = dayjs(date).locale('th');
-  const day = thDate.format("DD");
-  const month = thDate.format("MM");
-  const year = thDate.year() + 543;
-
-  return `${day}/${month}/${year}`;
+  return `${thDate.format("DD")}/${thDate.format("MM")}/${thDate.year() + 543}`;
 };
 
 /**
@@ -180,16 +178,19 @@ export const DateLongTH = (date: Date) => {
  * @param locale ภาษา (default คือ 'th')
  * @returns string ที่เป็นวันที่ในรูปแบบที่แปลงแล้ว
  */
-export const convertDateToLongTH = (date: Date, format?: string, locale: string = "th"): string => {
+export const convertDateToLongTH = (
+  date: Date,
+  format?: string,
+  locale: string = "th"
+): string => {
   const localizedDate = dayjs(date).tz("Asia/Bangkok").locale(locale);
   const buddhistYear = localizedDate.year() + 543;
 
-  switch (format) {
-    case 'full':
-      return `${localizedDate.format("D MMMM")} ${buddhistYear}`;
-    case 'DD/MM/YYYY':
-      return `${localizedDate.format("DD/MM/")}${buddhistYear}`;
-    default:
-      return `${localizedDate.format("D MMM")} ${buddhistYear}`;
+  if (format === 'full') {
+    return `${localizedDate.format("D MMMM")} ${buddhistYear}`;
   }
+  if (format === 'DD/MM/YYYY') {
+    return `${localizedDate.format("DD/MM/")}${buddhistYear}`;
+  }
+  return `${localizedDate.format("D MMM")} ${buddhistYear}`;
 };

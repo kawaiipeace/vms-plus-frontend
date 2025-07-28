@@ -219,6 +219,8 @@ export default function ListFlow({ requestData }: Props) {
                 ).time
               }
               isDriverPEA={request?.is_pea_employee_driver === "1"}
+              canScoreButton={request?.can_score_button === true}
+              showTravelCard={request?.can_travel_card_button === true}
             />
           );
         }

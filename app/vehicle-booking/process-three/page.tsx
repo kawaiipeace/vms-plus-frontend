@@ -73,7 +73,6 @@ export default function ProcessThree() {
     useState<string>("");
   const { profile } = useProfile();
 
-  // 1. Add pagination state
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -126,20 +125,15 @@ export default function ProcessThree() {
       router.push("process-two");
     }
     setLoading(false);
-    if (formData.isPeaEmployeeDriver) {
-      if (formData.isPeaEmployeeDriver === "1") {
-        setSelectedDriverType("พนักงาน กฟภ.");
-      } else {
-        setSelectedDriverType("พนักงานขับรถ");
-      }
-    }
-  }, [formData, router]);
-
-  useEffect(() => {
-    if (formData.isAdminChooseDriver) {
+    
+    // Modified this part to prioritize isAdminChooseDriver
+    if (formData.isAdminChooseDriver === true || formData.isSystemChooseDriver === true) {
+      setSelectedDriverType("พนักงานขับรถ");
       driverAppointmentRef.current?.openModal();
+    } else if (formData.isPeaEmployeeDriver) {
+      setSelectedDriverType(formData.isPeaEmployeeDriver === "1" ? "พนักงาน กฟภ." : "พนักงานขับรถ");
     }
-  }, [formData.isAdminChooseDriver]);
+  }, [formData.masCarpoolDriverUid,formData.isAdminChooseDriver,formData.isSystemChooseDriver,formData.isPeaEmployeeDriver, router]);
 
   useEffect(() => {
     if (appointValid) {
@@ -168,29 +162,26 @@ export default function ProcessThree() {
     if (typeName === "พนักงานขับรถ") {
       setSelectedVehiclePoolId("");
       setValue("masCarpoolDriverUid", "");
-      updateFormData({
-        masCarpoolDriverUid: "",
-      });
+      // updateFormData({
+      //   masCarpoolDriverUid: "",
+      //   // isAdminChooseDriver: false,
+      // });
     }
-  
+
     setSelectedDriverType(typeName);
     const isPeaEmployee = typeName === "พนักงาน กฟภ." ? "1" : "0";
     
     setValue("isPeaEmployeeDriver", isPeaEmployee);
-    updateFormData({
-      isPeaEmployeeDriver: isPeaEmployee,
-    });
-  
-    if (typeName === "พนักงานขับรถ" && formData.isAdminChooseDriver) {
+    // updateFormData({
+    //   isPeaEmployeeDriver: isPeaEmployee,
+    //   isAdminChooseDriver: typeName === "พนักงานขับรถ",
+    // });
+
+    if (typeName === "พนักงานขับรถ" && (formData.isAdminChooseDriver || formData.isSystemChooseDriver)) {
       driverAppointmentRef.current?.openModal();
     }
   };
 
-  useEffect(() => {
-    console.log("Driver type changed to:", selectedDriverType);
-  }, [selectedDriverType]);
-
-  // In the data fetching useEffect, always set filteredDrivers to the API result for the current page
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
@@ -198,11 +189,10 @@ export default function ProcessThree() {
         const queryParams: Record<string, any> = {
           ...params,
           emp_id: profile?.emp_id,
-          start_date:  toISODateTime(formData.startDate || "",formData.timeStart || ""),
-          end_date: toISODateTime(formData.endDate || "",formData.timeEnd || ""),
+          start_date: toISODateTime(formData.startDate || "", formData.timeStart || ""),
+          end_date: toISODateTime(formData.endDate || "", formData.timeEnd || ""),
         };
         
-  
         if (formData.masCarpoolUid) {
           queryParams.mas_carpool_uid = formData.masCarpoolUid;
         }
@@ -213,7 +203,6 @@ export default function ProcessThree() {
   
         const response = await fetchSearchDrivers(queryParams);
         if (response.status === 200) {
-          // Always set filteredDrivers to the API result for the current page
           setFilteredDrivers(response.data.drivers);
           setAllDriver(response.data.pagination.total);
           setPagination({
@@ -233,7 +222,6 @@ export default function ProcessThree() {
     fetchDrivers();
   }, [params, profile, formData]);
 
-  // 3. Pagination handler
   const handlePageChange = (newPage: number) => {
     setParams(prev => ({
       ...prev,
@@ -241,12 +229,9 @@ export default function ProcessThree() {
     }));
   };
 
-  // 4. Render PaginationControls below driver cards
-  // 5. Use the same empty state logic, but grid and pagination are now correct
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
-    console.log('test');
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
@@ -342,10 +327,6 @@ export default function ProcessThree() {
   }, [debouncedSearchInput]);
 
   useEffect(() => {
-    // if (!formData.isPeaEmployeeDriver) {
-    //   setSelectedDriverType("พนักงาน กฟภ.");
-    // }
-
     const fetchDefaultData = async () => {
       try {
         const response = await fetchUserDrivers(
@@ -373,7 +354,6 @@ export default function ProcessThree() {
             const driver = vehicleUserData[0];
             const isSameDriver = formData.vehicleUserEmpId === driver.emp_id;
             
-            // Prepare all form values
             const formValues = {
               isPeaEmployeeDriver: "1",
               driverEmpID: driver.emp_id,
@@ -383,19 +363,15 @@ export default function ProcessThree() {
               driverInternalContact: isSameDriver ? formData.telInternal : driver.tel_internal,
             };
     
-            // Set all form values at once
             Object.entries(formValues).forEach(([key, value]) => {
               setValue(key as keyof typeof formValues, value);
             });
             
-    
-            // Update other state
             setDriverLicenseNo(driver?.annual_driver?.driver_license_no);
             setAnnualYear(driver?.annual_driver?.annual_yyyy);
             setRequestAnnual(driver?.annual_driver?.request_annual_driver_no);
             setLicenseExpDate(driver?.annual_driver?.driver_license_expire_date);
     
-            // Update form data
             updateFormData({
               ...formValues,
               driverEmpPosition: driver.posi_text,
@@ -462,14 +438,6 @@ export default function ProcessThree() {
       setLoadingDrivers(false);
     }
   }, []);
-
-  const onPageChange = (newPage: number) => {
-    setParams(prev => ({
-      ...prev,
-      page: newPage,
-      ...(searchInput.length >= 3 ? { search: searchInput } : { search: "" }),
-    }));
-  };
 
   const handlePageSizeChange = (newLimit: number) => {
     setParams(prev => ({
@@ -734,128 +702,112 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                  {!formData.isAdminChooseDriver && (
+                  {(!formData.isAdminChooseDriver && !formData.isSystemChooseDriver) && (
                     <>
-                      <>
-                        <div className="page-section-header border-0">
-                          <div className="page-header-left">
-                            <div className="page-title">
-                              <span className="page-title-label">
-                                เลือกพนักงานขับรถ
-                              </span>
-                              <span className="badge badge-outline badge-gray page-title-status">
-                                {filteredDrivers.length > 0 ? (
-                                  <>ว่าง {filteredDrivers.length} คน</>
-                                ) : (
-                                  "ไม่พบข้อมูล"
-                                )}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="input-group input-group-search hidden mb-5 w-[20em]">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text search-ico-info">
-                              <i className="material-symbols-outlined">
-                                search
-                              </i>
+                      <div className="page-section-header border-0">
+                        <div className="page-header-left">
+                          <div className="page-title">
+                            <span className="page-title-label">
+                              เลือกพนักงานขับรถ
+                            </span>
+                            <span className="badge badge-outline badge-gray page-title-status">
+                              {filteredDrivers.length > 0 ? (
+                                <>ว่าง {pagination.total} คน</>
+                              ) : (
+                                "ไม่พบข้อมูล"
+                              )}
                             </span>
                           </div>
-                          {/* <input
-                            ref={searchInputRef}
-                            key="driver-search-input"
-                            type="text"
-                            id="myInputTextField"
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            className="form-control dt-search-input"
-                            placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                            disabled={loadingDrivers}
-                            autoFocus
-                          /> */}
-
-                          <input
-                            ref={searchInputRef}
-                            type="text"
-                            className="form-control dt-search-input"
-                            value={searchInput}
-                            onChange={handleSearchChange}
-                            onKeyPress={(e) => {
-                              if (
-                                e.key === "Enter" &&
-                                searchInput.length >= 3
-                              ) {
-                                setParams((prev) => ({
-                                  ...prev,
-                                  search: searchInput,
-                                  page: 1,
-                                }));
-                              }
-                            }}
-                            placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                          />
                         </div>
-                        {allDriver <= 0 ? (
-                          <EmptyDriver
-                            imgSrc="/assets/img/empty/empty_driver.svg"
-                            title="ไม่พบพนักงานขับรถ"
-                            desc={
-                              <>
-                                ระบบไม่พบพนักงานขับรถในสังกัด <br />
-                                กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />
-                                ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                              </>
+                      </div>
+
+                      <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text search-ico-info">
+                            <i className="material-symbols-outlined">
+                              search
+                            </i>
+                          </span>
+                        </div>
+                        <input
+                          ref={searchInputRef}
+                          type="text"
+                          className="form-control dt-search-input"
+                          value={searchInput}
+                          onChange={handleSearchChange}
+                          onKeyPress={(e) => {
+                            if (
+                              e.key === "Enter" &&
+                              searchInput.length >= 3
+                            ) {
+                              setParams((prev) => ({
+                                ...prev,
+                                search: searchInput,
+                                page: 1,
+                              }));
                             }
-                            button="ค้นหานอกสังกัด"
-                            onSelectDriver={setCarpoolId}
+                          }}
+                          placeholder="ค้นหาชื่อพนักงานขับรถ.."
+                        />
+                      </div>
+                      {allDriver <= 0 ? (
+                        <EmptyDriver
+                          imgSrc="/assets/img/empty/empty_driver.svg"
+                          title="ไม่พบพนักงานขับรถ"
+                          desc={
+                            <>
+                              ระบบไม่พบพนักงานขับรถในสังกัด <br />
+                              กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />
+                              ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                            </>
+                          }
+                          button="ค้นหานอกสังกัด"
+                          onSelectDriver={setCarpoolId}
+                        />
+                      ) : searchInput.length >= 3 && filteredDrivers.length === 0 ? (
+                        <EmptyDriver
+                          imgSrc="/assets/img/empty/empty_driver.svg"
+                          title="ไม่พบพนักงานขับรถ"
+                          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
+                        />
+                      ) : filteredDrivers.length === 0 ? (
+                        <div className="text-center text-gray-500 py-8">ไม่พบข้อมูล</div>
+                      ) : (
+                        <>
+                          <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
+                            {filteredDrivers.map(
+                              (driver: any, index: number) => (
+                                <DriverCard
+                                  key={index}
+                                  id={driver.mas_driver_uid}
+                                  imgSrc={
+                                    driver.driver_image ||
+                                    "/assets/img/sample-driver.png"
+                                  }
+                                  name={driver.driver_name || ""}
+                                  nickname={driver.driver_nickname || ""}
+                                  company={driver?.vendor_name || ""}
+                                  rating={
+                                    driver.driver_average_satisfaction_score ||
+                                    "ยังไม่มีการให้คะแนน"
+                                  }
+                                  age={driver.age || "-"}
+                                  onVehicleSelect={handleVehicleSelection}
+                                  isSelected={
+                                    selectedVehiclePoolId ===
+                                    driver.mas_driver_uid
+                                  }
+                                />
+                              )
+                            )}
+                          </div>
+                          <PaginationControls
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                            onPageSizeChange={handlePageSizeChange}
                           />
-                        ) : searchInput.length >= 3 && filteredDrivers.length === 0 ? (
-                          <EmptyDriver
-                            imgSrc="/assets/img/empty/empty_driver.svg"
-                            title="ไม่พบพนักงานขับรถ"
-                            desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-                          />
-                        ) : filteredDrivers.length === 0 ? (
-                          <div className="text-center text-gray-500 py-8">ไม่พบข้อมูล</div>
-                        ) : (
-                          <>
-                            <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
-                              {filteredDrivers.map(
-                                (driver: any, index: number) => (
-                                  <DriverCard
-                                    key={index}
-                                    id={driver.mas_driver_uid}
-                                    imgSrc={
-                                      driver.driver_image ||
-                                      "/assets/img/sample-driver.png"
-                                    }
-                                    name={driver.driver_name || ""}
-                                    nickname={driver.driver_nickname || ""}
-                                    company={driver?.vendor_name || ""}
-                                    rating={
-                                      driver.driver_average_satisfaction_score ||
-                                      "ยังไม่มีการให้คะแนน"
-                                    }
-                                    age={driver.age || "-"}
-                                    onVehicleSelect={handleVehicleSelection}
-                                    isSelected={
-                                      selectedVehiclePoolId ===
-                                      driver.mas_driver_uid
-                                    }
-                                  />
-                                )
-                              )}
-                            </div>
-                            {/* 4. PaginationControls */}
-                            <PaginationControls
-                              pagination={pagination}
-                              onPageChange={handlePageChange}
-                              onPageSizeChange={handlePageSizeChange}
-                            />
-                          </>
-                        )}
-                      </>
+                        </>
+                      )}
                     </>
                   )}
                 </div>

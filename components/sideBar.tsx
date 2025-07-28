@@ -76,7 +76,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
           link: "/administrator/booking-confirmer",
-          roles: ["level1-approval", "license-approval"],
+          roles: ["level1-approval"],
         },
         {
           title: "อนุมัติคำขอใช้และใบอนุญาต",
