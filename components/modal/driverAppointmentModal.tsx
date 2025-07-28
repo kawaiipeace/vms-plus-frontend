@@ -63,8 +63,6 @@ const DriverAppointmentModal = forwardRef<
     : { date: "", time: "" }; // ✅ Ensure consistent return shape
 
 
-      console.log("Initial DateTime:", initialDateTime);
-
   const [selectedDate, setSelectedDate] = useState<string>(
     (initialDateTime).date || ""
   );
