@@ -201,6 +201,8 @@ export default function RequestForm() {
               : profile?.emp_id
           );
 
+          console.log('response',response.data);
+
           if (response) {
             const vehicleUserData = response.data;
             setVehicleUserDatas(vehicleUserData);
@@ -223,7 +225,9 @@ export default function RequestForm() {
             };
 
             if (vehicleUserData) {
-              if (!formData || Object.keys(formData).length === 0) {
+              const formDatas = localStorage.getItem('formData')
+              if (!formDatas) {
+                console.log('tet');
                 setValue("telInternal", vehicleUserData[0].tel_internal);
                 setValue("telMobile", vehicleUserData[0].tel_mobile);
               }
@@ -321,23 +325,17 @@ export default function RequestForm() {
     );
 
     if (empData) {
-      if (!formData) {
+      console.log('tttsss',empData);
+
         setValue("telInternal", empData.tel_internal);
         setValue("telMobile", empData.tel_mobile);
-      }
+    
 
       setValue("deptSapShort", empData.dept_sap_short);
       setValue("deptSap", empData.dept_sap);
       setValue("userImageUrl", empData.image_url);
       setValue("vehicleUserEmpPosition", empData.posi_text || "");
 
-      // Trigger form validation after setting values
-      await trigger([
-        "telInternal",
-        "telMobile",
-        "deptSapShort",
-        "vehicleUserEmpPosition",
-      ]);
     }
   };
 

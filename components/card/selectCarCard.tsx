@@ -94,10 +94,17 @@ export default function SelectCarCard({
             ดูรายละเอียด
           </button>
           <button
-            className={`btn btn-primary col-span-3`}
+            className={`col-span-3 ${
+              isSelected ? "btn btn-success" : "btn btn-primary"
+            }`}
             onClick={() => onSelect(vehicleId)}
           >
-            เลือก
+            <span className="text-white flex items-center gap-1">
+              {isSelected &&  <i className="material-symbols-outlined">
+                check
+              </i>}
+              {isSelected ? "เลือกคันนี้" : "เลือก"}
+            </span>
           </button>
         </div>
       </div>
