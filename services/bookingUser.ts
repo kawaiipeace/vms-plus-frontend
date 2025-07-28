@@ -41,7 +41,9 @@ export const createRequest = async (data: any) => {
 
 export const downloadExports = async () => {
   try {
-    const response = await axiosInstance.get("booking-user/export-requests");
+    const response = await axiosInstance.get("booking-user/export-requests", {
+      responseType: "blob", // CRUCIAL
+    });
     return response;
   } catch (error) {
     throw error;

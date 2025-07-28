@@ -498,7 +498,7 @@ const ReturnCarTab = ({
       <ReviewCarDriveDetailModal
         ref={reviewCarDriveDetailModalRef}
         id={requestData?.trn_request_uid}
-        role={"user"}
+        role={"admin"}
       />
       <ReturnCarAddModal
         useBy={useBy}

@@ -469,6 +469,8 @@ const RecordTravelTab = ({
                 data?.vehicle?.vehicle_department?.vehicle_mileage || 0,
             } as RecordTravelTabProps
           }
+          workPlace={data?.work_place}
+          pickupPlace={data?.pickup_place}
         />
         <RecordTravelAddModal
           ref={recordTravelEditModalRef}

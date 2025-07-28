@@ -284,7 +284,7 @@ const KeyPickUpEditModal = forwardRef<
         </div>
         <form onSubmit={handleSubmit(submit)}>
           <div className="modal-body overflow-y-auto">
-            {/* <div className="form-section">
+            <div className="form-section">
               <div className="form-group">
                 <div className="custom-group flex md:flex-row flex-col !gap-0 space-y-0 space-x-2">
                   <RadioButton
@@ -316,7 +316,7 @@ const KeyPickUpEditModal = forwardRef<
                   />
                 </div>
               </div>
-            </div> */}
+            </div>
 
             {selectedUserType == "พนักงาน กฟภ." ? (
               <div className="grid grid-cols-12 gap-4 mt-3">

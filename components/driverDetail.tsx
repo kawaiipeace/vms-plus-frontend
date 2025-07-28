@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 // import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -175,6 +176,7 @@ const DriverDetailContent = ({
             ref={keyPickupDetailModalRef}
             id={data?.received_key_emp_id || ""}
             name={data?.received_key_emp_name || "-"}
+            keyStartTime={data?.received_key_start_datetime || ""}
             deptSap={data?.received_key_dept_sap || "-"}
             phone={data?.received_key_mobile_contact_number || "-"}
             vehicle={data?.vehicle}
@@ -387,7 +389,7 @@ const DriverDetailContent = ({
               }
               time={
                 data?.accepted_vehicle_datetime
-                  ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                  ? convertToBuddhistDateTime(data?.accepted_vehicle_datetime).time
                   : "-"
               }
               mile_end={data?.mile_end?.toString() || "-"}

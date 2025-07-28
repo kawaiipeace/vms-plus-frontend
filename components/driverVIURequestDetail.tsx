@@ -5,6 +5,7 @@ import DriverPassengerInfoCard from "@/components/card/driverPassengerInfoCard";
 import KeyUserPickupCard from "./admin/key-handover/key-user-pickup-card";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import dayjs from "dayjs";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -28,7 +29,7 @@ export const DriverVIURequestDetail = ({
   };
 
   const date = getDateRange();
-  const timeRange = getDateRange("HH:mm");
+  const timeRange = convertToBuddhistDateTime(data?.start_datetime || "").time + " - " + convertToBuddhistDateTime(data?.end_datetime || "").time;
 
   return (
     <div>

@@ -1,3 +1,4 @@
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 import "dayjs/locale/en-gb";
@@ -59,7 +60,7 @@ export default function DriverPickUpPassengerCard(
                 <div className="form-label">เวลา</div>
                 <div className="form-text">
                   {props.pickup_datetime
-                    ? dayjs.utc(props.pickup_datetime).format("HH:mm")
+                    ? convertToBuddhistDateTime(props.pickup_datetime).time
                     : "-"}
                 </div>
               </div>
