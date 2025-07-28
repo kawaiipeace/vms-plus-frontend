@@ -1,9 +1,14 @@
 import { VehicleTimelineTransformData } from "@/app/types/vehicle-management/vehicle-timeline-type";
 import { getHoliday } from "@/services/vehicleService";
+import { DriverTimelineTransformData } from "@/app/types/carpool-management-type";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 import "dayjs/locale/en-gb";
-import { DriverTimelineTransformData } from "@/app/types/carpool-management-type";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const BASE_STATUS_COLORS = {
   green: { border: "#ABEFC6", bg: "#ECFDF3", text: "#067647" },
@@ -93,8 +98,8 @@ export function transformVehicleApiToTableData(
       };
 
       request.trip_details.forEach((trip: any) => {
-        const start = dayjs(trip.trip_start_datetime);
-        const end = dayjs(trip.trip_end_datetime);
+        const start = dayjs.utc(trip.trip_start_datetime);
+        const end = dayjs.utc(trip.trip_end_datetime);
         const duration = Math.max(end.diff(start, "day") + 1, 1);
 
         for (let i = 0; i < duration; i++) {
