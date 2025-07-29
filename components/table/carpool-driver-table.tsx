@@ -246,7 +246,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="ค้างคืน">
-            {Number(row.original.ref_driver_status_code) === 1 ? (
+            {row.original.ref_driver_status_code === "1" ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
@@ -383,7 +383,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="ค้างคืน">
-            {row.original.ref_driver_status_code === "1" ? (
+             {Number(row.original.work_type) === 1 ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
