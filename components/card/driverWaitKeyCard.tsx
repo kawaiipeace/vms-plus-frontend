@@ -17,8 +17,8 @@ export default function DriverWaitKeyCard(props: DriverWaitKeyCardProps) {
       return "-";
     }
 
-    const startTime = dayjs(props.received_key_start_datetime).format("HH:mm");
-    const endTime = dayjs(props.received_key_end_datetime).format("HH:mm");
+    const startTime = convertToBuddhistDateTime(props.received_key_start_datetime).time;
+    const endTime = convertToBuddhistDateTime(props.received_key_end_datetime).time;
 
     return `${startTime} - ${endTime}`;
   };

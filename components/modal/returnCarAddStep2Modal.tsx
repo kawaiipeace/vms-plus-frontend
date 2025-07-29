@@ -121,6 +121,7 @@ const ReturnCarAddStep2Modal = forwardRef<
           returned_vehicle_remark: valueFormStep1?.remark,
           trn_request_uid: requestData?.trn_request_uid || id,
           vehicle_images: imageList,
+          returned_vehicle_parking: valueFormStep1?.parkingLocation,
         };
 
         let response;
@@ -184,10 +185,11 @@ const ReturnCarAddStep2Modal = forwardRef<
           mile_end: Number(requestData?.mile_end || 0),
           returned_cleanliness_level: requestData?.returned_cleanliness_level,
           returned_vehicle_datetime: requestData?.returned_vehicle_datetime,
-          returned_vehicle_emp_id: requestData?.returned_vehicle_emp_id,
+          returned_vehicle_emp_id: requestData?.vehicle_user_emp_id,
           returned_vehicle_remark: requestData?.returned_vehicle_remark,
           trn_request_uid: requestData?.trn_request_uid || id,
           vehicle_images: imageList,
+          returned_vehicle_parking: valueFormStep1?.parkingLocation,
         };
 
         const response = await UserReturnedVehicle(formData);

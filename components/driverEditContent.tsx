@@ -8,6 +8,7 @@ import { DriverReceiveCarInfoCard } from "@/components/card/driverReceiveCarInfo
 import ImagesCarCard from "@/components/card/ImagesCarCard";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import dayjs from "dayjs";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 dayjs.extend(require("dayjs/plugin/buddhistEra"));
 dayjs.locale("th");
@@ -71,7 +72,7 @@ export const DriverEditContent = ({
                   }
                   time={
                     data?.accepted_vehicle_datetime
-                      ? dayjs(data?.pickup_datetime).format("HH:mm")
+                      ? convertToBuddhistDateTime(data?.pickup_datetime || "").time
                       : "-"
                   }
                   mile_end={data?.mile_start?.toString() || "-"}

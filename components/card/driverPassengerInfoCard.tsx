@@ -5,6 +5,7 @@ import { fetchDrivers } from "@/services/masterService";
 import { DriverType } from "@/app/types/driver-user-type";
 import CallToDriverModal from "@/components/modal/callToDriverModal";
 import dayjs from "dayjs";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface DriverPassengerInfoCardProps {
   id?: string;
@@ -115,7 +116,7 @@ export default function DriverPassengerInfoCard({
                   <div className="form-label">เวลา</div>
                   <div className="form-text">
                     {requestData?.pickup_datetime
-                      ? dayjs(requestData.pickup_datetime).format("HH:mm")
+                      ? convertToBuddhistDateTime(requestData.pickup_datetime).time
                       : "-"}
                   </div>
                 </div>

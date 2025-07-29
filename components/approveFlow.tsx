@@ -174,23 +174,30 @@ export default function ArpproveFlow() {
   };
 
   const downloadReport = async () => {
-    const response = await downloadExports();
-      // console.log("Download report response:", response);
+    try {
+      const response = await downloadExports(); // axios call with responseType: 'blob'
+  
       if (response.status === 200) {
         const blob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
+  
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "Request_Reports.xlsx"; // Set the desired file name
+        a.download = "Request_Reports.xlsx";
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
         a.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Failed to download report. Status:", response.status);
       }
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
   };
-
+  
   const handleClearAllFilters = () => {
     setParams({
       search: "",

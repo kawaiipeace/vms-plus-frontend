@@ -57,15 +57,14 @@ const DriverAppointmentModal = forwardRef<
   };
 
   const initialDateTime = formData?.pickupDatetime
-    ? convertToBuddhistDateTime(formData.pickupDatetime)
-    : convertToBuddhistDateTime(
-        convertToISO(formData?.startDate || "", formData?.timeStart || "")
-      );
+  ? convertToBuddhistDateTime(formData.pickupDatetime)
+  : formData?.startDate && formData?.timeStart
+    ? convertToBuddhistDateTime(convertToISO(formData.startDate, formData.timeStart))
+    : { date: "", time: "" }; // ✅ Ensure consistent return shape
 
-      console.log("Initial DateTime:", initialDateTime);
 
   const [selectedDate, setSelectedDate] = useState<string>(
-    initialDateTime.date || ""
+    (initialDateTime).date || ""
   );
   const [selectedTime, setSelectedTime] = useState<string>(
     initialDateTime.time || ""
@@ -129,7 +128,7 @@ const DriverAppointmentModal = forwardRef<
   }, [id]);
 
   const onSubmitForm = (data: any) => {
-    const pickup = convertToISO(selectedDate, selectedTime);
+    const pickup = convertToISO(selectedDate || "", selectedTime || "");
 
     updateFormData({
       pickupDatetime: pickup,

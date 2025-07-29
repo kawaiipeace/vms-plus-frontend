@@ -12,6 +12,8 @@ export default function DriverCard({
   age,
   company,
   seeDetail,
+  status,
+  canSelect,
   onVehicleSelect,
   nickname,
   adminDriverPickModalRef,
@@ -22,8 +24,10 @@ export default function DriverCard({
   name: string;
   rating: number;
   age: string;
+  status?: string;
   company: string;
   seeDetail?: boolean;
+  canSelect?: boolean;
   onVehicleSelect: (id: string) => void;
   nickname: string;
   adminDriverPickModalRef?: React.RefObject<{
@@ -67,7 +71,9 @@ export default function DriverCard({
         </div>
         <div className="card-content">
           <div className="card-content-top">
-            <div className="card-title">{name} {nickname ? "("+nickname+")" : ""}</div>
+            <div className="card-title">
+              {name} {nickname ? "(" + nickname + ")" : ""}
+            </div>
             <div className="card-supporting-text-group">
               <div className="card-supporting-text">{company}</div>
             </div>
@@ -101,16 +107,19 @@ export default function DriverCard({
             </button>
           )}
           <button
-          className={`btn ${isSelected ? "btn-success" : "btn-primary"} ${
-            seeDetail ? "w-[50%]" : "w-full"
-          }`}
+            className={`btn ${
+              !canSelect
+                ? "btn-disabled"
+                : isSelected
+                ? "btn-success"
+                : "btn-primary"
+            } ${seeDetail ? "w-[50%]" : "w-full"}`}
             onClick={() => driverAppointmentRef.current?.openModal()}
+            disabled={!canSelect}
           >
             <span className="text-white flex items-center gap-1">
-              {isSelected &&  <i className="material-symbols-outlined">
-                check
-              </i>}
-              {isSelected ? "เลือกคนนี้" : "เลือก"}
+              {isSelected && <i className="material-symbols-outlined">check</i>}
+              {!canSelect ? status : isSelected ? "เลือกคนนี้" : "เลือก"}
             </span>
           </button>
         </div>

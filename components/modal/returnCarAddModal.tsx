@@ -156,8 +156,6 @@ const ReturnCarAddModal = forwardRef<
       miles
     ) {
       if (edit) {
-  
-
         return handleSubmit();
       }
       setValueFormStep1({
@@ -183,7 +181,6 @@ const ReturnCarAddModal = forwardRef<
           ? convertToISO(selectedDate, selectedTime)
           : "";
 
-
       const formData = {
         fuel_end: fuelQuantity,
         mile_end: Number(miles || "0"),
@@ -194,7 +191,7 @@ const ReturnCarAddModal = forwardRef<
         trn_request_uid: data?.trn_request_uid || id,
         vehicle_images: imageList,
       };
-   
+
       let response;
       if (useBy === "user" || useBy === "userTabs") {
         response = await UserReturnedVehicle(formData);
