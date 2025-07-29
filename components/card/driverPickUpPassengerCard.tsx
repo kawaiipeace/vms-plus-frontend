@@ -1,4 +1,12 @@
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import dayjs from "dayjs";
+import "dayjs/locale/th";
+import "dayjs/locale/en-gb";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface DriverPickUpPassengerCardProps {
   pickup_place: string;
@@ -30,7 +38,15 @@ export default function DriverPickUpPassengerCard(
                 <div className="form-label">วันที่</div>
                 <div className="form-text">
                   {props.pickup_datetime
-                    ? dayjs(props.pickup_datetime).format("DD/MM/BBBB")
+                    ? dayjs
+                        .utc(props.pickup_datetime)
+                        .format("DD/MM/BBBB")
+                        .replace(
+                          "BBBB",
+                          (
+                            dayjs.utc(props.pickup_datetime).year() + 543
+                          ).toString()
+                        )
                     : "-"}
                 </div>
               </div>
@@ -44,7 +60,7 @@ export default function DriverPickUpPassengerCard(
                 <div className="form-label">เวลา</div>
                 <div className="form-text">
                   {props.pickup_datetime
-                    ? dayjs(props.pickup_datetime).format("HH:mm")
+                    ? convertToBuddhistDateTime(props.pickup_datetime).time
                     : "-"}
                 </div>
               </div>

@@ -82,6 +82,7 @@ const ReviewCarDriveDetailModal = forwardRef<
         setRatting(response.data);
       } else {
         const response = await fetchReviewDriverDetail(id || "");
+        console.log('response', response.data);
         setRatting(response.data);
       }
     } catch (error) {

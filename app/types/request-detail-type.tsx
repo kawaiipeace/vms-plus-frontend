@@ -141,6 +141,7 @@ export type RequestDetailType = Partial<{
   trip_details_count: number;
   satisfaction_survey_answers: satisfactionSurveyAnswers[];
   wbs_number?: string;
+  wbs_no?: string;
   activity_no?: string;
   network_no?: string;
   pm_order_no?: string;

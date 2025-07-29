@@ -218,7 +218,7 @@ export default function RequestDetailForm({
                 refCostTypeCode={requestData?.ref_cost_type_code}
                 costCenter={requestData?.cost_center}
                 activityNo={requestData?.activity_no}
-                wbsNo={requestData?.wbs_number}
+                wbsNo={requestData?.wbs_no}
                 networkNo={requestData?.network_no}
                 pmOrderNo={requestData?.pm_order_no}
               />

@@ -15,8 +15,9 @@ import RecordTravelTab from "@/components/tabs/recordTravelTab";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
+// import DriverPassengerInfoCard from "./card/driverPassengerInfoCard";
 import KeyPickupDetailModal from "./modal/keyPickUpDetailModal";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -175,6 +176,7 @@ const DriverDetailContent = ({
             ref={keyPickupDetailModalRef}
             id={data?.received_key_emp_id || ""}
             name={data?.received_key_emp_name || "-"}
+            keyStartTime={data?.received_key_start_datetime || ""}
             deptSap={data?.received_key_dept_sap || "-"}
             phone={data?.received_key_mobile_contact_number || "-"}
             vehicle={data?.vehicle}
@@ -248,9 +250,16 @@ const DriverDetailContent = ({
                     <p>ผู้โดยสาร</p>
                   </div>
                 </div>
-                <DriverPassengerInfoCard
+                {/* <DriverPassengerInfoCard
                   id={data?.trn_request_uid}
                   requestData={data}
+                /> */}
+                <UserInfoCard
+                  displayOn="driver"
+                  displayBtnMore={true}
+                  vehicleUserData={
+                    data?.vehicle?.vehicle_department?.vehicle_user
+                  }
                 />
               </div>
             </div>
@@ -380,7 +389,8 @@ const DriverDetailContent = ({
               }
               time={
                 data?.accepted_vehicle_datetime
-                  ? dayjs(data?.accepted_vehicle_datetime).format("HH:mm")
+                  ? convertToBuddhistDateTime(data?.accepted_vehicle_datetime)
+                      .time
                   : "-"
               }
               mile_end={data?.mile_end?.toString() || "-"}
@@ -440,6 +450,7 @@ const DriverDetailContent = ({
         useBy="driver"
         progress={progressType}
         ref={returnCarAddModalRef}
+        requestData={data}
       />
     </div>
   );
