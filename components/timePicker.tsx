@@ -39,6 +39,11 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, 
           onChange(dateStr);
         }
       },
+      onOpen: (_dates, _dateStr, instance) => {
+        document.querySelectorAll(".flatpickr-calendar").forEach(el => {
+          el.classList.remove("flatpickr-center-mobile");
+        });
+      },
     });
 
     // Cleanup flatpickr instance on unmount
@@ -58,13 +63,15 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, 
   }, [defaultValue]);
 
   return (
-    <input
-      className="form-control"
-      placeholder={placeholder}
-      defaultValue={defaultValue}
-      ref={timeInputRef}
-      type="text"
-    />
+    <div className="!relative"> {/* Added wrapper div */}
+      <input
+        className="form-control"
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+        ref={timeInputRef}
+        type="text"
+      />
+    </div>
   );
 };
 

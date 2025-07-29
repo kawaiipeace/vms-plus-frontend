@@ -501,7 +501,7 @@ export default function RequestEditForm({
               />
             )}
 
-            {updatedFormData?.isAdminChooseDriver === false && (
+            {(updatedFormData?.isAdminChooseDriver === false && updatedFormData?.isSystemChooseDriver === false) && (
               updatedFormData.isPeaEmployeeDriver === "1" ? (
                 <div className="mt-5">
                   <div className="form-section-header">

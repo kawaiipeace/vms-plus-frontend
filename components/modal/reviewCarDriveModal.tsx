@@ -88,8 +88,7 @@ const ReviewCarDriveModal = forwardRef<
             return {
               mas_satisfaction_survey_questions_code:
                 item.mas_satisfaction_survey_questions_uid,
-              survey_answer:
-                findValue?.survey_answer !== 0 ? findValue?.survey_answer : 5,
+                survey_answer: findValue?.survey_answer ?? 5,
             };
           }
         );
