@@ -2,7 +2,6 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import Rating from "@/components/rating";
 import {
   fetchReviewDriverDetail,
-  fetchUserReviewDriverDetail,
 } from "@/services/adminService";
 import {
   fetchRequestKeyDetail,
@@ -27,8 +26,8 @@ interface Props {
 
 interface SatisfactionSurveyQuestions {
   mas_satisfaction_survey_questions_code: string;
-  mas_satisfaction_survey_questions_title: string;
-  mas_satisfaction_survey_questions_desc: string;
+  mas_satisfaction_survey_questions_title?: string;
+  mas_satisfaction_survey_questions_desc?: string;
 }
 
 interface ReviewDriverDetail {
@@ -36,8 +35,10 @@ interface ReviewDriverDetail {
   survey_answer: number;
   satisfaction_survey_questions: {
     mas_satisfaction_survey_questions_code: string;
-    mas_satisfaction_survey_questions_title: string;
-    mas_satisfaction_survey_questions_desc: string;
+    mas_satisfaction_survey_questions_title?: string;
+    mas_satisfaction_survey_questions_desc?: string;
+    question_title?:string;
+    questions_description?:string;
   };
 }
 
@@ -77,14 +78,11 @@ const ReviewCarDriveDetailModal = forwardRef<
 
   const fetchReviewDriverDetailFunc = useCallback(async () => {
     try {
-      if (role === "user") {
-        const response = await fetchUserReviewDriverDetail(id || "");
-        setRatting(response.data);
-      } else {
+
         const response = await fetchReviewDriverDetail(id || "");
         console.log('response', response.data);
         setRatting(response.data);
-      }
+
     } catch (error) {
       console.error("Error fetching review details:", error);
     }
@@ -180,11 +178,11 @@ const ReviewCarDriveDetailModal = forwardRef<
                         name={name}
                         title={
                           item.satisfaction_survey_questions
-                            .mas_satisfaction_survey_questions_title
+                            .question_title || ""
                         }
                         description={
                           item.satisfaction_survey_questions
-                            .mas_satisfaction_survey_questions_desc
+                            .questions_description || ""
                         }
                         icon={iconList[index]}
                         value={item.survey_answer}
@@ -199,9 +197,9 @@ const ReviewCarDriveDetailModal = forwardRef<
                       <Rating
                         key={index}
                         name={name}
-                        title={item.mas_satisfaction_survey_questions_title}
+                        title={item.mas_satisfaction_survey_questions_title || ""}
                         description={
-                          item.mas_satisfaction_survey_questions_desc
+                          item.mas_satisfaction_survey_questions_desc || ""
                         }
                         icon={iconList[index]}
                         value={5} // Default value if no rating data
