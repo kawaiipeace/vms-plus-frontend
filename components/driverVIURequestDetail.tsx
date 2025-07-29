@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CarDetailCard2 from "@/components/card/carDetailCard2";
 import DriverTravelCard from "@/components/card/driverTravelCard";
 import DriverPassengerInfoCard from "@/components/card/driverPassengerInfoCard";
@@ -6,6 +6,7 @@ import KeyUserPickupCard from "./admin/key-handover/key-user-pickup-card";
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import dayjs from "dayjs";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
+import DriverNewPassengerInfoCard from "./card/driverNewPassengerInfoCard";
 
 interface DriverDetailContentProps {
   data?: RequestDetailType;
@@ -30,6 +31,9 @@ export const DriverVIURequestDetail = ({
 
   const date = getDateRange();
   const timeRange = convertToBuddhistDateTime(data?.start_datetime || "").time + " - " + convertToBuddhistDateTime(data?.end_datetime || "").time;
+
+  useEffect(() => {
+  },[data]);
 
   return (
     <div>
@@ -62,7 +66,7 @@ export const DriverVIURequestDetail = ({
                 <p>ผู้โดยสาร</p>
               </div>
             </div>
-            <DriverPassengerInfoCard
+            <DriverNewPassengerInfoCard
               displayLocation
               id={data?.trn_request_uid}
               requestData={data}
