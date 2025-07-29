@@ -186,8 +186,14 @@ export default function KeyPickUp({ editable, requestId }: RequestDetailFormProp
       <KeyPickUpEditModal
         ref={keyPickUpEditModalRef}
         onBack={() => keyPickupDetailModalRef.current?.openModal()}
-        onSubmit={() => {
-          keyPickupDetailModalRef.current?.openModal();
+        onSubmit={async () => {
+          try {
+            await fetchRequestDetailfunc();
+            keyPickupDetailModalRef.current?.openModal();
+          } catch (error) {
+            console.error("Failed to refresh data:", error);
+            // Maybe show an error message to the user
+          }
         }}
         requestData={requestData}
       />

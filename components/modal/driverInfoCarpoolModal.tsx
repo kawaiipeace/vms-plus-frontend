@@ -37,6 +37,7 @@ const DriverInfoCarpoolModal = forwardRef<
           if (response.status === 200) {
             const res = response.data;
             setVehicleUserData(res[0]);
+            console.log("Vehicle User Data:", res[0]);
           }
         } catch (error) {
           console.error("Error fetching requests:", error);
@@ -170,12 +171,10 @@ const DriverInfoCarpoolModal = forwardRef<
                             <i className="material-symbols-outlined">hotel</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {!vehicleUserData?.ref_driver_status_code
-                                  ? "-"
-                                  : String(vehicleUserData?.ref_driver_status_code) ===
-                                    "1"
-                                  ? "ค้างคืนได้"
-                                  : "ไม่ค้างคืนได้"}
+                                {Number(vehicleUserData?.work_type) ===
+                                    1
+                                  ? "ค้างคืน"
+                                  : "ไป-กลับ"}
                               </div>
                             </div>
                           </div>

@@ -53,4 +53,5 @@ export interface DriverMasType extends DriverType {
   driver_license_no: string;
   driver_license_end_date: string;
   approved_job_driver_end_date: string;
+  work_type: number;
 }

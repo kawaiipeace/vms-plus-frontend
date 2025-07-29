@@ -96,7 +96,7 @@ const KeyPickUpEditModal = forwardRef<
       name: "",
       remark: "",
       telMobile: "",
-      selectedUserType: "พนักงาน กฟภ.",
+      selectedUserType: "พนักงานขับรถ",
     },
   });
 
@@ -205,7 +205,7 @@ const KeyPickUpEditModal = forwardRef<
       payload = {
         outsider_name: data.name || "", // Get from form data
         received_key_mobile_contact_number: data.telOutsideMobile || "", // Get from form data
-        received_key_remark: data.remark || "", // Get from form data
+        received_key_remark: data.remarkOutside || "", // Get from form data
         trn_request_uid: reqId || "",
       };
     } else {
