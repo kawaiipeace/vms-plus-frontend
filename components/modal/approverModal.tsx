@@ -60,7 +60,7 @@ const ApproverModal = forwardRef<
 
   useEffect(() => {
     const param = {
-      emp_id: profile?.emp_id,
+      emp_id: formData.vehicleUserEmpId,
     };
     const fetchApprover = async () => {
       try {

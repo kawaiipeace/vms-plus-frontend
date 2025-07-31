@@ -251,23 +251,9 @@ export default function RequestForm() {
         }
       };
 
-      const fetchApprover = async () => {
-        const param = {
-          emp_id: profile?.emp_id,
-        };
-        try {
-          const response = await fetchUserApproverUsers(param);
-          if (response.status === 200) {
-            const data = response.data[0];
-            setApproverData(data);
-          }
-        } catch (error) {
-          console.error("Error fetching requests:", error);
-        }
-      };
+     
 
       fetchDefaultData();
-      fetchApprover();
     }
   }, [profile, formData]);
 
@@ -567,6 +553,24 @@ export default function RequestForm() {
     }
   };
   const onSubmit = (data: any) => {
+
+    const fetchApprover = async () => {
+      const param = {
+        emp_id: selectedVehicleUserOption?.value,
+      };
+      try {
+        const response = await fetchUserApproverUsers(param);
+        if (response.status === 200) {
+          const data = response.data[0];
+          setApproverData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    fetchApprover();
+
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
 
