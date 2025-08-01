@@ -539,7 +539,7 @@ export default function RequestEditForm({
                 </button>
               </div>
               <ApproverInfoCard
-                emp_id={updatedFormData?.approvedRequestEmpId || ""}
+                emp_id={(updatedFormData?.approvedRequestEmpId || updatedFormData.vehicleUserEmpId) || ""}
               />
             </div>
           )}
