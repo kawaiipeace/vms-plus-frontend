@@ -44,7 +44,7 @@ export default function FirstApproverListTable({
       accessorKey: "log_request_action_datetime",
       header: () => (
         <div className="relative flex items-center justify-center text-center">
-          <div className="text-center">เลขที่คำขอ</div>
+          <div className="text-center">วันที่ / เวลา</div>
         </div>
       ),
       enableSorting: true,
@@ -68,10 +68,10 @@ export default function FirstApproverListTable({
     },
     {
       accessorKey: "action_by_fullname",
-      header: () => <div className="text-left">ผู้ใช้ยานพาหนะ</div>,
+      header: () => <div className="text-left">ผู้ดำเนินการ</div>,
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
+        <div className="text-left" data-name="ผู้ดำเนินการ">
         <div className="flex flex-col">
           <div className="text-left">
           {row.original.action_by_fullname}

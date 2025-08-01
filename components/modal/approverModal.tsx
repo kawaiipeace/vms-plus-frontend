@@ -13,6 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelect from "../customSelect";
+import { useProfile } from "@/contexts/profileContext";
 
 interface Props {
   onUpdate?: (data: any) => void;
@@ -42,6 +43,7 @@ const ApproverModal = forwardRef<
     { value: string; label: string }[]
   >([]);
   const [costName, setCostName] = useState<string>("");
+  const { profile } = useProfile();
 
   const [selectedVehicleUserOption, setSelectedVehicleUserOption] = useState(
     driverOptions[0]
@@ -57,9 +59,12 @@ const ApproverModal = forwardRef<
   }));
 
   useEffect(() => {
+    const param = {
+      emp_id: formData.vehicleUserEmpId,
+    };
     const fetchApprover = async () => {
       try {
-        const response = await fetchUserApproverUsers();
+        const response = await fetchUserApproverUsers(param);
         if (response.status === 200) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
