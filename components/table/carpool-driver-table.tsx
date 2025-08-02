@@ -296,8 +296,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score ||
-              "ยังไม่มีการให้คะแนน"}
+            {(row.original.driver_average_satisfaction_score === 0.00 || 0) ? "ยังไม่มีการให้คะแนน" : row.original.driver_average_satisfaction_score}
           </div>
         );
       },
@@ -433,8 +432,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score ||
-              "ยังไม่มีการให้คะแนน"}
+             {(Number(row.original.driver_average_satisfaction_score) === 0.00 || 0) ? "ยังไม่มีการให้คะแนน" : row.original.driver_average_satisfaction_score}
           </div>
         );
       },
