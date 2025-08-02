@@ -431,6 +431,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                           enableSearchOnApi={true}
                           showDescriptions={true}
                           isInputOil={false}
+                          initialValue={12}
                         />
                       )}
                       {group.value === "03" && (
