@@ -37,7 +37,6 @@ const AdminDriverPickModal = forwardRef<
 
   useImperativeHandle(ref, () => ({
     openModal: () => {
-
       fetchDriverData();
       hasReset.current = false;
       modalRef.current?.showModal();
@@ -59,10 +58,11 @@ const AdminDriverPickModal = forwardRef<
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-   const filtered = drivers.filter((driver: DriverType) =>
-    driver.driver_name?.toLowerCase().includes(value.toLowerCase()) ||
-    driver.driver_nickname?.toLowerCase().includes(value.toLowerCase())
-  );
+    const filtered = drivers.filter(
+      (driver: DriverType) =>
+        driver.driver_name?.toLowerCase().includes(value.toLowerCase()) ||
+        driver.driver_nickname?.toLowerCase().includes(value.toLowerCase())
+    );
     setFilteredDrivers(filtered);
   };
 
@@ -134,7 +134,7 @@ const AdminDriverPickModal = forwardRef<
       emp_id: requestData?.vehicle_user_emp_id || "",
       start_date: requestData?.start_datetime || "",
       end_date: requestData?.end_datetime || "",
-      work_type: requestData?.trip_type || ""
+      work_type: requestData?.trip_type || "",
     };
     setParams(newParams);
 
@@ -290,8 +290,11 @@ const AdminDriverPickModal = forwardRef<
                             workCount={driver.work_count}
                             company={driver.driver_dept_sap || ""}
                             rating={
-                              driver.driver_average_satisfaction_score ||
-                              "ยังไม่มีการให้คะแนน"
+                              Number(
+                                driver?.driver_average_satisfaction_score
+                              ) === (0 || 0.0)
+                                ? "ยังไม่มีการให้คะแนน"
+                                : driver?.driver_average_satisfaction_score
                             }
                             age={driver.age || "-"}
                             seeDetail={true}

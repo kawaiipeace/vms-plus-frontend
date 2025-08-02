@@ -275,7 +275,7 @@ const DriverViewProfilePage = () => {
                   <span className="page-title-label">{driverInfo?.driver_name}</span>
                   <div className="flex items-center">
                     <i className="material-symbols-outlined text-[#A80689] !text-3xl">star</i>
-                    {Number(vehicleUserData?.driver_average_satisfaction_score === 0 || vehicleUserData?.driver_average_satisfaction_score === 0.00) ? (
+                    {Number(vehicleUserData?.driver_average_satisfaction_score === 0 || Number(vehicleUserData?.driver_average_satisfaction_score) === 0.00) ? (
                       "ยังไม่มีการให้คะแนน"
                     ) : (
                       <>

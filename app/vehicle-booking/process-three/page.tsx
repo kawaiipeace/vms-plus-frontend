@@ -790,8 +790,8 @@ export default function ProcessThree() {
                                   status={driver.status || ""}
                                   company={driver?.vendor_name || ""}
                                   rating={
-                                    driver.driver_average_satisfaction_score ||
-                                    "ยังไม่มีการให้คะแนน"
+                                    Number(driver.driver_average_satisfaction_score) === (0 || 0.00) ?
+                                    "ยังไม่มีการให้คะแนน" : driver.driver_average_satisfaction_score
                                   }
                                   age={driver.age || "-"}
                                   onVehicleSelect={handleVehicleSelection}

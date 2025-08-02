@@ -57,9 +57,11 @@ export default function DriverWithRatingCard({
               <div className="card-item w-full">
                 <i className="material-symbols-outlined">star</i>
                 <span className="card-item-text">
-                  {" "}
-                  {requestData?.driver?.driver_average_satisfaction_score ||
-                    "-"}
+                {Number(
+                    requestData?.driver?.driver_average_satisfaction_score
+                  ) === (0 || 0.0)
+                    ? "ยังไม่มีการให้คะแนน"
+                    : requestData?.driver?.driver_average_satisfaction_score}
                 </span>
               </div>
             </div>

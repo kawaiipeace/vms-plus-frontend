@@ -139,9 +139,11 @@ const DriverInfoModal = forwardRef<
                               <div className="form-text text-nowrap">
                                 {vehicleUserData?.driver_average_satisfaction_score ? (
                                   <>
-                                    {
-                                      vehicleUserData.driver_average_satisfaction_score
-                                    }
+                                    {Number(
+                                      vehicleUserData?.driver_average_satisfaction_score
+                                    ) === (0 || 0.0)
+                                      ? "ยังไม่มีการให้คะแนน"
+                                      : vehicleUserData?.driver_average_satisfaction_score}
                                     (
                                     {
                                       vehicleUserData.driver_total_satisfaction_review
