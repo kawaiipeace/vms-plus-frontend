@@ -1,5 +1,6 @@
 import { ProgressRequestStatusEmp } from "@/app/types/driver-lic-list-type";
 import { ProgressRequestType } from "@/app/types/progress-request-status";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -168,8 +169,8 @@ export default function ApproveProgress({ progressSteps, progressRequestStatusEm
                                 <div className="form-plaintext-group">
                                   <div className="form-text text-nowrap">
                                     {
-                                      progressRequestStatusEmp
-                                        ?.mobile_number
+                                      formatPhoneNumber(progressRequestStatusEmp
+                                        ?.mobile_number || "")
                                     }
                                   </div>
                                 </div>

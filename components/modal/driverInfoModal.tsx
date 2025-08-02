@@ -9,6 +9,7 @@ import { fetchDriverDetail } from "@/services/masterService";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import { DriverType } from "@/app/types/driver-user-type";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface Props {
   id?: string;
@@ -122,7 +123,7 @@ const DriverInfoModal = forwardRef<
                             </i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {vehicleUserData?.driver_contact_number || "-"}
+                                {vehicleUserData?.driver_contact_number ? formatPhoneNumber(vehicleUserData?.driver_contact_number) : "-"}
                               </div>
                             </div>
                           </div>
