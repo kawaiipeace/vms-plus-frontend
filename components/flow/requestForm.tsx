@@ -362,6 +362,8 @@ export default function RequestForm() {
       try {
         const response = await uploadFile(file);
         setValue("attachmentFile", response.file_url || "");
+        setFileName(shortenFilename(response.file_url));
+        setFileError("");
       } catch (error: unknown) {
         if (
           typeof error === "object" &&

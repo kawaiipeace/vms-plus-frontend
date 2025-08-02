@@ -125,15 +125,26 @@ export default function ProcessThree() {
       router.push("process-two");
     }
     setLoading(false);
-    
+
     // Modified this part to prioritize isAdminChooseDriver
-    if (formData.isAdminChooseDriver === true || formData.isSystemChooseDriver === true) {
+    if (
+      formData.isAdminChooseDriver === true ||
+      formData.isSystemChooseDriver === true
+    ) {
       setSelectedDriverType("พนักงานขับรถ");
       driverAppointmentRef.current?.openModal();
     } else if (formData.isPeaEmployeeDriver) {
-      setSelectedDriverType(formData.isPeaEmployeeDriver === "1" ? "พนักงาน กฟภ." : "พนักงานขับรถ");
+      setSelectedDriverType(
+        formData.isPeaEmployeeDriver === "1" ? "พนักงาน กฟภ." : "พนักงานขับรถ"
+      );
     }
-  }, [formData.masCarpoolDriverUid,formData.isAdminChooseDriver,formData.isSystemChooseDriver,formData.isPeaEmployeeDriver, router]);
+  }, [
+    formData.masCarpoolDriverUid,
+    formData.isAdminChooseDriver,
+    formData.isSystemChooseDriver,
+    formData.isPeaEmployeeDriver,
+    router,
+  ]);
 
   useEffect(() => {
     if (appointValid) {
@@ -170,14 +181,18 @@ export default function ProcessThree() {
 
     setSelectedDriverType(typeName);
     const isPeaEmployee = typeName === "พนักงาน กฟภ." ? "1" : "0";
-    
+
     setValue("isPeaEmployeeDriver", isPeaEmployee);
+    console.log('handleselecttype');
     updateFormData({
       isPeaEmployeeDriver: isPeaEmployee,
       // isAdminChooseDriver: typeName === "พนักงานขับรถ",
     });
 
-    if (typeName === "พนักงานขับรถ" && (formData.isAdminChooseDriver || formData.isSystemChooseDriver)) {
+    if (
+      typeName === "พนักงานขับรถ" &&
+      (formData.isAdminChooseDriver || formData.isSystemChooseDriver)
+    ) {
       driverAppointmentRef.current?.openModal();
     }
   };
@@ -189,18 +204,24 @@ export default function ProcessThree() {
         const queryParams: Record<string, any> = {
           ...params,
           emp_id: profile?.emp_id,
-          start_date: toISODateTime(formData.startDate || "", formData.timeStart || ""),
-          end_date: toISODateTime(formData.endDate || "", formData.timeEnd || ""),
+          start_date: toISODateTime(
+            formData.startDate || "",
+            formData.timeStart || ""
+          ),
+          end_date: toISODateTime(
+            formData.endDate || "",
+            formData.timeEnd || ""
+          ),
         };
-        
+
         if (formData.masCarpoolUid) {
           queryParams.mas_carpool_uid = formData.masCarpoolUid;
         }
-  
+
         if (formData.masVehicleUid) {
           queryParams.mas_vehicle_uid = formData.masVehicleUid;
         }
-  
+
         const response = await fetchSearchDrivers(queryParams);
         if (response.status === 200) {
           setFilteredDrivers(response.data.drivers);
@@ -223,7 +244,7 @@ export default function ProcessThree() {
   }, [params, profile, formData]);
 
   const handlePageChange = (newPage: number) => {
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       page: newPage,
     }));
@@ -232,6 +253,7 @@ export default function ProcessThree() {
   const handleVehicleUserChange = async (
     selectedOption: CustomSelectOption
   ) => {
+    console.log('handlevehiclechange');
     setValue("driverInternalContact", "");
     setValue("driverMobileContact", "");
     setValue("driverEmpID", "");
@@ -280,6 +302,7 @@ export default function ProcessThree() {
         driverDeptSap: empData.posi_text + " " + empData.dept_sap_short,
         isPeaEmployeeDriver: "1",
       });
+
     }
   };
 
@@ -332,53 +355,63 @@ export default function ProcessThree() {
         const response = await fetchUserDrivers(
           formData?.driverEmpID ? formData?.driverEmpID : profile?.emp_id
         );
-        
+
         if (response) {
           const vehicleUserData = response.data;
           setVehicleUserDatas(vehicleUserData);
-    
+
           const driverOptionsArray = vehicleUserData.map(
-            (user: { emp_id: string; full_name: string; dept_sap: string }) => ({
+            (user: {
+              emp_id: string;
+              full_name: string;
+              dept_sap: string;
+            }) => ({
               value: user.emp_id,
               label: `${user.full_name} (${user.emp_id})`,
             })
           );
           setDriverOptions(driverOptionsArray);
-    
+
           const selectedDriverOption = {
             value: vehicleUserData[0]?.emp_id,
             label: `${vehicleUserData[0]?.full_name} (${vehicleUserData[0]?.emp_id})`,
           };
-    
+
           if (vehicleUserData[0]) {
             const driver = vehicleUserData[0];
             const isSameDriver = formData.vehicleUserEmpId === driver.emp_id;
-            
+
             const formValues = {
-              isPeaEmployeeDriver: "1",
+              // isPeaEmployeeDriver: "1",
               driverEmpID: driver.emp_id,
               driverEmpName: driver.full_name,
               driverDeptSap: `${driver.posi_text} ${driver.dept_sap_short}`,
-              driverMobileContact: isSameDriver ? formData.telMobile : driver.tel_mobile,
-              driverInternalContact: isSameDriver ? formData.telInternal : driver.tel_internal,
+              driverMobileContact: isSameDriver
+                ? formData.telMobile
+                : driver.tel_mobile,
+              driverInternalContact: isSameDriver
+                ? formData.telInternal
+                : driver.tel_internal,
             };
-    
+
             Object.entries(formValues).forEach(([key, value]) => {
               setValue(key as keyof typeof formValues, value);
             });
-            
+
             setDriverLicenseNo(driver?.annual_driver?.driver_license_no);
             setAnnualYear(driver?.annual_driver?.annual_yyyy);
             setRequestAnnual(driver?.annual_driver?.request_annual_driver_no);
-            setLicenseExpDate(driver?.annual_driver?.driver_license_expire_date);
-    
+            setLicenseExpDate(
+              driver?.annual_driver?.driver_license_expire_date
+            );
+
             updateFormData({
               ...formValues,
               driverEmpPosition: driver.posi_text,
-              isPeaEmployeeDriver: "1",
+              // isPeaEmployeeDriver: "1",
             });
           }
-    
+
           setSelectedVehicleUserOption(selectedDriverOption);
         }
       } catch (error) {
@@ -440,7 +473,7 @@ export default function ProcessThree() {
   }, []);
 
   const handlePageSizeChange = (newLimit: number) => {
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
       limit: newLimit,
       page: 1,
@@ -702,116 +735,125 @@ export default function ProcessThree() {
                     selectedDriverType == "พนักงานขับรถ" ? "block" : "hidden"
                   } `}
                 >
-                  {(!formData.isAdminChooseDriver && !formData.isSystemChooseDriver) && (
-                    <>
-                      <div className="page-section-header border-0">
-                        <div className="page-header-left">
-                          <div className="page-title">
-                            <span className="page-title-label">
-                              เลือกพนักงานขับรถ
-                            </span>
-                            <span className="badge badge-outline badge-gray page-title-status">
-                              {filteredDrivers.length > 0 ? (
-                                <>ว่าง {pagination.total} คน</>
-                              ) : (
-                                "ไม่พบข้อมูล"
-                              )}
-                            </span>
+                  {!formData.isAdminChooseDriver &&
+                    !formData.isSystemChooseDriver && (
+                      <>
+                        <div className="page-section-header border-0">
+                          <div className="page-header-left">
+                            <div className="page-title">
+                              <span className="page-title-label">
+                                เลือกพนักงานขับรถ
+                              </span>
+                              <span className="badge badge-outline badge-gray page-title-status">
+                                {filteredDrivers.length > 0 ? (
+                                  <>ว่าง {pagination.total} คน</>
+                                ) : (
+                                  "ไม่พบข้อมูล"
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="input-group input-group-search hidden mb-5 w-[20em]">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text search-ico-info">
-                            <i className="material-symbols-outlined">
-                              search
-                            </i>
-                          </span>
-                        </div>
-                        <input
-                          ref={searchInputRef}
-                          type="text"
-                          className="form-control dt-search-input"
-                          value={searchInput}
-                          onChange={handleSearchChange}
-                          onKeyPress={(e) => {
-                            if (
-                              e.key === "Enter" &&
-                              searchInput.length >= 3
-                            ) {
-                              setParams((prev) => ({
-                                ...prev,
-                                search: searchInput,
-                                page: 1,
-                              }));
-                            }
-                          }}
-                          placeholder="ค้นหาชื่อพนักงานขับรถ.."
-                        />
-                      </div>
-                      {allDriver <= 0 ? (
-                        <EmptyDriver
-                          imgSrc="/assets/img/empty/empty_driver.svg"
-                          title="ไม่พบพนักงานขับรถ"
-                          desc={
-                            <>
-                              ระบบไม่พบพนักงานขับรถในสังกัด <br />
-                              กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />
-                              ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
-                            </>
-                          }
-                          button="ค้นหานอกสังกัด"
-                          onSelectDriver={setCarpoolId}
-                        />
-                      ) : searchInput.length >= 3 && filteredDrivers.length === 0 ? (
-                        <EmptyDriver
-                          imgSrc="/assets/img/empty/empty_driver.svg"
-                          title="ไม่พบพนักงานขับรถ"
-                          desc={<>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>}
-                        />
-                      ) : filteredDrivers.length === 0 ? (
-                        <div className="text-center text-gray-500 py-8">ไม่พบข้อมูล</div>
-                      ) : (
-                        <>
-                          <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
-                            {filteredDrivers.map(
-                              (driver: any, index: number) => (
-                                <DriverCard
-                                  key={index}
-                                  id={driver.mas_driver_uid}
-                                  imgSrc={
-                                    driver.driver_image ||
-                                    "/assets/img/sample-driver.png"
-                                  }
-                                  name={driver.driver_name || ""}
-                                  nickname={driver.driver_nickname || ""}
-                                  canSelect={driver.can_select || false}
-                                  status={driver.status || ""}
-                                  company={driver?.vendor_name || ""}
-                                  rating={
-                                    Number(driver.driver_average_satisfaction_score) === (0 || 0.00) ?
-                                    "ยังไม่มีการให้คะแนน" : driver.driver_average_satisfaction_score
-                                  }
-                                  age={driver.age || "-"}
-                                  onVehicleSelect={handleVehicleSelection}
-                                  isSelected={
-                                    selectedVehiclePoolId ===
-                                    driver.mas_driver_uid
-                                  }
-                                />
-                              )
-                            )}
+                        <div className="input-group input-group-search hidden mb-5 w-[20em]">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text search-ico-info">
+                              <i className="material-symbols-outlined">
+                                search
+                              </i>
+                            </span>
                           </div>
-                          <PaginationControls
-                            pagination={pagination}
-                            onPageChange={handlePageChange}
-                            onPageSizeChange={handlePageSizeChange}
+                          <input
+                            ref={searchInputRef}
+                            type="text"
+                            className="form-control dt-search-input"
+                            value={searchInput}
+                            onChange={handleSearchChange}
+                            onKeyPress={(e) => {
+                              if (
+                                e.key === "Enter" &&
+                                searchInput.length >= 3
+                              ) {
+                                setParams((prev) => ({
+                                  ...prev,
+                                  search: searchInput,
+                                  page: 1,
+                                }));
+                              }
+                            }}
+                            placeholder="ค้นหาชื่อพนักงานขับรถ.."
                           />
-                        </>
-                      )}
-                    </>
-                  )}
+                        </div>
+                        {allDriver <= 0 ? (
+                          <EmptyDriver
+                            imgSrc="/assets/img/empty/empty_driver.svg"
+                            title="ไม่พบพนักงานขับรถ"
+                            desc={
+                              <>
+                                ระบบไม่พบพนักงานขับรถในสังกัด <br />
+                                กลุ่มยานพาหนะนี้ที่คุณสามารถเลือกได้ <br />
+                                ลองค้นหาใหม่หรือเลือกจากนอกกลุ่มนี้
+                              </>
+                            }
+                            button="ค้นหานอกสังกัด"
+                            onSelectDriver={setCarpoolId}
+                          />
+                        ) : searchInput.length >= 3 &&
+                          filteredDrivers.length === 0 ? (
+                          <EmptyDriver
+                            imgSrc="/assets/img/empty/empty_driver.svg"
+                            title="ไม่พบพนักงานขับรถ"
+                            desc={
+                              <>เปลี่ยนคำค้นหรือเงื่อนไขแล้วลองใหม่อีกครั้ง</>
+                            }
+                          />
+                        ) : filteredDrivers.length === 0 ? (
+                          <div className="text-center text-gray-500 py-8">
+                            ไม่พบข้อมูล
+                          </div>
+                        ) : (
+                          <>
+                            <div className="grid md:grid-cols-4 grid-cols-1 gap-5 w-full">
+                              {filteredDrivers.map(
+                                (driver: any, index: number) => (
+                                  <DriverCard
+                                    key={index}
+                                    id={driver.mas_driver_uid}
+                                    imgSrc={
+                                      driver.driver_image ||
+                                      "/assets/img/sample-driver.png"
+                                    }
+                                    name={driver.driver_name || ""}
+                                    nickname={driver.driver_nickname || ""}
+                                    canSelect={driver.can_select || false}
+                                    status={driver.status || ""}
+                                    company={driver?.vendor_name || ""}
+                                    rating={
+                                      Number(
+                                        driver.driver_average_satisfaction_score
+                                      ) === (0 || 0.0)
+                                        ? "ยังไม่มีการให้คะแนน"
+                                        : driver.driver_average_satisfaction_score
+                                    }
+                                    age={driver.age || "-"}
+                                    onVehicleSelect={handleVehicleSelection}
+                                    isSelected={
+                                      selectedVehiclePoolId ===
+                                      driver.mas_driver_uid
+                                    }
+                                  />
+                                )
+                              )}
+                            </div>
+                            <PaginationControls
+                              pagination={pagination}
+                              onPageChange={handlePageChange}
+                              onPageSizeChange={handlePageSizeChange}
+                            />
+                          </>
+                        )}
+                      </>
+                    )}
                 </div>
               </div>
             </div>

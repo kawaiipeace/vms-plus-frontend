@@ -354,7 +354,7 @@ export default function RequestEditForm({
 
             <ReferenceCard
               refNum={updatedFormData.referenceNumber}
-              file={updatedFormData.attachmentFile}
+              file={updatedFormData.fileName}
             />
           </div>
 
