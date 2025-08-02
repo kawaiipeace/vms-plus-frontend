@@ -827,6 +827,7 @@ export default function RequestForm() {
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
                         defaultValue={convertToThaiDate(formData.startDate)}
+                        minDate={formData.startDate ? formData.startDate : new Date().toISOString().split("T")[0]}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
                           setValue("startDate", value, {
