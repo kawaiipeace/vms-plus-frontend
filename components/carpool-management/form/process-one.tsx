@@ -147,31 +147,11 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
     fetchDriverFunc();
   }, []);
 
-  const fetchData = async () => {
-    if (group?.value) {
-      setDLoading(true);
-      try {
-        const response = await getCarpoolDepartmentByType(
-          group.value, // No need for || "" since we checked group?.value
-          "" // Empty search string as per your code
-        );
-        const result = response.data;
-        // Get first 12 items from the result array
-        const first12Items = result.slice(0, 12);
-        setDepartments(first12Items);
-      } catch (error) {
-        console.error("Error fetching status data:", error);
-      } finally {
-        setDLoading(false);
-      }
-    }
-  };
-
   useEffect(() => {
     if (group?.value) {
-      fetchData();
       fetchDepartmentFunc();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group]);
 
   useEffect(() => {
