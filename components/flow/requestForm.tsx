@@ -299,7 +299,6 @@ export default function RequestForm() {
     );
 
     if (empData) {
-      console.log('tttsss',empData);
 
         setValue("telInternal", empData.tel_internal);
         setValue("telMobile", empData.tel_mobile);
@@ -865,12 +864,13 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-                        defaultValue={convertToThaiDate(formData.endDate)}
+                        defaultValue={formData.endDate && convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
                           setValue("endDate", value);
                         }}
-                        minDate={startDate}
+                        minDate={formData.startDate ? convertToBuddhistDateTime(startDate).date : startDate} 
+                        
                       />
                     </div>
                   </div>
