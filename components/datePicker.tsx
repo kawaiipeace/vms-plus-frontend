@@ -7,6 +7,13 @@ import { Thai } from "flatpickr/dist/l10n/th";
 import { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+
 interface DatePickerProps {
   placeholder?: string;
   defaultValue?: string; // Format: "dd/mm/พ.ศ."
@@ -66,7 +73,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         formatDate: (date, _format, _locale) => {
           const d = String(date.getDate()).padStart(2, "0");
           const m = String(date.getMonth() + 1).padStart(2, "0");
-          const y = date.getFullYear() + 543;
+          const y = date.getFullYear();
           return `${d}/${m}/${y}`;
         },
         defaultDate: defaultValue ? parseDate(convertToGregorian(defaultValue)) : undefined,
