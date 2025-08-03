@@ -19,6 +19,7 @@ import ToastCustom from "../toastCustom";
 import Image from "next/image";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface PaginationType {
   limit: number;
@@ -224,6 +225,13 @@ export default function CarpoolApproverTable({
         </div>
       ),
       enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left w-40" data-name="เบอร์โทรศัพท์">
+            {formatPhoneNumber(row.original.mobile_contact_number)}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "is_main_approver",

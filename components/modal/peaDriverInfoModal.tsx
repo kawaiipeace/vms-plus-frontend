@@ -11,6 +11,7 @@ import { PeaDriverType } from "@/app/types/vehicle-user-type";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import useSwipeDown from "@/utils/swipeDown";
 import LicensePlateStat from "../licensePlateStat";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 interface Props {
   id?: string;
@@ -101,7 +102,7 @@ const PeaDriverInfoModal = forwardRef<
                           </i>
                           <div className="form-plaintext-group">
                             <div className="form-text text-nowrap">
-                              {vehicleUserData?.tel_mobile || "-"}
+                              {vehicleUserData?.tel_mobile ? formatPhoneNumber(vehicleUserData?.tel_mobile) : "-"}
                             </div>
                           </div>
                         </div>

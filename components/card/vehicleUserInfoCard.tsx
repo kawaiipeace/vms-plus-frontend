@@ -1,4 +1,5 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import Image from "next/image";
 
 interface Props {
@@ -35,7 +36,7 @@ export default function VehicleUserInfoCard({ id, requestData, displayPhone }: P
                 <div className="form-group form-plaintext">
                   <i className="material-symbols-outlined">smartphone</i>
                   <div className="form-plaintext-group">
-                    <div className="form-text text-nowrap">{requestData?.car_user_mobile_contact_number || "-"}</div>
+                    <div className="form-text text-nowrap">{requestData?.car_user_mobile_contact_number ? formatPhoneNumber(requestData?.car_user_mobile_contact_number || "") : "-"}</div>
                   </div>
                 </div>
               </div>

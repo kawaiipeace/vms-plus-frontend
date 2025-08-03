@@ -32,6 +32,7 @@ const ReferenceModal = forwardRef<
   RefProps
 >(({ onUpdate, requestData, role }, ref) => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const hasReset = useRef(false);
   useImperativeHandle(ref, () => ({
     openModal: () => {
@@ -55,7 +56,7 @@ const ReferenceModal = forwardRef<
 
   useEffect(() => {
     if (formData.attachmentFile) {
-      setFileName(shortenFilename(formData.attachmentFile));
+      setFileName(shortenFilename(formData.fileName));
       setFileValue(formData.attachmentFile);
     }
   }, [formData]);
@@ -74,30 +75,48 @@ const ReferenceModal = forwardRef<
     }
   }, [requestData, reset]);
 
-const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  const file = event.target.files?.[0] || null;
-  if (!file) return;
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.files) return;
+    const file = event.target.files?.[0];
 
-  // Check if file type is not PDF
-  if (file.type !== "application/pdf") {
-    setFileError("กรุณาเลือกไฟล์ PDF เท่านั้น");
-    setFileValue("");
-    setFileName("อัพโหลดเอกสารแนบ");
-    return;
-  }
+    // Check if file exists and is PDF
+    if (file) {
+      if (file.type !== "application/pdf") {
+        setFileError("กรุณาอัพโหลดไฟล์ PDF เท่านั้น");
+        setFileName("อัพโหลดเอกสารแนบ");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
 
-  try {
-    const response = await uploadFile(file);
-    setFileValue(response.file_url);
-    setFileName(shortenFilename(response.file_url));
-    setFileError("");
-  } catch (error: any) {
-    const errorMessage = error?.response?.data?.message || "ไม่สามารถอัพโหลดไฟล์ได้";
-    setFileError(errorMessage);
-    setFileValue("");
-    setFileName("อัพโหลดเอกสารแนบ");
-  }
-};
+      // Reset previous errors
+      setFileError("");
+      setFileName(shortenFilename(file.name));
+
+      try {
+        const response = await uploadFile(file);
+        setFileValue(response.file_url || "");
+        setFileName(shortenFilename(response.file_name || ""));
+        setFileError("");
+      } catch (error: unknown) {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error
+        ) {
+          const axiosError = error as {
+            response?: { data?: { message?: string } };
+          };
+          setFileError(axiosError.response?.data?.message || "Upload failed");
+        } else {
+          setFileError("An unexpected error occurred");
+        }
+      }
+    }
+  };
 
   const onSubmit = async (data: any) => {
     if (requestData) {
@@ -129,12 +148,14 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
           ...data,
           referenceNumber: data.referenceNumber,
           attachmentFile: fileValue,
+          fileName: fileName,
         });
       }
 
       updateFormData({
         referenceNumber: data.referenceNumber,
         attachmentFile: fileValue,
+        fileName: fileName,
       });
 
       modalRef.current?.close();
@@ -207,6 +228,7 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
                         type="file"
                         className="file-input hidden"
                         onChange={handleFileChange}
+                        ref={fileInputRef}
                         accept=".pdf"
                       />
                       <div className="input-uploadfile-label w-full">{fileName}</div>

@@ -86,7 +86,7 @@ export default function DriverSmallInfoCard({
   return (
     <div className="card card-section-inline gap-4 flex-col">
       <div className="card-body">
-      {(!requestData || requestData?.can_choose_driver === false) && (
+        {(!requestData || requestData?.can_choose_driver === false) && (
           <>
             <div className="card-body-inline">
               <div className="img-square w-[30%] rounded-md overflow-hidden self-start">
@@ -126,8 +126,10 @@ export default function DriverSmallInfoCard({
                       <div className="card-item">
                         <i className="material-symbols-outlined">star</i>
                         <span className="card-item-text">
-                          {driver.driver_average_satisfaction_score ||
-                            "ยังไม่มีการให้คะแนน"}
+                          {Number(driver?.driver_average_satisfaction_score) ===
+                          (0 || 0.0)
+                            ? "ยังไม่มีการให้คะแนน"
+                            : driver?.driver_average_satisfaction_score}
                         </span>
                       </div>
                       <div className="card-item">
@@ -207,7 +209,8 @@ export default function DriverSmallInfoCard({
                           <div className="form-label">วันที่และเวลา</div>
                           <div className="form-text">
                             {convertToBuddhistDateTime(pickupDatetime || "")
-                              .date + " " +
+                              .date +
+                              " " +
                               convertToBuddhistDateTime(pickupDatetime || "")
                                 .time}
                           </div>
