@@ -100,8 +100,17 @@ const AddCarpoolAdminModal = forwardRef<
   }, [editId]);
 
   const fetchCarpoolAdminFunc = async (search?: string) => {
+    const values = formData.form.carpool_authorized_depts.map(
+      (dept) => dept.value
+    );
+
     try {
-      const response = await getCarpoolAdmin(search, id || undefined);
+      const response = await getCarpoolAdmin(
+        search,
+        id || "",
+        formData.form.carpool_type,
+        values
+      );
       const result = response.data;
       setAdmins(result);
     } catch (error) {
