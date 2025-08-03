@@ -139,9 +139,10 @@ const DriverInfoCarpoolModal = forwardRef<
                             <i className="material-symbols-outlined">star</i>
                             <div className="form-plaintext-group">
                               <div className="form-text text-nowrap">
-                                {
-                                  vehicleUserData?.driver_average_satisfaction_score
-                                }
+                              {Number(vehicleUserData?.driver_average_satisfaction_score) ===
+                          (0 || 0.0)
+                            ? "ยังไม่มีการให้คะแนน"
+                            : vehicleUserData?.driver_average_satisfaction_score}
                               </div>
                             </div>
                           </div>

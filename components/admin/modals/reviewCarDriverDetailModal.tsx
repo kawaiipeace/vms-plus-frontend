@@ -1,8 +1,6 @@
 import { RequestDetailType } from "@/app/types/request-detail-type";
 import Rating from "@/components/rating";
-import {
-  fetchReviewDriverDetail,
-} from "@/services/adminService";
+import { fetchReviewDriverDetail } from "@/services/adminService";
 import {
   fetchRequestKeyDetail,
   fetchSatisfactionSurveyQuestions,
@@ -37,8 +35,8 @@ interface ReviewDriverDetail {
     mas_satisfaction_survey_questions_code: string;
     mas_satisfaction_survey_questions_title?: string;
     mas_satisfaction_survey_questions_desc?: string;
-    question_title?:string;
-    questions_description?:string;
+    question_title?: string;
+    questions_description?: string;
   };
 }
 
@@ -78,11 +76,9 @@ const ReviewCarDriveDetailModal = forwardRef<
 
   const fetchReviewDriverDetailFunc = useCallback(async () => {
     try {
-
-        const response = await fetchReviewDriverDetail(id || "");
-        console.log('response', response.data);
-        setRatting(response.data);
-
+      const response = await fetchReviewDriverDetail(id || "");
+      console.log("response", response.data);
+      setRatting(response.data);
     } catch (error) {
       console.error("Error fetching review details:", error);
     }
@@ -164,7 +160,11 @@ const ReviewCarDriveDetailModal = forwardRef<
               <div className="flex gap-1 items-center">
                 <i className="material-symbols-outlined text-brand-900">star</i>
                 <span className="text-base font-semibold">
-                  {requestData?.driver?.driver_average_satisfaction_score}
+                  {Number(
+                    requestData?.driver?.driver_average_satisfaction_score
+                  ) === (0 || 0.0)
+                    ? "ยังไม่มีการให้คะแนน"
+                    : requestData?.driver?.driver_average_satisfaction_score}
                 </span>
               </div>
             </div>
@@ -177,8 +177,8 @@ const ReviewCarDriveDetailModal = forwardRef<
                         key={index}
                         name={name}
                         title={
-                          item.satisfaction_survey_questions
-                            .question_title || ""
+                          item.satisfaction_survey_questions.question_title ||
+                          ""
                         }
                         description={
                           item.satisfaction_survey_questions
@@ -197,7 +197,9 @@ const ReviewCarDriveDetailModal = forwardRef<
                       <Rating
                         key={index}
                         name={name}
-                        title={item.mas_satisfaction_survey_questions_title || ""}
+                        title={
+                          item.mas_satisfaction_survey_questions_title || ""
+                        }
                         description={
                           item.mas_satisfaction_survey_questions_desc || ""
                         }
