@@ -354,7 +354,7 @@ export default function RequestEditForm({
 
             <ReferenceCard
               refNum={updatedFormData.referenceNumber}
-              file={updatedFormData.attachmentFile}
+              file={updatedFormData.fileName}
             />
           </div>
 
@@ -539,7 +539,7 @@ export default function RequestEditForm({
                 </button>
               </div>
               <ApproverInfoCard
-                emp_id={updatedFormData?.approvedRequestEmpId || ""}
+                emp_id={(updatedFormData?.approvedRequestEmpId || updatedFormData.vehicleUserEmpId) || ""}
               />
             </div>
           )}

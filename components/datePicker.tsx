@@ -169,7 +169,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       }
 
       // Validate year (must be at least 1000 in Buddhist or Gregorian)
-      if (isNaN(year) || (year < 1000 && (year + 543) < 1000)) {
+      if (isNaN(year)) {
         instance.clear();
         if (input) input.value = "";
         onChange?.("");

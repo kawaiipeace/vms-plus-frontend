@@ -24,6 +24,7 @@ import ToastCustom from "../toastCustom";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import Image from "next/image";
 import BadgeStatus from "../carpool-management/modal/status";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
@@ -296,8 +297,9 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score ||
-              "ยังไม่มีการให้คะแนน"}
+            {row.original.driver_average_satisfaction_score === 0.0 || 0
+              ? "ยังไม่มีการให้คะแนน"
+              : row.original.driver_average_satisfaction_score}
           </div>
         );
       },
@@ -371,6 +373,13 @@ export default function CarpoolDriverTable({
       accessorKey: "driver_contact_number",
       header: () => <div className="text-left">เบอร์โทรศัพท์</div>,
       enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left w-40" data-name="เบอร์โทรศัพท์">
+            {formatPhoneNumber(row.original.driver_contact_number)}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "ref_driver_status_code",
@@ -383,7 +392,7 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="ค้างคืน">
-             {Number(row.original.work_type) === 1 ? (
+            {Number(row.original.work_type) === 1 ? (
               <div className="w-6 h-6 rounded-full border border-[#ABEFC6] bg-[#ECFDF3] flex items-center justify-center">
                 <i className="material-symbols-outlined text-[#ABEFC6]">
                   check
@@ -433,8 +442,9 @@ export default function CarpoolDriverTable({
       cell: ({ row }) => {
         return (
           <div className="text-left" data-name="คะแนน">
-            {row.original.driver_average_satisfaction_score ||
-              "ยังไม่มีการให้คะแนน"}
+            {Number(row.original.driver_average_satisfaction_score) === 0.0 || 0
+              ? "ยังไม่มีการให้คะแนน"
+              : row.original.driver_average_satisfaction_score}
           </div>
         );
       },

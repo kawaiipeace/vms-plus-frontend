@@ -25,6 +25,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import CustomSelectOnSearch from "@/components/customSelectOnSearch";
 import dayjs from "dayjs";
+import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 
 const schema = yup
   .object()
@@ -270,13 +271,6 @@ export default function RequestForm() {
 
     if (selectedOption.value === "") {
       setSelectedVehicleUserOption(null);
-      // Trigger form validation after clearing
-      await trigger([
-        "telInternal",
-        "telMobile",
-        "deptSapShort",
-        "vehicleUserEmpPosition",
-      ]);
       return;
     } else {
       setSelectedVehicleUserOption(
@@ -295,13 +289,6 @@ export default function RequestForm() {
       setValue("vehicleUserEmpPosition", "");
       setValue("deptSap", "");
       setValue("userImageUrl", "");
-      // Trigger form validation after clearing
-      await trigger([
-        "telInternal",
-        "telMobile",
-        "deptSapShort",
-        "vehicleUserEmpPosition",
-      ]);
       return;
     }
 
@@ -370,11 +357,13 @@ export default function RequestForm() {
 
       // Reset previous errors
       setFileError("");
-      setFileName(file.name);
+      setFileName(shortenFilename(file.name));
 
       try {
         const response = await uploadFile(file);
         setValue("attachmentFile", response.file_url || "");
+        setFileName(shortenFilename(response.file_url));
+        setFileError("");
       } catch (error: unknown) {
         if (
           typeof error === "object" &&
@@ -396,12 +385,11 @@ export default function RequestForm() {
     register,
     handleSubmit,
     setValue,
-    trigger,
     watch,
     formState: { errors, isValid },
     reset,
   } = useForm({
-    mode: "onChange",
+    mode: "onSubmit",
     resolver: yupResolver(schema),
     defaultValues: {
       telInternal: formData.telInternal || "",
@@ -421,6 +409,7 @@ export default function RequestForm() {
       userImageUrl: formData.userImageUrl || "",
       costCenter: formData.costCenter || "",
       pmOrderNo: formData.pmOrderNo || "",
+      wbsNumber: formData.wbsNumber || "",
       networkNo: formData.networkNo || "",
       activityNo: formData.activityNo || "",
     },
@@ -449,7 +438,7 @@ export default function RequestForm() {
     }
 
     if (formData.attachmentFile) {
-      setFileName(shortenFilename(String(formData?.attachmentFile)));
+      setFileName(shortenFilename(String(formData?.fileName)));
     }
 
     const data = costTypeDatas.find(
@@ -573,6 +562,7 @@ export default function RequestForm() {
 
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
+    data.fileName = fileName;
 
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;
@@ -712,9 +702,7 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เบอร์ภายใน</label>
                     <div
-                      className={`input-group ${
-                        errors.telInternal && "is-invalid"
-                      }`}
+                      className="input-group"
                     >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -745,9 +733,9 @@ export default function RequestForm() {
                         }}
                       />
                     </div>
-                    {errors.telInternal && (
+                    {/* {errors.telInternal && (
                       <FormHelper text={String(errors.telInternal.message)} />
-                    )}
+                    )} */}
                   </div>
                 </div>
 
@@ -755,9 +743,7 @@ export default function RequestForm() {
                   <div className="form-group">
                     <label className="form-label">เบอร์โทรศัพท์</label>
                     <div
-                      className={`input-group ${
-                        errors.telMobile && "is-invalid"
-                      }`}
+                      className={`input-group`}
                     >
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -792,9 +778,7 @@ export default function RequestForm() {
                         }}
                       />
                     </div>
-                    {errors.telMobile && (
-                      <FormHelper text={String(errors.telMobile.message)} />
-                    )}
+                  
                   </div>
                 </div>
               </div>
@@ -826,14 +810,11 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={convertToThaiDate(formData.startDate)}
+                        defaultValue={convertToBuddhistDateTime(formData.startDate || "").date}
+                        minDate={formData.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : new Date().toISOString().split("T")[0]}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
-                          setValue("startDate", value, {
-                            shouldValidate: true,
-                          });
-                          trigger("startDate");
-                          trigger("endDate"); // Also trigger endDate validation
+                          setValue("startDate", value);
                         }}
                       />
                     </div>
@@ -880,8 +861,7 @@ export default function RequestForm() {
                         defaultValue={convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
-                          setValue("endDate", value, { shouldValidate: true });
-                          trigger("endDate");
+                          setValue("endDate", value);
                         }}
                         minDate={startDate}
                       />
