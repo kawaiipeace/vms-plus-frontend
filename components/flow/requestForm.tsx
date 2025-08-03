@@ -109,6 +109,7 @@ export default function RequestForm() {
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
     []
   );
+  const [loadingApprover, setLoadingApprover] = useState(false);
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string }[]
   >([]);
@@ -541,24 +542,30 @@ export default function RequestForm() {
       setLoadingCostCenter(false);
     }
   };
-  const onSubmit = (data: any) => {
 
-    const fetchApprover = async () => {
-      const param = {
-        emp_id: selectedVehicleUserOption?.value,
-      };
-      try {
-        const response = await fetchUserApproverUsers(param);
-        if (response.status === 200) {
-          const data = response.data[0];
-          setApproverData(data);
+  useEffect(() => {
+    const fetchApproverData = async () => {
+      if (selectedVehicleUserOption?.value) {
+        setLoadingApprover(true);
+        try {
+          const response = await fetchUserApproverUsers({
+            emp_id: selectedVehicleUserOption.value
+          });
+          if (response.status === 200) {
+            setApproverData(response.data[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching approver:", error);
+        } finally {
+          setLoadingApprover(false);
         }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
       }
     };
+  
+    fetchApproverData();
+  }, [selectedVehicleUserOption]);
 
-    fetchApprover();
+  const onSubmit = (data: any) => {
 
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
