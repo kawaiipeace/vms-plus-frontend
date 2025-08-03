@@ -235,6 +235,13 @@ export default function CarpoolDriverTable({
       accessorKey: "driver_contact_number",
       header: () => <div className="text-left">เบอร์โทรศัพท์</div>,
       enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div className="text-left w-40" data-name="เบอร์โทรศัพท์">
+            {formatPhoneNumber(row.original.driver_contact_number)}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "ref_driver_status_code",
