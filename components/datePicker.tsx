@@ -6,6 +6,11 @@ import "flatpickr/dist/flatpickr.min.css";
 import { Thai } from "flatpickr/dist/l10n/th";
 import { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface DatePickerProps {
   placeholder?: string;
@@ -169,7 +174,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       }
 
       // Validate year (must be at least 1000 in Buddhist or Gregorian)
-      if (isNaN(year)) {
+      if (isNaN(year) || (year < 1000 && (year + 543) < 1000)) {
         instance.clear();
         if (input) input.value = "";
         onChange?.("");

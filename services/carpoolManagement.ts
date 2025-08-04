@@ -45,17 +45,25 @@ export const chooseDriverChoice = async () => {
 
 export const getCarpoolAdmin = async (
   search?: string,
-  mas_carpool_uid?: string
+  mas_carpool_uid?: string,
+  carpool_type?: string,
+  dept_saps?: string[]
 ) => {
   try {
-    const url = search
-      ? "carpool-management/admin-mas-search?search=" +
-        search +
-        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "")
-      : "carpool-management/admin-mas-search" +
-        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "");
-    const response = await axiosInstance.get(url);
+    let url = "carpool-management/admin-mas-search";
 
+    const queryParams = [];
+
+    if (search) queryParams.push(`search=${search}`);
+    queryParams.push(`mas_carpool_uid=${mas_carpool_uid || ""}`);
+    if (carpool_type) queryParams.push(`carpool_type=${carpool_type}`);
+    if (dept_saps) queryParams.push(`dept_saps=${dept_saps}`);
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join("&")}`;
+    }
+
+    const response = await axiosInstance.get(url);
     return response;
   } catch (error) {
     throw error;
@@ -64,17 +72,25 @@ export const getCarpoolAdmin = async (
 
 export const getCarpoolApprover = async (
   search?: string,
-  mas_carpool_uid?: string
+  mas_carpool_uid?: string,
+  carpool_type?: string,
+  dept_saps?: string[]
 ) => {
   try {
-    const url = search
-      ? "carpool-management/approver-mas-search?search=" +
-        search +
-        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "")
-      : "carpool-management/approver-mas-search" +
-        (mas_carpool_uid ? "&mas_carpool_uid=" + mas_carpool_uid : "");
-    const response = await axiosInstance.get(url);
+    let url = "carpool-management/approver-mas-search";
 
+    const queryParams = [];
+
+    if (search) queryParams.push(`search=${search}`);
+    queryParams.push(`mas_carpool_uid=${mas_carpool_uid || ""}`);
+    if (carpool_type) queryParams.push(`carpool_type=${carpool_type}`);
+    if (dept_saps) queryParams.push(`dept_saps=${dept_saps}`);
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join("&")}`;
+    }
+
+    const response = await axiosInstance.get(url);
     return response;
   } catch (error) {
     throw error;

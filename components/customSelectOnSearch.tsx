@@ -21,6 +21,7 @@ interface SelectProps {
   onSearchInputChange?: (value: string) => void;
   loading?: boolean;
   enableSearchOnApi?: boolean;
+  initialValue?: number;
 }
 
 export default function CustomSelectOnSearch({
@@ -37,11 +38,13 @@ export default function CustomSelectOnSearch({
   enableSearchOnApi,
   onSearchInputChange,
   loading = false,
+  initialValue,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState(value?.label?.toString() || "");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [lastSearchTerm, setLastSearchTerm] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const userTypingRef = useRef(false);
@@ -61,6 +64,7 @@ export default function CustomSelectOnSearch({
         const handler = setTimeout(() => {
           onSearchInputChange(trimmedInput);
           setLastSearchTerm(trimmedInput);
+          setHasSearched(true);
         }, 500);
 
         return () => {
@@ -90,10 +94,15 @@ export default function CustomSelectOnSearch({
         return text.toLowerCase().includes(trimmed.toLowerCase());
       });
 
+  // Show initial items on first load when enableSearchOnApi is true and no search has been performed
+  const displayOptions = enableSearchOnApi && !hasSearched && inputText.trim().length < 3 && initialValue
+    ? options.slice(0, initialValue)
+    : filteredOptions;
+
   const shouldShowDropdown =
     isOpen &&
     ((!enableSearchOnApi && options.length > 0) ||
-      (enableSearchOnApi && inputText.trim().length >= 3));
+      (enableSearchOnApi && (inputText.trim().length >= 3 || (!hasSearched && initialValue && options.length > 0))));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -113,6 +122,7 @@ export default function CustomSelectOnSearch({
     if (!isOpen) {
       setInputText(value?.label?.toString() || "");
       userTypingRef.current = false;
+      setHasSearched(false);
     }
   }, [value, isOpen]);
 
@@ -123,14 +133,14 @@ export default function CustomSelectOnSearch({
     } else if (isOpen) {
       if (e.key === "ArrowDown") {
         setHighlightedIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : 0
+          prev < displayOptions.length - 1 ? prev + 1 : 0
         );
       } else if (e.key === "ArrowUp") {
         setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredOptions.length - 1
+          prev > 0 ? prev - 1 : displayOptions.length - 1
         );
       } else if (e.key === "Enter" && highlightedIndex >= 0) {
-        const selected = filteredOptions[highlightedIndex];
+        const selected = displayOptions[highlightedIndex];
         onChange(selected);
         setInputText(selected.label ? selected.label.toString() : "");
         setIsOpen(false);
@@ -259,8 +269,8 @@ export default function CustomSelectOnSearch({
 
       {shouldShowDropdown && (
         <ul className="max-h-[16rem] overflow-y-auto absolute flex drop-list-custom flex-col left-0 p-2 gap-2 z-10 mt-1 w-full border border-gray-300 rounded-lg shadow-lg bg-white">
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option, idx) => (
+          {displayOptions.length > 0 ? (
+            displayOptions.map((option, idx) => (
               <li
                 key={option.value}
                 className={`px-4 py-2 cursor-pointer flex gap-2 items-start rounded-lg ${
