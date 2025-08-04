@@ -109,6 +109,7 @@ export default function RequestForm() {
   const [vehicleUserDatas, setVehicleUserDatas] = useState<VehicleUserType[]>(
     []
   );
+  const [loadingApprover, setLoadingApprover] = useState(false);
   const [costTypeOptions, setCostTypeOptions] = useState<
     { value: string; label: string }[]
   >([]);
@@ -298,7 +299,6 @@ export default function RequestForm() {
     );
 
     if (empData) {
-      console.log('tttsss',empData);
 
         setValue("telInternal", empData.tel_internal);
         setValue("telMobile", empData.tel_mobile);
@@ -541,24 +541,30 @@ export default function RequestForm() {
       setLoadingCostCenter(false);
     }
   };
-  const onSubmit = (data: any) => {
 
-    const fetchApprover = async () => {
-      const param = {
-        emp_id: selectedVehicleUserOption?.value,
-      };
-      try {
-        const response = await fetchUserApproverUsers(param);
-        if (response.status === 200) {
-          const data = response.data[0];
-          setApproverData(data);
+  useEffect(() => {
+    const fetchApproverData = async () => {
+      if (selectedVehicleUserOption?.value) {
+        setLoadingApprover(true);
+        try {
+          const response = await fetchUserApproverUsers({
+            emp_id: selectedVehicleUserOption.value
+          });
+          if (response.status === 200) {
+            setApproverData(response.data[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching approver:", error);
+        } finally {
+          setLoadingApprover(false);
         }
-      } catch (error) {
-        console.error("Error fetching requests:", error);
       }
     };
+  
+    fetchApproverData();
+  }, [selectedVehicleUserOption]);
 
-    fetchApprover();
+  const onSubmit = (data: any) => {
 
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
@@ -858,12 +864,13 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่สิ้นสุดเดินทาง"
-                        defaultValue={convertToThaiDate(formData.endDate)}
+                        defaultValue={formData.endDate && convertToThaiDate(formData.endDate)}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
                           setValue("endDate", value);
                         }}
-                        minDate={startDate}
+                        minDate={formData.startDate ? convertToBuddhistDateTime(startDate).date : startDate} 
+                        
                       />
                     </div>
                   </div>
