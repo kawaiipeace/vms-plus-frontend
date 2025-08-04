@@ -55,7 +55,7 @@ export const getCarpoolAdmin = async (
     const queryParams = [];
 
     if (search) queryParams.push(`search=${search}`);
-    queryParams.push(`mas_carpool_uid=${mas_carpool_uid || ""}`);
+    queryParams.push(`mas_carpool_uid=${mas_carpool_uid || " "}`);
     if (carpool_type) queryParams.push(`carpool_type=${carpool_type}`);
     if (dept_saps) queryParams.push(`dept_saps=${dept_saps}`);
 
@@ -82,7 +82,7 @@ export const getCarpoolApprover = async (
     const queryParams = [];
 
     if (search) queryParams.push(`search=${search}`);
-    queryParams.push(`mas_carpool_uid=${mas_carpool_uid || ""}`);
+    queryParams.push(`mas_carpool_uid=${mas_carpool_uid || " "}`);
     if (carpool_type) queryParams.push(`carpool_type=${carpool_type}`);
     if (dept_saps) queryParams.push(`dept_saps=${dept_saps}`);
 
