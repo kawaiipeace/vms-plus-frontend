@@ -74,6 +74,7 @@ export type RequestDetailType = Partial<{
   progress_request_status_emp: ProgressRequestStatusEmp;
   ref_request_status_name: string;
   rejected_request_reason: string;
+  doc_file_name: string;
   canceled_request_reason: string;
   received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;
