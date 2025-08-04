@@ -6,6 +6,11 @@ import "flatpickr/dist/flatpickr.min.css";
 import { Thai } from "flatpickr/dist/l10n/th";
 import { Instance as FlatpickrInstance } from "flatpickr/dist/types/instance";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface DatePickerProps {
   placeholder?: string;

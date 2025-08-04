@@ -97,7 +97,7 @@ const LicenseCardModal = forwardRef<
         <div className="modal-body overflow-y-auto text-center">
           <div className="form-section">
             <div
-              className="grid gap-5 grid-cols-12 w-[328px] max-w-[328px] export-img bg-[url('/assets/img/departure_card.png')] bg-center bg-no-repeat p-4 rounded-xl mx-auto"
+              className="grid gap-5 grid-cols-12 w-[328px] max-w-[328px] export-img bg-center bg-no-repeat bg-[url('/assets/img/departure_card.png')] [background-size:130%_600px] p-4 rounded-xl mx-auto"
               ref={exportImgRef}
             >
               <div className="col-span-12">
