@@ -62,27 +62,14 @@ const AddCarpoolApproverModal = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const FetchIdFunc = async () => {
-      if (id) {
-        try {
-          const response = await getCarpoolManagementId(id);
-          const result = response.data;
-          console.log("Carpool data:", result);
-          setCarpool(result);
-        } catch (error) {
-          console.error("Error fetching status data:", error);
-        }
-      }
-    };
-
-    FetchIdFunc();
-  }, [id]);
 
   useEffect(() => {
     const fetchCarpoolApproverDetailsFunc = async () => {
       if (editId) {
         if (id) {
+
+        
+
           try {
             const response = await getCarpoolApproverDetails(editId);
             const result = response.data;
@@ -125,11 +112,30 @@ const AddCarpoolApproverModal = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
+  // useEffect(() => {
+  //   fetchCarpoolManagement();
+  // },[carpool,id])
+
+  const fetchCarpoolManagement = async () => {
+  
+    try {
+      const response = await getCarpoolManagementId(id || "");
+      const result = response.data;
+      console.log("Carpool data:", result);
+      setCarpool(result);
+      return result;
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  }
+
   const fetchCarpoolApproverFunc = async (search?: string) => {
+    const carpoolRes = await fetchCarpoolManagement();
+    console.log("Carpool Approver data:", carpoolRes);
     let values;
     if(id){
-      values = carpool?.carpool_authorized_depts.map(
-        (dept) => dept.dept_sap
+      values = carpoolRes?.carpool_authorized_depts.map(
+        (dept:any) => dept.dept_sap
       );
     }else if(formData){
       values = formData?.form?.carpool_authorized_depts.map(
@@ -138,11 +144,13 @@ const AddCarpoolApproverModal = forwardRef<
     }else{
       values = [""];
     }
+   
+    
     try {
       const response = await getCarpoolApprover(
         search,
         id || "",
-        id ? carpool?.carpool_type : formData?.form?.carpool_type,
+        id ? carpoolRes?.carpool_type : formData?.form?.carpool_type,
         values
       );
       const result = response.data;
@@ -381,12 +389,12 @@ const AddCarpoolApproverModal = forwardRef<
     setSelectedApprover(option);
     const approve = approver.find((item) => item.emp_id === option.value);
 
-    const internal = approve?.tel_internal;
-    const mobile = approve?.tel_mobile;
+    const internal = approve?.tel_internal || "";
+    const mobile = approve?.tel_mobile || "";
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
     if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
-    setDeptSapShort(approve?.posi_text + " " + approve?.dept_sap_short);
+    setDeptSapShort((approve?.posi_text || "") + " " + (approve?.dept_sap_short || ""));
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
