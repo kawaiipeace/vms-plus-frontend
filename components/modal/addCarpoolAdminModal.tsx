@@ -124,17 +124,19 @@ const AddCarpoolAdminModal = forwardRef<
       values = carpool?.carpool_authorized_depts.map(
         (dept) => dept.dept_sap
       );
-    }else{
-      values = formData.form.carpool_authorized_depts.map(
+    }else if(formData){
+      values = formData?.form?.carpool_authorized_depts.map(
         (dept) => dept.value
       );
+    }else{
+      values = [""];
     }
   
     try {
       const response = await getCarpoolAdmin(
         search,
         id || "",
-        id ? carpool?.carpool_type : formData.form.carpool_type,
+        id ? carpool?.carpool_type : (formData?.form?.carpool_type || ""),
         values
       );
       const result = response.data;

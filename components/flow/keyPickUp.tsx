@@ -177,7 +177,7 @@ export default function KeyPickUp({ editable, requestId }: RequestDetailFormProp
         reqId={requestData?.trn_request_uid || ""}
         imgSrc={""}
         deptSapShort={
-          (requestData?.received_key_position || "") + " " + requestData?.received_key_dept_sap_short || "-"
+          requestData?.vendor_name
         }
         onSubmit={() => {
           handleModalUpdate();

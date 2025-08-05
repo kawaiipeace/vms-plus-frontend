@@ -127,17 +127,22 @@ const AddCarpoolApproverModal = forwardRef<
 
   const fetchCarpoolApproverFunc = async (search?: string) => {
     let values;
-    if (id) {
-      values = carpool?.carpool_authorized_depts.map((dept) => dept.dept_sap);
-    } else {
-      values = formData.form.carpool_authorized_depts.map((dept) => dept.value);
+    if(id){
+      values = carpool?.carpool_authorized_depts.map(
+        (dept) => dept.dept_sap
+      );
+    }else if(formData){
+      values = formData?.form?.carpool_authorized_depts.map(
+        (dept) => dept.value
+      );
+    }else{
+      values = [""];
     }
-
     try {
       const response = await getCarpoolApprover(
         search,
         id || "",
-        id ? carpool?.carpool_type : formData.form.carpool_type,
+        id ? carpool?.carpool_type : formData?.form?.carpool_type,
         values
       );
       const result = response.data;

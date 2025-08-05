@@ -8,6 +8,7 @@ export type RequestDetailType = Partial<{
   trn_request_uid: string;
   request_no: string;
   vehicle_user_emp_name: string;
+  vendor_name: string;
   vehicle_user_dept_sap: string;
   vehicle_user_emp_id: string;
   vehicle_user_dept_sap_short: string;
