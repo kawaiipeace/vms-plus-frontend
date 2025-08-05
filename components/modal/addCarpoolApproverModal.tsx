@@ -386,15 +386,22 @@ const AddCarpoolApproverModal = forwardRef<
   };
 
   const selectApprover = (option: CustomSelectOption) => {
+    if (option.value === "") {
+      setSelectedApprover(undefined);
+      setDeptSapShort("");
+      setInternalContactNumber("");
+      setMobileContactNumber("");
+    } else {
     setSelectedApprover(option);
     const approve = approver.find((item) => item.emp_id === option.value);
 
-    const internal = approve?.tel_internal || "";
-    const mobile = approve?.tel_mobile || "";
+    const internal = approve?.tel_internal;
+    const mobile = approve?.tel_mobile;
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
     if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
-    setDeptSapShort((approve?.posi_text || "") + " " + (approve?.dept_sap_short || ""));
+    setDeptSapShort((approve?.posi_text) + " " + (approve?.dept_sap_short));
+    }
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
