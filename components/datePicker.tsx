@@ -14,7 +14,7 @@ dayjs.extend(timezone);
 
 interface DatePickerProps {
   placeholder?: string;
-  defaultValue?: string; // Format: "dd/mm/พ.ศ."
+  defaultValue?: string; // Format: "dd/mm/yyyy" (Buddhist year)
   minDate?: string;
   maxDate?: string;
   onChange?: (isoDate: string) => void; // Format: "YYYY-MM-DD"
@@ -50,6 +50,21 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         flatpickrInstance.current.destroy();
       }
 
+      // Normalize dates before passing to flatpickr
+      const normalizedDefaultDate = defaultValue 
+        ? parseDate(convertToGregorian(defaultValue))
+        : minDate
+          ? parseDate(convertToGregorian(minDate))
+          : undefined;
+
+      const normalizedMinDate = minDate 
+        ? parseDate(convertToGregorian(minDate))
+        : undefined;
+
+      const normalizedMaxDate = maxDate 
+        ? parseDate(convertToGregorian(maxDate))
+        : undefined;
+
       const instance = flatpickr(inputRef.current, {
         mode: "single",
         monthSelectorType: "static",
@@ -74,14 +89,12 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           const y = date.getFullYear() + 543;
           return `${d}/${m}/${y}`;
         },
-        defaultDate: defaultValue ? parseDate(convertToGregorian(defaultValue)) : undefined,
-        minDate,
-        maxDate,
-
+        defaultDate: normalizedDefaultDate,
+        minDate: normalizedMinDate,
+        maxDate: normalizedMaxDate,
         onChange: (selectedDates, _dateStr, instance) => {
           const selected = selectedDates?.[0];
           if (!selected) {
-            // When date is cleared, call onChange with empty string
             onChange?.("");
             return;
           }
@@ -89,20 +102,16 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           onChange?.(localDate);
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-
         onReady: (_dates, dateStr, instance) => {
           patchBuddhistInput(instance, dateStr);
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-
         onMonthChange: (_dates, _dateStr, instance) => {
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-
         onYearChange: (_dates, _dateStr, instance) => {
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-
         onValueUpdate: (_dates, dateStr, instance) => {
           validateAndClearIfInvalid(instance);
           if (dateStr) {
@@ -110,8 +119,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           }
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-    
-
         onOpen: (_dates, _dateStr, instance) => {
           document.querySelectorAll(".flatpickr-calendar").forEach(el => {
             el.classList.add("flatpickr-center-mobile");
@@ -120,12 +127,10 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           if (wrapper) wrapper.style.overflow = "hidden";
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-
         onClose: (_dates, _dateStr, instance) => {
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "";
           validateAndClearIfInvalid(instance);
-          // Ensure onChange is called if the input is empty after validation
           if (!instance.input?.value) {
             onChange?.("");
           }
@@ -157,7 +162,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       const month = parseInt(m, 10);
       const year = parseInt(y, 10);
 
-      // Validate day (1-31)
       if (isNaN(day) || day < 1 || day > 31) {
         instance.clear();
         if (input) input.value = "";
@@ -165,7 +169,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         return;
       }
 
-      // Validate month (1-12)
       if (isNaN(month) || month < 1 || month > 12) {
         instance.clear();
         if (input) input.value = "";
@@ -173,7 +176,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         return;
       }
 
-      // Validate year (must be at least 1000 in Buddhist or Gregorian)
       if (isNaN(year) || (year < 1000 && (year + 543) < 1000)) {
         instance.clear();
         if (input) input.value = "";

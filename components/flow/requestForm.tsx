@@ -149,6 +149,7 @@ export default function RequestForm() {
   };
 
   useEffect(() => {
+    console.log("datestart", convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date);
     fetchCostTypeRequest(profile?.emp_id || "");
   }, [profile]);
 
@@ -816,8 +817,8 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={convertToBuddhistDateTime(formData.startDate || "").date}
-                        minDate={formData.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : new Date().toISOString().split("T")[0]}
+                        defaultValue={formData?.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date}
+                        minDate={formData.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
                           setValue("startDate", value);
