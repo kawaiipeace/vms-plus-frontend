@@ -10,10 +10,11 @@ import { CustomSelectOption } from "../customSelect";
 import {
   getCarpoolApprover,
   getCarpoolApproverDetails,
+  getCarpoolManagementId,
   postCarpoolApproverCreate,
   putCarpoolApproverUpdate,
 } from "@/services/carpoolManagement";
-import { CarpoolApprover } from "@/app/types/carpool-management-type";
+import { Carpool, CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
@@ -48,7 +49,7 @@ const AddCarpoolApproverModal = forwardRef<
   const [toast, setToast] = useState<ToastProps | undefined>();
   const [editName, setEditName] = useState<string | undefined>(undefined);
   const [validPhone, setValidPhone] = useState<boolean>(false);
-
+  const [carpool, setCarpool] = useState<Carpool>();
   const { formData, updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
@@ -60,6 +61,23 @@ const AddCarpoolApproverModal = forwardRef<
     fetchCarpoolApproverFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const FetchIdFunc = async () => {
+      if (id) {
+        try {
+          const response = await getCarpoolManagementId(id);
+          const result = response.data;
+          console.log("Carpool data:", result);
+          setCarpool(result);
+        } catch (error) {
+          console.error("Error fetching status data:", error);
+        }
+      }
+    };
+
+    FetchIdFunc();
+  }, [id]);
 
   useEffect(() => {
     const fetchCarpoolApproverDetailsFunc = async () => {
@@ -108,14 +126,18 @@ const AddCarpoolApproverModal = forwardRef<
   }, [editId]);
 
   const fetchCarpoolApproverFunc = async (search?: string) => {
-    const values = formData.form.carpool_authorized_depts.map(
-      (dept) => dept.value
-    );
+    let values;
+    if (id) {
+      values = carpool?.carpool_authorized_depts.map((dept) => dept.dept_sap);
+    } else {
+      values = formData.form.carpool_authorized_depts.map((dept) => dept.value);
+    }
+
     try {
       const response = await getCarpoolApprover(
         search,
         id || "",
-        formData.form.carpool_type,
+        id ? carpool?.carpool_type : formData.form.carpool_type,
         values
       );
       const result = response.data;
