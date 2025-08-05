@@ -121,7 +121,6 @@ const AddCarpoolApproverModal = forwardRef<
     try {
       const response = await getCarpoolManagementId(id || "");
       const result = response.data;
-      console.log("Carpool data:", result);
       setCarpool(result);
       return result;
     } catch (error) {
@@ -131,7 +130,6 @@ const AddCarpoolApproverModal = forwardRef<
 
   const fetchCarpoolApproverFunc = async (search?: string) => {
     const carpoolRes = await fetchCarpoolManagement();
-    console.log("Carpool Approver data:", carpoolRes);
     let values;
     if(id){
       values = carpoolRes?.carpool_authorized_depts.map(

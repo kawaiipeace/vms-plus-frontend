@@ -100,29 +100,28 @@ const AddCarpoolAdminModal = forwardRef<
     fetchCarpoolAdminDetailsFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
+  
 
-  useEffect(() => {
-    const FetchIdFunc = async () => {
-      if (id) {
-        try {
-          const response = await getCarpoolManagementId(id);
-          const result = response.data;
-          console.log("Carpool data:", result);
-          setCarpool(result);
-        } catch (error) {
-          console.error("Error fetching status data:", error);
-        }
-      }
-    };
+  const fetchCarpoolManagement = async () => {
+  
+    try {
+      const response = await getCarpoolManagementId(id || "");
+      const result = response.data;
+      setCarpool(result);
+      return result;
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  }
 
-    FetchIdFunc();
-  }, [id]);
 
   const fetchCarpoolAdminFunc = async (search?: string) => {
+    const carpoolRes = await fetchCarpoolManagement();
+
     let values;
     if(id){
-      values = carpool?.carpool_authorized_depts.map(
-        (dept) => dept.dept_sap
+      values = carpoolRes?.carpool_authorized_depts.map(
+        (dept:any) => dept.dept_sap
       );
     }else if(formData){
       values = formData?.form?.carpool_authorized_depts.map(
@@ -136,7 +135,7 @@ const AddCarpoolAdminModal = forwardRef<
       const response = await getCarpoolAdmin(
         search,
         id || "",
-        id ? carpool?.carpool_type : (formData?.form?.carpool_type || ""),
+        id ? carpoolRes?.carpool_type : (formData?.form?.carpool_type || ""),
         values
       );
       const result = response.data;
