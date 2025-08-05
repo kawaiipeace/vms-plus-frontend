@@ -393,6 +393,7 @@ export default function ProcessOneForm({ carpool }: { carpool?: Carpool }) {
                       setGroup(e);
                       setValue("carpool_type", e.value);
                       setDepartmentSelected([]);
+                      setValue("carpool_authorized_depts", []);
                     }}
                   />
                   <div>
