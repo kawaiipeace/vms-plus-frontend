@@ -1,4 +1,5 @@
 import { DriverInfoType } from "@/app/types/drivers-management-type";
+import { formatPhoneNumber } from "@/utils/formatPhoneNumber";
 import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import Image from "next/image";
@@ -46,9 +47,7 @@ const DriverBasicInfoCard = ({ driverInfo }: { driverInfo: DriverInfoType }) => 
                         <div className="form-plaintext-group">
                           <div className="form-text text-nowrap">
                             {driverInfo?.driver_contact_number
-                              ? driverInfo.driver_contact_number
-                                  .replace(/-/g, "")
-                                  .replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3")
+                              ? formatPhoneNumber(driverInfo.driver_contact_number)
                               : "-"}
                           </div>
                         </div>
