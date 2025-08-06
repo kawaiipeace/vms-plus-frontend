@@ -38,6 +38,17 @@ export default function FinalListTable({ defaultData, pagination }: Props) {
     pageSize: pagination.limit,
   });
 
+  useEffect(() => {
+
+  }, [defaultData]);
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination.page, pagination.limit]);
+
   const requestListColumns: ColumnDef<RequestListType>[] = [
     {
       accessorKey: "request_no",
