@@ -48,6 +48,17 @@ export default function AdminKeyHandOverListTable({
     pageSize: pagination.limit,
   });
 
+  useEffect(() => {
+
+  }, [defaultData]);
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination.page, pagination.limit]);
+
   const requestListColumns: ColumnDef<RequestListType>[] = [
     {
       accessorKey: "received_key_start_datetime",

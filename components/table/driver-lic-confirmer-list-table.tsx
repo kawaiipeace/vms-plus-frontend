@@ -33,10 +33,21 @@ export default function DriverLicConfirmerListTable({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  const paginationState = {
-    pageIndex: pagination.page - 1, // Convert to 0-based index
+  const [paginationState, setPagination] = useState<PaginationState>({
+    pageIndex: pagination.page - 1, // Adjusting page index as React Table uses 0-based indexing
     pageSize: pagination.limit,
-  };
+  });
+
+  useEffect(() => {
+
+  }, [defaultData]);
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination.page, pagination.limit]);
 
   const requestListColumns: ColumnDef<DriverLicListType>[] = [
     {
