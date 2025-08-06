@@ -265,7 +265,7 @@ export default function AdminApproveFlow() {
     fetchRequestsData();
   }, [params]);
 
-  useEffect(() => {}, [dataRequest]); // This will log whenever dataRequest changes
+  useEffect(() => {}, [dataRequest, params]);
 
   if (loading) {
     return <div className="mt-0 pt-0"></div>;
