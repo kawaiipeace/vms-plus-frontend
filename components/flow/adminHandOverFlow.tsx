@@ -207,9 +207,7 @@ export default function AdminKeyHandOverFlow() {
     }));
   };
 
-  useEffect(() => {
-
-  }, [dataRequest]);
+  useEffect(() => {}, [dataRequest, params]);
 
   if (loading) {
     return <div className="mt-0 pt-0"></div>;
