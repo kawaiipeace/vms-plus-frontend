@@ -57,6 +57,7 @@ export default function KeyPickUp({
       pickup.setHours(0, 0, 0, 0);
       setPickupDatePassed(today > pickup);
       setRequestData(response.data);
+      console.log(response.data);
       setVehicleKeyTypeData(responseKeyType.data);
       const timer = setTimeout(() => {
         setLoading(false);
@@ -196,11 +197,11 @@ export default function KeyPickUp({
         reqId={requestData?.trn_request_uid || ""}
         imgSrc={""}
         deptSapShort={
-          requestData?.receiver_key_type === 2
+          Number(requestData?.receiver_key_type) === 2
             ? (requestData?.received_key_position || "") +
                 " " +
                 requestData?.received_key_dept_sap_short || "-"
-            : requestData?.vendor_name || ""
+            : requestData?.driver?.vendor_name || ""
         }
         onSubmit={() => {
           handleModalUpdate();
