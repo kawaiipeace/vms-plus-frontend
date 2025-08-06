@@ -196,12 +196,14 @@ export default function KeyPickUp({
         }}
         reqId={requestData?.trn_request_uid || ""}
         imgSrc={""}
-        deptSapShort={
+        deptSapShort = {
           Number(requestData?.receiver_key_type) === 2
             ? (requestData?.received_key_position || "") +
-                " " +
-                requestData?.received_key_dept_sap_short || "-"
-            : requestData?.driver?.vendor_name || ""
+                "" +
+                requestData?.received_key_dept_sap_short || ""
+            : Number(requestData?.receiver_key_type) === 1
+            ? requestData?.driver?.vendor_name || ""
+            : ""
         }
         onSubmit={() => {
           handleModalUpdate();
