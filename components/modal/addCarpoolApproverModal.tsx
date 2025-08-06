@@ -10,10 +10,11 @@ import { CustomSelectOption } from "../customSelect";
 import {
   getCarpoolApprover,
   getCarpoolApproverDetails,
+  getCarpoolManagementId,
   postCarpoolApproverCreate,
   putCarpoolApproverUpdate,
 } from "@/services/carpoolManagement";
-import { CarpoolApprover } from "@/app/types/carpool-management-type";
+import { Carpool, CarpoolApprover } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
@@ -48,7 +49,7 @@ const AddCarpoolApproverModal = forwardRef<
   const [toast, setToast] = useState<ToastProps | undefined>();
   const [editName, setEditName] = useState<string | undefined>(undefined);
   const [validPhone, setValidPhone] = useState<boolean>(false);
-
+  const [carpool, setCarpool] = useState<Carpool>();
   const { formData, updateFormData } = useFormContext();
 
   useImperativeHandle(ref, () => ({
@@ -61,10 +62,14 @@ const AddCarpoolApproverModal = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+
   useEffect(() => {
     const fetchCarpoolApproverDetailsFunc = async () => {
       if (editId) {
         if (id) {
+
+        
+
           try {
             const response = await getCarpoolApproverDetails(editId);
             const result = response.data;
@@ -107,15 +112,43 @@ const AddCarpoolApproverModal = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
+  // useEffect(() => {
+  //   fetchCarpoolManagement();
+  // },[carpool,id])
+
+  const fetchCarpoolManagement = async () => {
+  
+    try {
+      const response = await getCarpoolManagementId(id || "");
+      const result = response.data;
+      setCarpool(result);
+      return result;
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  }
+
   const fetchCarpoolApproverFunc = async (search?: string) => {
-    const values = formData.form.carpool_authorized_depts.map(
-      (dept) => dept.value
-    );
+    const carpoolRes = await fetchCarpoolManagement();
+    let values;
+    if(id){
+      values = carpoolRes?.carpool_authorized_depts.map(
+        (dept:any) => dept.dept_sap
+      );
+    }else if(formData){
+      values = formData?.form?.carpool_authorized_depts.map(
+        (dept) => dept.value
+      );
+    }else{
+      values = [""];
+    }
+   
+    
     try {
       const response = await getCarpoolApprover(
         search,
         id || "",
-        formData.form.carpool_type,
+        id ? carpoolRes?.carpool_type : formData?.form?.carpool_type,
         values
       );
       const result = response.data;
@@ -351,6 +384,12 @@ const AddCarpoolApproverModal = forwardRef<
   };
 
   const selectApprover = (option: CustomSelectOption) => {
+    if (option.value === "") {
+      setSelectedApprover(undefined);
+      setDeptSapShort("");
+      setInternalContactNumber("");
+      setMobileContactNumber("");
+    } else {
     setSelectedApprover(option);
     const approve = approver.find((item) => item.emp_id === option.value);
 
@@ -359,7 +398,8 @@ const AddCarpoolApproverModal = forwardRef<
     setInternalContactNumber(internal);
     setMobileContactNumber(mobile);
     if (mobile) setValidPhone(!/^\d{10}$/.test(mobile));
-    setDeptSapShort(approve?.posi_text + " " + approve?.dept_sap_short);
+    setDeptSapShort((approve?.posi_text) + " " + (approve?.dept_sap_short));
+    }
   };
 
   const swipeDownHandlers = useSwipeDown(() => modalRef.current?.close());
