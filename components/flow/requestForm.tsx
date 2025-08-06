@@ -149,6 +149,7 @@ export default function RequestForm() {
   };
 
   useEffect(() => {
+    console.log("datestart", convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date);
     fetchCostTypeRequest(profile?.emp_id || "");
   }, [profile]);
 
@@ -362,7 +363,7 @@ export default function RequestForm() {
       try {
         const response = await uploadFile(file);
         setValue("attachmentFile", response.file_url || "");
-        setFileName(shortenFilename(response.file_url));
+        setFileName(shortenFilename(response.file_name));
         setFileError("");
       } catch (error: unknown) {
         if (
@@ -398,7 +399,7 @@ export default function RequestForm() {
       purpose: formData.purpose || "",
       remark: formData.remark || "",
       referenceNumber: formData.referenceNumber || "",
-      startDate: formData.startDate || "",
+      startDate: formData.startDate || new Date().toISOString().split("T")[0],
       endDate: formData.endDate || "",
       refCostTypeCode: formData.refCostTypeCode || "",
       timeStart: formData.timeStart || "08:30",
@@ -602,7 +603,7 @@ export default function RequestForm() {
         purpose: "",
         remark: "",
         referenceNumber: "",
-        startDate: "",
+        startDate: new Date().toISOString().split("T")[0],
         endDate: "",
         refCostTypeCode: "",
         timeStart: "08:30",
@@ -816,8 +817,8 @@ export default function RequestForm() {
 
                       <DatePicker
                         placeholder="ระบุวันที่เริ่มต้นเดินทาง"
-                        defaultValue={convertToBuddhistDateTime(formData.startDate || "").date}
-                        minDate={formData.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : new Date().toISOString().split("T")[0]}
+                        defaultValue={formData?.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date}
+                        minDate={formData.startDate ? convertToBuddhistDateTime(formData.startDate || "").date : convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date}
                         onChange={(dateStr) => {
                           const value = dateStr || ""; // Ensure empty string if cleared
                           setValue("startDate", value);

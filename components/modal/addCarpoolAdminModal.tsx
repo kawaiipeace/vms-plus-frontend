@@ -10,10 +10,11 @@ import { CustomSelectOption } from "../customSelect";
 import {
   getCarpoolAdmin,
   getCarpoolAdminDetails,
+  getCarpoolManagementId,
   postCarpoolAdminCreate,
   putCarpoolAdminUpdate,
 } from "@/services/carpoolManagement";
-import { CarpoolAdmin } from "@/app/types/carpool-management-type";
+import { Carpool, CarpoolAdmin } from "@/app/types/carpool-management-type";
 import { useFormContext } from "@/contexts/carpoolFormContext";
 import { useSearchParams } from "next/navigation";
 import ToastCustom from "../toastCustom";
@@ -46,6 +47,7 @@ const AddCarpoolAdminModal = forwardRef<
   const [mobile_contact_number, setMobileContactNumber] = useState<string>();
   const [toast, setToast] = useState<ToastProps | undefined>();
   const [validPhone, setValidPhone] = useState<boolean>(false);
+  const [carpool, setCarpool] = useState<Carpool>();
 
   const { formData, updateFormData } = useFormContext();
 
@@ -98,17 +100,42 @@ const AddCarpoolAdminModal = forwardRef<
     fetchCarpoolAdminDetailsFunc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
+  
+
+  const fetchCarpoolManagement = async () => {
+  
+    try {
+      const response = await getCarpoolManagementId(id || "");
+      const result = response.data;
+      setCarpool(result);
+      return result;
+    } catch (error) {
+      console.error("Error fetching status data:", error);
+    }
+  }
+
 
   const fetchCarpoolAdminFunc = async (search?: string) => {
-    const values = formData.form.carpool_authorized_depts.map(
-      (dept) => dept.value
-    );
+    const carpoolRes = await fetchCarpoolManagement();
 
+    let values;
+    if(id){
+      values = carpoolRes?.carpool_authorized_depts.map(
+        (dept:any) => dept.dept_sap
+      );
+    }else if(formData){
+      values = formData?.form?.carpool_authorized_depts.map(
+        (dept) => dept.value
+      );
+    }else{
+      values = [""];
+    }
+  
     try {
       const response = await getCarpoolAdmin(
         search,
         id || "",
-        formData.form.carpool_type,
+        id ? carpoolRes?.carpool_type : (formData?.form?.carpool_type || ""),
         values
       );
       const result = response.data;

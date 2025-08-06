@@ -8,6 +8,7 @@ export type RequestDetailType = Partial<{
   trn_request_uid: string;
   request_no: string;
   vehicle_user_emp_name: string;
+  vendor_name: string;
   vehicle_user_dept_sap: string;
   vehicle_user_emp_id: string;
   vehicle_user_dept_sap_short: string;
@@ -74,6 +75,7 @@ export type RequestDetailType = Partial<{
   progress_request_status_emp: ProgressRequestStatusEmp;
   ref_request_status_name: string;
   rejected_request_reason: string;
+  doc_file_name: string;
   canceled_request_reason: string;
   received_key_datetime: string; // ISO date-time string
   received_key_dept_sap: string;
