@@ -39,6 +39,19 @@ export default function DriverLicApproverListTable({
     pageSize: pagination.limit,
   });
 
+
+  useEffect(() => {
+
+  }, [defaultData]);
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: pagination.page - 1,
+      pageSize: pagination.limit,
+    });
+  }, [pagination.page, pagination.limit]);
+
+
   const requestListColumns: ColumnDef<DriverLicListType>[] = [
     {
       accessorKey: "request_annual_driver_no",
