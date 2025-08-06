@@ -1,5 +1,6 @@
 "use client";
 
+import { Carpool } from "@/app/types/carpool-management-type";
 import { PaginationType } from "@/app/types/request-action-type";
 import Header from "@/components/header";
 import AddCarpoolAdminModal from "@/components/modal/addCarpoolAdminModal";
@@ -312,7 +313,7 @@ export default function CarpoolProcessTwo() {
 
             <AddCarpoolAdminModal
               ref={addCarpoolAdminModalRef}
-              id={""}
+              id={id || ""}
               setRefetch={setRefetch}
             />
 
