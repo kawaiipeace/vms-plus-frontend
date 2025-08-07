@@ -101,6 +101,8 @@ export default function SideBar({ menuName }: SidebarProps) {
           link: "/administrator/request-list",
           roles: [
             "admin-approval",
+            "admin-department",
+            "admin-department-main",
             "admin-super",
             "admin-carpool",
             "approval-carpool",
