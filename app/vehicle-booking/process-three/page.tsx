@@ -197,6 +197,8 @@ export default function ProcessThree() {
     }
   };
 
+ 
+
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
@@ -431,6 +433,10 @@ export default function ProcessThree() {
   };
 
   const next = () => {
+    const isPeaEmployeeDriver = selectedDriverType === "พนักงาน กฟภ." ? "1" : "0";
+    updateFormData({
+      isPeaEmployeeDriver: isPeaEmployeeDriver,
+    });
     localStorage.setItem("processThree", "Done");
     router.push("process-four");
   };
