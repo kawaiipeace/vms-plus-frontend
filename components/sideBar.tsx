@@ -100,6 +100,8 @@ export default function SideBar({ menuName }: SidebarProps) {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
           roles: [
+            "admin-department",
+            "admin-department-main",
             "admin-approval",
             "admin-super",
             "admin-carpool",
