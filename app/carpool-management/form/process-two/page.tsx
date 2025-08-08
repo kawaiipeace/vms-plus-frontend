@@ -313,7 +313,7 @@ export default function CarpoolProcessTwo() {
 
             <AddCarpoolAdminModal
               ref={addCarpoolAdminModalRef}
-              id={id || ""}
+              id={""}
               setRefetch={setRefetch}
             />
 
