@@ -100,6 +100,8 @@ export default function SideBar({ menuName }: SidebarProps) {
           title: "ตรวจสอบและจัดการคำขอ",
           link: "/administrator/request-list",
           roles: [
+            "admin-department",
+            "admin-department-main",
             "admin-approval",
             "admin-department",
             "admin-department-main",
@@ -111,7 +113,7 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "อนุมัติใช้ยานพาหนะ",
           link: "/administrator/booking-final",
-          roles: ["approval-department", "approval-carpool"],
+          roles: ["final-approval", "admin-super", "approval-department"],
         },
       ].filter((item) => item.roles.some((role) => roles?.includes(role))),
     },
@@ -138,7 +140,13 @@ export default function SideBar({ menuName }: SidebarProps) {
         {
           title: "กลุ่มยานพาหนะ",
           link: "/carpool-management",
-          roles: ["admin-super", "admin-region", "admin-department"],
+          roles: [
+            "admin-super",
+            "admin-region",
+            "admin-carpool",
+            "admin-department",
+            "admin-department-main",
+          ],
         },
         // {
         //   title: "ข้อมูล Fleet card",

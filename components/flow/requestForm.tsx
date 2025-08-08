@@ -569,7 +569,7 @@ export default function RequestForm() {
 
     data.vehicleUserEmpId = selectedVehicleUserOption?.value;
     const result = selectedVehicleUserOption?.label.split("(")[0].trim();
-    data.fileName = fileName;
+    data.fileName = fileName === "อัพโหลดเอกสารแนบ" ? "" : fileName;
 
     data.vehicleUserEmpName = result;
     data.vehicleUserDeptSap = data.deptSap;

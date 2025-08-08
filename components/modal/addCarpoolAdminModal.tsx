@@ -23,6 +23,7 @@ import CustomSelectOnSearch from "../customSelectOnSearch";
 
 interface Props {
   id?: string;
+  editId?:string;
   setRefetch: (value: boolean) => void;
 }
 
@@ -146,6 +147,7 @@ const AddCarpoolAdminModal = forwardRef<
   };
 
   const handleConfirm = () => {
+    console.log('edit',editId);
     if (editId) {
       adminEdit(editId);
     } else {
