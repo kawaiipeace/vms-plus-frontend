@@ -148,6 +148,12 @@ export default function SideBar({ menuName }: SidebarProps) {
             "admin-department-main",
           ],
         },
+        
+        // {
+        //   title: "ข้อมูล Fleet card",
+        //   link: "request-list",
+        //   roles: ["admin-super"],
+        // },
         // {
         //   title: "ข้อมูล Fleet card",
         //   link: "request-list",
@@ -332,6 +338,24 @@ export default function SideBar({ menuName }: SidebarProps) {
               </li>
             );
           })}
+
+<li className="nav-item">
+            <Link
+              href="/dashboard"
+              className={`nav-link flex items-center ${
+                activeItem === "dashboard" ? "active" : ""
+              }`}
+            >
+              <i className="material-symbols-outlined">dashboard</i>
+              <span
+                className={`nav-link-label transition-all duration-300 ${
+                  isExpanded || isPinned ? "opacity-100" : "opacity-0 w-0"
+                }`}
+              >
+                ภาพรวม Dashboard
+              </span>
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

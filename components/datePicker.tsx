@@ -30,6 +30,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
     const inputRef = useRef<HTMLInputElement>(null);
     const flatpickrInstance = useRef<FlatpickrInstance | null>(null);
 
+    // Expose reset and setValue methods
     useImperativeHandle(ref, () => ({
       reset: () => {
         if (flatpickrInstance.current) {
@@ -38,11 +39,13 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       },
       setValue: (value: string) => {
         if (flatpickrInstance.current && value) {
+          // value expected in "dd/mm/yyyy" Buddhist or Gregorian format
           flatpickrInstance.current.setDate(convertToGregorian(value), true);
         }
       },
     }));
 
+    // Initialize flatpickr
     useEffect(() => {
       if (!inputRef.current) return;
 
@@ -56,11 +59,13 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         locale: Thai,
         allowInput: true,
         altFormat: "d/m/Y",
-        dateFormat: "Y-m-d",
+        dateFormat: "Y-m-d", // always Gregorian internally
         position: "auto left",
         disableMobile: true,
         static: window.innerWidth <= 768,
         positionElement: inputRef.current,
+
+        // Parsing: accept "dd/mm/yyyy" Buddhist or Gregorian
         parseDate: (datestr: string, _format: string) => {
           if (!datestr || datestr.includes("-")) {
             return new Date(datestr);
@@ -68,25 +73,31 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           const parsed = parseDate(datestr);
           return parsed ?? new Date(NaN);
         },
+
+        // Format date to show in input: Buddhist year
         formatDate: (date, _format, _locale) => {
           const d = String(date.getDate()).padStart(2, "0");
           const m = String(date.getMonth() + 1).padStart(2, "0");
           const y = date.getFullYear() + 543;
           return `${d}/${m}/${y}`;
         },
+
         defaultDate: defaultValue ? parseDate(convertToGregorian(defaultValue)) : undefined,
         minDate,
         maxDate,
 
+        // When user changes date selection
         onChange: (selectedDates, _dateStr, instance) => {
           const selected = selectedDates?.[0];
           if (!selected) {
-            // When date is cleared, call onChange with empty string
+            // Cleared
             onChange?.("");
             return;
           }
           const localDate = dayjs(selected).format("YYYY-MM-DD");
           onChange?.(localDate);
+
+          // Update calendar UI year display
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
 
@@ -110,7 +121,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           }
           requestAnimationFrame(() => updateCalendarYear(instance));
         },
-    
 
         onOpen: (_dates, _dateStr, instance) => {
           document.querySelectorAll(".flatpickr-calendar").forEach(el => {
@@ -125,7 +135,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
           const wrapper = document.querySelector(".modal-scroll-wrapper") as HTMLElement;
           if (wrapper) wrapper.style.overflow = "";
           validateAndClearIfInvalid(instance);
-          // Ensure onChange is called if the input is empty after validation
           if (!instance.input?.value) {
             onChange?.("");
           }
@@ -140,11 +149,12 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       };
     }, [defaultValue, minDate, maxDate]);
 
+    // Validate user input, clear if invalid
     const validateAndClearIfInvalid = (instance: FlatpickrInstance) => {
       const input = instance.input;
       const value = input?.value ?? "";
-      const parts = value.split("/").map(s => s.trim());
-      
+      const parts = value.split("/").map((s) => s.trim());
+
       if (parts.length !== 3) {
         instance.clear();
         if (input) input.value = "";
@@ -157,7 +167,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       const month = parseInt(m, 10);
       const year = parseInt(y, 10);
 
-      // Validate day (1-31)
       if (isNaN(day) || day < 1 || day > 31) {
         instance.clear();
         if (input) input.value = "";
@@ -165,7 +174,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         return;
       }
 
-      // Validate month (1-12)
       if (isNaN(month) || month < 1 || month > 12) {
         instance.clear();
         if (input) input.value = "";
@@ -173,8 +181,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         return;
       }
 
-      // Validate year (must be at least 1000 in Buddhist or Gregorian)
-      if (isNaN(year) || (year < 1000 && (year + 543) < 1000)) {
+      if (isNaN(year) || (year < 1000 && year + 543 < 1000)) {
         instance.clear();
         if (input) input.value = "";
         onChange?.("");
@@ -182,42 +189,82 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       }
     };
 
+    // Update calendar year UI elements with Buddhist year, but store Gregorian year in data attribute
     const updateCalendarYear = (instance: FlatpickrInstance) => {
       const container = instance.calendarContainer;
       if (!container) return;
+
       const yearEls = container.querySelectorAll<HTMLElement>(".cur-year, .numInput.cur-year");
-      yearEls.forEach(el => {
-        let y: number;
+
+      yearEls.forEach((el) => {
+        let gregYear: number;
+
         if (el instanceof HTMLInputElement) {
-          y = parseInt(el.value, 10);
-          if (y && y < 2500) el.value = (y + 543).toString();
+          const stored = el.getAttribute("data-gregorian-year");
+          if (stored) {
+            gregYear = parseInt(stored, 10);
+          } else {
+            gregYear = parseInt(el.value, 10);
+            if (!isNaN(gregYear)) {
+              el.setAttribute("data-gregorian-year", gregYear.toString());
+            }
+          }
+
+          if (!isNaN(gregYear)) {
+            el.value = (gregYear + 543).toString();
+          }
         } else {
-          y = parseInt(el.textContent || "0", 10);
-          if (y && y < 2500) el.textContent = (y + 543).toString();
+          const stored = el.getAttribute("data-gregorian-year");
+          if (stored) {
+            gregYear = parseInt(stored, 10);
+          } else {
+            gregYear = parseInt(el.textContent || "0", 10);
+            if (!isNaN(gregYear)) {
+              el.setAttribute("data-gregorian-year", gregYear.toString());
+            }
+          }
+
+          if (!isNaN(gregYear)) {
+            el.textContent = (gregYear + 543).toString();
+          }
         }
       });
     };
 
+    // Patch input value to show Buddhist year, but underlying flatpickr stores Gregorian date
     const patchBuddhistInput = (instance: FlatpickrInstance, dateStr: string) => {
       if (!instance.input || !dateStr) return;
+
       const [d, m, y] = dateStr.split("/");
+
+      if (!d || !m || !y) return;
+
+      const yearNum = parseInt(y, 10);
+
       let buddhistYear = y;
-      if (y && parseInt(y, 10)) {
-        const yearNum = parseInt(y, 10);
-        buddhistYear = yearNum < 2500 ? (yearNum + 543).toString() : y;
+
+      if (yearNum && yearNum < 2500) {
+        buddhistYear = (yearNum + 543).toString();
+      } else if (yearNum && yearNum > 3000) {
+        buddhistYear = (yearNum - 543).toString();
       }
+
       instance.input.value = [d, m, buddhistYear].join("/");
     };
 
+    // Convert input Thai Buddhist year date string to Gregorian date string ("dd/mm/yyyy")
     const convertToGregorian = (thaiDate: string): string => {
       const [d, m, y] = thaiDate.split("/");
+
       const year = parseInt(y, 10);
       const gregorian = year > 2500 ? year - 543 : year;
+
       return `${d}/${m}/${gregorian}`;
     };
 
+    // Parse "dd/mm/yyyy" (Gregorian) string to Date object
     const parseDate = (dmy: string): Date | undefined => {
-      const parts = dmy.split("/").map(part => part.trim());
+      const parts = dmy.split("/").map((part) => part.trim());
       if (parts.length !== 3) return undefined;
 
       const [d, m, y] = parts;
@@ -229,6 +276,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
       const day = Number(d);
       const month = Number(m);
       const date = new Date(year, month - 1, day);
+
       return isNaN(date.getTime()) ? undefined : date;
     };
 
