@@ -88,12 +88,14 @@ export default function RequestDetailForm({
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
+          icon="cancle_circle"
           desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
         />
       )}
       {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
         <AlertCustom
           title="คำขอใช้ถูกยกเลิกแล้ว"
+          icon="cancle_circle"
           desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
         />
       )}
