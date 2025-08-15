@@ -77,7 +77,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
       cell: ({ row }) => (
         <div className="text-left" data-name="ผู้ใช้ยานพาหนะ">
           <div className="flex flex-col">
-            <div>{row.original.vehicle_user_emp_name} ({row.original.vehicle_user_emp_id})</div>
+            <div>{row.original.vehicle_user_emp_name}</div>
              <div className="text-color-secondary text-xs">
               {row.original.vehicle_user_position + " " + row.original.vehicle_user_dept_name_short}
             </div>

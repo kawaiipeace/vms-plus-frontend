@@ -181,7 +181,7 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "เดินทาง") {
+        if (ref_request_status_name === "บันทึกการเดินทาง") {
           return (
             <MobileTravelLogCard
               key={request.trn_request_uid || index}
