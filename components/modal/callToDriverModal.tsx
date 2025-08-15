@@ -36,7 +36,7 @@ const CallToDriverModal = forwardRef<
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
             <div className="modal-title text-center">
-              {title}
+              <p>{title}</p>
               <p className="font-normal">{subTitle}</p>
             </div>
             <form method="dialog">
