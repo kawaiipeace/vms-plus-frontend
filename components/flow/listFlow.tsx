@@ -34,7 +34,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               supportingTexts={[
                 request.work_place || "-",
@@ -62,7 +62,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               supportingTexts={[
                 request.work_place || "-",
@@ -91,7 +91,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               supportingTexts={[
                 request.work_place || "-",
@@ -117,7 +117,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -153,7 +153,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -189,7 +189,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -233,7 +233,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -254,7 +254,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -276,7 +276,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -300,7 +300,7 @@ export default function ListFlow({ requestData }: Props) {
                 carRegis={
                   request?.vehicle_license_plate +
                   " " +
-                  request?.vehicle_license_plate_province_short
+                  request?.vehicle_license_plate_province_full
                 }
                 location={request?.work_place || ""}
                 date={
