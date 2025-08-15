@@ -69,7 +69,7 @@ export default function CarDetailCard({
               </div>
               <div className="card-subtitle">
                 {vehicle?.vehicle_license_plate}{" "}
-                {vehicle?.vehicle_license_plate_province_short}
+                {vehicle?.vehicle_license_plate_province_full}
               </div>
               <div className="supporting-text-group">
                 <div className="supporting-text">{vehicle?.CarType}</div>
