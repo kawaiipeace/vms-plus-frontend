@@ -558,7 +558,7 @@ export default function ProcessTwo() {
                               carType={vehicle.car_type}
                               deptSap={vehicle.vehicle_owner_dept_short}
                               province={
-                                vehicle.vehicle_license_plate_province_short
+                                vehicle.vehicle_license_plate_province_full
                               }
                               fleetCardNo={vehicle?.fleet_card_no}
                               seat={vehicle.seat}
