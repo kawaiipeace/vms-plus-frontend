@@ -71,7 +71,7 @@ export default function MobileWaitForVehicleCard({
           </div>
         </div>
 
-        <div className="card-item-group d-flex flex-column">
+        <div className="card-item-group d-flex flex-column !w-full">
           <div className="card-item ">
             <i className="material-symbols-outlined">local_parking</i>
             <span className="card-item-text">{parkingLocation}</span>
