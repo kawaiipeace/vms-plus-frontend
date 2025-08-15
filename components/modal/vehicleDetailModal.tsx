@@ -274,7 +274,7 @@ const VehicleDetailModel = forwardRef<
           </div>
         </div>
         {/* Modal Actions */}
-        <div className="modal-action">
+        <div className="modal-action sticky bottom-0 gap-3 mt-0">
           <button
             className="btn btn-secondary"
             onClick={() => modalRef.current?.close()}
