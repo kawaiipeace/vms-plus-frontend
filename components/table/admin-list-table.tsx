@@ -31,6 +31,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [reqData, setReqData] = useState<RequestListType[]>(defaultData);
 
   // Set pagination from props
   const [paginationState, setPagination] = useState<PaginationState>({
@@ -39,7 +40,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
   });
 
   useEffect(() => {
-
+    setReqData(defaultData);
   }, [defaultData]);
 
   useEffect(() => {
@@ -300,7 +301,7 @@ export default function AdminListTable({ defaultData, pagination }: Props) {
   ];
 
   const table = useReactTable({
-    data: defaultData,
+    data: reqData,
     columns: requestListColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
