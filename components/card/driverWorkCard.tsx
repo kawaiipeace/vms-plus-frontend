@@ -77,22 +77,31 @@ export default function DriverWorkCard({
           </div>
           <div className="card-content">
             <div className="card-content-top">
-              <div className="card-title">   {driver.driver_name} {driver.driver_nickname && `(${driver.driver_nickname})`}</div>
+              <div className="card-title">
+                {" "}
+                {driver.driver_name}{" "}
+                {driver.driver_nickname && `(${driver.driver_nickname})`}
+              </div>
               <div className="supporting-text-group">
-              <div className="card-supporting-text">{driver.driver_status.ref_driver_status_desc}</div>
-              <div className="card-supporting-text">{driver.work_type_name}</div>
+                <div className="card-supporting-text">
+                  {driver.driver_status.ref_driver_status_desc}
+                </div>
+                <div className="card-supporting-text">
+                  {driver.work_type_name}
+                </div>
               </div>
             </div>
 
             <div className="card-item-group">
-    
-                <div className="card-item">
-                  <i className="material-symbols-outlined">work</i>
-                  <span className="card-item-text">
-                  {driver.work_count} งาน / {driver.work_days} วัน
+              <div className="card-item">
+                <i className="material-symbols-outlined">work</i>
+                <span className="card-item-text">
+                  {driver.work_count} งาน / {driver?.work_days} วัน{" "}
+                  <span className="card-item-text text-secondary ml-2">
+                    (งานเดือนนี้)
                   </span>
-                </div>
-             
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -100,7 +109,9 @@ export default function DriverWorkCard({
           <div className="card-actioins w-full">
             <div className="flex gap-3">
               <button
-                className={`btn ${selectDriver ? "btn-secondary" : "btn-secondary"} flex-1`}
+                className={`btn ${
+                  selectDriver ? "btn-secondary" : "btn-secondary"
+                } flex-1`}
                 onClick={
                   userKeyPickup
                     ? () => userKeyPickUpModalRef.current?.openModal()
@@ -110,7 +121,10 @@ export default function DriverWorkCard({
                 ดูรายละเอียด
               </button>
               {selectDriver && (
-                <button className="btn btn-secondary flex-1"   onClick={() => adminDriverPickModalRef.current?.openModal()}>
+                <button
+                  className="btn btn-secondary flex-1"
+                  onClick={() => adminDriverPickModalRef.current?.openModal()}
+                >
                   เลือกพนักงานขับรถ
                 </button>
               )}
@@ -158,7 +172,6 @@ export default function DriverWorkCard({
           </>
         )}
       </div>
-
 
       <DriverInfoModal
         ref={driverInfoModalRef}
