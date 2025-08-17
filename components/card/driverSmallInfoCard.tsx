@@ -18,6 +18,7 @@ interface DriverSmallInfoCardProps {
   showPhone?: boolean;
   selectDriver?: boolean;
   reqId?: string;
+  showWork?: boolean;
   noBack?: boolean;
   pickupPlace?: string;
   pickupDatetime?: string;
@@ -32,6 +33,7 @@ export default function DriverSmallInfoCard({
   showPhone,
   id,
   selectDriver,
+  showWork,
   reqId,
   noBack,
   pickupPlace,
@@ -123,19 +125,35 @@ export default function DriverSmallInfoCard({
                     </div>
                   ) : (
                     <>
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">star</i>
-                        <span className="card-item-text">
-                          {Number(driver?.driver_average_satisfaction_score) ===
-                          (0 || 0.0)
-                            ? "ยังไม่มีการให้คะแนน"
-                            : driver?.driver_average_satisfaction_score}
-                        </span>
-                      </div>
-                      <div className="card-item">
-                        <i className="material-symbols-outlined">person</i>
-                        <span className="card-item-text">{driver.age}</span>
-                      </div>
+                      {showWork ? (
+                       <> <div className="card-item">
+                       <i className="material-symbols-outlined">work</i>
+                       <span className="card-item-text">
+                         {driver.work_count} งาน / {driver?.work_days} วัน <span className="card-item-text text-secondary ml-2">(งานเดือนนี้)</span>
+                       </span>
+                     </div>
+                    </>
+                         
+                     
+                      ) : (
+                        <>
+                          {" "}
+                          <div className="card-item">
+                            <i className="material-symbols-outlined">star</i>
+                            <span className="card-item-text">
+                              {Number(
+                                driver?.driver_average_satisfaction_score
+                              ) === (0 || 0.0)
+                                ? "ยังไม่มีการให้คะแนน"
+                                : driver?.driver_average_satisfaction_score}
+                            </span>
+                          </div>
+                          <div className="card-item">
+                            <i className="material-symbols-outlined">person</i>
+                            <span className="card-item-text">{driver.age}</span>
+                          </div>{" "}
+                        </>
+                      )}
                     </>
                   )}
                 </div>

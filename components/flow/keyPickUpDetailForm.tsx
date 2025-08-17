@@ -107,7 +107,7 @@ export default function KeyPickUpDetailForm({ editable, requestId }: KeyPickUpDe
               <div className="form-section-header-title">หนังสืออ้างอิง</div>
             </div>
 
-            <ReferenceCard refNum={requestData?.doc_no} file={requestData?.doc_file} />
+            <ReferenceCard refNum={requestData?.doc_no}   link={requestData?.doc_file} file={requestData?.doc_file_name} />
           </div>
 
           <div className="form-section">

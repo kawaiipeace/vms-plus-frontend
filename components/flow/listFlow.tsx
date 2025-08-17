@@ -21,7 +21,7 @@ export default function ListFlow({ requestData }: Props) {
   return (
     <>
       {requestData.map((request, index) => {
-        const { ref_request_status_name } = request;
+        const { ref_request_status_name, ref_request_status_code } = request;
 
         if (ref_request_status_name === "รออนุมัติ") {
           return (
@@ -34,7 +34,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               supportingTexts={[
                 request.work_place || "-",
@@ -62,7 +62,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               supportingTexts={[
                 request.work_place || "-",
@@ -91,7 +91,7 @@ export default function ListFlow({ requestData }: Props) {
               cardSubtitle={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               supportingTexts={[
                 request.work_place || "-",
@@ -117,7 +117,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -153,7 +153,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -181,7 +181,7 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "เดินทาง") {
+        if (ref_request_status_name === "บันทึกการเดินทาง") {
           return (
             <MobileTravelLogCard
               key={request.trn_request_uid || index}
@@ -189,7 +189,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -225,7 +225,28 @@ export default function ListFlow({ requestData }: Props) {
           );
         }
 
-        if (ref_request_status_name === "รอตรวจสอบ") {
+        if (ref_request_status_code === "30") {
+          return (
+            <MobileWaitVerifyCard
+              key={request.trn_request_uid || index}
+              id={request.trn_request_uid}
+              can_score={false}
+              licensePlate={
+                request?.vehicle_license_plate +
+                " " +
+                request?.vehicle_license_plate_province_full
+              }
+              location={request?.work_place || ""}
+              dateRange={
+                convertToBuddhistDateTime(request?.start_datetime || "").date +
+                " - " +
+                convertToBuddhistDateTime(request?.end_datetime || "").date
+              }
+            />
+          );
+        }
+
+        if (ref_request_status_code === "70") {
           return (
             <MobileWaitVerifyCard
               key={request.trn_request_uid || index}
@@ -233,7 +254,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -254,7 +275,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -276,7 +297,7 @@ export default function ListFlow({ requestData }: Props) {
               licensePlate={
                 request?.vehicle_license_plate +
                 " " +
-                request?.vehicle_license_plate_province_short
+                request?.vehicle_license_plate_province_full
               }
               location={request?.work_place || ""}
               dateRange={
@@ -300,7 +321,7 @@ export default function ListFlow({ requestData }: Props) {
                 carRegis={
                   request?.vehicle_license_plate +
                   " " +
-                  request?.vehicle_license_plate_province_short
+                  request?.vehicle_license_plate_province_full
                 }
                 location={request?.work_place || ""}
                 date={

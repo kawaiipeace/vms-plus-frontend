@@ -97,9 +97,10 @@ export type RecordFuelTabProps = {
   mile: number;
   tax_invoice_date: string;
   tax_invoice_no: string;
-  price_per_liter: number;
+  price_per_liter: number | string;
+  vat: number | string;
   sum_liter: number;
-  sum_price: number;
+  sum_price: number | string;
   receipt_img: string;
   ref_payment_type_code: number;
   ref_payment_type: {

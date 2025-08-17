@@ -16,7 +16,7 @@ interface CarDetailCardProps {
   onUpdate?: () => void;
 }
 
-export default function CarDetailCard({
+export default function CarDetailCardAdmin({
   vehicle,
   seeDetail,
   selectVehicle,
@@ -37,6 +37,7 @@ export default function CarDetailCard({
     return null;
   }
 
+  console.log('vehicle',vehicle);
   const stationNames =
     vehicle?.vehicle_department?.fleet_card_oil_stations
       ?.split(",")
@@ -79,40 +80,60 @@ export default function CarDetailCard({
               </div>
             </div>
 
-            <div className="card-item-group grid !w-full !grid-cols-1">
-              {vehicle?.vehicle_department?.fleet_card_no &&
-              <CarCardItem
-                icon="credit_card"
-                title="บัตรเติมน้ำมัน"
-                images={stationImages.length > 0 ? stationImages : []}
-                value=""
-              />
-              }
-
-              {vehicle?.ref_fuel_type?.ref_fuel_type_name_th && (
-                <div className="card-item col-span-2">
-                  <i className="material-symbols-outlined">local_gas_station</i>
-                  <span className="card-item-text">
-                    {vehicle?.ref_fuel_type.ref_fuel_type_name_th}
+            <div className="card-item-group grid grid-cols-1">
+              <div className="card-item col-span-2">
+                <i className="material-symbols-outlined">credit_card</i>
+                <div className="card-item-text w-full !flex justify-between">
+                  บัตรเติมน้ำมัน{" "}
+                  <span className="text-color-secondary">
+                    <div className="flex gap-2 items-center flex-wrap">
+                      {stationImages.map((image, index) => (
+                        <Image
+                          key={index}
+                          src={image}
+                          alt={`image-${index}`}
+                          width={16}
+                          height={16}
+                          className="rounded-full"
+                        />
+                      ))}
+                    </div>
                   </span>
                 </div>
-              )}
-              {vehicle?.vehicle_gear && (
-                <div className="card-item col-span-2">
-                  <i className="material-symbols-outlined">auto_transmission</i>
-                  <span className="card-item-text">
-                    {vehicle?.vehicle_gear === "NORMAL"
-                      ? "เกียร์ธรรมดา"
-                      : "เกียร์อัตโนมัติ"}
-                  </span>
-                </div>
-              )}
+              </div>
 
               <div className="card-item col-span-2">
                 <i className="material-symbols-outlined">
                   airline_seat_recline_extra
                 </i>
-                <span className="card-item-text">{vehicle?.seat} ที่นั่ง</span>
+                <div className="card-item-text w-full !flex justify-between">
+                  จำนวนที่นั่ง
+                  <span className="text-color-secondary">
+                    {" "}
+                    {vehicle?.seat} ที่นั่ง
+                  </span>
+                </div>
+              </div>
+
+              <div className="card-item col-span-2">
+                <i className="material-symbols-outlined">road</i>
+                <div className="card-item-text w-full !flex justify-between">
+                  ระยะทางเดือนก่อน{" "}
+                  <span className="text-color-secondary">
+                    {" "}
+                    {vehicle?.vehicle_department?.vehicle_mileage_last_month} km
+                  </span>
+                </div>
+              </div>
+
+              <div className="card-item col-span-2">
+                <i className="material-symbols-outlined">
+                  swap_driving_apps_wheel
+                </i>
+                <div className="card-item-text w-full !flex justify-between">
+                  เลขไมล์ล่าสุด{" "}
+                  <span className="text-color-secondary"> {vehicle?.vehicle_department?.vehicle_mileage}</span>
+                </div>
               </div>
             </div>
           </div>

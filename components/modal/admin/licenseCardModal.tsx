@@ -5,6 +5,7 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { exportElementAsImage } from "@/utils/exportImage";
 import useSwipeDown from "@/utils/swipeDown";
 import Image from "next/image";
+import router from "next/router";
 import {
   forwardRef,
   useCallback,
@@ -77,6 +78,10 @@ const LicenseCardModal = forwardRef<
     );
   };
 
+  const clickClose = () => {
+    router.push("/vehicle-in-use/driver");
+  }
+
   return (
     <dialog ref={modalRef} className="modal">
       <div
@@ -97,7 +102,7 @@ const LicenseCardModal = forwardRef<
         <div className="modal-body overflow-y-auto text-center">
           <div className="form-section">
             <div
-              className="grid gap-5 grid-cols-12 w-[328px] max-w-[328px] export-img bg-center bg-no-repeat bg-[url('/assets/img/departure_card.png')] [background-size:130%_600px] p-4 rounded-xl mx-auto"
+              className="grid gap-5 grid-cols-12 w-[328px] h-[510px] max-w-[328px] export-img bg-center bg-no-repeat bg-[url('/assets/img/departure_card.png')] bg-[length:auto_500px] bg-no-repeat p-4 rounded-xl mx-auto"
               ref={exportImgRef}
             >
               <div className="col-span-12">
@@ -135,7 +140,7 @@ const LicenseCardModal = forwardRef<
                         <div className="col-span-12">
                           <div className="form-group form-plaintext">
                             <i className="material-symbols-outlined">
-                              calendar_month
+                              location_on
                             </i>
                             <div className="form-plaintext-group">
                               <div className="form-label">
@@ -168,14 +173,14 @@ const LicenseCardModal = forwardRef<
                 </div>
               </div>
 
-              <div className="flex justify-start items-center col-span-12 mt-5">
-                <div className="w-[80px] rounded-full overflow-hidden">
+              <div className="flex justify-start items-center col-span-12 mb-4">
+                <div className="w-[80px] h-[80px] rounded-full overflow-hidden">
                   <Image
                     src={
                       data?.vehicle_user_image_url ||
                       "/assets/img/sample-avatar.png"
                     }
-                    className="w-full"
+                    className="w-full h-full object-cover object-top"
                     width={100}
                     height={100}
                     alt=""
@@ -204,9 +209,9 @@ const LicenseCardModal = forwardRef<
           <div className="flex justify-between w-full gap-3">
             <button
               className="btn btn-secondary flex-1"
-              onClick={() => modalRef.current?.close()}
+              onClick={clickClose}
             >
-              กลับหน้าหลัก
+              ปิด
             </button>
             <button
               className={`btn btn-primary flex-1 ${
