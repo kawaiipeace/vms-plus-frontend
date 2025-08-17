@@ -41,6 +41,7 @@ export interface VehicleDetailType {
     vehicle_img: string;
     vehicle_user_emp_id: string;
     vehicle_user_emp_name: string;
+    vehicle_mileage_last_month: string;
     vehicle_admin_emp_id: string;
     vehicle_admin_emp_name: string;
     posi_text: string;

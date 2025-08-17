@@ -2,7 +2,6 @@ import { RequestDetailType } from "@/app/types/request-detail-type";
 import {
   AppointmentDriverCard,
   ApproveProgress,
-  CarDetailCard,
   ChooseDriverCard,
   DisbursementModal,
   DisburstmentCard,
@@ -23,6 +22,7 @@ import { fetchRequestDetail } from "@/services/bookingAdmin";
 import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { useEffect, useRef, useState } from "react";
 import ChooseVehicleCard from "../card/chooseVehicleCard";
+import CarDetailCardAdmin from "../card/carDetailCardAdmin";
 
 interface RequestDetailFormProps {
   requestId: string;
@@ -88,12 +88,14 @@ export default function RequestDetailForm({
       {requestData?.ref_request_status_name == "ถูกตีกลับ" && (
         <AlertCustom
           title="คำขอใช้ถูกตีกลับ"
+          icon="cancle_circle"
           desc={`เหตุผล: ${requestData?.rejected_request_reason}`}
         />
       )}
       {requestData?.ref_request_status_name == "ยกเลิกคำขอ" && (
         <AlertCustom
           title="คำขอใช้ถูกยกเลิกแล้ว"
+          icon="cancle_circle"
           desc={`เหตุผล: ${requestData?.canceled_request_reason}`}
         />
       )}
@@ -189,6 +191,7 @@ export default function RequestDetailForm({
 
             <ReferenceCard
               refNum={requestData?.doc_no}
+              link={requestData?.doc_file}
               file={requestData?.doc_file_name}
             />
           </div>
@@ -249,7 +252,7 @@ export default function RequestDetailForm({
 
                 {requestData?.vehicle &&
                   requestData?.can_choose_vehicle === false && (
-                    <CarDetailCard
+                    <CarDetailCardAdmin
                       reqId={requestData?.trn_request_uid}
                       vehicle={requestData?.vehicle}
                       requestData={requestData}
@@ -308,7 +311,7 @@ export default function RequestDetailForm({
                             driverDetail={requestData?.driver}
                             requestData={requestData}
                             noBack={true}
-                            showPhone={true}
+                            showWork={true}
                             seeDetail={true}
                             selectDriver={
                               requestData?.ref_request_status_code === "30"

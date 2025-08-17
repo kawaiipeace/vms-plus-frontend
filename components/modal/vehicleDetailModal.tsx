@@ -110,7 +110,7 @@ const VehicleDetailModel = forwardRef<
                 </div>
                 <div className="modal-inner-subtitle">
                   {vehicleDetail?.vehicle_license_plate?.trim()}{" "}
-                  {vehicleDetail?.vehicle_license_plate_province_short}
+                  {vehicleDetail?.vehicle_license_plate_province_full}
                 </div>
                 <div className="supporting-text-group">
                   <div className="supporting-text">
@@ -274,7 +274,7 @@ const VehicleDetailModel = forwardRef<
           </div>
         </div>
         {/* Modal Actions */}
-        <div className="modal-action">
+        <div className="modal-action sticky bottom-0 gap-3 mt-0">
           <button
             className="btn btn-secondary"
             onClick={() => modalRef.current?.close()}

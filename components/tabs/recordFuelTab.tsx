@@ -22,6 +22,7 @@ import {
 import ExampleFuelStringImageModal from "../modal/exampleFuelImageModal";
 import TableRecordTravelComponent from "../tableRecordTravel";
 import ZeroRecord from "../zeroRecord";
+import { formatNumber } from "@/utils/formatNumber";
 
 function RequestListContent() {
   const searchParams = useSearchParams();
@@ -178,6 +179,8 @@ const RecordFuelTab = ({
           ref_oil_station_brand_name:
             oilStationBrand?.ref_oil_station_brand_name_th || "",
           ref_fuel_type_name: item.ref_fuel_type.ref_fuel_type_name_th,
+          vat: formatNumber(item.vat),
+          sum_price: formatNumber(item.sum_price),
           ref_payment_type_name: item.ref_payment_type.ref_payment_type_name,
           ref_cost_type_name: item.ref_cost_type.ref_cost_type_name,
         };
@@ -297,7 +300,7 @@ const RecordFuelTab = ({
       enableSorting: false,
       cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ภาษี">
-          {getValue() as string}
+          {formatNumber(getValue() as string)}
         </div>
       ),
     },
@@ -307,7 +310,7 @@ const RecordFuelTab = ({
       enableSorting: false,
       cell: ({ getValue }: CellContext<RecordFuelTabProps, unknown>) => (
         <div className="text-left" data-name="ยอดรวมชำระ">
-          {getValue() as string}
+          {formatNumber(getValue() as string)}
         </div>
       ),
     },

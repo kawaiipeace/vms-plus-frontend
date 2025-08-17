@@ -444,7 +444,7 @@ export default function RequestListTable({
               </>
             )}
 
-            {statusValue == "เดินทาง" && (
+            {statusValue == "บันทึกการเดินทาง" && (
               <>
                 <button
                   className="btn btn-icon btn-tertiary bg-transparent shadow-none border-none tooltip tooltip-left"

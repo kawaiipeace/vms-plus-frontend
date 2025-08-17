@@ -58,13 +58,13 @@ const ReceiveCarSuccessModal = forwardRef<
             <div className="confirm-text">
               {role === "admin"
                 ? "ในวันเดินทาง คุณต้องแสดงใบอนุญาตนำรถออกจาก กฟภ. กับ เจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยามก่อนออกจาก กฟฟ. ต้นสังกัด"
-                : "ในวันเดินทาง คุณต้องนำบัตรเดินทางไปแสดง กับเจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยาม ก่อนออกจาก กฟภ."}
+                : "ในวันเดินทาง คุณต้องแสดงใบอนุญาตนำรถออกจาก กฟภ. กับ เจ้าหน้าที่รักษาความปลอดภัยที่ป้อมยามก่อนออกจาก กฟฟ. ต้นสังกัด"}
             </div>
             <div className="modal-footer mt-5 grid grid-cols-1 gap-3">
               {/* {role === "admin" ? ( */}
               <>
                 <div className="flex w-full gap-2">
-                  <div className="flex-1">
+                  <div className="flex-1 hidden md:block">
                     <button
                       type="button"
                       className="btn btn-secondary !w-full"
