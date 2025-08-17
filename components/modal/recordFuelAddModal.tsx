@@ -510,7 +510,7 @@ const RecordTravelAddModal = forwardRef<
                               type="number"
                               className="form-control"
                               placeholder="ระบุราคาต่อลิตร"
-                              value={valueForm.price_per_liter ?? 0}
+                              defaultValue={valueForm.price_per_liter ?? 0}
                               onChange={(e) =>
                                 setValueForm((val) => {
                                   const sum_liter = val.sum_price
@@ -573,7 +573,7 @@ const RecordTravelAddModal = forwardRef<
                             type="number"
                             className="form-control"
                             placeholder="ระบุยอดรวมชำระ"
-                            value={valueForm.sum_price  ?? 0}
+                            defaultValue={valueForm.sum_price  ?? 0}
                             onChange={(e) => {
                               setValueForm((val) => {
                                 const sum_liter = val.price_per_liter
