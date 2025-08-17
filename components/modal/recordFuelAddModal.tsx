@@ -143,7 +143,7 @@ const RecordTravelAddModal = forwardRef<
 
       setValueForm({
         mile: dataItem.mile?.toString() || "",
-        price_per_liter: dataItem.price_per_liter || 0,
+        price_per_liter: Number(dataItem.price_per_liter) || 0,
         ref_fuel_type_id: {
           value: dataItem.ref_fuel_type_id?.toString() || "",
           label: ref_fuel_type_id?.ref_fuel_type_name_th || "",
@@ -154,7 +154,7 @@ const RecordTravelAddModal = forwardRef<
           imageUrl: imageSrc,
         },
         sum_liter: dataItem.sum_liter || 0,
-        sum_price: dataItem.sum_price || 0,
+        sum_price: Number(dataItem.sum_price) || 0,
         tax_invoice_date:
           convertToBuddhistDateTime(dataItem?.tax_invoice_date).date || "",
         tax_invoice_no: dataItem?.tax_invoice_no || "",
@@ -469,7 +469,7 @@ const RecordTravelAddModal = forwardRef<
                             </div>
                             <DatePicker
                               placeholder="ระบุวันที่"
-                              defaultValue={valueForm.tax_invoice_date}
+                              defaultValue={valueForm.tax_invoice_date ? valueForm.tax_invoice_date : convertToBuddhistDateTime(new Date().toISOString().split("T")[0]).date}
                               onChange={(date) =>
                                 setValueForm((val) => ({
                                   ...val,
@@ -510,7 +510,7 @@ const RecordTravelAddModal = forwardRef<
                               type="number"
                               className="form-control"
                               placeholder="ระบุราคาต่อลิตร"
-                              value={valueForm.price_per_liter}
+                              defaultValue={valueForm.price_per_liter ?? 0}
                               onChange={(e) =>
                                 setValueForm((val) => {
                                   const sum_liter = val.sum_price
@@ -548,7 +548,7 @@ const RecordTravelAddModal = forwardRef<
                               type="number"
                               className="form-control !px-3"
                               placeholder="ระบุจำนวนลิตร"
-                              value={valueForm.sum_liter}
+                              value={valueForm.sum_liter ?? 0}
                               disabled
                               // onChange={(e) =>
                               //   setValueForm((val) => ({
@@ -573,7 +573,7 @@ const RecordTravelAddModal = forwardRef<
                             type="number"
                             className="form-control"
                             placeholder="ระบุยอดรวมชำระ"
-                            value={valueForm.sum_price}
+                            defaultValue={valueForm.sum_price  ?? 0}
                             onChange={(e) => {
                               setValueForm((val) => {
                                 const sum_liter = val.price_per_liter

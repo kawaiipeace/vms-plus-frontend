@@ -324,7 +324,7 @@ export default function ArpproveFlow() {
           </button>
           <button
             onClick={downloadReport}
-            className="btn btn-secondary h-[40px] min-h-[40px]"
+            className="btn btn-secondary h-[40px] min-h-[40px] md:block hidden"
           >
             <div className="flex items-center">
               <i className="material-symbols-outlined">download</i>

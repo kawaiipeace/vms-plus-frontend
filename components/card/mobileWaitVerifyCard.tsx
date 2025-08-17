@@ -9,6 +9,7 @@ interface MobileWaitForKeyCardProps {
   licensePlate: string;
   location: string;
   dateRange: string;
+  can_score?: boolean;
 }
 
 export default function MobileWaitVerifyCard({
@@ -17,6 +18,7 @@ export default function MobileWaitVerifyCard({
   licensePlate,
   location,
   dateRange,
+  can_score = true
 }: MobileWaitForKeyCardProps) {
   const router = useRouter();
 
@@ -63,6 +65,7 @@ export default function MobileWaitVerifyCard({
             </div>
           </div>
 
+          {can_score && 
           <div className="card-actions flex w-full">
             <button
               className="btn btn-secondary flex-1"
@@ -75,6 +78,7 @@ export default function MobileWaitVerifyCard({
               ให้คะแนนผู้ขับขี่
             </button>
           </div>
+          }
         </div>
       </div>
       <ReviewCarDriveModal ref={reviewCarDriveModalRef} id={id} />

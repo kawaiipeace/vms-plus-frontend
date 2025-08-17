@@ -16,6 +16,7 @@ import { convertToBuddhistDateTime } from "@/utils/converToBuddhistDateTime";
 import { fetchRequestDetail } from "@/services/bookingFinal";
 import PickupKeyDetailCard from "@/components/card/pickupKeyDetailCard";
 import DriverWorkCard from "../card/driverWorkCard";
+import CarDetailCardAdmin from "../card/carDetailCardAdmin";
 
 interface RequestDetailFormProps {
   requestId: string;
@@ -123,6 +124,7 @@ export default function RequestDetailForm({
 
             <ReferenceCard
               refNum={requestData?.doc_no}
+              link={requestData?.doc_file}
               file={requestData?.doc_file_name}
             />
           </div>
@@ -201,7 +203,7 @@ export default function RequestDetailForm({
                 )}
 
                 {requestData?.vehicle && (
-                    <CarDetailCard
+                    <CarDetailCardAdmin
                       reqId={requestData?.trn_request_uid}
                       vehicle={requestData?.vehicle}
                       seeDetail={true}

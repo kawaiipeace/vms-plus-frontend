@@ -22,15 +22,19 @@ export default function AutoCarCard({
     closeModal: () => void;
   } | null>(null);
 
-
   return (
-    <div className={`card relative ${isSelected ? "!border-2 !border-brand-900" : ""}`}>
-       {isSelected && (
+    <div
+      className={`card relative ${
+        isSelected ? "!border-2 !border-brand-900" : ""
+      }`}
+    >
+      {isSelected && (
         <div className="absolute top-2 right-2">
-        <span className="badge badge-pill-outline badge-active bg-brand-100 whitespace-nowrap !rounded-md text-brand-800">
-        <i className="material-symbols-outlined">check</i>
-         เลือกอยู่</span> 
-       </div>
+          <span className="badge badge-pill-outline badge-active bg-brand-100 whitespace-nowrap !rounded-md text-brand-800">
+            <i className="material-symbols-outlined">check</i>
+            เลือกอยู่
+          </span>
+        </div>
       )}
       <div className="card-body">
         <div className="card-img-top h-[27vh]">
@@ -52,14 +56,24 @@ export default function AutoCarCard({
         </div>
         <div className="card-actions">
           <button
-            className="btn btn-primary"
+            className={`${isSelected ? "btn btn-success" : "btn btn-primary"}`}
             onClick={() => vehiclePickModalRef.current?.openModal()}
           >
-            เลือกประเภท
+            <span className="text-white flex items-center gap-1">
+              {isSelected && <i className="material-symbols-outlined">check</i>}
+              {isSelected ? "เลือกประเภทนี้" : "เลือกประเภท"}
+            </span>
           </button>
         </div>
       </div>
-      <VehiclePickModel process="add" selectType={title} masCarpoolUid={masCarpoolUid} desc={desc} ref={vehiclePickModalRef} onSelect={() => onSelect(title)} />
+      <VehiclePickModel
+        process="add"
+        selectType={title}
+        masCarpoolUid={masCarpoolUid}
+        desc={desc}
+        ref={vehiclePickModalRef}
+        onSelect={() => onSelect(title)}
+      />
     </div>
   );
 }

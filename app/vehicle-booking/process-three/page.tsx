@@ -169,26 +169,19 @@ export default function ProcessThree() {
   const allValid = licenseValid && annualValid;
 
   const handleSelectTypes = (typeName: string) => {
-    // Clear any previous selections when switching types
     if (typeName === "พนักงานขับรถ") {
       setSelectedVehiclePoolId("");
+      setMasDriverUid("");
+      setAppointValid(false);
       setValue("masCarpoolDriverUid", "");
-      updateFormData({
-        masCarpoolDriverUid: "",
-        // isAdminChooseDriver: false,
-      });
+      updateFormData({ masCarpoolDriverUid: "" });
     }
-
+  
     setSelectedDriverType(typeName);
     const isPeaEmployee = typeName === "พนักงาน กฟภ." ? "1" : "0";
-
     setValue("isPeaEmployeeDriver", isPeaEmployee);
-    console.log('handleselecttype');
-    updateFormData({
-      isPeaEmployeeDriver: isPeaEmployee,
-      // isAdminChooseDriver: typeName === "พนักงานขับรถ",
-    });
-
+    updateFormData({ isPeaEmployeeDriver: isPeaEmployee });
+  
     if (
       typeName === "พนักงานขับรถ" &&
       (formData.isAdminChooseDriver || formData.isSystemChooseDriver)
@@ -196,7 +189,7 @@ export default function ProcessThree() {
       driverAppointmentRef.current?.openModal();
     }
   };
-
+  
  
 
   useEffect(() => {
@@ -871,11 +864,9 @@ export default function ProcessThree() {
                 disabled={
                   selectedDriverType === "พนักงาน กฟภ."
                     ? !selectedVehicleUserOption || !allValid
-                    : selectedVehiclePoolId === "" &&
-                      masDriverUid === "" &&
-                      !appointValid &&
-                      formData.isPeaEmployeeDriver !== "0"
+                    : !(selectedVehiclePoolId || masDriverUid || appointValid)
                 }
+                
               >
                 ต่อไป
                 <i className="material-symbols-outlined icon-settings-300-24">

@@ -122,6 +122,7 @@ export default function RequestDetailForm({
 
             <ReferenceCard
               refNum={requestData?.doc_no}
+              link={requestData?.doc_file}
               file={requestData?.doc_file_name}
             />
           </div>

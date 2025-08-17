@@ -4,9 +4,10 @@ import Link from "next/link";
 interface RefProps {
   refNum?: string;
   file?: string;
+  link?:string;
 }
 
-export default function ReferenceCard({ refNum, file }: RefProps) {
+export default function ReferenceCard({ refNum, file, link }: RefProps) {
 
   return (
     <div className="form-card">
@@ -27,7 +28,7 @@ export default function ReferenceCard({ refNum, file }: RefProps) {
               <i className="material-symbols-outlined">attach_file</i>
               <div className="form-plaintext-group">
                 <div className="form-label">เอกสารแนบ</div>
-                <Link href={file ? file : "#"} target="__blank" className="form-text text-info">
+                <Link href={link ? link : "#"} target="__blank" className="form-text text-info">
                   {shortenFilename(file || "")}
                 </Link>
               </div>

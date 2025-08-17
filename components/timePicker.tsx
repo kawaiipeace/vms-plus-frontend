@@ -33,6 +33,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ placeholder = "HH:MM",minTime, 
       defaultDate: defaultValue || "",
       dateFormat: "H:i",
       position: "below center",
+      minuteIncrement: 1,
       time_24hr: true,
       onChange: (selectedDates, dateStr) => {
         if (onChange) {
