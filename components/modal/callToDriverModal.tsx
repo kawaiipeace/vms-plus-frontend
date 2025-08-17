@@ -35,10 +35,12 @@ const CallToDriverModal = forwardRef<
             <div className="bottom-sheet-icon"></div>
           </div>
           <div className="modal-header bg-white sticky top-0 flex justify-between z-10">
-            <div className="modal-title text-center">
+            <div className="modal-title text-center flex flex-col justify-center">
               <p>{title}</p>
               <p className="font-normal">{subTitle}</p>
             </div>
+           
+        
             <form method="dialog">
               <button className="close btn btn-icon border-none bg-transparent shadow-none btn-tertiary">
                 <i className="material-symbols-outlined">close</i>
