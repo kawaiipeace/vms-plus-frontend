@@ -115,7 +115,7 @@ export default function MobileDriverCard({
         )}
 
         {cardType === "waitCar" && (
-          <div className="card-item-group d-flex">
+          <div className="card-item-group grid !grid-cols-1">
             <div className="card-item">
               <i className="material-symbols-outlined">local_parking</i>
               <span className="card-item-text">{locationNote || "-"}</span>
